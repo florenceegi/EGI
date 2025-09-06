@@ -66,12 +66,17 @@
                                 @endif
                             </div>
 
-
                             <!-- Collection Info -->
                             <div class="flex-1 min-w-0">
-                                <h5 class="font-medium text-gray-900 truncate transition-colors dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">
-                                    {{ $collection->collection_name }}
-                                </h5>
+                                <div class="flex items-center space-x-2">
+                                    <h5 class="font-medium text-gray-900 truncate transition-colors dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                                        {{ $collection->collection_name }}
+                                    </h5>
+                                    <!-- Owner Badge -->
+                                    <span class="px-2 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded-full dark:bg-purple-900/30 dark:text-purple-300">
+                                        Owner
+                                    </span>
+                                </div>
                                 <div class="flex items-center justify-between text-xs font-medium text-gray-800 dark:text-gray-200">
                                     <div class="flex items-center space-x-3">
                                         <span class="flex items-center">
@@ -100,18 +105,33 @@
                                             @endif
                                         </span>
 
+                                        <!-- Creator info -->
+                                        {{-- <span class="flex items-center text-purple-600 dark:text-purple-400">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                            </svg>
+                                            {{ $collection->creator->name }}
+                                        </span> --}}
+
                                         @if($soldCount > 0)
                                             <span class="flex items-center text-green-700 dark:text-green-400">
                                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                 </svg>
-                                      {{--  --}}
+                                                {{ $soldCount }} {{ __('collection.sold') }}
                                             </span>
                                         @endif
                                     </div>
                                 </div>
+
+                                @if($collection->description)
+                                    <p class="mt-1 mb-2 text-xs text-gray-600 truncate dark:text-gray-400">
+                                        {{ Str::limit($collection->description, 80) }}
+                                    </p>
+                                @endif
+
                                 @if($collection->type)
-                                    <span class="px-2 py-0.5 text-xs font-medium rounded-full mb-2 {{
+                                    <span class="px-2 py-0.5 text-xs font-medium rounded-full mt-2 {{
                                         $collection->status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' :
                                         ($collection->status === 'local' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300' :
                                         'bg-gray-200 text-gray-900 dark:bg-gray-600 dark:text-gray-100')
