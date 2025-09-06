@@ -183,7 +183,9 @@
                         </div>
                         @endcan
 
+                        @auth
                         <x-navigation.vanilla-desktop-menu />
+                        @endauth
 
                         {{-- Create EGI Button - Solo per utenti con permesso --}}
 
@@ -300,7 +302,9 @@
     </header>
 
     {{-- Mobile Menu Component - Outside header for proper overlay positioning --}}
+    @auth
     <x-navigation.vanilla-mobile-menu />
+    @endauth
 
     <script>
         window.addEventListener('load', function() {
