@@ -1,6 +1,7 @@
-{{-- Vanilla Mobile Navigation Component - No Alpine.js --}}
+{{-- Vanilla Mobile Navigation Component }}
 
-{{-- Component-specific assets --}}
+{{--  --}}
+    
 @push('styles')
     @vite('resources/css/mega-menu.css')
 @endpush
@@ -11,7 +12,7 @@
 
 <!-- Mobile Menu Container -->
 <style>
-/* TEST CSS INLINE DIRETTO - SUPER AGGRESSIVO PER CONTENUTO */
+/* CSS INLINE DIRETTO - SUPER AGGRESSIVO PER CONTENUTO */
 [data-mobile-menu] {
     z-index: 999999 !important;
 }
@@ -21,28 +22,36 @@
     font-size: 24px !important;
 }
 [data-mobile-content] {
-    background-color: #ffffff !important;
+    background-color: rgba(17, 24, 39, 0.9) !important;
+    backdrop-filter: blur(24px) !important;
     opacity: 1 !important;
     visibility: visible !important;
 }
 .mobile-menu-content {
-    background-color: #ffffff !important;
+    background-color: transparent !important;
+    backdrop-filter: blur(24px) !important;
     opacity: 1 !important;
 }
 .mobile-menu-content h4 {
-    color: #000000 !important;
     opacity: 1 !important;
+    color: #e5e7eb !important;
 }
 .mobile-menu-content a {
-    color: #000000 !important;
     opacity: 1 !important;
+    color: #e5e7eb !important;
+}
+.mobile-menu-content button {
+    opacity: 1 !important;
+    color: #e5e7eb !important;
 }
 .mobile-menu-content div {
     opacity: 1 !important;
 }
 .mobile-card {
-    background-color: #ffffff !important;
     opacity: 1 !important;
+}
+.mobile-nav-item {
+    color: #e5e7eb !important;
 }
 .space-y-2, .space-y-4, .space-y-1 {
     opacity: 1 !important;
@@ -50,19 +59,18 @@
 </style>
 
 @php
-$user = App\Helpers\FegiAuth::user(); // User object or null
-$authType = App\Helpers\FegiAuth::getAuthType(); // 'strong', 'weak', 'guest'
-$canCreateEgi = $user && $user->can('create_EGI');
-
+    $user = App\Helpers\FegiAuth::user(); // User object or null
+    $authType = App\Helpers\FegiAuth::getAuthType(); // 'strong', 'weak', 'guest'
+    $canCreateEgi = $user && $user->can('create_EGI');
 @endphp
 
 <div data-mobile-menu class="fixed inset-0 hidden sm:hidden" style="z-index: 999999 !important;">
     <!-- Mobile Menu Overlay -->
-    <div data-mobile-overlay class="fixed inset-0 bg-black/20 backdrop-blur-sm mobile-menu-overlay" style="opacity: 1 !important; visibility: visible !important; z-index: 999998 !important;"></div>
+    <div data-mobile-overlay class="fixed inset-0 bg-black/60 backdrop-blur-md mobile-menu-overlay" style="opacity: 1 !important; visibility: visible !important; z-index: 999998 !important;"></div>
 
     <!-- Mobile Menu Content -->
     <div class="fixed inset-0 flex" style="z-index: 999999 !important;">
-        <div data-mobile-content class="relative flex flex-col w-full max-w-sm ml-auto transition-transform duration-300 ease-out transform translate-x-full bg-white shadow-2xl dark:bg-gray-900 mobile-menu-container" style="opacity: 1 !important; visibility: visible !important; z-index: 999999 !important; background-color: white !important;">
+        <div data-mobile-content class="relative flex flex-col w-full max-w-sm ml-auto transition-transform duration-300 ease-out transform translate-x-full bg-gray-900/90 backdrop-blur-xl shadow-2xl border-l border-gray-700/50 mobile-menu-container" style="opacity: 1 !important; visibility: visible !important; z-index: 999999 !important;">
 
             <!-- Header Section with User Info -->
             <div class="flex items-center justify-between p-6 bg-gradient-to-r from-blue-500 to-purple-600 mobile-header-gradient" style="opacity: 1 !important; background: linear-gradient(to right, #3b82f6, #9333ea) !important; color: white !important;">
@@ -112,11 +120,11 @@ $canCreateEgi = $user && $user->can('create_EGI');
             @endauth
 
             <!-- Navigation Content -->
-            <div class="flex-1 p-4 space-y-4 overflow-y-auto mobile-menu-content" style="background-color: white !important; color: #374151 !important; opacity: 1 !important;">
+            <div class="flex-1 p-4 space-y-4 overflow-y-auto mobile-menu-content" style="opacity: 1 !important;">
 
                 <!-- Main Navigation -->
                 <div class="space-y-2" style="opacity: 1 !important;">
-                    <h4 class="px-3 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400" style="color: #6b7280 !important;">{{ __('menu.navigation') }}</h4>
+                    <h4 class="px-3 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">{{ __('menu.navigation') }}</h4>
                     <div class="space-y-1" style="opacity: 1 !important;">
 
                         {{-- Se siamo nel guest layout (Home), mostra i link di nav-links.blade.php --}}
@@ -176,8 +184,7 @@ $canCreateEgi = $user && $user->can('create_EGI');
                                 @auth
                                 <button type="button" id="mobile-collection-list-dropdown-button"
                                     class="flex items-center justify-between w-full px-4 py-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl mobile-nav-item"
-                                    aria-expanded="false" aria-haspopup="true"
-                                    style="color: #374151 !important;">
+                                    aria-expanded="false" aria-haspopup="true">
                                     <span class="flex items-center space-x-3">
                                         <div class="flex items-center justify-center w-8 h-8 text-white bg-purple-500 rounded-lg">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,13 +201,11 @@ $canCreateEgi = $user && $user->can('create_EGI');
                                 </button>
                                 {{-- Dropdown menu mobile --}}
                                 <div id="mobile-collection-list-dropdown-menu"
-                                    class="mx-4 mb-2 mt-1 hidden max-h-[40vh] overflow-y-auto rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
-                                    style="background-color: white !important; opacity: 1 !important;">
-                                    <div id="mobile-collection-list-loading" class="px-4 py-3 text-sm text-center text-gray-500"
-                                        style="color: #6b7280 !important;">
+                                    class="mx-4 mb-2 mt-1 hidden max-h-[40vh] overflow-y-auto rounded-xl border border-gray-600 bg-gray-800/90 py-2 shadow-lg backdrop-blur-lg"
+                                    style="opacity: 1 !important;">
+                                    <div id="mobile-collection-list-loading" class="px-4 py-3 text-sm text-center text-gray-500">
                                         {{ __('collection.loading_galleries') }}</div>
-                                    <div id="mobile-collection-list-empty" class="hidden px-4 py-3 text-sm text-center text-gray-500"
-                                        style="color: #6b7280 !important;">
+                                    <div id="mobile-collection-list-empty" class="hidden px-4 py-3 text-sm text-center text-gray-500">
                                         {{ __('collection.no_galleries_found') }} <button type="button" data-action="open-create-collection-modal"
                                             class="underline hover:text-emerald-400">{{ __('collection.create_one_question') }}</button></div>
                                     <div id="mobile-collection-list-error" class="hidden px-4 py-3 text-sm text-center text-red-500">
@@ -228,8 +233,7 @@ $canCreateEgi = $user && $user->can('create_EGI');
                             @can('create_collection')
                                 <button type="button" data-action="open-create-collection-modal"
                                     class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl mobile-nav-item"
-                                    aria-label="{{ __('collection.create_collection') }}"
-                                    style="color: #374151 !important;">
+                                    aria-label="{{ __('collection.create_collection') }}">
                                     <div class="flex items-center justify-center w-8 h-8 text-white bg-indigo-500 rounded-lg">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                                             <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
@@ -328,8 +332,7 @@ $canCreateEgi = $user && $user->can('create_EGI');
                             @can('create_collection')
                                 <button type="button" data-action="open-create-collection-modal"
                                     class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl mobile-nav-item"
-                                    aria-label="{{ __('collection.create_collection') }}"
-                                    style="color: #374151 !important;">
+                                    aria-label="{{ __('collection.create_collection') }}">
                                     <div class="flex items-center justify-center w-8 h-8 text-white bg-indigo-500 rounded-lg">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                                             <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
@@ -341,6 +344,12 @@ $canCreateEgi = $user && $user->can('create_EGI');
                         @endif
                     </div>
                 </div>
+
+                <!-- Dynamic Collections Carousel Card -->
+                <x-menu-collections-carousel :collections="Auth::check() ? Auth::user()->ownedCollections()->orderBy('position')->get() : collect()" />
+
+                <!-- Shared Collections Carousel Card - Collections where user is collaborator -->
+                <x-menu-guest-collections-carousel :collections="Auth::check() ? Auth::user()->collaborations()->orderBy('position')->get() : collect()" />
 
                 <!-- Account Management Card -->
                 <div class="p-4 border bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl border-emerald-200/30 dark:border-emerald-800/30 mobile-card">
@@ -393,11 +402,6 @@ $canCreateEgi = $user && $user->can('create_EGI');
                         @endcan
                     </div>
                 </div>
-
-                <!-- Dynamic Collections Carousel Card -->
-                @can('create_collection')
-                    <x-menu-collections-carousel :collections="Auth::user()->ownedCollections()->orderBy('position')->get()" />
-                @endcan
 
                 <!-- Activity & Notifications Card -->
                 <div class="p-4 border bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl border-orange-200/30 dark:border-orange-800/30 mobile-card">
