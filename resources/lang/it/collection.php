@@ -29,6 +29,7 @@ return [
     'from_collection' => 'Dalla Collezione',
     'create' => 'Crea',
     'new' => 'Nuovo',
+    'sold' => 'venduti',
 
     // Collection Status
     'status' => [

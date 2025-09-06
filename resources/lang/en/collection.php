@@ -28,6 +28,7 @@ return [
     'creating' => 'Creating...',
     'create' => 'Create',
     'new' => 'New',
+    'sold' => 'sold',
 
     // Collection Status
     'status' => [

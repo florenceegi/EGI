@@ -25,6 +25,7 @@ return [
     'creating' => 'Création en cours...',
     'create' => 'Créer',
     'new' => 'Nouveau',
+    'sold' => 'vendus',
 
     // Success States
     'creation_success_title' => 'Collection créée !',
