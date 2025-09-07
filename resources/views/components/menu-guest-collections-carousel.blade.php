@@ -36,14 +36,16 @@
             <div class="flex items-center space-x-1">
                 <button type="button" 
                         data-scroll-direction="left"
-                        class="carousel-btn p-1 text-gray-400 transition-colors rounded hover:text-emerald-600 dark:hover:text-emerald-400">
+                        id="btn-left-guest-carousel"
+                        class="p-1 text-gray-400 transition-colors rounded hover:text-emerald-600 dark:hover:text-emerald-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </button>
                 <button type="button" 
                         data-scroll-direction="right"
-                        class="carousel-btn p-1 text-gray-400 transition-colors rounded hover:text-emerald-600 dark:hover:text-emerald-400">
+                        id="btn-right-guest-carousel"
+                        class="p-1 text-gray-400 transition-colors rounded hover:text-emerald-600 dark:hover:text-emerald-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
@@ -194,24 +196,55 @@
         const carousel = document.querySelector('.carousel-container');
         
         if (carousel) {
-            // Handle scroll buttons with both mouse and touch events
-            const scrollButtons = document.querySelectorAll('.carousel-btn');
-            scrollButtons.forEach(button => {
-                const direction = button.getAttribute('data-scroll-direction');
-                const scrollAmount = direction === 'left' ? -320 : 320;
-                
-                // Mouse events
-                button.addEventListener('click', function(e) {
+            // Handle scroll buttons with both mouse and touch events - specific buttons for this carousel
+            const leftButton = document.getElementById('btn-left-guest-carousel');
+            const rightButton = document.getElementById('btn-right-guest-carousel');
+            
+            if (leftButton) {
+                // Left button events
+                leftButton.addEventListener('click', function(e) {
                     e.preventDefault();
-                    carousel.scrollBy({left: scrollAmount, behavior: 'smooth'});
+                    e.stopPropagation();
+                    carousel.scrollBy({left: -320, behavior: 'smooth'});
                 });
                 
-                // Touch events for mobile
-                button.addEventListener('touchstart', function(e) {
+                leftButton.addEventListener('touchend', function(e) {
                     e.preventDefault();
-                    carousel.scrollBy({left: scrollAmount, behavior: 'smooth'});
+                    e.stopPropagation();
+                    carousel.scrollBy({left: -320, behavior: 'smooth'});
                 });
-            });
+                
+                leftButton.addEventListener('touchstart', function(e) {
+                    e.stopPropagation();
+                });
+                
+                leftButton.addEventListener('touchmove', function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            if (rightButton) {
+                // Right button events
+                rightButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    carousel.scrollBy({left: 320, behavior: 'smooth'});
+                });
+                
+                rightButton.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    carousel.scrollBy({left: 320, behavior: 'smooth'});
+                });
+                
+                rightButton.addEventListener('touchstart', function(e) {
+                    e.stopPropagation();
+                });
+                
+                rightButton.addEventListener('touchmove', function(e) {
+                    e.stopPropagation();
+                });
+            }
             
             // Mouse wheel scrolling - convert vertical to horizontal
             carousel.addEventListener('wheel', function(e) {
@@ -257,11 +290,17 @@
             let touchScrollLeft = 0;
             
             carousel.addEventListener('touchstart', function(e) {
+                // Ignore touch on buttons
+                if (e.target.closest('#btn-left-guest-carousel') || e.target.closest('#btn-right-guest-carousel')) return;
+                
                 touchStartX = e.touches[0].pageX - carousel.offsetLeft;
                 touchScrollLeft = carousel.scrollLeft;
             });
             
             carousel.addEventListener('touchmove', function(e) {
+                // Ignore touch on buttons
+                if (e.target.closest('#btn-left-guest-carousel') || e.target.closest('#btn-right-guest-carousel')) return;
+                
                 if (!touchStartX) return;
                 e.preventDefault();
                 const x = e.touches[0].pageX - carousel.offsetLeft;
