@@ -1,0 +1,12 @@
+🎯 **PROBLEMA IDENTIFICATO:**
+
+1. **Bottoni condizionali**: I bottoni esistono solo se count($collections) > 1
+2. **JavaScript assume sempre**: Cerca bottoni che potrebbero non esistere
+3. **Mobile behavior**: Menu mobile potrebbe avere logiche diverse
+4. **Event timing**: DOMContentLoaded potrebbe eseguire prima che i bottoni siano visibili
+
+**DEBUGGING STEPS:**
+1. Verificare se $collections ha elementi
+2. Controllare se i bottoni sono nel DOM
+3. Testare visibilità CSS su mobile
+4. Verificare z-index e layout conflicts

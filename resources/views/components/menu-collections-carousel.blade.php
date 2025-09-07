@@ -190,125 +190,143 @@
 document.addEventListener('DOMContentLoaded', function() {
     const carousel = document.querySelector('.carousel-container-menu');
     
-    if (carousel) {
-        // Handle scroll buttons with both mouse and touch events - specific buttons for this carousel
-        const leftButton = document.getElementById('btn-left-main-carousel');
-        const rightButton = document.getElementById('btn-right-main-carousel');
+    if (!carousel) {
+        console.log('Main carousel container not found');
+        return;
+    }
+    
+    // Handle scroll buttons - check if they exist first
+    const leftButton = document.getElementById('btn-left-main-carousel');
+    const rightButton = document.getElementById('btn-right-main-carousel');
+    
+    console.log('Main carousel buttons found:', {
+        left: !!leftButton,
+        right: !!rightButton,
+        collectionsCount: {{ count($collections) }}
+    });
+    
+    // Only attach button events if buttons exist
+    if (leftButton && rightButton) {
+        console.log('Attaching events to main carousel buttons');
         
-        if (leftButton) {
-            // Left button events
-            leftButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                carousel.scrollBy({left: -320, behavior: 'smooth'});
-            });
-            
-            leftButton.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                carousel.scrollBy({left: -320, behavior: 'smooth'});
-            });
-            
-            leftButton.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-            });
-            
-            leftButton.addEventListener('touchmove', function(e) {
-                e.stopPropagation();
-            });
-        }
-        
-        if (rightButton) {
-            // Right button events
-            rightButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                carousel.scrollBy({left: 320, behavior: 'smooth'});
-            });
-            
-            rightButton.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                carousel.scrollBy({left: 320, behavior: 'smooth'});
-            });
-            
-            rightButton.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-            });
-            
-            rightButton.addEventListener('touchmove', function(e) {
-                e.stopPropagation();
-            });
-        }
-        
-        // Mouse wheel scrolling - convert vertical to horizontal
-        carousel.addEventListener('wheel', function(e) {
+        // Left button events
+        leftButton.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            this.scrollLeft += e.deltaY;
-        }, { passive: false });
+            console.log('Main carousel left button clicked');
+            carousel.scrollBy({left: -320, behavior: 'smooth'});
+        });
         
-        // Touch/drag scrolling
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-        
-        // Mouse events
-        carousel.addEventListener('mousedown', function(e) {
-            isDown = true;
-            startX = e.pageX - carousel.offsetLeft;
-            scrollLeft = carousel.scrollLeft;
-            carousel.style.cursor = 'grabbing';
+        leftButton.addEventListener('touchend', function(e) {
             e.preventDefault();
+            e.stopPropagation();
+            console.log('Main carousel left button touched');
+            carousel.scrollBy({left: -320, behavior: 'smooth'});
         });
         
-        carousel.addEventListener('mouseleave', function() {
-            isDown = false;
-            carousel.style.cursor = 'grab';
+        leftButton.addEventListener('touchstart', function(e) {
+            e.stopPropagation();
         });
         
-        carousel.addEventListener('mouseup', function() {
-            isDown = false;
-            carousel.style.cursor = 'grab';
+        leftButton.addEventListener('touchmove', function(e) {
+            e.stopPropagation();
         });
         
-        carousel.addEventListener('mousemove', function(e) {
-            if (!isDown) return;
+        // Right button events
+        rightButton.addEventListener('click', function(e) {
             e.preventDefault();
-            const x = e.pageX - carousel.offsetLeft;
-            const walk = (x - startX) * 2;
-            carousel.scrollLeft = scrollLeft - walk;
+            e.stopPropagation();
+            console.log('Main carousel right button clicked');
+            carousel.scrollBy({left: 320, behavior: 'smooth'});
         });
         
-        // Touch events for mobile
-        let touchStartX = 0;
-        let touchScrollLeft = 0;
-        
-        carousel.addEventListener('touchstart', function(e) {
-            // Ignore touch on buttons
-            if (e.target.closest('#btn-left-main-carousel') || e.target.closest('#btn-right-main-carousel')) return;
-            
-            touchStartX = e.touches[0].pageX - carousel.offsetLeft;
-            touchScrollLeft = carousel.scrollLeft;
-        });
-        
-        carousel.addEventListener('touchmove', function(e) {
-            // Ignore touch on buttons
-            if (e.target.closest('#btn-left-main-carousel') || e.target.closest('#btn-right-main-carousel')) return;
-            
-            if (!touchStartX) return;
+        rightButton.addEventListener('touchend', function(e) {
             e.preventDefault();
-            const x = e.touches[0].pageX - carousel.offsetLeft;
-            const walk = (x - touchStartX) * 2;
-            carousel.scrollLeft = touchScrollLeft - walk;
-        }, { passive: false });
-        
-        carousel.addEventListener('touchend', function() {
-            touchStartX = 0;
+            e.stopPropagation();
+            console.log('Main carousel right button touched');
+            carousel.scrollBy({left: 320, behavior: 'smooth'});
         });
         
-        // Set cursor
-        carousel.style.cursor = 'grab';
+        rightButton.addEventListener('touchstart', function(e) {
+            e.stopPropagation();
+        });
+        
+        rightButton.addEventListener('touchmove', function(e) {
+            e.stopPropagation();
+        });
+    } else {
+        console.log('Main carousel buttons not found - skipping button events');
     }
+    
+    // Mouse wheel scrolling - convert vertical to horizontal
+    carousel.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.scrollLeft += e.deltaY;
+    }, { passive: false });
+    
+    // Touch/drag scrolling
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    
+    // Mouse events
+    carousel.addEventListener('mousedown', function(e) {
+        isDown = true;
+        startX = e.pageX - carousel.offsetLeft;
+        scrollLeft = carousel.scrollLeft;
+        carousel.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+    
+    carousel.addEventListener('mouseleave', function() {
+        isDown = false;
+        carousel.style.cursor = 'grab';
+    });
+    
+    carousel.addEventListener('mouseup', function() {
+        isDown = false;
+        carousel.style.cursor = 'grab';
+    });
+    
+    carousel.addEventListener('mousemove', function(e) {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - carousel.offsetLeft;
+        const walk = (x - startX) * 2;
+        carousel.scrollLeft = scrollLeft - walk;
+    });
+    
+    // Touch events for mobile
+    let touchStartX = 0;
+    let touchScrollLeft = 0;
+    
+    carousel.addEventListener('touchstart', function(e) {
+        // Ignore touch on buttons if they exist
+        if (leftButton && e.target.closest('#btn-left-main-carousel')) return;
+        if (rightButton && e.target.closest('#btn-right-main-carousel')) return;
+        
+        touchStartX = e.touches[0].pageX - carousel.offsetLeft;
+        touchScrollLeft = carousel.scrollLeft;
+    });
+    
+    carousel.addEventListener('touchmove', function(e) {
+        // Ignore touch on buttons if they exist
+        if (leftButton && e.target.closest('#btn-left-main-carousel')) return;
+        if (rightButton && e.target.closest('#btn-right-main-carousel')) return;
+        
+        if (!touchStartX) return;
+        e.preventDefault();
+        const x = e.touches[0].pageX - carousel.offsetLeft;
+        const walk = (x - touchStartX) * 2;
+        carousel.scrollLeft = touchScrollLeft - walk;
+    }, { passive: false });
+    
+    carousel.addEventListener('touchend', function() {
+        touchStartX = 0;
+    });
+    
+    // Set cursor
+    carousel.style.cursor = 'grab';
 });
 </script>
