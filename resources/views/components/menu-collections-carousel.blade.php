@@ -22,15 +22,15 @@
         @if(count($collections) > 1)
         <div class="flex items-center space-x-1">
             <button type="button" 
-                    onclick="document.querySelector('.carousel-container-menu').scrollBy({left: -320, behavior: 'smooth'})"
-                    class="p-1 text-gray-400 transition-colors rounded hover:text-purple-600 dark:hover:text-purple-400">
+                    data-scroll-direction="left"
+                    class="p-1 text-gray-400 transition-colors rounded hover:text-purple-600 dark:hover:text-purple-400 carousel-btn">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </button>
             <button type="button" 
-                    onclick="document.querySelector('.carousel-container-menu').scrollBy({left: 320, behavior: 'smooth'})"
-                    class="p-1 text-gray-400 transition-colors rounded hover:text-purple-600 dark:hover:text-purple-400">
+                    data-scroll-direction="right"
+                    class="p-1 text-gray-400 transition-colors rounded hover:text-purple-600 dark:hover:text-purple-400 carousel-btn">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
@@ -189,6 +189,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const carousel = document.querySelector('.carousel-container-menu');
     
     if (carousel) {
+        // Handle scroll buttons with both mouse and touch events
+        const scrollButtons = document.querySelectorAll('.carousel-btn');
+        scrollButtons.forEach(button => {
+            const direction = button.getAttribute('data-scroll-direction');
+            const scrollAmount = direction === 'left' ? -320 : 320;
+            
+            // Mouse events
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                carousel.scrollBy({left: scrollAmount, behavior: 'smooth'});
+            });
+            
+            // Touch events for mobile
+            button.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                carousel.scrollBy({left: scrollAmount, behavior: 'smooth'});
+            });
+        });
+        
         // Mouse wheel scrolling - convert vertical to horizontal
         carousel.addEventListener('wheel', function(e) {
             e.preventDefault();
