@@ -83,13 +83,38 @@ class CollectionsController extends Controller {
             $query->where('creator_id', $request->creator);
         }
 
-        // Filtro per stato
+        // Filtro per stato / visibilità
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         } else {
-            // Mostra solo collezioni pubblicate per utenti non autenticati o senza permessi
-            if (\Illuminate\Support\Facades\Gate::denies('collection-permission', [auth()->user() ? 'create_collection' : 'manage_advanced_settings', null])) {
-                $query->where('is_published', true);
+            // Utente anonimo: solo pubblicate
+            if (!$currentUserId) {
+                $query->where('collections.is_published', true);
+            } else {
+                // Utente autenticato: includi anche non pubblicate se creator o con permesso create_collection
+                // 1) Collezioni di cui è creator (query diretta)
+                $creatorIds = Collection::where('creator_id', $currentUserId)->pluck('id');
+
+                // 2) Collezioni collegate via pivot all'utente (candidate)
+                $candidateIds = DB::table('collection_user')
+                    ->where('user_id', $currentUserId)
+                    ->pluck('collection_id');
+
+                // 3) Carica le candidate e filtra in PHP usando userHasPermission (con users eager loaded)
+                $eligibleIds = Collection::with(['users' => function ($r) use ($currentUserId) {
+                    $r->where('users.id', $currentUserId);
+                }])
+                    ->whereIn('id', $candidateIds)
+                    ->get()
+                    ->filter(fn($c) => $c->userHasPermission($currentUserId, 'create_collection'))
+                    ->pluck('id');
+
+                // 4) Applica visibilità: pubblicate OR (creator o eligible per permesso)
+                $query->where(function ($q) use ($creatorIds, $eligibleIds, $currentUserId) {
+                    $q->where('collections.is_published', true)
+                        ->orWhereIn('collections.id', $creatorIds)
+                        ->orWhereIn('collections.id', $eligibleIds);
+                });
             }
         }
 
@@ -98,12 +123,7 @@ class CollectionsController extends Controller {
             $query->where('epp_id', $request->epp);
         }
 
-        // Aggiungi un filtro per `is_published` al join per la popolarità se non è già gestito globalmente
-        $query->when(true, function ($q) { // Questo `when(true)` è un modo per applicare la condizione se la rotta lo richiede
-            if (\Illuminate\Support\Facades\Gate::denies('collection-permission', [auth()->user() ? 'create_collection' : 'manage_advanced_settings', null])) {
-                $q->where('collections.is_published', true);
-            }
-        });
+        // Nota: nessun filtro aggiuntivo qui; la visibilità è già gestita sopra con la condizione per utente/permessi
 
 
         // Ordinamento

@@ -115,29 +115,41 @@ class Collection extends Model implements HasMedia {
 
     /**
      * Check if a user has a specific permission in this collection based on their role
-     * 
+     *
      * @param User|int $user User model or user ID
      * @param string $permission Permission name to check
      * @return bool
      */
     public function userHasPermission($user, string $permission): bool {
-        $userId = is_numeric($user) ? $user : $user->id;
-
-        // Get user's role in this collection
-        $collectionUser = $this->users()->where('users.id', $userId)->first();
-
-        if (!$collectionUser) {
-            return false; // User is not part of this collection
+        $userId = is_numeric($user) ? (int) $user : ($user->id ?? null);
+        if (!$userId) {
+            return false;
         }
 
-        // Get the role from pivot
-        $userRole = $collectionUser->pivot->role;
+        // Usa la relazione pre-caricata se disponibile per evitare query aggiuntive
+        $userRelation = null;
+        if ($this->relationLoaded('users')) {
+            $users = $this->getRelation('users');
+            $userRelation = $users->firstWhere('id', $userId);
+        }
 
-        // Check if the role exists in Spatie and has the permission
+        if (!$userRelation) {
+            // Fallback: interroga la relazione
+            $userRelation = $this->users()->where('users.id', $userId)->first();
+        }
+
+        if (!$userRelation) {
+            return false; // L'utente non fa parte della collection
+        }
+
+        $userRole = $userRelation->pivot->role ?? null;
+        if (!$userRole) {
+            return false;
+        }
+
         $role = \Spatie\Permission\Models\Role::where('name', $userRole)->first();
-
         if (!$role) {
-            return false; // Role doesn't exist in Spatie
+            return false; // Ruolo inesistente
         }
 
         return $role->hasPermissionTo($permission);
