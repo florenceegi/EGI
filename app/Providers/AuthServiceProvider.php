@@ -41,6 +41,16 @@ class AuthServiceProvider extends ServiceProvider {
 
         // Register collection-based permissions gate
         Gate::define('collection-permission', function ($user, $permission, $collection) {
+            // Se non autenticato, nega
+            if (!$user) {
+                return false;
+            }
+
+            // Se non è fornita una collection specifica, fallback al controllo globale del permesso
+            if (!$collection) {
+                return $user->can($permission);
+            }
+
             // Get user's role in this specific collection
             $collectionUser = $collection->users()
                 ->where('users.id', $user->id)
@@ -55,11 +65,11 @@ class AuthServiceProvider extends ServiceProvider {
 
             // Check if the role exists in Spatie and has the permission
             $role = \Spatie\Permission\Models\Role::where('name', $userRole)->first();
-            
+
             if (!$role) {
                 return false; // Role doesn't exist in Spatie
             }
-            
+
             return $role->hasPermissionTo($permission);
         });
 
