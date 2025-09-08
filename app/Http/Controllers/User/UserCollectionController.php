@@ -12,6 +12,9 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role as SpatieRole;
 use Ultra\UltraLogManager\UltraLogManager;         // Import ULM
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface; // Import Interfaccia UEM
 
@@ -29,8 +32,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface; // Import Interfaccia U
  * @since 2025-05-09
  * @author Padmin D. Curtis (for Fabio Cherici)
  */
-final class UserCollectionController extends Controller
-{
+final class UserCollectionController extends Controller {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager; // Proprietà per UEM
 
@@ -40,8 +42,7 @@ final class UserCollectionController extends Controller
      * @param UltraLogManager $logger The ULM instance for logging.
      * @param ErrorManagerInterface $errorManager The UEM instance for error handling.
      */
-    public function __construct(UltraLogManager $logger, ErrorManagerInterface $errorManager)
-    {
+    public function __construct(UltraLogManager $logger, ErrorManagerInterface $errorManager) {
         $this->logger = $logger;
         $this->errorManager = $errorManager; // Inietta UEM
     }
@@ -59,8 +60,7 @@ final class UserCollectionController extends Controller
      *  - On Unauthenticated (401 - gestito dal middleware Sanctum/Auth): Standard 401 response.
      *  - Utilizzato dal div id = "collection-list-dropdown-menu" nei layout
      */
-    public function getAccessibleCollections(Request $request): JsonResponse
-    {
+    public function getAccessibleCollections(Request $request): JsonResponse {
         /** @var User|null $user */
         // $user = $request->user();
 
@@ -87,23 +87,23 @@ final class UserCollectionController extends Controller
 
         // Elenco collection dell'utente loggato
         $ownedCollections = $user->ownedCollections()
-                                 ->select('id', 'collection_name')
-                                 ->orderBy('collection_name', 'asc')
-                                 ->get();
+            ->select('id', 'collection_name')
+            ->orderBy('collection_name', 'asc')
+            ->get();
 
         // Elenco collection in cui l'utente loggato collabora come memebro della collection
         $collaboratingCollections = $user->collaborations()
-                                         ->with('creator:id,email')
-                                         ->select('collections.id', 'collections.collection_name', 'collections.creator_id')
-                                         ->orderBy('collections.collection_name', 'asc')
-                                         ->get()
-                                         ->map(static function (Collection $collection): array {
-                                             return [
-                                                 'id' => $collection->id,
-                                                 'collection_name' => $collection->collection_name,
-                                                 'creator_email' => $collection->creator->email ?? 'N/A',
-                                             ];
-                                         });
+            ->with('creator:id,email')
+            ->select('collections.id', 'collections.collection_name', 'collections.creator_id')
+            ->orderBy('collections.collection_name', 'asc')
+            ->get()
+            ->map(static function (Collection $collection): array {
+                return [
+                    'id' => $collection->id,
+                    'collection_name' => $collection->collection_name,
+                    'creator_email' => $collection->creator->email ?? 'N/A',
+                ];
+            });
         /**
          * @psalm-suppress LessSpecificReturnStatement
          * @psalm-suppress MoreSpecificReturnStatement
@@ -122,8 +122,7 @@ final class UserCollectionController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function getEgiCreatableCollections(Request $request): JsonResponse
-    {
+    public function getEgiCreatableCollections(Request $request): JsonResponse {
         /** @var User|null $user */
         $user = FegiAuth::user();
 
@@ -136,52 +135,68 @@ final class UserCollectionController extends Controller
         }
 
         $this->logger->info(
-            'Fetching EGI-creatable collections for user.',
+            'Fetching EGI-creatable collections via pivot (collection_user).',
             ['user_id' => $user->id, 'log_category' => 'COLLECTION_ACCESS']
         );
 
-        // Recupera sia owned che collaborations, poi filtra per permesso create_EGI
-        $allCollections = collect([]);
+        try {
+            // 1) Leggi tutte le righe pivot per l'utente
+            $pivotRows = DB::table('collection_user')
+                ->where('user_id', $user->id)
+                ->select('collection_id', 'role')
+                ->get();
 
-        // Owned
-        $owned = $user->ownedCollections()->select('id', 'collection_name')->get();
-        $allCollections = $allCollections->merge($owned);
-
-        // Collaborations
-        $collabs = $user->collaborations()->select('collections.id', 'collections.collection_name')->get();
-        $allCollections = $allCollections->merge($collabs);
-
-        // Filtra usando la logica dei ruoli sulla pivot + Spatie\Permission
-        $eligible = $allCollections->filter(function (Collection $collection) use ($user) {
-            try {
-                $collectionUser = $collection->users()->where('users.id', $user->id)->first();
-                if (!$collectionUser) return false;
-                $userRoleName = $collectionUser->pivot->role ?? null;
-                if (!$userRoleName) return false;
-
-                $role = \Spatie\Permission\Models\Role::where('name', $userRoleName)->first();
-                if (!$role) return false;
-
-                return $role->hasPermissionTo('create_EGI');
-            } catch (\Throwable $e) {
-                $this->logger->error('Error while checking create_EGI permission for collection', [
-                    'user_id' => $user->id,
-                    'collection_id' => $collection->id,
-                    'error' => $e->getMessage(),
-                    'log_category' => 'AUTH_ERROR'
-                ]);
-                return false;
+            if ($pivotRows->isEmpty()) {
+                return response()->json(['eligible_collections' => []]);
             }
-        })->values()->map(static function (Collection $collection): array {
-            return [
-                'id' => $collection->id,
-                'collection_name' => $collection->collection_name,
-            ];
-        });
 
-        return response()->json([
-            'eligible_collections' => $eligible,
-        ]);
+            // 2) Precarica i ruoli Spatie coinvolti e verifica permesso create_EGI
+            $roleNames = $pivotRows->pluck('role')->filter()->unique()->values()->all();
+            $roles = SpatieRole::whereIn('name', $roleNames)->get();
+            $roleAllowed = [];
+            foreach ($roles as $role) {
+                $roleAllowed[$role->name] = $role->hasPermissionTo('create_EGI');
+            }
+
+            // 3) Seleziona gli ID collection dove il ruolo dell'utente è abilitato
+            $eligibleIds = $pivotRows->filter(function ($row) use ($roleAllowed) {
+                $roleName = $row->role ?? null;
+                return $roleName && ($roleAllowed[$roleName] ?? false);
+            })->pluck('collection_id')->unique()->values()->all();
+
+            if (empty($eligibleIds)) {
+                return response()->json(['eligible_collections' => []]);
+            }
+
+            // 4) Carica le collection idonee ordinate per nome
+            $collections = Collection::whereIn('id', $eligibleIds)
+                ->select('id', 'collection_name')
+                ->orderBy('collection_name', 'asc')
+                ->get()
+                ->map(static function (Collection $collection): array {
+                    return [
+                        'id' => $collection->id,
+                        'collection_name' => $collection->collection_name,
+                    ];
+                });
+
+            // Log diagnostico: quante e quali
+            $this->logger->info('EGI-creatable collections computed (pivot)', [
+                'user_id' => $user->id,
+                'eligible_count' => $collections->count(),
+                'eligible_ids' => $collections->pluck('id')->all(),
+                'log_category' => 'COLLECTION_ACCESS'
+            ]);
+
+            return response()->json(['eligible_collections' => $collections]);
+        } catch (\Throwable $e) {
+            $this->logger->error('Error computing EGI-creatable collections from pivot', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'log_category' => 'AUTH_ERROR'
+            ]);
+            return response()->json(['eligible_collections' => []]);
+        }
     }
     /**
      * 🎯 Set the current active collection for the authenticated user.
@@ -195,8 +210,7 @@ final class UserCollectionController extends Controller
      *  - UEM_SET_CURRENT_COLLECTION_FORBIDDEN (403 - da definire in uem config)
      *  - UEM_SET_CURRENT_COLLECTION_FAILED (500 - da definire in uem config)
      */
-    public function setCurrentCollection(Request $request, Collection $collection): JsonResponse
-    {
+    public function setCurrentCollection(Request $request, Collection $collection): JsonResponse {
         /** @var User|null $user */
         $user = $request->user();
 
@@ -217,9 +231,9 @@ final class UserCollectionController extends Controller
         $isCollaboratorQuery = $user->collaborations();
         $isCollaborator = false;
         if ($isCollaboratorQuery instanceof Builder) {
-             $isCollaborator = $isCollaboratorQuery->where('collection_id', $collection->id)->exists();
+            $isCollaborator = $isCollaboratorQuery->where('collection_id', $collection->id)->exists();
         } else {
-             $this->logger->error(
+            $this->logger->error(
                 'collaborations() did not return a Query Builder instance for user.',
                 ['user_id' => $user->id, 'collection_id' => $collection->id, 'log_category' => 'RELATIONSHIP_ERROR']
             );
@@ -244,7 +258,7 @@ final class UserCollectionController extends Controller
 
             $request->session()->put('current_collection_id', $collection->id);
 
-           // CRUCIALE: Invalida la cache dell'app config
+            // CRUCIALE: Invalida la cache dell'app config
             $lang = app()->getLocale();
             $cacheKey = "app_config_{$lang}_{$user->id}";
             Cache::forget($cacheKey);
@@ -267,7 +281,6 @@ final class UserCollectionController extends Controller
                 'current_collection_id' => $collection->id,
                 'current_collection_name' => $collection->collection_name,
             ]);
-
         } catch (\Throwable $e) {
             $this->logger->error(
                 'Exception while updating current collection.',
