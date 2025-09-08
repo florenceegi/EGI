@@ -82,30 +82,31 @@ $navLinkClasses = $isMobile
         @endauth
     @endif
 
-    {{-- Create EGI Button - Sempre visibile, la logica di azione è gestita da JS in base allo stato utente ANCHE PER UTENTI WEAK --}}
-    <button type="button"
-        class="js-create-egi-contextual-button {{ $navLinkClasses }} {{ $isMobile ? 'w-full text-left' : 'inline-flex items-center gap-1' }}"
-        data-action="open-create-egi-contextual" data-auth-type="{{ $authType }}"
-        aria-label="{{ __('guest_layout.create_egi') }}">
-        @if ($isMobile)
-        {{-- Versione Mobile - icona + testo allineati a sinistra --}}
-        <span class="flex items-center gap-1">
-            <svg class="w-4 h-4 js-create-egi-button-icon" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-                <path
-                    d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-            </svg>
-            <span class="js-create-egi-button-text">{{ __('guest_layout.create_egi') }}</span>
-        </span>
-        @else
-        {{-- Versione Desktop - layout inline --}}
+@endcan
+
+{{-- Create EGI Button - Sempre visibile, la logica di azione è gestita da JS in base allo stato utente ANCHE PER UTENTI WEAK --}}
+<button type="button"
+    class="js-create-egi-contextual-button {{ $navLinkClasses }} {{ $isMobile ? 'w-full text-left' : 'inline-flex items-center gap-1' }}"
+    data-action="open-create-egi-contextual" data-auth-type="{{ $authType }}"
+    aria-label="{{ __('guest_layout.create_egi') }}">
+    @if ($isMobile)
+    {{-- Versione Mobile - icona + testo allineati a sinistra --}}
+    <span class="flex items-center gap-1">
         <svg class="w-4 h-4 js-create-egi-button-icon" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
             <path
                 d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
         </svg>
         <span class="js-create-egi-button-text">{{ __('guest_layout.create_egi') }}</span>
-        @endif
-    </button>
-@endcan
+    </span>
+    @else
+    {{-- Versione Desktop - layout inline --}}
+    <svg class="w-4 h-4 js-create-egi-button-icon" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+        <path
+            d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
+    </svg>
+    <span class="js-create-egi-button-text">{{ __('guest_layout.create_egi') }}</span>
+    @endif
+</button>
 
 {{-- Create Collection CTA - Solo se l'utente ha il permesso --}}
 @can('create_collection')

@@ -73,7 +73,7 @@ export async function handleCreateEgiFlow(config: AppConfig, DOM: typeof DOMElem
                 document.dispatchEvent(new CustomEvent('collection-changed', { detail: newDetails }));
             }
         }
-        (window as any).mainUploadModalManager?.openModal('egi');
+        document.dispatchEvent(new CustomEvent('openUploadModal', { detail: { type: 'egi' } }));
         return;
     }
 
@@ -93,6 +93,6 @@ export async function handleCreateEgiFlow(config: AppConfig, DOM: typeof DOMElem
             document.dispatchEvent(new CustomEvent('collection-changed', { detail: newDetails }));
         }
         close();
-        (window as any).mainUploadModalManager?.openModal('egi');
+        document.dispatchEvent(new CustomEvent('openUploadModal', { detail: { type: 'egi' } }));
     });
 }

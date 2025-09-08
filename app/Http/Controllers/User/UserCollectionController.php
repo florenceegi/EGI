@@ -212,41 +212,25 @@ final class UserCollectionController extends Controller {
      */
     public function setCurrentCollection(Request $request, Collection $collection): JsonResponse {
         /** @var User|null $user */
-        $user = $request->user();
-
+        $user = FegiAuth::user();
         if (!$user) {
             $this->logger->warning(
                 'Attempt to access setCurrentCollection without authenticated user.',
                 ['ip_address' => $request->ip(), 'target_collection_id' => $collection->id, 'log_category' => 'AUTH_FAILURE']
             );
-            // Definire 'UEM_USER_UNAUTHENTICATED' in config/error-manager.php
-            // Uso dell'istanza iniettata di ErrorManagerInterface
             return $this->errorManager->handle('UEM_USER_UNAUTHENTICATED', [
                 'target_collection_id' => $collection->id,
                 'ip_address' => $request->ip()
             ], new \Exception('User not authenticated'));
         }
 
-        $isOwner = $collection->creator_id === $user->id;
-        $isCollaboratorQuery = $user->collaborations();
-        $isCollaborator = false;
-        if ($isCollaboratorQuery instanceof Builder) {
-            $isCollaborator = $isCollaboratorQuery->where('collection_id', $collection->id)->exists();
-        } else {
-            $this->logger->error(
-                'collaborations() did not return a Query Builder instance for user.',
-                ['user_id' => $user->id, 'collection_id' => $collection->id, 'log_category' => 'RELATIONSHIP_ERROR']
-            );
-            // Considerare UEM_INTERNAL_SERVER_ERROR se questa è una condizione critica
-        }
-
-        if (!$isOwner && !$isCollaborator) {
+        // Autorizzazione: usa Gate centralizzato basato su ruolo/permessi nel pivot
+        if ((!$collection->userHasPermission($user, 'create_EGI'))) {
             $this->logger->warning(
-                'Unauthorized attempt to set current collection.',
+                'Unauthorized attempt to set current collection (Gate denied).',
                 ['user_id' => $user->id, 'collection_id' => $collection->id, 'ip_address' => $request->ip(), 'log_category' => 'AUTH_FORBIDDEN']
             );
-            // Definire 'UEM_SET_CURRENT_COLLECTION_FORBIDDEN' in config/error-manager.php
-            return $this->errorManager->handle('UEM_SET_CURRENT_COLLECTION_FORBIDDEN', [ // Uso dell'istanza UEM
+            return $this->errorManager->handle('UEM_SET_CURRENT_COLLECTION_FORBIDDEN', [
                 'user_id' => $user->id,
                 'collection_id' => $collection->id
             ]);
@@ -255,15 +239,12 @@ final class UserCollectionController extends Controller {
         try {
             $user->current_collection_id = $collection->id;
             $user->save();
-
             $request->session()->put('current_collection_id', $collection->id);
 
-            // CRUCIALE: Invalida la cache dell'app config
+            // Invalida cache app config per l'utente
             $lang = app()->getLocale();
             $cacheKey = "app_config_{$lang}_{$user->id}";
             Cache::forget($cacheKey);
-
-            // Se ci sono più lingue, invalida tutte
             foreach (config('app.available_locales', ['it', 'en']) as $locale) {
                 Cache::forget("app_config_{$locale}_{$user->id}");
             }
@@ -272,10 +253,6 @@ final class UserCollectionController extends Controller {
                 'Current collection updated successfully.',
                 ['user_id' => $user->id, 'new_current_collection_id' => $collection->id, 'log_category' => 'COLLECTION_UPDATE']
             );
-            /**
-             * @psalm-suppress LessSpecificReturnStatement
-             * @psalm-suppress MoreSpecificReturnStatement
-             */
             return response()->json([
                 'message' => 'Current collection updated successfully.',
                 'current_collection_id' => $collection->id,
@@ -288,12 +265,10 @@ final class UserCollectionController extends Controller {
                     'user_id' => $user->id,
                     'collection_id' => $collection->id,
                     'error_message' => $e->getMessage(),
-                    // 'error_trace' => $e->getTraceAsString(), // UEM gestirà il logging della traccia se configurato
                     'log_category' => 'DB_ERROR'
                 ]
             );
-            // Definire 'UEM_SET_CURRENT_COLLECTION_FAILED' in config/error-manager.php
-            return $this->errorManager->handle('UEM_SET_CURRENT_COLLECTION_FAILED', [ // Uso dell'istanza UEM
+            return $this->errorManager->handle('UEM_SET_CURRENT_COLLECTION_FAILED', [
                 'user_id' => $user->id,
                 'collection_id' => $collection->id,
             ], $e);

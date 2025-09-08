@@ -889,7 +889,7 @@ function setupFegiCustomEvents(): void {
 };
 
 /**
- * 📜 Oracode Global Function: createCollectionFlow  
+ * 📜 Oracode Global Function: createCollectionFlow
  * 🎯 Alias per openCreateCollectionModal (compatibilità multipla)
  */
 (window as any).createCollectionFlow = (window as any).openCreateCollectionModal;
