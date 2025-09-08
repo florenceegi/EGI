@@ -5,8 +5,7 @@ export class RequestCreateNotificationWallet {
             return RequestCreateNotificationWallet.instance;
         }
         this.options = options || { apiBaseUrl: '/notifications' };
-        this.bindEvents();
-        ensureTranslationsLoaded(); // 🔥 Carica subito le traduzioni!
+    this.bindEvents();
         console.log('🚀 RequestCreateNotificationWallet initialized');
         RequestCreateNotificationWallet.instance = this;
         return this;
@@ -16,51 +15,65 @@ export class RequestCreateNotificationWallet {
      * 🌐 Sistema di traduzione intelligente con fallback
      * Prova prima il sistema moderno appTranslate, poi il sistema deprecato
      */
-    translate(key, fallback = key) {
-        // Prova prima il sistema moderno
-        if (typeof window.appTranslate === 'function') {
+    translate(key, fallback ) {
+        // Usa SOLO il sistema moderno (definito da main/collection.js)
+        if (typeof window !== 'undefined' && typeof window.appTranslate === 'function') {
             try {
                 const result = window.appTranslate(key, fallback);
-                if (result && result !== key) {
-                    return result;
-                }
+                return result ?? fallback;
             } catch (error) {
-                console.warn('🔄 appTranslate fallback to getTranslation for key:', key);
+                console.warn('appTranslate ha generato un errore per la chiave:', key, error);
             }
+        } else {
+            console.warn('appTranslate non inizializzato. Chiave:', key);
         }
-        
-        // Fallback al sistema deprecato 
-        if (typeof window.getTranslation === 'function') {
-            return window.getTranslation(key, fallback);
-        }
-        
-        // Ultimo fallback
         return fallback;
     }
 
     bindEvents() {
-        document.querySelectorAll('.create-wallet-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const collectionId = e.target.dataset.collectionId;
-                const userId = parseInt(e.target.dataset.userId, 10);
-                const walletAddress = e.target.dataset.walletAddress || '';
 
-                console.log("🔍 Valori recuperati:", { collectionId, userId, walletAddress });
+        console.log("🔍 BindEvent");
 
-                if (!collectionId || isNaN(userId)) {
-                    console.error("❌ Errore: Manca collectionId o userId nel dataset!");
-                    return;
-                }
+        // Event delegation: copre pulsanti renderizzati dinamicamente e click su figli (SVG, path)
+        document.addEventListener('click', async (event) => {
+            const target = event.target;
+            if (!(target instanceof Element)) return;
+            const btn = target.closest('.create-wallet-btn');
+            if (!btn) return;
 
-                await this.openCreateWalletModal(collectionId, userId, walletAddress);
-            });
+            const collectionId = btn.getAttribute('data-collection-id');
+            const userIdStr = btn.getAttribute('data-user-id');
+            const walletAddress = btn.getAttribute('data-wallet-address') || '';
+
+            const userId = userIdStr ? parseInt(userIdStr, 10) : NaN;
+
+            console.log("🔍 Valori recuperati (delegation):", { collectionId, userId, walletAddress });
+
+            if (!collectionId || isNaN(userId)) {
+                console.error("❌ Errore: Manca collectionId o userId nel dataset!");
+                return;
+            }
+
+            await this.openCreateWalletModal(collectionId, userId, walletAddress);
         });
+
+        // Supporto Livewire: logga al termine del render per diagnosticare
+        if (window.Livewire && typeof window.Livewire.hook === 'function') {
+            window.Livewire.hook('message.processed', (message, component) => {
+                console.debug('🔁 Livewire DOM updated for component', component.fingerprint?.name || '', '— handlers are delegated, no rebind needed');
+            });
+        }
     }
     async openCreateWalletModal(collectionId, userId, walletAddress = '') {
         const modalHtml = await this.getCreateModalHtml(walletAddress);
 
         try {
-            const result = await Swal.fire({
+            if (!window.Swal) {
+                console.error('❌ SweetAlert2 non trovato su window.Swal. Assicurati che resources/js/app.js sia caricato.');
+                alert('SweetAlert non disponibile');
+                return;
+            }
+            const result = await window.Swal.fire({
                 title: this.translate('collection.wallet.create_the_wallet'),
                 html: modalHtml,
                 showCancelButton: true,
@@ -74,7 +87,7 @@ export class RequestCreateNotificationWallet {
                 },
                 preConfirm: () => this.validateAndCollectData(collectionId, userId)
             });
-            
+
             if (result.isConfirmed && result.value) {
                 await this.handleCreateWallet(result.value);
             }
@@ -97,7 +110,7 @@ export class RequestCreateNotificationWallet {
 
         if (!walletAddress) {
             console.error("❌ Errore: Indirizzo wallet mancante!");
-            Swal.showValidationMessage(this.translate('collection.wallet.validation.address_required'));
+            if (window.Swal) window.Swal.showValidationMessage(this.translate('collection.wallet.validation.address_required'));
             return null;
         }
 
@@ -113,7 +126,7 @@ export class RequestCreateNotificationWallet {
             <form id="wallet-modal-form" class="space-y-4">
                 <div class="mb-3">
                     <label for="walletAddress" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('collection.wallet.address')}
+                        ${this.translate('Address')}
                     </label>
                     <input type="text"
                            id="walletAddress"
@@ -125,26 +138,26 @@ export class RequestCreateNotificationWallet {
 
                 <div class="mb-3">
                     <label for="royaltyMint" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('collection.wallet.royalty_mint')}
+                        ${this.translate('royalty % mint')}
                     </label>
                     <input type="number"
                            id="royaltyMint"
                            class="swal2-input bg-gray-700 text-white"
                            style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
                            step="0.01"
-                           placeholder="${this.translate('collection.wallet.royalty_mint_placeholder')}">
+                           placeholder="${this.translate('royalty % mint')}">
                 </div>
 
                 <div class="mb-3">
                     <label for="royaltyRebind" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('collection.wallet.royalty_rebind')}
+                        ${this.translate('royalty % rebind')}
                     </label>
                     <input type="number"
                            id="royaltyRebind"
                            class="swal2-input bg-gray-700 text-white"
                            style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
                            step="0.01"
-                           placeholder="${this.translate('collection.wallet.royalty_rebind_placeholder')}">
+                           placeholder="${this.translate('royalty % rebind')}">
                 </div>
             </form>
         `;
@@ -190,17 +203,20 @@ export class RequestCreateNotificationWallet {
 
         window.location.reload();
 
-        Swal.fire({
+        const msg = this.translate('collection.wallet.creation_success_detail');
+        if (!window.Swal) return alert(msg);
+        window.Swal.fire({
             icon: 'success',
             title: this.translate('collection.wallet.creation_success'),
-            text: this.translate('collection.wallet.creation_success_detail'),
+            text: msg,
             timer: 3000,
             showConfirmButton: false
         });
     }
 
     showSuccess(message) {
-        Swal.fire({
+    if (!window.Swal) return alert(message);
+    window.Swal.fire({
             icon: 'success',
             title: this.translate('collection.wallet.creation_success'),
             text: message,
@@ -209,10 +225,11 @@ export class RequestCreateNotificationWallet {
     }
 
     showError(message) {
-        Swal.fire({
+        if (!window.Swal) return alert(message);
+        window.Swal.fire({
             icon: 'error',
             title: this.translate('wallet_validation_check_pending_wallet_title'),
-                                   
+
             text: message
         });
     }

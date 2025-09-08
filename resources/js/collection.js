@@ -15,9 +15,11 @@ window.Swal = Swal; // Sintassi JS standard
 console.log('SweetAlert2 importato e globale.'); // Debugging
 
 // Importa utils (translations, enums)
-import { fetchTranslations, ensureTranslationsLoaded, getTranslation } from './utils/translations';
+import { fetchTranslations, ensureTranslationsLoaded } from './utils/translations';
 import { loadEnums, getEnum, isPendingStatus } from './utils/enums';
 console.log('Utils per translations e enums importati.'); // Debugging
+
+import { appTranslate } from '../ts/config/appConfig'
 
 // Importa la gestione del modale
 // import { initializeModal } from '../ts/open-close-modal';
@@ -92,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Carica le traduzioni all'avvio (mantieni come nel tuo codice originale se è fuori listener)
 fetchTranslations(); // <-- Questo è chiamato direttamente nel tuo codice originale, non in un listener
-window.getTranslation = getTranslation; // Sintassi JS standard
+window.appTranslate = appTranslate; // Sintassi JS standard
 window.ensureTranslationsLoaded = ensureTranslationsLoaded; // Sintassi JS standard
 console.log('Traduzioni avviate (fuori listener).'); // Debugging
 
@@ -105,6 +107,7 @@ import './modules/notifications/init/notification-response-init'; // Questo modu
 
 
 console.log('app.js execution finished (initial phase - after imports).'); // Debugging
+// Removed invalid type import in JS: AppConfig is a TS type, not a runtime export
 
 
 // // Documentazione: di window.fetch polyfill

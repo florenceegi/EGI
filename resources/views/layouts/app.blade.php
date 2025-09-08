@@ -66,7 +66,7 @@
 
     {{-- Application Assets --}}
     @vite(['resources/css/app.css', 'resources/css/gdpr.css', 'resources/css/reservation-history.css',
-    'resources/js/app.js', 'resources/js/components/create-collection-modal.js', 'resources/js/reservation-history.js'])
+    'resources/js/app.js', 'resources/js/collection.js', 'resources/js/components/create-collection-modal.js', 'resources/js/reservation-history.js'])
 
     {{-- Oracode 3.0: Allow child views to inject custom styles (Pillar #5 - Predisposed to Variation) --}}
     @stack('styles')

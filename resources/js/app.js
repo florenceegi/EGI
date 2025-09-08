@@ -54,6 +54,8 @@ import { DeleteProposalInvitation } from './modules/notifications/delete-proposa
 import { DeleteProposalWallet } from './modules/notifications/delete-proposal-wallet';
 console.log('Moduli wallet importati (init in main.ts).'); // Debugging
 
+
+
 // --- 📤 IMPORT ULTRA UPLOAD MANAGER (disponibile per main.ts) ---
 import { initializeApp as initializeUltraUploadManager } from '/vendor/ultra/ultra-upload-manager/resources/ts/core/file_upload_manager.ts';
 console.log('Modulo file_upload_manager importato (init in main.ts).'); // Debugging
