@@ -262,7 +262,7 @@
         </div>
 
         {{-- Utility Details Modal --}}
-        @if($egi->utility && $egi->is_published == 0)
+        @if($egi->utility )
         <div id="utility-modal" class="fixed inset-0 z-50 items-center justify-center hidden bg-black/80 backdrop-blur-sm">
             <div class="relative w-full max-w-4xl mx-4 my-8 max-h-[90vh] overflow-hidden">
                 {{-- Modal Content --}}

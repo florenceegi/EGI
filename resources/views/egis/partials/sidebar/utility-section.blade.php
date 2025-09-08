@@ -1,7 +1,6 @@
 {{-- resources/views/egis/partials/sidebar/utility-section.blade.php --}}
 {{-- 
     Sezione utility display
-    ORIGINE: righe 143-186 di show.blade.php (Utility Display Section)
     VARIABILI: $egi (con $egi->utility)
 --}}
 
