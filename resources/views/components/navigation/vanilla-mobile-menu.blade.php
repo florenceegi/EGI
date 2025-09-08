@@ -65,12 +65,15 @@
 @endphp
 
 <div data-mobile-menu class="fixed inset-0 hidden sm:hidden" style="z-index: 999999 !important;">
-    <!-- Mobile Menu Overlay -->
-    <div data-mobile-overlay class="fixed inset-0 bg-black/60 backdrop-blur-md mobile-menu-overlay" style="opacity: 1 !important; visibility: visible !important; z-index: 999998 !important;"></div>
+    <!-- Mobile Menu Overlay - Modificato per NON coprire il contenuto del menu -->
+    <div data-mobile-overlay class="fixed inset-0 bg-black/60 backdrop-blur-md mobile-menu-overlay" style="opacity: 1 !important; visibility: visible !important; z-index: 999998 !important; pointer-events: none !important;"></div>
 
     <!-- Mobile Menu Content -->
     <div class="fixed inset-0 flex" style="z-index: 999999 !important;">
-        <div data-mobile-content class="relative flex flex-col w-full max-w-sm ml-auto transition-transform duration-300 ease-out transform translate-x-full bg-gray-900/90 backdrop-blur-xl shadow-2xl border-l border-gray-700/50 mobile-menu-container" style="opacity: 1 !important; visibility: visible !important; z-index: 999999 !important;">
+        <!-- Area cliccabile per chiudere il menu (solo a sinistra del contenuto) -->
+        <div data-mobile-close-area class="flex-1 cursor-pointer" style="pointer-events: auto !important;"></div>
+        
+        <div data-mobile-content class="relative flex flex-col w-full max-w-sm ml-auto transition-transform duration-300 ease-out transform translate-x-full border-l shadow-2xl bg-gray-900/90 backdrop-blur-xl border-gray-700/50 mobile-menu-container" style="opacity: 1 !important; visibility: visible !important; z-index: 999999 !important; pointer-events: auto !important;">
 
             <!-- Header Section with User Info -->
             <div class="flex items-center justify-between p-6 bg-gradient-to-r from-blue-500 to-purple-600 mobile-header-gradient" style="opacity: 1 !important; background: linear-gradient(to right, #3b82f6, #9333ea) !important; color: white !important;">
