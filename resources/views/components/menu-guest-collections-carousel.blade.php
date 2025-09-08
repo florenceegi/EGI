@@ -37,7 +37,7 @@
                 <button type="button" 
                         data-scroll-direction="left"
                         id="btn-left-guest-carousel"
-                        class="p-1 text-gray-400 transition-colors rounded hover:text-emerald-600 dark:hover:text-emerald-400">
+                        class="relative z-[9999999] p-2 text-white bg-gray-600 rounded hover:bg-emerald-600 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
@@ -45,7 +45,7 @@
                 <button type="button" 
                         data-scroll-direction="right"
                         id="btn-right-guest-carousel"
-                        class="p-1 text-gray-400 transition-colors rounded hover:text-emerald-600 dark:hover:text-emerald-400">
+                        class="relative z-[9999999] p-2 text-white bg-gray-600 rounded hover:bg-emerald-600 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
@@ -188,152 +188,8 @@
     .carousel-container {
         -webkit-overflow-scrolling: touch;
         scroll-behavior: smooth;
+        overscroll-behavior-x: contain;
     }
     </style>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const carousel = document.querySelector('.carousel-container');
-        
-        if (!carousel) {
-            console.log('Guest carousel container not found');
-            return;
-        }
-        
-        // Handle scroll buttons - check if they exist first
-        const leftButton = document.getElementById('btn-left-guest-carousel');
-        const rightButton = document.getElementById('btn-right-guest-carousel');
-        
-        console.log('Guest carousel buttons found:', {
-            left: !!leftButton,
-            right: !!rightButton,
-            collectionsCount: {{ count($collections) }}
-        });
-        
-        // Only attach button events if buttons exist
-        if (leftButton && rightButton) {
-            console.log('Attaching events to guest carousel buttons');
-            
-            // Left button events
-            leftButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Guest carousel left button clicked');
-                carousel.scrollBy({left: -320, behavior: 'smooth'});
-            });
-            
-            leftButton.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Guest carousel left button touched');
-                carousel.scrollBy({left: -320, behavior: 'smooth'});
-            });
-            
-            leftButton.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-            });
-            
-            leftButton.addEventListener('touchmove', function(e) {
-                e.stopPropagation();
-            });
-            
-            // Right button events
-            rightButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Guest carousel right button clicked');
-                carousel.scrollBy({left: 320, behavior: 'smooth'});
-            });
-            
-            rightButton.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Guest carousel right button touched');
-                carousel.scrollBy({left: 320, behavior: 'smooth'});
-            });
-            
-            rightButton.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-            });
-            
-            rightButton.addEventListener('touchmove', function(e) {
-                e.stopPropagation();
-            });
-        } else {
-            console.log('Guest carousel buttons not found - skipping button events');
-        }
-        
-        // Mouse wheel scrolling - convert vertical to horizontal
-        carousel.addEventListener('wheel', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.scrollLeft += e.deltaY;
-        }, { passive: false });
-        
-        // Touch/drag scrolling
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-        
-        // Mouse events
-        carousel.addEventListener('mousedown', function(e) {
-            isDown = true;
-            startX = e.pageX - carousel.offsetLeft;
-            scrollLeft = carousel.scrollLeft;
-            carousel.style.cursor = 'grabbing';
-            e.preventDefault();
-        });
-        
-        carousel.addEventListener('mouseleave', function() {
-            isDown = false;
-            carousel.style.cursor = 'grab';
-        });
-        
-        carousel.addEventListener('mouseup', function() {
-            isDown = false;
-            carousel.style.cursor = 'grab';
-        });
-        
-        carousel.addEventListener('mousemove', function(e) {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = e.pageX - carousel.offsetLeft;
-            const walk = (x - startX) * 2;
-            carousel.scrollLeft = scrollLeft - walk;
-        });
-        
-        // Touch events for mobile
-        let touchStartX = 0;
-        let touchScrollLeft = 0;
-        
-        carousel.addEventListener('touchstart', function(e) {
-            // Ignore touch on buttons if they exist
-            if (leftButton && e.target.closest('#btn-left-guest-carousel')) return;
-            if (rightButton && e.target.closest('#btn-right-guest-carousel')) return;
-            
-            touchStartX = e.touches[0].pageX - carousel.offsetLeft;
-            touchScrollLeft = carousel.scrollLeft;
-        });
-        
-        carousel.addEventListener('touchmove', function(e) {
-            // Ignore touch on buttons if they exist
-            if (leftButton && e.target.closest('#btn-left-guest-carousel')) return;
-            if (rightButton && e.target.closest('#btn-right-guest-carousel')) return;
-            
-            if (!touchStartX) return;
-            e.preventDefault();
-            const x = e.touches[0].pageX - carousel.offsetLeft;
-            const walk = (x - touchStartX) * 2;
-            carousel.scrollLeft = touchScrollLeft - walk;
-        }, { passive: false });
-        
-        carousel.addEventListener('touchend', function() {
-            touchStartX = 0;
-        });
-        
-        // Set cursor
-        carousel.style.cursor = 'grab';
-    });
-    </script>
 
 @endif

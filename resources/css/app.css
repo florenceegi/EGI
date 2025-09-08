@@ -842,4 +842,15 @@
     }
 }
 
+/* ==========================================================================
+   🔧 Mobile Carousel Button Force Visibility Fix
+   ========================================================================== */
+.force-visible-carousel-btn {
+    visibility: visible !important;
+    pointer-events: auto !important;
+    display: block !important;
+    opacity: 1 !important;
+    z-index: 9999999 !important;
+}
+
 /* Fine del file app.css - CSS hyper spostato in file dedicato */
