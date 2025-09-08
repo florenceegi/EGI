@@ -110,7 +110,7 @@ class Collection extends Model implements HasMedia {
      * @return bool
      */
     public function isPublished(): bool {
-        return $this->status === 'published';
+    return (bool) $this->is_published;
     }
 
     /**
