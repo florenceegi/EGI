@@ -35,6 +35,32 @@ export async function fetchUserAccessibleCollectionsAPI(config: AppConfig): Prom
     }
 }
 
+/**
+ * Fetch collections where the user can create EGI (filtered by role permission).
+ */
+export async function fetchEgiCreatableCollectionsAPI(config: AppConfig): Promise<Array<{ id: number; collection_name: string }> | null> {
+    try {
+        const response = await fetch('/api/user/egi-creatable-collections', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': getCsrfTokenTS() },
+        });
+
+        if (!response.ok) {
+            const errorData: ServerErrorResponse = await response.json().catch(() => ({
+                error: 'HTTP_ERROR', message: appTranslate('errorFetchCollectionsHttp', config.translations, { status: response.status, statusText: response.statusText })
+            }));
+            UEM.handleServerErrorResponse(errorData, appTranslate('errorFetchCollections', config.translations, {}));
+            return null;
+        }
+        const json = await response.json();
+        return (json.eligible_collections as Array<{ id: number; collection_name: string }>) || [];
+    } catch (error: any) {
+        console.error('Padmin API Error: Error fetching egi-creatable collections:', error.message);
+        UEM.handleClientError('CLIENT_API_EGI_CREATABLE_COLLECTIONS_FETCH_FAIL', { error: error.message }, error, appTranslate('errorFetchCollectionsGeneric', config.translations, {}));
+        return null;
+    }
+}
+
 export async function setCurrentUserCollectionAPI(
     config: AppConfig,
     collectionId: number

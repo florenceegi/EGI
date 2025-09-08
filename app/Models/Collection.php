@@ -110,26 +110,18 @@ class Collection extends Model implements HasMedia {
      * @return bool
      */
     public function isPublished(): bool {
-        return (bool) $this->is_published;
+        return $this->status === 'published';
     }
 
     /**
      * Check if a user has a specific permission in this collection based on their role
-     *
-     * @param User|int|null $user User model, user ID or null (guest)
+     * 
+     * @param User|int $user User model or user ID
      * @param string $permission Permission name to check
      * @return bool
      */
     public function userHasPermission($user, string $permission): bool {
-        // Guest or missing user => no permission
-        if (!$user) {
-            return false;
-        }
-
-        $userId = is_numeric($user) ? (int) $user : ($user->id ?? null);
-        if (!$userId) {
-            return false;
-        }
+        $userId = is_numeric($user) ? $user : $user->id;
 
         // Get user's role in this collection
         $collectionUser = $this->users()->where('users.id', $userId)->first();

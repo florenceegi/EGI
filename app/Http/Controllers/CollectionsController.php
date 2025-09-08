@@ -87,9 +87,8 @@ class CollectionsController extends Controller {
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         } else {
-            // Regola semplificata: mostra bozze solo a chi ha il permesso 'create_collection'.
-            // Tutti gli altri vedono solo collezioni pubblicate.
-            if (\Illuminate\Support\Facades\Gate::denies('collection-permission', ['create_collection', null])) {
+            // Mostra solo collezioni pubblicate per utenti non autenticati o senza permessi
+            if (\Illuminate\Support\Facades\Gate::denies('collection-permission', [auth()->user() ? 'create_collection' : 'manage_advanced_settings', null])) {
                 $query->where('is_published', true);
             }
         }
@@ -99,9 +98,9 @@ class CollectionsController extends Controller {
             $query->where('epp_id', $request->epp);
         }
 
-        // Aggiungi un filtro per `is_published` per i casi in cui si unisce su tabelle ausiliarie (es. popolarità)
-        $query->when(true, function ($q) { // Applicazione coerente della regola pubblicazione
-            if (\Illuminate\Support\Facades\Gate::denies('collection-permission', ['create_collection', null])) {
+        // Aggiungi un filtro per `is_published` al join per la popolarità se non è già gestito globalmente
+        $query->when(true, function ($q) { // Questo `when(true)` è un modo per applicare la condizione se la rotta lo richiede
+            if (\Illuminate\Support\Facades\Gate::denies('collection-permission', [auth()->user() ? 'create_collection' : 'manage_advanced_settings', null])) {
                 $q->where('collections.is_published', true);
             }
         });

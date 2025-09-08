@@ -376,6 +376,10 @@ Route::prefix('api/user')->name('api.user.')->group(function () {
     Route::get('/accessible-collections', [UserCollectionController::class, 'getAccessibleCollections'])
         ->name('accessible.collections');
 
+    // New: Collections where the user can create EGI (filtered by role permission)
+    Route::get('/egi-creatable-collections', [UserCollectionController::class, 'getEgiCreatableCollections'])
+        ->name('egi.creatable.collections');
+
     Route::post('/set-current-collection/{collection}', [UserCollectionController::class, 'setCurrentCollection'])
         ->name('setCurrentCollection');
 });

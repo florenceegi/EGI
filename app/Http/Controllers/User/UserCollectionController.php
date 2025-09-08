@@ -115,6 +115,75 @@ final class UserCollectionController extends Controller
     }
 
     /**
+     * 🎯 Get collections where the authenticated user can CREATE EGI.
+     * Filtra le collection accessibili in base ai permessi del ruolo (pivot collection_users)
+     * verificando il permesso Spatie "create_EGI" associato al ruolo.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getEgiCreatableCollections(Request $request): JsonResponse
+    {
+        /** @var User|null $user */
+        $user = FegiAuth::user();
+
+        if (!$user) {
+            $this->logger->warning(
+                'Unauthenticated access to getEgiCreatableCollections. Middleware issue?',
+                ['ip_address' => $request->ip(), 'log_category' => 'AUTH_FAILURE']
+            );
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $this->logger->info(
+            'Fetching EGI-creatable collections for user.',
+            ['user_id' => $user->id, 'log_category' => 'COLLECTION_ACCESS']
+        );
+
+        // Recupera sia owned che collaborations, poi filtra per permesso create_EGI
+        $allCollections = collect([]);
+
+        // Owned
+        $owned = $user->ownedCollections()->select('id', 'collection_name')->get();
+        $allCollections = $allCollections->merge($owned);
+
+        // Collaborations
+        $collabs = $user->collaborations()->select('collections.id', 'collections.collection_name')->get();
+        $allCollections = $allCollections->merge($collabs);
+
+        // Filtra usando la logica dei ruoli sulla pivot + Spatie\Permission
+        $eligible = $allCollections->filter(function (Collection $collection) use ($user) {
+            try {
+                $collectionUser = $collection->users()->where('users.id', $user->id)->first();
+                if (!$collectionUser) return false;
+                $userRoleName = $collectionUser->pivot->role ?? null;
+                if (!$userRoleName) return false;
+
+                $role = \Spatie\Permission\Models\Role::where('name', $userRoleName)->first();
+                if (!$role) return false;
+
+                return $role->hasPermissionTo('create_EGI');
+            } catch (\Throwable $e) {
+                $this->logger->error('Error while checking create_EGI permission for collection', [
+                    'user_id' => $user->id,
+                    'collection_id' => $collection->id,
+                    'error' => $e->getMessage(),
+                    'log_category' => 'AUTH_ERROR'
+                ]);
+                return false;
+            }
+        })->values()->map(static function (Collection $collection): array {
+            return [
+                'id' => $collection->id,
+                'collection_name' => $collection->collection_name,
+            ];
+        });
+
+        return response()->json([
+            'eligible_collections' => $eligible,
+        ]);
+    }
+    /**
      * 🎯 Set the current active collection for the authenticated user.
      *
      * @param Request $request The incoming HTTP request.

@@ -617,7 +617,8 @@ function setupEventListeners(): void {
             () => {
                 const authStatus = getAuthStatus(mainAppConfig);
                 if (authStatus === 'logged-in' || authStatus === 'connected') {
-                    mainUploadModalManager?.openModal('egi');
+                    // Pre-check flow for selecting collection and setting current_collection_id
+                    import('./features/collections/createEgiFlow').then(m => m.handleCreateEgiFlow(mainAppConfig, DOMElements));
                 } else {
                     openSecureWalletModal(mainAppConfig, DOMElements, 'create-egi');
                 }
@@ -633,7 +634,7 @@ function setupEventListeners(): void {
         (event) => {
             const authStatus = getAuthStatus(mainAppConfig);
             if (authStatus === 'logged-in' || authStatus === 'connected') {
-                mainUploadModalManager?.openModal('egi');
+                import('./features/collections/createEgiFlow').then(m => m.handleCreateEgiFlow(mainAppConfig, DOMElements));
             } else {
                 openSecureWalletModal(mainAppConfig, DOMElements, 'create-egi');
             }
@@ -650,7 +651,7 @@ function setupEventListeners(): void {
             (event) => {
                 const authStatus = getAuthStatus(mainAppConfig);
                 if (authStatus === 'logged-in' || authStatus === 'connected') {
-                    mainUploadModalManager?.openModal('egi');
+                    import('./features/collections/createEgiFlow').then(m => m.handleCreateEgiFlow(mainAppConfig, DOMElements));
                 } else {
                     openSecureWalletModal(mainAppConfig, DOMElements, 'create-egi');
                 }
