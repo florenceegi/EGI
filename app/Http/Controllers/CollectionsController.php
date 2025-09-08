@@ -76,8 +76,7 @@ class CollectionsController extends Controller {
                         });
                 });
             }
-        ])
-            ->select('collections.*'); // Seleziona tutte le colonne da 'collections' per evitare ambiguità iniziali
+        ])->select('collections.*'); // Seleziona tutte le colonne da 'collections' per evitare ambiguità iniziali
 
         // Nuovo filtro opzionale per creator_id
         if ($request->filled('creator')) {
@@ -88,8 +87,9 @@ class CollectionsController extends Controller {
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         } else {
-            // Mostra solo collezioni pubblicate per utenti non autenticati o senza permessi
-            if (!auth()->user() || !auth()->user()->can('view_draft_collections')) {
+            // Restringe i risultati alle collezioni pubblicate se il Gate 'collection-permission' nega i permessi richiesti
+            // (es. utente non autenticato o privo dei permessi create_collection/manage_advanced_settings)
+            if (\Illuminate\Support\Facades\Gate::denies('collection-permission', [auth()->user() ? 'create_collection' : 'manage_advanced_settings', null])) {
                 $query->where('is_published', true);
             }
         }
@@ -101,7 +101,7 @@ class CollectionsController extends Controller {
 
         // Aggiungi un filtro per `is_published` al join per la popolarità se non è già gestito globalmente
         $query->when(true, function ($q) { // Questo `when(true)` è un modo per applicare la condizione se la rotta lo richiede
-            if (!auth()->user() || !auth()->user()->can('view_draft_collections')) {
+            if (\Illuminate\Support\Facades\Gate::denies('collection-permission', [auth()->user() ? 'create_collection' : 'manage_advanced_settings', null])) {
                 $q->where('collections.is_published', true);
             }
         });
