@@ -24,6 +24,10 @@ export default defineConfig(({ mode }) => {
                     'resources/js/navbar-performance.js',
                     'resources/js/lazy-loader.js',
                     // Regular assets
+                    'resources/ts/main.ts', // Corretto da main.js a main.ts
+                    'resources/ts/main_app.ts',
+                    'resources/js/guest.js',
+                    'resources/js/polyfills.js',
                     'resources/js/logo3d.js',
                     'resources/css/app.css',
                     'resources/css/guest.css',
@@ -41,12 +45,8 @@ export default defineConfig(({ mode }) => {
                     'resources/js/app.js',
                     'resources/js/collection.js',
                     'resources/js/collection-carousel.js', // Carousel helper
-                    'resources/js/biography-edit.js', // AGGIUNTO!
+                    'resources/js/biography-edit.js',
                     'resources/js/reservation-history.js', // Sistema cronologia prenotazioni
-                    'resources/ts/main.ts', // Corretto da main.js a main.ts
-                    'resources/ts/main_app.ts',
-                    'resources/js/guest.js',
-                    'resources/js/polyfills.js',
                     'resources/js/collections-show.js',
                     'resources/js/home-nft.js',
                     'resources/js/components/create-collection-modal.js',

@@ -19,7 +19,7 @@ import { fetchTranslations, ensureTranslationsLoaded } from './utils/translation
 import { loadEnums, getEnum, isPendingStatus } from './utils/enums';
 console.log('Utils per translations e enums importati.'); // Debugging
 
-import { appTranslate } from '../ts/config/appConfig'
+import { appTranslate, initializeAppConfig } from '../ts/config/appConfig'
 
 // Importa la gestione del modale
 // import { initializeModal } from '../ts/open-close-modal';
@@ -39,7 +39,14 @@ import {
     RequestUpdateNotificationWallet,
     RequestWalletDonation,
 } from './modules/notifications/init/request-notification-wallet-init';
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Assicura che AppConfig (e quindi le traduzioni per appTranslate) sia pronto
+    if (typeof window.appConfigInitPromise === 'function') {
+        // nothing
+    }
+    if (window.__appConfigInitPromise) {
+        try { await window.__appConfigInitPromise; } catch {}
+    }
 
     // Inizializza il modale
     // initializeModal();
@@ -69,7 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Listener per DeleteProposalInvitation (dal tuo codice originale)
 let deleteProposalInvitationInstance = null;
 import { DeleteProposalInvitation } from './modules/notifications/delete-proposal-invitation';
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    if (window.__appConfigInitPromise) {
+        try { await window.__appConfigInitPromise; } catch {}
+    }
     if (!deleteProposalInvitationInstance) {
         deleteProposalInvitationInstance = new DeleteProposalInvitation({ apiBaseUrl: '/notifications' });
         console.log(`🔍 Inizializzazione unica DeleteProposalInvitation (DOMContentLoaded)`);
@@ -81,7 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Listener per DeleteProposalWallet (dal tuo codice originale)
 let deleteProposalWalletInstance = null;
 import { DeleteProposalWallet } from './modules/notifications/delete-proposal-wallet';
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    if (window.__appConfigInitPromise) {
+        try { await window.__appConfigInitPromise; } catch {}
+    }
     if (!deleteProposalWalletInstance) {
         deleteProposalWalletInstance = new DeleteProposalWallet({ apiBaseUrl: '/notifications' });
         console.log(`🔍 Inizializzazione unica DeleteProposalWallet (DOMContentLoaded)`);
@@ -92,11 +105,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Carica le traduzioni all'avvio (mantieni come nel tuo codice originale se è fuori listener)
-fetchTranslations(); // <-- Questo è chiamato direttamente nel tuo codice originale, non in un listener
-window.appTranslate = appTranslate; // Sintassi JS standard
-window.ensureTranslationsLoaded = ensureTranslationsLoaded; // Sintassi JS standard
-console.log('Traduzioni avviate (fuori listener).'); // Debugging
+// Inizializza AppConfig (che contiene anche le translations usate da appTranslate)
+// E rende disponibile appTranslate globalmente solo dopo l'inizializzazione
+// Pre-inizializza AppConfig il prima possibile e rendi disponibile appTranslate quando pronto
+window.__appConfigInitPromise = (async () => {
+    try {
+        await initializeAppConfig();
+        window.appTranslate = appTranslate; // Sistema moderno basato su AppConfig
+        console.log('✅ AppConfig inizializzato: appTranslate pronto.');
+    } catch (e) {
+        console.error('❌ Impossibile inizializzare AppConfig per le traduzioni:', e);
+        // Espone comunque la funzione per evitare crash, ma senza config tradurrà a fallback
+        window.appTranslate = appTranslate;
+    }
+})();
+
+// Carica le traduzioni legacy in window.translations (compatibilità, non usato da appTranslate)
+fetchTranslations();
+window.ensureTranslationsLoaded = ensureTranslationsLoaded;
+console.log('Traduzioni legacy avviate (compatibilità).');
 
 
 // Import dei moduli notifiche (senza inizializzazioni dirette mostrate nel listener DOMContentLoaded fornito)

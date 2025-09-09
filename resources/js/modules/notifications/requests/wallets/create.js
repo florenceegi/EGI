@@ -15,11 +15,11 @@ export class RequestCreateNotificationWallet {
      * 🌐 Sistema di traduzione intelligente con fallback
      * Prova prima il sistema moderno appTranslate, poi il sistema deprecato
      */
-    translate(key, fallback ) {
+    translate(key, fallback = key) {
         // Usa SOLO il sistema moderno (definito da main/collection.js)
         if (typeof window !== 'undefined' && typeof window.appTranslate === 'function') {
             try {
-                const result = window.appTranslate(key, fallback);
+                    const result = window.appTranslate(key);
                 return result ?? fallback;
             } catch (error) {
                 console.warn('appTranslate ha generato un errore per la chiave:', key, error);
@@ -120,13 +120,13 @@ export class RequestCreateNotificationWallet {
     }
 
     async getCreateModalHtml(walletAddress = '') {
-        console.log("🔍 Caricamento HTML del modale...");
+        console.log("🔍 Caricamento HTML del modale...", this.translate('wallet_address', 'Address'));
 
         return `
             <form id="wallet-modal-form" class="space-y-4">
                 <div class="mb-3">
                     <label for="walletAddress" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('Address')}
+                        ${this.translate('wallet_address', 'Address')}
                     </label>
                     <input type="text"
                            id="walletAddress"
@@ -138,26 +138,26 @@ export class RequestCreateNotificationWallet {
 
                 <div class="mb-3">
                     <label for="royaltyMint" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('royalty % mint')}
+                        ${this.translate('collection.wallet.royalty_mint')}
                     </label>
                     <input type="number"
                            id="royaltyMint"
                            class="swal2-input bg-gray-700 text-white"
                            style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
                            step="0.01"
-                           placeholder="${this.translate('royalty % mint')}">
+                           placeholder="${this.translate('collection.wallet.royalty_mint_placeholder')}">
                 </div>
 
                 <div class="mb-3">
                     <label for="royaltyRebind" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('royalty % rebind')}
+                        ${this.translate('collection.wallet.royalty_rebind')}
                     </label>
                     <input type="number"
                            id="royaltyRebind"
                            class="swal2-input bg-gray-700 text-white"
                            style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
                            step="0.01"
-                           placeholder="${this.translate('royalty % rebind')}">
+                           placeholder="${this.translate('collection.wallet.royalty_rebind_placeholder')}">
                 </div>
             </form>
         `;
