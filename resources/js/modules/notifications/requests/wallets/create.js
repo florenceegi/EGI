@@ -133,31 +133,31 @@ export class RequestCreateNotificationWallet {
                            class="swal2-input bg-gray-700 text-white"
                            style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
                            value="${walletAddress}"
-                           placeholder="${this.translate('collection.wallet.address_placeholder')}">
+                           placeholder="${this.translate('wallet_address_placeholder')}">
                 </div>
 
                 <div class="mb-3">
                     <label for="royaltyMint" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('collection.wallet.royalty_mint')}
+                        ${this.translate('wallet_royalty_mint')}
                     </label>
                     <input type="number"
                            id="royaltyMint"
                            class="swal2-input bg-gray-700 text-white"
                            style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
                            step="0.01"
-                           placeholder="${this.translate('collection.wallet.royalty_mint_placeholder')}">
+                           placeholder="${this.translate('wallet_royalty_mint_placeholder')}">
                 </div>
 
                 <div class="mb-3">
                     <label for="royaltyRebind" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('collection.wallet.royalty_rebind')}
+                        ${this.translate('wallet_royalty_rebind')}
                     </label>
                     <input type="number"
                            id="royaltyRebind"
                            class="swal2-input bg-gray-700 text-white"
                            style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
                            step="0.01"
-                           placeholder="${this.translate('collection.wallet.royalty_rebind_placeholder')}">
+                           placeholder="${this.translate('wallet_royalty_rebind_placeholder')}">
                 </div>
             </form>
         `;
