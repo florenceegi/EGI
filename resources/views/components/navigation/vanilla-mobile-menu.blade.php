@@ -147,12 +147,16 @@
 
                             {{-- 🔍 Universal Search Trigger (mobile, sostituisce dropdown collezioni) --}}
                             <button type="button" id="mobile-universal-search-button"
-                                class="{{ $navLinkClasses }} flex w-full items-center gap-2 text-left"
+                                class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-xl mobile-nav-item"
                                 data-action="open-universal-search"
                                 aria-label="Apri ricerca avanzata"
                                 onclick="window.dispatchEvent(new CustomEvent('universal-search-open'))">
-                                <span class="text-base material-symbols-outlined" aria-hidden="true">search</span>
-                                <span>Cerca</span>
+                                <div class="flex items-center justify-center w-8 h-8 text-white bg-pink-500 rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.2-5.2m1.7-4.3a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <span class="font-medium">{{ __('label.search') }}</span>
                             </button>
 
                             {{-- Creators Link --}}
@@ -299,12 +303,16 @@
 
                             {{-- 🔍 Universal Search Trigger (mobile, sostituisce dropdown collezioni) --}}
                             <button type="button" id="mobile-universal-search-button"
-                                class="{{ $navLinkClasses }} flex w-full items-center gap-2 text-left"
+                                class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-xl mobile-nav-item"
                                 data-action="open-universal-search"
                                 aria-label="Apri ricerca avanzata"
                                 onclick="window.dispatchEvent(new CustomEvent('universal-search-open'))">
-                                <span class="text-base material-symbols-outlined" aria-hidden="true">search</span>
-                                <span>Cerca</span>
+                                <div class="flex items-center justify-center w-8 h-8 text-white bg-pink-500 rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.2-5.2m1.7-4.3a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <span class="font-medium">{{ __('label.search') }}</span>
                             </button>
 
                             {{-- Create EGI Button - Sempre visibile, la logica di azione è gestita da JS in base allo stato utente --}}
@@ -340,12 +348,16 @@
                         @unless(View::getSection('title') === __('guest_home.page_title') || request()->routeIs('home') || request()->is('/'))
                             {{-- 🔍 Universal Search Trigger (mobile - layout app / altre pagine) --}}
                             <button type="button" id="mobile-universal-search-button-generic"
-                                class="{{ $navLinkClasses }} flex w-full items-center gap-2 text-left"
+                                class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-xl mobile-nav-item"
                                 data-action="open-universal-search"
                                 aria-label="Apri ricerca avanzata"
                                 onclick="window.dispatchEvent(new CustomEvent('universal-search-open'))">
-                                <span class="text-base material-symbols-outlined" aria-hidden="true">search</span>
-                                <span>Cerca</span>
+                                <div class="flex items-center justify-center w-8 h-8 text-white bg-pink-500 rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.2-5.2m1.7-4.3a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <span class="font-medium">{{ __('label.search') }}</span>
                             </button>
                         @endunless
                     </div>
