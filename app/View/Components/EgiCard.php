@@ -2,10 +2,8 @@
 
 namespace App\View\Components;
 
-use Closure;
-use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use App\Services\ImageVariantHelper;
+use Illuminate\Contracts\View\View;
 
 class EgiCard extends Component {
     public $egi;
@@ -43,33 +41,15 @@ class EgiCard extends Component {
      *
      * @return string|null
      */
+    // Placeholder per eventuale futura ottimizzazione immagine (rimosso helper non presente)
     public function getOptimizedImageUrl(): ?string {
-        if (!$this->egi || !$this->egi->collection_id || !$this->egi->user_id || !$this->egi->key_file) {
-            return null;
-        }
-
-        // Build storage base path using existing pattern
-        $storageBasePath = sprintf(
-            'users_files/collections_%d/creator_%d',
-            $this->egi->collection_id,
-            $this->egi->user_id
-        );
-
-        // Try to get optimized 'card' variant URL with fallback to original
-        $variantUrl = ImageVariantHelper::getVariantUrlWithFallback(
-            $storageBasePath,
-            $this->egi->key_file,
-            'card', // Use card variant (400x400) for card display
-            'public' // Use public disk
-        );
-
-        return $variantUrl;
+        return null;
     }
 
     /**
      * Get the view / contents that represent the component.
      */
-    public function render(): View|Closure|string {
+    public function render(): View|string {
         return view('components.egi-card');
     }
 }

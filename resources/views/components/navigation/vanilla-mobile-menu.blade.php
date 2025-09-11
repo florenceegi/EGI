@@ -1,7 +1,7 @@
 {{-- Vanilla Mobile Navigation Component }}
 
 {{--  --}}
-    
+
 @push('styles')
     @vite('resources/css/mega-menu.css')
 @endpush
@@ -62,6 +62,9 @@
     $user = App\Helpers\FegiAuth::user(); // User object or null
     $authType = App\Helpers\FegiAuth::getAuthType(); // 'strong', 'weak', 'guest'
     $canCreateEgi = $user && $user->can('create_EGI');
+    $navLinkClasses =
+    'text-gray-300 hover:text-emerald-400 transition px-3 py-2 rounded-md text-sm font-medium
+    hover:bg-gray-800/40';
 @endphp
 
 <div data-mobile-menu class="fixed inset-0 hidden sm:hidden" style="z-index: 999999 !important;">
@@ -72,7 +75,7 @@
     <div class="fixed inset-0 flex" style="z-index: 999999 !important;">
         <!-- Area cliccabile per chiudere il menu (solo a sinistra del contenuto) -->
         <div data-mobile-close-area class="flex-1 cursor-pointer" style="pointer-events: auto !important;"></div>
-        
+
         <div data-mobile-content class="relative flex flex-col w-full max-w-sm ml-auto transition-transform duration-300 ease-out transform translate-x-full border-l shadow-2xl bg-gray-900/90 backdrop-blur-xl border-gray-700/50 mobile-menu-container" style="opacity: 1 !important; visibility: visible !important; z-index: 999999 !important; pointer-events: auto !important;">
 
             <!-- Header Section with User Info -->
@@ -141,6 +144,16 @@
                                 </div>
                                 <span class="font-medium">{{ __('guest_layout.home') }}</span>
                             </a>
+
+                            {{-- 🔍 Universal Search Trigger (mobile, sostituisce dropdown collezioni) --}}
+                            <button type="button" id="mobile-universal-search-button"
+                                class="{{ $navLinkClasses }} flex w-full items-center gap-2 text-left"
+                                data-action="open-universal-search"
+                                aria-label="Apri ricerca avanzata"
+                                onclick="window.dispatchEvent(new CustomEvent('universal-search-open'))">
+                                <span class="text-base material-symbols-outlined" aria-hidden="true">search</span>
+                                <span>Cerca</span>
+                            </button>
 
                             {{-- Creators Link --}}
                             <a href="{{ url('/creator') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-colors mobile-nav-item {{ request()->routeIs('creator.index') ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : '' }}">
@@ -284,37 +297,15 @@
                                 <span class="font-medium">{{ __('EPPS') }}</span>
                             </a>
 
-                            {{-- Le mie Collezioni Dropdown - Solo per utenti loggati --}}
-                            @can('create_EGI')
-                                @auth
-                                <button type="button" id="mobile-collection-list-dropdown-button-app"
-                                    class="flex items-center justify-between w-full px-4 py-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl mobile-nav-item"
-                                    aria-expanded="false" aria-haspopup="true">
-                                    <span class="flex items-center space-x-3">
-                                        <div class="flex items-center justify-center w-8 h-8 text-white bg-purple-500 rounded-lg">
-                                            <span class="text-sm material-symbols-outlined" aria-hidden="true">view_carousel</span>
-                                        </div>
-                                        <span class="font-medium">{{ __('collection.my_galleries') }}</span>
-                                    </span>
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                        <path fill-rule="evenodd"
-                                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                                {{-- Dropdown menu mobile app --}}
-                                <div id="mobile-collection-list-dropdown-menu-app"
-                                    class="mx-3 mb-2 mt-1 hidden max-h-[40vh] overflow-y-auto rounded-md border border-gray-700 bg-gray-800 py-1 shadow-lg">
-                                    <div id="mobile-collection-list-loading-app" class="px-4 py-3 text-sm text-center text-gray-400">
-                                        {{ __('collection.loading_galleries') }}</div>
-                                    <div id="mobile-collection-list-empty-app" class="hidden px-4 py-3 text-sm text-center text-gray-400">
-                                        {{ __('collection.no_galleries_found') }} <button type="button" data-action="open-create-collection-modal"
-                                            class="underline hover:text-emerald-400">{{ __('collection.create_one_question') }}</button></div>
-                                    <div id="mobile-collection-list-error-app" class="hidden px-4 py-3 text-sm text-center text-red-400">
-                                        {{ __('collection.error_loading_galleries') }}</div>
-                                </div>
-                                @endauth
-                            @endcan
+                            {{-- 🔍 Universal Search Trigger (mobile, sostituisce dropdown collezioni) --}}
+                            <button type="button" id="mobile-universal-search-button"
+                                class="{{ $navLinkClasses }} flex w-full items-center gap-2 text-left"
+                                data-action="open-universal-search"
+                                aria-label="Apri ricerca avanzata"
+                                onclick="window.dispatchEvent(new CustomEvent('universal-search-open'))">
+                                <span class="text-base material-symbols-outlined" aria-hidden="true">search</span>
+                                <span>Cerca</span>
+                            </button>
 
                             {{-- Create EGI Button - Sempre visibile, la logica di azione è gestita da JS in base allo stato utente --}}
                             @can('create_EGI')

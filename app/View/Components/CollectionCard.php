@@ -2,21 +2,19 @@
 
 namespace App\View\Components;
 
-use App\Models\Collection;
-use Closure;
-use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
-class CollectionCard extends Component
-{
+use App\Models\Collection;
+
+class CollectionCard extends Component {
     public $collection;
     public $id;
 
     /**
      * Create a new component instance.
      */
-    public function __construct($id)
-    {
+    public function __construct($id) {
 
         $this->id = $id;
 
@@ -27,8 +25,7 @@ class CollectionCard extends Component
     /**
      * Get the view / contents that represent the component.
      */
-    public function render(): View|Closure|string
-    {
+    public function render(): View|string {
         return view('components.collection-card', [
             'collection' => $this->collection,
             'id' => $this->id

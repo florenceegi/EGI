@@ -2,25 +2,14 @@
 
 namespace App\View\Components;
 
-use Closure;
-use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
-class CreatorCard extends Component
-{
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
-    {
-        //
+class CreatorCard extends Component {
+    public function __construct(public $creator, public string $imageType = 'card', public string $displayType = 'default') {
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
-    {
+    public function render(): View|string {
         return view('components.creator-card');
     }
 }

@@ -157,6 +157,8 @@ class AppServiceProvider extends ServiceProvider {
         Blade::component('EgiStatsSection', \App\View\Components\EgiStatsSection::class);
         Blade::component('gdpr-layout', \App\View\Components\GdprLayout::class);
         Blade::component('responsive-image', \App\View\Components\ResponsiveImage::class);
+        Blade::component('universal-search-modal', \App\View\Components\UniversalSearchModal::class);
+        Blade::component('app-layout', \App\View\Components\AppLayout::class);
 
         // Registriamo un driver nominato "custom_database"
         Notification::extend('custom_database', function ($app) {

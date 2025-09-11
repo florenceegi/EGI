@@ -33,6 +33,7 @@ use App\Http\Controllers\GdprController;
 use App\Http\Controllers\IconAdminController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Notifications\Gdpr\GdprNotificationResponseController;
 use App\Http\Controllers\Notifications\NotificationReservationResponseController;
 use App\Http\Middleware\SetLanguage;
@@ -150,6 +151,16 @@ Route::get('/', function () {
 });
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Universal Search Results
+Route::get('/search/results', [SearchController::class, 'results'])->name('search.results');
+Route::get('/search/panel', [SearchController::class, 'panel'])->name('search.panel');
+// Alias dedicati per risultati filtrati per singolo tipo
+Route::get('/egis/search', function (\Illuminate\Http\Request $r) {
+    return redirect()->route('search.results', array_merge($r->all(), ['types' => 'egi']));
+})->name('egis.search');
+Route::get('/creators/search', function (\Illuminate\Http\Request $r) {
+    return redirect()->route('search.results', array_merge($r->all(), ['types' => 'creator']));
+})->name('creators.search');
 // Collection Banner Upload (creator-only)
 Route::middleware(['auth'])
     ->prefix('collections')

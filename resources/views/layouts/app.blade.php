@@ -205,6 +205,9 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
     <!-- OS1 Modals Section -->
     @include('components.create-collection-modal')
 
+    {{-- Universal Search Modal (global singleton) --}}
+    <x-universal-search-modal />
+
     <!-- OS1 User Collection Data for Dashboard Context -->
     @auth
     <script type="application/json" id="user-collection-data">

@@ -116,6 +116,18 @@ function initializeMobileMenu() {
     // Event listeners
     trigger.addEventListener('click', toggleMenu);
 
+    // Chiudi menu quando si apre la universal search (evento legacy o API nuova)
+    window.addEventListener('universal-search-open', () => {
+        if(isOpen) closeMobileMenu();
+    });
+    window.addEventListener('keydown', (e)=>{
+        if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k' && isOpen){
+            // Shortcut aprirà la search, chiudi prima
+            closeMobileMenu();
+        }
+    });
+    // Se viene chiamata l'API nuova globale, intercettiamo via MutationObserver dello stato hidden sulla modale? Non necessario, evento sufficiente.
+
     if (closeBtn) {
         closeBtn.addEventListener('click', closeMobileMenu);
     }
@@ -130,9 +142,9 @@ function initializeMobileMenu() {
     if (overlay) {
         overlay.addEventListener('click', function(e) {
             // Non chiudere se il click è su un bottone del carousel
-            if (e.target.closest('#btn-left-main-carousel') || 
+            if (e.target.closest('#btn-left-main-carousel') ||
                 e.target.closest('#btn-right-main-carousel') ||
-                e.target.closest('#btn-left-guest-carousel') || 
+                e.target.closest('#btn-left-guest-carousel') ||
                 e.target.closest('#btn-right-guest-carousel') ||
                 e.target.closest('[data-scroll-direction]')) {
                 console.log('🔥 OVERLAY: Click su bottone carousel - NON chiudo menu!');
@@ -171,18 +183,18 @@ function initializeMobileMenu() {
 // Initialize carousel buttons with proper logic
 function initializeCarouselButtons() {
     console.log('🎠 Initializing carousel buttons...');
-    
+
     // Main carousel buttons
     const mainLeftBtn = document.getElementById('btn-left-main-carousel');
     const mainRightBtn = document.getElementById('btn-right-main-carousel');
-    
-    // Guest carousel buttons  
+
+    // Guest carousel buttons
     const guestLeftBtn = document.getElementById('btn-left-guest-carousel');
     const guestRightBtn = document.getElementById('btn-right-guest-carousel');
-    
+
     console.log('Main buttons found:', {left: !!mainLeftBtn, right: !!mainRightBtn});
     console.log('Guest buttons found:', {left: !!guestLeftBtn, right: !!guestRightBtn});
-    
+
     // Main carousel LEFT
     if (mainLeftBtn) {
         // Click event per desktop
@@ -198,7 +210,7 @@ function initializeCarouselButtons() {
             }
         }, { passive: true });
     }
-    
+
     // Main carousel RIGHT
     if (mainRightBtn) {
         // Click event per desktop
@@ -214,7 +226,7 @@ function initializeCarouselButtons() {
             }
         }, { passive: true });
     }
-    
+
     // Guest carousel LEFT
     if (guestLeftBtn) {
         // Click (mouse e tap sintetizzato)
@@ -230,7 +242,7 @@ function initializeCarouselButtons() {
             }
         }, { passive: true });
     }
-    
+
     // Guest carousel RIGHT
     if (guestRightBtn) {
         // Click (mouse e tap sintetizzato)
@@ -251,15 +263,15 @@ function initializeCarouselButtons() {
 // Initialize carousel scrolling functionality
 function initializeCarouselScrolling() {
     console.log('🎠 Initializing carousel scrolling...');
-    
+
     // Main carousel
     const mainCarousel = document.querySelector('.carousel-container-menu');
     if (mainCarousel) {
         console.log('✅ Main carousel found, setting up scrolling');
         setupCarouselScrolling(mainCarousel, 'main');
     }
-    
-    // Guest carousel  
+
+    // Guest carousel
     const guestCarousel = document.querySelector('.menu-guest-collections-carousel .carousel-container');
     if (guestCarousel) {
         console.log('✅ Guest carousel found, setting up scrolling');
@@ -275,12 +287,12 @@ function setupCarouselScrolling(carousel, type) {
         e.stopPropagation();
         this.scrollLeft += e.deltaY;
     }, { passive: false });
-    
+
     // Touch/drag scrolling
     let isDown = false;
     let startX;
     let scrollLeft;
-    
+
     // Mouse events
     carousel.addEventListener('mousedown', function(e) {
         if (e.target.closest('#btn-left-main-carousel, #btn-right-main-carousel, #btn-left-guest-carousel, #btn-right-guest-carousel')) return;
@@ -290,17 +302,17 @@ function setupCarouselScrolling(carousel, type) {
         carousel.style.cursor = 'grabbing';
         e.preventDefault();
     });
-    
+
     carousel.addEventListener('mouseleave', function() {
         isDown = false;
         carousel.style.cursor = 'grab';
     });
-    
+
     carousel.addEventListener('mouseup', function() {
         isDown = false;
         carousel.style.cursor = 'grab';
     });
-    
+
     carousel.addEventListener('mousemove', function(e) {
         if (!isDown) return;
         if (e.target.closest('#btn-left-main-carousel, #btn-right-main-carousel, #btn-left-guest-carousel, #btn-right-guest-carousel')) return;
@@ -309,55 +321,55 @@ function setupCarouselScrolling(carousel, type) {
         const walk = (x - startX) * 2;
         carousel.scrollLeft = scrollLeft - walk;
     });
-    
+
     // Touch events for mobile scrolling (not for buttons)
     let touchStartX = 0;
     let touchScrollLeft = 0;
-    
+
     carousel.addEventListener('touchstart', function(e) {
         // Ignore touch on buttons - let button handlers manage them
         if (e.target.closest('#btn-left-main-carousel, #btn-right-main-carousel, #btn-left-guest-carousel, #btn-right-guest-carousel')) {
             console.log(`🎠 ${type} carousel: Ignoring touchstart on button, letting button handler manage it`);
             return;
         }
-        
+
         touchStartX = e.touches[0].pageX - carousel.offsetLeft;
         touchScrollLeft = carousel.scrollLeft;
     });
-    
+
     carousel.addEventListener('touchmove', function(e) {
         // Ignore touch on buttons
         if (e.target.closest('#btn-left-main-carousel, #btn-right-main-carousel, #btn-left-guest-carousel, #btn-right-guest-carousel')) return;
-        
+
         if (!touchStartX) return;
         e.preventDefault();
         const x = e.touches[0].pageX - carousel.offsetLeft;
         const walk = (x - touchStartX) * 2;
         carousel.scrollLeft = touchScrollLeft - walk;
     }, { passive: false });
-    
+
     carousel.addEventListener('touchend', function() {
         if (!touchStartX) return;
         touchStartX = 0;
     });
-    
+
     // Set cursor
     carousel.style.cursor = 'grab';
-    
+
     console.log(`✅ ${type} carousel scrolling initialized`);
 }
 
-// Funzioni per gestire il carousel CORRETTAMENTE 
+// Funzioni per gestire il carousel CORRETTAMENTE
 function findScrollableCarousel() {
     const allCarousels = document.querySelectorAll('[class*="carousel-container"]');
     let workingCarousel = null;
-    
+
     allCarousels.forEach((c) => {
         if (c.scrollWidth > c.clientWidth && !workingCarousel) {
             workingCarousel = c;
         }
     });
-    
+
     return workingCarousel;
 }
 
@@ -455,7 +467,7 @@ function initializeTouchGestures() {
     const handleTouchStart = (e) => {
         const target = e.target;
         const isCarouselButton = target.closest('[data-scroll-direction]');
-        
+
         if (isCarouselButton) {
             console.log('👆 Touch START su bottone carousel. Blocco lo swipe.');
             isTouchingCarouselButton = true;
@@ -473,7 +485,7 @@ function initializeTouchGestures() {
 
     const handleTouchMove = (e) => {
         if (isTouchingCarouselButton) {
-            return; 
+            return;
         }
         if (!isDragging) return;
 
@@ -485,11 +497,11 @@ function initializeTouchGestures() {
 
         if (!isVerticalScroll && Math.abs(deltaY) > Math.abs(deltaX)) {
             isVerticalScroll = true;
-            return; 
+            return;
         }
 
         if (!isVerticalScroll && deltaX > 0) {
-            e.preventDefault(); 
+            e.preventDefault();
             const progress = Math.min(deltaX / content.offsetWidth, 1);
             content.style.transform = `translateX(${deltaX}px)`;
             content.style.opacity = Math.max(0.3, 1 - progress * 0.7);
@@ -666,7 +678,7 @@ function handleCreateEgiAction(authType) {
         if (typeof window.showLoginModal === 'function') {
             window.showLoginModal();
         } else {
-            // No fallback redirect - evita navigazione indesiderata  
+            // No fallback redirect - evita navigazione indesiderata
             console.log('No auth modal function found - check your global functions');
         }
     }
@@ -800,46 +812,46 @@ function ensureGuestCarouselLayout(containerArg) {
 // Funzione per forzare la configurazione dei bottoni carousel quando il menu è visibile
 function forceCarouselButtonsSetup() {
     console.log('🔧 FORZANDO setup bottoni carousel...');
-    
+
     const guestLeftBtn = document.getElementById('btn-left-guest-carousel');
     const guestRightBtn = document.getElementById('btn-right-guest-carousel');
-    
+
     console.log('🔍 Bottoni guest trovati:', { left: !!guestLeftBtn, right: !!guestRightBtn });
-    
+
     if (guestLeftBtn) {
         console.log('🔧 Forzando setup guest left button');
-        
+
         // ⚡ FIX CRITICO: Forza la visibilità del bottone con setProperty important
         guestLeftBtn.style.setProperty('visibility', 'visible', 'important');
         guestLeftBtn.style.setProperty('pointer-events', 'auto', 'important');
         guestLeftBtn.style.setProperty('display', 'block', 'important');
         guestLeftBtn.style.setProperty('opacity', '1', 'important');
         guestLeftBtn.style.setProperty('z-index', '9999999', 'important');
-        
+
         // Aggiungi classe CSS per override aggressivo
         guestLeftBtn.classList.add('force-visible-carousel-btn');
-        
+
         console.log('🔧 Visibility forzata per left button');
-        
+
         // NON AGGIUNGERE LISTENER QUI - Lasciamo che initializeCarouselButtons se ne occupi
         console.log('✅ Visibilità guest left button forzata');
     }
-    
+
     if (guestRightBtn) {
         console.log('🔧 Forzando setup guest right button');
-        
+
         // ⚡ FIX CRITICO: Forza la visibilità del bottone con setProperty important
         guestRightBtn.style.setProperty('visibility', 'visible', 'important');
         guestRightBtn.style.setProperty('pointer-events', 'auto', 'important');
         guestRightBtn.style.setProperty('display', 'block', 'important');
         guestRightBtn.style.setProperty('opacity', '1', 'important');
         guestRightBtn.style.setProperty('z-index', '9999999', 'important');
-        
+
         // Aggiungi classe CSS per override aggressivo
         guestRightBtn.classList.add('force-visible-carousel-btn');
-        
+
         console.log('🔧 Visibility forzata per right button');
-        
+
         // NON AGGIUNGERE LISTENER QUI - Lasciamo che initializeCarouselButtons se ne occupi
         console.log('✅ Visibilità guest right button forzata');
     }
@@ -847,19 +859,19 @@ function forceCarouselButtonsSetup() {
 
 function forceScrollCarousel(direction) {
     console.log('🎯 FORZANDO SCROLL:', direction);
-    
+
     const carousel = document.querySelector('.menu-guest-collections-carousel .carousel-container');
-    
+
     if (carousel) {
         const amount = direction === 'left' ? -320 : 320;
         console.log('📦 Carousel trovato, scrolling:', amount);
-        
+
         // Prova tutti i metodi possibili
         const currentScroll = carousel.scrollLeft;
-        
+
         // Metodo 1: scrollBy
         carousel.scrollBy({ left: amount, behavior: 'smooth' });
-        
+
         // Metodo 2: scrollLeft diretto
         setTimeout(() => {
             if (carousel.scrollLeft === currentScroll) {
@@ -867,7 +879,7 @@ function forceScrollCarousel(direction) {
                 carousel.scrollLeft = Math.max(0, currentScroll + amount);
             }
         }, 100);
-        
+
         // Metodo 3: transform CSS se tutto il resto fallisce
         setTimeout(() => {
             if (carousel.scrollLeft === currentScroll) {
@@ -882,7 +894,7 @@ function forceScrollCarousel(direction) {
                 }
             }
         }, 200);
-        
+
     } else {
         console.log('❌ Carousel non trovato');
     }

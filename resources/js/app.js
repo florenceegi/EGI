@@ -69,6 +69,11 @@ console.log('Moduli notifiche importati.'); // Debugging
 import './biography-edit';
 console.log('biography-edit.js importato.');
 
+// --- 🔍 UNIVERSAL SEARCH (TS) ---
+// Import del modulo TypeScript (auto-initializza se presente il markup della modale)
+import '../ts/features/search/universalSearch.ts';
+console.log('Universal Search (vanilla) importato.');
+
 console.log('app.js setup complete (dependencies only - orchestration in main.ts).'); // Debugging
 
 // --- 📚 DOCUMENTAZIONE POLYFILL ---

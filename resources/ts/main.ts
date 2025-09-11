@@ -44,6 +44,7 @@ import { initPortfolioManager } from './features/portfolio/portfolioManager'; //
 import { NatanAssistant } from './components/natan-assistant';
 import { mountAllCurrentPrices } from './current-price'; // 🔴 Real-time price updates
 import { initializeStatsRealTime } from './stats-realtime'; // 📊 Real-time statistics updates
+import { autoInitUniversalSearch } from './features/search/universalSearch';
 
 // --- 💰 IMPORTAZIONI SISTEMA MULTI-VALUTA (Enterprise Financial System) ---
 import { currencyService } from './services/currencyService';
@@ -497,6 +498,9 @@ async function initializeApplicationOrchestrated(): Promise<void> {
         // console.log('Padmin Main: Phase 6.2 - Initializing real-time statistics updates...');
         initializeStatsRealTime();
 
+        // FASE 6.3: Universal Search (vanilla)
+        autoInitUniversalSearch();
+
         // FASE 7: Sistema FEGI (include UploadModalManager + Ultra Upload Manager on-demand)
         // console.log('Padmin Main: Phase 7 - Initializing FEGI system...');
         await initializeFEGISystemOrchestrated();
@@ -508,13 +512,14 @@ async function initializeApplicationOrchestrated(): Promise<void> {
         document.body.classList.add('page-loaded');
 
         // Setup listeners per transizioni pagina
-        document.querySelectorAll('a[href^="/"]').forEach(link => {
-            link.addEventListener('click', function (e) {
-                if (this.hostname === window.location.hostname) {
+        document.querySelectorAll<HTMLAnchorElement>('a[href^="/"]').forEach((link: HTMLAnchorElement) => {
+            link.addEventListener('click', (e: Event) => {
+                const anchor = e.currentTarget as HTMLAnchorElement | null;
+                if (anchor && anchor.hostname === window.location.hostname) {
                     e.preventDefault();
                     document.body.classList.add('page-transitioning');
                     setTimeout(() => {
-                        window.location.href = this.href;
+                        window.location.href = anchor.href;
                     }, 300);
                 }
             });
@@ -603,7 +608,7 @@ function setupEventListeners(): void {
     safeAddEventListener(
         DOMElements.connectWalletModalEl,
         'click',
-        (e: MouseEvent) => {
+        (e: Event) => {
             if (e.target === DOMElements.connectWalletModalEl) closeSecureWalletModal(DOMElements);
         },
         'Connect Wallet Modal Background'

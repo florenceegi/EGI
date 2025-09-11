@@ -115,7 +115,7 @@
                         <x-notific                        /* MOBILE - Titolo cliccabile */
                         w-full flex justify-between    /* Occupa tutto lo spazio */
                         chevron visibile              /* Indica collassabilità */
-                        
+
                         /* DESKTOP - Titolo normale */
                         md:pointer-events-none        /* Non cliccabile */
                         md:hidden                     /* Chevron nascosto */ation-badge />
@@ -148,40 +148,6 @@
                     <nav class="items-center hidden space-x-1 md:flex" role="navigation"
                         aria-label="{{ __('collection.main_navigation_aria_label') }}">
                         @include('partials.nav-links', ['isMobile' => false, 'authType' => $authType])
-
-                        {{-- Dropdown My Galleries --}}
-                        @can('create_collection')
-                        <div id="collection-list-dropdown-container" class="relative">
-                            <button id="collection-list-dropdown-button" type="button"
-                                class="{{ $navLinkClasses }} inline-flex items-center" aria-expanded="false"
-                                aria-haspopup="true">
-                                <span class="mr-1 text-base material-symbols-outlined"
-                                    aria-hidden="true">view_carousel</span>
-                                <span id="collection-list-button-text">{{ __('collection.my_galleries') }}</span>
-                                <svg class="w-4 h-4 ml-1 -mr-1" fill="currentColor" viewBox="0 0 20 20"
-                                    aria-hidden="true">
-                                    <path fill-rule="evenodd"
-                                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            <div id="collection-list-dropdown-menu"
-                                class="absolute right-0 z-20 mt-2 hidden max-h-[60vh] w-72 origin-top-right overflow-y-auto rounded-md border border-gray-800 bg-gray-900 py-1 shadow-xl ring-1 ring-gray-700 backdrop-blur-sm focus:outline-none">
-                                <div id="collection-list-loading" class="px-4 py-3 text-sm text-center text-gray-400">
-                                    {{ __('collection.loading_galleries') }}</div>
-                                <div id="collection-list-empty"
-                                    class="hidden px-4 py-3 text-sm text-center text-gray-400">
-                                    {{ __('collection.no_galleries_found') }} <a
-                                        href="{{ route('collections.create') }}"
-                                        class="underline hover:text-emerald-400">{{ __('collection.create_one_question')
-                                        }}</a>
-                                </div>
-                                <div id="collection-list-error"
-                                    class="hidden px-4 py-3 text-sm text-center text-red-400">
-                                    {{ __('collection.error_loading_galleries') }}</div>
-                            </div>
-                        </div>
-                        @endcan
 
                         @auth
                         <x-navigation.vanilla-desktop-menu />
@@ -247,6 +213,13 @@
                         <a href="{{ route('register') }}" id="register-link-desktop"
                             class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                             {{ __('collection.register') }}</a>
+                        {{-- Guest Universal Search Trigger --}}
+                        <button type="button" class="{{ $navLinkClasses }} inline-flex items-center gap-1"
+                                onclick="window.UniversalSearch ? window.UniversalSearch.open() : window.dispatchEvent(new CustomEvent('universal-search-open'))"
+                                aria-label="{{ __('collection.search') }}">
+                            <span class="text-base material-symbols-outlined" aria-hidden="true">search</span>
+                            <span>{{ __('collection.search') }}</span>
+                        </button>
                     </nav>
 
                     {{-- Menu Mobile Button --}}

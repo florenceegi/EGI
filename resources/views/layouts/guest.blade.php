@@ -139,6 +139,9 @@
 
 <!-- Scripts -->
 
+{{-- Universal Search Modal disponibile anche per i guest --}}
+<x-universal-search-modal />
+
 @vite(['resources/js/polyfills.js', 'resources/js/app.js', 'resources/js/guest.js', 'resources/ts/main.ts'])
 
 {{-- 🎯 HEIC Detection Integration - Embedded in Layout --}}
