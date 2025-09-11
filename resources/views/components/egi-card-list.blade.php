@@ -151,6 +151,18 @@ $showBadge = $showBadge ?? $showOwnershipBadge;
             </div>
             @endif
 
+            {{-- Badge Categoria (top-left) --}}
+            @php
+                $categoryName = $egi->category_name;
+                $categoryClasses = $egi->category_badge_classes;
+            @endphp
+            <div class="absolute left-2 top-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold leading-none shadow ring-1 ring-white/10 {{ $categoryClasses }}"
+                    title="{{ $categoryName }}" aria-label="EGI Category: {{ $categoryName }}">
+                    {{ Str::limit($categoryName, 16) }}
+                </span>
+            </div>
+
             <!-- Context Badge -->
             @if ($showOwnershipBadge)
             <div class="absolute right-2 top-12">

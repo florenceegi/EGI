@@ -275,6 +275,62 @@ class Egi extends Model {
             ->orderBy('created_at', 'desc'); // Tie-breaker per stesso prezzo
     }
 
+    // ---------------------------------------------------------------------
+    // Categoria (Trait con category.slug = 'category') Accessors
+    // ---------------------------------------------------------------------
+    /**
+     * Restituisce il trait di categoria primario (se presente).
+     * Per definizione di business ce n'è al massimo uno; se più di uno, prende il primo.
+     */
+    public function getCategoryTraitAttribute()
+    {
+        if (!$this->relationLoaded('traits')) {
+            // Evitiamo query multiple se non eager loaded: carichiamo on-demand (accettabile fallback)
+            $this->load(['traits.category']);
+        }
+        return $this->traits->first(function ($trait) {
+            return $trait->category && $trait->category->slug === 'category';
+        });
+    }
+
+    /**
+     * Nome categoria (display_value > value > default config)
+     */
+    public function getCategoryNameAttribute(): string
+    {
+        $default = config('egi_category_badges.default', 'Art');
+        $trait = $this->category_trait;
+        $raw = $trait ? ($trait->display_value ?: $trait->value) : $default;
+        if (!$raw) {
+            return $default;
+        }
+        // Normalizziamo capitalizzando solo la prima lettera per matching mappa
+        $normalized = ucfirst(strtolower($raw));
+        // Se la chiave esiste così com'è, usiamo quella, altrimenti proviamo match case-insensitive
+        $map = config('egi_category_badges.map', []);
+        if (isset($map[$raw])) return $raw;
+        if (isset($map[$normalized])) return $normalized;
+        // Tentativo case-insensitive
+        foreach (array_keys($map) as $key) {
+            if (strcasecmp($key, $raw) === 0) {
+                return $key;
+            }
+        }
+        return $default;
+    }
+
+    /**
+     * Classi CSS Tailwind per il badge della categoria.
+     */
+    public function getCategoryBadgeClassesAttribute(): string
+    {
+        $map = config('egi_category_badges.map', []);
+        $name = $this->category_name; // Già normalizzato
+        $default = config('egi_category_badges.default', 'Art');
+        return $map[$name]['classes'] ?? ($map[$default]['classes'] ?? 'bg-gray-600 text-white');
+    }
+
+
     /**
      * Relationship with utility
      * One-to-one relationship: each EGI can have one utility

@@ -46,9 +46,13 @@ class CreatorHomeController extends Controller {
 
         // Recupera tutti gli EGI pubblicati delle collezioni CREATE dal creator
         // Nota: creator_id identifica CHI HA CREATO la collezione, non chi la possiede
-        $egis = Egi::with(['collection', 'reservations' => function ($q) {
+        $egis = Egi::with([
+            'collection',
+            'traits.category', // eager loading categoria per badge
+            'reservations' => function ($q) {
             $q->where('is_current', true); // Solo prenotazioni attive
-        }])
+            }
+        ])
             ->whereHas('collection', function ($q) use ($creator) {
                 $q->where('creator_id', $creator->id); // Collection create dal creator
             })
@@ -139,7 +143,7 @@ class CreatorHomeController extends Controller {
         // Aggiungi flag per animazioni se i numeri sono grandi
         $stats['animate'] = max($stats) > 10;
 
-        $featuredEgis = Egi::with(['collection'])
+    $featuredEgis = Egi::with(['collection', 'traits.category'])
             ->where('is_published', true) // <-- Riga corretta
             ->whereHas('collection', function ($q) use ($creator) {
                 $q->where('creator_id', $creator->id)

@@ -172,6 +172,17 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
         </span>
         @endif
 
+        {{-- Badge Categoria (Trait category) --}}
+        @php
+            $categoryName = $egi->category_name; // accessor
+            $categoryClasses = $egi->category_badge_classes;
+        @endphp
+        <span
+            class="absolute z-10 px-2 py-0.5 text-[10px] font-semibold tracking-wide rounded-full left-2 top-10 backdrop-blur-sm ring-1 ring-white/10 shadow {{ $categoryClasses }}"
+            title="{{ $categoryName }}" aria-label="EGI Category: {{ $categoryName }}">
+            {{ Str::limit($categoryName, 14) }}
+        </span>
+
         {{-- 🌟 BADGE COMPOSTO HYPER + POSSEDUTO (SOLUZIONE MICHELIN) --}}
         @if ($showPurchasePrice && $isHyper)
         <div class="badge-composite">
@@ -509,7 +520,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
     {{-- Utility Images Carousel --}}
     @if($egi->utility && $egi->utility->getMedia('utility_gallery')->count() > 0)
         <div class="px-2 pb-2 border-t border-white/5">
-            
+
             @if($egi->utility->getMedia('utility_gallery')->count() > 5)
             <div class="mt-1 text-center">
                 <span class="text-[10px] text-gray-400">
@@ -517,7 +528,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                 </span>
             </div>
             @endif
-            
+
             <!-- Container con larghezza massima per forzare overflow -->
             <div class="relative w-full" style="max-width: 280px;">
                 <!-- Scrollable Container -->
@@ -526,7 +537,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                     @foreach($egi->utility->getMedia('utility_gallery') as $index => $media)
                     <div class="flex-shrink-0 w-12 h-12 overflow-hidden transition-all duration-200 rounded-lg cursor-pointer hover:scale-105 hover:shadow-lg hover:ring-2 hover:ring-white/50"
                         onclick="openUtilityImageModal('{{ $media->getUrl('large') }}', '{{ $egi->utility->title }}', {{ $index }})">
-                        <img src="{{ $media->getUrl('thumb') }}" 
+                        <img src="{{ $media->getUrl('thumb') }}"
                             alt="{{ $egi->utility->title }} - Image {{ $index + 1 }}"
                             class="object-cover w-full h-full transition-opacity duration-200 opacity-80 hover:opacity-100"
                             loading="lazy">
@@ -535,7 +546,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                 </div>
             </div>
 
-            
+
         </div>
 
         <style>
