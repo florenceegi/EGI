@@ -26,10 +26,10 @@
     {{-- EGIs --}}
     @if($egiResults)
         <div class="mt-8">
-            @php 
-                $egiGlobal = method_exists($egiResults, 'total') ? $egiResults->total() : null; 
-                $egiPage = $egiResults->count(); 
-                $egiHeadingTotal = $egiGlobal && $egiGlobal >= $egiPage ? $egiGlobal : $egiPage; 
+            @php
+                $egiGlobal = method_exists($egiResults, 'total') ? $egiResults->total() : null;
+                $egiPage = $egiResults->count();
+                $egiHeadingTotal = $egiGlobal && $egiGlobal >= $egiPage ? $egiGlobal : $egiPage;
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-purple-300">
                 {{ __('search.results.egis_heading', ['count' => $egiHeadingTotal]) }}
@@ -53,10 +53,10 @@
     {{-- Collections --}}
     @if($collectionResults)
         <div class="mt-12">
-            @php 
-                $collectionGlobal = method_exists($collectionResults, 'total') ? $collectionResults->total() : null; 
-                $collectionPage = $collectionResults->count(); 
-                $collectionHeadingTotal = $collectionGlobal && $collectionGlobal >= $collectionPage ? $collectionGlobal : $collectionPage; 
+            @php
+                $collectionGlobal = method_exists($collectionResults, 'total') ? $collectionResults->total() : null;
+                $collectionPage = $collectionResults->count();
+                $collectionHeadingTotal = $collectionGlobal && $collectionGlobal >= $collectionPage ? $collectionGlobal : $collectionPage;
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-amber-300">
                 {{ __('search.results.collections_heading', ['count' => $collectionHeadingTotal]) }}
@@ -80,10 +80,10 @@
     {{-- Creators --}}
     @if($creatorResults)
         <div class="mt-12">
-            @php 
-                $creatorGlobal = method_exists($creatorResults, 'total') ? $creatorResults->total() : null; 
-                $creatorPage = $creatorResults->count(); 
-                $creatorHeadingTotal = $creatorGlobal && $creatorGlobal >= $creatorPage ? $creatorGlobal : $creatorPage; 
+            @php
+                $creatorGlobal = method_exists($creatorResults, 'total') ? $creatorResults->total() : null;
+                $creatorPage = $creatorResults->count();
+                $creatorHeadingTotal = $creatorGlobal && $creatorGlobal >= $creatorPage ? $creatorGlobal : $creatorPage;
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-cyan-300">
                 {{ __('search.results.creators_heading', ['count' => $creatorHeadingTotal]) }}

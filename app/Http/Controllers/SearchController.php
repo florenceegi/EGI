@@ -38,11 +38,13 @@ class SearchController extends Controller {
         $facets = $this->service->traitFacets();
 
         // Diagnostic: log mismatch tra total() e count() se anomalo
-        foreach ([
-            'egis' => $egiResults,
-            'collections' => $collectionResults,
-            'creators' => $creatorResults,
-        ] as $k => $paginator) {
+        foreach (
+            [
+                'egis' => $egiResults,
+                'collections' => $collectionResults,
+                'creators' => $creatorResults,
+            ] as $k => $paginator
+        ) {
             if ($paginator) {
                 try {
                     $global = method_exists($paginator, 'total') ? $paginator->total() : null;

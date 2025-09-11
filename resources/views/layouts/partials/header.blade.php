@@ -214,12 +214,12 @@
                             class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                             {{ __('collection.register') }}</a>
                         {{-- Guest Universal Search Trigger --}}
-                        <button type="button" class="{{ $navLinkClasses }} inline-flex items-center gap-1"
+                        {{-- <button type="button" class="{{ $navLinkClasses }} inline-flex items-center gap-1"
                                 onclick="window.UniversalSearch ? window.UniversalSearch.open() : window.dispatchEvent(new CustomEvent('universal-search-open'))"
                                 aria-label="{{ __('collection.search') }}">
                             <span class="text-base material-symbols-outlined" aria-hidden="true">search</span>
                             <span>{{ __('collection.search') }}</span>
-                        </button>
+                        </button> --}}
                     </nav>
 
                     {{-- Menu Mobile Button --}}
