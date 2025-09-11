@@ -154,16 +154,18 @@ class UniversalSearchService {
         // --- Aggregazione collection per ruolo (incluso owner come 'creator') ---
         $userIds = $paginated->pluck('id');
         if ($userIds->isNotEmpty()) {
+            // MariaDB strict mode richiede group by su tutte le colonne non aggregate: includiamo is_owner e role
             $pivotRows = DB::table('collection_user as cu')
                 ->select(
                     'cu.user_id',
-                    DB::raw("CASE WHEN cu.is_owner = 1 THEN 'creator' ELSE cu.role END as role"),
+                    'cu.is_owner',
+                    'cu.role',
                     DB::raw('COUNT(*) as total')
                 )
                 ->whereIn('cu.user_id', $userIds)
                 ->where('cu.status', '!=', 'removed')
                 ->whereNull('cu.removed_at')
-                ->groupBy('cu.user_id', 'role')
+                ->groupBy('cu.user_id', 'cu.is_owner', 'cu.role')
                 ->get()
                 ->groupBy('user_id');
 
@@ -171,9 +173,8 @@ class UniversalSearchService {
                 $rows = $pivotRows->get($creator->id, collect());
                 $map = [];
                 foreach ($rows as $r) {
-                    if ($r->role) {
-                        $map[$r->role] = (int) $r->total;
-                    }
+                    $roleKey = $r->is_owner ? 'creator' : ($r->role ?: 'unknown');
+                    $map[$roleKey] = ($map[$roleKey] ?? 0) + (int) $r->total;
                 }
                 // Ordina mettendo creator, admin, editor, viewer, resto alfabetico
                 if ($map) {
