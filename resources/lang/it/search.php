@@ -9,9 +9,9 @@ return [
         'open_advanced' => 'Apri ricerca avanzata',
         'query_label' => 'Query:',
         'total_all' => 'Totale risultati complessivi:',
-        'egis_heading' => 'EGIs (:count)',
-        'collections_heading' => 'Collections (:count)',
-        'creators_heading' => 'Creators (:count)',
+        'egis_heading' => 'EGIs',
+        'collections_heading' => 'Collections',
+        'creators_heading' => 'Creators',
         'none_egis' => 'Nessun EGI trovato.',
         'none_collections' => 'Nessuna Collection trovata.',
         'none_creators' => 'Nessun Creator trovato.'

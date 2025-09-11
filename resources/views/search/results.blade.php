@@ -16,11 +16,11 @@
     @endif
 
     @php
-        // Totale aggregato (usa total() se disponibile altrimenti numero elementi pagina)
-        $totalAll = 0;
-    if(isset($egiResults)) $totalAll += $egiTotal ?? ($egiResults->total() ?? $egiResults->count());
-    if(isset($collectionResults)) $totalAll += $collectionTotal ?? ($collectionResults->total() ?? $collectionResults->count());
-    if(isset($creatorResults)) $totalAll += $creatorTotal ?? ($creatorResults->total() ?? $creatorResults->count());
+    // Totale aggregato usa fresh_total che viene calcolato dal service
+    $totalAll = 0;
+    if(isset($egiResults)) $totalAll += $egiResults->fresh_total ?? $egiResults->count();
+    if(isset($collectionResults)) $totalAll += $collectionResults->fresh_total ?? $collectionResults->count();
+    if(isset($creatorResults)) $totalAll += $creatorResults->fresh_total ?? $creatorResults->count();
     @endphp
     <p class="mb-10 text-xs tracking-wide text-gray-400 uppercase">{{ __('search.results.total_all') }} <span class="font-semibold text-emerald-400">{{ $totalAll }}</span></p>
 
@@ -28,11 +28,11 @@
     @if($egiResults)
         <div class="mt-8">
             @php
-                // Usa la STESSA logica del totale complessivo che funziona
-                $egiHeadingTotal = $egiTotal ?? ($egiResults->total() ?? $egiResults->count());
+                // Usa fresh_total calcolato dal service che bypassa la cache
+                $egiHeadingTotal = $egiResults->fresh_total ?? $egiResults->count();
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-purple-300">
-                {{ __('search.results.egis_heading', ['count' => $egiHeadingTotal]) }}
+                {{ __('search.results.egis_heading') }} {{ $egiHeadingTotal }}
             </h2>
             @if($egiResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -51,11 +51,11 @@
     @if($collectionResults)
         <div class="mt-12">
             @php
-                // Usa la STESSA logica del totale complessivo che funziona
-                $collectionHeadingTotal = $collectionTotal ?? ($collectionResults->total() ?? $collectionResults->count());
+                // Usa fresh_total calcolato dal service
+                $collectionHeadingTotal = $collectionResults->fresh_total ?? $collectionResults->count();
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-amber-300">
-                {{ __('search.results.collections_heading', ['count' => $collectionHeadingTotal]) }}
+                {{ __('search.results.collections_heading') }} ({{ $collectionHeadingTotal }})
             </h2>
             @if($collectionResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -74,11 +74,11 @@
     @if($creatorResults)
         <div class="mt-12">
             @php
-                // Usa la STESSA logica del totale complessivo che funziona
-                $creatorHeadingTotal = $creatorTotal ?? ($creatorResults->total() ?? $creatorResults->count());
+                // Usa fresh_total calcolato dal service
+                $creatorHeadingTotal = $creatorResults->fresh_total ?? $creatorResults->count();
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-cyan-300">
-                {{ __('search.results.creators_heading', ['count' => $creatorHeadingTotal]) }}
+                {{ __('search.results.creators_heading') }} ({{ $creatorHeadingTotal }})
             </h2>
             @if($creatorResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
