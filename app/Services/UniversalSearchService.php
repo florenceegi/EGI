@@ -150,6 +150,47 @@ class UniversalSearchService {
 
         /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
         $paginated = $query->paginate($perPage);
+
+        // --- Aggregazione collection per ruolo (incluso owner come 'creator') ---
+        $userIds = $paginated->pluck('id');
+        if ($userIds->isNotEmpty()) {
+            $pivotRows = DB::table('collection_user as cu')
+                ->select(
+                    'cu.user_id',
+                    DB::raw("CASE WHEN cu.is_owner = 1 THEN 'creator' ELSE cu.role END as role"),
+                    DB::raw('COUNT(*) as total')
+                )
+                ->whereIn('cu.user_id', $userIds)
+                ->where('cu.status', '!=', 'removed')
+                ->whereNull('cu.removed_at')
+                ->groupBy('cu.user_id', 'role')
+                ->get()
+                ->groupBy('user_id');
+
+            foreach ($paginated as $creator) {
+                $rows = $pivotRows->get($creator->id, collect());
+                $map = [];
+                foreach ($rows as $r) {
+                    if ($r->role) {
+                        $map[$r->role] = (int) $r->total;
+                    }
+                }
+                // Ordina mettendo creator, admin, editor, viewer, resto alfabetico
+                if ($map) {
+                    $ordered = [];
+                    $preferred = ['creator','owner','admin','editor','viewer'];
+                    foreach ($preferred as $pr) {
+                        if (isset($map[$pr])) { $ordered[$pr] = $map[$pr]; unset($map[$pr]); }
+                    }
+                    ksort($map);
+                    foreach ($map as $k => $v) { $ordered[$k] = $v; }
+                    $creator->collection_role_counts = $ordered;
+                } else {
+                    $creator->collection_role_counts = [];
+                }
+            }
+        }
+
         return $paginated;
     }
 
