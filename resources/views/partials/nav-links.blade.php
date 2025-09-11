@@ -44,7 +44,8 @@ $navLinkClasses = $isMobile
 
 {{-- EPPs Link - Su mobile sempre visibile, su desktop solo se non siamo negli EPPs --}}
 @if ($isMobile || !request()->routeIs('epps.*'))
-<a href="{{ route('epps.index') }}" class="{{ $navLinkClasses }}"
+{{-- Reindirizzato a pagina "work in progress" --}}
+<a href="{{ route('under_construction', ['key' => 'epps']) }}" class="{{ $navLinkClasses }}"
     aria-label="{{ __('guest_layout.' . ($isMobile ? 'mobile_' : '') . 'epps_link_aria_label') }}">
     {{ __('guest_layout.epps') }}
 </a>
