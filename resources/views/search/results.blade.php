@@ -17,16 +17,16 @@
 
     @php
         $totalAll = 0;
-        if(isset($egiResults)) $totalAll += $egiResults?->total() ?? 0;
-        if(isset($collectionResults)) $totalAll += $collectionResults?->total() ?? 0;
-        if(isset($creatorResults)) $totalAll += $creatorResults?->total() ?? 0;
+    if(isset($egiResults)) $totalAll += ($egiResults->total() ?: $egiResults->count() ?: count($egiResults->items()));
+    if(isset($collectionResults)) $totalAll += ($collectionResults->total() ?: $collectionResults->count() ?: count($collectionResults->items()));
+    if(isset($creatorResults)) $totalAll += ($creatorResults->total() ?: $creatorResults->count() ?: count($creatorResults->items()));
     @endphp
     <p class="mb-10 text-xs tracking-wide text-gray-400 uppercase">{{ __('search.results.total_all') }} <span class="font-semibold text-emerald-400">{{ $totalAll }}</span></p>
 
     {{-- EGIs --}}
     @if($egiResults)
         <div class="mt-8">
-            @php $egiHeadingTotal = $egiResults->total() ?: $egiResults->count(); @endphp
+            @php $egiHeadingTotal = $egiResults->total() ?: $egiResults->count() ?: count($egiResults->items()); @endphp
             <h2 class="mb-3 text-lg font-semibold text-purple-300">{{ __('search.results.egis_heading', ['count' => $egiHeadingTotal]) }}</h2>
             @if($egiResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -44,7 +44,7 @@
     {{-- Collections --}}
     @if($collectionResults)
         <div class="mt-12">
-            @php $collectionHeadingTotal = $collectionResults->total() ?: $collectionResults->count(); @endphp
+            @php $collectionHeadingTotal = $collectionResults->total() ?: $collectionResults->count() ?: count($collectionResults->items()); @endphp
             <h2 class="mb-3 text-lg font-semibold text-amber-300">{{ __('search.results.collections_heading', ['count' => $collectionHeadingTotal]) }}</h2>
             @if($collectionResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -62,7 +62,7 @@
     {{-- Creators --}}
     @if($creatorResults)
         <div class="mt-12">
-            @php $creatorHeadingTotal = $creatorResults->total() ?: $creatorResults->count(); @endphp
+            @php $creatorHeadingTotal = $creatorResults->total() ?: $creatorResults->count() ?: count($creatorResults->items()); @endphp
             <h2 class="mb-3 text-lg font-semibold text-cyan-300">{{ __('search.results.creators_heading', ['count' => $creatorHeadingTotal]) }}</h2>
             @if($creatorResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
