@@ -172,8 +172,7 @@ class Egi extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function traits(): HasMany
-    {
+    public function traits(): HasMany {
         return $this->hasMany(EgiTrait::class, 'egi_id')->orderBy('sort_order');
     }
 
@@ -182,8 +181,7 @@ class Egi extends Model {
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getTraitsByCategoryAttribute()
-    {
+    public function getTraitsByCategoryAttribute() {
         return $this->traits->groupBy('category_id');
     }
 
@@ -192,8 +190,7 @@ class Egi extends Model {
      *
      * @return bool
      */
-    public function hasRareTraits(): bool
-    {
+    public function hasRareTraits(): bool {
         return $this->traits->contains(function ($trait) {
             return $trait->isRare();
         });
@@ -282,22 +279,31 @@ class Egi extends Model {
      * Restituisce il trait di categoria primario (se presente).
      * Per definizione di business ce n'è al massimo uno; se più di uno, prende il primo.
      */
-    public function getCategoryTraitAttribute()
-    {
+    public function getCategoryTraitAttribute() {
+        // Garantiamo che category e traitType siano caricati (permette fallback se slug category mancante)
         if (!$this->relationLoaded('traits')) {
-            // Evitiamo query multiple se non eager loaded: carichiamo on-demand (accettabile fallback)
-            $this->load(['traits.category']);
+            $this->load(['traits.category', 'traits.traitType']);
+        } else {
+            $this->traits->loadMissing(['category', 'traitType']);
         }
-        return $this->traits->first(function ($trait) {
-            return $trait->category && $trait->category->slug === 'category';
+
+        $needles = ['category', 'categories'];
+
+        return $this->traits->first(function ($trait) use ($needles) {
+            $catSlug  = strtolower(trim($trait->category->slug ?? ''));
+            $typeSlug = strtolower(trim($trait->traitType->slug ?? ''));
+            $typeName = strtolower(trim($trait->traitType->name ?? ''));
+
+            return in_array($catSlug, $needles, true)
+                || in_array($typeSlug, $needles, true)
+                || in_array($typeName, $needles, true);
         });
     }
 
     /**
      * Nome categoria (display_value > value > default config)
      */
-    public function getCategoryNameAttribute(): string
-    {
+    public function getCategoryNameAttribute(): string {
         $trait = $this->category_trait;
         $raw = $trait ? ($trait->display_value ?: $trait->value) : null;
         // Restituiamo sempre la versione LOCALIZZATA da trait_elements.values
@@ -308,14 +314,41 @@ class Egi extends Model {
     /**
      * Classi CSS Tailwind per il badge della categoria.
      */
-    public function getCategoryBadgeClassesAttribute(): string
-    {
+    public function getCategoryBadgeClassesAttribute(): string {
         $trait = $this->category_trait;
         $raw = $trait ? ($trait->display_value ?: $trait->value) : null;
         [$canonical, $_localized] = $this->resolveCategoryCanonicalAndLocalized($raw);
         $map = config('egi_category_badges.map', []);
         $default = config('egi_category_badges.default', 'Art');
         return $map[$canonical]['classes'] ?? ($map[$default]['classes'] ?? 'bg-gray-600 text-white');
+    }
+
+    /**
+     * Debug helper: restituisce array grezzo delle informazioni categoria per troubleshooting.
+     * NON usare in produzione (solo log / tinker).
+     */
+    public function getCategoryDebugAttribute(): array {
+        $trait = $this->category_trait;
+        if (!$trait) {
+            return [
+                'found' => false,
+                'reason' => 'no_trait',
+            ];
+        }
+        $raw = $trait->display_value ?: $trait->value;
+        [$canonical, $localized] = $this->resolveCategoryCanonicalAndLocalized($raw);
+        return [
+            'found' => true,
+            'trait_id' => $trait->id,
+            'raw_value' => $raw,
+            'display_value' => $trait->display_value,
+            'stored_value' => $trait->value,
+            'category_slug' => $trait->category->slug ?? null,
+            'trait_type_slug' => $trait->traitType->slug ?? null,
+            'trait_type_name' => $trait->traitType->name ?? null,
+            'canonical' => $canonical,
+            'localized' => $localized,
+        ];
     }
 
     /**
@@ -327,8 +360,7 @@ class Egi extends Model {
      * @param string|null $raw Valore grezzo del trait (display_value o value)
      * @return array [canonicalEnglish, localizedLabel]
      */
-    private function resolveCategoryCanonicalAndLocalized(?string $raw): array
-    {
+    private function resolveCategoryCanonicalAndLocalized(?string $raw): array {
         $defaultCanonical = config('egi_category_badges.default', 'Art');
         $translations = trans('trait_elements.values'); // english => italian
         if (!is_array($translations)) {
@@ -360,6 +392,33 @@ class Egi extends Model {
         }
 
         return [$canonical, $localized];
+    }
+
+    /**
+     * Debug helper (non usato in produzione direttamente): restituisce contesto categoria grezzo.
+     * Utile per capire perché cade nel fallback.
+     */
+    public function getCategoryDebugContextAttribute(): array {
+        $rawTrait = $this->category_trait; // Tratto filtrato
+        $all = $this->relationLoaded('traits') ? $this->traits->map(function ($t) {
+            return [
+                'id' => $t->id,
+                'value' => $t->value,
+                'display_value' => $t->display_value,
+                'category_slug' => $t->category?->slug,
+                'category_id' => $t->category_id,
+            ];
+        }) : [];
+        [$canonical, $localized] = $this->resolveCategoryCanonicalAndLocalized($rawTrait?->display_value ?: $rawTrait?->value);
+        return [
+            'raw_trait_found' => (bool)$rawTrait,
+            'raw_value' => $rawTrait?->value,
+            'raw_display_value' => $rawTrait?->display_value,
+            'raw_category_slug' => $rawTrait?->category?->slug,
+            'canonical' => $canonical,
+            'localized' => $localized,
+            'all_traits_sample' => $all,
+        ];
     }
 
 
