@@ -21,6 +21,17 @@ class SearchController extends Controller {
 
     public function results(Request $request) {
         $q = $request->get('q');
+        // Se l'utente ha cambiato query ma è rimasto su una pagina >1, reindirizziamo a page=1 per evitare impressione di "cache"
+        $prevQ = $request->session()->get('last_search_q');
+        $page = (int) $request->get('page', 1);
+        if ($q !== null && $prevQ !== null && $q !== $prevQ && $page > 1) {
+            $request->session()->put('last_search_q', $q);
+            return redirect()->to(url('/search/results') . '?' . http_build_query(array_merge($request->except('page'), ['page' => 1])));
+        }
+        // Aggiorna la query corrente in session per il prossimo confronto
+        if ($q !== null) {
+            $request->session()->put('last_search_q', $q);
+        }
         $types = array_filter(explode(',', $request->get('types', '')));
         if (!$types) {
             $types = ['egi', 'collection', 'creator'];

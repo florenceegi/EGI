@@ -184,7 +184,7 @@ $imageUrl = asset("images/logo/$logo");
             @if(isset($creator->collection_role_counts) && count($creator->collection_role_counts))
             <div class="flex flex-wrap gap-2 mt-2">
                 @foreach($creator->collection_role_counts as $role => $cnt)
-                    <span class="px-2 py-1 text-xs font-medium rounded bg-gray-700/60 text-gray-300">
+                    <span class="px-2 py-1 text-xs font-medium text-gray-300 rounded bg-gray-700/60">
                         {{ $role }}: <span class="text-purple-300">{{ $cnt }}</span>
                     </span>
                 @endforeach

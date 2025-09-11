@@ -18,9 +18,9 @@
     @php
         // Totale aggregato (usa total() se disponibile altrimenti numero elementi pagina)
         $totalAll = 0;
-    if(isset($egiResults)) $totalAll += ($egiResults->fresh_total ?? $egiResults->total() ?? $egiResults->count());
-    if(isset($collectionResults)) $totalAll += ($collectionResults->fresh_total ?? $collectionResults->total() ?? $collectionResults->count());
-    if(isset($creatorResults)) $totalAll += ($creatorResults->fresh_total ?? $creatorResults->total() ?? $creatorResults->count());
+    if(isset($egiResults)) $totalAll += $egiTotal ?? ($egiResults->total() ?? $egiResults->count());
+    if(isset($collectionResults)) $totalAll += $collectionTotal ?? ($collectionResults->total() ?? $collectionResults->count());
+    if(isset($creatorResults)) $totalAll += $creatorTotal ?? ($creatorResults->total() ?? $creatorResults->count());
     @endphp
     <p class="mb-10 text-xs tracking-wide text-gray-400 uppercase">{{ __('search.results.total_all') }} <span class="font-semibold text-emerald-400">{{ $totalAll }}</span></p>
 
@@ -28,16 +28,11 @@
     @if($egiResults)
         <div class="mt-8">
             @php
-                $egiGlobal = method_exists($egiResults, 'total') ? $egiResults->total() : null; // totale reale (tutti i risultati)
-                $egiGlobal = $egiResults->fresh_total ?? (method_exists($egiResults, 'total') ? $egiResults->total() : null);
-                $egiPage = $egiResults->count();
-                $egiHeadingTotal = $egiGlobal ?: $egiPage;
+                // Usa la STESSA logica del totale complessivo che funziona
+                $egiHeadingTotal = $egiTotal ?? ($egiResults->total() ?? $egiResults->count());
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-purple-300">
                 {{ __('search.results.egis_heading', ['count' => $egiHeadingTotal]) }}
-                @if($egiGlobal !== null && $egiGlobal !== $egiPage)
-                    <span class="ml-2 text-xs font-normal text-gray-500">(page {{ $egiPage }})</span>
-                @endif
             </h2>
             @if($egiResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -56,16 +51,11 @@
     @if($collectionResults)
         <div class="mt-12">
             @php
-                $collectionGlobal = method_exists($collectionResults, 'total') ? $collectionResults->total() : null;
-                $collectionGlobal = $collectionResults->fresh_total ?? (method_exists($collectionResults, 'total') ? $collectionResults->total() : null);
-                $collectionPage = $collectionResults->count();
-                $collectionHeadingTotal = $collectionGlobal ?: $collectionPage;
+                // Usa la STESSA logica del totale complessivo che funziona
+                $collectionHeadingTotal = $collectionTotal ?? ($collectionResults->total() ?? $collectionResults->count());
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-amber-300">
                 {{ __('search.results.collections_heading', ['count' => $collectionHeadingTotal]) }}
-                @if($collectionGlobal !== null && $collectionGlobal !== $collectionPage)
-                    <span class="ml-2 text-xs font-normal text-gray-500">(page {{ $collectionPage }})</span>
-                @endif
             </h2>
             @if($collectionResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -84,16 +74,11 @@
     @if($creatorResults)
         <div class="mt-12">
             @php
-                $creatorGlobal = method_exists($creatorResults, 'total') ? $creatorResults->total() : null;
-                $creatorGlobal = $creatorResults->fresh_total ?? (method_exists($creatorResults, 'total') ? $creatorResults->total() : null);
-                $creatorPage = $creatorResults->count();
-                $creatorHeadingTotal = $creatorGlobal ?: $creatorPage;
+                // Usa la STESSA logica del totale complessivo che funziona
+                $creatorHeadingTotal = $creatorTotal ?? ($creatorResults->total() ?? $creatorResults->count());
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-cyan-300">
                 {{ __('search.results.creators_heading', ['count' => $creatorHeadingTotal]) }}
-                @if($creatorGlobal !== null && $creatorGlobal !== $creatorPage)
-                    <span class="ml-2 text-xs font-normal text-gray-500">(page {{ $creatorPage }})</span>
-                @endif
             </h2>
             @if($creatorResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

@@ -99,11 +99,11 @@ class UniversalSearchService {
             });
         }
 
-    $freshTotal = (clone $query)->count();
-    /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
-    $paginated = $query->paginate($perPage);
-    $paginated->fresh_total = $freshTotal;
-    return $paginated;
+        $freshTotal = (clone $query)->count();
+        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
+        $paginated = $query->paginate($perPage);
+        $paginated->fresh_total = $freshTotal;
+        return $paginated;
     }
 
     /**
@@ -152,10 +152,10 @@ class UniversalSearchService {
             });
         }
 
-    $freshTotal = (clone $query)->count();
-    /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
-    $paginated = $query->paginate($perPage);
-    $paginated->fresh_total = $freshTotal;
+        $freshTotal = (clone $query)->count();
+        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
+        $paginated = $query->paginate($perPage);
+        $paginated->fresh_total = $freshTotal;
 
         // --- Aggregazione collection per ruolo (incluso owner come 'creator') ---
         $userIds = $paginated->pluck('id');
