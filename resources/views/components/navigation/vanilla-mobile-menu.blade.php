@@ -336,6 +336,18 @@
                                 </button>
                             @endcan
                         @endif
+
+                        @unless(View::getSection('title') === __('guest_home.page_title') || request()->routeIs('home') || request()->is('/'))
+                            {{-- 🔍 Universal Search Trigger (mobile - layout app / altre pagine) --}}
+                            <button type="button" id="mobile-universal-search-button-generic"
+                                class="{{ $navLinkClasses }} flex w-full items-center gap-2 text-left"
+                                data-action="open-universal-search"
+                                aria-label="Apri ricerca avanzata"
+                                onclick="window.dispatchEvent(new CustomEvent('universal-search-open'))">
+                                <span class="text-base material-symbols-outlined" aria-hidden="true">search</span>
+                                <span>Cerca</span>
+                            </button>
+                        @endunless
                     </div>
                 </div>
 

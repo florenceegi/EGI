@@ -98,7 +98,7 @@ $navLinkClasses = $isMobile
 
 @if(!$isMobile)
 {{-- Desktop Universal Search Trigger --}}
-<button type="button" class="{{ $navLinkClasses }} inline-flex items-center gap-1" aria-label="Apri ricerca avanzata" onclick="window.UniversalSearch && window.UniversalSearch.open()">
+<button type="button" class="{{ $navLinkClasses }} inline-flex items-center gap-1" aria-label="Apri ricerca avanzata" onclick="window.UniversalSearch ? window.UniversalSearch.open() : window.dispatchEvent(new CustomEvent('universal-search-open'))">
     <span class="material-symbols-outlined text-base" aria-hidden="true">search</span>
     <span>Cerca</span>
 </button>
