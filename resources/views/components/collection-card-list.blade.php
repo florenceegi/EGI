@@ -46,8 +46,24 @@ $config = $contextConfig[$context] ?? $contextConfig['default'];
 // Badge logic - può essere sovrascritto dal parametro showBadge
 $showBadge = $showBadge ?? $showOwnershipBadge;
 
-// Determina l'immagine da utilizzare
-$imagePath = $imageType === 'card' ? $collection->image_card : $collection->image_EGI;
+// Determina l'immagine da utilizzare - come in home-collection-card.blade.php
+$logo = config('app.logo_01');
+$imageUrl = '';
+
+// Prova ad usare Spatie Media se disponibile
+if ($collection) {
+    if (method_exists($collection, 'getFirstMediaUrl')) {
+        $imageUrl = $collection->getFirstMediaUrl('head', 'card');
+        if ($imageUrl != '') {
+            // OK, abbiamo un'immagine
+        } else {
+            // Nessuna immagine, usa il logo di default
+            $imageUrl = asset($logo);
+        }
+    } else {
+        $imageUrl = asset($logo);
+    }
+}
 @endphp
 
 {{-- Collection Card List Component --}}
@@ -60,8 +76,8 @@ $imagePath = $imageType === 'card' ? $collection->image_card : $collection->imag
         <a href="{{ route('home.collections.show', $collection->id) }}"
             class="relative flex-shrink-0 w-28 h-28 overflow-hidden rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 cursor-pointer group-hover:ring-2 group-hover:ring-blue-400 transition-all duration-300">
 
-            @if ($imagePath)
-            <img src="{{ $imagePath }}" alt="{{ $collection->collection_name }}"
+            @if ($imageUrl)
+            <img src="{{ $imageUrl }}" alt="{{ $collection->collection_name }}"
                 class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110">
             @else
             <div
