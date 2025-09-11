@@ -32,7 +32,7 @@
                 $egiHeadingTotal = $egiResults->fresh_total ?? $egiResults->count();
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-purple-300">
-                {{ __('search.results.egis_heading') }} {{ $egiHeadingTotal }}
+                {{ __('search.results.egis_heading') }} ({{ $egiHeadingTotal }})
             </h2>
             @if($egiResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

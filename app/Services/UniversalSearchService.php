@@ -115,7 +115,7 @@ class UniversalSearchService {
         /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
         $paginated = $query->paginate($perPage);
         $paginated->fresh_total = $freshTotal;
-        
+
         // Aggiungi informazioni sul ruolo dell'utente per ogni collection usando makeHidden per evitare conflitti
         $collectionIds = $paginated->pluck('id');
         if ($collectionIds->isNotEmpty() && !empty($qTokens)) {
@@ -127,7 +127,7 @@ class UniversalSearchService {
                     ->select(
                         'cu.collection_id',
                         'u.name',
-                        'u.nick_name', 
+                        'u.nick_name',
                         'u.last_name',
                         'cu.is_owner',
                         'cu.role'
@@ -141,11 +141,11 @@ class UniversalSearchService {
                             ->orWhere('u.last_name', 'like', $like);
                     })
                     ->get();
-                
+
                 foreach ($userRoles as $ur) {
                     $role = $ur->is_owner ? 'creator' : $ur->role;
                     $userName = $ur->name . ($ur->nick_name ? ' (' . $ur->nick_name . ')' : '');
-                    
+
                     if (!isset($userRolesMap[$ur->collection_id])) {
                         $userRolesMap[$ur->collection_id] = [];
                     }
@@ -157,13 +157,13 @@ class UniversalSearchService {
                     }
                 }
             }
-            
+
             // Assegna i ruoli alle collection usando un attributo temporaneo
             foreach ($paginated as $collection) {
                 $collection->setAttribute('search_user_roles', $userRolesMap[$collection->id] ?? []);
             }
         }
-        
+
         return $paginated;
     }
 
