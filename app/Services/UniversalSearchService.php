@@ -75,9 +75,10 @@ class UniversalSearchService {
             });
         }
 
-        $freshTotal = (clone $query)->count();
+        // DISABILITA CACHE per query di ricerca EGI
+        $freshTotal = (clone $query)->disableCache()->count();
         /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
-        $paginated = $query->paginate($perPage);
+        $paginated = $query->disableCache()->paginate($perPage);
         $paginated->fresh_total = $freshTotal;
         return $paginated;
     }
@@ -99,11 +100,12 @@ class UniversalSearchService {
             });
         }
 
-    $freshTotal = (clone $query)->count();
-    /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
-    $paginated = $query->paginate($perPage);
-    $paginated->fresh_total = $freshTotal;
-    return $paginated;
+        // DISABILITA CACHE per query di ricerca Collections
+        $freshTotal = (clone $query)->disableCache()->count();
+        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
+        $paginated = $query->disableCache()->paginate($perPage);
+        $paginated->fresh_total = $freshTotal;
+        return $paginated;
     }
 
     /**
@@ -152,10 +154,11 @@ class UniversalSearchService {
             });
         }
 
-    $freshTotal = (clone $query)->count();
-    /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
-    $paginated = $query->paginate($perPage);
-    $paginated->fresh_total = $freshTotal;
+        // DISABILITA CACHE per query di ricerca Creators  
+        $freshTotal = (clone $query)->disableCache()->count();
+        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
+        $paginated = $query->disableCache()->paginate($perPage);
+        $paginated->fresh_total = $freshTotal;
 
         // --- Aggregazione collection per ruolo (incluso owner come 'creator') ---
         $userIds = $paginated->pluck('id');
@@ -204,6 +207,110 @@ class UniversalSearchService {
         }
 
         return $paginated;
+    }
+
+    /**
+     * Conta EGIs senza paginazione (per totali affidabili)
+     */
+    public function countEgis(array $params): int {
+        $qTokens = $this->tokenize($params['q'] ?? null);
+        $traits = $params['traits'] ?? [];
+        $collectionIds = $params['collections'] ?? [];
+
+        $query = Egi::query()
+            ->where(function ($q) {
+                $q->where('is_published', true)
+                    ->orWhere('is_public', true);
+            });
+
+        if ($collectionIds) {
+            $query->whereIn('collection_id', $collectionIds);
+        }
+
+        foreach ($qTokens as $token) {
+            $like = "%" . $token . "%";
+            $query->where(function ($sub) use ($like) {
+                $sub->where('title', 'like', $like)
+                    ->orWhere('description', 'like', $like)
+                    ->orWhereHas('collection.creator', function ($q) use ($like) {
+                        $q->where('name', 'like', $like)
+                            ->orWhere('nick_name', 'like', $like)
+                            ->orWhere('last_name', 'like', $like);
+                    });
+            });
+        }
+
+        if ($traits) {
+            $query->whereIn('id', function ($sub) use ($traits) {
+                $sub->select('egi_id')
+                    ->from('egi_traits')
+                    ->whereIn('value', $traits)
+                    ->groupBy('egi_id')
+                    ->havingRaw('COUNT(DISTINCT value) >= ?', [count(array_unique($traits))]);
+            });
+        }
+
+        return $query->count();
+    }
+
+    /**
+     * Conta Collections senza paginazione
+     */
+    public function countCollections(array $params): int {
+        $qTokens = $this->tokenize($params['q'] ?? null);
+
+        $query = Collection::query()->where('is_published', true);
+
+        foreach ($qTokens as $token) {
+            $like = "%" . $token . "%";
+            $query->where(function ($sub) use ($like) {
+                $sub->where('collection_name', 'like', $like)
+                    ->orWhere('description', 'like', $like);
+            });
+        }
+
+        return $query->count();
+    }
+
+    /**
+     * Conta Creators senza paginazione
+     */
+    public function countCreators(array $params): int {
+        $qTokens = $this->tokenize($params['q'] ?? null);
+        $traits = $params['traits'] ?? [];
+        $userTypes = $params['user_types'] ?? [];
+
+        $query = User::query();
+
+        if ($userTypes) {
+            $query->whereIn('usertype', $userTypes);
+        }
+
+        foreach ($qTokens as $token) {
+            $like = "%" . $token . "%";
+            $query->where(function ($sub) use ($like) {
+                $sub->where('name', 'like', $like)
+                    ->orWhere('nick_name', 'like', $like)
+                    ->orWhere('last_name', 'like', $like)
+                    ->orWhere('wallet', 'like', $like);
+            });
+        }
+
+        if ($traits) {
+            $query->whereIn('id', function ($sub) use ($traits) {
+                $sub->select('user_id')
+                    ->from('egis')
+                    ->whereIn('id', function ($s2) use ($traits) {
+                        $s2->select('egi_id')
+                            ->from('egi_traits')
+                            ->whereIn('value', $traits)
+                            ->groupBy('egi_id')
+                            ->havingRaw('COUNT(DISTINCT value) >= ?', [count(array_unique($traits))]);
+                    });
+            });
+        }
+
+        return $query->count();
     }
 
     /**
