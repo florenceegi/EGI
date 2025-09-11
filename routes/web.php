@@ -294,7 +294,7 @@ Route::prefix('home')->name('home.')->group(function () {
 });
 
 // Fallback legacy route: direct /collections/{id} GET (usato da suggerimenti / vecchi link)
-Route::get('/collections/{id}', function($id) {
+Route::get('/collections/{id}', function ($id) {
     return redirect()->route('home.collections.show', ['id' => $id]);
 })->where('id', '[0-9]+');
 

@@ -39,6 +39,8 @@
         </div>
     </div> --}}
 
+    {{-- Universal Search Modal disponibile anche per i guest --}}
+    <x-universal-search-modal />
 
      <div id="upload-modal"
         class="hidden modal"
