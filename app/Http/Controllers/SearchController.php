@@ -37,6 +37,30 @@ class SearchController extends Controller {
 
         $facets = $this->service->traitFacets();
 
+        // Diagnostic: log mismatch tra total() e count() se anomalo
+        foreach ([
+            'egis' => $egiResults,
+            'collections' => $collectionResults,
+            'creators' => $creatorResults,
+        ] as $k => $paginator) {
+            if ($paginator) {
+                try {
+                    $global = method_exists($paginator, 'total') ? $paginator->total() : null;
+                    $page = $paginator->count();
+                    if ($global !== null && $global < $page) {
+                        \Log::warning('Search paginator mismatch', [
+                            'type' => $k,
+                            'global_total' => $global,
+                            'page_count' => $page,
+                            'ids' => $paginator->pluck('id'),
+                        ]);
+                    }
+                } catch (\Throwable $e) {
+                    \Log::error('Search paginator diagnostics failed', ['type' => $k, 'error' => $e->getMessage()]);
+                }
+            }
+        }
+
         return view('search.results', compact(
             'q',
             'types',

@@ -16,7 +16,7 @@
     @endif
 
     @php
-        $totalAll = 0;
+    $totalAll = 0;
     if(isset($egiResults)) $totalAll += ($egiResults->total() ?: $egiResults->count() ?: count($egiResults->items()));
     if(isset($collectionResults)) $totalAll += ($collectionResults->total() ?: $collectionResults->count() ?: count($collectionResults->items()));
     if(isset($creatorResults)) $totalAll += ($creatorResults->total() ?: $creatorResults->count() ?: count($creatorResults->items()));
@@ -26,8 +26,17 @@
     {{-- EGIs --}}
     @if($egiResults)
         <div class="mt-8">
-            @php $egiHeadingTotal = $egiResults->total() ?: $egiResults->count() ?: count($egiResults->items()); @endphp
-            <h2 class="mb-3 text-lg font-semibold text-purple-300">{{ __('search.results.egis_heading', ['count' => $egiHeadingTotal]) }}</h2>
+            @php 
+                $egiGlobal = method_exists($egiResults, 'total') ? $egiResults->total() : null; 
+                $egiPage = $egiResults->count(); 
+                $egiHeadingTotal = $egiGlobal && $egiGlobal >= $egiPage ? $egiGlobal : $egiPage; 
+            @endphp
+            <h2 class="mb-3 text-lg font-semibold text-purple-300">
+                {{ __('search.results.egis_heading', ['count' => $egiHeadingTotal]) }}
+                @if($egiGlobal !== null && $egiGlobal !== $egiPage)
+                    <span class="ml-2 text-xs font-normal text-gray-500">(page {{ $egiPage }})</span>
+                @endif
+            </h2>
             @if($egiResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     @foreach($egiResults as $egi)
@@ -44,8 +53,17 @@
     {{-- Collections --}}
     @if($collectionResults)
         <div class="mt-12">
-            @php $collectionHeadingTotal = $collectionResults->total() ?: $collectionResults->count() ?: count($collectionResults->items()); @endphp
-            <h2 class="mb-3 text-lg font-semibold text-amber-300">{{ __('search.results.collections_heading', ['count' => $collectionHeadingTotal]) }}</h2>
+            @php 
+                $collectionGlobal = method_exists($collectionResults, 'total') ? $collectionResults->total() : null; 
+                $collectionPage = $collectionResults->count(); 
+                $collectionHeadingTotal = $collectionGlobal && $collectionGlobal >= $collectionPage ? $collectionGlobal : $collectionPage; 
+            @endphp
+            <h2 class="mb-3 text-lg font-semibold text-amber-300">
+                {{ __('search.results.collections_heading', ['count' => $collectionHeadingTotal]) }}
+                @if($collectionGlobal !== null && $collectionGlobal !== $collectionPage)
+                    <span class="ml-2 text-xs font-normal text-gray-500">(page {{ $collectionPage }})</span>
+                @endif
+            </h2>
             @if($collectionResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     @foreach($collectionResults as $collection)
@@ -62,8 +80,17 @@
     {{-- Creators --}}
     @if($creatorResults)
         <div class="mt-12">
-            @php $creatorHeadingTotal = $creatorResults->total() ?: $creatorResults->count() ?: count($creatorResults->items()); @endphp
-            <h2 class="mb-3 text-lg font-semibold text-cyan-300">{{ __('search.results.creators_heading', ['count' => $creatorHeadingTotal]) }}</h2>
+            @php 
+                $creatorGlobal = method_exists($creatorResults, 'total') ? $creatorResults->total() : null; 
+                $creatorPage = $creatorResults->count(); 
+                $creatorHeadingTotal = $creatorGlobal && $creatorGlobal >= $creatorPage ? $creatorGlobal : $creatorPage; 
+            @endphp
+            <h2 class="mb-3 text-lg font-semibold text-cyan-300">
+                {{ __('search.results.creators_heading', ['count' => $creatorHeadingTotal]) }}
+                @if($creatorGlobal !== null && $creatorGlobal !== $creatorPage)
+                    <span class="ml-2 text-xs font-normal text-gray-500">(page {{ $creatorPage }})</span>
+                @endif
+            </h2>
             @if($creatorResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     @foreach($creatorResults as $creator)
