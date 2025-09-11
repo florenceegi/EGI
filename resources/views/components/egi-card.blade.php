@@ -181,11 +181,16 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                 $categoryClasses = 'bg-gradient-to-r from-amber-400 to-yellow-500 text-white';
             }
         @endphp
-        <span
-            class="absolute z-10 px-2 py-0.5 text-[10px] font-semibold tracking-wide rounded-full left-2 top-8 backdrop-blur-sm ring-1 ring-white/10 shadow {{ $categoryClasses }}"
-            title="{{ $categoryName }}" aria-label="EGI Category: {{ $categoryName }}" data-cat-name="{{ $categoryName }}" data-cat-classes="{{ $categoryClasses }}">
-            {{ Str::limit($categoryName, 14) }}
-        </span>
+        {{-- Fix posizione badge: alcune palette (Art, Science) includono 'relative' per pseudo-element overlays
+             che sovrascriveva 'absolute' rendendo invisibile il badge solo su questa card.
+             Avvolgiamo in un container assoluto e lasciamo la <span> relativa per gli effetti. --}}
+        <div class="absolute z-10 left-0 top-9">
+            <span
+                class="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold tracking-wide rounded-full backdrop-blur-sm ring-1 ring-white/10 shadow {{ $categoryClasses }}"
+                title="{{ $categoryName }}" aria-label="EGI Category: {{ $categoryName }}" data-cat-name="{{ $categoryName }}" data-cat-classes="{{ $categoryClasses }}">
+                {{ Str::limit($categoryName, 14) }}
+            </span>
+        </div>
 
         {{-- 🌟 BADGE COMPOSTO HYPER + POSSEDUTO (SOLUZIONE MICHELIN) --}}
         @if ($showPurchasePrice && $isHyper)
