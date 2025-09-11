@@ -95,7 +95,19 @@ class UniversalSearchService {
             $like = "%" . $token . "%";
             $query->where(function ($sub) use ($like) {
                 $sub->where('collection_name', 'like', $like)
-                    ->orWhere('description', 'like', $like);
+                    ->orWhere('description', 'like', $like)
+                    // Cerca anche per nome/nick del creator
+                    ->orWhereHas('creator', function ($q) use ($like) {
+                        $q->where('name', 'like', $like)
+                            ->orWhere('nick_name', 'like', $like)
+                            ->orWhere('last_name', 'like', $like);
+                    })
+                    // Cerca anche nelle collection dove l'utente compare in collection_users
+                    ->orWhereHas('users', function ($q) use ($like) {
+                        $q->where('name', 'like', $like)
+                            ->orWhere('nick_name', 'like', $like)
+                            ->orWhere('last_name', 'like', $like);
+                    });
             });
         }
 
@@ -103,6 +115,55 @@ class UniversalSearchService {
         /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
         $paginated = $query->paginate($perPage);
         $paginated->fresh_total = $freshTotal;
+        
+        // Aggiungi informazioni sul ruolo dell'utente per ogni collection usando makeHidden per evitare conflitti
+        $collectionIds = $paginated->pluck('id');
+        if ($collectionIds->isNotEmpty() && !empty($qTokens)) {
+            $userRolesMap = [];
+            foreach ($qTokens as $token) {
+                $like = "%" . $token . "%";
+                $userRoles = DB::table('collection_user as cu')
+                    ->join('users as u', 'u.id', '=', 'cu.user_id')
+                    ->select(
+                        'cu.collection_id',
+                        'u.name',
+                        'u.nick_name', 
+                        'u.last_name',
+                        'cu.is_owner',
+                        'cu.role'
+                    )
+                    ->whereIn('cu.collection_id', $collectionIds)
+                    ->where('cu.status', '!=', 'removed')
+                    ->whereNull('cu.removed_at')
+                    ->where(function ($q) use ($like) {
+                        $q->where('u.name', 'like', $like)
+                            ->orWhere('u.nick_name', 'like', $like)
+                            ->orWhere('u.last_name', 'like', $like);
+                    })
+                    ->get();
+                
+                foreach ($userRoles as $ur) {
+                    $role = $ur->is_owner ? 'creator' : $ur->role;
+                    $userName = $ur->name . ($ur->nick_name ? ' (' . $ur->nick_name . ')' : '');
+                    
+                    if (!isset($userRolesMap[$ur->collection_id])) {
+                        $userRolesMap[$ur->collection_id] = [];
+                    }
+                    if (!isset($userRolesMap[$ur->collection_id][$userName])) {
+                        $userRolesMap[$ur->collection_id][$userName] = [];
+                    }
+                    if (!in_array($role, $userRolesMap[$ur->collection_id][$userName])) {
+                        $userRolesMap[$ur->collection_id][$userName][] = $role;
+                    }
+                }
+            }
+            
+            // Assegna i ruoli alle collection usando un attributo temporaneo
+            foreach ($paginated as $collection) {
+                $collection->setAttribute('search_user_roles', $userRolesMap[$collection->id] ?? []);
+            }
+        }
+        
         return $paginated;
     }
 

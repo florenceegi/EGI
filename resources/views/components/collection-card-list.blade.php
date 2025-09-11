@@ -68,13 +68,13 @@ if ($collection) {
 
 {{-- Collection Card List Component --}}
 <article
-    class="collection-card-list group relative bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 hover:border-gray-600 hover:bg-gray-800/70 transition-all duration-300"
+    class="relative p-4 transition-all duration-300 border collection-card-list group bg-gray-800/50 rounded-xl border-gray-700/50 hover:border-gray-600 hover:bg-gray-800/70"
     data-collection-id="{{ $collection->id }}">
 
     <div class="flex items-start gap-4">
         <!-- Image Section -->
         <a href="{{ route('home.collections.show', $collection->id) }}"
-            class="relative flex-shrink-0 w-28 h-28 overflow-hidden rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 cursor-pointer group-hover:ring-2 group-hover:ring-blue-400 transition-all duration-300">
+            class="relative flex-shrink-0 overflow-hidden transition-all duration-300 rounded-lg cursor-pointer w-28 h-28 bg-gradient-to-br from-gray-700 to-gray-800 group-hover:ring-2 group-hover:ring-blue-400">
 
             @if ($imageUrl)
             <img src="{{ $imageUrl }}" alt="{{ $collection->collection_name }}"
@@ -91,7 +91,7 @@ if ($collection) {
 
             <!-- Hover overlay for visual feedback -->
             <div
-                class="absolute inset-0 bg-blue-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                class="absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-0 bg-blue-400/20 group-hover:opacity-100">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M13.5 6H5.25A2.25 2.25 0 003 8.25v7.5A2.25 2.25 0 005.25 18h7.5A2.25 2.25 0 0015 15.75v-7.5A2.25 2.25 0 0013.5 6z" />
@@ -137,13 +137,13 @@ if ($collection) {
                 <div class="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
                 <span class="truncate max-w-[120px]">{{ $collection->user->first_name }} {{ $collection->user->last_name
                     }}</span>
-                <span class="text-gray-500 text-xs">({{ __('profile.creator') }})</span>
+                <span class="text-xs text-gray-500">({{ __('profile.creator') }})</span>
             </div>
             @endif
 
             <!-- Description -->
             @if ($collection->description)
-            <p class="text-sm text-gray-400 mb-2 line-clamp-2">
+            <p class="mb-2 text-sm text-gray-400 line-clamp-2">
                 {{ Str::limit($collection->description, 100) }}
             </p>
             @endif
@@ -157,7 +157,7 @@ if ($collection) {
                             d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
                             clip-rule="evenodd" />
                     </svg>
-                    <span class="text-blue-300 font-medium">{{ $collection->egis_count ?? 0 }}</span>
+                    <span class="font-medium text-blue-300">{{ $collection->egis_count ?? 0 }}</span>
                     <span>EGI</span>
                 </div>
 
@@ -174,11 +174,23 @@ if ($collection) {
                 @endif
             </div>
 
-            <!-- Collection ID -->
+            <!-- User Roles Section (se presenti) -->
+            @if(isset($collection->search_user_roles) && count($collection->search_user_roles))
+            <div class="flex flex-wrap gap-1 mt-2">
+                @foreach($collection->search_user_roles as $userName => $roles)
+                    <div class="px-2 py-1 text-xs bg-gray-700/60 rounded text-gray-300">
+                        <span class="font-medium">{{ $userName }}:</span>
+                        @foreach($roles as $role)
+                            <span class="text-blue-300">{{ $role }}</span>@if(!$loop->last), @endif
+                        @endforeach
+                    </div>
+                @endforeach
+            </div>
+            @endif            <!-- Collection ID -->
             <div class="flex items-center justify-between mt-2">
                 <div class="flex items-center gap-2">
                     <span
-                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                        class="inline-flex items-center px-2 py-1 text-xs font-medium text-white rounded-full bg-gradient-to-r from-blue-500 to-purple-500">
                         {{ __('label.collection') }}
                     </span>
                 </div>
