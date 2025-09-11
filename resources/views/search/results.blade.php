@@ -26,7 +26,8 @@
     {{-- EGIs --}}
     @if($egiResults)
         <div class="mt-8">
-            <h2 class="mb-3 text-lg font-semibold text-purple-300">{{ __('search.results.egis_heading', ['count' => $egiResults->total()]) }}</h2>
+            @php $egiHeadingTotal = $egiResults->total() ?: $egiResults->count(); @endphp
+            <h2 class="mb-3 text-lg font-semibold text-purple-300">{{ __('search.results.egis_heading', ['count' => $egiHeadingTotal]) }}</h2>
             @if($egiResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     @foreach($egiResults as $egi)
@@ -43,7 +44,8 @@
     {{-- Collections --}}
     @if($collectionResults)
         <div class="mt-12">
-            <h2 class="mb-3 text-lg font-semibold text-amber-300">{{ __('search.results.collections_heading', ['count' => $collectionResults->total()]) }}</h2>
+            @php $collectionHeadingTotal = $collectionResults->total() ?: $collectionResults->count(); @endphp
+            <h2 class="mb-3 text-lg font-semibold text-amber-300">{{ __('search.results.collections_heading', ['count' => $collectionHeadingTotal]) }}</h2>
             @if($collectionResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     @foreach($collectionResults as $collection)
@@ -60,7 +62,8 @@
     {{-- Creators --}}
     @if($creatorResults)
         <div class="mt-12">
-            <h2 class="mb-3 text-lg font-semibold text-cyan-300">{{ __('search.results.creators_heading', ['count' => $creatorResults->total()]) }}</h2>
+            @php $creatorHeadingTotal = $creatorResults->total() ?: $creatorResults->count(); @endphp
+            <h2 class="mb-3 text-lg font-semibold text-cyan-300">{{ __('search.results.creators_heading', ['count' => $creatorHeadingTotal]) }}</h2>
             @if($creatorResults->count())
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     @foreach($creatorResults as $creator)

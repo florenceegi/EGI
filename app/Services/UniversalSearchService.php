@@ -41,7 +41,10 @@ class UniversalSearchService {
 
         $query = Egi::query()
             ->with(['collection.creator', 'traits.category', 'traits.traitType'])
-            ->where('is_published', true);
+            ->where(function ($q) {
+                $q->where('is_published', true)
+                    ->orWhere('is_public', true); // include anche EGI resi pubblici ma non ancora "pubblicati"
+            });
 
         if ($collectionIds) {
             $query->whereIn('collection_id', $collectionIds);
@@ -53,10 +56,10 @@ class UniversalSearchService {
             $query->where(function ($sub) use ($like) {
                 $sub->where('title', 'like', $like)
                     ->orWhere('description', 'like', $like)
-                    ->orWhereHas('collection.creator', function($q) use ($like) {
+                    ->orWhereHas('collection.creator', function ($q) use ($like) {
                         $q->where('name', 'like', $like)
-                           ->orWhere('nick_name', 'like', $like)
-                           ->orWhere('last_name', 'like', $like);
+                            ->orWhere('nick_name', 'like', $like)
+                            ->orWhere('last_name', 'like', $like);
                     });
             });
         }
@@ -109,7 +112,11 @@ class UniversalSearchService {
         $perPage = $params['per_page'] ?? config('search.per_page');
 
         $query = User::query()
-            ->withCount(['collections', 'createdEgis as egis_count' => function($q){ $q->where('is_published', true); }]);
+            ->withCount([
+                'collections',
+                // Conteggio totale EGIs creati (indipendente dallo stato) per riflettere attività reale
+                'createdEgis as egis_count'
+            ]);
 
         if ($userTypes) {
             $query->whereIn('usertype', $userTypes);
