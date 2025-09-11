@@ -177,6 +177,24 @@ export default {
         'bg-verde-rinascita', 'text-verde-rinascita',
         'bg-blu-algoritmo', 'text-blu-algoritmo',
         'bg-rosso-committente', 'text-rosso-committente',
+    // --- Safelist badge categorie (config/egi_category_badges.php) ---
+    'bg-gradient-to-r', 'bg-gradient-to-br',
+    'from-amber-400','via-amber-300','to-yellow-500',
+    'from-indigo-500','to-purple-600','from-slate-600','to-slate-800',
+    'from-emerald-500','to-teal-500','from-orange-500','to-amber-600',
+    'from-blue-500','to-cyan-500','from-cyan-600','via-sky-500','to-indigo-700',
+    'from-fuchsia-500','to-violet-600','from-yellow-500','to-amber-500',
+    'from-purple-600','to-indigo-600','from-stone-500','to-stone-700',
+    'from-green-500','to-lime-500','from-rose-500','to-pink-500','from-red-500','to-orange-500','from-sky-500','to-indigo-500',
+    'ring-amber-300/50','ring-cyan-300/40',
+    'shadow-[0_0_0_1px_rgba(255,255,255,0.15)]','shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_0_12px_-2px_rgba(14,165,233,0.5)]',
+    'before:content-[""]','before:absolute','before:inset-0',
+    'before:bg-[conic-gradient(at_50%_50%,#fef08a_0deg,#fbbf24_60deg,#f472b6_120deg,#8b5cf6_180deg,#0ea5e9_240deg,#10b981_300deg,#fef08a_360deg)]',
+    'before:bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.25),transparent_60%),conic-gradient(from_0deg_at_70%_60%,#06b6d4_0deg,#6366f1_120deg,#0ea5e9_240deg,#06b6d4_360deg)]',
+    'before:mix-blend-overlay','before:opacity-60','before:opacity-70',
+    'before:animate-[spin_8s_linear_infinite]',
+    'after:content-[""]','after:absolute','after:-inset-1',
+    'after:bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.08)_0_6px,transparent_6px_12px)]','after:opacity-40','after:animate-[pulse_5s_ease-in-out_infinite]',
         // ... etc. per gli altri colori e le loro varianti (light, dark, text) se usate dinamicamente
         // Pattern per i colori di stato (se non coperti da DaisyUI)
         {

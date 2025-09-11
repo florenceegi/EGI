@@ -174,12 +174,16 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
 
         {{-- Badge Categoria (Trait category) --}}
         @php
-            $categoryName = $egi->category_name; // accessor
-            $categoryClasses = $egi->category_badge_classes;
+            $categoryName = $egi->category_name; // accessor (localized)
+            $categoryClasses = $egi->category_badge_classes; // palette classes
+            // Fallback di sicurezza se per qualche motivo le classi non vengono generate / purge Tailwind
+            if (empty($categoryClasses)) {
+                $categoryClasses = 'bg-gradient-to-r from-amber-400 to-yellow-500 text-white';
+            }
         @endphp
         <span
-            class="absolute z-10 px-2 py-0.5 text-[10px] font-semibold tracking-wide rounded-full left-2 top-10 backdrop-blur-sm ring-1 ring-white/10 shadow {{ $categoryClasses }}"
-            title="{{ $categoryName }}" aria-label="EGI Category: {{ $categoryName }}">
+            class="absolute z-10 px-2 py-0.5 text-[10px] font-semibold tracking-wide rounded-full left-2 top-8 backdrop-blur-sm ring-1 ring-white/10 shadow {{ $categoryClasses }}"
+            title="{{ $categoryName }}" aria-label="EGI Category: {{ $categoryName }}" data-cat-name="{{ $categoryName }}" data-cat-classes="{{ $categoryClasses }}">
             {{ Str::limit($categoryName, 14) }}
         </span>
 
