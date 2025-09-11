@@ -293,6 +293,12 @@ Route::prefix('home')->name('home.')->group(function () {
     // Route::post('/collections/{collection}/report', [CollectionsController::class, 'report'])->name('collections.report');
 });
 
+// Fallback legacy route: direct /collections/{id} GET (usato da suggerimenti / vecchi link)
+Route::get('/collections/{id}', function($id) {
+    return redirect()->route('home.collections.show', ['id' => $id]);
+})->where('id', '[0-9]+');
+
+
 // EGI routes
 
 Route::group(['prefix' => 'egis'], function () {

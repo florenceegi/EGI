@@ -64,7 +64,7 @@ function renderSuggestions() {
     const block = (title: string, color: string, items: any[], tpl: (it: any) => string) => items.length ? `<div><h4 class="mb-1 text-xs font-semibold tracking-wide ${color} uppercase">${title}</h4><ul class="space-y-1">${items.map(tpl).join('')}</ul></div>` : '';
     suggestionsEl.innerHTML = `<div class="p-4 space-y-4 max-h-80 overflow-y-auto">
     ${block('EGI', 'text-purple-300', state.suggestions.egis, it => `<li><a href="/egis/${it.id}" class="block px-2 py-1 rounded hover:bg-gray-700/60">#${it.id} — ${esc(limit(it.title, 50))}</a></li>`)}
-    ${block('Collections', 'text-amber-300', state.suggestions.collections, it => `<li><a href="/collections/${it.id}/members" class="block px-2 py-1 rounded hover:bg-gray-700/60">${esc(limit(it.collection_name, 60))}</a></li>`)}
+    ${block('Collections', 'text-amber-300', state.suggestions.collections, it => `<li><a href="/home/collections/${it.id}" class="block px-2 py-1 rounded hover:bg-gray-700/60">${esc(limit(it.collection_name, 60))}</a></li>`)}
     ${block('Creators', 'text-cyan-300', state.suggestions.creators, it => `<li><a href="/creator/${it.id}" class="block px-2 py-1 rounded hover:bg-gray-700/60">${esc(limit(it.name, 50))}</a></li>`)}
     <div class="pt-2 border-t border-gray-700/40"><button data-us-open-results class="w-full px-3 py-2 text-xs font-semibold text-white rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500">Apri pagina risultati</button></div>
   </div>`;
