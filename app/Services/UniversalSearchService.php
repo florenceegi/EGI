@@ -75,8 +75,10 @@ class UniversalSearchService {
             });
         }
 
+        $freshTotal = (clone $query)->count();
         /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
         $paginated = $query->paginate($perPage);
+        $paginated->fresh_total = $freshTotal;
         return $paginated;
     }
 
@@ -97,9 +99,11 @@ class UniversalSearchService {
             });
         }
 
-        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
-        $paginated = $query->paginate($perPage);
-        return $paginated;
+    $freshTotal = (clone $query)->count();
+    /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
+    $paginated = $query->paginate($perPage);
+    $paginated->fresh_total = $freshTotal;
+    return $paginated;
     }
 
     /**
@@ -148,8 +152,10 @@ class UniversalSearchService {
             });
         }
 
-        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
-        $paginated = $query->paginate($perPage);
+    $freshTotal = (clone $query)->count();
+    /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator $paginated */
+    $paginated = $query->paginate($perPage);
+    $paginated->fresh_total = $freshTotal;
 
         // --- Aggregazione collection per ruolo (incluso owner come 'creator') ---
         $userIds = $paginated->pluck('id');
@@ -179,12 +185,17 @@ class UniversalSearchService {
                 // Ordina mettendo creator, admin, editor, viewer, resto alfabetico
                 if ($map) {
                     $ordered = [];
-                    $preferred = ['creator','owner','admin','editor','viewer'];
+                    $preferred = ['creator', 'owner', 'admin', 'editor', 'viewer'];
                     foreach ($preferred as $pr) {
-                        if (isset($map[$pr])) { $ordered[$pr] = $map[$pr]; unset($map[$pr]); }
+                        if (isset($map[$pr])) {
+                            $ordered[$pr] = $map[$pr];
+                            unset($map[$pr]);
+                        }
                     }
                     ksort($map);
-                    foreach ($map as $k => $v) { $ordered[$k] = $v; }
+                    foreach ($map as $k => $v) {
+                        $ordered[$k] = $v;
+                    }
                     $creator->collection_role_counts = $ordered;
                 } else {
                     $creator->collection_role_counts = [];

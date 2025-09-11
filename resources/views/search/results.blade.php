@@ -16,10 +16,11 @@
     @endif
 
     @php
-    $totalAll = 0;
-    if(isset($egiResults)) $totalAll += ($egiResults->total() ?: $egiResults->count() ?: count($egiResults->items()));
-    if(isset($collectionResults)) $totalAll += ($collectionResults->total() ?: $collectionResults->count() ?: count($collectionResults->items()));
-    if(isset($creatorResults)) $totalAll += ($creatorResults->total() ?: $creatorResults->count() ?: count($creatorResults->items()));
+        // Totale aggregato (usa total() se disponibile altrimenti numero elementi pagina)
+        $totalAll = 0;
+    if(isset($egiResults)) $totalAll += ($egiResults->fresh_total ?? $egiResults->total() ?? $egiResults->count());
+    if(isset($collectionResults)) $totalAll += ($collectionResults->fresh_total ?? $collectionResults->total() ?? $collectionResults->count());
+    if(isset($creatorResults)) $totalAll += ($creatorResults->fresh_total ?? $creatorResults->total() ?? $creatorResults->count());
     @endphp
     <p class="mb-10 text-xs tracking-wide text-gray-400 uppercase">{{ __('search.results.total_all') }} <span class="font-semibold text-emerald-400">{{ $totalAll }}</span></p>
 
@@ -27,9 +28,10 @@
     @if($egiResults)
         <div class="mt-8">
             @php
-                $egiGlobal = method_exists($egiResults, 'total') ? $egiResults->total() : null;
+                $egiGlobal = method_exists($egiResults, 'total') ? $egiResults->total() : null; // totale reale (tutti i risultati)
+                $egiGlobal = $egiResults->fresh_total ?? (method_exists($egiResults, 'total') ? $egiResults->total() : null);
                 $egiPage = $egiResults->count();
-                $egiHeadingTotal = $egiGlobal && $egiGlobal >= $egiPage ? $egiGlobal : $egiPage;
+                $egiHeadingTotal = $egiGlobal ?: $egiPage;
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-purple-300">
                 {{ __('search.results.egis_heading', ['count' => $egiHeadingTotal]) }}
@@ -55,8 +57,9 @@
         <div class="mt-12">
             @php
                 $collectionGlobal = method_exists($collectionResults, 'total') ? $collectionResults->total() : null;
+                $collectionGlobal = $collectionResults->fresh_total ?? (method_exists($collectionResults, 'total') ? $collectionResults->total() : null);
                 $collectionPage = $collectionResults->count();
-                $collectionHeadingTotal = $collectionGlobal && $collectionGlobal >= $collectionPage ? $collectionGlobal : $collectionPage;
+                $collectionHeadingTotal = $collectionGlobal ?: $collectionPage;
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-amber-300">
                 {{ __('search.results.collections_heading', ['count' => $collectionHeadingTotal]) }}
@@ -82,8 +85,9 @@
         <div class="mt-12">
             @php
                 $creatorGlobal = method_exists($creatorResults, 'total') ? $creatorResults->total() : null;
+                $creatorGlobal = $creatorResults->fresh_total ?? (method_exists($creatorResults, 'total') ? $creatorResults->total() : null);
                 $creatorPage = $creatorResults->count();
-                $creatorHeadingTotal = $creatorGlobal && $creatorGlobal >= $creatorPage ? $creatorGlobal : $creatorPage;
+                $creatorHeadingTotal = $creatorGlobal ?: $creatorPage;
             @endphp
             <h2 class="mb-3 text-lg font-semibold text-cyan-300">
                 {{ __('search.results.creators_heading', ['count' => $creatorHeadingTotal]) }}
