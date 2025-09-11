@@ -298,25 +298,11 @@ class Egi extends Model {
      */
     public function getCategoryNameAttribute(): string
     {
-        $default = config('egi_category_badges.default', 'Art');
         $trait = $this->category_trait;
-        $raw = $trait ? ($trait->display_value ?: $trait->value) : $default;
-        if (!$raw) {
-            return $default;
-        }
-        // Normalizziamo capitalizzando solo la prima lettera per matching mappa
-        $normalized = ucfirst(strtolower($raw));
-        // Se la chiave esiste così com'è, usiamo quella, altrimenti proviamo match case-insensitive
-        $map = config('egi_category_badges.map', []);
-        if (isset($map[$raw])) return $raw;
-        if (isset($map[$normalized])) return $normalized;
-        // Tentativo case-insensitive
-        foreach (array_keys($map) as $key) {
-            if (strcasecmp($key, $raw) === 0) {
-                return $key;
-            }
-        }
-        return $default;
+        $raw = $trait ? ($trait->display_value ?: $trait->value) : null;
+        // Restituiamo sempre la versione LOCALIZZATA da trait_elements.values
+        [$_canonical, $localized] = $this->resolveCategoryCanonicalAndLocalized($raw);
+        return $localized;
     }
 
     /**
@@ -324,10 +310,56 @@ class Egi extends Model {
      */
     public function getCategoryBadgeClassesAttribute(): string
     {
+        $trait = $this->category_trait;
+        $raw = $trait ? ($trait->display_value ?: $trait->value) : null;
+        [$canonical, $_localized] = $this->resolveCategoryCanonicalAndLocalized($raw);
         $map = config('egi_category_badges.map', []);
-        $name = $this->category_name; // Già normalizzato
         $default = config('egi_category_badges.default', 'Art');
-        return $map[$name]['classes'] ?? ($map[$default]['classes'] ?? 'bg-gray-600 text-white');
+        return $map[$canonical]['classes'] ?? ($map[$default]['classes'] ?? 'bg-gray-600 text-white');
+    }
+
+    /**
+     * Risolve il nome canonico (EN) e quello localizzato (IT) partendo da un valore raw che può
+     * essere già inglese oppure già tradotto (es. "Nature" | "Natura").
+     * Il mapping di stile (palette) resta ancorato alla chiave inglese in config/egi_category_badges.php
+     * mentre in UI mostriamo sempre il valore localizzato.
+     *
+     * @param string|null $raw Valore grezzo del trait (display_value o value)
+     * @return array [canonicalEnglish, localizedLabel]
+     */
+    private function resolveCategoryCanonicalAndLocalized(?string $raw): array
+    {
+        $defaultCanonical = config('egi_category_badges.default', 'Art');
+        $translations = trans('trait_elements.values'); // english => italian
+        if (!is_array($translations)) {
+            $translations = [];
+        }
+
+        $canonical = $defaultCanonical;
+        $localized = $translations[$defaultCanonical] ?? $defaultCanonical; // fallback se mancasse la traduzione
+
+        if ($raw !== null) {
+            $candidate = trim($raw);
+            if ($candidate !== '') {
+                // Caso 1: già in inglese (chiave presente)
+                if (array_key_exists($candidate, $translations)) {
+                    $canonical = $candidate;
+                    $localized = $translations[$candidate] ?? $candidate;
+                } else {
+                    // Caso 2: è una traduzione italiana -> cerchiamo la chiave inglese
+                    $found = array_search($candidate, $translations, true);
+                    if ($found !== false) {
+                        $canonical = $found;
+                        $localized = $candidate; // già localizzato
+                    } else {
+                        // Caso 3: valore sconosciuto -> mostriamo così com'è ma usiamo default per stile
+                        $localized = $candidate;
+                    }
+                }
+            }
+        }
+
+        return [$canonical, $localized];
     }
 
 
