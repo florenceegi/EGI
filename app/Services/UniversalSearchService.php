@@ -40,7 +40,7 @@ class UniversalSearchService {
         $perPage = $params['per_page'] ?? config('search.per_page');
 
         $query = Egi::query()
-            ->with(['collection', 'traits.category', 'traits.traitType'])
+            ->with(['collection.creator', 'traits.category', 'traits.traitType'])
             ->where('is_published', true);
 
         if ($collectionIds) {
@@ -52,7 +52,12 @@ class UniversalSearchService {
             $like = "%" . $token . "%";
             $query->where(function ($sub) use ($like) {
                 $sub->where('title', 'like', $like)
-                    ->orWhere('description', 'like', $like);
+                    ->orWhere('description', 'like', $like)
+                    ->orWhereHas('collection.creator', function($q) use ($like) {
+                        $q->where('name', 'like', $like)
+                           ->orWhere('nick_name', 'like', $like)
+                           ->orWhere('last_name', 'like', $like);
+                    });
             });
         }
 
@@ -103,7 +108,8 @@ class UniversalSearchService {
         $userTypes = $params['user_types'] ?? [];
         $perPage = $params['per_page'] ?? config('search.per_page');
 
-        $query = User::query()->withCount('collections');
+        $query = User::query()
+            ->withCount(['collections', 'createdEgis as egis_count' => function($q){ $q->where('is_published', true); }]);
 
         if ($userTypes) {
             $query->whereIn('usertype', $userTypes);
