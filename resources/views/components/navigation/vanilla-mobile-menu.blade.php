@@ -121,9 +121,6 @@
                     <h4 class="px-3 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">{{ __('menu.navigation') }}</h4>
                     <div class="space-y-1" style="opacity: 1 !important;">
 
-                        {{-- Se siamo nel guest layout (Home), mostra i link di nav-links.blade.php --}}
-                        @if(View::getSection('title') === __('guest_home.page_title') || request()->routeIs('home') || request()->is('/'))
-
                             {{-- 🔍 Universal Search Trigger (mobile, sostituisce dropdown collezioni) --}}
                             <button type="button" id="mobile-universal-search-button"
                                 class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-xl mobile-nav-item"
@@ -216,90 +213,6 @@
                                 </div>
                                 <span class="font-medium">{{ __('guest_layout.epps') }}</span>
                             </a>
-
-
-                        @else
-
-                            {{-- Se siamo nell'app layout (Dashboard), mostra i link standard --}}
-                            <a href="{{ route('home') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors mobile-nav-item {{ request()->routeIs('home') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : '' }}">
-                                <div class="flex items-center justify-center w-8 h-8 text-white bg-blue-500 rounded-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                                    </svg>
-                                </div>
-                                <span class="font-medium">{{ __('Home') }}</span>
-                            </a>
-
-                            <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-colors mobile-nav-item {{ request()->routeIs('dashboard') ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : '' }}">
-                                <div class="flex items-center justify-center w-8 h-8 text-white bg-purple-500 rounded-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                                    </svg>
-                                </div>
-                                <span class="font-medium">{{ __('Dashboard') }}</span>
-                            </a>
-
-                            <a href="{{ route('home.collections.index') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-colors mobile-nav-item {{ request()->routeIs('home.collections.*') ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : '' }}">
-                                <div class="flex items-center justify-center w-8 h-8 text-white rounded-lg bg-emerald-500">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                                    </svg>
-                                </div>
-                                <span class="font-medium">{{ __('Collections') }}</span>
-                            </a>
-
-                            <a href="{{ route('epps.index') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-xl transition-colors mobile-nav-item {{ request()->routeIs('epps.*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                                <div class="flex items-center justify-center w-8 h-8 text-white bg-orange-500 rounded-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                    </svg>
-                                </div>
-                                <span class="font-medium">{{ __('EPPS') }}</span>
-                            </a>
-
-                            {{-- 🔍 Universal Search Trigger (mobile, sostituisce dropdown collezioni) --}}
-                            <button type="button" id="mobile-universal-search-button"
-                                class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-xl mobile-nav-item"
-                                data-action="open-universal-search"
-                                aria-label="Apri ricerca avanzata"
-                                onclick="window.dispatchEvent(new CustomEvent('universal-search-open'))">
-                                <div class="flex items-center justify-center w-8 h-8 text-white bg-pink-500 rounded-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.2-5.2m1.7-4.3a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <span class="font-medium">{{ __('label.search') }}</span>
-                            </button>
-
-                            {{-- Create EGI Button - Sempre visibile, la logica di azione è gestita da JS in base allo stato utente --}}
-                            @can('create_EGI')
-                                <button type="button"
-                                    class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors js-create-egi-contextual-button dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl mobile-nav-item"
-                                    data-action="open-create-egi-contextual" data-auth-type="{{ Auth::check() ? 'authenticated' : 'guest' }}"
-                                    aria-label="{{ __('guest_layout.create_egi') }}">
-                                    <div class="flex items-center justify-center w-8 h-8 text-white bg-green-500 rounded-lg">
-                                        <svg class="w-4 h-4 js-create-egi-button-icon" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-                                            <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-                                        </svg>
-                                    </div>
-                                    <span class="font-medium js-create-egi-button-text">{{ __('guest_layout.create_egi') }}</span>
-                                </button>
-                            @endcan
-
-                            {{-- Create Collection CTA - Solo se l'utente ha il permesso --}}
-                            @can('create_collection')
-                                <button type="button" data-action="open-create-collection-modal"
-                                    class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl mobile-nav-item"
-                                    aria-label="{{ __('collection.create_collection') }}">
-                                    <div class="flex items-center justify-center w-8 h-8 text-white bg-indigo-500 rounded-lg">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-                                            <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-                                        </svg>
-                                    </div>
-                                    <span class="font-medium">{{ __('collection.create_collection') }}</span>
-                                </button>
-                            @endcan
-                        @endif
 
                         @unless(View::getSection('title') === __('guest_home.page_title') || request()->routeIs('home') || request()->is('/'))
                             {{-- 🔍 Universal Search Trigger (mobile - layout app / altre pagine) --}}

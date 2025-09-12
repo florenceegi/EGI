@@ -222,4 +222,15 @@ return [
         'org_email_invalid' => 'Please enter a valid organization email address',
         'org_url_invalid' => 'Please enter a valid organization URL',
     ],
+
+    // Banner management
+    'banner_uploaded_successfully' => 'Banner uploaded successfully',
+    'banner_deleted_successfully' => 'Banner deleted successfully',
+    'no_banner_to_delete' => 'No banner to delete',
+    'banner_upload_failed' => 'Failed to upload banner',
+    'upload_banner' => 'Upload Banner',
+    'delete_banner' => 'Delete Banner',
+    'current_banner' => 'Current Banner',
+    'banner_help' => 'The banner will be displayed as background on your creator page. Recommended size: 1920x600px.',
+    'no_banner_set' => 'No banner set',
 ];

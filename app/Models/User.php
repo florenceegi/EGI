@@ -1165,8 +1165,8 @@ class User extends Authenticatable implements HasMedia {
 
     /**
      * @Oracode Spatie: Media Collections Configuration
-     * 🎯 Purpose: Define media collections for user profile images
-     * 🖼️ Collections: profile_images for multiple profile photos, current_profile for active one
+     * 🎯 Purpose: Define media collections for user profile images and banners
+     * 🖼️ Collections: profile_images for multiple profile photos, current_profile for active one, banner_images for background
      */
     public function registerMediaCollections(): void {
         $userProfile = $this->addMediaCollection('profile_images')
@@ -1178,12 +1178,17 @@ class User extends Authenticatable implements HasMedia {
         $this->addMediaCollection('current_profile')
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
             ->singleFile(true);
+
+        // Banner images for creator home page background
+        $this->addMediaCollection('banner_images')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif'])
+            ->singleFile(true);
     }
 
     /**
      * @Oracode Spatie: Media Conversions for Performance
-     * 🎯 Purpose: Auto-generate optimized image versions for profile photos
-     * ⚡ Performance: Thumbnail, avatar, and web-optimized versions
+     * 🎯 Purpose: Auto-generate optimized image versions for profile photos and banners
+     * ⚡ Performance: Thumbnail, avatar, web-optimized, and banner versions
      */
     public function registerMediaConversions(?Media $media = null): void {
         $this->addMediaConversion('thumb')
@@ -1200,6 +1205,29 @@ class User extends Authenticatable implements HasMedia {
         $this->addMediaConversion('web')
             ->fit(800, 600)
             ->optimize();
+
+        // Banner conversions for creator home background
+        $this->addMediaConversion('banner')
+            ->width(1920)
+            ->height(600)
+            ->optimize()
+            ->nonQueued();
+
+        $this->addMediaConversion('banner_mobile')
+            ->width(768)
+            ->height(480)
+            ->optimize()
+            ->nonQueued();
+    }
+
+    /**
+     * @Oracode Method: Get Creator Banner URL
+     * 🎯 Purpose: Get the creator's home page banner image URL with fallback
+     * 📤 Returns: Banner URL string or default background
+     */
+    public function getCreatorBannerUrl(string $conversion = 'banner'): ?string {
+        $bannerUrl = $this->getFirstMediaUrl('banner_images', $conversion);
+        return $bannerUrl ?: null;
     }
 
     /**

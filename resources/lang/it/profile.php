@@ -221,4 +221,15 @@ return [
     'image_deletion_failed' => 'Errore durante l\'eliminazione dell\'immagine',
     'how_to_use_images' => 'Come gestire le immagini profilo',
     'image_management_help' => 'Passa il mouse su un\'immagine per vedere i pulsanti. Clicca sull\'icona blu per impostare l\'immagine come profilo attuale, o sull\'icona rossa per eliminarla.',
+
+    // Banner management
+    'banner_uploaded_successfully' => 'Banner caricato con successo',
+    'banner_deleted_successfully' => 'Banner eliminato con successo',
+    'no_banner_to_delete' => 'Nessun banner da eliminare',
+    'banner_upload_failed' => 'Errore durante il caricamento del banner',
+    'upload_banner' => 'Carica Banner',
+    'delete_banner' => 'Elimina Banner',
+    'current_banner' => 'Banner Attuale',
+    'banner_help' => 'Il banner verrà visualizzato come sfondo nella tua pagina creator. Dimensione consigliata: 1920x600px.',
+    'no_banner_set' => 'Nessun banner impostato',
 ];

@@ -432,6 +432,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::delete('/profile/delete-image', [App\Http\Controllers\ProfileImageController::class, 'deleteImage'])
             ->name('profile.delete-image');
 
+        // Profile Banner Management Routes
+        Route::post('/profile/upload-banner', [App\Http\Controllers\ProfileImageController::class, 'uploadBanner'])
+            ->name('profile.upload-banner');
+        Route::delete('/profile/delete-banner', [App\Http\Controllers\ProfileImageController::class, 'deleteBanner'])
+            ->name('profile.delete-banner');
+
         // Upload authorization check
         Route::get('/api/check-upload-authorization', [Ultra\UploadManager\Controllers\Config\ConfigController::class, 'checkUploadAuthorization'])
             ->name('upload.authorization');

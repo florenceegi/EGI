@@ -62,6 +62,88 @@
         </div>
     @endif
 
+    {{-- Profile Banner Management --}}
+    <div class="mb-8 space-y-8">
+        {{-- Current Banner Card --}}
+        <div class="p-6 gdpr-card rounded-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg gdpr-title">
+                    {{ __('profile.current_banner') }}
+                </h3>
+                <svg class="w-6 h-6 text-oro-fiorentino" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+
+            @php
+                $currentBanner = auth()->user()->getFirstMedia('banner_images');
+            @endphp
+
+            @if ($currentBanner)
+                <div class="mb-4">
+                    <div class="relative w-full h-32 overflow-hidden border-2 rounded-lg border-oro-fiorentino">
+                        <img src="{{ $currentBanner->getUrl('banner_mobile') }}"
+                            alt="{{ __('profile.current_banner') }}"
+                            class="object-cover w-full h-full">
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <div>
+                            <p class="text-sm gdpr-subtitle">{{ __('profile.currently_active') }}</p>
+                            <p class="text-xs text-gray-500">
+                                {{ $currentBanner->created_at->format('d M Y H:i') }}</p>
+                        </div>
+                        <form action="{{ route('profile.delete-banner') }}" method="POST"
+                            onsubmit="return confirm('{{ __('profile.confirm_delete_image') }}')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="px-3 py-1 text-xs text-white transition-colors bg-red-600 rounded hover:bg-red-700">
+                                {{ __('profile.delete_banner') }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @else
+                <div class="mb-4">
+                    <div class="flex items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg">
+                        <div class="text-center">
+                            <svg class="w-8 h-8 mx-auto text-gray-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p class="mt-2 text-sm text-gray-500">{{ __('profile.no_banner_set') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Banner Upload Form --}}
+            <form action="{{ route('profile.upload-banner') }}" method="POST" enctype="multipart/form-data"
+                class="space-y-4" id="banner-upload-form">
+                @csrf
+                <div>
+                    <label for="banner_image" class="block text-sm font-medium gdpr-label">
+                        {{ __('profile.upload_banner') }}
+                    </label>
+                    <input type="file" name="banner_image" id="banner_image" accept="image/*" required
+                        class="block w-full mt-1 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-oro-fiorentino file:text-black hover:file:bg-oro-fiorentino/80 transition-colors">
+                    <p class="mt-1 text-xs text-gray-500">{{ __('profile.banner_help') }}</p>
+                </div>
+                <button type="submit"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-black transition-colors border border-transparent rounded-md bg-oro-fiorentino hover:bg-oro-fiorentino/80 focus:outline-none focus:ring-2 focus:ring-oro-fiorentino focus:ring-offset-2">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    {{ __('profile.upload_banner') }}
+                </button>
+            </form>
+        </div>
+    </div>
+
     {{-- Profile Images Content --}}
     <div class="space-y-8">
         {{-- Current Profile Image Card --}}

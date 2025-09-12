@@ -1,6 +1,6 @@
 @vite(['resources/css/creator-home.css', 'resources/js/creator-home.js'])
 
-<x-creator-layout :title="$creator->name . ' - ' . __('creator.home.title_suffix')" :metaDescription="__('creator.home.meta_description', ['name' => $creator->name])">
+<x-guest-layout :title="$creator->name . ' - ' . __('creator.home.title_suffix')" :metaDescription="__('creator.home.meta_description', ['name' => $creator->name])">
 
 
     {{-- Schema.org Markup --}}
@@ -53,15 +53,29 @@
         </script>
     </x-slot>
 
-    {{-- Hero Section --}}
-    <section class="relative min-h-[60vh] overflow-hidden bg-gradient-to-br from-gray-900 via-blu-algoritmo to-gray-900"
-        role="banner" aria-label="{{ __('creator.home.hero_aria_label', ['name' => $creator->name]) }}">
-
-        {{-- Renaissance Pattern --}}
+    <x-slot name="platformInfoButtons">
+        {{-- 🎨 HERO BANNER POTENZIATO - Mobile Responsive --}}
         <div class="absolute inset-0 opacity-50" aria-hidden="true">
-            {{-- Padmin: Stile corretto per un'immagine di sfondo a copertura totale --}}
-            <div class="absolute inset-0"
-                style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+            {{-- Dynamic Creator Banner with Spatie Media Support --}}
+            <div class="absolute inset-0">
+                @php
+                    // Prova ad usare Spatie Media se disponibile per il banner del creator
+                    $bannerUrl = method_exists($creator, 'getCreatorBannerUrl')
+                        ? $creator->getCreatorBannerUrl('banner')
+                        : null;
+                @endphp
+                @if($bannerUrl)
+                <img src="{{ $bannerUrl }}" alt="Banner for {{ $creator->name }}"
+                    class="object-cover w-full h-full">
+                @else
+                {{-- Fallback: Random background or gradient --}}
+                <div class="absolute inset-0"
+                    style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+                </div>
+                @endif
+                {{-- Overlay gradiente potenziato per leggibilità --}}
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
             </div>
         </div>
 
@@ -179,44 +193,51 @@
                 </div>
             </div>
         </div>
+    </x-slot>
+
+    <x-slot name="platformStats">
+        {{-- Navigation Tabs --}}
+        <nav class="sticky top-0 z-40 border-b border-gray-800 bg-gray-900/95 backdrop-blur-md" role="navigation"
+            aria-label="{{ __('creator.home.nav_aria_label') }}">
+            <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div class="flex overflow-x-auto scrollbar-hide">
+                    <a href="{{ route('creator.home', $creator->id) }}"
+                        class="px-6 py-4 text-sm font-medium border-b-2 text-oro-fiorentino border-oro-fiorentino whitespace-nowrap"
+                        aria-current="page">
+                        {{ __('creator.home.nav.overview') }}
+                    </a>
+                    <a href="{{ route('creator.portfolio', $creator->id) }}"
+                        class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
+                        {{ __('creator.home.nav.portfolio') }}
+                    </a>
+                    <a href="{{ route('creator.collections', $creator->id) }}"
+                        class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
+                        {{ __('creator.home.nav.collections') }}
+                    </a>
+                    <a href="{{ route('biographies.public.show', $creator->id) }}"
+                        class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
+                        {{ __('creator.home.nav.biography') }}
+                    </a>
+                    <a href="{{ route('creator.impact', $creator->id) }}"
+                        class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
+                        {{ __('creator.home.nav.impact') }}
+                    </a>
+                    <a href="{{ route('creator.community', $creator->id) }}"
+                        class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
+                        {{ __('creator.home.nav.community') }}
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </x-slot>
+
+    {{-- Hero Section --}}
+    <section class="relative min-h-[60vh] overflow-hidden bg-gradient-to-br from-gray-900 via-blu-algoritmo to-gray-900"
+        role="banner" aria-label="{{ __('creator.home.hero_aria_label', ['name' => $creator->name]) }}">
     </section>
 
-    {{-- Navigation Tabs --}}
-    <nav class="sticky top-0 z-40 border-b border-gray-800 bg-gray-900/95 backdrop-blur-md" role="navigation"
-        aria-label="{{ __('creator.home.nav_aria_label') }}">
-        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="flex overflow-x-auto scrollbar-hide">
-                <a href="{{ route('creator.home', $creator->id) }}"
-                    class="px-6 py-4 text-sm font-medium border-b-2 text-oro-fiorentino border-oro-fiorentino whitespace-nowrap"
-                    aria-current="page">
-                    {{ __('creator.home.nav.overview') }}
-                </a>
-                <a href="{{ route('creator.portfolio', $creator->id) }}"
-                    class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
-                    {{ __('creator.home.nav.portfolio') }}
-                </a>
-                <a href="{{ route('creator.collections', $creator->id) }}"
-                    class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
-                    {{ __('creator.home.nav.collections') }}
-                </a>
-                <a href="{{ route('biographies.public.show', $creator->id) }}"
-                    class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
-                    {{ __('creator.home.nav.biography') }}
-                </a>
-                <a href="{{ route('creator.impact', $creator->id) }}"
-                    class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
-                    {{ __('creator.home.nav.impact') }}
-                </a>
-                <a href="{{ route('creator.community', $creator->id) }}"
-                    class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
-                    {{ __('creator.home.nav.community') }}
-                </a>
-            </div>
-        </div>
-    </nav>
+     <x-slot name="heroFullWidth">
 
-    {{-- Main Content Area --}}
-    <main class="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
             {{-- Featured Works Section --}}
@@ -281,6 +302,13 @@
                 </div>
             </aside>
         </div>
+
+    </x-slot>
+
+
+    {{-- Main Content Area --}}
+    <main class="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+
     </main>
 
-</x-creator-layout>
+</x-guest-layout>

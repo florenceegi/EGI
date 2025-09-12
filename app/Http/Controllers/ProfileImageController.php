@@ -236,4 +236,133 @@ class ProfileImageController extends \App\Http\Controllers\Controller
                 ->with('error', __('profile.failed_to_delete_image'));
         }
     }
+
+    /**
+     * Upload creator banner image
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|RedirectResponse
+     */
+    public function uploadBanner(Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            // Validation
+            if (!$request->hasFile('banner_image')) {
+                throw new \Exception('No banner file uploaded');
+            }
+
+            $files = $request->file('banner_image');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+
+            $uploadedMedia = [];
+
+            foreach ($files as $file) {
+                // Basic file validation
+                if (!$file->isValid()) {
+                    throw new \Exception('Invalid file upload');
+                }
+
+                // Size validation (max 10MB)
+                if ($file->getSize() > 10 * 1024 * 1024) {
+                    throw new \Exception('File too large. Maximum size is 10MB.');
+                }
+
+                // MIME type validation
+                $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+                if (!in_array($file->getMimeType(), $allowedMimes)) {
+                    throw new \Exception('Invalid file type. Only JPEG, PNG, WebP, and AVIF are allowed.');
+                }
+
+                // Add to banner_images collection (replaces existing due to singleFile)
+                $media = $user->addMediaFromRequest('banner_image')
+                    ->toMediaCollection('banner_images');
+
+                $uploadedMedia[] = [
+                    'id' => $media->id,
+                    'name' => $media->name,
+                    'file_name' => $media->file_name,
+                    'url' => $media->getUrl(),
+                    'banner_url' => $media->getUrl('banner'),
+                    'banner_mobile_url' => $media->getUrl('banner_mobile'),
+                ];
+
+                Log::info('Banner uploaded successfully', [
+                    'user_id' => $user->id,
+                    'media_id' => $media->id,
+                    'file_name' => $media->file_name
+                ]);
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => __('profile.banner_uploaded_successfully'),
+                    'media' => $uploadedMedia
+                ]);
+            }
+
+            return redirect()->back()
+                ->with('success', __('profile.banner_uploaded_successfully'));
+
+        } catch (\Exception $e) {
+            Log::error('Banner upload failed', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 422);
+            }
+
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete creator banner image
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function deleteBanner(Request $request): RedirectResponse
+    {
+        try {
+            $user = Auth::user();
+
+            // Get current banner
+            $banner = $user->getFirstMedia('banner_images');
+            
+            if (!$banner) {
+                throw new \Exception(__('profile.no_banner_to_delete'));
+            }
+
+            // Delete the banner
+            $banner->delete();
+
+            Log::info('Banner deleted successfully', [
+                'user_id' => $user->id,
+                'media_id' => $banner->id
+            ]);
+
+            return redirect()->back()
+                ->with('success', __('profile.banner_deleted_successfully'));
+
+        } catch (\Exception $e) {
+            Log::error('Banner deletion failed', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
 }
