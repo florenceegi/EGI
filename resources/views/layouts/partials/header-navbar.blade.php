@@ -46,9 +46,7 @@
                 {{-- Nav Desktop --}}
                 <nav class="items-center hidden space-x-1 md:flex" role="navigation"
                     aria-label="{{ __('collection.main_navigation_aria_label') }}">
-                                            
-                    
-                    
+                                        
                     @include('partials.nav-links', ['isMobile' => false, 'authType' => $authType])
 
                     @auth
@@ -58,29 +56,33 @@
                     {{-- Wallet e Auth --}}
                     <span class="h-6 mx-2 border-l border-gray-700" aria-hidden="true"></span>
 
-
+                    @guest
                     <a href="{{ route('login') }}" id="login-link-desktop" class="{{ $navLinkClasses }}">{{__('collection.login') }}</a>
                     <a href="{{ route('register') }}" id="register-link-desktop"
                         class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         {{ __('collection.register') }}</a>
-
-                    
+                    @endguest
                 </nav>
             
-                {{-- Menu Mobile Button --}}
-                @auth
+                {{-- Menu Mobile Button - Sempre visibile --}}
                 <button type="button" data-mobile-menu-trigger class="block p-1 transition-colors rounded-full md:hidden hover:bg-gray-800/50">
-                    @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                        <img class="object-cover rounded-full size-8 ring-2 ring-gray-600"
-                            src="{{ Auth::user()->profile_photo_url }}"
-                            alt="{{ Auth::user()->name }}" />
+                    @auth
+                        @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
+                            <img class="object-cover rounded-full size-8 ring-2 ring-gray-600"
+                                src="{{ Auth::user()->profile_photo_url }}"
+                                alt="{{ Auth::user()->name }}" />
+                        @else
+                            <div class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white bg-gray-600 rounded-full">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </div>
+                        @endif
                     @else
-                        <div class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white bg-gray-600 rounded-full">
-                            {{ substr(Auth::user()->name, 0, 1) }}
-                        </div>
-                    @endif
+                        {{-- Icona hamburger per utenti guest --}}
+                        <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    @endauth
                 </button>
-                @endauth
 
                 {{-- Bottone Accedi (Solo per guest su mobile) --}}
                 @guest
@@ -89,7 +91,7 @@
                         class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
                         {{ __('collection.login') }}
                     </a>
-                    <a href="{{ route('register') }}" id="register-link-desktop"
+                    <a href="{{ route('register') }}" id="register-link-mobile"
                         class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         {{ __('collection.register') }}
                     </a>
@@ -97,7 +99,6 @@
                 @endguest
 
             </div>
-
         </div>
     </div>
                     
@@ -108,11 +109,10 @@
 
 <script>
     window.addEventListener('load', function() {
-    const header = document.querySelector('header[role="banner"]');
-    if (header) {
-        header.classList.remove('navbar-simple-hide');
-        header.classList.add('navbar-simple-show');
-    }
-});
-
+        const header = document.querySelector('header[role="banner"]');
+        if (header) {
+            header.classList.remove('navbar-simple-hide');
+            header.classList.add('navbar-simple-show');
+        }
+    });
 </script>

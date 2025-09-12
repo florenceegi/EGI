@@ -82,6 +82,7 @@
             <div class="flex items-center justify-between p-6 bg-gradient-to-r from-blue-500 to-purple-600 mobile-header-gradient" style="opacity: 1 !important; background: linear-gradient(to right, #3b82f6, #9333ea) !important; color: white !important;">
                 <div class="flex items-center space-x-3">
 
+                    @auth
                         @if(Auth::check() && Auth::user()->id)
                             <a href="{{ route('creator.home', Auth::user()->id) }}" class="block transition-transform duration-300 hover:scale-105">
                                 <img class="object-cover transition-all duration-300 rounded-full size-12 ring-2 ring-white/30 hover:ring-white/60"
@@ -94,10 +95,22 @@
                                 alt="{{ Auth::user()?->name ?? '' }}" />
                         @endif
 
-                    <div>
-                        <h3 class="font-semibold text-white">{{ Auth::user()?->name ?? '' }}</h3>
-                        <p class="text-sm text-white/80">{{ Auth::user()?->email ?? '' }}</p>
-                    </div>
+                        <div>
+                            <h3 class="font-semibold text-white">{{ Auth::user()?->name ?? '' }}</h3>
+                            <p class="text-sm text-white/80">{{ Auth::user()?->email ?? '' }}</p>
+                        </div>
+                    @else
+                        {{-- Guest user display --}}
+                        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-white/20">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white">{{ __('navigation.guest_user') }}</h3>
+                            <p class="text-sm text-white/80">{{ __('navigation.welcome_guest') }}</p>
+                        </div>
+                    @endauth
                 </div>
                 <button data-mobile-close class="p-2 transition-colors rounded-lg text-white/80 hover:text-white hover:bg-white/10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,10 +246,13 @@
                 </div>
 
                 <!-- Dynamic Collections Carousel Card -->
+                @auth
                 <x-menu-collections-carousel :collections="Auth::check() ? Auth::user()->ownedCollections()->orderBy('position')->get() : collect()" />
 
                 <!-- Shared Collections Carousel Card - Collections where user is collaborator -->
                 <x-menu-guest-collections-carousel :collections="Auth::check() ? Auth::user()->collaborations()->orderBy('position')->get() : collect()" />
+
+                @endauth
 
                 <!-- Account Management Card -->
                 <div class="p-4 border bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl border-emerald-200/30 dark:border-emerald-800/30 mobile-card">
@@ -351,24 +367,42 @@
                     </a>
                 </div>
 
-                <!-- Danger Zone & Logout -->
-                <div class="flex items-center justify-between">
-                    @can('gdpr.delete_account')
-                        <a href="{{ route('gdpr.delete-account') }}" class="text-xs text-red-500 transition-colors hover:text-red-700">
-                            {{ __('menu.delete_account') }}
-                        </a>
-                    @endcan
+                @auth
+                    <!-- Danger Zone & Logout for authenticated users -->
+                    <div class="flex items-center justify-between">
+                        @can('gdpr.delete_account')
+                            <a href="{{ route('gdpr.delete-account') }}" class="text-xs text-red-500 transition-colors hover:text-red-700">
+                                {{ __('menu.delete_account') }}
+                            </a>
+                        @endcan
 
-                    <form method="POST" action="{{ route('logout') }}" class="ml-auto">
-                        @csrf
-                        <button type="submit" class="flex items-center px-4 py-2 space-x-2 text-sm text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600">
+                        <form method="POST" action="{{ route('logout') }}" class="ml-auto">
+                            @csrf
+                            <button type="submit" class="flex items-center px-4 py-2 space-x-2 text-sm text-white transition-colors bg-red-500 rounded-lg hover:bg-red-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                                <span>{{ __('menu.logout') }}</span>
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <!-- Login & Register buttons for guest users -->
+                    <div class="flex flex-col space-y-2">
+                        <a href="{{ route('login') }}" class="flex items-center justify-center px-4 py-2 space-x-2 text-sm text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-600">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                             </svg>
-                            <span>{{ __('menu.logout') }}</span>
-                        </button>
-                    </form>
-                </div>
+                            <span>{{ __('collection.login') }}</span>
+                        </a>
+                        <a href="{{ route('register') }}" class="flex items-center justify-center px-4 py-2 space-x-2 text-sm text-gray-700 transition-colors bg-gray-200 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                            </svg>
+                            <span>{{ __('collection.register') }}</span>
+                        </a>
+                    </div>
+                @endauth
             </div>
 
         </div>

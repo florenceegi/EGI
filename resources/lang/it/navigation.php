@@ -6,5 +6,7 @@ return [
     'edit_personal_data' => 'Modifica Dati Personali',
     'security_password' => 'Sicurezza e Password',
     'profile_images' => 'Immagini Profilo',
-    'logout' => 'Logout',
+    'logout' => 'Esci',
+    'guest_user' => 'Utente Ospite',
+    'welcome_guest' => 'Benvenuto su FlorenceEGI',
 ];

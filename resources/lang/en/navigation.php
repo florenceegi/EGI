@@ -7,4 +7,6 @@ return [
     'security_password' => 'Security & Password',
     'profile_images' => 'Profile Images',
     'logout' => 'Logout',
+    'guest_user' => 'Guest User',
+    'welcome_guest' => 'Welcome to FlorenceEGI',
 ];
