@@ -147,6 +147,8 @@ return [
     'open_main_menu' => 'Hauptmenü öffnen',
 
     'wallet' => [
+        'unassigned' => 'Nicht zugewiesen',
+        'wallets' => 'Sammlungs-Wallets',
         'copy_address' => 'Kopieren Sie die Adresse',
         'donation' => 'Spende',
         'donation_success' => 'Spende erfolgreich',

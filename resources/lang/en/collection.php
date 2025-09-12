@@ -159,6 +159,8 @@ return [
     'open_main_menu' => 'Open main menu',
 
     'wallet' => [
+        'unassigned' => 'Unassigned',
+        'wallets' => 'Collection wallets',
         'copy_address' => 'Copy address',
         'donation' => 'Donation',
         'donation_success' => 'Donation sent successfully',

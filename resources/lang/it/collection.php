@@ -161,6 +161,7 @@ return [
     'open_main_menu' => 'Apri menù principale',
     
     'wallet' => [
+        'unassigned' => 'Non assegnato',
         'wallets' => 'Wallet della collection',
         'copy_address' => 'Copia indirizzo',
         'donation' => 'Donazione',

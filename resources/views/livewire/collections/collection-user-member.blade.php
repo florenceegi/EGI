@@ -1,5 +1,5 @@
 <div id="collection_management" class="p-6 bg-gray-800 border border-gray-700 shadow-lg rounded-2xl">
-    <x-slot name="platformHeader">
+    {{-- <x-slot name="platformHeader"> --}}
     <!-- Titolo della sezione -->
     <div id="collection_management" class="p-6 bg-gray-800 border border-gray-700 shadow-lg rounded-2xl">
 
@@ -22,10 +22,10 @@
                 <p class="text-sm text-gray-400">{{ __('collection.team_members_description') }}</p>
             </div>
 
-            @if ($canCreateTeam)
+            
                 <div class="flex flex-wrap gap-4 space-x-0">
                     <!-- Bottone per invitare un nuovo membro alla collection -->
-                    <button id ="inviteNewMember" class="w-full btn btn-primary sm:w-auto" wire:click="openInviteModal">
+                    <button id="inviteNewMember" class="w-full btn btn-primary sm:w-auto" wire:click="openInviteModal">
                         {{ __('collection.invite_collection_member') }}
                     </button>
                     <!-- Bottone per creare un nuovo wallet -->
@@ -33,7 +33,7 @@
                         {{ __('collection.wallet.create_the_wallet') }}
                     </button>
                 </div>
-            @endif
+            
         </div>
         <!-- Marquee ticker: Testo in movimento in stile tabellone borsa -->
 
@@ -153,7 +153,7 @@
                         </p>
                     @else
                         <p class="text-sm text-gray-400">
-                            <strong>{{ __('collection.wallet.approver') }}:</strong> {{ __('Unassigned') }}
+                            <strong>{{ __('collection.wallet.approver') }}:</strong> {{ __('collection.wallet.unassigned') }}
                         </p>
                     @endif
 
@@ -185,5 +185,5 @@
             'collectionId' => $collectionId,
         ])
     @endif
-    </x-slot>
+    {{-- </x-slot> --}}
 </div>

@@ -219,6 +219,8 @@
 </script>
 
 @stack('scripts')
+    {{-- Livewire Scripts --}}
+    @livewireScripts
 </body>
 
 </html>

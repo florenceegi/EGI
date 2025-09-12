@@ -122,10 +122,7 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
         <div class="flex flex-col min-h-screen">
             {{-- Navigation Header --}}
             {{-- MODIFICA: Aggiunto stile base per header, i componenti Livewire interni dovranno adattarsi --}}
-            <header role="banner" aria-label="Main navigation" class="border-b shadow-sm border-base-300 bg-base-200">
-                {{-- <livewire:navigation-menu /> --}}
-                @include('navigation-menu')
-            </header>
+            @include('layouts.partials.header-navbar')
 
             {{-- Page Header Section (Optional) --}}
             @if (isset($header))

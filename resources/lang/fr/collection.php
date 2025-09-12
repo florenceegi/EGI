@@ -147,6 +147,7 @@ return [
     'open_main_menu' => 'Ouvrir le menu principal',
 
     'wallet' => [
+        'unassigned' => 'Non assigné',
         'wallets' => 'Portefeuille de la collection',
         'copy_address' => 'Copier l\'adresse',
         'donation' => 'Donation',

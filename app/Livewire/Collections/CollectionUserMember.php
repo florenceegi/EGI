@@ -20,7 +20,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Attributes\Layout;
     
 
-#[Layout('layouts.platform')] 
+#[Layout('layouts.app')] 
 class CollectionUserMember extends Component {
 
     use HasPermissionTrait;
@@ -237,6 +237,7 @@ class CollectionUserMember extends Component {
     }
 
     public function openInviteModal() {
+        
         Log::channel('florenceegi')->info('OpenInviteModal', [
             'collectionId' => $this->collectionId
         ]);
