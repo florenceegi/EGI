@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+<div class="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
     <div class="container px-4 py-8 mx-auto max-w-none">
         <!-- Notification Center Header -->
         <div class="mb-8 text-center">
@@ -148,6 +148,7 @@
         </div>
     </div>
 </div>
+
 
 {{-- Scripts per le notifiche con EVENT DELEGATION --}}
 @push('scripts')

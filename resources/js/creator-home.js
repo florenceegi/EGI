@@ -11,8 +11,8 @@
  * @date 2025-06-29
  */
 
-document.addEventListener('DOMContentLoaded', function() {
-    'use strict';
+document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
 
     // ==========================================================================
     // Stats Counter Animation
@@ -22,10 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
      * Animates number counting from 0 to target value
      */
     function animateStats() {
-        const stats = document.querySelectorAll('[data-stat-value]');
+        const stats = document.querySelectorAll("[data-stat-value]");
 
-        stats.forEach(stat => {
-            const target = parseInt(stat.getAttribute('data-stat-value') || stat.textContent);
+        stats.forEach((stat) => {
+            const target = parseInt(
+                stat.getAttribute("data-stat-value") || stat.textContent
+            );
             const duration = 1500; // 1.5 seconds
             const start = 0;
             const increment = target / (duration / 16); // 60fps
@@ -43,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Start animation when element is in viewport
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
+                entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         updateCounter();
                         observer.unobserve(entry.target);
@@ -61,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const followButton = document.querySelector('[aria-label*="Segui"]');
     if (followButton) {
-        followButton.addEventListener('click', async function(e) {
+        followButton.addEventListener("click", async function (e) {
             e.preventDefault();
 
             // Prevent double clicks
@@ -69,13 +71,18 @@ document.addEventListener('DOMContentLoaded', function() {
             this.disabled = true;
 
             try {
-                const response = await fetch(`/api/creator/${creatorId}/follow`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                const response = await fetch(
+                    `/api/creator/${creatorId}/follow`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector(
+                                'meta[name="csrf-token"]'
+                            ).content,
+                        },
                     }
-                });
+                );
 
                 if (response.ok) {
                     const data = await response.json();
@@ -87,33 +94,39 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                ${window.__('creator.home.following')}
+                                ${window.__("creator.home.following")}
                             </span>
                         `;
-                        this.classList.add('bg-gray-600');
-                        this.classList.remove('bg-oro-fiorentino');
+                        this.classList.add("bg-gray-600");
+                        this.classList.remove("bg-oro-fiorentino");
                     } else {
                         this.innerHTML = `
                             <span class="flex items-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
-                                ${window.__('creator.home.follow_button')}
+                                ${window.__("creator.home.follow_button")}
                             </span>
                         `;
-                        this.classList.remove('bg-gray-600');
-                        this.classList.add('bg-oro-fiorentino');
+                        this.classList.remove("bg-gray-600");
+                        this.classList.add("bg-oro-fiorentino");
                     }
 
                     // Update follower count
-                    const followerStat = document.querySelector('[data-stat-type="supporters"]');
+                    const followerStat = document.querySelector(
+                        '[data-stat-type="supporters"]'
+                    );
                     if (followerStat) {
-                        const currentCount = parseInt(followerStat.textContent.replace(/,/g, ''));
-                        followerStat.textContent = (currentCount + (data.following ? 1 : -1)).toLocaleString();
+                        const currentCount = parseInt(
+                            followerStat.textContent.replace(/,/g, "")
+                        );
+                        followerStat.textContent = (
+                            currentCount + (data.following ? 1 : -1)
+                        ).toLocaleString();
                     }
                 }
             } catch (error) {
-                console.error('Follow action failed:', error);
+                console.error("Follow action failed:", error);
                 // Show error toast/notification
             } finally {
                 this.disabled = false;
@@ -125,19 +138,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Become Patron Modal
     // ==========================================================================
 
-    const patronButton = document.querySelector('[aria-label*="Diventa mecenate"]');
+    const patronButton = document.querySelector(
+        '[aria-label*="Diventa mecenate"]'
+    );
     if (patronButton) {
-        patronButton.addEventListener('click', function(e) {
+        patronButton.addEventListener("click", function (e) {
             e.preventDefault();
 
             // Check if user is authenticated
             if (!window.FegiAuth || !window.FegiAuth.check()) {
-                window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+                window.location.href =
+                    "/login?redirect=" +
+                    encodeURIComponent(window.location.pathname);
                 return;
             }
 
             // Open patron modal (to be implemented)
-            console.log('Opening patron modal...');
+            console.log("Opening patron modal...");
             // TODO: Implement patron modal
         });
     }
@@ -146,16 +163,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tab Navigation Enhancement
     // ==========================================================================
 
-    const tabContainer = document.querySelector('nav .scrollbar-hide');
+    const tabContainer = document.querySelector("nav .scrollbar-hide");
     if (tabContainer) {
         // Add keyboard navigation
-        const tabs = tabContainer.querySelectorAll('a');
+        const tabs = tabContainer.querySelectorAll("a");
         tabs.forEach((tab, index) => {
-            tab.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowRight' && index < tabs.length - 1) {
+            tab.addEventListener("keydown", function (e) {
+                if (e.key === "ArrowRight" && index < tabs.length - 1) {
                     e.preventDefault();
                     tabs[index + 1].focus();
-                } else if (e.key === 'ArrowLeft' && index > 0) {
+                } else if (e.key === "ArrowLeft" && index > 0) {
                     e.preventDefault();
                     tabs[index - 1].focus();
                 }
@@ -170,25 +187,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // Lazy Load Collections
     // ==========================================================================
 
-    const collectionCards = document.querySelectorAll('.collection-preview-card');
+    const collectionCards = document.querySelectorAll(
+        ".collection-preview-card"
+    );
     if (collectionCards.length > 0) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target.querySelector('img[data-src]');
-                    if (img) {
-                        img.src = img.dataset.src;
-                        img.removeAttribute('data-src');
-                        img.classList.add('fade-in');
+        const imageObserver = new IntersectionObserver(
+            (entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target.querySelector("img[data-src]");
+                        if (img) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute("data-src");
+                            img.classList.add("fade-in");
+                        }
+                        observer.unobserve(entry.target);
                     }
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, {
-            rootMargin: '50px'
-        });
+                });
+            },
+            {
+                rootMargin: "50px",
+            }
+        );
 
-        collectionCards.forEach(card => imageObserver.observe(card));
+        collectionCards.forEach((card) => imageObserver.observe(card));
     }
 
     // ==========================================================================
@@ -196,18 +218,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==========================================================================
 
     function initShareButtons() {
-        const shareButton = document.querySelector('[data-share-profile]');
+        const shareButton = document.querySelector("[data-share-profile]");
         if (shareButton && navigator.share) {
-            shareButton.addEventListener('click', async function() {
+            shareButton.addEventListener("click", async function () {
                 try {
                     await navigator.share({
                         title: document.title,
-                        text: this.dataset.shareText || '',
-                        url: window.location.href
+                        text: this.dataset.shareText || "",
+                        url: window.location.href,
                     });
                 } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        console.error('Share failed:', err);
+                    if (err.name !== "AbortError") {
+                        console.error("Share failed:", err);
                     }
                 }
             });
@@ -219,20 +241,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==========================================================================
 
     // Get creator ID from URL
-    const creatorId = window.location.pathname.split('/')[2];
+    const creatorId = window.location.pathname.split("/")[2];
 
     // Initialize all features
     animateStats();
     initShareButtons();
 
     // Add page transition class
-    document.body.classList.add('creator-page-loaded');
+    document.body.classList.add("creator-page-loaded");
 
     // Log page view for analytics
     if (window.gtag) {
-        window.gtag('event', 'page_view', {
-            page_title: 'Creator Profile',
-            creator_id: creatorId
+        window.gtag("event", "page_view", {
+            page_title: "Creator Profile",
+            creator_id: creatorId,
         });
     }
 });
@@ -244,8 +266,10 @@ document.addEventListener('DOMContentLoaded', function() {
 /**
  * Simple translation helper
  */
-window.__ = window.__ || function(key, replacements = {}) {
-    // This would connect to your Laravel translations
-    // For now, return the key
-    return key;
-};
+window.__ =
+    window.__ ||
+    function (key, replacements = {}) {
+        // This would connect to your Laravel translations
+        // For now, return the key
+        return key;
+    };
