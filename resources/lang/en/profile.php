@@ -233,4 +233,10 @@ return [
     'current_banner' => 'Current Banner',
     'banner_help' => 'The banner will be displayed as background on your creator page. Recommended size: 1920x600px.',
     'no_banner_set' => 'No banner set',
+    'all_banner_images' => 'All Banner Images',
+    'upload_new_banner' => 'Upload New Banner',
+    'banner_not_found' => 'Banner not found',
+    'set_as_banner_success' => 'Banner set as current successfully',
+    'set_as_banner' => 'Set as Banner',
+    'no_media_id_provided' => 'No media ID provided',
 ];

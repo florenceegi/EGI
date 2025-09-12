@@ -1179,8 +1179,15 @@ class User extends Authenticatable implements HasMedia {
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
             ->singleFile(true);
 
-        // Banner images for creator home page background
-        $this->addMediaCollection('banner_images')
+        // Banner images gallery for creator home page background
+        $bannerProfile = $this->addMediaCollection('banner_images')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
+
+        $bannerProfile->singleFile = false;
+        $bannerProfile->collectionSizeLimit = null;
+
+        // Current active banner (single file)
+        $this->addMediaCollection('current_banner')
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif'])
             ->singleFile(true);
     }
@@ -1223,11 +1230,11 @@ class User extends Authenticatable implements HasMedia {
     /**
      * @Oracode Method: Get Creator Banner URL
      * 🎯 Purpose: Get the creator's home page banner image URL with fallback
-     * 📤 Returns: Banner URL string or default background
+     * 📤 Returns: Banner URL string or null
      */
     public function getCreatorBannerUrl(string $conversion = 'banner'): ?string {
-        $bannerUrl = $this->getFirstMediaUrl('banner_images', $conversion);
-        return $bannerUrl ?: null;
+        $currentBanner = $this->getCurrentBanner();
+        return $currentBanner ? $currentBanner->getUrl($conversion) : null;
     }
 
     /**
@@ -1267,6 +1274,46 @@ class User extends Authenticatable implements HasMedia {
         $this->update([
             'profile_photo_path' => $media->file_name
         ]);
+
+        return true;
+    }
+
+    /**
+     * @Oracode Method: Get Current Banner Image
+     * 🎯 Purpose: Get the currently active banner image
+     * 📤 Returns: Media model or null
+     */
+    public function getCurrentBanner(): ?Media {
+        return $this->getFirstMedia('current_banner');
+    }
+
+    /**
+     * @Oracode Method: Get All Banner Images
+     * 🎯 Purpose: Get all uploaded banner images
+     * 📤 Returns: Collection of Media models
+     */
+    public function getAllBannerImages() {
+        return $this->getMedia('banner_images');
+    }
+
+    /**
+     * @Oracode Method: Set Current Banner Image
+     * 🎯 Purpose: Set a specific banner as the current active banner
+     * 📤 Returns: Boolean success status
+     */
+    public function setCurrentBanner(Media $media): bool {
+        // Clear current banner first
+        $currentBanner = $this->getCurrentBanner();
+        if ($currentBanner) {
+            $currentBanner->delete();
+        }
+
+        // Copy the selected banner to current_banner collection
+        $newBanner = $media->copy($this, 'current_banner');
+        
+        // Store reference to source media for tracking
+        $newBanner->setCustomProperty('source_media_id', $media->id);
+        $newBanner->save();
 
         return true;
     }

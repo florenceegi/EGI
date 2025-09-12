@@ -435,6 +435,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         // Profile Banner Management Routes
         Route::post('/profile/upload-banner', [App\Http\Controllers\ProfileImageController::class, 'uploadBanner'])
             ->name('profile.upload-banner');
+        Route::post('/profile/set-current-banner', [App\Http\Controllers\ProfileImageController::class, 'setCurrentBanner'])
+            ->name('profile.set-current-banner');
         Route::delete('/profile/delete-banner', [App\Http\Controllers\ProfileImageController::class, 'deleteBanner'])
             ->name('profile.delete-banner');
 

@@ -19,15 +19,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @version 1.0.0 (FlorenceEGI Profile Images)
  * @date 2025-01-07
  */
-class ProfileImageController extends \App\Http\Controllers\Controller
-{
+class ProfileImageController extends \App\Http\Controllers\Controller {
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         // Authorization handled by route middleware
     }
 
@@ -37,8 +35,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|RedirectResponse
      */
-    public function uploadImage(Request $request)
-    {
+    public function uploadImage(Request $request) {
         try {
             $user = Auth::user();
             $uploadedMedia = [];
@@ -141,8 +138,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function setCurrentImage(Request $request): RedirectResponse
-    {
+    public function setCurrentImage(Request $request): RedirectResponse {
         $request->validate([
             'media_id' => 'required|integer|exists:media,id',
         ]);
@@ -185,8 +181,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function deleteImage(Request $request): RedirectResponse
-    {
+    public function deleteImage(Request $request): RedirectResponse {
         $request->validate([
             'media_id' => 'required|integer|exists:media,id',
         ]);
@@ -247,18 +242,17 @@ class ProfileImageController extends \App\Http\Controllers\Controller
     {
         try {
             $user = Auth::user();
+            $uploadedMedia = [];
 
-            // Validation
+            // Simple validation - just check if files exist
             if (!$request->hasFile('banner_image')) {
-                throw new \Exception('No banner file uploaded');
+                throw new \Exception('No files uploaded');
             }
 
             $files = $request->file('banner_image');
             if (!is_array($files)) {
                 $files = [$files];
             }
-
-            $uploadedMedia = [];
 
             foreach ($files as $file) {
                 // Basic file validation
@@ -277,8 +271,8 @@ class ProfileImageController extends \App\Http\Controllers\Controller
                     throw new \Exception('Invalid file type. Only JPEG, PNG, WebP, and AVIF are allowed.');
                 }
 
-                // Add to banner_images collection (replaces existing due to singleFile)
-                $media = $user->addMediaFromRequest('banner_image')
+                // Add to banner_images collection (allows multiple)
+                $media = $user->addMedia($file)
                     ->toMediaCollection('banner_images');
 
                 $uploadedMedia[] = [
@@ -307,7 +301,6 @@ class ProfileImageController extends \App\Http\Controllers\Controller
 
             return redirect()->back()
                 ->with('success', __('profile.banner_uploaded_successfully'));
-
         } catch (\Exception $e) {
             Log::error('Banner upload failed', [
                 'user_id' => Auth::id(),
@@ -327,7 +320,53 @@ class ProfileImageController extends \App\Http\Controllers\Controller
     }
 
     /**
-     * Delete creator banner image
+     * Set current banner image
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function setCurrentBanner(Request $request): RedirectResponse
+    {
+        try {
+            $user = Auth::user();
+            $mediaId = $request->input('media_id');
+
+            if (!$mediaId) {
+                throw new \Exception(__('profile.no_media_id_provided'));
+            }
+
+            // Find the banner image
+            $banner = $user->getMedia('banner_images')->where('id', $mediaId)->first();
+
+            if (!$banner) {
+                throw new \Exception(__('profile.banner_not_found'));
+            }
+
+            // Set as current banner
+            $user->setCurrentBanner($banner);
+
+            Log::info('Current banner updated successfully', [
+                'user_id' => $user->id,
+                'media_id' => $mediaId
+            ]);
+
+            return redirect()->back()
+                ->with('success', __('profile.set_as_banner_success'));
+
+        } catch (\Exception $e) {
+            Log::error('Failed to set current banner', [
+                'user_id' => Auth::id(),
+                'media_id' => $request->input('media_id'),
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete specific banner image
      *
      * @param Request $request
      * @return RedirectResponse
@@ -336,12 +375,23 @@ class ProfileImageController extends \App\Http\Controllers\Controller
     {
         try {
             $user = Auth::user();
+            $mediaId = $request->input('media_id');
 
-            // Get current banner
-            $banner = $user->getFirstMedia('banner_images');
-            
+            if (!$mediaId) {
+                throw new \Exception(__('profile.no_media_id_provided'));
+            }
+
+            // Find the banner image
+            $banner = $user->getMedia('banner_images')->where('id', $mediaId)->first();
+
             if (!$banner) {
-                throw new \Exception(__('profile.no_banner_to_delete'));
+                throw new \Exception(__('profile.banner_not_found'));
+            }
+
+            // Check if this is the current banner and clear it if needed
+            $currentBanner = $user->getCurrentBanner();
+            if ($currentBanner && $currentBanner->getCustomProperty('source_media_id') == $mediaId) {
+                $currentBanner->delete();
             }
 
             // Delete the banner
@@ -349,7 +399,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller
 
             Log::info('Banner deleted successfully', [
                 'user_id' => $user->id,
-                'media_id' => $banner->id
+                'media_id' => $mediaId
             ]);
 
             return redirect()->back()
@@ -358,6 +408,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller
         } catch (\Exception $e) {
             Log::error('Banner deletion failed', [
                 'user_id' => Auth::id(),
+                'media_id' => $request->input('media_id'),
                 'error' => $e->getMessage()
             ]);
 

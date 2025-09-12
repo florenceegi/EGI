@@ -232,4 +232,10 @@ return [
     'current_banner' => 'Banner Attuale',
     'banner_help' => 'Il banner verrà visualizzato come sfondo nella tua pagina creator. Dimensione consigliata: 1920x600px.',
     'no_banner_set' => 'Nessun banner impostato',
+    'all_banner_images' => 'Tutti i Banner',
+    'upload_new_banner' => 'Carica Nuovo Banner',
+    'banner_not_found' => 'Banner non trovato',
+    'set_as_banner_success' => 'Banner impostato come attuale con successo',
+    'set_as_banner' => 'Imposta come Banner',
+    'no_media_id_provided' => 'ID media non fornito',
 ];
