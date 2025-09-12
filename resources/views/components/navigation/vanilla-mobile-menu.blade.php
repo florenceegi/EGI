@@ -136,7 +136,7 @@
                             </button>
 
                             {{-- Create EGI Button - Sempre visibile, la logica di azione è gestita da JS in base allo stato utente --}}
-                            @can('create_EGI')
+                            {{-- @can('create_EGI') --}}
                                 <button type="button"
                                     class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors js-create-egi-contextual-button dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl mobile-nav-item"
                                     data-action="open-create-egi-contextual" data-auth-type="{{ $authType }}"
@@ -148,7 +148,7 @@
                                     </div>
                                     <span class="font-medium js-create-egi-button-text">{{ __('guest_layout.create_egi') }}</span>
                                 </button>
-                            @endcan
+                            {{-- @endcan --}}
 
                             {{-- Create Collection CTA - Solo se l'utente ha il permesso --}}
                             @can('create_collection')

@@ -105,21 +105,14 @@
                         </a>
                         {{-- Welcome Message - Dopo il logo per tutte le dimensioni --}}
                         <x-user-welcome />
+
+                        <x-section-border />
+
+                        {{-- Notification Badge (Mobile) --}}
+                        @if(App\Helpers\FegiAuth::check())
+                        <x-notification-badge />
+                        @endif
                     </div>
-
-                    {{-- Notification Badge (Desktop) --}}
-                    {{-- @if(App\Helpers\FegiAuth::check())
-                    <div class="hidden md:block">
-                        <x-notific                        /* MOBILE - Titolo cliccabile */
-                        w-full flex justify-between    /* Occupa tutto lo spazio */
-                        chevron visibile              /* Indica collassabilità */
-
-                        /* DESKTOP - Titolo normale */
-                        md:pointer-events-none        /* Non cliccabile */
-                        md:hidden                     /* Chevron nascosto */ation-badge />
-                    </div>
-                    @endif --}}
-
 
                     @php
                     $authType = App\Helpers\FegiAuth::getAuthType(); // 'strong', 'weak', 'guest'
@@ -129,13 +122,14 @@
                     {{-- Nav Desktop --}}
                     <nav class="items-center hidden space-x-1 md:flex" role="navigation"
                         aria-label="{{ __('collection.main_navigation_aria_label') }}">
+                                                
+                        
+                        
                         @include('partials.nav-links', ['isMobile' => false, 'authType' => $authType])
 
                         @auth
                         <x-navigation.vanilla-desktop-menu />
                         @endauth
-
-                        {{-- Create EGI Button - Solo per utenti con permesso --}}
 
                         {{-- Wallet e Auth --}}
                         <span class="h-6 mx-2 border-l border-gray-700" aria-hidden="true"></span>
@@ -146,16 +140,9 @@
                             class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                             {{ __('collection.register') }}</a>
 
+                        
                     </nav>
-
-
-
-                    {{-- Notification Badge (Mobile) --}}
-                    @if(App\Helpers\FegiAuth::check())
-                    <x-notification-badge />
-                    @endif
-
-
+                  
                     {{-- Menu Mobile Button --}}
                     @auth
                     <button type="button" data-mobile-menu-trigger class="block p-1 transition-colors rounded-full md:hidden hover:bg-gray-800/50">
@@ -185,19 +172,15 @@
                     </div>
                     @endguest
 
-
-
                 </div>
 
             </div>
         </div>
-
+                    
     </header>
 
-    {{-- Mobile Menu Component - Outside header for proper overlay positioning --}}
-
+     {{-- Mobile Menu Component - Outside header for proper overlay positioning --}}
     <x-navigation.vanilla-mobile-menu />
-
 
     <script>
         window.addEventListener('load', function() {

@@ -18,9 +18,9 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role; // Importiamo i ruoli di Spatie
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\Layout;
+    
 
-
-#[Layout('layouts.app')] 
+#[Layout('layouts.platform')] 
 class CollectionUserMember extends Component {
 
     use HasPermissionTrait;

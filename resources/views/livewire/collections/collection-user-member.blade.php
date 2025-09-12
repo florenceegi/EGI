@@ -1,5 +1,5 @@
 <div id="collection_management" class="p-6 bg-gray-800 border border-gray-700 shadow-lg rounded-2xl">
-
+    <x-slot name="platformHeader">
     <!-- Titolo della sezione -->
     <div id="collection_management" class="p-6 bg-gray-800 border border-gray-700 shadow-lg rounded-2xl">
 
@@ -185,5 +185,5 @@
             'collectionId' => $collectionId,
         ])
     @endif
-
+    </x-slot>
 </div>
