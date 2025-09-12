@@ -215,4 +215,8 @@ return [
         'previous_egi' => 'Previous EGI',
         'next_egi' => 'Next EGI',
     ],
+
+    'session' => [
+        'expired' => 'Session expired. Please log in again.',
+    ],
 ];

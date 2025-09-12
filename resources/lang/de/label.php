@@ -202,4 +202,8 @@ return [
         'utilities' => 'Dienstprogramme',
         'upload_file' => 'Datei hochladen',
     ],
+
+    'session' => [
+        'expired' => 'Sitzung abgelaufen. Bitte melden Sie sich erneut an.',
+    ],
 ];

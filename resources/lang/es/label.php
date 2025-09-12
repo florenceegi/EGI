@@ -202,4 +202,8 @@ return [
         'utilities' => 'Utilidades',
         'upload_file' => 'Subir archivo',
     ],
+
+    'session' => [
+        'expired' => 'Sesión expirada. Inicia sesión de nuevo.',
+    ],
 ];

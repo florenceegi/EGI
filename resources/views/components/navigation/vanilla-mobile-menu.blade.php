@@ -81,7 +81,7 @@
             <!-- Header Section with User Info -->
             <div class="flex items-center justify-between p-6 bg-gradient-to-r from-blue-500 to-purple-600 mobile-header-gradient" style="opacity: 1 !important; background: linear-gradient(to right, #3b82f6, #9333ea) !important; color: white !important;">
                 <div class="flex items-center space-x-3">
-                    @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
+
                         @if(Auth::check() && Auth::user()->id)
                             <a href="{{ route('creator.home', Auth::user()->id) }}" class="block transition-transform duration-300 hover:scale-105">
                                 <img class="object-cover transition-all duration-300 rounded-full size-12 ring-2 ring-white/30 hover:ring-white/60"
@@ -93,19 +93,7 @@
                                 src="{{ Auth::user()?->profile_photo_url ?? null }}"
                                 alt="{{ Auth::user()?->name ?? '' }}" />
                         @endif
-                    @else
-                        @if(Auth::check() && Auth::user()->id)
-                            <a href="{{ route('creator.home', Auth::user()->id) }}" class="block transition-transform duration-300 hover:scale-105">
-                                <div class="flex items-center justify-center w-12 h-12 text-lg font-bold text-white transition-all duration-300 rounded-full bg-white/20 hover:bg-white/30">
-                                    {{ substr(Auth::user()?->name ?? 'U', 0, 1) }}
-                                </div>
-                            </a>
-                        @else
-                            <div class="flex items-center justify-center w-12 h-12 text-lg font-bold text-white rounded-full bg-white/20">
-                                {{ substr(Auth::user()?->name ?? 'U', 0, 1) }}
-                            </div>
-                        @endif
-                    @endif
+
                     <div>
                         <h3 class="font-semibold text-white">{{ Auth::user()?->name ?? '' }}</h3>
                         <p class="text-sm text-white/80">{{ Auth::user()?->email ?? '' }}</p>
@@ -135,15 +123,6 @@
 
                         {{-- Se siamo nel guest layout (Home), mostra i link di nav-links.blade.php --}}
                         @if(View::getSection('title') === __('guest_home.page_title') || request()->routeIs('home') || request()->is('/'))
-                            {{-- Home Link --}}
-                            <a href="{{ url('/') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors mobile-nav-item {{ (request()->routeIs('home') || request()->is('/')) ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : '' }}">
-                                <div class="flex items-center justify-center w-8 h-8 text-white bg-blue-500 rounded-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                                    </svg>
-                                </div>
-                                <span class="font-medium">{{ __('guest_layout.home') }}</span>
-                            </a>
 
                             {{-- 🔍 Universal Search Trigger (mobile, sostituisce dropdown collezioni) --}}
                             <button type="button" id="mobile-universal-search-button"
@@ -158,6 +137,45 @@
                                 </div>
                                 <span class="font-medium">{{ __('label.search') }}</span>
                             </button>
+
+                            {{-- Create EGI Button - Sempre visibile, la logica di azione è gestita da JS in base allo stato utente --}}
+                            @can('create_EGI')
+                                <button type="button"
+                                    class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors js-create-egi-contextual-button dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl mobile-nav-item"
+                                    data-action="open-create-egi-contextual" data-auth-type="{{ $authType }}"
+                                    aria-label="{{ __('guest_layout.create_egi') }}">
+                                    <div class="flex items-center justify-center w-8 h-8 text-white bg-green-500 rounded-lg">
+                                        <svg class="w-4 h-4 js-create-egi-button-icon" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                            <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
+                                        </svg>
+                                    </div>
+                                    <span class="font-medium js-create-egi-button-text">{{ __('guest_layout.create_egi') }}</span>
+                                </button>
+                            @endcan
+
+                            {{-- Create Collection CTA - Solo se l'utente ha il permesso --}}
+                            @can('create_collection')
+                                <button type="button" data-action="open-create-collection-modal"
+                                    class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl mobile-nav-item"
+                                    aria-label="{{ __('collection.create_collection') }}">
+                                    <div class="flex items-center justify-center w-8 h-8 text-white bg-indigo-500 rounded-lg">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                            <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
+                                        </svg>
+                                    </div>
+                                    <span class="font-medium">{{ __('collection.create_collection') }}</span>
+                                </button>
+                            @endcan
+
+                            {{-- Home Link --}}
+                            <a href="{{ url('/') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors mobile-nav-item {{ (request()->routeIs('home') || request()->is('/')) ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : '' }}">
+                                <div class="flex items-center justify-center w-8 h-8 text-white bg-blue-500 rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                    </svg>
+                                </div>
+                                <span class="font-medium">{{ __('guest_layout.home') }}</span>
+                            </a>
 
                             {{-- Creators Link --}}
                             <a href="{{ url('/creator') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-colors mobile-nav-item {{ request()->routeIs('creator.index') ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : '' }}">
@@ -199,71 +217,9 @@
                                 <span class="font-medium">{{ __('guest_layout.epps') }}</span>
                             </a>
 
-                            {{-- Le mie Collezioni Dropdown - Solo per utenti loggati --}}
-                            @can('create_EGI')
-                                @auth
-                                <button type="button" id="mobile-collection-list-dropdown-button"
-                                    class="flex items-center justify-between w-full px-4 py-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl mobile-nav-item"
-                                    aria-expanded="false" aria-haspopup="true">
-                                    <span class="flex items-center space-x-3">
-                                        <div class="flex items-center justify-center w-8 h-8 text-white bg-purple-500 rounded-lg">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                                            </svg>
-                                        </div>
-                                        <span class="font-medium">{{ __('collection.my_galleries') }}</span>
-                                    </span>
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                        <path fill-rule="evenodd"
-                                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                                {{-- Dropdown menu mobile --}}
-                                <div id="mobile-collection-list-dropdown-menu"
-                                    class="mx-4 mb-2 mt-1 hidden max-h-[40vh] overflow-y-auto rounded-xl border border-gray-600 bg-gray-800/90 py-2 shadow-lg backdrop-blur-lg"
-                                    style="opacity: 1 !important;">
-                                    <div id="mobile-collection-list-loading" class="px-4 py-3 text-sm text-center text-gray-500">
-                                        {{ __('collection.loading_galleries') }}</div>
-                                    <div id="mobile-collection-list-empty" class="hidden px-4 py-3 text-sm text-center text-gray-500">
-                                        {{ __('collection.no_galleries_found') }} <button type="button" data-action="open-create-collection-modal"
-                                            class="underline hover:text-emerald-400">{{ __('collection.create_one_question') }}</button></div>
-                                    <div id="mobile-collection-list-error" class="hidden px-4 py-3 text-sm text-center text-red-500">
-                                        {{ __('collection.error_loading_galleries') }}</div>
-                                </div>
-                                @endauth
-                            @endcan
-
-                            {{-- Create EGI Button - Sempre visibile, la logica di azione è gestita da JS in base allo stato utente --}}
-                            @can('create_EGI')
-                                <button type="button"
-                                    class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors js-create-egi-contextual-button dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl mobile-nav-item"
-                                    data-action="open-create-egi-contextual" data-auth-type="{{ $authType }}"
-                                    aria-label="{{ __('guest_layout.create_egi') }}">
-                                    <div class="flex items-center justify-center w-8 h-8 text-white bg-green-500 rounded-lg">
-                                        <svg class="w-4 h-4 js-create-egi-button-icon" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-                                            <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-                                        </svg>
-                                    </div>
-                                    <span class="font-medium js-create-egi-button-text">{{ __('guest_layout.create_egi') }}</span>
-                                </button>
-                            @endcan
-
-                            {{-- Create Collection CTA - Solo se l'utente ha il permesso --}}
-                            @can('create_collection')
-                                <button type="button" data-action="open-create-collection-modal"
-                                    class="flex items-center w-full px-4 py-3 space-x-3 text-gray-700 transition-colors dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-xl mobile-nav-item"
-                                    aria-label="{{ __('collection.create_collection') }}">
-                                    <div class="flex items-center justify-center w-8 h-8 text-white bg-indigo-500 rounded-lg">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
-                                            <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
-                                        </svg>
-                                    </div>
-                                    <span class="font-medium">{{ __('collection.create_collection') }}</span>
-                                </button>
-                            @endcan
 
                         @else
+
                             {{-- Se siamo nell'app layout (Dashboard), mostra i link standard --}}
                             <a href="{{ route('home') }}" class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors mobile-nav-item {{ request()->routeIs('home') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : '' }}">
                                 <div class="flex items-center justify-center w-8 h-8 text-white bg-blue-500 rounded-lg">

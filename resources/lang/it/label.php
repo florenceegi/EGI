@@ -240,4 +240,8 @@ return [
         'supported_formats' => 'Formati supportati: JPG, PNG, GIF, WebP (max 10MB)',
         'delete_image' => 'Elimina Immagine',
     ],
+
+    'session' => [
+        'expired' => 'Sessione scaduta. Accedi di nuovo.',
+    ],
 ];

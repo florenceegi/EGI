@@ -202,4 +202,8 @@ return [
         'utilities' => 'Utilitários',
         'upload_file' => 'Carregar arquivo',
     ],
+
+    'session' => [
+        'expired' => 'Sessão expirada. Faça login novamente.',
+    ],
 ];
