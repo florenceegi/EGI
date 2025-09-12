@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 
+
 @php(session(['natan_session_boot' => true]))
 
 @include('layouts.partials.header')
 
-
 <!-- Platform Info Buttons (ora in cima) -->
-@isset($platformInfoButtons)
-<div class="relative z-20 w-full">
-    {{ $platformInfoButtons }}
+@isset($platformHeader)
+<div class="relative w-full px-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
+    {{ $platformHeader }}
 </div>
 @endisset
 
 <!-- Platform Statistics (ora sotto i bottoni) -->
-@isset($platformStats)
-<div class="relative z-20 w-full">
-    {{ $platformStats }}
+@isset($platformSubHeader)
+<div class="relative z-10 w-full px-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
+    {{ $platformHeader }}
 </div>
 @endisset
 
@@ -28,49 +28,42 @@
 
     @isset($heroFullWidth)
     {{-- Layout a colonna intera --}}
-    <div class="relative z-10 w-full px-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="relative z-10 w-full p-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
         {{ $heroFullWidth }}
     </div>
     @endisset
-    
-    {{-- EGI Carousel Slot - Mobile First --}}
-    @isset($egiCarousel)
-    <div class="relative z-10 w-full" role="region" aria-label="Featured EGI Carousel">
-        {{ $egiCarousel }}
-    </div>
-    @endisset
-
-    {{-- Natan Assistant (se presente) --}}
-    @isset($heroNatanAssistant)
-    <div class="natan-assistant fixed bottom-6 right-6 z-[40] flex flex-col items-end" role="region"
-        aria-label="{{ __('guest_layout.hero_right_content_aria_label') }}">
-        {{ $heroNatanAssistant ?? '' }}
-    </div>
-    @endisset
 
     {{-- Contenuto sotto l'hero --}}
-    <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+    @isset($belowHeroContent_0)
+    <div class="relative z-10 w-full p-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8 below-hero-content" role="region"
         aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
-        {{ $belowHeroContent ?? '' }}
-    </div>
+        {{ $belowHeroContent_0 ?? '' }}
+    </div>    
+    @endisset
 
     {{-- Top Collectors Carousel --}}
+    @isset($belowHeroContent_1)
     <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
         aria-label="Top Collectors Carousel">
-        {{ $belowHeroContent_0_5 ?? '' }}
-    </div>
-
-    {{-- Contenuto sotto l'hero --}}
-    <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
         {{ $belowHeroContent_1 ?? '' }}
     </div>
+    @endisset
 
-    <div class="relative z-10 w-full mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+    @isset($belowHeroContent_2)
+    <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
         aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
-        
         {{ $belowHeroContent_2 ?? '' }}
     </div>
+    @endisset
+
+    @isset($belowHeroContent_3)
+    <div class="relative z-10 w-full mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
+        {{ $belowHeroContent_3 ?? '' }}
+    </div>
+    @endisset
+
+    {{-- EGI Carousel Slot - Mobile First --}}
 
     <div class="absolute z-20 transform -translate-x-1/2 animate-bounce-slow bottom-6 left-1/2 md:hidden">
         <button type="button" aria-label="{{ __('guest_layout.scroll_down_aria_label') }}"
@@ -82,17 +75,9 @@
             </svg>
         </button>
     </div>
-    </div>
+    
 </section>
 @endunless
-
-{{-- SLOT PER IL CONTENUTO DEGLI ATTORI --}}
-@isset($actorContent)
-<div id="guest-layout-actors-section-wrapper" class="relative z-10 w-full"> {{-- Wrapper opzionale per stili globali se
-    necessario --}}
-    {{ $actorContent }}
-</div>
-@endisset
 
 <!-- Main Content -->
 <main id="main-content" role="main" class="flex-grow">
@@ -114,6 +99,7 @@
         </div>
     </div>
 </footer>
+
 
 <!-- Modals -->
 <div id="upload-modal" class="hidden modal" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1"

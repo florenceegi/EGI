@@ -185,6 +185,8 @@ return [
     ],
 
     // === PROFILE IMAGES ===
+    'profile_images_management' => 'Gestione Immagini Profilo',
+    'profile_images_subtitle' => 'Carica, gestisci e seleziona le tue immagini profilo',
     'current_profile_image' => 'Immagine Profilo Attuale',
     'currently_active' => 'Attualmente attiva',
     'no_current_image' => 'Nessuna immagine profilo impostata',
@@ -238,4 +240,6 @@ return [
     'set_as_banner_success' => 'Banner impostato come attuale con successo',
     'set_as_banner' => 'Imposta come Banner',
     'no_media_id_provided' => 'ID media non fornito',
+    'how_to_use_banners' => 'Come gestire i banner',
+    'banner_management_help' => 'Passa il mouse sul banner per vedere i pulsanti. Clicca sull\'icona blu per impostare il banner come attuale, o sull\'icona rossa per eliminarlo.',
 ];

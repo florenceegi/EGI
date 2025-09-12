@@ -1310,7 +1310,7 @@ class User extends Authenticatable implements HasMedia {
 
         // Copy the selected banner to current_banner collection
         $newBanner = $media->copy($this, 'current_banner');
-        
+
         // Store reference to source media for tracking
         $newBanner->setCustomProperty('source_media_id', $media->id);
         $newBanner->save();

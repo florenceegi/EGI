@@ -159,6 +159,7 @@ class AppServiceProvider extends ServiceProvider {
         Blade::component('responsive-image', \App\View\Components\ResponsiveImage::class);
         Blade::component('universal-search-modal', \App\View\Components\UniversalSearchModal::class);
         Blade::component('app-layout', \App\View\Components\AppLayout::class);
+        Blade::component('environmental-stats', \App\View\Components\EnvironmentalStats::class);
 
         // Registriamo un driver nominato "custom_database"
         Notification::extend('custom_database', function ($app) {

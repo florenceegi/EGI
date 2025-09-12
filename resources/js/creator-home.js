@@ -162,11 +162,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Ensure active tab is visible on mobile
-        const activeTab = tabContainer.querySelector('[aria-current="page"]');
-        if (activeTab) {
-            activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-        }
+        // Tab scrolling will be handled by user interaction only
+        // No automatic scroll on page load to prevent unwanted scrolling
     }
 
     // ==========================================================================

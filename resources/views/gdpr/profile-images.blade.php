@@ -1,4 +1,5 @@
-<x-app-layout>
+<x-platform-layout  :title="$user->name . ' - ' . __('creator.home.title_suffix')" :metaDescription="__('creator.home.meta_description', ['name' => $user->name])">
+
     {{--
     @Oracode View: GDPR Profile Images Management - FlorenceEGI Brand Compliant
     🎯 Purpose: Dedicated interface for profile image management
@@ -14,26 +15,6 @@
     @seo-purpose Provide dedicated profile image management interface
     @accessibility-trait Full ARIA landmark structure
     --}}
-
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl gdpr-title">
-                    {{ __('profile.profile_images_management') }}
-                </h1>
-                <p class="mt-1 gdpr-subtitle">
-                    {{ __('profile.profile_images_subtitle') }}
-                </p>
-            </div>
-            <div class="hidden sm:block">
-                <svg class="w-8 h-8 text-oro-fiorentino" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-            </div>
-        </div>
-    </x-slot>
 
     {{-- Success/Error Messages --}}
     @if (session('success'))
@@ -62,8 +43,30 @@
         </div>
     @endif
 
+    <x-slot name="platformHeader">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl gdpr-title">
+                {{ __('profile.profile_images_management') }}
+            </h1>
+            <p class="mt-1 gdpr-subtitle">
+                {{ __('profile.profile_images_subtitle') }}
+            </p>
+        </div>
+        <div class="hidden sm:block">
+            <svg class="w-8 h-8 text-oro-fiorentino" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+        </div>
+    </div>
+    </x-slot>
+
+
     {{-- Profile Banner Management --}}
-    <div class="mb-8 space-y-8">
+    <x-slot name="heroFullWidth">
+    <div class="pb-8 mb-8 space-y-8 border-solid border-slate-600">
         {{-- Current Banner Card --}}
         <div class="p-6 gdpr-card rounded-2xl">
             <div class="flex items-center justify-between mb-6">
@@ -183,8 +186,8 @@
                                 clip-rule="evenodd" />
                         </svg>
                         <div>
-                            <p class="font-medium">{{ __('profile.how_to_use_images') }}</p>
-                            <p class="mt-1 text-blue-600">{{ __('profile.image_management_help') }}</p>
+                            <p class="font-medium">{{ __('profile.how_to_use_banners') }}</p>
+                            <p class="mt-1 text-blue-600">{{ __('profile.banner_management_help') }}</p>
                         </div>
                     </div>
                 </div>
@@ -257,9 +260,11 @@
             </div>
         @endif
     </div>
+    </x-slot>
 
     {{-- Profile Images Content --}}
-    <div class="space-y-8">
+    <x-slot name="belowHeroContent_0">
+    <div class="pb-8 mb-8 space-y-8 border-b border-gray-700">
         {{-- Current Profile Image Card --}}
         <div class="p-6 gdpr-card rounded-2xl">
             <div class="flex items-center justify-between mb-6">
@@ -442,6 +447,7 @@
             </div>
         @endif
     </div>
+    </x-slot>
 
     {{-- JavaScript for Profile Image Management --}}
     @push('scripts')
@@ -822,4 +828,4 @@
             });
         </script>
     @endpush
-</x-app-layout>
+</x-platform-layout>

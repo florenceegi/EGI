@@ -39,6 +39,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
         try {
             $user = Auth::user();
             $uploadedMedia = [];
+            
 
             // Simple validation - just check if files exist
             if (!$request->hasFile('profile_image')) {
@@ -238,8 +239,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|RedirectResponse
      */
-    public function uploadBanner(Request $request)
-    {
+    public function uploadBanner(Request $request) {
         try {
             $user = Auth::user();
             $uploadedMedia = [];
@@ -325,8 +325,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
      * @param Request $request
      * @return RedirectResponse
      */
-    public function setCurrentBanner(Request $request): RedirectResponse
-    {
+    public function setCurrentBanner(Request $request): RedirectResponse {
         try {
             $user = Auth::user();
             $mediaId = $request->input('media_id');
@@ -352,7 +351,6 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
 
             return redirect()->back()
                 ->with('success', __('profile.set_as_banner_success'));
-
         } catch (\Exception $e) {
             Log::error('Failed to set current banner', [
                 'user_id' => Auth::id(),
@@ -371,8 +369,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
      * @param Request $request
      * @return RedirectResponse
      */
-    public function deleteBanner(Request $request): RedirectResponse
-    {
+    public function deleteBanner(Request $request): RedirectResponse {
         try {
             $user = Auth::user();
             $mediaId = $request->input('media_id');
@@ -404,7 +401,6 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
 
             return redirect()->back()
                 ->with('success', __('profile.banner_deleted_successfully'));
-
         } catch (\Exception $e) {
             Log::error('Banner deletion failed', [
                 'user_id' => Auth::id(),

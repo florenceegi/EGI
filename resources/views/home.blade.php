@@ -23,7 +23,7 @@
         </div>
     </x-slot>
 
-    <x-slot name="heroFullWidth">
+    <x-slot name="platformStats">
 
         <x-collection-hero-banner :collections="$featuredCollections" id="mainHeroCarousel" />
 
@@ -59,11 +59,11 @@
     {{-- Nuovo slot per il carousel dei Creator - NASCOSTO su mobile --}}
     <x-slot name="belowHeroContent_1">
         <div class="hidden lg:block">
-            
+
             <x-collections-carousel :collections="$featuredCollections" bgClass="bg-gray-900" marginClass="mb-12" />
         </div>
     </x-slot>
-  
+
 
     {{-- Sezione: Protagonisti e Attori dell'Ecosistema --}}
     {{-- POPOLIAMO IL NUOVO SLOT $actorContent CON IL NOSTRO COMPONENTE actors-section --}}
