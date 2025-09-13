@@ -346,8 +346,8 @@ if (is_array($collection)) {
                             ->distinct('reservations.user_id')
                             ->count('reservations.user_id');
                     @endphp
-                    <x-collection.view-selector 
-                        :totalItems="$collection->egis_count ?? 0" 
+                    <x-collection.view-selector
+                        :totalItems="$collection->egis_count ?? 0"
                         :totalHolders="$totalHolders" />
                 </div>
             </div>

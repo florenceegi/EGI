@@ -140,6 +140,20 @@ return [
             'no_data_title' => 'Nessun Dato Ancora',
             'no_data_description' => 'I trend appariranno qui quando inizierai a vendere le tue opere.',
         ],
+
+        // 👥 Holders Widget
+        'holders' => [
+            'title' => 'I Miei Holder',
+            'collections' => 'collezioni',
+            'collection' => 'collezione',
+            'total_holders' => 'Holder Totali',
+            'total_items' => 'Opere Totali',
+            'total_volume' => 'Volume Totale',
+            'unknown_user' => 'Utente Sconosciuto',
+            'no_holders_yet' => 'Nessun Holder Ancora',
+            'no_holders_message' => 'Le tue opere non hanno ancora holder. Continua a promuovere!',
+            'view_all' => 'Vedi Tutti',
+        ],
     ],
     'under_construction' => [
         'title' => 'In Costruzione',

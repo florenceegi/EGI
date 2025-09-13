@@ -139,6 +139,20 @@ return [
             'no_data_title' => 'No Data Yet',
             'no_data_description' => 'Trends will appear here when you start selling your works.',
         ],
+
+        // 👥 Holders Widget
+        'holders' => [
+            'title' => 'My Holders',
+            'collections' => 'collections',
+            'collection' => 'collection',
+            'total_holders' => 'Total Holders',
+            'total_items' => 'Total Items',
+            'total_volume' => 'Total Volume',
+            'unknown_user' => 'Unknown User',
+            'no_holders_yet' => 'No Holders Yet',
+            'no_holders_message' => 'Your works don\'t have holders yet. Keep promoting!',
+            'view_all' => 'View All',
+        ],
     ],
     'under_construction' => [
         'title' => 'Under Construction',
