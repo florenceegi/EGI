@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\BiographyWebController;
 
 
 // Creator Home Routes
@@ -33,7 +34,7 @@ Route::prefix('creator')->name('creator.')->group(function () {
         ->where('id', '[0-9]+')
         ->name('portfolio');
 
-    Route::get('/{id}/biography', [CreatorHomeController::class, 'underConstruction'])
+    Route::get('/{id}/biography', [BiographyWebController::class, 'show'])
         ->where('id', '[0-9]+')
         ->name('biography');
 

@@ -194,11 +194,23 @@ class BiographyWebController extends Controller
         $userId = FegiAuth::id();
         $walletAddress = FegiAuth::getWallet();
 
-        $biography = Biography::where('user_id', $creator_id)->firstOrFail();
+        $biography = Biography::where('user_id', $creator_id)->first();
+        $biographyOwner = User::findOrFail($creator_id); // Proprietario della biografia
 
-        // Check if biography exists
+        // Check if biography exists - show graceful message instead of 404
         if (!$biography) {
-            abort(404, 'Biografia non trovata');
+            $this->logger->info('Biography not found for user', [
+                'creator_id' => $creator_id,
+                'viewer_id' => $userId,
+                'auth_type' => $authType
+            ]);
+
+            return view('biography.show', [
+                'user' => $biographyOwner,
+                'biography' => null,
+                'isOwner' => FegiAuth::check() && $biographyOwner->id === $userId,
+                'authType' => $authType
+            ]);
         }
 
         $this->logger->info('Biography page requested', [
@@ -216,7 +228,6 @@ class BiographyWebController extends Controller
 
         try {
             $currentUser = FegiAuth::user(); // Utente attualmente autenticato
-            $biographyOwner = User::findOrFail($creator_id); // Proprietario della biografia
 
             // Access control validation
             if (!$biography->is_public && (!FegiAuth::check() || $biography->user_id !== $userId)) {
