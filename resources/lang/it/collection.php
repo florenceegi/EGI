@@ -384,6 +384,7 @@ return [
         'create_invitation' => 'Crea un invito',
         'already_member' => 'Questo utente è già membro di questa collezione!',
         'user_already_member' => 'L\'utente che stai tentando di invitare è già un membro di questa collezione!',
+        'unauthorized_role' => 'Questo utente non può essere invitato. Solo gli utenti con ruoli Creator, Patron o Enterprise possono essere invitati alle collezioni.',
     ],
     'collaborators' => [
         'add_denied' => 'Non hai i permessi per aggiungere collaboratori',

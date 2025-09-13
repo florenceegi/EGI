@@ -17,6 +17,22 @@ enum UserRoleForInvite: string {
     }
 
     /**
+     * Ruoli che possono essere INVITATI (ruolo sulla piattaforma)
+     * Solo questi user types possono ricevere inviti per collezioni
+     */
+    public static function allowedPlatformRoles(): array {
+        return ['creator', 'patron', 'enterprise'];
+    }
+
+    /**
+     * Ruoli disponibili DENTRO la collezione (ruolo assegnato nella collezione)
+     * Questi sono i ruoli che si possono assegnare agli invitati dentro la collezione
+     */
+    public static function collectionRoles(): array {
+        return array_map(fn($case) => $case->value, self::cases());
+    }
+
+    /**
      * Ottieni tutti i valori dell'enum con labels leggibili
      */
     public static function options(): array {
@@ -26,6 +42,17 @@ enum UserRoleForInvite: string {
             self::ADMIN->value => 'Admin',
             self::EDITOR->value => 'Editor',
             self::GUEST->value => 'Guest',
+        ];
+    }
+
+    /**
+     * Labels per i ruoli piattaforma consentiti agli inviti
+     */
+    public static function allowedPlatformRoleLabels(): array {
+        return [
+            'creator' => 'Creator',
+            'patron' => 'Patron',
+            'enterprise' => 'Enterprise',
         ];
     }
 
@@ -40,5 +67,19 @@ enum UserRoleForInvite: string {
             self::EDITOR => 'Editor',
             self::GUEST => 'Guest',
         };
+    }
+
+    /**
+     * Verifica se un ruolo piattaforma può essere invitato
+     */
+    public static function canBeInvited(string $platformRole): bool {
+        return in_array($platformRole, self::allowedPlatformRoles());
+    }
+
+    /**
+     * Verifica se un ruolo è valido per essere assegnato in una collezione
+     */
+    public static function isValidCollectionRole(string $collectionRole): bool {
+        return in_array($collectionRole, self::collectionRoles());
     }
 }

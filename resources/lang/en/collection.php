@@ -382,6 +382,7 @@ return [
         'create_invitation' => 'Create an invitation',
         'already_member' => 'This user is already a member of this collection!',
         'user_already_member' => 'The user you are trying to invite is already a member of this collection!',
+        'unauthorized_role' => 'This user cannot be invited. Only users with Creator, Patron, or Enterprise roles can be invited to collections.',
     ],
     'collaborators' => [
         'add_denied' => 'You don\'t have permission to add collaborators',

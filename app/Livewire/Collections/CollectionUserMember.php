@@ -201,6 +201,23 @@ class CollectionUserMember extends Component {
             $invitedUser = \App\Models\User::where('email', $this->email)->first();
 
             if ($invitedUser) {
+                // CONTROLLO RUOLO PIATTAFORMA: Verifica se l'utente può essere invitato
+                $userRole = $invitedUser->getRoleNames()->first(); // Ottieni il primo ruolo Spatie dell'utente
+
+                if (!UserRoleForInvite::canBeInvited($userRole)) {
+                    Log::channel('florenceegi')->warning('Tentativo di invitare utente con ruolo non autorizzato', [
+                        'invited_email' => $this->email,
+                        'invited_user_id' => $invitedUser->id,
+                        'user_role' => $userRole,
+                        'allowed_roles' => UserRoleForInvite::allowedPlatformRoles(),
+                        'collection_id' => $this->collectionId,
+                        'inviter_user_id' => auth()->id()
+                    ]);
+
+                    $this->addError('email', __('collection.invitation.unauthorized_role'));
+                    return;
+                }
+
                 $existingMember = CollectionUser::where('collection_id', $this->collectionId)
                     ->where('user_id', $invitedUser->id)
                     ->first();
@@ -217,6 +234,17 @@ class CollectionUserMember extends Component {
                     $this->addError('email', __('collection.invitation.user_already_member'));
                     return;
                 }
+            } else {
+                // Se l'utente non esiste, non possiamo verificare il suo ruolo
+                // Puoi decidere se permettere l'invito di nuovi utenti o bloccare
+                Log::channel('florenceegi')->warning('Tentativo di invitare email non registrata', [
+                    'invited_email' => $this->email,
+                    'collection_id' => $this->collectionId,
+                    'inviter_user_id' => auth()->id()
+                ]);
+
+                $this->addError('email', __('collection.invitation.user_not_found'));
+                return;
             }
 
             $this->invitationService->createInvitation(
