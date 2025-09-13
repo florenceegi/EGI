@@ -30,6 +30,34 @@ return [
     'new' => 'New',
     'sold' => 'sold',
 
+    // View Selector
+    'view_selector' => [
+        'items' => 'Items',
+        'list' => 'List',
+        'holders' => 'Holders',
+        'traits' => 'Traits',
+    ],
+
+    // Holders
+    'holders' => [
+        'total_holders' => 'Total Holders',
+        'total_items' => 'Total Items',
+        'total_volume' => 'Total Volume',
+        'holder' => 'Holder',
+        'items' => 'Items',
+        'percentage' => 'Percentage',
+        'total_spent' => 'Total Spent',
+        'no_holders_yet' => 'No Holders Yet',
+        'no_holders_message' => 'There are no holders for this collection yet.',
+        'unknown_user' => 'Unknown User',
+    ],
+
+    // Traits (placeholder for future)
+    'traits' => [
+        'coming_soon' => 'Coming Soon',
+        'coming_soon_message' => 'Traits view will be available soon.',
+    ],
+
     // Collection Status
     'status' => [
         'active' => 'Active',

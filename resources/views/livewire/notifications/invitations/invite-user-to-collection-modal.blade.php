@@ -20,7 +20,7 @@
                 <select id="role" wire:model="role"
                     class="w-full text-white bg-gray-700 select select-bordered select-primary">
                     <option value="" disabled>{{ __('Select a role') }}</option>
-                    @foreach ($roles as $role)
+                    @foreach ($rolesForInvite as $role)
                         <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                     @endforeach
                 </select>

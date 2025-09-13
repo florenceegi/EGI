@@ -16,11 +16,12 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role; // Importiamo i ruoli di Spatie
+use App\Enums\UserRoleForInvite; // Importiamo l'enum per i ruoli di invito
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\Layout;
-    
 
-#[Layout('layouts.app')] 
+
+#[Layout('layouts.app')]
 class CollectionUserMember extends Component {
 
     use HasPermissionTrait;
@@ -34,7 +35,8 @@ class CollectionUserMember extends Component {
     public $walletProposals;
     public $invitationProposal;
     public $show = false; // Proprietà per gestire la visibilità della modale
-    public $roles = []; // Ruoli disponibili
+    public $roles = []; // Ruoli disponibili dalla tabella roles
+    public $rolesForInvite = []; // Ruoli specifici per gli inviti
     public $canCreateWallet = true; // Permesso per creare wallet
     public $canCreateTeam = true; // Permesso per creare inviti
 
@@ -76,6 +78,9 @@ class CollectionUserMember extends Component {
 
         // Carica i ruoli disponibili da Spatie
         $this->roles = Role::pluck('name')->toArray(); // Recupera i nomi dei ruoli dalla tabella 'roles'
+
+        // Carica i ruoli specifici per gli inviti dall'enum
+        $this->rolesForInvite = UserRoleForInvite::values();
 
         // Carica la collection e i suoi dati
         $this->loadCollectionData();
@@ -237,7 +242,7 @@ class CollectionUserMember extends Component {
     }
 
     public function openInviteModal() {
-        
+
         Log::channel('florenceegi')->info('OpenInviteModal', [
             'collectionId' => $this->collectionId
         ]);

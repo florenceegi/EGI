@@ -247,7 +247,7 @@ class BiographyWebController extends Controller {
             // Se si accede dalla pagina del creator, la biografia è considerata pubblica
             $isCreatorPage = str_contains($request->route()->getName(), 'creator.');
             $allowPublicAccess = $biography->is_public || $isCreatorPage;
-            
+
             // Debug logging
             $this->logger->info('Biography access control debug', [
                 'route_name' => $request->route()->getName(),
@@ -258,7 +258,7 @@ class BiographyWebController extends Controller {
                 'user_id' => $userId,
                 'biography_owner_id' => $biography->user_id
             ]);
-            
+
             if (!$allowPublicAccess && (!FegiAuth::check() || $biography->user_id !== $userId)) {
                 // Log security event for unauthorized access attempt
                 $this->auditService->logSecurityEvent(

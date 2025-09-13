@@ -31,6 +31,34 @@ return [
     'new' => 'Nuovo',
     'sold' => 'venduti',
 
+    // View Selector
+    'view_selector' => [
+        'items' => 'Opere',
+        'list' => 'Lista',
+        'holders' => 'Holder',
+        'traits' => 'Traits',
+    ],
+
+    // Holders
+    'holders' => [
+        'total_holders' => 'Holder Totali',
+        'total_items' => 'Opere Totali',
+        'total_volume' => 'Volume Totale',
+        'holder' => 'Holder',
+        'items' => 'Opere',
+        'percentage' => 'Percentuale',
+        'total_spent' => 'Totale Speso',
+        'no_holders_yet' => 'Nessun Holder Ancora',
+        'no_holders_message' => 'Non ci sono ancora holder per questa collezione.',
+        'unknown_user' => 'Utente Sconosciuto',
+    ],
+
+    // Traits (placeholder for future)
+    'traits' => [
+        'coming_soon' => 'Prossimamente',
+        'coming_soon_message' => 'La visualizzazione dei traits sarà disponibile presto.',
+    ],
+
     // Collection Status
     'status' => [
         'active' => 'Attiva',
@@ -159,7 +187,7 @@ return [
     'login' => 'Accedi',
     'register' => 'Registrati',
     'open_main_menu' => 'Apri menù principale',
-    
+
     'wallet' => [
         'unassigned' => 'Non assegnato',
         'wallets' => 'Wallet della collection',

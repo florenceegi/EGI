@@ -334,18 +334,21 @@ if (is_array($collection)) {
                         <option value="price_high">{{ __('collection.show.price_high_to_low') }}</option>
                     </select>
 
-                    {{-- View Toggle --}}
-                    <div class="flex p-1 bg-gray-800 rounded-lg">
-                        <button
-                            class="px-3 py-1 text-sm font-medium text-white bg-indigo-600 rounded view-toggle active"
-                            data-view="grid">
-                            <span class="text-sm material-symbols-outlined">grid_view</span>
-                        </button>
-                        <button class="px-3 py-1 text-sm font-medium text-gray-400 rounded view-toggle hover:text-white"
-                            data-view="list">
-                            <span class="text-sm material-symbols-outlined">view_list</span>
-                        </button>
-                    </div>
+                    {{-- View Selector Component --}}
+                    @php
+                        // Calcola il numero di holder unici per questa collezione
+                        $totalHolders = DB::table('reservations')
+                            ->join('egis', 'egis.id', '=', 'reservations.egi_id')
+                            ->where('egis.collection_id', $collection->id)
+                            ->where('reservations.is_highest', true)
+                            ->where('reservations.is_current', true)
+                            ->whereNull('egis.deleted_at')
+                            ->distinct('reservations.user_id')
+                            ->count('reservations.user_id');
+                    @endphp
+                    <x-collection.view-selector 
+                        :totalItems="$collection->egis_count ?? 0" 
+                        :totalHolders="$totalHolders" />
                 </div>
             </div>
 
@@ -400,6 +403,22 @@ if (is_array($collection)) {
                     </div>
                 </div>
                 @endforelse
+            </div>
+
+            {{-- Holders Container --}}
+            <div id="holders-container" style="display: none;">
+                <x-collection.holders-list :collection="$collection" />
+            </div>
+
+            {{-- Traits Container (placeholder for future) --}}
+            <div id="traits-container" style="display: none;">
+                <div class="p-12 text-center bg-gray-800 rounded-lg">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-gray-700 rounded-full flex items-center justify-center">
+                        <span class="text-2xl text-gray-400 material-symbols-outlined">category</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">{{ __('collection.traits.coming_soon') }}</h3>
+                    <p class="text-gray-400">{{ __('collection.traits.coming_soon_message') }}</p>
+                </div>
             </div>
 
             {{-- Load More Button (se necessario) --}}
@@ -507,43 +526,7 @@ document.querySelectorAll('.like-button').forEach(button => {
     });
 });
 
-// View Toggle - SIMPLIFIED with direct style control
-document.querySelectorAll('.view-toggle').forEach(button => {
-    button.addEventListener('click', function() {
-        const view = this.dataset.view;
-        const container = document.getElementById('egis-container');
-
-        // Update buttons
-        document.querySelectorAll('.view-toggle').forEach(btn => {
-            btn.classList.remove('active', 'bg-indigo-600', 'text-white');
-            btn.classList.add('text-gray-400');
-        });
-
-        this.classList.add('active', 'bg-indigo-600', 'text-white');
-        this.classList.remove('text-gray-400');
-
-        // Toggle between grid and list items with direct style control
-        if (view === 'list') {
-            container.className = 'space-y-4';
-            // Hide grid items, show list items
-            container.querySelectorAll('.grid-view').forEach(item => {
-                item.style.display = 'none';
-            });
-            container.querySelectorAll('.list-view').forEach(item => {
-                item.style.display = 'block';
-            });
-        } else {
-            container.className = 'egi-grid';
-            // Show grid items, hide list items
-            container.querySelectorAll('.grid-view').forEach(item => {
-                item.style.display = 'block';
-            });
-            container.querySelectorAll('.list-view').forEach(item => {
-                item.style.display = 'none';
-            });
-        }
-    });
-});
+// View Toggle - Now handled by view-selector component
 
 // EGI sorting functionality
 document.getElementById('egis-sort').addEventListener('change', function() {
