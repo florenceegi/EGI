@@ -398,4 +398,10 @@ return [
         'part_of' => 'Parte di',
     ],
 
+    // Collaboratori della Collection
+    'collection_collaborators' => 'Collaboratori',
+    'owner' => 'Proprietario',
+    'creator' => 'Creatore',
+    'no_other_collaborators' => 'Nessun altro collaboratore',
+
 ];

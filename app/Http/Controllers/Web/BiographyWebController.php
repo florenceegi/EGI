@@ -27,8 +27,22 @@ use App\Models\User;
  * @date 2025-07-03
  * @purpose Display biography pages with hybrid authentication and GDPR compliance
  */
-class BiographyWebController extends Controller
-{
+class BiographyWebController extends Controller {
+
+    /**
+     * Risolve un creator da ID numerico o nick_name
+     *
+     * @param string|int $identifier
+     * @return User
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    private function resolveCreator($identifier): User {
+        if (is_numeric($identifier)) {
+            return User::findOrFail($identifier);
+        } else {
+            return User::where('nick_name', $identifier)->firstOrFail();
+        }
+    }
     /**
      * @Oracode Ultra Dependencies + GDPR Audit
      */
@@ -57,8 +71,7 @@ class BiographyWebController extends Controller
      *
      * @throws \Ultra\ErrorManager\Exceptions\UltraErrorException When listing fails
      */
-    public function index(Request $request): View
-    {
+    public function index(Request $request): View {
         $authType = FegiAuth::getAuthType();
         $userId = FegiAuth::id();
         $walletAddress = FegiAuth::getWallet();
@@ -188,14 +201,13 @@ class BiographyWebController extends Controller
      *
      * @throws \Ultra\ErrorManager\Exceptions\UltraErrorException When access denied or display fails
      */
-    public function show(Request $request, $creator_id): View | RedirectResponse | Response
-    {
+    public function show(Request $request, $creator_id): View | RedirectResponse | Response {
         $authType = FegiAuth::getAuthType();
         $userId = FegiAuth::id();
         $walletAddress = FegiAuth::getWallet();
 
-        $biography = Biography::where('user_id', $creator_id)->first();
-        $biographyOwner = User::findOrFail($creator_id); // Proprietario della biografia
+        $biographyOwner = $this->resolveCreator($creator_id); // Proprietario della biografia
+        $biography = Biography::where('user_id', $biographyOwner->id)->first();
 
         // Check if biography exists - show graceful message instead of 404
         if (!$biography) {
@@ -222,6 +234,8 @@ class BiographyWebController extends Controller
             'is_public' => $biography->is_public,
             'biography_type' => $biography->type,
             'owner_id' => $biography->user_id,
+            'is_creator_page' => str_contains($request->route()->getName(), 'creator.'),
+            'route_name' => $request->route()->getName(),
             'wallet' => $walletAddress,
             'ip_address' => $request->ip()
         ]);
@@ -230,10 +244,25 @@ class BiographyWebController extends Controller
             $currentUser = FegiAuth::user(); // Utente attualmente autenticato
 
             // Access control validation
-            if (!$biography->is_public && (!FegiAuth::check() || $biography->user_id !== $userId)) {
+            // Se si accede dalla pagina del creator, la biografia è considerata pubblica
+            $isCreatorPage = str_contains($request->route()->getName(), 'creator.');
+            $allowPublicAccess = $biography->is_public || $isCreatorPage;
+            
+            // Debug logging
+            $this->logger->info('Biography access control debug', [
+                'route_name' => $request->route()->getName(),
+                'is_creator_page' => $isCreatorPage,
+                'biography_is_public' => $biography->is_public,
+                'allow_public_access' => $allowPublicAccess,
+                'user_authenticated' => FegiAuth::check(),
+                'user_id' => $userId,
+                'biography_owner_id' => $biography->user_id
+            ]);
+            
+            if (!$allowPublicAccess && (!FegiAuth::check() || $biography->user_id !== $userId)) {
                 // Log security event for unauthorized access attempt
                 $this->auditService->logSecurityEvent(
-                    $currentUser ?? new \stdClass(),
+                    $currentUser,
                     'unauthorized_biography_access',
                     [
                         'biography_id' => $biography->id,
@@ -284,7 +313,7 @@ class BiographyWebController extends Controller
             $biographyMedia = $biography->getMedia('main_gallery'); // Ensure media is loaded
 
             // Se vuoi, puoi ciclare:
-            foreach($biographyMedia as $media) {
+            foreach ($biographyMedia as $media) {
                 $this->logger->info('Biography media URL', ['url' => $media->getUrl()]);
             }
 

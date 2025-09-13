@@ -154,6 +154,9 @@
                             {{-- Collection Link --}}
                             @include('egis.partials.sidebar.collection-link-section', compact('collection'))
 
+                            {{-- Collection Collaborators --}}
+                            @include('egis.partials.sidebar.collection-collaborators-section', compact('collection'))
+
                             {{-- Component Utility Manager (solo per creator) --}}
                             @include('egis.partials.sidebar.utility-manager-section', compact('egi'))
                         </div>

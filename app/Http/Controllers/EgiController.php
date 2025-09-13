@@ -83,6 +83,7 @@ class EgiController extends Controller {
         try {
             $egi = Egi::with([
                 'collection.creator',
+                'collection.users',
                 'collection.epp',
                 'user',
                 'owner',

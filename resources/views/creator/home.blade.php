@@ -214,7 +214,7 @@
                         class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
                         {{ __('creator.home.nav.collections') }}
                     </a>
-                    <a href="{{ route('biographies.public.show', $creator->id) }}"
+                    <a href="{{ route('creator.biography', $creator->id) }}"
                         class="px-6 py-4 text-sm font-medium text-gray-300 border-b-2 border-transparent whitespace-nowrap hover:border-gray-600 hover:text-white">
                         {{ __('creator.home.nav.biography') }}
                     </a>

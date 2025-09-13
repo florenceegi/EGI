@@ -873,10 +873,10 @@ class PaymentDistribution extends Model {
     public static function getUserNonCreatorEarnings(int $userId): array {
         $earnings = static::where('payment_distributions.user_id', $userId)
             ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
-            ->join('collection_user', function($join) use ($userId) {
+            ->join('collection_user', function ($join) use ($userId) {
                 $join->on('payment_distributions.collection_id', '=', 'collection_user.collection_id')
-                     ->where('collection_user.user_id', '=', $userId)
-                     ->where('collection_user.is_owner', '=', false);
+                    ->where('collection_user.user_id', '=', $userId)
+                    ->where('collection_user.is_owner', '=', false);
             })
             ->join('collections', 'payment_distributions.collection_id', '=', 'collections.id')
             ->where('reservations.sub_status', 'highest')
@@ -893,10 +893,10 @@ class PaymentDistribution extends Model {
         // Get detailed breakdown by collection
         $collectionBreakdown = static::where('payment_distributions.user_id', $userId)
             ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
-            ->join('collection_user', function($join) use ($userId) {
+            ->join('collection_user', function ($join) use ($userId) {
                 $join->on('payment_distributions.collection_id', '=', 'collection_user.collection_id')
-                     ->where('collection_user.user_id', '=', $userId)
-                     ->where('collection_user.is_owner', '=', false);
+                    ->where('collection_user.user_id', '=', $userId)
+                    ->where('collection_user.is_owner', '=', false);
             })
             ->join('collections', 'payment_distributions.collection_id', '=', 'collections.id')
             ->where('reservations.sub_status', 'highest')

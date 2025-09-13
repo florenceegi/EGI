@@ -361,4 +361,10 @@ return [
         ],
     ],
 
+    // Collection Collaborators
+    'collection_collaborators' => 'Collaborators',
+    'owner' => 'Owner',
+    'creator' => 'Creator',
+    'no_other_collaborators' => 'No other collaborators',
+
 ];

@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\CheckCollectionPermission;
 use App\Http\Middleware\CheckPendingWallet;
+use App\Http\Middleware\CreatorNicknameRedirect;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\SetLanguage;
 use Illuminate\Foundation\Application;
@@ -16,18 +17,18 @@ Dotenv::createImmutable(dirname(__DIR__))->load();
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: [
-            __DIR__.'/../routes/web.php',
-            __DIR__.'/../routes/menu_dashboard.php',
-            __DIR__.'/../routes/gdpr.php',
-            __DIR__.'/../routes/auth.php',
-            __DIR__.'/../routes/user-domains.php',
-            __DIR__.'/../routes/gdpr_legal.php',
-            __DIR__.'/../routes/creator.php',
-            __DIR__.'/../routes/biography.php',
-            __DIR__.'/../routes/archetips.php'
+            __DIR__ . '/../routes/web.php',
+            __DIR__ . '/../routes/menu_dashboard.php',
+            __DIR__ . '/../routes/gdpr.php',
+            __DIR__ . '/../routes/auth.php',
+            __DIR__ . '/../routes/user-domains.php',
+            __DIR__ . '/../routes/gdpr_legal.php',
+            __DIR__ . '/../routes/creator.php',
+            __DIR__ . '/../routes/biography.php',
+            __DIR__ . '/../routes/archetips.php'
         ],
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -35,6 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'collection_can'       => CheckCollectionPermission::class,
             'role_or_permission'   => RoleOrPermissionMiddleware::class,
             'check.pending.wallet' => CheckPendingWallet::class,
+            'creator.nickname'     => CreatorNicknameRedirect::class,
         ]);
 
         $middleware->web(replace: [

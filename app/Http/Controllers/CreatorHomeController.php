@@ -25,6 +25,22 @@ use Illuminate\View\View;
  * @date 2025-08-10
  */
 class CreatorHomeController extends Controller {
+
+    /**
+     * Risolve un creator da ID numerico o nick_name
+     *
+     * @param string|int $identifier
+     * @return User
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    private function resolveCreator($identifier): User {
+        if (is_numeric($identifier)) {
+            return User::findOrFail($identifier);
+        } else {
+            return User::where('nick_name', $identifier)->firstOrFail();
+        }
+    }
+
     /**
      * Portfolio del Creator: mostra tutti gli EGI CREATI dal creator
      *
@@ -33,8 +49,8 @@ class CreatorHomeController extends Controller {
      * - Include statistiche di vendita/prenotazioni per ogni EGI
      * - Differente dal portfolio Collector che mostra EGI acquistati
      */
-    public function portfolio(int $id, Request $request): View {
-        $creator = User::findOrFail($id);
+    public function portfolio($id, Request $request): View {
+        $creator = $this->resolveCreator($id);
         if (!$creator->hasRole('creator')) {
             abort(404);
         }
@@ -116,13 +132,13 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Show creator's main showcase page
      * 📤 Output: Creator home view with stats and featured content
      */
-    public function home(int $id): View {
-        $creator = User::with(['collections' => function ($query) {
+    public function home($id): View {
+        $creator = $this->resolveCreator($id);
+        $creator->load(['collections' => function ($query) {
             $query->where('is_published', true)
                 ->latest()
                 ->take(6);
-        }])
-            ->findOrFail($id);
+        }]);
 
         // Verifica se l'utente è un creator
         if (!$creator->hasRole('creator')) {
@@ -231,8 +247,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Redirect to the collections index, filtered by this creator.
      * 📤 Output: A redirect response.
      */
-    public function collections(int $id): \Illuminate\Http\RedirectResponse {
-        $creator = User::findOrFail($id);
+    public function collections($id): \Illuminate\Http\RedirectResponse {
+        $creator = $this->resolveCreator($id);
 
         if (!$creator->hasRole('creator')) {
             abort(404);
@@ -250,8 +266,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Display specific collection details
      * 📤 Output: Redirect to existing collection show route
      */
-    public function showCollection(int $id) {
-        $creator = User::findOrFail($id);
+    public function showCollection($id) {
+        $creator = $this->resolveCreator($id);
 
         // La query ora cerca per ID della collezione, garantendo anche che appartenga al creator corretto.
         $collection = Collection::where('creator_id', $creator->id)->firstOrFail();
@@ -268,8 +284,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Placeholder for future sections
      * 📤 Output: Coming soon page with back navigation
      */
-    public function underConstruction(int $id): View {
-        $creator = User::findOrFail($id);
+    public function underConstruction($id): View {
+        $creator = $this->resolveCreator($id);
 
         if (!$creator->hasRole('creator')) {
             abort(404);

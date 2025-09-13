@@ -37,7 +37,7 @@ $nonCreatorEarnings = $nonCreatorEarnings ?? [
 ];
 
 // Calcola la percentuale di entrate da ruoli non-creator
-$nonCreatorPercentage = $totalEarnings['total_earnings'] > 0 
+$nonCreatorPercentage = $totalEarnings['total_earnings'] > 0
     ? round(($nonCreatorEarnings['total_earnings'] / $totalEarnings['total_earnings']) * 100, 1)
     : 0;
 @endphp
@@ -65,12 +65,12 @@ $nonCreatorPercentage = $totalEarnings['total_earnings'] > 0
                     </svg>
                 </div>
             </div>
-            
+
             <div class="space-y-3">
                 <div class="text-3xl font-bold text-oro-fiorentino">
                     <x-currency-price :price="$totalEarnings['total_earnings']" />
                 </div>
-                
+
                 <div class="grid grid-cols-2 gap-4 text-sm">
                     <div>
                         <span class="text-gray-400">{{ __('Distribuzioni') }}</span>
@@ -94,19 +94,19 @@ $nonCreatorPercentage = $totalEarnings['total_earnings'] > 0
                     </svg>
                 </div>
             </div>
-            
+
             <div class="space-y-3">
                 <div class="text-3xl font-bold text-verde-algoritmo">
                     <x-currency-price :price="$nonCreatorEarnings['total_earnings']" />
                 </div>
-                
+
                 <div class="flex items-center space-x-2 text-sm">
                     <span class="text-gray-400">{{ __('del totale') }}</span>
                     <span class="px-2 py-1 bg-verde-algoritmo/20 text-verde-algoritmo rounded-full font-medium">
                         {{ $nonCreatorPercentage }}%
                     </span>
                 </div>
-                
+
                 <div class="grid grid-cols-2 gap-4 text-sm">
                     <div>
                         <span class="text-gray-400">{{ __('Distribuzioni') }}</span>
@@ -130,7 +130,7 @@ $nonCreatorPercentage = $totalEarnings['total_earnings'] > 0
             </svg>
             <span>{{ __('Ruoli Attivi') }}</span>
         </h3>
-        
+
         <div class="flex flex-wrap gap-2">
             @foreach($nonCreatorEarnings['roles_held'] as $role)
             <span class="px-3 py-1 bg-blu-algoritmo/20 text-blu-algoritmo rounded-full text-sm font-medium">
@@ -150,7 +150,7 @@ $nonCreatorPercentage = $totalEarnings['total_earnings'] > 0
             </svg>
             <span>{{ __('Dettaglio per Collezione') }}</span>
         </h3>
-        
+
         <div class="space-y-3">
             @foreach($nonCreatorEarnings['collection_breakdown'] as $collection)
             <div class="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-600">

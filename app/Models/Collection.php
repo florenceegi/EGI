@@ -93,7 +93,7 @@ class Collection extends Model implements HasMedia {
      */
     public function users() {
         return $this->belongsToMany(User::class, 'collection_user')
-            ->withPivot('role')
+            ->withPivot('role', 'is_owner')
             ->withTimestamps();
     }
 
