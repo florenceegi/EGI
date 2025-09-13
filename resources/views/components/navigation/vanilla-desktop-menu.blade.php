@@ -92,10 +92,10 @@
 
                 <!-- Dynamic Collections Carousel Card -->
                 <x-menu-collections-carousel :collections="Auth::check() ? Auth::user()->ownedCollections()->orderBy('position')->get() : collect()" />
-                
+
                 <!-- Shared Collections Carousel Card - Collections where user is collaborator -->
                 <x-menu-guest-collections-carousel :collections="Auth::check() ? Auth::user()->collaborations()->orderBy('position')->get() : collect()" />
-                
+
                 <!-- Account Management Card -->
                 <div class="p-4 border bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl border-emerald-200/30 dark:border-emerald-800/30 mega-card">
                     <div class="flex items-center mb-3 space-x-3">
@@ -139,6 +139,9 @@
                         </a>
                         <a href="{{ route('gdpr.profile-images') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
                             {{ __('menu.profile_images') }}
+                        </a>
+                        <a href="{{ route('biography.manage') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            {{ __('menu.biography_items.manage') }}
                         </a>
                         @can('gdpr.export_data')
                             <a href="{{ route('gdpr.export-data') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
