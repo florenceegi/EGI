@@ -797,6 +797,8 @@ class PaymentDistribution extends Model {
             'user_id' => $userId,
             'user_role' => $userRole,
             'general_stats' => static::getUserDistributionStats($userId),
+            'total_earnings' => static::getUserTotalEarnings($userId),
+            'non_creator_earnings' => static::getUserNonCreatorEarnings($userId),
         ];
 
         switch ($userRole) {
@@ -829,5 +831,106 @@ class PaymentDistribution extends Model {
                         ->exists(),
                 ]);
         }
+    }
+
+    // ================================
+    // 🔄 USER ROLE-BASED EARNINGS STATISTICS
+    // ================================
+
+    /**
+     * Get total earnings for a user from all payment distributions (regardless of role)
+     * @param int $userId
+     * @return array
+     */
+    public static function getUserTotalEarnings(int $userId): array {
+        $earnings = static::where('payment_distributions.user_id', $userId)
+            ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+            ->where('reservations.sub_status', 'highest')
+            ->selectRaw('
+                COUNT(payment_distributions.id) as total_distributions,
+                SUM(payment_distributions.amount_eur) as total_earnings,
+                AVG(payment_distributions.amount_eur) as avg_earning_per_distribution,
+                COUNT(DISTINCT payment_distributions.collection_id) as collections_count,
+                COUNT(DISTINCT payment_distributions.reservation_id) as reservations_count
+            ')
+            ->first();
+
+        return [
+            'total_earnings' => round($earnings->total_earnings ?? 0, 2),
+            'total_distributions' => $earnings->total_distributions ?? 0,
+            'avg_earning_per_distribution' => round($earnings->avg_earning_per_distribution ?? 0, 2),
+            'collections_involved' => $earnings->collections_count ?? 0,
+            'reservations_involved' => $earnings->reservations_count ?? 0,
+        ];
+    }
+
+    /**
+     * Get earnings for a user ONLY from collections where they are NOT the creator
+     * Uses collection_user table to find collections where user has a role but is_owner = false
+     * @param int $userId
+     * @return array
+     */
+    public static function getUserNonCreatorEarnings(int $userId): array {
+        $earnings = static::where('payment_distributions.user_id', $userId)
+            ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+            ->join('collection_user', function($join) use ($userId) {
+                $join->on('payment_distributions.collection_id', '=', 'collection_user.collection_id')
+                     ->where('collection_user.user_id', '=', $userId)
+                     ->where('collection_user.is_owner', '=', false);
+            })
+            ->join('collections', 'payment_distributions.collection_id', '=', 'collections.id')
+            ->where('reservations.sub_status', 'highest')
+            ->selectRaw('
+                COUNT(payment_distributions.id) as total_distributions,
+                SUM(payment_distributions.amount_eur) as total_earnings,
+                AVG(payment_distributions.amount_eur) as avg_earning_per_distribution,
+                COUNT(DISTINCT payment_distributions.collection_id) as collections_count,
+                COUNT(DISTINCT payment_distributions.reservation_id) as reservations_count,
+                GROUP_CONCAT(DISTINCT collection_user.role) as roles_held
+            ')
+            ->first();
+
+        // Get detailed breakdown by collection
+        $collectionBreakdown = static::where('payment_distributions.user_id', $userId)
+            ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+            ->join('collection_user', function($join) use ($userId) {
+                $join->on('payment_distributions.collection_id', '=', 'collection_user.collection_id')
+                     ->where('collection_user.user_id', '=', $userId)
+                     ->where('collection_user.is_owner', '=', false);
+            })
+            ->join('collections', 'payment_distributions.collection_id', '=', 'collections.id')
+            ->where('reservations.sub_status', 'highest')
+            ->selectRaw('
+                collections.id as collection_id,
+                collections.collection_name,
+                collection_user.role,
+                COUNT(payment_distributions.id) as distributions_count,
+                SUM(payment_distributions.amount_eur) as earnings_from_collection,
+                AVG(payment_distributions.amount_eur) as avg_earning
+            ')
+            ->groupBy('collections.id', 'collections.collection_name', 'collection_user.role')
+            ->orderBy('earnings_from_collection', 'DESC')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'collection_id' => $item->collection_id,
+                    'collection_name' => $item->collection_name,
+                    'role' => $item->role,
+                    'distributions_count' => $item->distributions_count,
+                    'earnings_from_collection' => round($item->earnings_from_collection, 2),
+                    'avg_earning' => round($item->avg_earning, 2),
+                ];
+            })
+            ->toArray();
+
+        return [
+            'total_earnings' => round($earnings->total_earnings ?? 0, 2),
+            'total_distributions' => $earnings->total_distributions ?? 0,
+            'avg_earning_per_distribution' => round($earnings->avg_earning_per_distribution ?? 0, 2),
+            'collections_involved' => $earnings->collections_count ?? 0,
+            'reservations_involved' => $earnings->reservations_count ?? 0,
+            'roles_held' => $earnings->roles_held ? explode(',', $earnings->roles_held) : [],
+            'collection_breakdown' => $collectionBreakdown,
+        ];
     }
 }

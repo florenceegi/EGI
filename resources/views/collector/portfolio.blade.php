@@ -94,6 +94,13 @@
         </div>
     </section>
 
+    {{-- Role-based Earnings Statistics --}}
+    <section class="py-8 bg-gray-900">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <x-stats.role-earnings-widget :user-id="$collector->id" />
+        </div>
+    </section>
+
     {{-- Portfolio Content --}}
     <div class="min-h-screen bg-gray-800">
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

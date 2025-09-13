@@ -92,6 +92,11 @@
                         <x-stats.collection-performance-widget :creatorId="$creator->id" :collectionPerformance="$advancedStats['collection_performance']" />
                         <x-stats.engagement-widget :creatorId="$creator->id" :engagement="$advancedStats['engagement']" />
                     </div>
+
+                    {{-- Row 3: Role-based Earnings --}}
+                    <div class="grid grid-cols-1 gap-8">
+                        <x-stats.role-earnings-widget :user-id="$creator->id" />
+                    </div>
                 </div>
             </div>
         </section>
