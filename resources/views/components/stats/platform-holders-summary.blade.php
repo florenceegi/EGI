@@ -42,6 +42,7 @@ $aggregatedHolders = $holders->groupBy('user_id')->map(function($userHoldings) {
         'creators_supported' => $userHoldings->unique('creator_id')->count(),
         'collections' => $userHoldings->map(function($holding) {
             return [
+                'id' => $holding->collection_id,
                 'name' => $holding->collection_name,
                 'items' => $holding->items_count,
                 'spent' => $holding->total_spent,
@@ -125,19 +126,22 @@ $componentId = 'platform-holders-' . uniqid();
 
                         {{-- User Info --}}
                         <div class="flex items-center flex-1 min-w-0 space-x-3">
-                            {{-- Avatar --}}
+                            {{-- Avatar cliccabile --}}
                             @php
                                 $user = App\Models\User::find($holder['user_id']);
                                 $profilePhotoUrl = $user ? $user->profile_photo_url : null;
                             @endphp
-                            @if($profilePhotoUrl)
-                                <img src="{{ $profilePhotoUrl }}" alt="{{ $holder['user_name'] }}"
-                                     class="object-cover w-8 h-8 rounded-full">
-                            @else
-                                <div class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-gradient-to-br from-blue-500 to-purple-500">
-                                    {{ strtoupper(substr($holder['user_name'] ?? 'U', 0, 1)) }}
-                                </div>
-                            @endif
+                            <a href="{{ route('collector.home', $holder['user_id']) }}"
+                               class="block transition-transform duration-200 hover:scale-105">
+                                @if($profilePhotoUrl)
+                                    <img src="{{ $profilePhotoUrl }}" alt="{{ $holder['user_name'] }}"
+                                         class="object-cover w-8 h-8 transition-colors duration-200 border-2 border-transparent rounded-full hover:border-blue-400">
+                                @else
+                                    <div class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white transition-all duration-200 border-2 border-transparent rounded-full bg-gradient-to-br from-blue-500 to-purple-500 hover:border-blue-400">
+                                        {{ strtoupper(substr($holder['user_name'] ?? 'U', 0, 1)) }}
+                                    </div>
+                                @endif
+                            </a>
 
                             {{-- Name and details --}}
                             <div class="flex-1 min-w-0">
@@ -180,7 +184,7 @@ $componentId = 'platform-holders-' . uniqid();
                             {{-- Barra percentuale con gradiente dinamico --}}
                             <div class="space-y-1">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs text-gray-400 font-medium">{{ $percentage }}%</span>
+                                    <span class="text-xs font-medium text-gray-400">{{ $percentage }}%</span>
                                 </div>
                                 <div class="w-full h-3 bg-gray-700 rounded-full shadow-inner">
                                     <div class="bg-gradient-to-r {{ $gradientColors }} h-3 rounded-full transition-all duration-500 shadow-lg"
@@ -227,19 +231,22 @@ $componentId = 'platform-holders-' . uniqid();
                                 @endif
                             </div>
 
-                            {{-- Avatar --}}
+                            {{-- Avatar cliccabile --}}
                             @php
                                 $user = App\Models\User::find($holder['user_id']);
                                 $profilePhotoUrl = $user ? $user->profile_photo_url : null;
                             @endphp
-                            @if($profilePhotoUrl)
-                                <img src="{{ $profilePhotoUrl }}" alt="{{ $holder['user_name'] }}"
-                                     class="object-cover w-10 h-10 rounded-full">
-                            @else
-                                <div class="flex items-center justify-center w-10 h-10 text-lg font-bold text-white rounded-full bg-gradient-to-br from-blue-500 to-purple-500">
-                                    {{ strtoupper(substr($holder['user_name'] ?? 'U', 0, 1)) }}
-                                </div>
-                            @endif
+                            <a href="{{ route('collector.home', $holder['user_id']) }}"
+                               class="block transition-transform duration-200 hover:scale-105">
+                                @if($profilePhotoUrl)
+                                    <img src="{{ $profilePhotoUrl }}" alt="{{ $holder['user_name'] }}"
+                                         class="object-cover w-10 h-10 transition-colors duration-200 border-2 border-transparent rounded-full hover:border-blue-400">
+                                @else
+                                    <div class="flex items-center justify-center w-10 h-10 text-lg font-bold text-white transition-all duration-200 border-2 border-transparent rounded-full bg-gradient-to-br from-blue-500 to-purple-500 hover:border-blue-400">
+                                        {{ strtoupper(substr($holder['user_name'] ?? 'U', 0, 1)) }}
+                                    </div>
+                                @endif
+                            </a>
 
                             {{-- User Info --}}
                             <div class="flex-1">
@@ -301,22 +308,25 @@ $componentId = 'platform-holders-' . uniqid();
                                             $collectionGradient = 'from-orange-400 to-red-600';
                                         }
                                     @endphp
-                                    <div class="p-2 space-y-1 bg-white rounded bg-opacity-5">
+                                    <a href="{{ route('home.collections.show', $collection['id']) }}"
+                                       class="block p-2 space-y-1 transition-all duration-200 bg-white rounded bg-opacity-5 hover:bg-opacity-10 group">
                                         <div class="flex items-center justify-between">
-                                            <span class="text-sm text-white truncate">{{ $collection['name'] }}</span>
+                                            <span class="text-sm text-white truncate transition-colors duration-200 group-hover:text-blue-300">
+                                                {{ $collection['name'] }}
+                                            </span>
                                             <span class="text-sm text-gray-400">
                                                 {{ $collection['items'] }} (€{{ number_format($collection['spent'], 0) }})
                                             </span>
                                         </div>
                                         {{-- Barra percentuale per collezione --}}
                                         <div class="flex items-center space-x-2">
-                                            <div class="flex-1 bg-gray-600 rounded-full h-1.5">
+                                            <div class="flex-1 bg-gray-600 rounded-full h-1.5 group-hover:bg-gray-500 transition-colors duration-200">
                                                 <div class="bg-gradient-to-r {{ $collectionGradient }} h-1.5 rounded-full transition-all duration-500"
                                                      style="width: {{ min($collectionPercentage, 100) }}%"></div>
                                             </div>
-                                            <span class="text-xs text-gray-400 min-w-[2.5rem]">{{ $collectionPercentage }}%</span>
+                                            <span class="text-xs text-gray-400 min-w-[2.5rem] group-hover:text-gray-300 transition-colors duration-200">{{ $collectionPercentage }}%</span>
                                         </div>
-                                    </div>
+                                    </a>
                                 @endforeach
                             </div>
                         </div>

@@ -12,8 +12,7 @@
 @props([
     'totalWorks' => 12847,
     'totalArtists' => 342,
-    'ctaText' => 'Esplora la Collezione',
-    'ctaLink' => '#collectors',
+    'totalReservations' => \App\Models\Reservation::where('is_current', true)->where('status', 'active')->where('is_highest', true)->sum('offer_amount_fiat'),
     'subtitle' => 'Dove passione e raffinatezza creano collezioni immortali'
 ])
 
@@ -71,9 +70,10 @@
                 <div class="counter-number" id="counterNumber-{{ $componentId }}">0</div>
             </div>
 
-            <a href="{{ $ctaLink }}" class="premium-cta">
-                {{ $ctaText }}
-            </a>
+            <div class="collection-counter">
+                <div class="counter-label">Volume Prenotazioni</div>
+                <div class="counter-number" id="reservationCounter-{{ $componentId }}">0</div>
+            </div>
 
             <div class="collection-counter">
                 <div class="counter-label">Artisti Rari</div>
@@ -109,6 +109,7 @@
         width: 100%;
         height: 100%;
         z-index: 1;
+        pointer-events: auto;
     }
 
     .gallery-grid {
@@ -234,7 +235,7 @@
         position: absolute;
         width: 100%;
         font-family: 'Bodoni Moda', serif;
-        font-size: clamp(4rem, 10vw, 8rem);
+        font-size: clamp(3rem, 8vw, 8rem);
         font-weight: 900;
         font-style: italic;
         text-transform: uppercase;
@@ -313,6 +314,7 @@
         margin-top: 50px;
         opacity: 0;
         animation: elementsReveal 1s ease-out 3s forwards;
+        flex-wrap: wrap;
     }
 
     .collection-counter {
@@ -321,6 +323,19 @@
         border: 1px solid rgba(212, 175, 55, 0.3);
         position: relative;
         overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        min-width: 180px;
+        text-align: center;
+    }
+
+    .collection-counter:hover {
+        transform: translateY(-5px) scale(1.05);
+        border-color: rgba(212, 175, 55, 0.6);
+        box-shadow:
+            0 10px 30px rgba(212, 175, 55, 0.2),
+            0 5px 15px rgba(0, 0, 0, 0.3);
     }
 
     .collection-counter::before {
@@ -351,55 +366,6 @@
         font-weight: 700;
         color: #d4af37;
         text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-    }
-
-    .premium-cta {
-        position: relative;
-        display: inline-block;
-        padding: 20px 60px;
-        font-family: 'Crimson Pro', serif;
-        font-size: 1.1rem;
-        font-weight: 600;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        text-decoration: none;
-        color: #0a0908;
-        background: linear-gradient(135deg,
-            #d4af37 0%,
-            #f4e4c1 50%,
-            #d4af37 100%);
-        background-size: 200% 200%;
-        border: none;
-        cursor: pointer;
-        overflow: hidden;
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        animation: ctaPulse 2s ease-in-out infinite;
-    }
-
-    .premium-cta::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-
-    .premium-cta:hover {
-        transform: translateY(-3px) scale(1.05);
-        box-shadow:
-            0 20px 40px rgba(212, 175, 55, 0.3),
-            0 10px 20px rgba(0, 0, 0, 0.2);
-        animation: none;
-    }
-
-    .premium-cta:hover::before {
-        width: 300px;
-        height: 300px;
     }
 
     .particles-overlay {
@@ -578,30 +544,173 @@
         100% { transform: rotate(360deg); }
     }
 
-    @keyframes ctaPulse {
-        0%, 100% {
-            background-position: 0% 50%;
-            transform: scale(1);
-        }
-        50% {
-            background-position: 100% 50%;
-            transform: scale(1.02);
-        }
-    }
-
     /* Responsive */
     @media (max-width: 768px) {
         .collector-universe {
             height: 500px;
         }
 
+        .collector-title-wrapper {
+            height: 100px;
+            margin-bottom: 20px;
+        }
+
         .collector-title {
-            font-size: clamp(3rem, 12vw, 5rem);
+            font-size: clamp(2.2rem, 8vw, 3.5rem);
+        }
+
+        .collector-subtitle {
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .subtitle-container {
+            height: 30px;
+            margin-bottom: 25px;
+        }
+
+        .interactive-elements {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding: 0 15px;
+        }
+
+        .collection-counter {
+            min-width: 120px;
+            max-width: 140px;
+            padding: 12px 16px;
+            flex: 0 1 auto;
+        }
+
+        .counter-label {
+            font-size: 0.7rem;
+            margin-bottom: 6px;
+        }
+
+        .counter-number {
+            font-size: 1.4rem;
+        }
+
+        .gallery-grid {
+            opacity: 0.02;
+        }
+
+        .artwork-piece {
+            opacity: 0.2;
+        }
+
+        .content-overlay {
+            padding: 0 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .collector-universe {
+            height: 450px;
+        }
+
+        .collector-title-wrapper {
+            height: 80px;
+            margin-bottom: 15px;
+        }
+
+        .collector-title {
+            font-size: clamp(1.8rem, 9vw, 2.8rem);
+        }
+
+        .collector-subtitle {
+            font-size: 0.9rem;
+            padding: 0 10px;
+        }
+
+        .subtitle-container {
+            height: 25px;
+            margin-bottom: 20px;
+        }
+
+        .content-overlay {
+            width: 98%;
+            padding: 0 5px;
+        }
+
+        .interactive-elements {
+            gap: 8px;
+            margin-top: 15px;
+            padding: 0 10px;
+        }
+
+        .collection-counter {
+            min-width: 100px;
+            max-width: 110px;
+            padding: 10px 12px;
+        }
+
+        .counter-label {
+            font-size: 0.65rem;
+            margin-bottom: 4px;
+        }
+
+        .counter-number {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .collector-universe {
+            height: 400px;
+        }
+
+        .collector-title {
+            font-size: clamp(1.5rem, 10vw, 2.2rem);
+        }
+
+        .collector-title-wrapper {
+            height: 70px;
+            margin-bottom: 10px;
         }
 
         .interactive-elements {
             flex-direction: column;
-            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .collection-counter {
+            min-width: 200px;
+            max-width: 250px;
+            padding: 8px 15px;
+        }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .collection-counter:hover {
+            transform: none;
+        }
+
+        .collection-counter:active {
+            transform: translateY(-2px) scale(1.02);
+            border-color: rgba(212, 175, 55, 0.7);
+        }
+
+        .gallery-grid {
+            animation-duration: 80s;
+        }
+
+        .artwork-piece {
+            opacity: 0.15;
+        }
+    }
+
+    /* High DPI displays */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .collector-title {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
     }
 </style>
@@ -618,13 +727,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const componentId = '{{ $componentId }}';
     const totalWorks = {{ $totalWorks }};
     const totalArtists = {{ $totalArtists }};
+    const totalReservations = {{ $totalReservations }};
     const subtitle = "{{ $subtitle }}";
+
+    // Device detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     // Three.js Scene Setup
     let scene, camera, renderer;
     let particles, frames;
     let mouseX = 0, mouseY = 0;
     let targetX = 0, targetY = 0;
+    let lastTouch = { x: 0, y: 0 };
 
     function initThreeJS() {
         // Scene
@@ -632,9 +747,10 @@ document.addEventListener('DOMContentLoaded', function() {
         scene.fog = new THREE.FogExp2(0x0a0908, 0.002);
 
         // Camera
+        const containerHeight = isMobile ? (window.innerWidth < 480 ? 450 : 500) : 600;
         camera = new THREE.PerspectiveCamera(
             75,
-            window.innerWidth / 600,
+            window.innerWidth / containerHeight,
             0.1,
             1000
         );
@@ -647,10 +763,11 @@ document.addEventListener('DOMContentLoaded', function() {
         renderer = new THREE.WebGLRenderer({
             canvas: canvas,
             alpha: true,
-            antialias: true
+            antialias: !isMobile, // Disable antialiasing on mobile for better performance
+            powerPreference: 'high-performance'
         });
-        renderer.setSize(window.innerWidth, 600);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, containerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for better performance
 
         // Create floating golden frames
         createFloatingFrames();
@@ -669,6 +786,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mouse movement
         document.addEventListener('mousemove', onMouseMove);
 
+        // Touch events for mobile
+        if (isTouchDevice) {
+            document.addEventListener('touchstart', onTouchStart, { passive: false });
+            document.addEventListener('touchmove', onTouchMove, { passive: false });
+            document.addEventListener('touchend', onTouchEnd, { passive: true });
+        }
+
         // Start animation
         animate();
     }
@@ -686,7 +810,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         frames = new THREE.Group();
 
-        for (let i = 0; i < 20; i++) {
+        // Reduce frames on mobile for better performance
+        const frameCount = isMobile ? 10 : 20;
+
+        for (let i = 0; i < frameCount; i++) {
             const frame = new THREE.Mesh(geometry, material.clone());
             frame.position.x = (Math.random() - 0.5) * 100;
             frame.position.y = (Math.random() - 0.5) * 50;
@@ -695,9 +822,9 @@ document.addEventListener('DOMContentLoaded', function() {
             frame.rotation.y = Math.random() * Math.PI;
             frame.userData = {
                 rotationSpeed: {
-                    x: (Math.random() - 0.5) * 0.01,
-                    y: (Math.random() - 0.5) * 0.01,
-                    z: (Math.random() - 0.5) * 0.01
+                    x: (Math.random() - 0.5) * (isMobile ? 0.005 : 0.01),
+                    y: (Math.random() - 0.5) * (isMobile ? 0.005 : 0.01),
+                    z: (Math.random() - 0.5) * (isMobile ? 0.005 : 0.01)
                 },
                 floatSpeed: Math.random() * 0.5 + 0.5,
                 floatOffset: Math.random() * Math.PI * 2
@@ -709,7 +836,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function createParticleSystem() {
-        const particleCount = 500;
+        // Reduce particles on mobile for better performance
+        const particleCount = isMobile ? 250 : 500;
         const geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particleCount * 3);
         const colors = new Float32Array(particleCount * 3);
@@ -734,10 +862,10 @@ document.addEventListener('DOMContentLoaded', function() {
         geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
         const material = new THREE.PointsMaterial({
-            size: 2,
+            size: isMobile ? 1.5 : 2,
             vertexColors: true,
             transparent: true,
-            opacity: 0.6,
+            opacity: isMobile ? 0.4 : 0.6,
             blending: THREE.AdditiveBlending,
             depthWrite: false
         });
@@ -747,8 +875,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function onMouseMove(event) {
+        const containerHeight = isMobile ? (window.innerWidth < 480 ? 450 : 500) : 600;
         mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-        mouseY = -(event.clientY / 600) * 2 + 1;
+        mouseY = -(event.clientY / containerHeight) * 2 + 1;
+    }
+
+    function onTouchStart(event) {
+        if (event.touches.length === 1) {
+            lastTouch.x = event.touches[0].clientX;
+            lastTouch.y = event.touches[0].clientY;
+        }
+    }
+
+    function onTouchMove(event) {
+        event.preventDefault();
+        if (event.touches.length === 1) {
+            const touch = event.touches[0];
+            const containerHeight = isMobile ? (window.innerWidth < 480 ? 450 : 500) : 600;
+            mouseX = (touch.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(touch.clientY / containerHeight) * 2 + 1;
+
+            lastTouch.x = touch.clientX;
+            lastTouch.y = touch.clientY;
+        }
+    }
+
+    function onTouchEnd(event) {
+        // Mantieni l'ultima posizione per continuità
     }
 
     function animate() {
@@ -836,6 +989,21 @@ document.addEventListener('DOMContentLoaded', function() {
             delay: 3.5,
             snap: { innerHTML: 1 }
         });
+
+        gsap.to(`#reservationCounter-${componentId}`, {
+            innerHTML: totalReservations,
+            duration: 3,
+            ease: "power2.out",
+            delay: 4,
+            snap: { innerHTML: 1 },
+            onUpdate: function() {
+                const element = document.getElementById(`reservationCounter-${componentId}`);
+                if (element) {
+                    const value = Math.floor(this.targets()[0].innerHTML);
+                    element.innerHTML = '€' + value.toLocaleString();
+                }
+            }
+        });
     }
 
     // Create DOM particles
@@ -843,7 +1011,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById(`particlesOverlay-${componentId}`);
         if (!container) return;
 
-        for (let i = 0; i < 30; i++) {
+        // Reduce particles on mobile for better performance
+        const particleCount = isMobile ? 15 : 30;
+
+        for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.className = 'golden-particle';
             particle.style.left = Math.random() * 100 + '%';
@@ -867,45 +1038,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     createDOMParticles();
 
-    // Advanced hover effects
-    const cta = document.querySelector('.premium-cta');
+    // Enhanced interaction for collection counters
+    const counters = document.querySelectorAll('.collection-counter');
+    counters.forEach(counter => {
+        if (isTouchDevice) {
+            counter.addEventListener('touchstart', function() {
+                this.style.transform = 'translateY(-2px) scale(1.02)';
+                this.style.borderColor = 'rgba(212, 175, 55, 0.7)';
+            });
 
-    if (cta) {
-        cta.addEventListener('mouseenter', () => {
-            if (frames && typeof gsap !== 'undefined') {
-                gsap.to(frames.children, {
-                    duration: 1,
-                    ease: "power2.out",
-                    onUpdate: function() {
-                        frames.children.forEach(frame => {
-                            frame.material.emissiveIntensity = 0.5;
-                        });
-                    }
-                });
-            }
-        });
+            counter.addEventListener('touchend', function() {
+                this.style.transform = '';
+                this.style.borderColor = '';
+            });
+        } else {
+            counter.addEventListener('mouseenter', function() {
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(this, {
+                        y: -5,
+                        scale: 1.05,
+                        duration: 0.3,
+                        ease: "power2.out"
+                    });
+                }
+            });
 
-        cta.addEventListener('mouseleave', () => {
-            if (frames && typeof gsap !== 'undefined') {
-                gsap.to(frames.children, {
-                    duration: 1,
-                    ease: "power2.out",
-                    onUpdate: function() {
-                        frames.children.forEach(frame => {
-                            frame.material.emissiveIntensity = 0.2;
-                        });
-                    }
-                });
-            }
-        });
-    }
+            counter.addEventListener('mouseleave', function() {
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(this, {
+                        y: 0,
+                        scale: 1,
+                        duration: 0.3,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        }
+    });
 
     // Resize handler
     window.addEventListener('resize', () => {
         if (camera && renderer) {
-            camera.aspect = window.innerWidth / 600;
+            const containerHeight = isMobile ? (window.innerWidth < 480 ? 450 : 500) : 600;
+            camera.aspect = window.innerWidth / containerHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, 600);
+            renderer.setSize(window.innerWidth, containerHeight);
         }
     });
 });
