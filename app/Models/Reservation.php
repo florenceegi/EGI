@@ -677,4 +677,30 @@ class Reservation extends Model {
 
         return $this->save();
     }
+
+    /**
+     * Conta il numero totale di opere (EGI) attualmente prenotate sulla piattaforma
+     *
+     * @return int
+     */
+    public static function getTotalReservedWorks(): int
+    {
+        return static::where('is_current', true)
+            ->distinct('egi_id')
+            ->count('egi_id');
+    }
+
+    /**
+     * Conta il numero totale di artisti (creators) che hanno almeno un'opera prenotata
+     *
+     * @return int
+     */
+    public static function getTotalArtistsWithReservations(): int
+    {
+        return static::where('is_current', true)
+            ->join('egis', 'reservations.egi_id', '=', 'egis.id')
+            ->join('collections', 'egis.collection_id', '=', 'collections.id')
+            ->distinct('collections.creator_id')
+            ->count('collections.creator_id');
+    }
 }

@@ -98,6 +98,10 @@ class CollectorHomeController extends Controller {
         $query = $request->input('query');
         $sort = $request->input('sort', 'latest'); // 'latest', 'most_egis', 'most_spent'
 
+        // Calcola le statistiche per il banner
+        $totalReservedWorks = Reservation::getTotalReservedWorks();
+        $totalArtistsWithReservations = Reservation::getTotalArtistsWithReservations();
+
         $collectors = User::whereHas('validReservations')
             ->when($query, function ($q) use ($query) {
                 $q->where('name', 'like', '%' . $query . '%');
@@ -117,7 +121,13 @@ class CollectorHomeController extends Controller {
             })
             ->paginate(20);
 
-        return view('collector.index', compact('collectors', 'query', 'sort'));
+        return view('collector.index', compact(
+            'collectors', 
+            'query', 
+            'sort', 
+            'totalReservedWorks', 
+            'totalArtistsWithReservations'
+        ));
     }
 
     /**

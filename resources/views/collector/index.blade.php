@@ -3,8 +3,8 @@
 
     <x-slot name="platformHeaderBanner">
         <x-collector-banner
-            :total-works="15000"
-            :total-artists="400"
+            :total-works="$totalReservedWorks"
+            :total-artists="$totalArtistsWithReservations"
             cta-text="Scopri le Opere"
             cta-link=""
             subtitle="L'eccellenza del collezionismo rinascimentale"
