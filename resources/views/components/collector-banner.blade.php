@@ -10,10 +10,19 @@
 --}}
 
 @props([
+    'title' => 'COLLECTORS',
     'totalWorks' => 12847,
     'totalArtists' => 342,
     'totalReservations' => \App\Models\Reservation::where('is_current', true)->where('status', 'active')->where('is_highest', true)->sum('offer_amount_fiat'),
-    'subtitle' => 'Dove passione e raffinatezza creano collezioni immortali'
+    'subtitle' => 'Dove passione e raffinatezza creano collezioni immortali',
+    'floatingArtworks' => \App\Models\Egi::whereNotNull('key_file')
+        ->whereNotNull('collection_id')
+        ->whereNotNull('user_id')
+        ->whereNotNull('extension')
+        ->where('is_published', true)
+        ->inRandomOrder()
+        ->take(60)
+        ->get()
 ])
 
 @push('styles')
@@ -32,17 +41,25 @@
     {{-- Three.js Canvas --}}
     <canvas id="three-canvas-{{ $componentId = Str::random(8) }}"></canvas>
 
-    {{-- Gallery Grid --}}
-    <div class="gallery-grid">
-        @for($i = 0; $i < 48; $i++)
-            <div class="gallery-frame"></div>
-        @endfor
-    </div>
-
     {{-- Floating Artwork --}}
     <div class="artwork-container">
-        @for($i = 0; $i < 4; $i++)
-            <div class="artwork-piece"></div>
+        @foreach($floatingArtworks->take(4) as $index => $artwork)
+            <div class="artwork-piece artwork-piece-{{ $index + 1 }}" data-artwork-id="{{ $artwork->id }}">
+                @if($artwork->avatar_image_url)
+                    <img src="{{ $artwork->avatar_image_url }}"
+                         alt="{{ $artwork->title ?? 'Opera d\'arte' }}"
+                         class="artwork-image"
+                         loading="lazy">
+                @endif
+                <div class="artwork-frame"></div>
+            </div>
+        @endforeach
+
+        {{-- Backup empty frames if not enough artworks --}}
+        @for($i = $floatingArtworks->count(); $i < 4; $i++)
+            <div class="artwork-piece artwork-piece-{{ $i + 1 }}">
+                <div class="artwork-frame"></div>
+            </div>
         @endfor
     </div>
 
@@ -52,9 +69,9 @@
     {{-- Main Content --}}
     <div class="content-overlay">
         <div class="collector-title-wrapper">
-            <h1 class="collector-title title-shadow">COLLECTORS</h1>
-            <h1 class="collector-title title-glow">COLLECTORS</h1>
-            <h1 class="collector-title title-main">COLLECTORS</h1>
+            <h1 class="collector-title title-shadow">{{ $title }}</h1>
+            <h1 class="collector-title title-glow">{{ $title }}</h1>
+            <h1 class="collector-title title-main">{{ $title }}</h1>
         </div>
 
         <div class="subtitle-container">
@@ -112,37 +129,7 @@
         pointer-events: auto;
     }
 
-    .gallery-grid {
-        position: absolute;
-        top: 0;
-        left: -50%;
-        width: 200%;
-        height: 100%;
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        grid-template-rows: repeat(4, 1fr);
-        gap: 2px;
-        opacity: 0.03;
-        transform: perspective(1000px) rotateX(45deg);
-        animation: gridRotate 60s linear infinite;
-        z-index: 2;
-    }
 
-    .gallery-frame {
-        border: 1px solid rgba(212, 175, 55, 0.2);
-        background: radial-gradient(circle at center,
-            rgba(212, 175, 55, 0.05) 0%,
-            transparent 70%);
-        animation: frameGlow 4s ease-in-out infinite;
-    }
-
-    .gallery-frame:nth-child(odd) {
-        animation-delay: 0.5s;
-    }
-
-    .gallery-frame:nth-child(even) {
-        animation-delay: 1s;
-    }
 
     .artwork-container {
         position: absolute;
@@ -156,37 +143,64 @@
         position: absolute;
         width: 80px;
         height: 100px;
-        background: linear-gradient(135deg,
-            rgba(139, 69, 19, 0.1) 0%,
-            rgba(212, 175, 55, 0.1) 50%,
-            rgba(139, 69, 19, 0.1) 100%);
-        border: 2px solid rgba(212, 175, 55, 0.2);
+        opacity: 0;
+        overflow: hidden;
+        border-radius: 4px;
         box-shadow:
             0 10px 40px rgba(212, 175, 55, 0.1),
-            inset 0 0 20px rgba(0, 0, 0, 0.5);
-        opacity: 0;
+            0 5px 15px rgba(0, 0, 0, 0.3);
     }
 
-    .artwork-piece::before {
+    .artwork-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 2px;
+        transition: transform 0.3s ease;
+    }
+
+    .artwork-frame {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid rgba(212, 175, 55, 0.4);
+        border-radius: 4px;
+        background: linear-gradient(45deg,
+            transparent 0%,
+            rgba(212, 175, 55, 0.05) 50%,
+            transparent 100%);
+        pointer-events: none;
+    }
+
+    .artwork-piece:hover .artwork-image {
+        transform: scale(1.05);
+    }
+
+    .artwork-frame::before {
         content: '';
         position: absolute;
-        top: 10%;
-        left: 10%;
-        right: 10%;
-        bottom: 10%;
+        top: 6px;
+        left: 6px;
+        right: 6px;
+        bottom: 6px;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 2px;
         background: radial-gradient(ellipse at center,
-            rgba(212, 175, 55, 0.2) 0%,
+            rgba(212, 175, 55, 0.1) 0%,
             transparent 70%);
         animation: artworkShine 5s ease-in-out infinite;
     }
 
-    .artwork-piece:nth-child(1) {
+    .artwork-piece-1 {
         top: 10%;
         left: 5%;
         animation: floatArtwork1 15s ease-in-out infinite;
     }
 
-    .artwork-piece:nth-child(2) {
+    .artwork-piece-2 {
         top: 60%;
         left: 10%;
         width: 60px;
@@ -195,7 +209,7 @@
         animation-delay: 2s;
     }
 
-    .artwork-piece:nth-child(3) {
+    .artwork-piece-3 {
         top: 20%;
         right: 8%;
         width: 90px;
@@ -204,7 +218,7 @@
         animation-delay: 4s;
     }
 
-    .artwork-piece:nth-child(4) {
+    .artwork-piece-4 {
         top: 65%;
         right: 15%;
         width: 70px;
@@ -379,20 +393,37 @@
     }
 
     .golden-particle {
+        /* VECCHIO STILE - NON PIU' USATO */
+        display: none;
+    }
+
+    .floating-artwork-particle {
         position: absolute;
-        width: 3px;
-        height: 3px;
-        background: radial-gradient(circle,
-            rgba(212, 175, 55, 0.8) 0%,
-            rgba(212, 175, 55, 0) 70%);
-        border-radius: 50%;
-        filter: blur(0.5px);
+        width: 40px;
+        height: 50px;
+        pointer-events: none;
+        z-index: 5;
+        opacity: 0.8;
+    }
+
+    .particle-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid rgba(212, 175, 55, 0.4);
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
     }
 
     /* Animations */
     @keyframes gridRotate {
         0% { transform: perspective(1000px) rotateX(45deg) translateX(0); }
         100% { transform: perspective(1000px) rotateX(45deg) translateX(-50%); }
+    }
+
+    @keyframes goldShimmer {
+        0%, 100% { opacity: 0.15; }
+        50% { opacity: 0.3; }
     }
 
     @keyframes frameGlow {
@@ -596,11 +627,19 @@
         }
 
         .gallery-grid {
-            opacity: 0.02;
+            opacity: 0.6;
         }
 
-        .artwork-piece {
-            opacity: 0.2;
+        .gallery-artwork-image {
+            opacity: 0.7;
+        }
+
+        .artwork-piece {        .artwork-frame {
+            border-width: 1px;
+        }
+
+        .artwork-frame::before {
+            border-width: 0.5px;
         }
 
         .content-overlay {
@@ -697,12 +736,16 @@
             border-color: rgba(212, 175, 55, 0.7);
         }
 
-        .gallery-grid {
-            animation-duration: 80s;
-        }
-
         .artwork-piece {
             opacity: 0.15;
+        }
+
+        .artwork-frame {
+            border-width: 1px;
+        }
+
+        .artwork-frame::before {
+            border-width: 0.5px;
         }
     }
 
@@ -714,6 +757,17 @@
         }
     }
 </style>
+
+@php
+    $floatingArtworksData = $floatingArtworks->map(function($artwork) {
+        return [
+            'id' => $artwork->id,
+            'title' => $artwork->title,
+            'avatar_url' => $artwork->avatar_image_url,
+            'thumbnail_url' => $artwork->thumbnail_image_url
+        ];
+    })->toArray();
+@endphp
 
 @once
 @push('scripts')
@@ -729,6 +783,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalArtists = {{ $totalArtists }};
     const totalReservations = {{ $totalReservations }};
     const subtitle = "{{ $subtitle }}";
+
+    // Floating artworks data
+    const floatingArtworks = @json($floatingArtworksData);
 
     // Device detection
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -798,23 +855,62 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function createFloatingFrames() {
-        const geometry = new THREE.BoxGeometry(1, 1.3, 0.1);
-        const material = new THREE.MeshPhongMaterial({
-            color: 0xd4af37,
-            emissive: 0x8b6914,
-            emissiveIntensity: 0.2,
-            shininess: 100,
-            opacity: 0.8,
-            transparent: true
-        });
-
         frames = new THREE.Group();
 
-        // Reduce frames on mobile for better performance
-        const frameCount = isMobile ? 10 : 20;
+        // Increase frames to replace golden cubes with artworks
+        const frameCount = isMobile ? 20 : 40;
 
         for (let i = 0; i < frameCount; i++) {
-            const frame = new THREE.Mesh(geometry, material.clone());
+            // Use PlaneGeometry instead of BoxGeometry for better texture display
+            const geometry = new THREE.PlaneGeometry(1.2, 1.5);
+            let material;
+
+            // Use artwork texture if available
+            if (floatingArtworks && floatingArtworks.length > 0) {
+                const artwork = floatingArtworks[i % floatingArtworks.length];
+                if (artwork && artwork.avatar_url) {
+                    const textureLoader = new THREE.TextureLoader();
+
+                    // Create material with artwork texture
+                    material = new THREE.MeshBasicMaterial({
+                        transparent: true,
+                        opacity: 0.8,
+                        side: THREE.DoubleSide
+                    });
+
+                    // Load texture
+                    textureLoader.load(
+                        artwork.avatar_url,
+                        function(texture) {
+                            material.map = texture;
+                            material.needsUpdate = true;
+                        },
+                        undefined,
+                        function(error) {
+                            // Fallback to golden material on error
+                            material.color.setHex(0xd4af37);
+                        }
+                    );
+                } else {
+                    // Fallback golden material
+                    material = new THREE.MeshBasicMaterial({
+                        color: 0xd4af37,
+                        transparent: true,
+                        opacity: 0.6,
+                        side: THREE.DoubleSide
+                    });
+                }
+            } else {
+                // Fallback golden material
+                material = new THREE.MeshBasicMaterial({
+                    color: 0xd4af37,
+                    transparent: true,
+                    opacity: 0.6,
+                    side: THREE.DoubleSide
+                });
+            }
+
+            const frame = new THREE.Mesh(geometry, material);
             frame.position.x = (Math.random() - 0.5) * 100;
             frame.position.y = (Math.random() - 0.5) * 50;
             frame.position.z = (Math.random() - 0.5) * 50;
@@ -836,42 +932,57 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function createParticleSystem() {
-        // Reduce particles on mobile for better performance
-        const particleCount = isMobile ? 250 : 500;
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(particleCount * 3);
-        const colors = new Float32Array(particleCount * 3);
-        const sizes = new Float32Array(particleCount);
+        // SOSTITUISCO LE PARTICELLE DORATE CON IMMAGINI DELLE OPERE
+        // Non creo più particelle Three.js, uso elementi DOM con immagini
+
+        const container = document.getElementById(`particlesOverlay-${componentId}`);
+        if (!container) return;
+
+        // Numero di opere volanti
+        const particleCount = isMobile ? 30 : 60;
 
         for (let i = 0; i < particleCount; i++) {
-            const i3 = i * 3;
-            positions[i3] = (Math.random() - 0.5) * 100;
-            positions[i3 + 1] = (Math.random() - 0.5) * 60;
-            positions[i3 + 2] = (Math.random() - 0.5) * 50;
+            // Creo un div per ogni opera
+            const particle = document.createElement('div');
+            particle.className = 'floating-artwork-particle';
 
-            // Golden colors
-            colors[i3] = 0.83 + Math.random() * 0.17;
-            colors[i3 + 1] = 0.69 + Math.random() * 0.1;
-            colors[i3 + 2] = 0.22;
+            // Posizione iniziale casuale
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
 
-            sizes[i] = Math.random() * 2 + 0.5;
+            // Aggiungo l'immagine dell'opera
+            if (floatingArtworks && floatingArtworks.length > 0) {
+                const artwork = floatingArtworks[i % floatingArtworks.length];
+                if (artwork && artwork.avatar_url) {
+                    const img = document.createElement('img');
+                    img.src = artwork.avatar_url;
+                    img.alt = artwork.title || 'Opera';
+                    img.className = 'particle-image';
+                    particle.appendChild(img);
+                }
+            }
+
+            container.appendChild(particle);
+
+            // Animazione con GSAP
+            if (typeof gsap !== 'undefined') {
+                gsap.set(particle, {
+                    rotation: Math.random() * 360,
+                    scale: 0.3 + Math.random() * 0.4
+                });
+
+                gsap.to(particle, {
+                    y: -200,
+                    x: (Math.random() - 0.5) * 300,
+                    rotation: '+=360',
+                    opacity: 0,
+                    duration: Math.random() * 8 + 6,
+                    repeat: -1,
+                    delay: Math.random() * 8,
+                    ease: "power1.out"
+                });
+            }
         }
-
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-        const material = new THREE.PointsMaterial({
-            size: isMobile ? 1.5 : 2,
-            vertexColors: true,
-            transparent: true,
-            opacity: isMobile ? 0.4 : 0.6,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-
-        particles = new THREE.Points(geometry, material);
-        scene.add(particles);
     }
 
     function onMouseMove(event) {
@@ -911,17 +1022,7 @@ document.addEventListener('DOMContentLoaded', function() {
         targetX += (mouseX - targetX) * 0.05;
         targetY += (mouseY - targetY) * 0.05;
 
-        // Rotate particles
-        if (particles) {
-            particles.rotation.y += 0.0005;
-            particles.rotation.x += 0.0003;
-
-            // Mouse influence on particles
-            particles.rotation.y += targetX * 0.01;
-            particles.rotation.x += targetY * 0.01;
-        }
-
-        // Animate frames
+        // Animate frames (Three.js frames with artwork textures)
         if (frames) {
             frames.children.forEach((frame, index) => {
                 const time = Date.now() * 0.001;
@@ -1006,34 +1107,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Create DOM particles
+    // Create DOM particles with artwork images - DISABLED
     function createDOMParticles() {
-        const container = document.getElementById(`particlesOverlay-${componentId}`);
-        if (!container) return;
-
-        // Reduce particles on mobile for better performance
-        const particleCount = isMobile ? 15 : 30;
-
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'golden-particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.top = Math.random() * 100 + '%';
-            container.appendChild(particle);
-
-            // Animate particle
-            if (typeof gsap !== 'undefined') {
-                gsap.to(particle, {
-                    y: -100,
-                    x: (Math.random() - 0.5) * 100,
-                    opacity: 0,
-                    duration: Math.random() * 5 + 5,
-                    repeat: -1,
-                    delay: Math.random() * 5,
-                    ease: "power1.out"
-                });
-            }
-        }
+        // Disabled - we only want the floating artworks and Three.js frames
+        return;
     }
 
     createDOMParticles();

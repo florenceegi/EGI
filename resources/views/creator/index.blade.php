@@ -1,6 +1,15 @@
 {{-- resources/views/creators/index.blade.php --}}
-<x-guest-layout :title="__('creator.index.page_title')" :metaDescription="__('creator.index.meta_description')">
+<x-platform-layout :title="__('creator.index.page_title')" :metaDescription="__('creator.index.meta_description')">
 
+<x-slot name="platformHeaderBanner">
+    <x-collector-banner
+        title="CREATORS"
+        subtitle="Scopri gli artisti visionari che plasmano l'arte del futuro"
+        :total-works="App\Models\User::whereHas('createdEgis')->count()"
+        :total-artists="App\Models\Egi::distinct('user_id')->count()"
+        :total-reservations="App\Models\Reservation::where('is_current', true)->where('status', 'active')->where('is_highest', true)->sum('offer_amount_fiat')"
+    />
+</x-slot>
 
 <x-slot name="heroFullWidth">
     <div class="relative py-16 bg-gray-900 sm:py-24 lg:py-32">
@@ -101,4 +110,4 @@
     </div>
 </x-slot>
 
-</x-guest-layout>
+</x-platform-layout>

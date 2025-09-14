@@ -4,7 +4,7 @@
 {{-- Uses Tailwind CSS for styling and layout. --}}
 {{-- Expects $collections (Paginator instance) and $epps (Collection of Epp) from the controller. --}}
 
-<x-guest-layout :title="__('collection.index.page_title')"
+<x-platform-layout :title="__('collection.index.page_title')"
     :metaDescription="__('collection.index.meta_description')">
 
     {{-- Aggiungiamo Schema.org per la pagina elenco --}}
@@ -39,6 +39,15 @@
           }
         }
         </script>
+    </x-slot>
+
+    <x-slot name="platformHeaderBanner">
+        <x-collector-banner
+            title="COLLECTIONS"
+            subtitle="Esplora collezioni uniche e rare del mondo dell'arte digitale"
+            :total-works="App\Models\Collection::count()"
+            :total-artists="App\Models\Collection::distinct('creator_id')->count()"
+        />
     </x-slot>
 
     <x-slot name="heroFullWidth">
@@ -171,4 +180,4 @@
         {{ $collections->appends(request()->query())->links() }}
     </div>
 
-</x-guest-layout>
+</x-platform-layout>
