@@ -132,6 +132,7 @@ return [
         'sort_most_spent' => 'Maggiore Spesa',
         'reset_filters' => 'Reset',
         'apply_filters' => 'Cerca',
+        'toggle_search' => 'Apri/Chiudi area di ricerca',
         'no_collectors_found' => 'Nessun collector trovato per i criteri specificati.',
     ],
 

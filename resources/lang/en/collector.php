@@ -129,6 +129,7 @@ return [
         'sort_most_spent' => 'Highest Spending',
         'reset_filters' => 'Reset',
         'apply_filters' => 'Search',
+        'toggle_search' => 'Toggle search area',
         'no_collectors_found' => 'No collectors found for the specified criteria.',
     ],
 
