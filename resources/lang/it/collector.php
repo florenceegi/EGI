@@ -133,6 +133,7 @@ return [
         'reset_filters' => 'Reset',
         'apply_filters' => 'Cerca',
         'toggle_search' => 'Apri/Chiudi area di ricerca',
+        'toggle_holders' => 'Mostra/Nascondi statistiche piattaforma',
         'no_collectors_found' => 'Nessun collector trovato per i criteri specificati.',
     ],
 
@@ -140,6 +141,7 @@ return [
     // Card Component
     'card' => [
         'collections' => 'collezioni',
+        'reservations' => 'prenotazioni',
     ],
 
     // Collector Carousel

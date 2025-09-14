@@ -130,12 +130,14 @@ return [
         'reset_filters' => 'Reset',
         'apply_filters' => 'Search',
         'toggle_search' => 'Toggle search area',
+        'toggle_holders' => 'Show/Hide platform statistics',
         'no_collectors_found' => 'No collectors found for the specified criteria.',
     ],
 
     // Card Component
     'card' => [
         'collections' => 'collections',
+        'reservations' => 'reservations',
     ],
 
     // Portfolio Page

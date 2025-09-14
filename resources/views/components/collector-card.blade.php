@@ -100,13 +100,24 @@ $stats = $collector->getCollectorStats();
             </div>
         </div>
 
-        {{-- Collections Count Badge --}}
-        @if (isset($stats['total_collections']) && $stats['total_collections'] > 0)
-        <div class="mt-2 text-center">
+        {{-- Stats Badges --}}
+        @if ((isset($stats['total_collections']) && $stats['total_collections'] > 0) || (isset($stats['active_reservations']) && $stats['active_reservations'] > 0))
+        <div class="mt-2 flex flex-wrap justify-center gap-1.5">
+            {{-- Collections Badge --}}
+            @if (isset($stats['total_collections']) && $stats['total_collections'] > 0)
             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-verde-rinascita/20 text-verde-rinascita border border-verde-rinascita/30">
                 <span class="material-symbols-outlined text-sm mr-1">folder_open</span>
                 {{ $stats['total_collections'] }} {{ __('collector.card.collections') }}
             </span>
+            @endif
+
+            {{-- EGI Reservations Badge --}}
+            @if (isset($stats['active_reservations']) && $stats['active_reservations'] > 0)
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                <span class="material-symbols-outlined text-sm mr-1">bookmark</span>
+                {{ $stats['active_reservations'] }} {{ __('collector.card.reservations') }}
+            </span>
+            @endif
         </div>
         @endif
     </div>

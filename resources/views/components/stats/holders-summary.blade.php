@@ -50,7 +50,7 @@ $uniqueCollections = $holders->unique('collection_id')->count();
 <div class="p-6 bg-white bg-opacity-10 backdrop-blur-md rounded-xl">
     {{-- Header --}}
     <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xl font-semibold text-white flex items-center space-x-2">
+        <h3 class="flex items-center space-x-2 text-xl font-semibold text-white">
             <span class="material-symbols-outlined">group</span>
             <span>{{ __('creator.portfolio.holders.title') }}</span>
         </h3>
@@ -126,7 +126,7 @@ $uniqueCollections = $holders->unique('collection_id')->count();
                                 <div class="text-xs text-gray-400">
                                     {{ $holder['collections_count'] }} {{ $holder['collections_count'] == 1 ? __('creator.portfolio.holders.collection') : __('creator.portfolio.holders.collections') }}
                                     @if($user->usertype === 'verified')
-                                        <span class="ml-1 text-blue-400 material-symbols-outlined text-xs">verified</span>
+                                        <span class="ml-1 text-xs text-blue-400 material-symbols-outlined">verified</span>
                                     @endif
                                 </div>
                             </div>
@@ -143,9 +143,33 @@ $uniqueCollections = $holders->unique('collection_id')->count();
 
                     {{-- Stats --}}
                     <div class="text-right">
+                        @php
+                            $percentage = $totalItems > 0 ? round(($holder['total_items'] / $totalItems) * 100, 1) : 0;
+
+                            // Determina il gradiente in base alla percentuale
+                            if ($percentage >= 50) {
+                                $gradientColors = 'from-green-400 to-emerald-600'; // Verde per alte percentuali
+                            } elseif ($percentage >= 25) {
+                                $gradientColors = 'from-yellow-400 to-orange-500'; // Giallo-Arancione per medie percentuali
+                            } elseif ($percentage >= 10) {
+                                $gradientColors = 'from-blue-400 to-indigo-600'; // Blu per basse percentuali
+                            } else {
+                                $gradientColors = 'from-gray-400 to-gray-600'; // Grigio per percentuali molto basse
+                            }
+                        @endphp
                         <div class="font-semibold text-white">{{ $holder['total_items'] }}</div>
-                        <div class="text-xs text-gray-400">
+                        <div class="mb-2 text-xs text-gray-400">
                             €{{ number_format($holder['total_spent'], 0) }}
+                        </div>
+                        {{-- Barra percentuale con gradiente dinamico --}}
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-400">{{ $percentage }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-gradient-to-r {{ $gradientColors }} h-2 rounded-full transition-all duration-500 shadow-sm"
+                                     style="width: {{ min($percentage, 100) }}%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

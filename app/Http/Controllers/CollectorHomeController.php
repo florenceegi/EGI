@@ -102,18 +102,30 @@ class CollectorHomeController extends Controller {
         $totalReservedWorks = Reservation::getTotalReservedWorks();
         $totalArtistsWithReservations = Reservation::getTotalArtistsWithReservations();
 
-        $collectors = User::whereHas('validReservations')
+        $collectors = User::whereHas('validReservations', function ($query) {
+            // Solo prenotazioni che sono attualmente "highest" (vincenti)
+            $query->where('is_current', true)
+                ->whereNull('superseded_by_id');
+        })
             ->when($query, function ($q) use ($query) {
                 $q->where('name', 'like', '%' . $query . '%');
             })
             ->with(['validReservations' => function ($query) {
-                $query->with('egi')->take(3);
+                $query->where('is_current', true)
+                    ->whereNull('superseded_by_id')
+                    ->with('egi')->take(3);
             }])
             ->when($sort === 'most_egis', function ($q) {
-                $q->withCount('validReservations')->orderBy('valid_reservations_count', 'desc');
+                $q->withCount(['validReservations' => function ($query) {
+                    $query->where('is_current', true)
+                        ->whereNull('superseded_by_id');
+                }])->orderBy('valid_reservations_count', 'desc');
             })
             ->when($sort === 'most_spent', function ($q) {
-                $q->withSum('validReservations as total_spent', 'offer_amount_fiat')
+                $q->withSum(['validReservations as total_spent' => function ($query) {
+                    $query->where('is_current', true)
+                        ->whereNull('superseded_by_id');
+                }], 'offer_amount_fiat')
                     ->orderBy('total_spent', 'desc');
             })
             ->when($sort === 'latest', function ($q) {
@@ -122,10 +134,10 @@ class CollectorHomeController extends Controller {
             ->paginate(20);
 
         return view('collector.index', compact(
-            'collectors', 
-            'query', 
-            'sort', 
-            'totalReservedWorks', 
+            'collectors',
+            'query',
+            'sort',
+            'totalReservedWorks',
             'totalArtistsWithReservations'
         ));
     }

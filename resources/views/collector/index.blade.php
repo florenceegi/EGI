@@ -15,13 +15,22 @@
         <div class="relative py-6 bg-gray-900 sm:py-8 lg:py-10">
             <div class="container px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
 
-                <!-- Search Toggle Button -->
-                <div class="flex justify-center mb-4">
+                <!-- Search and Platform Stats Toggle Buttons -->
+                <div class="flex justify-center mb-4 space-x-4">
+                    <!-- Search Toggle Button -->
                     <button id="searchToggle" type="button"
                         class="flex items-center justify-center p-3 text-white transition-all duration-300 rounded-full bg-verde-rinascita hover:bg-verde-rinascita-dark focus:outline-none focus:ring-2 focus:ring-verde-rinascita focus:ring-offset-2 focus:ring-offset-gray-900"
                         aria-label="{{ __('collector.index.toggle_search') }}"
                         aria-expanded="false">
-                        <span class="material-symbols-outlined text-2xl">search</span>
+                        <span class="text-2xl material-symbols-outlined">search</span>
+                    </button>
+
+                    <!-- Platform Holders Toggle Button -->
+                    <button id="holdersToggle" type="button"
+                        class="flex items-center justify-center p-3 text-white transition-all duration-300 rounded-full bg-blu-algoritmo hover:bg-blu-algoritmo-dark focus:outline-none focus:ring-2 focus:ring-blu-algoritmo focus:ring-offset-2 focus:ring-offset-gray-900"
+                        aria-label="{{ __('collector.index.toggle_holders') }}"
+                        aria-expanded="false">
+                        <span class="text-2xl material-symbols-outlined">leaderboard</span>
                     </button>
                 </div>
 
@@ -73,6 +82,11 @@
                     </div>
                 </div>
 
+                <!-- Collapsible Platform Holders Area -->
+                <div id="holdersArea" class="hidden mt-6 transition-all duration-300 ease-in-out">
+                    <x-stats.platform-holders-summary :limit="10" />
+                </div>
+
                 <div class="grid grid-cols-1 gap-8 mt-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @forelse($collectors as $collector)
                         <x-collector-card :collector="$collector" />
@@ -93,10 +107,17 @@
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Search Toggle Logic
             const searchToggle = document.getElementById('searchToggle');
             const searchArea = document.getElementById('searchArea');
             const searchIcon = searchToggle.querySelector('.material-symbols-outlined');
-            let isExpanded = false;
+            let isSearchExpanded = false;
+
+            // Holders Toggle Logic
+            const holdersToggle = document.getElementById('holdersToggle');
+            const holdersArea = document.getElementById('holdersArea');
+            const holdersIcon = holdersToggle.querySelector('.material-symbols-outlined');
+            let isHoldersExpanded = false;
 
             // Controlla se ci sono parametri di ricerca attivi per mostrare l'area aperta
             const urlParams = new URLSearchParams(window.location.search);
@@ -107,13 +128,17 @@
             }
 
             searchToggle.addEventListener('click', function() {
-                toggleSearchArea(!isExpanded);
+                toggleSearchArea(!isSearchExpanded);
+            });
+
+            holdersToggle.addEventListener('click', function() {
+                toggleHoldersArea(!isHoldersExpanded);
             });
 
             function toggleSearchArea(expand) {
-                isExpanded = expand;
+                isSearchExpanded = expand;
 
-                if (isExpanded) {
+                if (isSearchExpanded) {
                     // Mostra l'area di ricerca
                     searchArea.classList.remove('hidden');
                     searchArea.classList.add('animate-fadeInDown');
@@ -141,6 +166,35 @@
                     // Ripristina icona e stile del bottone
                     searchIcon.textContent = 'search';
                     searchToggle.classList.remove('bg-verde-rinascita-dark');
+                }
+            }
+
+            function toggleHoldersArea(expand) {
+                isHoldersExpanded = expand;
+
+                if (isHoldersExpanded) {
+                    // Mostra l'area holders
+                    holdersArea.classList.remove('hidden');
+                    holdersArea.classList.add('animate-fadeInDown');
+                    holdersToggle.setAttribute('aria-expanded', 'true');
+
+                    // Cambia icona e stile del bottone
+                    holdersIcon.textContent = 'expand_less';
+                    holdersToggle.classList.add('bg-blu-algoritmo-dark');
+                } else {
+                    // Nascondi l'area holders
+                    holdersArea.classList.add('animate-fadeOutUp');
+
+                    setTimeout(() => {
+                        holdersArea.classList.add('hidden');
+                        holdersArea.classList.remove('animate-fadeInDown', 'animate-fadeOutUp');
+                    }, 200);
+
+                    holdersToggle.setAttribute('aria-expanded', 'false');
+
+                    // Ripristina icona e stile del bottone
+                    holdersIcon.textContent = 'leaderboard';
+                    holdersToggle.classList.remove('bg-blu-algoritmo-dark');
                 }
             }
         });

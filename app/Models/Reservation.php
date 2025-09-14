@@ -683,8 +683,7 @@ class Reservation extends Model {
      *
      * @return int
      */
-    public static function getTotalReservedWorks(): int
-    {
+    public static function getTotalReservedWorks(): int {
         return static::where('is_current', true)
             ->distinct('egi_id')
             ->count('egi_id');
@@ -695,8 +694,7 @@ class Reservation extends Model {
      *
      * @return int
      */
-    public static function getTotalArtistsWithReservations(): int
-    {
+    public static function getTotalArtistsWithReservations(): int {
         return static::where('is_current', true)
             ->join('egis', 'reservations.egi_id', '=', 'egis.id')
             ->join('collections', 'egis.collection_id', '=', 'collections.id')

@@ -5,6 +5,13 @@
 
 @include('layouts.partials.header')
 
+<!-- Platform Header Banner (primissimo slot, full width) -->
+@isset($platformHeaderBanner)
+<div class="relative w-full">
+    {{ $platformHeaderBanner }}
+</div>
+@endisset
+
 <!-- Platform Info Buttons (ora in cima) -->
 @isset($platformHeader)
 <div class="relative w-full px-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
@@ -21,24 +28,24 @@
 
 <!-- Hero Section -->
 @unless (isset($noHero) && $noHero)
-<section id="hero-section" class="relative flex min-h-[100vh] flex-col items-center overflow-hidden"
+<section id="hero-section" class="relative flex flex-col overflow-hidden"
     aria-labelledby="hero-main-title">
 
     <h1 id="hero-main-title" class="sr-only">{{ $title ?? __('guest_layout.default_title') }}</h1>
 
     @isset($heroFullWidth)
     {{-- Layout a colonna intera --}}
-    <div class="relative z-10 w-full p-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="relative z-10 w-full p-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         {{ $heroFullWidth }}
     </div>
     @endisset
 
     {{-- Contenuto sotto l'hero --}}
     @isset($belowHeroContent_0)
-    <div class="relative z-10 w-full p-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
+    <div class="relative z-10 w-full p-4 mx-auto max-w-7xl sm:px-6 lg:px-8 below-hero-content" role="region"
+        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
         {{ $belowHeroContent_0 ?? '' }}
-    </div>    
+    </div>
     @endisset
 
     {{-- Top Collectors Carousel --}}
@@ -51,14 +58,14 @@
 
     @isset($belowHeroContent_2)
     <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
+        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
         {{ $belowHeroContent_2 ?? '' }}
     </div>
     @endisset
 
     @isset($belowHeroContent_3)
     <div class="relative z-10 w-full mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
+        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
         {{ $belowHeroContent_3 ?? '' }}
     </div>
     @endisset
@@ -75,7 +82,7 @@
             </svg>
         </button>
     </div>
-    
+
 </section>
 @endunless
 
