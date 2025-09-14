@@ -100,10 +100,11 @@ $stats = $collector->getCollectorStats();
             </div>
         </div>
 
-        {{-- Collections Count --}}
+        {{-- Collections Count Badge --}}
         @if (isset($stats['total_collections']) && $stats['total_collections'] > 0)
         <div class="mt-2 text-center">
-            <span class="text-xs text-gray-400">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-verde-rinascita/20 text-verde-rinascita border border-verde-rinascita/30">
+                <span class="material-symbols-outlined text-sm mr-1">folder_open</span>
                 {{ $stats['total_collections'] }} {{ __('collector.card.collections') }}
             </span>
         </div>

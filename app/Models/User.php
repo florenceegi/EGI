@@ -1498,6 +1498,16 @@ class User extends Authenticatable implements HasMedia {
         $totalCollections = $this->purchasedEgis()
             ->distinct('collection_id')
             ->count('collection_id');
+            
+        // Also count collections from valid reservations (for collectors page)
+        $collectionsFromReservations = $this->hasMany(Reservation::class, 'user_id')
+            ->whereIn('reservations.status', ['active', 'completed'])
+            ->join('egis', 'reservations.egi_id', '=', 'egis.id')
+            ->distinct('egis.collection_id')
+            ->count('egis.collection_id');
+            
+        // Use the maximum between purchased and reserved collections
+        $totalCollections = max($totalCollections, $collectionsFromReservations);
 
         return [
             'total_egis' => $purchasedEgis,
