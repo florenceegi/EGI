@@ -1,6 +1,7 @@
 <?php
 // resources/lang/en/statistics.php
 return [
+    'statistics_dashboard' => 'Cruscotto Statistiche',
     'dashboard_subtitle' => 'Analisi complete per le tue collezioni EGI',
     'refresh' => 'Aggiorna',
     'loading' => 'Caricamento',
@@ -13,6 +14,16 @@ return [
     'total_reservations' => 'Prenotazioni Totali',
     'total_amount' => 'Importo Totale',
     'epp_quota' => 'Quota EPP',
+
+    // Portfolio Statistics (moved from public portfolio)
+    'portfolio_statistics' => 'Statistiche Portfolio Personale',
+    'platform_statistics' => 'Statistiche Piattaforma',
+    'total_egis' => 'EGI Totali',
+    'total_collections' => 'Collezioni Totali',
+    'reserved_egis' => 'EGI Prenotati',
+    'available_egis' => 'EGI Disponibili',
+    'highest_offer' => 'Offerta più Alta',
+    'total_value' => 'Valore Totale',
 
     // Section Titles
     'likes_by_collection' => 'Like per Collezione',
@@ -97,4 +108,19 @@ return [
     'epp_ratio' => 'Ratio EPP',
     'active' => 'Attiva',
     'view_details' => 'Visualizza Dettagli',
+
+    // Likes Analytics
+    'likes_analytics' => 'Analisi Like',
+    'likes_received_analysis' => 'Analisi Like Ricevuti',
+    'likes_given_analysis' => 'Analisi Like Lasciati',
+    'total_likes_received' => 'Like Ricevuti',
+    'likes_received' => 'Like Ricevuti',
+    'likes_given' => 'Like Lasciati',
+    'top_liked_egis' => 'EGI più Apprezzati',
+    'top_liking_users' => 'Utenti più Attivi',
+    'total_given' => 'Totale Lasciati',
+    'no_liked_egis' => 'Nessun EGI ha ancora ricevuto like',
+    'no_liking_users' => 'Nessun like dato ancora',
+    'liked_by' => 'Like da',
+    'users' => 'utenti',
 ];

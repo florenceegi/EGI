@@ -59,102 +59,37 @@
 
         {{-- Statistics Content --}}
         <div id="statistics-content" class="hidden">
-            {{-- KPI Summary Boxes --}}
-            <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
-                {{-- Total Likes --}}
-                <div class="p-6 text-white shadow-lg bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-pink-100">{{ __('statistics.total_likes') }}</p>
-                            <p class="text-3xl font-bold" id="kpi-total-likes">0</p>
-                        </div>
-                        <div class="p-3 bg-white rounded-lg bg-opacity-20">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                    </div>
+            {{-- Portfolio Statistics Section - I COMPONENTI ESISTENTI SPOSTATI DAL PORTFOLIO --}}
+            <div class="mb-8">
+                <h2 class="flex items-center mb-6 text-2xl font-bold text-white">
+                    <svg class="w-8 h-8 mr-3 text-oro-fiorentino" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    {{ __('statistics.portfolio_statistics') }}
+                </h2>
+
+                {{-- Row 1: Earnings & Monthly Trends --}}
+                <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
+                    <x-stats.earnings-widget :creatorId="auth()->id()" />
+                    <x-stats.monthly-trend-chart :creatorId="auth()->id()" :monthlyTrend="[]" />
                 </div>
 
-                {{-- Total Reservations --}}
-                <div class="p-6 text-white shadow-lg bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-blue-100">{{ __('statistics.total_reservations') }}</p>
-                            <p class="text-3xl font-bold" id="kpi-total-reservations">0</p>
-                            <p class="text-xs text-blue-200" id="kpi-strong-reservations">0 strong</p>
-                        </div>
-                        <div class="p-3 bg-white rounded-lg bg-opacity-20">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-                            </svg>
-                        </div>
-                    </div>
+                {{-- Row 2: Collection Performance & Engagement --}}
+                <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
+                    <x-stats.collection-performance-widget :creatorId="auth()->id()" :collectionPerformance="[]" />
+                    <x-stats.engagement-widget :creatorId="auth()->id()" :engagement="[]" />
                 </div>
 
-                {{-- Total Amount --}}
-                <div class="p-6 text-white shadow-lg bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-green-100">{{ __('statistics.total_amount') }}</p>
-                            <p class="text-3xl font-bold" id="kpi-total-amount">€0</p>
-                        </div>
-                        <div class="p-3 bg-white rounded-lg bg-opacity-20">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                            </svg>
-                        </div>
-                    </div>
+                {{-- Row 3: Role-based Earnings & Holders Summary --}}
+                <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
+                    <x-stats.role-earnings-widget :user-id="auth()->id()" />
+                    <x-stats.holders-summary :creatorId="auth()->id()" />
                 </div>
 
-                {{-- EPP Quota --}}
-                <div class="p-6 text-white shadow-lg bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-purple-100">{{ __('statistics.epp_quota') }}</p>
-                            <p class="text-3xl font-bold" id="kpi-epp-quota">€0</p>
-                        </div>
-                        <div class="p-3 bg-white rounded-lg bg-opacity-20">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Detailed Statistics --}}
-            <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
-                {{-- Likes by Collection --}}
-                <div class="p-6 bg-white bg-opacity-10 backdrop-blur-md rounded-xl">
-                    <h3 class="mb-4 text-xl font-semibold text-white">{{ __('statistics.likes_by_collection') }}</h3>
-                    <div id="likes-by-collection" class="space-y-3">
-                        <div class="py-8 text-center text-gray-300">{{ __('statistics.no_data') }}</div>
-                    </div>
-                </div>
-
-                {{-- Reservations by Collection --}}
-                <div class="p-6 bg-white bg-opacity-10 backdrop-blur-md rounded-xl">
-                    <h3 class="mb-4 text-xl font-semibold text-white">{{ __('statistics.reservations_by_collection') }}</h3>
-                    <div id="reservations-by-collection" class="space-y-3">
-                        <div class="py-8 text-center text-gray-300">{{ __('statistics.no_data') }}</div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Top EGIs --}}
-            <div class="p-6 mb-8 bg-white bg-opacity-10 backdrop-blur-md rounded-xl">
-                <h3 class="mb-4 text-xl font-semibold text-white">{{ __('statistics.top_egis') }}</h3>
-                <div id="top-egis" class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div class="py-8 text-center text-gray-300 col-span-full">{{ __('statistics.no_data') }}</div>
-                </div>
-            </div>
-
-            {{-- EPP Breakdown --}}
-            <div class="p-6 bg-white bg-opacity-10 backdrop-blur-md rounded-xl">
-                <h3 class="mb-4 text-xl font-semibold text-white">{{ __('statistics.epp_breakdown') }}</h3>
-                <div id="epp-breakdown" class="space-y-4">
-                    <div class="py-8 text-center text-gray-300">{{ __('statistics.no_data') }}</div>
+                {{-- Row 4: Likes Analytics --}}
+                <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
+                    <x-stats.likes-analytics-widget :userId="auth()->id()" />
+                    <x-stats.likes-given-analytics-widget :userId="auth()->id()" />
                 </div>
             </div>
         </div>
@@ -241,135 +176,8 @@ document.addEventListener('DOMContentLoaded', function() {
      * Render statistics data to UI
      */
     function renderStatistics(data) {
-        // Update KPI boxes
-        updateKPIs(data.summary);
-
-        // Update detailed sections
-        renderLikesByCollection(data.likes.by_collection);
-        renderReservationsByCollection(data.reservations.by_collection);
-        renderTopEgis(data.likes.top_egis);
-        renderEppBreakdown(data.epp_potential.by_collection);
-    }
-
-    /**
-     * Update KPI summary boxes
-     */
-    function updateKPIs(summary) {
-        document.getElementById('kpi-total-likes').textContent = summary.total_likes.toLocaleString();
-        document.getElementById('kpi-total-reservations').textContent = summary.total_reservations.toLocaleString();
-        document.getElementById('kpi-strong-reservations').textContent = `${summary.strong_reservations} strong`;
-        document.getElementById('kpi-total-amount').textContent = `€${summary.total_amount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-        document.getElementById('kpi-epp-quota').textContent = `€${summary.epp_quota.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-    }
-
-    /**
-     * Render likes by collection
-     */
-    function renderLikesByCollection(collections) {
-        const container = document.getElementById('likes-by-collection');
-
-        if (collections.length === 0) {
-            container.innerHTML = '<div class="py-4 text-center text-gray-300">{{ __("statistics.no_collections") }}</div>';
-            return;
-        }
-
-        const html = collections.map(collection => `
-            <div class="flex items-center justify-between p-3 bg-white rounded-lg bg-opacity-5">
-                <div>
-                    <h4 class="font-medium text-white truncate">${escapeHtml(collection.collection_name)}</h4>
-                    <p class="text-sm text-gray-300">${collection.total_likes} likes totali</p>
-                </div>
-                <div class="text-right">
-                    <div class="font-medium text-pink-400">${collection.collection_likes} collezione</div>
-                    <div class="text-sm text-blue-400">${collection.egi_likes} EGI</div>
-                </div>
-            </div>
-        `).join('');
-
-        container.innerHTML = html;
-    }
-
-    /**
-     * Render reservations by collection
-     */
-    function renderReservationsByCollection(collections) {
-        const container = document.getElementById('reservations-by-collection');
-
-        if (collections.length === 0) {
-            container.innerHTML = '<div class="py-4 text-center text-gray-300">{{ __("statistics.no_reservations") }}</div>';
-            return;
-        }
-
-        const html = collections.map(collection => `
-            <div class="flex items-center justify-between p-3 bg-white rounded-lg bg-opacity-5">
-                <div>
-                    <h4 class="font-medium text-white truncate">${escapeHtml(collection.collection_name)}</h4>
-                    <p class="text-sm text-gray-300">${collection.total_reservations} prenotazioni</p>
-                </div>
-                <div class="text-right">
-                    <div class="font-medium text-green-400">${collection.strong_reservations} strong</div>
-                    <div class="text-sm text-blue-400">${collection.weak_reservations} weak</div>
-                </div>
-            </div>
-        `).join('');
-
-        container.innerHTML = html;
-    }
-
-    /**
-     * Render top EGIs
-     */
-    function renderTopEgis(egis) {
-        const container = document.getElementById('top-egis');
-
-        if (egis.length === 0) {
-            container.innerHTML = '<div class="py-8 text-center text-gray-300 col-span-full">{{ __("statistics.no_top_egis") }}</div>';
-            return;
-        }
-
-        const html = egis.map((egi, index) => `
-            <div class="p-4 bg-white rounded-lg bg-opacity-5">
-                <div class="flex items-center mb-2 space-x-3">
-                    <div class="flex items-center justify-center w-8 h-8 font-bold text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
-                        ${index + 1}
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-medium text-white truncate">${escapeHtml(egi.title || 'Untitled EGI')}</h4>
-                        <p class="text-xs text-gray-400 truncate">${escapeHtml(egi.collection_name)}</p>
-                    </div>
-                </div>
-                <div class="text-lg font-bold text-pink-400">${egi.likes_count} likes</div>
-            </div>
-        `).join('');
-
-        container.innerHTML = html;
-    }
-
-    /**
-     * Render EPP breakdown
-     */
-    function renderEppBreakdown(collections) {
-        const container = document.getElementById('epp-breakdown');
-
-        if (collections.length === 0) {
-            container.innerHTML = '<div class="py-4 text-center text-gray-300">{{ __("statistics.no_epp_data") }}</div>';
-            return;
-        }
-
-        const html = collections.map(collection => `
-            <div class="flex items-center justify-between p-4 bg-white rounded-lg bg-opacity-5">
-                <div>
-                    <h4 class="font-medium text-white">${escapeHtml(collection.collection_name)}</h4>
-                    <p class="text-sm text-gray-300">${collection.epp_percentage}% EPP quota</p>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-purple-400">€${collection.epp_quota.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
-                    <div class="text-sm text-gray-400">from €${collection.total_amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
-                </div>
-            </div>
-        `).join('');
-
-        container.innerHTML = html;
+        // Portfolio statistics are handled by Laravel components
+        // No client-side rendering needed
     }
 
     // Utility functions

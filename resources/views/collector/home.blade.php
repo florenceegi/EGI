@@ -57,11 +57,29 @@
 
         {{-- Renaissance Pattern --}}
         <div class="absolute inset-0 opacity-50" aria-hidden="true">
-            {{-- Padmin: Stile corretto per un'immagine di sfondo a copertura totale --}}
-            <div class="absolute inset-0"
-                style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+            {{-- Dynamic Creator Banner with Spatie Media Support --}}
+            <div class="absolute inset-0">
+                @php
+                    // Prova ad usare Spatie Media se disponibile per il banner del creator
+                    $bannerUrl = method_exists($collector, 'getCreatorBannerUrl')
+                        ? $collector->getCreatorBannerUrl('banner')
+                        : null;
+                @endphp
+                @if($bannerUrl)
+                <img src="{{ $bannerUrl }}" alt="Banner for {{ $collector->name }}"
+                    class="object-cover w-full h-full">
+                @else
+                {{-- Fallback: Random background or gradient --}}
+                <div class="absolute inset-0"
+                    style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+                </div>
+                @endif
+                {{-- Overlay gradiente potenziato per leggibilità --}}
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
             </div>
         </div>
+
 
         {{-- Hero Content --}}
         <div class="relative z-10 px-4 py-16 mx-auto max-w-7xl sm:px-6 md:py-24 lg:px-8">

@@ -1,6 +1,7 @@
 <?php
 // resources/lang/pt/statistics.php
 return [
+    'statistics_dashboard' => 'Painel de Estatísticas',
     'dashboard_subtitle' => 'Análise abrangente para suas coleções EGI',
     'refresh' => 'Atualizar',
     'loading' => 'Carregando',

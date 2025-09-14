@@ -61,6 +61,10 @@ return [
         'discover_button' => 'Esplora Collezioni',
         'created' => 'Creato',
         'created_on' => 'Creato il',
+        'private_stats_info' => 'Visualizza le tue statistiche dettagliate nella dashboard privata.',
+        'view_detailed_stats' => 'Vai alle Statistiche',
+        'public_collections' => 'Collezioni Pubbliche',
+        'public_artworks' => 'Opere Pubbliche',
 
         // 💰 Earnings Widget
         'earnings' => [

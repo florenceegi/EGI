@@ -1,6 +1,7 @@
 <?php
 // resources/lang/de/statistics.php
 return [
+    'statistics_dashboard' => 'Statistik-Dashboard',
     'dashboard_subtitle' => 'Umfassende Analysen für Ihre EGI-Sammlungen',
     'refresh' => 'Aktualisieren',
     'loading' => 'Laden',

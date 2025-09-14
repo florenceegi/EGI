@@ -732,7 +732,7 @@
             cursor: default; /* Rimuovi cursor crosshair su mobile */
             touch-action: pan-y; /* Forza scroll verticale */
         }
-        
+
         .collection-counter:hover {
             transform: none;
         }

@@ -37,7 +37,9 @@ class CreatorHomeController extends Controller {
         if (is_numeric($identifier)) {
             return User::findOrFail($identifier);
         } else {
-            return User::where('nick_name', $identifier)->firstOrFail();
+            // Decodifica l'identifier per gestire spazi e caratteri URL-encoded
+            $decodedIdentifier = urldecode($identifier);
+            return User::where('nick_name', $decodedIdentifier)->firstOrFail();
         }
     }
 

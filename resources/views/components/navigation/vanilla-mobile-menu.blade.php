@@ -265,13 +265,19 @@
                         <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('menu.manage_account') }}</h4>
                     </div>
                     <div class="space-y-2">
+                        @can('manage_profile')
                         <a href="{{ route('user.domains.personal-data') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/50 dark:hover:bg-black/20">
                             {{ __('menu.edit_personal_data') }}
                         </a>
-                        @can('manage_profile')
-                            <a href="{{ route('profile.show') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/50 dark:hover:bg-black/20">
-                                {{ __('Profile') }}
-                            </a>
+                        <a href="{{ route('gdpr.profile-images') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            {{ __('menu.profile_images') }}
+                        </a>
+                        <a href="{{ route('biography.manage') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            {{ __('menu.biography_items.manage') }}
+                        </a>
+                        <a href="{{ route('statistics.index') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            {{ __('statistics.statistics_dashboard') }}
+                        </a>
                         @endcan
                     </div>
                 </div>
@@ -295,12 +301,7 @@
                         <a href="{{ route('gdpr.security') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
                             {{ __('menu.security_password') }}
                         </a>
-                        <a href="{{ route('gdpr.profile-images') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
-                            {{ __('menu.profile_images') }}
-                        </a>
-                        <a href="{{ route('biography.manage') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
-                            {{ __('menu.biography_items.manage') }}
-                        </a>
+
                         @can('gdpr.export_data')
                             <a href="{{ route('gdpr.export-data') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
                                 {{ __('menu.export_data') }}

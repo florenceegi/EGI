@@ -1,6 +1,7 @@
 <?php
 // resources/lang/fr/statistics.php
 return [
+    'statistics_dashboard' => 'Tableau de Bord des Statistiques',
     'dashboard_subtitle' => 'Analyses complètes pour vos collections EGI',
     'refresh' => 'Actualiser',
     'loading' => 'Chargement',

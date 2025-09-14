@@ -149,11 +149,7 @@
                                     {{ __('creator.home.follow_button') }}
                                 </span>
                             </button>
-                            <button type="button"
-                                class="rounded-full bg-verde-rinascita px-6 py-2.5 font-semibold text-white shadow-lg transition-all duration-300 hover:bg-verde-rinascita/90 hover:shadow-xl"
-                                aria-label="{{ __('creator.home.become_patron_aria', ['name' => $creator->name]) }}">
-                                {{ __('creator.home.become_patron_button') }}
-                            </button>
+                           
                         @elseif(\App\Helpers\FegiAuth::guest())
                             <button type="button" onclick="window.location.href='{{ route('login') }}'"
                                 class="bg-oro-fiorentino hover:bg-oro-fiorentino/90 rounded-full px-6 py-2.5 font-semibold text-gray-900 shadow-lg transition-all duration-300 hover:shadow-xl">

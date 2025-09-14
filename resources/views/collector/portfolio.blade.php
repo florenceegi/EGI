@@ -40,23 +40,27 @@
                 </div>
             </div>
 
-            {{-- Stats Bar --}}
-            <div class="mt-6 grid grid-cols-3 gap-6 text-center">
-                <div>
-                    <span class="text-oro-fiorentino block text-2xl font-bold">{{ $stats['total_owned_egis'] ?? 0
-                        }}</span>
-                    <span class="text-sm text-gray-300">{{ __('collector.portfolio.total_egis') }}</span>
+            {{-- Public Portfolio Info - Only basic public information --}}
+            <div class="mt-6 text-center">
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <span class="text-oro-fiorentino block text-xl font-bold">{{ $stats['total_owned_egis'] ?? 0 }}</span>
+                        <span class="text-sm text-gray-300">{{ __('collector.portfolio.public_collection_items') }}</span>
+                    </div>
                 </div>
-                <div>
-                    <span class="text-oro-fiorentino block text-2xl font-bold">{{ $stats['total_bids_made'] ?? 0
-                        }}</span>
-                    <span class="text-sm text-gray-300">{{ __('collector.portfolio.total_bids') }}</span>
-                </div>
-                <div>
-                    <span class="text-oro-fiorentino block text-2xl font-bold">€{{ $stats['total_spent_eur'] ?? 0
-                        }}</span>
-                    <span class="text-sm text-gray-300">{{ __('collector.portfolio.total_value') }}</span>
-                </div>
+                @if(Auth::check() && Auth::id() === $collector->id)
+                    <div class="mt-4 p-3 bg-blue-900/50 rounded-lg border border-blue-600/30">
+                        <p class="text-sm text-blue-200">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {{ __('collector.portfolio.private_stats_info') }}
+                            <a href="{{ route('statistics.index') }}" class="text-blue-300 hover:text-blue-100 underline ml-1">
+                                {{ __('collector.portfolio.view_detailed_stats') }}
+                            </a>
+                        </p>
+                    </div>
+                @endif
             </div>
         </div>
     </section>
@@ -91,13 +95,6 @@
                     {{ __('collector.home.collections_tab') }}
                 </a>
             </nav>
-        </div>
-    </section>
-
-    {{-- Role-based Earnings Statistics --}}
-    <section class="py-8 bg-gray-900">
-        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <x-stats.role-earnings-widget :user-id="$collector->id" />
         </div>
     </section>
 

@@ -12,8 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Questo middleware intercetta le richieste alle route creator/{id} e:
  * 1. Cerca il creator con l'ID specificato
- * 2. Se il creator ha un nick_name, reindirizza a creator/{nick_name}
- * 3. Altrimenti continua con l'ID originale
+ * 2. Se il creator ha un nick_name VALIDO (solo lettere, numeri, _ e -), reindirizza a creator/{nick_name}
+ * 3. Altrimenti continua con l'ID originale (per nick_name con spazi o caratteri speciali)
  */
 class CreatorNicknameRedirect {
     /**
@@ -29,10 +29,11 @@ class CreatorNicknameRedirect {
         if (is_numeric($creatorId)) {
             $creator = User::find($creatorId);
 
-            // Se il creator esiste e ha un nick_name, reindirizza all'URL con nick_name
+            // Se il creator esiste e ha un nick_name, reindirizza SEMPRE (anche con spazi)
             if ($creator && !empty($creator->nick_name)) {
                 $currentUrl = $request->fullUrl();
-                $newUrl = str_replace("/creator/{$creatorId}", "/creator/{$creator->nick_name}", $currentUrl);
+                $encodedNickname = urlencode($creator->nick_name); // Codifica il nick_name per URL
+                $newUrl = str_replace("/creator/{$creatorId}", "/creator/{$encodedNickname}", $currentUrl);
 
                 return redirect($newUrl, 301); // Redirect permanente
             }

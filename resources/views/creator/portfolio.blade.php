@@ -39,112 +39,34 @@
                 </div>
             </div>
 
-            {{-- Stats Bar - Enhanced per Creator Portfolio --}}
-            <div class="grid grid-cols-2 gap-6 mt-6 text-center md:grid-cols-4">
-                <div>
-                    <span class="block text-2xl font-bold text-oro-fiorentino">{{ $stats['total_egis'] ?? 0 }}</span>
-                    <span class="text-sm text-gray-300">{{ __('creator.portfolio.total_egis') }}</span>
+            {{-- Public Portfolio Info - Only basic public information --}}
+            <div class="mt-6 text-center">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                        <span class="block text-xl font-bold text-oro-fiorentino">{{ $stats['total_collections'] ?? 0 }}</span>
+                        <span class="text-sm text-gray-300">{{ __('creator.portfolio.public_collections') }}</span>
+                    </div>
+                    <div>
+                        <span class="block text-xl font-bold text-oro-fiorentino">{{ $stats['total_egis'] ?? 0 }}</span>
+                        <span class="text-sm text-gray-300">{{ __('creator.portfolio.public_artworks') }}</span>
+                    </div>
                 </div>
-                <div>
-                    <span class="block text-2xl font-bold text-oro-fiorentino">{{ $stats['total_collections'] ?? 0
-                        }}</span>
-                    <span class="text-sm text-gray-300">{{ __('creator.portfolio.total_collections') }}</span>
-                </div>
-                <div>
-                    <span class="block text-2xl font-bold text-oro-fiorentino">{{ $stats['reserved_egis'] ?? 0 }}</span>
-                    <span class="text-sm text-gray-300">{{ __('creator.portfolio.reserved_egis') }}</span>
-                </div>
-                <div>
-                    <span class="block text-2xl font-bold text-oro-fiorentino">€{{ number_format($stats['highest_offer']
-                        ?? 0, 0, ',', '.') }}</span>
-                    <span class="text-sm text-gray-300">{{ __('creator.portfolio.highest_offer') }}</span>
-                </div>
-            </div>
-
-            {{-- Secondary Stats Row --}}
-            <div class="grid grid-cols-2 gap-6 mt-4 text-center">
-                <div>
-                    <span class="block text-lg font-semibold text-white">{{ $stats['available_egis'] ?? 0 }}</span>
-                    <span class="text-xs text-gray-400">{{ __('creator.portfolio.available_egis') }}</span>
-                </div>
-                <div>
-                    <span class="block text-lg font-semibold text-white">€{{ number_format($stats['total_value_eur'] ??
-                        0, 0, ',', '.') }}</span>
-                    <span class="text-xs text-gray-400">{{ __('creator.portfolio.total_value') }}</span>
-                </div>
+                @if(Auth::check() && Auth::id() === $creator->id)
+                    <div class="mt-4 p-3 bg-blue-900/50 rounded-lg border border-blue-600/30">
+                        <p class="text-sm text-blue-200">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {{ __('creator.portfolio.private_stats_info') }}
+                            <a href="{{ route('statistics.index') }}" class="text-blue-300 hover:text-blue-100 underline ml-1">
+                                {{ __('creator.portfolio.view_detailed_stats') }}
+                            </a>
+                        </p>
+                    </div>
+                @endif
             </div>
         </div>
     </section>
-
-    {{-- Advanced Statistics Section --}}
-    @if($advancedStats && $advancedStats['earnings']['total_earnings'] > 0)
-        <section class="py-8 bg-gray-900">
-            <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="space-y-8">
-                    {{-- Row 1: Earnings & Monthly Trends --}}
-                    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                        <x-stats.earnings-widget :creatorId="$creator->id" :earnings="$advancedStats['earnings']" />
-                        <x-stats.monthly-trend-chart :creatorId="$creator->id" :monthlyTrend="$advancedStats['monthly_trend']" />
-                    </div>
-
-                    {{-- Row 2: Collection Performance & Engagement --}}
-                    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                        <x-stats.collection-performance-widget :creatorId="$creator->id" :collectionPerformance="$advancedStats['collection_performance']" />
-                        <x-stats.engagement-widget :creatorId="$creator->id" :engagement="$advancedStats['engagement']" />
-                    </div>
-
-                    {{-- Row 3: Role-based Earnings & Holders Summary --}}
-                    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                        <x-stats.role-earnings-widget :user-id="$creator->id" />
-                        <x-stats.holders-summary :creatorId="$creator->id" />
-                    </div>
-                </div>
-            </div>
-        </section>
-    @elseif($advancedStats)
-        {{-- No Sales Yet - Motivational Section --}}
-        <section class="py-8 bg-gray-900">
-            <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="space-y-8">
-                    {{-- Motivational Banner --}}
-                    <div class="p-8 text-center border rounded-lg bg-gradient-to-r from-purple-900/50 to-blue-900/50 border-purple-500/20">
-                        <svg class="w-16 h-16 mx-auto mb-4 text-oro-fiorentino" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                        </svg>
-                        <h3 class="mb-4 text-2xl font-bold text-white">{{ __('creator.portfolio.earnings.no_earnings_title') }}</h3>
-                        <p class="max-w-2xl mx-auto mb-6 text-gray-300">
-                            {{ __('creator.portfolio.earnings.no_earnings_description') }}
-                        </p>
-                        <div class="flex items-center justify-center space-x-6 text-sm text-gray-400">
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                                </svg>
-                                <span>Guadagna dalle vendite</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                                <span>Crea impatto ambientale</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                                </svg>
-                                <span>Costruisci la tua audience</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Holders Summary anche senza vendite --}}
-                    <div class="grid grid-cols-1 gap-8 lg:grid-cols-1">
-                        <x-stats.holders-summary :creatorId="$creator->id" />
-                    </div>
-                </div>
-            </div>
-        </section>
-    @endif
 
     {{-- EGI Grid/List --}}
     <div class="min-h-screen bg-gray-800">

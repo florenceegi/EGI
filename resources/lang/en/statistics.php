@@ -1,6 +1,7 @@
 <?php
 // resources/lang/en/statistics.php
 return [
+    'statistics_dashboard' => 'Statistics Dashboard',
     'dashboard_subtitle' => 'Comprehensive analytics for your EGI collections',
     'refresh' => 'Refresh',
     'loading' => 'Loading',
@@ -46,4 +47,17 @@ return [
     'sell_collections_description' => 'Collections with active distributions',
     'egis_description' => 'Total number of EGIs',
     'sell_egis_description' => 'EGIs with active reservations',
+
+    // Likes Analytics
+    'likes_analytics' => 'Likes Analytics',
+    'total_likes_received' => 'Total Likes Received',
+    'likes_received' => 'Likes Received',
+    'likes_given' => 'Likes Given',
+    'top_liked_egis' => 'Top Liked EGIs',
+    'top_liking_users' => 'Most Active Users',
+    'total_given' => 'Total Given',
+    'no_liked_egis' => 'No EGIs have received likes yet',
+    'no_liking_users' => 'No likes given yet',
+    'liked_by' => 'Liked by',
+    'users' => 'users',
 ];

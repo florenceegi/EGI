@@ -164,6 +164,7 @@ class StatisticsService {
         $reservationsStats = $this->getReservationsStatistics(); // Contiene anche i dati per amounts
         $amountStats = $this->getAmountStatistics($reservationsStats['valid_reservations_for_amount']);
         $eppPotentialStats = $this->getEppPotentialStatistics($reservationsStats['valid_reservations_for_amount']);
+        $portfolioStats = $this->getPortfolioStatistics(); // Nuove statistiche portfolio
 
         $summary = $this->buildSummaryKPIs(
             $likesStats,
@@ -177,6 +178,7 @@ class StatisticsService {
             'reservations' => $reservationsStats, // Rimuovi valid_reservations_for_amount se non serve all'esterno
             'amounts' => $amountStats,
             'epp_potential' => $eppPotentialStats,
+            'portfolio' => $portfolioStats, // Aggiunte le statistiche del portfolio
             'summary' => $summary,
         ];
     }
@@ -508,6 +510,14 @@ class StatisticsService {
             'reservations' => $emptyReservations,
             'amounts' => $emptyAmounts,
             'epp_potential' => $emptyEpp,
+            'portfolio' => [
+                'total_egis' => 0,
+                'total_collections' => 0,
+                'reserved_egis' => 0,
+                'available_egis' => 0,
+                'highest_offer' => 0,
+                'total_value_eur' => 0,
+            ],
             'summary' => [
                 'total_likes' => 0,
                 'total_reservations' => 0,
@@ -538,5 +548,350 @@ class StatisticsService {
             'log_category' => 'STATS_CACHE_CLEARED_EXPLICIT'
         ]);
         return Cache::forget($cacheKey);
+    }
+
+    /**
+     * 🎯 Calculates portfolio statistics (moved from public portfolio views)
+     * @return array Portfolio statistics including EGI counts, values, and offers
+     *
+     * @signature: getPortfolioStatistics(): array
+     * @context: Called internally by calculateAllStatistics to get portfolio data
+     * @privacy-safe: Operates on user's own collections and EGIs
+     */
+    private function getPortfolioStatistics(): array {
+        if (empty($this->userCollectionIds)) {
+            return [
+                'total_egis' => 0,
+                'total_collections' => 0,
+                'reserved_egis' => 0,
+                'available_egis' => 0,
+                'highest_offer' => 0,
+                'total_value_eur' => 0,
+            ];
+        }
+
+        // Get all EGIs from user's collections with their reservations
+        $egis = Egi::whereIn('collection_id', $this->userCollectionIds)
+            ->with(['reservations' => function ($query) {
+                $query->where('is_current', true)->where('status', 'active');
+            }])
+            ->get();
+
+        $totalEgis = $egis->count();
+        $totalCollections = count($this->userCollectionIds);
+
+        // Calculate reserved and available EGIs
+        $reservedEgis = $egis->filter(function ($egi) {
+            return $egi->reservations->isNotEmpty();
+        })->count();
+
+        $availableEgis = $totalEgis - $reservedEgis;
+
+        // Get highest offer and total value
+        $allActiveReservations = $egis->flatMap->reservations;
+        $highestOffer = $allActiveReservations->max('offer_amount_fiat') ?? 0;
+        $totalValueEur = $allActiveReservations->sum('amount_eur') ?? 0;
+
+        return [
+            'total_egis' => $totalEgis,
+            'total_collections' => $totalCollections,
+            'reserved_egis' => $reservedEgis,
+            'available_egis' => $availableEgis,
+            'highest_offer' => $highestOffer,
+            'total_value_eur' => $totalValueEur,
+        ];
+    }
+
+    /**
+     * 🎯 Get likes received statistics for a user's EGIs
+     * @param int $userId The user ID to get like statistics for
+     * @return array Statistics about likes received on user's EGIs
+     */
+    public static function getLikesReceivedStats($userId) {
+        try {
+            $cacheKey = "likes_received_stats_{$userId}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($userId) {
+                // Get user's EGIs with their likes and collections
+                $userEgis = Egi::whereHas('collection', function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+                    ->whereHas('likes') // Solo EGI che hanno almeno un like
+                    ->with(['likes.user', 'collection'])
+                    ->get();
+
+                // Calculate total likes received
+                $totalReceived = $userEgis->sum(function ($egi) {
+                    return $egi->likes->count();
+                });
+
+                // Get top EGIs by likes (solo quelli con like > 0)
+                $topEgis = $userEgis->map(function ($egi) {
+                    $likesCount = $egi->likes->count();
+
+                    // Ottieni la lista degli utenti che hanno messo like
+                    $likedByUsers = $egi->likes->map(function ($like) {
+                        return [
+                            'user_id' => $like->user->id,
+                            'nickname' => $like->user->nickname ?? $like->user->name ?? 'Unknown User',
+                            'avatar' => $like->user->avatar ?? null,
+                        ];
+                    })->toArray();
+
+                    return [
+                        'id' => $egi->id,
+                        'title' => $egi->title,
+                        'main_image_url' => $egi->getMainImageUrlAttribute(), // Chiama esplicitamente l'accessor
+                        'thumbnail_image_url' => $egi->getThumbnailImageUrlAttribute(),
+                        'avatar_image_url' => $egi->getAvatarImageUrlAttribute(),
+                        'collection_name' => $egi->collection->name ?? 'Unknown Collection',
+                        'likes_count' => $likesCount,
+                        'liked_by_users' => $likedByUsers, // Lista utenti che hanno messo like
+                    ];
+                })
+                    ->filter(function ($egi) {
+                        return $egi['likes_count'] > 0; // Filtra EGI con 0 like
+                    })
+                    ->sortByDesc('likes_count')
+                    ->take(10)
+                    ->values()
+                    ->toArray();
+
+                return [
+                    'total_received' => $totalReceived,
+                    'top_egis' => $topEgis,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get likes received stats', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_received' => 0,
+                'top_egis' => [],
+            ];
+        }
+    }
+
+    /**
+     * 🎯 Get likes given statistics for a user
+     * @param int $userId The user ID to get like statistics for
+     * @return array Statistics about likes given by the user
+     */
+    public static function getLikesGivenStats($userId) {
+        try {
+            $cacheKey = "likes_given_stats_{$userId}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($userId) {
+                // Get all likes given TO this user's EGIs (chi ha dato like agli EGI dell'utente)
+                $likesToUserEgis = Like::whereHas('likeable', function ($query) use ($userId) {
+                    $query->where('likeable_type', 'App\Models\Egi')
+                        ->whereHas('collection', function ($subQuery) use ($userId) {
+                            $subQuery->where('creator_id', $userId);
+                        });
+                })
+                    ->with(['user']) // Carica l'utente che ha dato il like
+                    ->get();
+
+                // Calculate total likes given TO this user
+                $totalGiven = $likesToUserEgis->count();
+
+                // Group by user who gave the like and count likes given by each
+                $likesGroupedByGiver = $likesToUserEgis->groupBy('user_id')
+                    ->filter(function ($likes, $giverId) use ($userId) {
+                        return $giverId !== null && $giverId != $userId; // Escludi like a se stesso
+                    });
+
+                // Get top users that gave likes to this user's EGIs
+                $topUsers = $likesGroupedByGiver->map(function ($likes, $giverId) {
+                    $giverUser = $likes->first()->user; // Prendi l'utente dal primo like
+
+                    if (!$giverUser) {
+                        return null;
+                    }
+
+                    return [
+                        'user_id' => $giverId,
+                        'nickname' => $giverUser->nickname ?? $giverUser->name ?? 'Unknown User',
+                        'avatar' => $giverUser->avatar ?? null,
+                        'likes_given' => $likes->count(),
+                    ];
+                })
+                    ->filter() // Rimuovi valori null
+                    ->sortByDesc('likes_given')
+                    ->take(20)
+                    ->values()
+                    ->toArray();
+
+                return [
+                    'total_given' => $totalGiven,
+                    'top_users' => $topUsers,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get likes given stats', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_given' => 0,
+                'top_users' => [],
+            ];
+        }
+    }
+
+    /**
+     * 🎯 Get likes given by user statistics (WHAT USER LIKED)
+     * @param int $userId The user ID to get statistics for
+     * @return array Statistics about what this user liked
+     */
+    public static function getLikesGivenByUserStats($userId) {
+        try {
+            $cacheKey = "likes_given_by_user_stats_{$userId}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($userId) {
+                // Get all likes given BY this user to EGIs
+                $userLikes = Like::where('user_id', $userId)
+                    ->where('likeable_type', 'App\Models\Egi')
+                    ->with(['likeable.collection.creator'])
+                    ->get();
+
+                // Calculate total likes given
+                $totalGiven = $userLikes->count();
+
+                // Get EGIs liked by this user
+                $likedEgis = $userLikes->map(function ($like) {
+                    $egi = $like->likeable;
+                    if (!$egi) return null;
+
+                    return [
+                        'id' => $egi->id,
+                        'title' => $egi->title,
+                        'main_image_url' => $egi->getMainImageUrlAttribute(),
+                        'thumbnail_image_url' => $egi->getThumbnailImageUrlAttribute(),
+                        'avatar_image_url' => $egi->getAvatarImageUrlAttribute(),
+                        'collection_name' => $egi->collection->collection_name ?? 'Unknown Collection',
+                        'owner_id' => $egi->collection->creator_id ?? null,
+                        'owner_name' => $egi->collection->creator->name ?? $egi->collection->creator->nickname ?? 'Unknown User',
+                        'owner_nick_name' => $egi->collection->creator->nick_name ?? null,
+                    ];
+                })
+                    ->filter() // Remove nulls
+                    ->values()
+                    ->toArray();
+
+                // Group by owner and count likes given to each
+                $likesGroupedByOwner = $userLikes->groupBy(function ($like) {
+                    return $like->likeable->collection->creator_id ?? null;
+                })->filter(function ($likes, $ownerId) use ($userId) {
+                    return $ownerId !== null && $ownerId != $userId; // Exclude self-likes
+                });
+
+                // Get owners ranked by likes received from this user
+                $owners = $likesGroupedByOwner->map(function ($likes, $ownerId) {
+                    $owner = User::find($ownerId);
+
+                    if (!$owner) {
+                        return null;
+                    }
+
+                    return [
+                        'user_id' => $ownerId,
+                        'nickname' => $owner->nickname ?? $owner->name ?? 'Unknown User',
+                        'nick_name' => $owner->nick_name, // Add nick_name for route
+                        'user' => $owner, // Pass the full user object so accessor works
+                        'likes_count' => $likes->count(),
+                    ];
+                })
+                    ->filter() // Remove nulls
+                    ->sortByDesc('likes_count')
+                    ->take(20)
+                    ->values()
+                    ->toArray();
+
+                return [
+                    'total_given' => $totalGiven,
+                    'liked_egis' => $likedEgis,
+                    'owners' => $owners,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get likes given by user stats', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_given' => 0,
+                'liked_egis' => [],
+                'owners' => [],
+            ];
+        }
+    }
+
+    /**
+     * 🎯 Get statistics about who liked user's EGIs
+     * @param int $userId The user ID to get statistics for
+     * @return array Statistics about users who liked this user's EGIs
+     */
+    public static function getWhoLikedUserEgisStats($userId) {
+        try {
+            $cacheKey = "who_liked_user_egis_stats_{$userId}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($userId) {
+                // Get all likes given TO this user's EGIs
+                $likesToUserEgis = Like::whereHas('likeable', function ($query) use ($userId) {
+                    $query->where('likeable_type', 'App\Models\Egi')
+                        ->whereHas('collection', function ($subQuery) use ($userId) {
+                            $subQuery->where('creator_id', $userId);
+                        });
+                })
+                    ->with(['user']) // Load the user who gave the like
+                    ->get();
+
+                // Group by user who gave the like and count
+                $usersWhoLiked = $likesToUserEgis->groupBy('user_id')
+                    ->map(function ($likes) {
+                        $user = $likes->first()->user;
+                        if (!$user) return null;
+
+                        return [
+                            'user_id' => $user->id,
+                            'nickname' => $user->nickname ?? $user->name ?? 'Unknown User',
+                            'nick_name' => $user->nick_name,
+                            'safe_nick_name' => $user->nick_name && \preg_match('/^[a-zA-Z0-9_-]+$/', $user->nick_name) ? $user->nick_name : null,
+                            'user' => $user, // Pass the full user object so accessor works
+                            'likes_given' => $likes->count(),
+                        ];
+                    })
+                    ->filter() // Remove nulls
+                    ->sortByDesc('likes_given')
+                    ->take(20)
+                    ->values()
+                    ->toArray();
+
+                return [
+                    'total_given' => $likesToUserEgis->count(),
+                    'top_users' => $usersWhoLiked,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get who liked user egis stats', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_given' => 0,
+                'top_users' => [],
+            ];
+        }
     }
 }

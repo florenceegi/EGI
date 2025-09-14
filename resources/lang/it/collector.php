@@ -117,6 +117,12 @@ return [
         'empty_title' => 'Nessun EGI Trovato',
         'empty_description' => 'Nessun EGI corrisponde ai filtri attuali. Prova ad adattare i criteri di ricerca.',
         'discover_button' => 'Esplora Marketplace',
+        'private_stats_info' => 'Visualizza le tue statistiche dettagliate nella dashboard privata.',
+        'view_detailed_stats' => 'Vai alle Statistiche',
+        'public_collection_items' => 'Oggetti in Collezione',
+        'total_owned_egis' => 'EGI Posseduti',
+        'total_bids_made' => 'Offerte Fatte',
+        'total_spent' => 'Totale Speso',
     ],
 
     // Index Page
