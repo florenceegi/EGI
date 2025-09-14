@@ -117,6 +117,7 @@
             #080605 100%);
         overflow: hidden;
         cursor: crosshair;
+        touch-action: pan-y; /* Permetti solo scroll verticale su mobile */
     }
 
     .collector-universe canvas {
@@ -126,7 +127,7 @@
         width: 100%;
         height: 100%;
         z-index: 1;
-        pointer-events: auto;
+        pointer-events: none; /* Disabilita completamente gli eventi su canvas */
     }
 
 
@@ -727,6 +728,11 @@
 
     /* Touch device optimizations */
     @media (hover: none) and (pointer: coarse) {
+        .collector-universe {
+            cursor: default; /* Rimuovi cursor crosshair su mobile */
+            touch-action: pan-y; /* Forza scroll verticale */
+        }
+        
         .collection-counter:hover {
             transform: none;
         }
@@ -840,15 +846,16 @@ document.addEventListener('DOMContentLoaded', function() {
         pointLight.position.set(0, 0, 30);
         scene.add(pointLight);
 
-        // Mouse movement
+        // Mouse movement - solo su desktop
         document.addEventListener('mousemove', onMouseMove);
 
-        // Touch events for mobile
-        if (isTouchDevice) {
-            document.addEventListener('touchstart', onTouchStart, { passive: false });
-            document.addEventListener('touchmove', onTouchMove, { passive: false });
-            document.addEventListener('touchend', onTouchEnd, { passive: true });
-        }
+        // Touch events for mobile - RIMOSSI per evitare conflitti con scroll
+        // Manteniamo solo mouse per desktop
+        // if (isTouchDevice) {
+        //     document.addEventListener('touchstart', onTouchStart, { passive: false });
+        //     document.addEventListener('touchmove', onTouchMove, { passive: false });
+        //     document.addEventListener('touchend', onTouchEnd, { passive: true });
+        // }
 
         // Start animation
         animate();
@@ -992,27 +999,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function onTouchStart(event) {
-        if (event.touches.length === 1) {
-            lastTouch.x = event.touches[0].clientX;
-            lastTouch.y = event.touches[0].clientY;
-        }
+        // DISABILITATO - non intercettiamo più eventi touch
+        return;
     }
 
     function onTouchMove(event) {
-        event.preventDefault();
-        if (event.touches.length === 1) {
-            const touch = event.touches[0];
-            const containerHeight = isMobile ? (window.innerWidth < 480 ? 450 : 500) : 600;
-            mouseX = (touch.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(touch.clientY / containerHeight) * 2 + 1;
-
-            lastTouch.x = touch.clientX;
-            lastTouch.y = touch.clientY;
-        }
+        // DISABILITATO - non intercettiamo più eventi touch per permettere scroll
+        return;
     }
 
     function onTouchEnd(event) {
-        // Mantieni l'ultima posizione per continuità
+        // DISABILITATO - non intercettiamo più eventi touch
+        return;
     }
 
     function animate() {
