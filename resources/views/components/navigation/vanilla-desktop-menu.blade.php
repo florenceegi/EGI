@@ -23,7 +23,7 @@
         @else
             <span class="inline-flex rounded-md">
                 <button type="button" data-dropdown-trigger
-                    class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition-all duration-300 ease-in-out bg-white border border-transparent rounded-lg hover:text-gray-700 hover:bg-gray-50 hover:shadow-lg hover:scale-105 focus:bg-gray-50 focus:outline-none active:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300 dark:focus:bg-gray-700 dark:active:bg-gray-700 group">
+                    class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-400 transition-all duration-300 ease-in-out bg-gray-800 border border-transparent rounded-lg hover:text-gray-300 hover:bg-gray-700 hover:shadow-lg hover:scale-105 focus:bg-gray-700 focus:outline-none active:bg-gray-700 group">
                     <div class="flex items-center space-x-2">
                         <div class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                             {{ substr(Auth::user()?->name ?? 'U', 0, 1) }}
@@ -45,7 +45,7 @@
          class="absolute right-0 z-50 invisible mt-2 transition-all duration-200 ease-out origin-top-right transform scale-95 opacity-0">
 
         <!-- Revolutionary Mega Menu Container -->
-        <div class="mega-menu-container bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl p-6 min-w-[380px] sm:min-w-[420px] lg:min-w-[500px] max-h-[70vh] overflow-y-auto dark:bg-gray-900/95 dark:border-gray-700/50">
+        <div class="mega-menu-container bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl p-6 min-w-[380px] sm:min-w-[420px] lg:min-w-[500px] max-h-[70vh] overflow-y-auto">
 
             <!-- User Header Card -->
             <div class="p-4 mb-6 border user-header-card bg-gradient-to-r from-blue-500 to-purple-600 mobile-header-gradient rounded-xl border-blue-300/40 dark:border-blue-700/40">
@@ -104,20 +104,20 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </div>
-                        <h4 class="font-semibold text-gray-900 dark:text-gray-100">{{ __('menu.manage_account') }}</h4>
+                        <h4 class="font-semibold text-gray-100">{{ __('menu.manage_account') }}</h4>
                     </div>
                     <div class="space-y-2">
-                        <a href="{{ route('user.domains.personal-data') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/50 dark:hover:bg-black/20">
+                        <a href="{{ route('user.domains.personal-data') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-emerald-400 hover:bg-black/20">
                             {{ __('menu.edit_personal_data') }}
                         </a>
                         @can('manage_profile')
-                            <a href="{{ route('gdpr.profile-images') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            <a href="{{ route('gdpr.profile-images') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-blue-400 hover:bg-black/20">
                                 {{ __('menu.profile_images') }}
                             </a>
-                            <a href="{{ route('biography.manage') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            <a href="{{ route('biography.manage') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-blue-400 hover:bg-black/20">
                                 {{ __('menu.biography_items.manage') }}
                             </a>
-                            <a href="{{ route('statistics.index') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            <a href="{{ route('statistics.index') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-emerald-400 hover:bg-black/20">
                                 {{ __('statistics.statistics_dashboard') }}
                             </a>
                         @endcan
@@ -132,19 +132,19 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                             </svg>
                         </div>
-                        <h4 class="font-semibold text-gray-900 dark:text-gray-100">{{ __('menu.gdpr_privacy') }}</h4>
+                        <h4 class="font-semibold text-gray-100">{{ __('menu.gdpr_privacy') }}</h4>
                     </div>
                     <div class="space-y-2">
                         @can('manage_consents')
-                            <a href="{{ route('gdpr.consent') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            <a href="{{ route('gdpr.consent') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-blue-400 hover:bg-black/20">
                                 {{ __('gdpr.menu.gdpr_center') }}
                             </a>
                         @endcan
-                        <a href="{{ route('gdpr.security') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
+                        <a href="{{ route('gdpr.security') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-blue-400 hover:bg-black/20">
                             {{ __('menu.security_password') }}
                         </a>
                         @can('gdpr.export_data')
-                            <a href="{{ route('gdpr.export-data') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            <a href="{{ route('gdpr.export-data') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-blue-400 hover:bg-black/20">
                                 {{ __('menu.export_data') }}
                             </a>
                         @endcan
@@ -159,11 +159,11 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 7H4l5-5v5z"/>
                             </svg>
                         </div>
-                        <h4 class="font-semibold text-gray-900 dark:text-gray-100">{{ __('menu.activity') }}</h4>
+                        <h4 class="font-semibold text-gray-100">{{ __('menu.activity') }}</h4>
                     </div>
                     <div class="space-y-2">
                         @can('view_activity_log')
-                            <a href="{{ route('gdpr.activity-log') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-white/50 dark:hover:bg-black/20">
+                            <a href="{{ route('gdpr.activity-log') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-orange-400 hover:bg-black/20">
                                 {{ __('menu.activity_log') }}
                             </a>
                         @endcan
@@ -180,17 +180,17 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                             </div>
-                            <h4 class="font-semibold text-gray-900 dark:text-gray-100">{{ __('menu.admin_tools') }}</h4>
+                            <h4 class="font-semibold text-gray-100">{{ __('menu.admin_tools') }}</h4>
                         </div>
                         <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                            <a href="{{ route('admin.roles.index') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-black/20">
+                            <a href="{{ route('admin.roles.index') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-gray-100 hover:bg-black/20">
                                 {{ __('menu.permissions_roles') }}
                             </a>
-                            <a href="{{ route('admin.users.index') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-black/20">
+                            <a href="{{ route('admin.users.index') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-gray-100 hover:bg-black/20">
                                 {{ __('menu.user_management') }}
                             </a>
                             @can('view_statistics')
-                                <a href="{{ route('statistics.index') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-black/20">
+                                <a href="{{ route('statistics.index') }}" class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:text-gray-100 hover:bg-black/20">
                                     {{ __('menu.statistics') }}
                                 </a>
                             @endcan
