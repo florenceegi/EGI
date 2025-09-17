@@ -19,6 +19,16 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ asset('images/logo/apple-touch-icon.png') }}">
 
+    {{-- Dark Mode Detection Script --}}
+    <script>
+        // Detecta preferenze tema del sistema e applica immediatamente
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="{{ asset('images/logo/logo_1.webp') }}" as="image">

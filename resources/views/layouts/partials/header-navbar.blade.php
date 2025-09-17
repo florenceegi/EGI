@@ -1,5 +1,5 @@
 <header
-    class="sticky top-0 z-50 w-full border-b border-gray-800 shadow-lg navbar-simple-hide bg-gray-900/90 backdrop-blur-md"
+    class="sticky top-0 z-50 w-full border-b border-gray-700 shadow-lg navbar-simple-hide bg-gray-900/95 backdrop-blur-md"
     role="banner" aria-label="{{ __('guest_layout.header_aria_label') }}">
     <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         @php
@@ -13,7 +13,7 @@
 
                 @php
                 $navLinkClasses =
-                'text-gray-300 hover:text-emerald-400 transition px-3 py-2 rounded-md text-sm font-medium
+                'text-gray-300 hover:text-emerald-400 hover:text-white transition px-3 py-2 rounded-md text-sm font-medium
                 hover:bg-gray-800/40';
                 @endphp
 
@@ -61,7 +61,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
                         </svg>
-                        <span class="hidden lg:inline">{{ __('gdpr.cookie.preferences_short') }}</span>
+                        <span class="hidden lg:inline">{{ __('gdpr.cookie.banner.preferences_short') }}</span>
                     </button>
 
                     {{-- Wallet e Auth --}}
@@ -70,7 +70,7 @@
                     @guest
                     <a href="{{ route('login') }}" id="login-link-desktop" class="{{ $navLinkClasses }}">{{__('collection.login') }}</a>
                     <a href="{{ route('register') }}" id="register-link-desktop"
-                        class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-white bg-emerald-600 border border-emerald-600 rounded-md hover:bg-emerald-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors">
                         {{ __('collection.register') }}</a>
                     @endguest
                 </nav>
@@ -99,11 +99,11 @@
                 @guest
                 <div class="block md:hidden">
                     <a href="{{ route('login') }}"
-                        class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
                         {{ __('collection.login') }}
                     </a>
                     <a href="{{ route('register') }}" id="register-link-mobile"
-                        class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-md hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-white bg-emerald-600 border border-emerald-600 rounded-md hover:bg-emerald-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors">
                         {{ __('collection.register') }}
                     </a>
                 </div>
