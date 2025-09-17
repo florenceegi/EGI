@@ -3,7 +3,7 @@
 
 <div class="flex items-center bg-gray-800 rounded-lg p-1">
     {{-- Items (Grid) --}}
-    <button class="view-selector-btn active px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
+    <button class="view-selector-btn px-4 py-2 text-sm font-medium text-gray-400 rounded-md transition-all duration-200 hover:text-white flex items-center space-x-2"
             data-view="items">
         <span class="material-symbols-outlined text-base">grid_view</span>
         <span class="hidden sm:inline">{{ __('collection.view_selector.items') }}</span>
@@ -11,7 +11,7 @@
     </button>
 
     {{-- List --}}
-    <button class="view-selector-btn px-4 py-2 text-sm font-medium text-gray-400 rounded-md transition-all duration-200 hover:text-white flex items-center space-x-2"
+    <button class="view-selector-btn active px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
             data-view="list">
         <span class="material-symbols-outlined text-base">view_list</span>
         <span class="hidden sm:inline">{{ __('collection.view_selector.list') }}</span>
@@ -61,6 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const egisContainer = document.getElementById('egis-container');
     const holdersContainer = document.getElementById('holders-container');
     const traitsContainer = document.getElementById('traits-container');
+
+    // Initialize with list view as default
+    showListView();
 
     viewButtons.forEach(button => {
         button.addEventListener('click', function() {

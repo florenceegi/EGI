@@ -353,7 +353,7 @@ if (is_array($collection)) {
             </div>
 
             {{-- Container EGI Responsivo --}}
-            <div class="egi-grid" id="egis-container">
+            <div class="space-y-4" id="egis-container">
                 @php
                 // Determina se l'utente corrente è il creator di questa collezione
                 $isCreatorViewing = false;
@@ -372,14 +372,14 @@ if (is_array($collection)) {
                 @forelse($collection->egis as $index => $egi)
 
                 {{-- Grid Item (shown in grid mode) --}}
-                <div class="egi-item card-hover grid-view">
+                <div class="egi-item card-hover grid-view" style="display: none;">
                     <x-egi-card :egi="$egi" :collection="$collection" :portfolioContext="$isCreatorViewing"
                         :portfolioOwner="$isCreatorViewing ? $collection->creator : null"
                         :creatorPortfolioContext="$isCreatorViewing" />
                 </div>
 
                 {{-- List Item (shown in list mode) --}}
-                <div class="egi-item list-view" style="display: none;">
+                <div class="egi-item list-view">
                     <x-egi-card-list :egi="$egi" :context="'collection'" :showBadge="false" :showPurchasePrice="false"
                         :showOwnershipBadge="false" />
                 </div>
