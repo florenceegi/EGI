@@ -9,6 +9,14 @@ return [
     'error_loading' => 'Failed to load statistics. Please try again.',
     'last_updated' => 'Last updated',
 
+    // Time Period Filters
+    'time_period' => 'Time Period',
+    'period_day' => 'Today',
+    'period_week' => 'Week',
+    'period_month' => 'Month',
+    'period_year' => 'Year',
+    'period_all' => 'All Time',
+
     // KPI Labels
     'total_likes' => 'Total Likes',
     'total_reservations' => 'Total Reservations',

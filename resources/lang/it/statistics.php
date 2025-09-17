@@ -9,6 +9,14 @@ return [
     'error_loading' => 'Errore nel caricamento delle statistiche. Riprova.',
     'last_updated' => 'Ultimo aggiornamento',
 
+    // Time Period Filters
+    'time_period' => 'Periodo Temporale',
+    'period_day' => 'Oggi',
+    'period_week' => 'Settimana',
+    'period_month' => 'Mese',
+    'period_year' => 'Anno',
+    'period_all' => 'Tutto',
+
     // KPI Labels
     'total_likes' => 'Like Totali',
     'total_reservations' => 'Prenotazioni Totali',
@@ -123,4 +131,6 @@ return [
     'no_liking_users' => 'Nessun like dato ancora',
     'liked_by' => 'Like da',
     'users' => 'utenti',
+    'liked_egis' => 'EGI Apprezzati',
+    'liked_owners' => 'Creatori degli EGI Apprezzati',
 ];

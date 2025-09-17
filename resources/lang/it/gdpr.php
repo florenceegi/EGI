@@ -411,7 +411,7 @@ return [
         'request_success' => 'Richiesta di esportazione inviata con successo. Riceverai una notifica al completamento.',
         'request_error' => 'Si è verificato un errore nell\'invio della richiesta. Riprova.',
 
-        // Export History  
+        // Export History
         'history_title' => 'Cronologia Esportazioni',
         'no_exports' => 'Nessuna Esportazione Presente',
         'no_exports_description' => 'Non hai ancora richiesto alcuna esportazione dei tuoi dati. Utilizza il modulo sopra per richiederne una.',
@@ -770,6 +770,52 @@ return [
         'update_preferences' => 'Aggiorna le tue preferenze di consenso',
         'preferences_updated' => 'Le tue preferenze di consenso sono state aggiornate con successo.',
         'preferences_update_error' => 'Si è verificato un errore durante l\'aggiornamento delle tue preferenze di consenso. Riprova.',
+    ],
+
+    // Cookie Banner
+    'cookie' => [
+        'banner' => [
+            'title' => 'Gestione dei Cookie',
+            'description' => 'Utilizziamo i cookie per migliorare la tua esperienza di navigazione, fornire funzionalità personalizzate e analizzare il nostro traffico. Scegli le tue preferenze di consenso.',
+            'privacy_policy_link' => 'Informativa Privacy',
+            'accept_all' => 'Accetta Tutti',
+            'reject_optional' => 'Solo Essenziali',
+            'customize' => 'Personalizza',
+            'preferences_title' => 'Preferenze Cookie',
+            'preferences_short' => 'Cookie',
+            'save_preferences' => 'Salva Preferenze',
+            'close_preferences' => 'Chiudi',
+            'close' => 'Chiudi',
+            'saving' => 'Salvataggio in corso...',
+            'required' => 'Obbligatorio',
+        ],
+        'categories' => [
+            'essential' => [
+                'label' => 'Cookie Essenziali',
+                'description' => 'Necessari per il funzionamento base del sito web. Non possono essere disattivati.',
+            ],
+            'functional' => [
+                'label' => 'Cookie Funzionali',
+                'description' => 'Migliorano l\'esperienza utente con funzionalità avanzate e personalizzazione.',
+            ],
+            'analytics' => [
+                'label' => 'Cookie Analitici',
+                'description' => 'Ci aiutano a comprendere come utilizzi il sito per migliorare le prestazioni.',
+            ],
+            'marketing' => [
+                'label' => 'Cookie di Marketing',
+                'description' => 'Utilizzati per mostrarti annunci pubblicitari pertinenti e personalizzati.',
+            ],
+            'profiling' => [
+                'label' => 'Cookie di Profilazione',
+                'description' => 'Creano un profilo delle tue preferenze per personalizzare contenuti e servizi.',
+            ],
+        ],
+        'consent_saved_successfully' => 'Le tue preferenze sui cookie sono state salvate con successo.',
+        'consent_acknowledged' => 'Le tue preferenze sui cookie sono state registrate.',
+        'consent_status_error' => 'Impossibile caricare le tue preferenze sui cookie.',
+        'consent_save_error' => 'Errore nel salvataggio delle preferenze sui cookie.',
+        'validation_error' => 'Dati di consenso non validi. Verifica le tue scelte.',
     ],
 
     // Footer

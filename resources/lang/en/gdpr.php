@@ -646,4 +646,48 @@ return [
         'preferences_updated' => 'Your consent preferences have been updated successfully.',
         'preferences_update_error' => 'An error occurred while updating your consent preferences. Please try again.',
     ],
+
+    // Cookie Banner
+    'cookie' => [
+        'banner' => [
+            'title' => 'Cookie Management',
+            'description' => 'We use cookies to enhance your browsing experience, provide personalized features, and analyze our traffic. Choose your consent preferences.',
+            'privacy_policy_link' => 'Privacy Policy',
+            'accept_all' => 'Accept All',
+            'reject_optional' => 'Essential Only',
+            'customize' => 'Customize',
+            'save_preferences' => 'Save Preferences',
+            'close_preferences' => 'Close',
+            'close' => 'Close',
+            'saving' => 'Saving...',
+            'required' => 'Required',
+        ],
+        'categories' => [
+            'essential' => [
+                'label' => 'Essential Cookies',
+                'description' => 'Necessary for basic website functionality. Cannot be disabled.',
+            ],
+            'functional' => [
+                'label' => 'Functional Cookies',
+                'description' => 'Enhance user experience with advanced features and personalization.',
+            ],
+            'analytics' => [
+                'label' => 'Analytics Cookies',
+                'description' => 'Help us understand how you use the site to improve performance.',
+            ],
+            'marketing' => [
+                'label' => 'Marketing Cookies',
+                'description' => 'Used to show you relevant and personalized advertisements.',
+            ],
+            'profiling' => [
+                'label' => 'Profiling Cookies',
+                'description' => 'Create a profile of your preferences to personalize content and services.',
+            ],
+        ],
+        'consent_saved_successfully' => 'Your cookie preferences have been saved successfully.',
+        'consent_acknowledged' => 'Your cookie preferences have been recorded.',
+        'consent_status_error' => 'Unable to load your cookie preferences.',
+        'consent_save_error' => 'Error saving cookie preferences.',
+        'validation_error' => 'Invalid consent data. Please check your choices.',
+    ],
 ];

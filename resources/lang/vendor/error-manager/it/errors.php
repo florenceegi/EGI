@@ -227,6 +227,10 @@ return [
         'gdpr_consent_save_error' => 'Fallimento salvataggio consensi in database. Verificare transazione DB e constraints UserConsent model.',
         'gdpr_consent_load_error' => 'Errore caricamento stato consensi utente. Controllare ConsentService::getUserConsentStatus() e relazioni model.',
 
+        // Cookie Consent Errors - Developer Messages IT
+        'cookie_consent_status_error' => 'Errore caricamento stato consensi cookie. Verificare CookieConsentController::getConsentStatus() e storage accessibility.',
+        'cookie_consent_save_error' => 'Fallimento salvataggio preferenze cookie. Controllare CookieConsentController::saveConsent() e validazione dati.',
+
         // GDPR Export Errors - Developer Messages IT
         'gdpr_export_request_error' => 'Errore richiesta esportazione dati GDPR. Verificare DataExportService e validazione request.',
         'gdpr_export_limit_reached' => 'Limite esportazioni GDPR raggiunto. Controllare rate limiting e politiche esportazione.',
@@ -586,6 +590,10 @@ return [
         'no_wallets_found' => 'Nessun wallet di pagamento è configurato per questa collezione. Contatta il proprietario della collezione.',
         'invalid_mint_percentages' => 'La configurazione dei wallet della collezione non è corretta. Contatta il proprietario della collezione per correggere le impostazioni delle percentuali.',
         'user_activity_logging_failed' => 'Impossibile registrare il log delle attività. Questo non influisce sulla tua transazione.',
+
+        // Cookie Consent Errors - User Messages IT
+        'cookie_consent_status_error' => 'Impossibile caricare le tue preferenze cookie. Riprova ricaricando la pagina.',
+        'cookie_consent_save_error' => 'Non è stato possibile salvare le tue preferenze cookie. Riprova tra qualche istante.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

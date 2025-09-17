@@ -2364,6 +2364,28 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        // Cookie Consent specific errors
+        'COOKIE_CONSENT_STATUS_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.cookie_consent_status_error',
+            'user_message_key' => 'error-manager::errors.user.cookie_consent_status_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'COOKIE_CONSENT_SAVE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.cookie_consent_save_error',
+            'user_message_key' => 'error-manager::errors.user.cookie_consent_save_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
         // GDPR Data Export errors
         'GDPR_EXPORT_REQUEST_ERROR' => [
             'type' => 'error',

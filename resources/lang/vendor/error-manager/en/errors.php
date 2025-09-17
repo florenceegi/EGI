@@ -227,6 +227,10 @@ return [
         'gdpr_consent_save_error' => 'Failed to save consents to database. Check DB transaction and UserConsent model constraints.',
         'gdpr_consent_load_error' => 'Error loading user consent status. Check ConsentService::getUserConsentStatus() and model relationships.',
 
+        // Cookie Consent Errors - Developer Messages EN
+        'cookie_consent_status_error' => 'Error loading cookie consent status. Check CookieConsentController::getConsentStatus() and storage accessibility.',
+        'cookie_consent_save_error' => 'Failed to save cookie preferences. Check CookieConsentController::saveConsent() and data validation.',
+
         // GDPR Export Errors - Developer Messages EN
         'gdpr_export_request_error' => 'Error requesting GDPR data export. Check DataExportService and request validation.',
         'gdpr_export_limit_reached' => 'GDPR export limit reached. Check rate limiting and export policies.',
@@ -586,6 +590,10 @@ return [
         'no_wallets_found' => 'No payment wallets are configured for this collection. Please contact the collection owner.',
         'invalid_mint_percentages' => 'The collection wallet configuration is incorrect. Please contact the collection owner to fix the percentage settings.',
         'user_activity_logging_failed' => 'Unable to record activity log. This does not affect your transaction.',
+
+        // Cookie Consent Errors - User Messages EN
+        'cookie_consent_status_error' => 'Unable to load your cookie preferences. Please try refreshing the page.',
+        'cookie_consent_save_error' => 'Could not save your cookie preferences. Please try again in a moment.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
