@@ -1,4 +1,4 @@
-<div class="p-6 bg-white rounded-lg shadow-md">
+<div class="p-6 bg-gray-800 rounded-lg shadow-md">
     <h3 class="mb-4 text-lg font-medium text-gray-900">{{ __('reservation.form.title') }}</h3>
 
     <form method="POST" action="{{ route('egis.reserve', $egi->id) }}" id="reservation-form">

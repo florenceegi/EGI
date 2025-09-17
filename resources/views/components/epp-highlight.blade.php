@@ -2,19 +2,19 @@
 
 @props(['highlightedEpps'])
 
-<section class="py-16 bg-white md:py-20"
+<section class="py-16 bg-gray-900 md:py-20"
         aria-labelledby="environmental-impact-heading">
     <div class="container px-4 mx-auto sm:px-6 lg:px-8">
         <h2 id="environmental-impact-heading"
-            class="mb-4 text-3xl font-bold text-center text-emerald-600">
+            class="mb-4 text-3xl font-bold text-center text-emerald-400">
             {{ __('guest_home.your_impact_counts_title') }}
         </h2>
-        <p class="max-w-3xl mx-auto mb-10 text-lg text-center text-gray-600">
+        <p class="max-w-3xl mx-auto mb-10 text-lg text-center text-gray-300">
             {{ __('guest_home.your_impact_counts_description') }}</p>
         <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
             @foreach ($highlightedEpps as $index => $epp)
             <article
-                class="relative flex flex-col items-center p-6 text-center transition duration-300 ease-in-out rounded-xl border border-gray-200 shadow-sm bg-white hover:shadow-md hover:transform hover:translate-y-[-4px]">
+                class="relative flex flex-col items-center p-6 text-center transition duration-300 ease-in-out rounded-xl border border-gray-700 shadow-sm bg-gray-800 hover:shadow-md hover:transform hover:translate-y-[-4px]">
                 {{-- Rarity Badge --}}
                 <div class="absolute right-2 top-2">
                     <span
@@ -46,8 +46,8 @@
                     <span class="text-3xl material-symbols-outlined">eco</span>
                     @endif
                 </div>
-                <h3 class="mb-2 text-xl font-semibold text-gray-900">{{ $epp->name }}</h3>
-                <p class="flex-grow mb-4 text-sm text-gray-600 line-clamp-3">{{ $epp->description }}
+                <h3 class="mb-2 text-xl font-semibold text-gray-100">{{ $epp->name }}</h3>
+                <p class="flex-grow mb-4 text-sm text-gray-300 line-clamp-3">{{ $epp->description }}
                 </p>
                 <div class="relative mt-auto">
                     <a href="{{ route('epps.show', $epp->id) }}"
