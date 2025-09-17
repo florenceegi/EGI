@@ -25,11 +25,11 @@
 
     {{-- Dropdown Panel --}}
     <div
-        class="absolute right-0 z-50 hidden mt-2 overflow-hidden bg-white border border-gray-200 rounded-lg shadow-xl notification-dropdown w-80 max-sm:fixed max-sm:left-1/2 max-sm:transform max-sm:-translate-x-1/2 max-sm:top-16 max-sm:w-80 max-sm:mx-4">
+        class="absolute right-0 z-50 hidden mt-2 overflow-hidden bg-gray-800 border border-gray-700 rounded-lg shadow-xl notification-dropdown w-80 max-sm:fixed max-sm:left-1/2 max-sm:transform max-sm:-translate-x-1/2 max-sm:top-16 max-sm:w-80 max-sm:mx-4">
         {{-- Header --}}
-        <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+        <div class="px-4 py-3 border-b border-gray-700 bg-gray-900">
             <div class="flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-gray-900">{{ __('notification.badge.title') }}</h3>
+                <h3 class="text-sm font-semibold text-gray-100">{{ __('notification.badge.title') }}</h3>
                 @if($unreadCount > 0)
                 <span class="px-2 py-1 text-xs font-medium text-white bg-red-500 rounded-full">
                     {{ $unreadCount }}
@@ -76,10 +76,10 @@
 
                             {{-- Content --}}
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm text-gray-900 line-clamp-2">
+                                <p class="text-sm text-gray-900 dark:text-gray-100 line-clamp-2">
                                     {{ $notification['message'] }}
                                 </p>
-                                <p class="mt-1 text-xs text-gray-500">
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                     {{ $notification['created_at'] }}
                                 </p>
                             </div>
@@ -104,13 +104,13 @@
             @else
                 {{-- Empty State --}}
                 <div class="px-4 py-8 text-center">
-                    <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8v8a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2z">
                         </path>
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('notification.badge.empty.title') }}</h3>
-                    <p class="mt-1 text-sm text-gray-500">{{ __('notification.badge.empty.message') }}</p>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('notification.badge.empty.title') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('notification.badge.empty.message') }}</p>
                 </div>
             @endif
         </div>

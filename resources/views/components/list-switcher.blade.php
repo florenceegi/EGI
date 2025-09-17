@@ -31,7 +31,7 @@
 
 
     <!-- Tab Content -->
-    <div class="tab-content min-h-[400px] bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+    <div class="tab-content min-h-[400px] bg-gray-800 rounded-lg p-4">
         <!-- Collections Tab -->
         <div id="main-content-collections" class="tab-content-panel">
             <x-collection-list :collections="$collections" />
