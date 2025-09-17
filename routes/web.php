@@ -1041,6 +1041,22 @@ Route::middleware(['web', 'auth'])->prefix('user/preferences')->name('web.user.p
         ->name('current-collection.get');
 });
 
+// Route temporanea per testare il cookie banner
+Route::get('/test-cookie-banner', function () {
+    return view('test-cookie-banner');
+})->name('test.cookie.banner');
+
+// Route temporanea per testare il cookie banner in inglese
+Route::get('/test-cookie-banner-en', function () {
+    app()->setLocale('en');
+    return view('test-cookie-banner');
+})->name('test.cookie.banner.en');
+
+// Route temporanea per testare il cookie banner con debug
+Route::get('/test-cookie-banner-debug', function () {
+    return view('test-cookie-banner-debug');
+})->name('test.cookie.banner.debug');
+
 /*
 |--------------------------------------------------------------------------
 | Trait Image Management Routes

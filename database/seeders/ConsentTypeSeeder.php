@@ -161,6 +161,63 @@ class ConsentTypeSeeder extends Seeder {
                     ],
                     'is_required' => false,
                     'priority_order' => 60,
+                ],
+
+                // COOKIE CONSENT TYPES - Nuovi per sistema cookie GDPR
+                [
+                    'slug' => 'essential',
+                    'legal_basis' => 'legitimate_interest',
+                    'data_categories' => [
+                        'session_data',
+                        'security_data',
+                        'technical_data'
+                    ],
+                    'processing_purposes' => [
+                        'website_functionality',
+                        'security',
+                        'session_management'
+                    ],
+                    'recipients' => ['internal_staff'],
+                    'is_required' => true,
+                    'priority_order' => 5,
+                    'is_active' => true,
+                ],
+                [
+                    'slug' => 'functional',
+                    'legal_basis' => 'consent',
+                    'data_categories' => [
+                        'preference_data',
+                        'functionality_data'
+                    ],
+                    'processing_purposes' => [
+                        'enhanced_functionality',
+                        'user_preferences'
+                    ],
+                    'recipients' => ['internal_staff'],
+                    'is_required' => false,
+                    'priority_order' => 15,
+                    'is_active' => true,
+                ],
+                [
+                    'slug' => 'profiling',
+                    'legal_basis' => 'consent',
+                    'data_categories' => [
+                        'behavioral_data',
+                        'preference_data',
+                        'usage_patterns'
+                    ],
+                    'processing_purposes' => [
+                        'user_profiling',
+                        'behavioral_analysis',
+                        'content_personalization'
+                    ],
+                    'recipients' => [
+                        'internal_staff',
+                        'analytics_providers'
+                    ],
+                    'is_required' => false,
+                    'priority_order' => 25,
+                    'is_active' => true,
                 ]
             ];
 

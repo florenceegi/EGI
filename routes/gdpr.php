@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GdprController;
+use App\Http\Controllers\CookieConsentController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Route;
  * @context gdpr
  */
 
- // === PRIVACY POLICY & TRANSPARENCY ===
+// === PRIVACY POLICY & TRANSPARENCY ===
 Route::get('/terms-of-service', [GdprController::class, 'termsOfService'])
     ->name('gdpr.terms');
 
@@ -25,19 +26,30 @@ Route::group(['prefix' => 'gdpr', 'as' => 'gdpr.'], function () {
 
     // Privacy Policy Download
     Route::get('/privacy-policy/download', [GdprController::class, 'privacyPolicyDownload'])
-            ->name('privacy-policy.download');
+        ->name('privacy-policy.download');
 
     // Alternative routes per diversi document types
     Route::get('/cookie-policy/download', [GdprController::class, 'cookiePolicyDownload'])
-            ->name('cookie-policy.download');
+        ->name('cookie-policy.download');
 
     Route::get('/policy/{type}/download', [GdprController::class, 'policyDownload'])
-            ->name('policy.download')
-            ->where('type', 'privacy-policy|cookie-policy|terms-of-service');
+        ->name('policy.download')
+        ->where('type', 'privacy-policy|cookie-policy|terms-of-service');
 
     Route::get('/privacy-policy/version/{version}', [GdprController::class, 'privacyPolicyVersion'])
         ->name('privacy-policy.version');
+});
 
+// === COOKIE CONSENT API (Public Access - per tutti i visitatori) ===
+Route::prefix('cookie-consent')->name('cookie-consent.')->group(function () {
+
+    // Get current cookie consent status (authenticated & anonymous users)
+    Route::get('/status', [CookieConsentController::class, 'getConsentStatus'])
+        ->name('status');
+
+    // Save cookie consent preferences (authenticated & anonymous users)
+    Route::post('/save', [CookieConsentController::class, 'saveConsent'])
+        ->name('save');
 });
 
 Route::middleware(['auth', 'verified'])->prefix('dashboard/gdpr')->name('gdpr.')->group(function () {
@@ -69,14 +81,14 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/gdpr')->name('gdpr.')
         ->name('export-data.download');
 
     // === PERSONAL DATA MANAGEMENT ===
-     Route::get('/edit-personal-data', [GdprController::class, 'editPersonalData'])
-         ->name('edit-personal-data');
+    Route::get('/edit-personal-data', [GdprController::class, 'editPersonalData'])
+        ->name('edit-personal-data');
 
     Route::put('/edit-personal-data/update', [GdprController::class, 'updatePersonalData'])
-         ->name('edit-personal-data.update');
+        ->name('edit-personal-data.update');
 
     Route::post('/edit-personal-data/request-rectification', [GdprController::class, 'requestRectification'])
-         ->name('edit-personal-data.rectification');
+        ->name('edit-personal-data.rectification');
 
     // === PROCESSING LIMITATION ===
     Route::get('/limit-processing', [GdprController::class, 'limitProcessing'])

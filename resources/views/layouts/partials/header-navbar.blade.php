@@ -46,12 +46,23 @@
                 {{-- Nav Desktop --}}
                 <nav class="items-center hidden space-x-1 md:flex" role="navigation"
                     aria-label="{{ __('collection.main_navigation_aria_label') }}">
-                                        
+
                     @include('partials.nav-links', ['isMobile' => false, 'authType' => $authType])
 
                     @auth
                     <x-navigation.vanilla-desktop-menu />
                     @endauth
+
+                    {{-- Cookie Preferences Link --}}
+                    <button type="button" onclick="window.cookieBannerManager?.showBanner()"
+                            class="{{ $navLinkClasses }} flex items-center gap-1"
+                            title="{{ __('gdpr.cookie.banner.preferences_title') }}"
+                            aria-label="{{ __('gdpr.cookie.banner.preferences_title') }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                        </svg>
+                        <span class="hidden lg:inline">{{ __('gdpr.cookie.preferences_short') }}</span>
+                    </button>
 
                     {{-- Wallet e Auth --}}
                     <span class="h-6 mx-2 border-l border-gray-700" aria-hidden="true"></span>
@@ -63,7 +74,7 @@
                         {{ __('collection.register') }}</a>
                     @endguest
                 </nav>
-            
+
                 {{-- Menu Mobile Button - Sempre visibile --}}
                 <button type="button" data-mobile-menu-trigger class="block p-1 transition-colors rounded-full md:hidden hover:bg-gray-800/50">
                     @auth
@@ -101,7 +112,7 @@
             </div>
         </div>
     </div>
-                    
+
 </header>
 
 {{-- Mobile Menu Component - Outside header for proper overlay positioning --}}

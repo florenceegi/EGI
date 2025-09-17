@@ -77,4 +77,7 @@
 
 <body class="flex flex-col min-h-screen antialiased text-gray-300 bg-gray-900 font-body">
 
+    {{-- Cookie Consent Banner - Universal GDPR compliance for all visitors --}}
+    @include('components.gdpr.cookie-banner')
+
     @include('layouts.partials.header-navbar')
