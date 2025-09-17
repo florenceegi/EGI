@@ -28,8 +28,7 @@ use Throwable; // Import Throwable per il type hinting nelle eccezioni
  * @version 2.0.0
  * @author Padmin D. Curtis & Fabio Cherici
  */
-class StatisticsController extends Controller
-{
+class StatisticsController extends Controller {
     private UltraLogManager $logger;
 
     /**
@@ -39,8 +38,7 @@ class StatisticsController extends Controller
      * @signature: __construct(UltraLogManager $logger)
      * @context: Controller instantiation by Laravel's service container.
      */
-    public function __construct(UltraLogManager $logger)
-    {
+    public function __construct(UltraLogManager $logger) {
         $this->logger = $logger;
         // Middleware 'auth' is applied at the route group level.
     }
@@ -65,12 +63,22 @@ class StatisticsController extends Controller
      * @log: STATS_PAGE_VIEW - User ID and request details.
      * @privacy-safe: Logs user ID and non-sensitive request details. View itself is a template.
      */
-    public function showStatisticsPage(Request $request): View
-    {
+    public function showStatisticsPage(Request $request): View {
         $user = $request->user(); // Authenticated by route middleware
+
+        // Get period from URL parameter
+        $period = $request->query('period', 'day');
+        $validPeriods = ['day', 'week', 'month', 'year', 'all'];
+        if (!in_array($period, $validPeriods)) {
+            $period = 'day';
+        }
+
+        // DEBUG: Log period for troubleshooting
+        \Log::info('Statistics page loaded with period: ' . $period);
 
         $this->logger->info('Statistics page view request', [
             'user_id' => $user?->id,
+            'period' => $period,
             'request_ip' => $request->ip(),
             'log_category' => 'STATS_PAGE_VIEW'
         ]);
@@ -78,6 +86,7 @@ class StatisticsController extends Controller
         return view('dashboard.statistics.statistics_blade_view', [
             'pageTitle' => __('statistics.dashboard_title'), // Or __('menu.statistics')
             'user'      => $user, // For potential use in the main layout (e.g., x-app-layout)
+            'period'    => $period, // Pass period to view
         ]);
     }
 
@@ -106,8 +115,7 @@ class StatisticsController extends Controller
      * @data-input: $request->query('refresh')
      * @data-output: JSON response with aggregated statistics.
      */
-    public function getStatisticsDataAsJson(Request $request): JsonResponse
-    {
+    public function getStatisticsDataAsJson(Request $request): JsonResponse {
         try {
             /** @var \App\Models\User $user */
             $user = $request->user(); // Authenticated by route middleware
@@ -123,15 +131,23 @@ class StatisticsController extends Controller
             }
 
             $forceRefresh = $request->query('refresh') === '1';
+            $period = $request->query('period', 'day'); // Default to 'day' if not specified
+
+            // Validate period parameter
+            $validPeriods = ['day', 'week', 'month', 'year', 'all'];
+            if (!in_array($period, $validPeriods)) {
+                $period = 'day'; // Fallback to default
+            }
 
             $this->logger->info('Statistics JSON data request initiated', [
                 'user_id' => $user->id,
                 'force_refresh' => $forceRefresh,
+                'period' => $period,
                 'log_category' => 'STATS_API_REQUEST'
             ]);
 
             $statisticsService = new StatisticsService($user, $this->logger);
-            $stats = $statisticsService->getComprehensiveStats($forceRefresh);
+            $stats = $statisticsService->getComprehensiveStats($forceRefresh, $period);
 
             $this->logger->info('Statistics JSON data calculation completed successfully', [
                 'user_id' => $user->id,
@@ -149,7 +165,6 @@ class StatisticsController extends Controller
                     'mvp_version' => '2.0.0'
                 ]
             ]);
-
         } catch (Throwable $e) { // Catching Throwable for broader error capture
             $userId = auth()->check() ? auth()->id() : 'Guest'; // Defensive check for user ID
 
@@ -194,13 +209,12 @@ class StatisticsController extends Controller
      * @log: STATS_CACHE_CLEAR_ERROR_DETAIL - Detailed exception info on failure (ULM log).
      * @privacy-safe: Logs user ID. Operation affects user-specific cache.
      */
-    public function clearCache(Request $request): JsonResponse
-    {
+    public function clearCache(Request $request): JsonResponse {
         try {
             /** @var \App\Models\User $user */
             $user = $request->user();
             if (!$user) {
-                 $this->logger->warning('Unauthenticated attempt to clear statistics cache.', ['log_category' => 'STATS_CACHE_AUTH_FAILURE']);
+                $this->logger->warning('Unauthenticated attempt to clear statistics cache.', ['log_category' => 'STATS_CACHE_AUTH_FAILURE']);
                 return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
             }
 
@@ -222,7 +236,7 @@ class StatisticsController extends Controller
                     ]
                 ]);
             } else {
-                 $this->logger->warning('Statistics cache not found or clear operation reported false.', [
+                $this->logger->warning('Statistics cache not found or clear operation reported false.', [
                     'user_id' => $user->id,
                     'log_category' => 'STATS_CACHE_CLEAR_NOT_FOUND'
                 ]);
@@ -237,7 +251,6 @@ class StatisticsController extends Controller
                     ]
                 ]);
             }
-
         } catch (Throwable $e) {
             $userId = auth()->check() ? auth()->id() : 'Guest';
             $this->logger->error('Statistics cache clear failed', [
@@ -276,8 +289,7 @@ class StatisticsController extends Controller
      * @log: STATS_SUMMARY_ERROR_DETAIL - Detailed exception info on failure (ULM log).
      * @privacy-safe: Logs user ID. Data returned is aggregated summary statistics.
      */
-    public function summary(Request $request): JsonResponse
-    {
+    public function summary(Request $request): JsonResponse {
         try {
             /** @var \App\Models\User $user */
             $user = $request->user();
@@ -309,7 +321,6 @@ class StatisticsController extends Controller
                     'endpoint_type' => 'summary'
                 ]
             ]);
-
         } catch (Throwable $e) {
             $userId = auth()->check() ? auth()->id() : 'Guest';
             $this->logger->error('Statistics summary data retrieval failed', [

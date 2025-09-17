@@ -865,7 +865,6 @@ class StatisticsService {
                             'user_id' => $user->id,
                             'nickname' => $user->nickname ?? $user->name ?? 'Unknown User',
                             'nick_name' => $user->nick_name,
-                            'safe_nick_name' => $user->nick_name && \preg_match('/^[a-zA-Z0-9_-]+$/', $user->nick_name) ? $user->nick_name : null,
                             'user' => $user, // Pass the full user object so accessor works
                             'likes_given' => $likes->count(),
                         ];
@@ -892,6 +891,647 @@ class StatisticsService {
                 'total_given' => 0,
                 'top_users' => [],
             ];
+        }
+    }
+
+    /**
+     * Get creator earnings statistics with temporal filtering
+     *
+     * @param int $creatorId
+     * @param string $period
+     * @return array
+     */
+    public function getCreatorEarnings(int $creatorId, string $period = 'month'): array {
+        try {
+            $cacheKey = "creator_earnings_{$creatorId}_{$period}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($creatorId, $period) {
+                [$startDate, $endDate] = $this->getDateRangeForPeriod($period);
+
+                $query = DB::table('payment_distributions')
+                    ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+                    ->join('egis', 'reservations.egi_id', '=', 'egis.id')
+                    ->join('collections', 'egis.collection_id', '=', 'collections.id')
+                    ->where('collections.creator_id', $creatorId)
+                    ->where('payment_distributions.user_type', 'creator')
+                    ->where('reservations.is_highest', true);
+
+                // Apply temporal filtering
+                if ($period !== 'all') {
+                    $query->whereBetween('payment_distributions.created_at', [$startDate, $endDate]);
+                }
+
+                $earnings = $query->selectRaw('
+                    COUNT(DISTINCT payment_distributions.id) as total_distributions,
+                    SUM(payment_distributions.amount_eur) as total_earnings,
+                    AVG(payment_distributions.amount_eur) as avg_earnings_per_distribution,
+                    MIN(payment_distributions.amount_eur) as min_earnings,
+                    MAX(payment_distributions.amount_eur) as max_earnings,
+                    COUNT(DISTINCT reservations.id) as total_sales,
+                    COUNT(DISTINCT egis.collection_id) as collections_with_sales
+                ')->first();
+
+                return [
+                    'total_earnings' => round($earnings->total_earnings ?? 0, 2),
+                    'total_distributions' => $earnings->total_distributions ?? 0,
+                    'total_sales' => $earnings->total_sales ?? 0,
+                    'avg_earnings_per_distribution' => round($earnings->avg_earnings_per_distribution ?? 0, 2),
+                    'avg_earnings_per_sale' => $earnings->total_sales > 0 ? round($earnings->total_earnings / $earnings->total_sales, 2) : 0,
+                    'min_earnings' => round($earnings->min_earnings ?? 0, 2),
+                    'max_earnings' => round($earnings->max_earnings ?? 0, 2),
+                    'collections_with_sales' => $earnings->collections_with_sales ?? 0,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get creator earnings stats', [
+                'creator_id' => $creatorId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_earnings' => 0,
+                'total_distributions' => 0,
+                'total_sales' => 0,
+                'avg_earnings_per_distribution' => 0,
+                'avg_earnings_per_sale' => 0,
+                'min_earnings' => 0,
+                'max_earnings' => 0,
+                'collections_with_sales' => 0,
+            ];
+        }
+    }
+
+    /**
+     * Get likes received statistics with temporal filtering
+     *
+     * @param int $userId
+     * @param string $period
+     * @return array
+     */
+    public function getLikesReceivedStatsByPeriod(int $userId, string $period = 'month'): array {
+        try {
+            $cacheKey = "likes_received_stats_{$userId}_{$period}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($userId, $period) {
+                [$startDate, $endDate] = $this->getDateRangeForPeriod($period);
+
+                // Get user's EGIs with their likes and collections
+                $userEgisQuery = Egi::whereHas('collection', function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+                    ->whereHas('likes', function ($query) use ($period, $startDate, $endDate) {
+                        if ($period !== 'all') {
+                            $query->whereBetween('created_at', [$startDate, $endDate]);
+                        }
+                    })
+                    ->with(['likes.user', 'collection']);
+
+                // Add temporal filtering to the likes relationship
+                if ($period !== 'all') {
+                    $userEgisQuery->with(['likes' => function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('created_at', [$startDate, $endDate]);
+                    }]);
+                }
+
+                $userEgis = $userEgisQuery->get();
+
+                // Calculate total likes received
+                $totalReceived = $userEgis->sum(function ($egi) {
+                    return $egi->likes->count();
+                });
+
+                // Get top EGIs by likes (solo quelli con like > 0)
+                $topEgis = $userEgis->map(function ($egi) {
+                    $likesCount = $egi->likes->count();
+
+                    // Ottieni la lista degli utenti che hanno messo like
+                    $likedByUsers = $egi->likes->map(function ($like) {
+                        return [
+                            'user_id' => $like->user->id,
+                            'nickname' => $like->user->nickname ?? $like->user->name ?? 'Unknown User',
+                            'avatar' => $like->user->avatar ?? null,
+                        ];
+                    })->toArray();
+
+                    return [
+                        'id' => $egi->id,
+                        'title' => $egi->title,
+                        'main_image_url' => $egi->getMainImageUrlAttribute(),
+                        'thumbnail_image_url' => $egi->getThumbnailImageUrlAttribute(),
+                        'avatar_image_url' => $egi->getAvatarImageUrlAttribute(),
+                        'collection_name' => $egi->collection->name ?? 'Unknown Collection',
+                        'likes_count' => $likesCount,
+                        'liked_by_users' => $likedByUsers,
+                    ];
+                })
+                    ->filter(function ($egi) {
+                        return $egi['likes_count'] > 0;
+                    })
+                    ->sortByDesc('likes_count')
+                    ->take(10)
+                    ->values()
+                    ->toArray();
+
+                return [
+                    'total_received' => $totalReceived,
+                    'top_egis' => $topEgis,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get likes received stats with period', [
+                'user_id' => $userId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_received' => 0,
+                'top_egis' => [],
+            ];
+        }
+    }
+
+    /**
+     * Get likes given by user statistics with temporal filtering
+     *
+     * @param int $userId
+     * @param string $period
+     * @return array
+     */
+    public function getLikesGivenByUserStatsByPeriod(int $userId, string $period = 'month'): array {
+        try {
+            $cacheKey = "likes_given_by_user_stats_{$userId}_{$period}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($userId, $period) {
+                [$startDate, $endDate] = $this->getDateRangeForPeriod($period);
+
+                // Get all likes given BY this user to EGIs with temporal filtering
+                $userLikesQuery = Like::where('user_id', $userId)
+                    ->where('likeable_type', 'App\Models\Egi')
+                    ->with(['likeable.collection.creator']);
+
+                // Apply temporal filtering
+                if ($period !== 'all') {
+                    $userLikesQuery->whereBetween('created_at', [$startDate, $endDate]);
+                }
+
+                $userLikes = $userLikesQuery->get();
+
+                // Calculate total likes given
+                $totalGiven = $userLikes->count();
+
+                // Get EGIs liked by this user
+                $likedEgis = $userLikes->map(function ($like) {
+                    $egi = $like->likeable;
+                    if (!$egi) return null;
+
+                    return [
+                        'id' => $egi->id,
+                        'title' => $egi->title,
+                        'main_image_url' => $egi->getMainImageUrlAttribute(),
+                        'thumbnail_image_url' => $egi->getThumbnailImageUrlAttribute(),
+                        'avatar_image_url' => $egi->getAvatarImageUrlAttribute(),
+                        'collection_name' => $egi->collection->collection_name ?? 'Unknown Collection',
+                        'owner_id' => $egi->collection->creator_id ?? null,
+                        'owner_name' => $egi->collection->creator->name ?? $egi->collection->creator->nickname ?? 'Unknown User',
+                        'owner_nick_name' => $egi->collection->creator->nick_name ?? null,
+                    ];
+                })
+                    ->filter() // Remove nulls
+                    ->values()
+                    ->toArray();
+
+                // Group by owner and count likes given to each
+                $likesGroupedByOwner = $userLikes->groupBy(function ($like) {
+                    return $like->likeable->collection->creator_id ?? null;
+                })->filter(function ($likes, $ownerId) use ($userId) {
+                    return $ownerId !== null && $ownerId != $userId; // Exclude self-likes
+                });
+
+                // Get owners ranked by likes received from this user
+                $owners = $likesGroupedByOwner->map(function ($likes, $ownerId) {
+                    $owner = User::find($ownerId);
+
+                    if (!$owner) {
+                        return null;
+                    }
+
+                    return [
+                        'user_id' => $ownerId,
+                        'nickname' => $owner->nickname ?? $owner->name ?? 'Unknown User',
+                        'nick_name' => $owner->nick_name,
+                        'user' => $owner,
+                        'likes_count' => $likes->count(),
+                    ];
+                })
+                    ->filter() // Remove nulls
+                    ->sortByDesc('likes_count')
+                    ->take(20)
+                    ->values()
+                    ->toArray();
+
+                return [
+                    'total_given' => $totalGiven,
+                    'liked_egis' => $likedEgis,
+                    'owners' => $owners,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get likes given by user stats with period', [
+                'user_id' => $userId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_given' => 0,
+                'liked_egis' => [],
+                'owners' => [],
+            ];
+        }
+    }
+
+    /**
+     * Get user total earnings statistics with temporal filtering
+     *
+     * @param int $userId
+     * @param string $period
+     * @return array
+     */
+    public function getUserTotalEarnings(int $userId, string $period = 'month'): array {
+        try {
+            $cacheKey = "user_total_earnings_{$userId}_{$period}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($userId, $period) {
+                [$startDate, $endDate] = $this->getDateRangeForPeriod($period);
+
+                $query = DB::table('payment_distributions')
+                    ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+                    ->join('egis', 'reservations.egi_id', '=', 'egis.id')
+                    ->join('collections', 'egis.collection_id', '=', 'collections.id')
+                    ->where('payment_distributions.user_id', $userId)
+                    ->where('reservations.is_highest', true);
+
+                // Apply temporal filtering
+                if ($period !== 'all') {
+                    $query->whereBetween('payment_distributions.created_at', [$startDate, $endDate]);
+                }
+
+                $earnings = $query->selectRaw('
+                    COUNT(DISTINCT payment_distributions.id) as total_distributions,
+                    SUM(payment_distributions.amount_eur) as total_earnings,
+                    AVG(payment_distributions.amount_eur) as avg_earning_per_distribution,
+                    COUNT(DISTINCT collections.id) as collections_involved,
+                    COUNT(DISTINCT reservations.id) as reservations_involved
+                ')->first();
+
+                return [
+                    'total_earnings' => round($earnings->total_earnings ?? 0, 2),
+                    'total_distributions' => $earnings->total_distributions ?? 0,
+                    'avg_earning_per_distribution' => round($earnings->avg_earning_per_distribution ?? 0, 2),
+                    'collections_involved' => $earnings->collections_involved ?? 0,
+                    'reservations_involved' => $earnings->reservations_involved ?? 0,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get user total earnings stats', [
+                'user_id' => $userId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_earnings' => 0,
+                'total_distributions' => 0,
+                'avg_earning_per_distribution' => 0,
+                'collections_involved' => 0,
+                'reservations_involved' => 0,
+            ];
+        }
+    }
+
+    /**
+     * Get user non-creator earnings statistics with temporal filtering
+     *
+     * @param int $userId
+     * @param string $period
+     * @return array
+     */
+    public function getUserNonCreatorEarnings(int $userId, string $period = 'month'): array {
+        try {
+            $cacheKey = "user_non_creator_earnings_{$userId}_{$period}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($userId, $period) {
+                [$startDate, $endDate] = $this->getDateRangeForPeriod($period);
+
+                $query = DB::table('payment_distributions')
+                    ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+                    ->join('egis', 'reservations.egi_id', '=', 'egis.id')
+                    ->join('collections', 'egis.collection_id', '=', 'collections.id')
+                    ->where('payment_distributions.user_id', $userId)
+                    ->where('payment_distributions.user_type', '!=', 'creator')
+                    ->where('reservations.is_highest', true);
+
+                // Apply temporal filtering
+                if ($period !== 'all') {
+                    $query->whereBetween('payment_distributions.created_at', [$startDate, $endDate]);
+                }
+
+                $earnings = $query->selectRaw('
+                    COUNT(DISTINCT payment_distributions.id) as total_distributions,
+                    SUM(payment_distributions.amount_eur) as total_earnings,
+                    AVG(payment_distributions.amount_eur) as avg_earning_per_distribution,
+                    COUNT(DISTINCT collections.id) as collections_involved,
+                    COUNT(DISTINCT reservations.id) as reservations_involved
+                ')->first();
+
+                return [
+                    'total_earnings' => round($earnings->total_earnings ?? 0, 2),
+                    'total_distributions' => $earnings->total_distributions ?? 0,
+                    'avg_earning_per_distribution' => round($earnings->avg_earning_per_distribution ?? 0, 2),
+                    'collections_involved' => $earnings->collections_involved ?? 0,
+                    'reservations_involved' => $earnings->reservations_involved ?? 0,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get user non-creator earnings stats', [
+                'user_id' => $userId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_earnings' => 0,
+                'total_distributions' => 0,
+                'avg_earning_per_distribution' => 0,
+                'collections_involved' => 0,
+                'reservations_involved' => 0,
+            ];
+        }
+    }
+
+    /**
+     * Get creator collection performance statistics with temporal filtering
+     */
+    public function getCreatorCollectionPerformance(int $creatorId, string $period = 'month', int $limit = 5): array {
+        try {
+            $cacheKey = "creator_collection_performance_{$creatorId}_{$period}_{$limit}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($creatorId, $period, $limit) {
+                [$startDate, $endDate] = $this->getDateRangeForPeriod($period);
+
+                $query = DB::table('payment_distributions')
+                    ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+                    ->join('egis', 'reservations.egi_id', '=', 'egis.id')
+                    ->join('collections', 'egis.collection_id', '=', 'collections.id')
+                    ->where('collections.creator_id', $creatorId)
+                    ->where('payment_distributions.user_type', 'creator')
+                    ->where('reservations.is_highest', true);
+
+                // Apply temporal filtering
+                if ($period !== 'all') {
+                    $query->whereBetween('payment_distributions.created_at', [$startDate, $endDate]);
+                }
+
+                $collections = $query->selectRaw('
+                    collections.id,
+                    collections.collection_name,
+                    COUNT(DISTINCT payment_distributions.id) as total_distributions,
+                    SUM(payment_distributions.amount_eur) as total_earnings,
+                    COUNT(DISTINCT reservations.id) as total_sales,
+                    COUNT(DISTINCT egis.id) as egis_sold,
+                    AVG(payment_distributions.amount_eur) as avg_earning,
+                    MAX(payment_distributions.amount_eur) as best_sale,
+                    MIN(reservations.amount_eur) as floor_price
+                ')
+                    ->groupBy('collections.id', 'collections.collection_name')
+                    ->orderBy('total_earnings', 'desc')
+                    ->limit($limit)
+                    ->get();
+
+                return $collections->map(function ($collection) {
+                    // Calculate conversion rate (example: 75% if good performance)
+                    $conversionRate = $collection->total_sales > 0 ? min(($collection->total_sales * 10), 100) : 0;
+
+                    return [
+                        'collection_id' => $collection->id,
+                        'collection_name' => $collection->collection_name,
+                        'total_earnings' => round($collection->total_earnings ?? 0, 2),
+                        'total_distributions' => $collection->total_distributions ?? 0,
+                        'total_sales' => $collection->total_sales ?? 0,
+                        'sales_count' => $collection->total_sales ?? 0, // Alias per compatibilità
+                        'egis_sold' => $collection->egis_sold ?? 0,
+                        'avg_earning' => round($collection->avg_earning ?? 0, 2),
+                        'avg_earnings' => round($collection->avg_earning ?? 0, 2), // Alias per compatibilità
+                        'best_sale' => round($collection->best_sale ?? 0, 2),
+                        'floor_price' => round($collection->floor_price ?? 0, 2),
+                        'conversion_rate' => round($conversionRate, 1),
+                        'earnings_from_collection' => round($collection->total_earnings ?? 0, 2),
+                    ];
+                })->toArray();
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get creator collection performance', [
+                'creator_id' => $creatorId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [];
+        }
+    }
+
+    /**
+     * Get creator engagement statistics with temporal filtering
+     */
+    public function getCreatorEngagementStats(int $creatorId, string $period = 'month'): array {
+        try {
+            $cacheKey = "creator_engagement_stats_{$creatorId}_{$period}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($creatorId, $period) {
+                [$startDate, $endDate] = $this->getDateRangeForPeriod($period);
+
+                // Get unique collectors (users who made reservations)
+                $collectorsQuery = DB::table('reservations')
+                    ->join('egis', 'reservations.egi_id', '=', 'egis.id')
+                    ->join('collections', 'egis.collection_id', '=', 'collections.id')
+                    ->where('collections.creator_id', $creatorId)
+                    ->where('reservations.is_highest', true);
+
+                if ($period !== 'all') {
+                    $collectorsQuery->whereBetween('reservations.created_at', [$startDate, $endDate]);
+                }
+
+                $collectorsReached = $collectorsQuery->distinct('reservations.user_id')->count('reservations.user_id');
+
+                // Get total volume generated
+                $volumeQuery = DB::table('payment_distributions')
+                    ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+                    ->join('egis', 'reservations.egi_id', '=', 'egis.id')
+                    ->join('collections', 'egis.collection_id', '=', 'collections.id')
+                    ->where('collections.creator_id', $creatorId)
+                    ->where('reservations.is_highest', true);
+
+                if ($period !== 'all') {
+                    $volumeQuery->whereBetween('payment_distributions.created_at', [$startDate, $endDate]);
+                }
+
+                $totalVolume = $volumeQuery->sum('payment_distributions.amount_eur') ?? 0;
+
+                // Calculate EPP impact (20% of total volume)
+                $eppPercentage = 20.0;
+                $eppImpact = ($totalVolume * $eppPercentage) / 100;
+
+                // Average impact per collector
+                $avgImpactPerCollector = $collectorsReached > 0 ? $eppImpact / $collectorsReached : 0;
+
+                return [
+                    'collectors_reached' => $collectorsReached,
+                    'epp_impact_generated' => round($eppImpact, 2),
+                    'total_volume_generated' => round($totalVolume, 2),
+                    'avg_impact_per_collector' => round($avgImpactPerCollector, 2),
+                    'epp_percentage' => $eppPercentage,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get creator engagement stats', [
+                'creator_id' => $creatorId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'collectors_reached' => 0,
+                'epp_impact_generated' => 0,
+                'total_volume_generated' => 0,
+                'avg_impact_per_collector' => 0,
+                'epp_percentage' => 0,
+            ];
+        }
+    }
+
+    /**
+     * Get creator holders statistics with temporal filtering
+     */
+    public function getCreatorHoldersStats(int $creatorId, string $period = 'month'): array {
+        try {
+            $cacheKey = "creator_holders_stats_{$creatorId}_{$period}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($creatorId, $period) {
+                [$startDate, $endDate] = $this->getDateRangeForPeriod($period);
+
+                // Get holders (users with highest reservations) for this creator's collections
+                $holdersQuery = DB::table('reservations')
+                    ->join('egis', 'reservations.egi_id', '=', 'egis.id')
+                    ->join('collections', 'egis.collection_id', '=', 'collections.id')
+                    ->where('collections.creator_id', $creatorId)
+                    ->where('reservations.is_highest', true)
+                    ->where('reservations.is_current', true);
+
+                if ($period !== 'all') {
+                    $holdersQuery->whereBetween('reservations.created_at', [$startDate, $endDate]);
+                }
+
+                $holders = $holdersQuery->selectRaw('
+                    reservations.user_id,
+                    collections.collection_name,
+                    collections.id as collection_id,
+                    COUNT(*) as items_count,
+                    SUM(reservations.amount_eur) as total_spent
+                ')
+                    ->groupBy('reservations.user_id', 'collections.id', 'collections.collection_name')
+                    ->orderBy('total_spent', 'desc')
+                    ->get();
+
+                // Aggregate holders by user
+                $aggregatedHolders = $holders->groupBy('user_id')->map(function ($userHoldings) {
+                    return [
+                        'user_id' => $userHoldings->first()->user_id,
+                        'total_items' => $userHoldings->sum('items_count'),
+                        'total_spent' => $userHoldings->sum('total_spent'),
+                        'collections_count' => $userHoldings->count(),
+                        'collections' => $userHoldings->map(function ($holding) {
+                            return [
+                                'name' => $holding->collection_name,
+                                'items' => $holding->items_count,
+                                'spent' => $holding->total_spent
+                            ];
+                        })->toArray()
+                    ];
+                })->sortByDesc('total_spent')->values()->take(10);
+
+                // Calculate summary statistics
+                $totalCollectors = $aggregatedHolders->count();
+                $totalItemsHeld = $aggregatedHolders->sum('total_items');
+                $totalRevenue = $aggregatedHolders->sum('total_spent');
+                $avgPerCollector = $totalCollectors > 0 ? $totalRevenue / $totalCollectors : 0;
+
+                return [
+                    'holders' => $holders->toArray(),
+                    'aggregated' => $aggregatedHolders->toArray(),
+                    'summary' => [
+                        'total_collectors' => $totalCollectors,
+                        'total_items_held' => $totalItemsHeld,
+                        'total_revenue' => round($totalRevenue, 2),
+                        'avg_per_collector' => round($avgPerCollector, 2)
+                    ]
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get creator holders stats', [
+                'creator_id' => $creatorId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'holders' => [],
+                'aggregated' => [],
+                'summary' => [
+                    'total_collectors' => 0,
+                    'total_items_held' => 0,
+                    'total_revenue' => 0,
+                    'avg_per_collector' => 0
+                ]
+            ];
+        }
+    }
+
+    /**
+     * Get date range for a given period
+     *
+     * @param string $period
+     * @return array
+     */
+    private function getDateRangeForPeriod(string $period): array {
+        $now = now();
+
+        switch ($period) {
+            case 'day':
+                return [$now->copy()->startOfDay(), $now->copy()->endOfDay()];
+
+            case 'week':
+                return [$now->copy()->startOfWeek(), $now->copy()->endOfWeek()];
+
+            case 'month':
+                return [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()];
+
+            case 'year':
+                return [$now->copy()->startOfYear(), $now->copy()->endOfYear()];
+
+            case 'all':
+            default:
+                // Per 'all', non restituiamo range perché la query non dovrebbe filtrare per date
+                return [null, null];
         }
     }
 }
