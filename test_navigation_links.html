@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Navigation Links - FlorenceEGI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
+</head>
+
+<body class="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8 text-center">Test Navigation Links</h1>
+
+        <!-- Test Theme Switch -->
+        <div class="text-center mb-8">
+            <button id="themeToggle"
+                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                🌓 Cambia Tema
+            </button>
+            <span id="currentTheme" class="ml-4 text-sm text-gray-600 dark:text-gray-400"></span>
+        </div>
+
+        <!-- Test Header con Logo -->
+        <div
+            class="mb-8 p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Test Header Navbar</h2>
+
+            <!-- Logo Test -->
+            <div class="flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 bg-blue-500 rounded"></div>
+                <span
+                    class="text-base font-semibold text-gray-700 dark:text-gray-400 transition group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                    Frangette
+                </span>
+            </div>
+
+            <!-- Navigation Links Test -->
+            <div class="flex flex-wrap gap-4">
+                <a href="#"
+                    class="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-white transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600/80 dark:hover:bg-emerald-600/80">
+                    Home
+                </a>
+                <a href="#"
+                    class="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-white transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600/80 dark:hover:bg-emerald-600/80">
+                    Creators
+                </a>
+                <a href="#"
+                    class="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-white transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600/80 dark:hover:bg-emerald-600/80">
+                    Collections
+                </a>
+                <a href="#"
+                    class="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-white transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600/80 dark:hover:bg-emerald-600/80">
+                    Collectors
+                </a>
+                <a href="#"
+                    class="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-white transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600/80 dark:hover:bg-emerald-600/80">
+                    EPPs
+                </a>
+            </div>
+
+            <!-- Separatore Test -->
+            <span class="inline-block h-6 mx-4 border-l border-gray-300 dark:border-gray-700"></span>
+
+            <!-- Bottoni Auth Test -->
+            <div class="flex gap-2 mt-4">
+                <a href="#"
+                    class="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100/40 dark:hover:bg-gray-800/40">
+                    Login
+                </a>
+                <a href="#"
+                    class="inline-flex items-center px-4 py-2 ml-2 text-sm font-medium text-white dark:text-gray-300 bg-blue-600 dark:bg-gray-800 border border-blue-600 dark:border-gray-700 rounded-md hover:bg-blue-700 dark:hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-indigo-500 focus:ring-offset-2 transition-colors">
+                    Registrati
+                </a>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="text-center">
+            <div
+                class="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 rounded-lg">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                Navigation Links aggiornati per compatibilità tema!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema di gestione tema
+        const themeToggle = document.getElementById('themeToggle');
+        const currentThemeSpan = document.getElementById('currentTheme');
+        const html = document.documentElement;
+
+        function updateThemeDisplay() {
+            const isDark = html.classList.contains('dark');
+            currentThemeSpan.textContent = isDark ? 'Tema Scuro Attivo' : 'Tema Chiaro Attivo';
+            themeToggle.textContent = isDark ? '☀️ Tema Chiaro' : '🌙 Tema Scuro';
+        }
+
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            html.classList.add('dark');
+        }
+
+        updateThemeDisplay();
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            updateThemeDisplay();
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            if (savedTheme === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+            updateThemeDisplay();
+        }
+    </script>
+</body>
+
+</html>
