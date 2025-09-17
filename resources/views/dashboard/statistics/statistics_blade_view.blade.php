@@ -57,6 +57,47 @@
             </div>
         </div>
 
+        {{-- Time Filter Bar --}}
+        <div class="mb-8">
+            <div class="p-6 bg-gray-800 bg-opacity-50 border border-gray-700 backdrop-blur-sm rounded-xl">
+                <h3 class="mb-4 text-lg font-semibold text-white">
+                    {{ __('statistics.time_period') }}
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        class="px-4 py-2 text-sm font-medium transition-all duration-200 border rounded-lg time-filter-btn active"
+                        data-period="day"
+                    >
+                        {{ __('statistics.period_day') }}
+                    </button>
+                    <button
+                        class="px-4 py-2 text-sm font-medium transition-all duration-200 border rounded-lg time-filter-btn"
+                        data-period="week"
+                    >
+                        {{ __('statistics.period_week') }}
+                    </button>
+                    <button
+                        class="px-4 py-2 text-sm font-medium transition-all duration-200 border rounded-lg time-filter-btn"
+                        data-period="month"
+                    >
+                        {{ __('statistics.period_month') }}
+                    </button>
+                    <button
+                        class="px-4 py-2 text-sm font-medium transition-all duration-200 border rounded-lg time-filter-btn"
+                        data-period="year"
+                    >
+                        {{ __('statistics.period_year') }}
+                    </button>
+                    <button
+                        class="px-4 py-2 text-sm font-medium transition-all duration-200 border rounded-lg time-filter-btn"
+                        data-period="all"
+                    >
+                        {{ __('statistics.period_all') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
         {{-- Statistics Content --}}
         <div id="statistics-content" class="hidden">
             {{-- Portfolio Statistics Section - I COMPONENTI ESISTENTI SPOSTATI DAL PORTFOLIO --}}
@@ -70,26 +111,26 @@
 
                 {{-- Row 1: Earnings & Monthly Trends --}}
                 <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
-                    <x-stats.earnings-widget :creatorId="auth()->id()" />
-                    <x-stats.monthly-trend-chart :creatorId="auth()->id()" :monthlyTrend="[]" />
+                    <x-stats.earnings-widget :creatorId="auth()->id()" :period="$period ?? 'month'" />
+                    <x-stats.monthly-trend-chart :creatorId="auth()->id()" :monthlyTrend="[]" :period="$period ?? 'month'" />
                 </div>
 
                 {{-- Row 2: Collection Performance & Engagement --}}
                 <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
-                    <x-stats.collection-performance-widget :creatorId="auth()->id()" :collectionPerformance="[]" />
-                    <x-stats.engagement-widget :creatorId="auth()->id()" :engagement="[]" />
+                    <x-stats.collection-performance-widget :creatorId="auth()->id()" :collectionPerformance="[]" :period="$period ?? 'month'" />
+                    <x-stats.engagement-widget :creatorId="auth()->id()" :engagement="[]" :period="$period ?? 'month'" />
                 </div>
 
                 {{-- Row 3: Role-based Earnings & Holders Summary --}}
                 <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
-                    <x-stats.role-earnings-widget :user-id="auth()->id()" />
-                    <x-stats.holders-summary :creatorId="auth()->id()" />
+                    <x-stats.role-earnings-widget :user-id="auth()->id()" :period="$period ?? 'month'" />
+                    <x-stats.holders-summary :creatorId="auth()->id()" :period="$period ?? 'month'" />
                 </div>
 
                 {{-- Row 4: Likes Analytics --}}
                 <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
-                    <x-stats.likes-analytics-widget :userId="auth()->id()" />
-                    <x-stats.likes-given-analytics-widget :userId="auth()->id()" />
+                    <x-stats.likes-analytics-widget :userId="auth()->id()" :period="$period ?? 'month'" />
+                    <x-stats.likes-given-analytics-widget :userId="auth()->id()" :period="$period ?? 'month'" />
                 </div>
             </div>
         </div>
@@ -111,9 +152,40 @@
 </x-app-layout>
 
 {{-- JavaScript for Statistics Loading --}}
+<style>
+/* Time Filter Buttons Styling */
+.time-filter-btn {
+    background-color: rgba(75, 85, 99, 0.5);
+    border-color: rgba(156, 163, 175, 0.3);
+    color: rgb(209, 213, 219);
+}
+
+.time-filter-btn:hover {
+    background-color: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.5);
+    color: white;
+}
+
+.time-filter-btn.active {
+    background-color: rgb(99, 102, 241);
+    border-color: rgb(99, 102, 241);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.4);
+}
+
+.time-filter-btn.active:hover {
+    background-color: rgb(79, 70, 229);
+    border-color: rgb(79, 70, 229);
+}
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let statisticsData = null;
+
+    // Get period from URL parameter or use default
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentTimePeriod = urlParams.get('period') || '{{ $period ?? "day" }}';
 
     // Elements
     const loadingOverlay = document.getElementById('loading-overlay');
@@ -122,14 +194,46 @@ document.addEventListener('DOMContentLoaded', function() {
     const statisticsContent = document.getElementById('statistics-content');
     const refreshButton = document.getElementById('refresh-stats');
     const lastUpdated = document.getElementById('last-updated');
+    const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
+
+    // Set active button based on current period
+    updateActiveTimeFilter();
 
     // Load statistics on page load
     loadStatistics();
+
+    // Time filter button handlers
+    timeFilterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const newPeriod = this.getAttribute('data-period');
+            if (newPeriod !== currentTimePeriod) {
+                currentTimePeriod = newPeriod;
+                updateActiveTimeFilter();
+
+                // Reload page with period parameter to update server-side components
+                const url = new URL(window.location);
+                url.searchParams.set('period', newPeriod);
+                window.location.href = url.toString();
+            }
+        });
+    });
 
     // Refresh button handler
     refreshButton?.addEventListener('click', function() {
         loadStatistics(true);
     });
+
+    /**
+     * Update active time filter button
+     */
+    function updateActiveTimeFilter() {
+        timeFilterButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-period') === currentTimePeriod) {
+                btn.classList.add('active');
+            }
+        });
+    }
 
     /**
      * Load statistics from API
@@ -139,7 +243,15 @@ document.addEventListener('DOMContentLoaded', function() {
         hideError();
 
         try {
-            const url = forceRefresh ? '/dashboard/statistics/data?refresh=1' : '/dashboard/statistics/data';
+            const params = new URLSearchParams({
+                period: currentTimePeriod
+            });
+
+            if (forceRefresh) {
+                params.append('refresh', '1');
+            }
+
+            const url = `/dashboard/statistics/data?${params.toString()}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {

@@ -1,50 +1,27 @@
 {{-- resources/views/components/portfolio/holders-summary.blade.php --}}
-@props(['creatorId'])
+@props(['creatorId', 'period' => 'month'])
 
 @php
-// Ottieni tutti i holder delle collezioni del creator (per ora solo come owner per semplicità)
-$holders = DB::table('reservations')
-    ->join('egis', 'egis.id', '=', 'reservations.egi_id')
-    ->join('collections', 'collections.id', '=', 'egis.collection_id')
-    ->where('collections.creator_id', $creatorId) // Solo collezioni di cui è owner
-    ->where('reservations.is_highest', true)
-    ->where('reservations.is_current', true)
-    ->whereNull('egis.deleted_at')
-    ->whereNull('collections.deleted_at')
-    ->select([
-        'reservations.user_id',
-        'collections.collection_name',
-        'collections.id as collection_id',
-        DB::raw('COUNT(*) as items_count'),
-        DB::raw('SUM(reservations.amount_eur) as total_spent')
-    ])
-    ->groupBy('reservations.user_id', 'collections.id', 'collections.collection_name')
-    ->orderBy('total_spent', 'desc')
-    ->orderBy('items_count', 'desc')
-    ->get();
+use App\Services\StatisticsService;
 
-// Aggrega i dati per utente
-$aggregatedHolders = $holders->groupBy('user_id')->map(function($userHoldings) {
-    return [
-        'user_id' => $userHoldings->first()->user_id,
-        'total_items' => $userHoldings->sum('items_count'),
-        'total_spent' => $userHoldings->sum('total_spent'),
-        'collections_count' => $userHoldings->count(),
-        'collections' => $userHoldings->map(function($holding) {
-            return [
-                'name' => $holding->collection_name,
-                'items' => $holding->items_count,
-                'spent' => $holding->total_spent
-            ];
-        })
-    ];
-})->sortByDesc('total_spent')->values()->take(10); // Aggiungi ->values() per resettare gli indici
+// Utilizza il servizio per ottenere i dati dei holders con periodo temporale
+$statisticsService = app(StatisticsService::class);
+$holdersData = $statisticsService->getCreatorHoldersStats($creatorId, $period);
 
-// Calcola le statistiche totali
-$totalHolders = $aggregatedHolders->count();
-$totalItems = $aggregatedHolders->sum('total_items');
-$totalVolume = $aggregatedHolders->sum('total_spent');
-$uniqueCollections = $holders->unique('collection_id')->count();
+$holders = $holdersData['holders'] ?? [];
+$aggregatedHolders = collect($holdersData['aggregated'] ?? []);
+$summary = $holdersData['summary'] ?? [
+    'total_collectors' => 0,
+    'total_items_held' => 0,
+    'total_revenue' => 0,
+    'avg_per_collector' => 0
+];
+
+// Usa i dati dal summary invece di calcoli locali
+$totalHolders = $summary['total_collectors'];
+$totalItems = $summary['total_items_held'];
+$totalVolume = $summary['total_revenue'];
+$uniqueCollections = count($holders); // Numero di collezioni diverse
 @endphp
 
 <div class="p-6 bg-white bg-opacity-10 backdrop-blur-md rounded-xl">
@@ -78,9 +55,9 @@ $uniqueCollections = $holders->unique('collection_id')->count();
     {{-- Top Holders List --}}
     @if($aggregatedHolders->isNotEmpty())
         <div class="space-y-3">
-            @foreach($aggregatedHolders as $index => $holder)
+            @foreach($aggregatedHolders->take(10) as $index => $holder)
                 @php
-                    $user = App\Models\User::find($holder['user_id']);
+                    $user = App\Models\User::find($holder['user_id'] ?? null);
                 @endphp
 
                 <div class="flex items-center p-3 transition-colors bg-white rounded-lg bg-opacity-5 hover:bg-opacity-10">
@@ -102,7 +79,7 @@ $uniqueCollections = $holders->unique('collection_id')->count();
                     <div class="flex items-center flex-1 min-w-0 space-x-3">
                         @if($user)
                             {{-- Avatar --}}
-                            @if($user->profile_photo_url)
+                            @if($user->profile_photo_url ?? false)
                                 <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}"
                                      class="object-cover w-8 h-8 rounded-full">
                             @else
@@ -124,8 +101,8 @@ $uniqueCollections = $holders->unique('collection_id')->count();
 
                                 {{-- Collections summary --}}
                                 <div class="text-xs text-gray-400">
-                                    {{ $holder['collections_count'] }} {{ $holder['collections_count'] == 1 ? __('creator.portfolio.holders.collection') : __('creator.portfolio.holders.collections') }}
-                                    @if($user->usertype === 'verified')
+                                    {{ $holder['collections_count'] ?? 0 }} {{ ($holder['collections_count'] ?? 0) == 1 ? __('creator.portfolio.holders.collection') : __('creator.portfolio.holders.collections') }}
+                                    @if(($user->usertype ?? '') === 'verified')
                                         <span class="ml-1 text-xs text-blue-400 material-symbols-outlined">verified</span>
                                     @endif
                                 </div>
@@ -144,22 +121,24 @@ $uniqueCollections = $holders->unique('collection_id')->count();
                     {{-- Stats --}}
                     <div class="text-right">
                         @php
-                            $percentage = $totalItems > 0 ? round(($holder['total_items'] / $totalItems) * 100, 1) : 0;
+                            $holderItems = $holder['total_items'] ?? 0;
+                            $holderSpent = $holder['total_spent'] ?? 0;
+                            $percentage = $totalItems > 0 ? round(($holderItems / $totalItems) * 100, 1) : 0;
 
                             // Determina il gradiente in base alla percentuale
                             if ($percentage >= 50) {
-                                $gradientColors = 'from-green-400 to-emerald-600'; // Verde per alte percentuali
+                                $gradientColors = 'from-green-400 to-emerald-600';
                             } elseif ($percentage >= 25) {
-                                $gradientColors = 'from-yellow-400 to-orange-500'; // Giallo-Arancione per medie percentuali
+                                $gradientColors = 'from-yellow-400 to-orange-500';
                             } elseif ($percentage >= 10) {
-                                $gradientColors = 'from-blue-400 to-indigo-600'; // Blu per basse percentuali
+                                $gradientColors = 'from-blue-400 to-indigo-600';
                             } else {
-                                $gradientColors = 'from-gray-400 to-gray-600'; // Grigio per percentuali molto basse
+                                $gradientColors = 'from-gray-400 to-gray-600';
                             }
                         @endphp
-                        <div class="font-semibold text-white">{{ $holder['total_items'] }}</div>
+                        <div class="font-semibold text-white">{{ $holderItems }}</div>
                         <div class="mb-2 text-xs text-gray-400">
-                            €{{ number_format($holder['total_spent'], 0) }}
+                            €{{ number_format($holderSpent, 0) }}
                         </div>
                         {{-- Barra percentuale con gradiente dinamico --}}
                         <div class="space-y-1">

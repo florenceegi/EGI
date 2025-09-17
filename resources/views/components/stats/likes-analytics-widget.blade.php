@@ -1,13 +1,15 @@
 @props([
     'userId' => null,
-    'creatorId' => null
+    'creatorId' => null,
+    'period' => 'month'
 ])
 
 @php
     $targetUserId = $userId ?? $creatorId ?? auth()->id();
+    $statisticsService = app(\App\Services\StatisticsService::class);
 
-    // Ottieni statistiche dei like ricevuti (EGI dell'utente)
-    $receivedLikesStats = \App\Services\StatisticsService::getLikesReceivedStats($targetUserId);
+    // Ottieni statistiche dei like ricevuti (EGI dell'utente) con periodo temporale
+    $receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetUserId, $period);
 
     // Ottieni statistiche di chi ha dato like agli EGI dell'utente
     $whoLikedStats = \App\Services\StatisticsService::getWhoLikedUserEgisStats($targetUserId);

@@ -1,13 +1,15 @@
 @props([
     'userId' => null,
-    'creatorId' => null
+    'creatorId' => null,
+    'period' => 'month'
 ])
 
 @php
     $targetUserId = $userId ?? $creatorId ?? auth()->id();
+    $statisticsService = app(\App\Services\StatisticsService::class);
 
-    // Ottieni statistiche dei like lasciati dall'utente
-    $givenLikesStats = \App\Services\StatisticsService::getLikesGivenByUserStats($targetUserId);
+    // Ottieni statistiche dei like lasciati dall'utente con periodo temporale
+    $givenLikesStats = $statisticsService->getLikesGivenByUserStatsByPeriod($targetUserId, $period);
 @endphp
 
 <div class="p-6 bg-white bg-opacity-10 backdrop-blur-md rounded-xl">

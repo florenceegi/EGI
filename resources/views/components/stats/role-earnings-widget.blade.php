@@ -2,19 +2,22 @@
     'userId' => null,
     'totalEarnings' => null,
     'nonCreatorEarnings' => null,
-    'size' => 'normal'
+    'size' => 'normal',
+    'period' => 'month'
 ])
 
 @php
-use App\Models\PaymentDistribution;
+use App\Services\StatisticsService;
 
-// Se non vengono passate le statistiche, le calcola
+// Se non vengono passate le statistiche, le calcola usando il periodo temporale
 if (!$totalEarnings && $userId) {
-    $totalEarnings = PaymentDistribution::getUserTotalEarnings($userId);
+    $statisticsService = app(StatisticsService::class);
+    $totalEarnings = $statisticsService->getUserTotalEarnings($userId, $period);
 }
 
 if (!$nonCreatorEarnings && $userId) {
-    $nonCreatorEarnings = PaymentDistribution::getUserNonCreatorEarnings($userId);
+    $statisticsService = app(StatisticsService::class);
+    $nonCreatorEarnings = $statisticsService->getUserNonCreatorEarnings($userId, $period);
 }
 
 // Fallback se non ci sono dati
