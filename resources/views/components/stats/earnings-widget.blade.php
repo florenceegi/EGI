@@ -1,15 +1,17 @@
 @props([
     'creatorId' => null,
     'earnings' => null,
-    'size' => 'normal'
+    'size' => 'normal',
+    'period' => 'month'
 ])
 
 @php
-use App\Models\PaymentDistribution;
+use App\Services\StatisticsService;
 
-// Se non vengono passate le earnings, le calcola
+// Se non vengono passate le earnings, le calcola usando il periodo
 if (!$earnings && $creatorId) {
-    $earnings = PaymentDistribution::getCreatorEarnings($creatorId);
+    $statisticsService = app(StatisticsService::class);
+    $earnings = $statisticsService->getCreatorEarnings($creatorId, $period);
 }
 
 // Fallback se non ci sono dati
@@ -24,7 +26,7 @@ $earnings = $earnings ?? [
 <div class="space-y-4">
     {{-- Header --}}
     <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+        <h2 class="flex items-center space-x-2 text-xl font-bold text-white">
             <svg class="w-6 h-6 text-oro-fiorentino" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
             </svg>
@@ -36,7 +38,7 @@ $earnings = $earnings ?? [
     </div>
 
     {{-- Earnings Grid --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {{-- Total Earnings --}}
         <x-stats.stat-card
             title="{{ __('creator.portfolio.earnings.total') }}"
@@ -88,7 +90,7 @@ $earnings = $earnings ?? [
 
     {{-- Performance Indicators --}}
     @if($earnings['total_earnings'] > 0)
-        <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div class="p-4 bg-gray-800 border border-gray-700 rounded-lg">
             <div class="flex items-center justify-between text-sm">
                 <div class="flex items-center space-x-2">
                     <div class="w-2 h-2 bg-green-400 rounded-full"></div>
@@ -101,14 +103,14 @@ $earnings = $earnings ?? [
             </div>
         </div>
     @else
-        <div class="bg-gray-800 border border-yellow-500/20 rounded-lg p-4">
+        <div class="p-4 bg-gray-800 border rounded-lg border-yellow-500/20">
             <div class="flex items-center space-x-3">
                 <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
                 <div>
-                    <p class="text-yellow-400 font-medium">{{ __('creator.portfolio.earnings.no_earnings_title') }}</p>
-                    <p class="text-gray-400 text-sm mt-1">{{ __('creator.portfolio.earnings.no_earnings_description') }}</p>
+                    <p class="font-medium text-yellow-400">{{ __('creator.portfolio.earnings.no_earnings_title') }}</p>
+                    <p class="mt-1 text-sm text-gray-400">{{ __('creator.portfolio.earnings.no_earnings_description') }}</p>
                 </div>
             </div>
         </div>

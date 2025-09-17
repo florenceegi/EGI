@@ -1,15 +1,17 @@
 @props([
     'creatorId' => null,
     'engagement' => null,
-    'size' => 'normal'
+    'size' => 'normal',
+    'period' => 'month'
 ])
 
 @php
-use App\Models\PaymentDistribution;
+use App\Services\StatisticsService;
 
-// Se non vengono passate le engagement stats, le calcola
+// Se non vengono passate le engagement stats, le calcola usando il periodo temporale
 if (!$engagement && $creatorId) {
-    $engagement = PaymentDistribution::getCreatorEngagementStats($creatorId);
+    $statisticsService = app(StatisticsService::class);
+    $engagement = $statisticsService->getCreatorEngagementStats($creatorId, $period);
 }
 
 // Fallback se non ci sono dati

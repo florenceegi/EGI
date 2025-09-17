@@ -292,7 +292,29 @@
                         </div>
                         <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ __('menu.gdpr_privacy') }}</h4>
                     </div>
+
                     <div class="space-y-2">
+                        {{-- Cookie Preferences Link --}}
+                        <button type="button"
+                            onclick="
+                                // Chiudi il menu mobile
+                                const mobileMenu = document.querySelector('[data-mobile-menu]');
+                                if (mobileMenu) {
+                                    mobileMenu.classList.add('hidden');
+                                }
+                                // Mostra il banner dei cookie
+                                if (window.cookieBannerManager?.showBanner) {
+                                    window.cookieBannerManager.showBanner();
+                                }
+                            "
+                            class="flex items-center w-full px-4 py-3 space-x-3 text-left text-gray-700 transition-colors dark:text-gray-200 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-xl mobile-nav-item">
+                            <div class="flex items-center justify-center w-8 h-8 text-white bg-yellow-500 rounded-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                                </svg>
+                            </div>
+                            <span class="font-medium">{{ __('gdpr.cookie.banner.preferences_title') }}</span>
+                        </button>
                         @can('manage_consents')
                             <a href="{{ route('gdpr.consent') }}" class="block px-2 py-1 text-sm text-gray-600 transition-colors duration-200 rounded-lg dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-black/20">
                                 {{ __('gdpr.menu.gdpr_center') }}

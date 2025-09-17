@@ -2,15 +2,17 @@
     'creatorId' => null,
     'collectionPerformance' => null,
     'limit' => 5,
-    'size' => 'normal'
+    'size' => 'normal',
+    'period' => 'month'
 ])
 
 @php
-use App\Models\PaymentDistribution;
+use App\Services\StatisticsService;
 
-// Se non vengono passate le performance, le calcola
+// Se non vengono passate le performance, le calcola usando il periodo temporale
 if (!$collectionPerformance && $creatorId) {
-    $collectionPerformance = PaymentDistribution::getCreatorCollectionPerformance($creatorId, $limit);
+    $statisticsService = app(StatisticsService::class);
+    $collectionPerformance = $statisticsService->getCreatorCollectionPerformance($creatorId, $period, $limit);
 }
 
 // Fallback se non ci sono dati
