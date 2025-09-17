@@ -6,7 +6,7 @@ $authType = $authType ?? App\Helpers\FegiAuth::getAuthType();
 
 $navLinkClasses = $isMobile
 ? 'text-gray-300 hover:bg-emerald-600/80 hover:text-white block px-3 py-2.5 rounded-md text-base font-medium transition-all duration-300'
-: 'text-gray-300 hover:text-white transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600/80';
+: 'text-gray-300 hover:text-emerald-400 hover:text-white transition-all duration-300 px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600/80';
 @endphp
 
 {{-- Home Link - Su mobile sempre visibile, su desktop solo se non siamo in home --}}

@@ -32,7 +32,7 @@
         {{ $heroFullWidth }}
     </div>
     @endisset
-    
+
     {{-- EGI Carousel Slot - Mobile First --}}
     @isset($egiCarousel)
     <div class="relative z-10 w-full" role="region" aria-label="Featured EGI Carousel">
@@ -50,7 +50,7 @@
 
     {{-- Contenuto sotto l'hero --}}
     <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
+        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
         {{ $belowHeroContent ?? '' }}
     </div>
 
@@ -62,13 +62,13 @@
 
     {{-- Contenuto sotto l'hero --}}
     <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
+        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
         {{ $belowHeroContent_1 ?? '' }}
     </div>
 
     <div class="relative z-10 w-full mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}"> 
-        
+        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
+
         {{ $belowHeroContent_2 ?? '' }}
     </div>
 
@@ -95,7 +95,7 @@
 @endisset
 
 <!-- Main Content -->
-<main id="main-content" role="main" class="flex-grow">
+<main id="main-content" role="main" class="flex-grow bg-gray-900">
     {{ $slot }}
 </main>
 
