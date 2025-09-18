@@ -206,15 +206,15 @@ Route::prefix('info')->name('info.')->group(function () {
     })->name('florence-egi');
 
     Route::get('/egi', function () {
-        return view('info.under-construction', ['title' => 'Cosa sono gli EGI?', 'subtitle' => 'Scopri come funzionano gli Environmental Generative Items']);
+        return view('info.under-construction', ['title' => 'Cosa sono gli EGI?', 'subtitle' => 'Scopri come funzionano gli EGI (Environmental Goods Invent)']);
     })->name('egi');
 
     Route::get('/attivare', function () {
-        return view('info.under-construction', ['title' => 'Come Attivare un EGI?', 'subtitle' => 'Guida step-by-step per attivare il tuo Environmental Generative Item']);
+        return view('info.under-construction', ['title' => 'Come co-creare un EGI?', 'subtitle' => 'Guida step-by-step per co-creare il tuo EGI (Environmental Goods Invent)']);
     })->name('attivare');
 
     Route::get('/impatto', function () {
-        return view('info.under-construction', ['title' => 'Che Impatto hanno gli EGI?', 'subtitle' => 'Scopri l\'impatto ambientale e sociale degli Environmental Generative Items']);
+        return view('info.under-construction', ['title' => 'Che Impatto hanno gli EGI?', 'subtitle' => 'Scopri l\'impatto ambientale e sociale degli EGI (Environmental Goods Invent)']);
     })->name('impatto');
 
     Route::get('/creator', function () {
@@ -222,7 +222,7 @@ Route::prefix('info')->name('info.')->group(function () {
     })->name('creator');
 
     Route::get('/attivatori', function () {
-        return view('info.under-construction', ['title' => 'Chi sono gli Attivatori?', 'subtitle' => 'Scopri il ruolo degli attivatori e come contribuiscono alla piattaforma']);
+        return view('info.under-construction', ['title' => 'Chi sono i Co Creator?', 'subtitle' => 'Scopri il ruolo dei Co Creator e come contribuiscono alla piattaforma']);
     })->name('attivatori');
 
     Route::get('/mecenati', function () {
@@ -236,6 +236,10 @@ Route::prefix('info')->name('info.')->group(function () {
     Route::get('/trader-pro', function () {
         return view('info.under-construction', ['title' => 'Trader Professionali', 'subtitle' => 'Scopri gli strumenti avanzati per il trading di EGI']);
     })->name('trader-pro');
+
+    Route::get('/epps', function () {
+        return view('info.under-construction', ['title' => 'Environmental Protection Project (EPP)', 'subtitle' => 'Scopri come gli EPP possono aiutare nella sostenibilità']);
+    })->name('epps');
 });
 /*
 |--------------------------------------------------------------------------

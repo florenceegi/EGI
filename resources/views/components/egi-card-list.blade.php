@@ -209,9 +209,21 @@ $showBadge = $showBadge ?? $showOwnershipBadge;
             <div class="flex flex-wrap items-center gap-4 mb-2 text-sm text-gray-400">
                 @if ($egi->collection)
                 <div class="flex items-center gap-1">
-                    <div
-                        class="w-3 h-3 rounded-full {{ $isHyper ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 'bg-gradient-to-r from-purple-500 to-blue-500' }}">
-                    </div>
+                    @php
+                        $collectionImageUrl = '';
+                        if (method_exists($egi->collection, 'getFirstMediaUrl')) {
+                            $collectionImageUrl = $egi->collection->getFirstMediaUrl('head', 'card');
+                        }
+                    @endphp
+                    @if($collectionImageUrl)
+                        <img src="{{ $collectionImageUrl }}" alt="{{ $egi->collection->collection_name }}"
+                            class="object-cover w-3 h-3 transition-transform duration-300 rounded-full hover:scale-110" loading="lazy"
+                            decoding="async">
+                    @else
+                        <div
+                            class="w-3 h-3 rounded-full {{ $isHyper ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 'bg-gradient-to-r from-purple-500 to-blue-500' }}">
+                        </div>
+                    @endif
                     <a href="{{ route('home.collections.show', $egi->collection->id) }}" class="transition-colors truncate max-w-[120px]
                         {{ $isHyper ? 'hover:text-yellow-400' : 'hover:text-purple-400' }}">
                         {{ $egi->collection->collection_name }}

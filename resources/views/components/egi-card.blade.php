@@ -403,9 +403,21 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
             @if ($egiCollection)
                 <div class="flex items-center gap-2 p-2 mb-2 border rounded-lg border-gray-700/50 bg-gray-800/50" data-collection-info>
                     <div class="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500">
-                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
-                        </svg>
+                        @php
+                            $collectionImageUrl = '';
+                            if (method_exists($egiCollection, 'getFirstMediaUrl')) {
+                                $collectionImageUrl = $egiCollection->getFirstMediaUrl('head', 'card');
+                            }
+                        @endphp
+                        @if($collectionImageUrl)
+                            <img src="{{ $collectionImageUrl }}" alt="{{ $egiCollection->collection_name }}"
+                                class="object-cover w-full h-full rounded-full transition-transform duration-300 group-hover:scale-105" loading="lazy"
+                                decoding="async">
+                        @else
+                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                            </svg>
+                        @endif
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-xs font-medium text-gray-300">{{ __('egi.collection.part_of') }}</span>

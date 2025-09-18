@@ -45,7 +45,7 @@ $navLinkClasses = $isMobile
 {{-- EPPs Link - Su mobile sempre visibile, su desktop solo se non siamo negli EPPs --}}
 @if ($isMobile || !request()->routeIs('epps.*'))
 {{-- Reindirizzato a pagina "work in progress" --}}
-<a href="{{ route('under_construction', ['key' => 'epps']) }}" class="{{ $navLinkClasses }}"
+<a href="{{ route('info.epps', ['key' => 'epps']) }}" class="{{ $navLinkClasses }}"
     aria-label="{{ __('guest_layout.' . ($isMobile ? 'mobile_' : '') . 'epps_link_aria_label') }}">
     {{ __('guest_layout.epps') }}
 </a>
@@ -99,7 +99,7 @@ $navLinkClasses = $isMobile
 @if(!$isMobile)
 {{-- Desktop Universal Search Trigger --}}
 <button type="button" class="{{ $navLinkClasses }} inline-flex items-center gap-1" aria-label="Apri ricerca avanzata" onclick="window.UniversalSearch ? window.UniversalSearch.open() : window.dispatchEvent(new CustomEvent('universal-search-open'))">
-    <span class="material-symbols-outlined text-base" aria-hidden="true">search</span>
+    <span class="text-base material-symbols-outlined" aria-hidden="true">search</span>
     <span>Cerca</span>
 </button>
 @endif
