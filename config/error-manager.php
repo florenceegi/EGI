@@ -3832,5 +3832,866 @@ return [
             'msg_to' => 'json',
         ],
 
+        // ====================================================
+        // COA SYSTEM ERRORS - Services Layer
+        // ====================================================
+
+        // SerialGenerator Service Errors
+        'COA_SERIAL_GENERATION_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_serial_generation_error',
+            'user_message_key' => 'error-manager::errors.user.coa_serial_generation_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_SERIAL_VALIDATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_serial_validation_error',
+            'user_message_key' => 'error-manager::errors.user.coa_serial_validation_error',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_SERIAL_UNIQUENESS_CHECK_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_serial_uniqueness_check_error',
+            'user_message_key' => 'error-manager::errors.user.coa_serial_uniqueness_check_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_SERIAL_PARSE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_serial_parse_error',
+            'user_message_key' => 'error-manager::errors.user.coa_serial_parse_error',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_SERIAL_STATISTICS_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_serial_statistics_error',
+            'user_message_key' => 'error-manager::errors.user.coa_serial_statistics_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_SERIAL_YEARS_QUERY_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_serial_years_query_error',
+            'user_message_key' => 'error-manager::errors.user.coa_serial_years_query_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // HashingService Errors
+        'COA_HASH_GENERATION_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_hash_generation_error',
+            'user_message_key' => 'error-manager::errors.user.coa_hash_generation_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_TRAITS_HASH_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_traits_hash_error',
+            'user_message_key' => 'error-manager::errors.user.coa_traits_hash_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_HASH_VERIFICATION_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_hash_verification_error',
+            'user_message_key' => 'error-manager::errors.user.coa_hash_verification_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_MULTI_HASH_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_multi_hash_error',
+            'user_message_key' => 'error-manager::errors.user.coa_multi_hash_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_MULTI_HASH_VERIFICATION_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_multi_hash_verification_error',
+            'user_message_key' => 'error-manager::errors.user.coa_multi_hash_verification_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_FILE_HASH_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_file_hash_error',
+            'user_message_key' => 'error-manager::errors.user.coa_file_hash_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_HASH_FORMAT_VALIDATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_hash_format_validation_error',
+            'user_message_key' => 'error-manager::errors.user.coa_hash_format_validation_error',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // SignatureService Errors
+        'COA_DIGITAL_SIGNATURE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_digital_signature_error',
+            'user_message_key' => 'error-manager::errors.user.coa_digital_signature_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_PHYSICAL_SIGNATURE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_physical_signature_error',
+            'user_message_key' => 'error-manager::errors.user.coa_physical_signature_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_DIGITAL_SIGNATURE_VERIFY_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_digital_signature_verify_error',
+            'user_message_key' => 'error-manager::errors.user.coa_digital_signature_verify_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_GET_SIGNATURES_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_get_signatures_error',
+            'user_message_key' => 'error-manager::errors.user.coa_get_signatures_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // TraitsSnapshotService Errors
+        'COA_TRAITS_VERSION_CREATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_traits_version_create_error',
+            'user_message_key' => 'error-manager::errors.user.coa_traits_version_create_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_SNAPSHOT_CREATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_snapshot_create_error',
+            'user_message_key' => 'error-manager::errors.user.coa_snapshot_create_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_SNAPSHOT_INTEGRITY_CHECK_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_snapshot_integrity_check_error',
+            'user_message_key' => 'error-manager::errors.user.coa_snapshot_integrity_check_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // CoaIssueService Errors
+        'COA_ISSUE_CERTIFICATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_issue_certificate_error',
+            'user_message_key' => 'error-manager::errors.user.coa_issue_certificate_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_REISSUE_CERTIFICATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_reissue_certificate_error',
+            'user_message_key' => 'error-manager::errors.user.coa_reissue_certificate_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_ISSUE_VALIDATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_issue_validation_error',
+            'user_message_key' => 'error-manager::errors.user.coa_issue_validation_error',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // CoaRevocationService Errors
+        'COA_REVOKE_CERTIFICATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_revoke_certificate_error',
+            'user_message_key' => 'error-manager::errors.user.coa_revoke_certificate_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_REVOKE_VALIDATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_revoke_validation_error',
+            'user_message_key' => 'error-manager::errors.user.coa_revoke_validation_error',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_REVOKE_HISTORY_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_revoke_history_error',
+            'user_message_key' => 'error-manager::errors.user.coa_revoke_history_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_BATCH_REVOKE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_batch_revoke_error',
+            'user_message_key' => 'error-manager::errors.user.coa_batch_revoke_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // AnnexService Errors
+        'COA_ANNEX_CREATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_annex_create_error',
+            'user_message_key' => 'error-manager::errors.user.coa_annex_create_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_ANNEX_UPDATE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_annex_update_error',
+            'user_message_key' => 'error-manager::errors.user.coa_annex_update_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_GET_ANNEXES_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_get_annexes_error',
+            'user_message_key' => 'error-manager::errors.user.coa_get_annexes_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // BundleService Errors
+        'COA_BUNDLE_CREATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_bundle_create_error',
+            'user_message_key' => 'error-manager::errors.user.coa_bundle_create_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_BUNDLE_ESTIMATE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_bundle_estimate_error',
+            'user_message_key' => 'error-manager::errors.user.coa_bundle_estimate_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // CoaAddendumService Errors
+        'COA_ADDENDUM_CREATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_addendum_create_error',
+            'user_message_key' => 'error-manager::errors.user.coa_addendum_create_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_POLICY_CREATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_policy_create_error',
+            'user_message_key' => 'error-manager::errors.user.coa_policy_create_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_GET_ADDENDUMS_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_get_addendums_error',
+            'user_message_key' => 'error-manager::errors.user.coa_get_addendums_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_GET_POLICIES_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_get_policies_error',
+            'user_message_key' => 'error-manager::errors.user.coa_get_policies_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_ADDENDUM_INTEGRITY_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_addendum_integrity_error',
+            'user_message_key' => 'error-manager::errors.user.coa_addendum_integrity_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_POLICY_INTEGRITY_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_policy_integrity_error',
+            'user_message_key' => 'error-manager::errors.user.coa_policy_integrity_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // VerifyPageService Errors
+        'VERIFY_DATA_GENERATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_data_generation_error',
+            'user_message_key' => 'error-manager::errors.user.verify_data_generation_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'VERIFY_PAGE_GENERATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_page_generation_error',
+            'user_message_key' => 'error-manager::errors.user.verify_page_generation_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'VERIFY_PUBLIC_ANNEXES_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_public_annexes_error',
+            'user_message_key' => 'error-manager::errors.user.verify_public_annexes_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'VERIFY_QR_GENERATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_qr_generation_error',
+            'user_message_key' => 'error-manager::errors.user.verify_qr_generation_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // ====================================================
+        // COA SYSTEM ERRORS - Base Controllers
+        // ====================================================
+
+        // CoaController Errors
+        'COA_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_index_error',
+            'user_message_key' => 'error-manager::errors.user.coa_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_SHOW_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_show_error',
+            'user_message_key' => 'error-manager::errors.user.coa_show_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_ISSUE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_issue_error',
+            'user_message_key' => 'error-manager::errors.user.coa_issue_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_REISSUE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_reissue_error',
+            'user_message_key' => 'error-manager::errors.user.coa_reissue_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_REVOKE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_revoke_error',
+            'user_message_key' => 'error-manager::errors.user.coa_revoke_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_BUNDLE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_bundle_error',
+            'user_message_key' => 'error-manager::errors.user.coa_bundle_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'COA_STATISTICS_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.coa_statistics_error',
+            'user_message_key' => 'error-manager::errors.user.coa_statistics_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // VerifyController Errors
+        'VERIFY_CERTIFICATE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_certificate_error',
+            'user_message_key' => 'error-manager::errors.user.verify_certificate_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'VERIFY_PAGE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_page_error',
+            'user_message_key' => 'error-manager::errors.user.verify_page_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'VERIFY_HASH_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_hash_error',
+            'user_message_key' => 'error-manager::errors.user.verify_hash_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'VERIFY_ANNEXES_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_annexes_error',
+            'user_message_key' => 'error-manager::errors.user.verify_annexes_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'VERIFY_QR_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_qr_error',
+            'user_message_key' => 'error-manager::errors.user.verify_qr_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'VERIFY_BATCH_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.verify_batch_error',
+            'user_message_key' => 'error-manager::errors.user.verify_batch_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'VERIFY_STATS_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.verify_stats_error',
+            'user_message_key' => 'error-manager::errors.user.verify_stats_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // AnnexController Errors
+        'ANNEX_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.annex_index_error',
+            'user_message_key' => 'error-manager::errors.user.annex_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ANNEX_SHOW_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.annex_show_error',
+            'user_message_key' => 'error-manager::errors.user.annex_show_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ANNEX_CREATE_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.annex_create_error',
+            'user_message_key' => 'error-manager::errors.user.annex_create_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ANNEX_UPDATE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.annex_update_error',
+            'user_message_key' => 'error-manager::errors.user.annex_update_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ANNEX_HISTORY_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.annex_history_error',
+            'user_message_key' => 'error-manager::errors.user.annex_history_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ANNEX_INTEGRITY_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.annex_integrity_error',
+            'user_message_key' => 'error-manager::errors.user.annex_integrity_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ANNEX_TYPES_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.annex_types_error',
+            'user_message_key' => 'error-manager::errors.user.annex_types_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // ====================================================
+        // COA PRO SYSTEM ERRORS - Addendum Controller
+        // ====================================================
+
+        'ADDENDUM_LIST_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_list_error',
+            'user_message_key' => 'error-manager::errors.user.addendum_list_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_NOT_FOUND' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_not_found',
+            'user_message_key' => 'error-manager::errors.user.addendum_not_found',
+            'http_status_code' => 404,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_DETAIL_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_detail_error',
+            'user_message_key' => 'error-manager::errors.user.addendum_detail_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_CREATION_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_creation_error',
+            'user_message_key' => 'error-manager::errors.user.addendum_creation_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_NOT_EDITABLE' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_not_editable',
+            'user_message_key' => 'error-manager::errors.user.addendum_not_editable',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_UPDATE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_update_error',
+            'user_message_key' => 'error-manager::errors.user.addendum_update_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_NOT_REVISABLE' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_not_revisable',
+            'user_message_key' => 'error-manager::errors.user.addendum_not_revisable',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_REVISION_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_revision_error',
+            'user_message_key' => 'error-manager::errors.user.addendum_revision_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_NOT_PUBLISHABLE' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_not_publishable',
+            'user_message_key' => 'error-manager::errors.user.addendum_not_publishable',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_PUBLISH_ERROR' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_publish_error',
+            'user_message_key' => 'error-manager::errors.user.addendum_publish_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_HISTORY_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_history_error',
+            'user_message_key' => 'error-manager::errors.user.addendum_history_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'ADDENDUM_ARCHIVE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.addendum_archive_error',
+            'user_message_key' => 'error-manager::errors.user.addendum_archive_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'RARITY_POLICIES_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.rarity_policies_error',
+            'user_message_key' => 'error-manager::errors.user.rarity_policies_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
     ]
 ];
