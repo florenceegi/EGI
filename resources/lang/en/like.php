@@ -21,4 +21,20 @@ return [
     'unlike_error_title' => 'Error Unliking EGI',
     'unlike_error_message' => 'An error occurred while trying to unlike this EGI. Please try again later.',
 
+    // Toast notifications
+    'toast' => [
+        'egi' => [
+            'liked_title' => 'EGI Liked!',
+            'liked_message' => 'You liked "{name}"',
+            'unliked_title' => 'EGI Unliked',
+            'unliked_message' => 'You unliked "{name}"',
+        ],
+        'collection' => [
+            'liked_title' => 'Collection Liked!',
+            'liked_message' => 'You liked the collection "{name}"',
+            'unliked_title' => 'Collection Unliked',
+            'unliked_message' => 'You unliked the collection "{name}"',
+        ],
+    ],
+
 ];

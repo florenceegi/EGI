@@ -21,4 +21,25 @@ return [
     'unlike_error_title' => 'Errore nella rimozione dai preferiti',
     'unlike_error_message' => 'Si è verificato un errore durante il tentativo di rimuovere questo EGI dai preferiti. Riprova più tardi.',
 
+    // Traduzioni componente like-button
+    'add_to_favorites' => 'Aggiungi ai preferiti',
+    'remove_from_favorites' => 'Rimuovi dai preferiti',
+    'likes_count' => ':count like|:count likes',
+
+    // Toast notifications
+    'toast' => [
+        'egi' => [
+            'liked_title' => 'EGI aggiunto ai preferiti!',
+            'liked_message' => 'Hai aggiunto "{name}" ai preferiti',
+            'unliked_title' => 'EGI rimosso dai preferiti',
+            'unliked_message' => 'Hai rimosso "{name}" dai preferiti',
+        ],
+        'collection' => [
+            'liked_title' => 'Collezione aggiunta ai preferiti!',
+            'liked_message' => 'Hai aggiunto la collezione "{name}" ai preferiti',
+            'unliked_title' => 'Collezione rimossa dai preferiti',
+            'unliked_message' => 'Hai rimosso la collezione "{name}" dai preferiti',
+        ],
+    ],
+
 ];

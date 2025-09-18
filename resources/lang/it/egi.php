@@ -24,6 +24,9 @@ return [
 
     // Azioni Principali
     'like_button_title' => 'Aggiungi ai Preferiti',
+    'unlike_button_title' => 'Rimuovi dai Preferiti',
+    'like_button_aria' => 'Aggiungi questo EGI ai tuoi preferiti',
+    'unlike_button_aria' => 'Rimuovi questo EGI dai tuoi preferiti',
     'share_button_title' => 'Condividi questo EGI',
     'current_price' => 'Prezzo Attuale',
     'not_currently_listed' => 'Da Attivare',
