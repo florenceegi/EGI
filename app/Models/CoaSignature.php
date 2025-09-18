@@ -26,8 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $signature_base64 Base64 encoded signature
  * @property \Carbon\Carbon $created_at
  */
-class CoaSignature extends Model
-{
+class CoaSignature extends Model {
     use HasFactory;
 
     /**
@@ -80,8 +79,7 @@ class CoaSignature extends Model
     /**
      * Get the CoA this signature belongs to
      */
-    public function coa(): BelongsTo
-    {
+    public function coa(): BelongsTo {
         return $this->belongsTo(Coa::class);
     }
 
@@ -92,56 +90,49 @@ class CoaSignature extends Model
     /**
      * Scope for QES signatures
      */
-    public function scopeQes($query)
-    {
+    public function scopeQes($query) {
         return $query->where('kind', self::KIND_QES);
     }
 
     /**
      * Scope for wallet signatures
      */
-    public function scopeWallet($query)
-    {
+    public function scopeWallet($query) {
         return $query->where('kind', self::KIND_WALLET);
     }
 
     /**
      * Scope for autograph scan signatures
      */
-    public function scopeAutographScan($query)
-    {
+    public function scopeAutographScan($query) {
         return $query->where('kind', self::KIND_AUTOGRAPH_SCAN);
     }
 
     /**
      * Check if this is a QES signature
      */
-    public function isQes(): bool
-    {
+    public function isQes(): bool {
         return $this->kind === self::KIND_QES;
     }
 
     /**
      * Check if this is a wallet signature
      */
-    public function isWallet(): bool
-    {
+    public function isWallet(): bool {
         return $this->kind === self::KIND_WALLET;
     }
 
     /**
      * Check if this is an autograph scan
      */
-    public function isAutographScan(): bool
-    {
+    public function isAutographScan(): bool {
         return $this->kind === self::KIND_AUTOGRAPH_SCAN;
     }
 
     /**
      * Get signature algorithm from payload
      */
-    public function getAlgorithm(): ?string
-    {
+    public function getAlgorithm(): ?string {
         if ($this->isWallet() && isset($this->payload['algo'])) {
             return $this->payload['algo'];
         }
@@ -156,8 +147,7 @@ class CoaSignature extends Model
     /**
      * Get signature timestamp from payload
      */
-    public function getSignatureTimestamp(): ?\Carbon\Carbon
-    {
+    public function getSignatureTimestamp(): ?\Carbon\Carbon {
         if (isset($this->payload['timestamp'])) {
             return \Carbon\Carbon::parse($this->payload['timestamp']);
         }
@@ -168,8 +158,7 @@ class CoaSignature extends Model
     /**
      * Get human readable signature info
      */
-    public function getDisplayInfo(): string
-    {
+    public function getDisplayInfo(): string {
         switch ($this->kind) {
             case self::KIND_QES:
                 return "QES ({$this->provider})";

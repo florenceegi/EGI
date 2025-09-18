@@ -10,8 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CoaSnapshot>
  */
-class CoaSnapshotFactory extends Factory
-{
+class CoaSnapshotFactory extends Factory {
     protected $model = CoaSnapshot::class;
 
     /**
@@ -19,8 +18,7 @@ class CoaSnapshotFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'coa_id' => Coa::factory(),
             'traits_version_id' => EgiTraitsVersion::factory(),
@@ -33,8 +31,7 @@ class CoaSnapshotFactory extends Factory
     /**
      * Generate realistic traits data for testing.
      */
-    private function generateTraitsData(): array
-    {
+    private function generateTraitsData(): array {
         return [
             'title' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(),
@@ -60,9 +57,8 @@ class CoaSnapshotFactory extends Factory
     /**
      * Create snapshot with specific traits data.
      */
-    public function withTraitsData(array $data): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function withTraitsData(array $data): static {
+        return $this->state(fn(array $attributes) => [
             'traits_data' => $data,
             'traits_hash' => hash('sha256', json_encode($data)),
         ]);
@@ -71,9 +67,8 @@ class CoaSnapshotFactory extends Factory
     /**
      * Create snapshot with custom hash.
      */
-    public function withHash(string $hash): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function withHash(string $hash): static {
+        return $this->state(fn(array $attributes) => [
             'traits_hash' => $hash,
         ]);
     }

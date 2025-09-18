@@ -25,8 +25,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $actor_id Platform user who performed the action
  * @property \Carbon\Carbon $created_at
  */
-class CoaEvent extends Model
-{
+class CoaEvent extends Model {
     use HasFactory, HasUlids;
 
     /**
@@ -73,16 +72,14 @@ class CoaEvent extends Model
     /**
      * Get the CoA this event belongs to
      */
-    public function coa(): BelongsTo
-    {
+    public function coa(): BelongsTo {
         return $this->belongsTo(Coa::class);
     }
 
     /**
      * Get the user who performed this action
      */
-    public function actor(): BelongsTo
-    {
+    public function actor(): BelongsTo {
         return $this->belongsTo(User::class, 'actor_id');
     }
 
@@ -93,32 +90,28 @@ class CoaEvent extends Model
     /**
      * Scope for specific event type
      */
-    public function scopeOfType($query, string $type)
-    {
+    public function scopeOfType($query, string $type) {
         return $query->where('type', $type);
     }
 
     /**
      * Scope for timeline (chronological order)
      */
-    public function scopeTimeline($query)
-    {
+    public function scopeTimeline($query) {
         return $query->orderBy('created_at', 'asc');
     }
 
     /**
      * Scope for recent events
      */
-    public function scopeRecent($query, int $days = 30)
-    {
+    public function scopeRecent($query, int $days = 30) {
         return $query->where('created_at', '>=', now()->subDays($days));
     }
 
     /**
      * Create event for CoA issuance
      */
-    public static function createIssued(string $coaId, ?int $actorId = null, array $details = []): self
-    {
+    public static function createIssued(string $coaId, ?int $actorId = null, array $details = []): self {
         return static::create([
             'coa_id' => $coaId,
             'type' => self::TYPE_ISSUED,
@@ -134,8 +127,7 @@ class CoaEvent extends Model
     /**
      * Create event for CoA revocation
      */
-    public static function createRevoked(string $coaId, string $reason, ?int $actorId = null): self
-    {
+    public static function createRevoked(string $coaId, string $reason, ?int $actorId = null): self {
         return static::create([
             'coa_id' => $coaId,
             'type' => self::TYPE_REVOKED,
@@ -202,15 +194,14 @@ class CoaEvent extends Model
     /**
      * Get human readable event description
      */
-    public function getDisplayDescription(): string
-    {
+    public function getDisplayDescription(): string {
         $actorName = $this->actor?->name ?? 'System';
 
         return match ($this->type) {
             self::TYPE_ISSUED => "CoA issued by {$actorName}",
             self::TYPE_REVOKED => "CoA revoked by {$actorName}: " . ($this->payload['reason'] ?? 'No reason provided'),
             self::TYPE_ANNEX_ADDED => "Annex {$this->payload['code']} v{$this->payload['version']} added by {$actorName}",
-            self::TYPE_ADDENDUM_ISSUED => "Addendum issued by {$actorName}" . 
+            self::TYPE_ADDENDUM_ISSUED => "Addendum issued by {$actorName}" .
                 ($this->payload['note'] ? ": {$this->payload['note']}" : ''),
             default => "Event {$this->type} by {$actorName}",
         };
@@ -219,8 +210,7 @@ class CoaEvent extends Model
     /**
      * Get event icon for UI
      */
-    public function getIcon(): string
-    {
+    public function getIcon(): string {
         return match ($this->type) {
             self::TYPE_ISSUED => '✅',
             self::TYPE_REVOKED => '❌',
@@ -233,8 +223,7 @@ class CoaEvent extends Model
     /**
      * Get event color class for UI
      */
-    public function getColorClass(): string
-    {
+    public function getColorClass(): string {
         return match ($this->type) {
             self::TYPE_ISSUED => 'text-green-600',
             self::TYPE_REVOKED => 'text-red-600',
@@ -247,8 +236,7 @@ class CoaEvent extends Model
     /**
      * Check if this event affects CoA validity
      */
-    public function affectsValidity(): bool
-    {
+    public function affectsValidity(): bool {
         return in_array($this->type, [self::TYPE_ISSUED, self::TYPE_REVOKED]);
     }
 }

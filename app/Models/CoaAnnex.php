@@ -30,8 +30,7 @@ use Illuminate\Support\Facades\Storage;
  * @property int|null $created_by Who created this version
  * @property \Carbon\Carbon $created_at
  */
-class CoaAnnex extends Model
-{
+class CoaAnnex extends Model {
     use HasFactory, HasUlids;
 
     /**
@@ -95,16 +94,14 @@ class CoaAnnex extends Model
     /**
      * Get the CoA this annex belongs to
      */
-    public function coa(): BelongsTo
-    {
+    public function coa(): BelongsTo {
         return $this->belongsTo(Coa::class);
     }
 
     /**
      * Get the user who created this annex version
      */
-    public function creator(): BelongsTo
-    {
+    public function creator(): BelongsTo {
         return $this->belongsTo(User::class, 'created_by');
     }
 
@@ -115,8 +112,7 @@ class CoaAnnex extends Model
     /**
      * Scope for latest version of each annex type
      */
-    public function scopeLatestVersions($query)
-    {
+    public function scopeLatestVersions($query) {
         return $query->whereIn('id', function ($subQuery) {
             $subQuery->select('id')
                 ->from('coa_annexes')
@@ -130,32 +126,28 @@ class CoaAnnex extends Model
     /**
      * Scope for specific annex code
      */
-    public function scopeOfCode($query, string $code)
-    {
+    public function scopeOfCode($query, string $code) {
         return $query->where('code', $code);
     }
 
     /**
      * Scope for critical annexes (require re-issue)
      */
-    public function scopeCritical($query)
-    {
+    public function scopeCritical($query) {
         return $query->whereIn('code', self::CRITICAL_CODES);
     }
 
     /**
      * Scope for addendum-allowed annexes
      */
-    public function scopeAddendumAllowed($query)
-    {
+    public function scopeAddendumAllowed($query) {
         return $query->whereIn('code', self::ADDENDUM_CODES);
     }
 
     /**
      * Get next version number for this annex code
      */
-    public static function getNextVersion(string $coaId, string $code): int
-    {
+    public static function getNextVersion(string $coaId, string $code): int {
         $latest = static::where('coa_id', $coaId)
             ->where('code', $code)
             ->orderBy('version', 'desc')
@@ -167,24 +159,21 @@ class CoaAnnex extends Model
     /**
      * Check if this annex is critical (requires re-issue)
      */
-    public function isCritical(): bool
-    {
+    public function isCritical(): bool {
         return in_array($this->code, self::CRITICAL_CODES);
     }
 
     /**
      * Check if this annex allows addendum updates
      */
-    public function allowsAddendum(): bool
-    {
+    public function allowsAddendum(): bool {
         return in_array($this->code, self::ADDENDUM_CODES);
     }
 
     /**
      * Get human readable annex name
      */
-    public function getDisplayName(): string
-    {
+    public function getDisplayName(): string {
         return match ($this->code) {
             self::CODE_PROVENANCE => 'Provenance',
             self::CODE_CONDITION => 'Condition Report',
@@ -197,8 +186,7 @@ class CoaAnnex extends Model
     /**
      * Get human readable file size
      */
-    public function getHumanSizeAttribute(): string
-    {
+    public function getHumanSizeAttribute(): string {
         if (!$this->bytes) {
             return 'Unknown size';
         }
@@ -218,24 +206,21 @@ class CoaAnnex extends Model
     /**
      * Check if file exists in storage
      */
-    public function exists(): bool
-    {
+    public function exists(): bool {
         return Storage::exists($this->path);
     }
 
     /**
      * Get file URL for download
      */
-    public function getUrl(): string
-    {
+    public function getUrl(): string {
         return Storage::url($this->path);
     }
 
     /**
      * Verify file integrity against stored hash
      */
-    public function verifyIntegrity(): bool
-    {
+    public function verifyIntegrity(): bool {
         if (!$this->exists()) {
             return false;
         }

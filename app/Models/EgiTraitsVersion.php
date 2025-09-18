@@ -24,8 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $created_by Who created this version
  * @property \Carbon\Carbon $created_at
  */
-class EgiTraitsVersion extends Model
-{
+class EgiTraitsVersion extends Model {
     use HasFactory;
 
     /**
@@ -64,16 +63,14 @@ class EgiTraitsVersion extends Model
     /**
      * Get the EGI this version belongs to
      */
-    public function egi(): BelongsTo
-    {
+    public function egi(): BelongsTo {
         return $this->belongsTo(Egi::class);
     }
 
     /**
      * Get the user who created this version
      */
-    public function creator(): BelongsTo
-    {
+    public function creator(): BelongsTo {
         return $this->belongsTo(User::class, 'created_by');
     }
 
@@ -84,16 +81,14 @@ class EgiTraitsVersion extends Model
     /**
      * Scope for getting latest version
      */
-    public function scopeLatest($query)
-    {
+    public function scopeLatest($query) {
         return $query->orderBy('version', 'desc');
     }
 
     /**
      * Get next version number for an EGI
      */
-    public static function getNextVersion(int $egiId): int
-    {
+    public static function getNextVersion(int $egiId): int {
         $latest = static::where('egi_id', $egiId)
             ->orderBy('version', 'desc')
             ->first();
@@ -104,8 +99,7 @@ class EgiTraitsVersion extends Model
     /**
      * Create new version for EGI traits
      */
-    public static function createVersion(int $egiId, array $traitsData, ?int $createdBy = null): self
-    {
+    public static function createVersion(int $egiId, array $traitsData, ?int $createdBy = null): self {
         return static::create([
             'egi_id' => $egiId,
             'version' => static::getNextVersion($egiId),
@@ -118,8 +112,7 @@ class EgiTraitsVersion extends Model
     /**
      * Compare traits with another version
      */
-    public function compareWith(EgiTraitsVersion $otherVersion): array
-    {
+    public function compareWith(EgiTraitsVersion $otherVersion): array {
         $currentTraits = $this->traits_json;
         $otherTraits = $otherVersion->traits_json;
 
@@ -135,8 +128,7 @@ class EgiTraitsVersion extends Model
     /**
      * Get trait changes summary
      */
-    public function getChangesSummary(): string
-    {
+    public function getChangesSummary(): string {
         if ($this->version === 1) {
             return 'Initial version';
         }

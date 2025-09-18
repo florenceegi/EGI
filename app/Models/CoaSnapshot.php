@@ -22,8 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array $snapshot_json Frozen snapshot data
  * @property \Carbon\Carbon $created_at
  */
-class CoaSnapshot extends Model
-{
+class CoaSnapshot extends Model {
     use HasFactory;
 
     /**
@@ -59,8 +58,7 @@ class CoaSnapshot extends Model
     /**
      * Get the CoA this snapshot belongs to
      */
-    public function coa(): BelongsTo
-    {
+    public function coa(): BelongsTo {
         return $this->belongsTo(Coa::class);
     }
 
@@ -71,48 +69,42 @@ class CoaSnapshot extends Model
     /**
      * Get work information from snapshot
      */
-    public function getWork(): array
-    {
+    public function getWork(): array {
         return $this->snapshot_json['work'] ?? [];
     }
 
     /**
      * Get traits information from snapshot
      */
-    public function getTraits(): array
-    {
+    public function getTraits(): array {
         return $this->snapshot_json['traits'] ?? [];
     }
 
     /**
      * Get images information from snapshot
      */
-    public function getImages(): array
-    {
+    public function getImages(): array {
         return $this->snapshot_json['images'] ?? [];
     }
 
     /**
      * Get issuer information from snapshot
      */
-    public function getIssuer(): array
-    {
+    public function getIssuer(): array {
         return $this->snapshot_json['issuer'] ?? [];
     }
 
     /**
      * Get declaration from snapshot
      */
-    public function getDeclaration(): ?string
-    {
+    public function getDeclaration(): ?string {
         return $this->snapshot_json['declaration'] ?? null;
     }
 
     /**
      * Get serial from snapshot
      */
-    public function getSerial(): ?string
-    {
+    public function getSerial(): ?string {
         return $this->snapshot_json['serial'] ?? null;
     }
 }

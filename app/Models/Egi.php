@@ -241,7 +241,7 @@ class Egi extends Model {
 
     /**
      * 🔗 CoA: An EGI can have multiple Certificates of Authenticity
-     * 
+     *
      * @return HasMany
      */
     public function coas(): HasMany {
@@ -250,7 +250,7 @@ class Egi extends Model {
 
     /**
      * 🔗 CoA: Get the active (valid) CoA for this EGI
-     * 
+     *
      * @return HasOne
      */
     public function activeCoa(): HasOne {
@@ -259,7 +259,7 @@ class Egi extends Model {
 
     /**
      * 🔗 CoA: Get traits version history for this EGI
-     * 
+     *
      * @return HasMany
      */
     public function traitsVersions(): HasMany {
@@ -629,16 +629,14 @@ class Egi extends Model {
     /**
      * Check if this EGI has any valid CoA
      */
-    public function hasValidCoa(): bool
-    {
+    public function hasValidCoa(): bool {
         return $this->coas()->where('status', 'valid')->exists();
     }
 
     /**
      * Get the latest valid CoA
      */
-    public function getLatestValidCoa(): ?Coa
-    {
+    public function getLatestValidCoa(): ?Coa {
         return $this->activeCoa;
     }
 
@@ -646,24 +644,21 @@ class Egi extends Model {
      * Check if this EGI can have a new CoA issued
      * (business rule: only one valid CoA at a time)
      */
-    public function canIssueNewCoa(): bool
-    {
+    public function canIssueNewCoa(): bool {
         return !$this->hasValidCoa();
     }
 
     /**
      * Get CoA count for this EGI
      */
-    public function getCoaCount(): int
-    {
+    public function getCoaCount(): int {
         return $this->coas()->count();
     }
 
     /**
      * Get valid CoA count for this EGI
      */
-    public function getValidCoaCount(): int
-    {
+    public function getValidCoaCount(): int {
         return $this->coas()->where('status', 'valid')->count();
     }
 

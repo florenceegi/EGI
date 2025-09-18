@@ -31,8 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property \Carbon\Carbon|null $revoked_at Revocation timestamp
  * @property string|null $revoke_reason Reason for revocation
  */
-class Coa extends Model
-{
+class Coa extends Model {
     use HasFactory, HasUlids;
 
     /**
@@ -75,48 +74,42 @@ class Coa extends Model
     /**
      * Get the EGI this CoA belongs to
      */
-    public function egi(): BelongsTo
-    {
+    public function egi(): BelongsTo {
         return $this->belongsTo(Egi::class);
     }
 
     /**
      * Get the immutable snapshot for this CoA
      */
-    public function snapshot(): HasOne
-    {
+    public function snapshot(): HasOne {
         return $this->hasOne(CoaSnapshot::class);
     }
 
     /**
      * Get all files associated with this CoA
      */
-    public function files(): HasMany
-    {
+    public function files(): HasMany {
         return $this->hasMany(CoaFile::class);
     }
 
     /**
      * Get all signatures for this CoA
      */
-    public function signatures(): HasMany
-    {
+    public function signatures(): HasMany {
         return $this->hasMany(CoaSignature::class);
     }
 
     /**
      * Get all annexes for this CoA (Pro feature)
      */
-    public function annexes(): HasMany
-    {
+    public function annexes(): HasMany {
         return $this->hasMany(CoaAnnex::class);
     }
 
     /**
      * Get all events for this CoA (Pro feature)
      */
-    public function events(): HasMany
-    {
+    public function events(): HasMany {
         return $this->hasMany(CoaEvent::class)->orderBy('created_at', 'desc');
     }
 
@@ -127,40 +120,35 @@ class Coa extends Model
     /**
      * Scope for valid CoAs
      */
-    public function scopeValid($query)
-    {
+    public function scopeValid($query) {
         return $query->where('status', 'valid');
     }
 
     /**
      * Scope for revoked CoAs
      */
-    public function scopeRevoked($query)
-    {
+    public function scopeRevoked($query) {
         return $query->where('status', 'revoked');
     }
 
     /**
      * Check if CoA is valid
      */
-    public function isValid(): bool
-    {
+    public function isValid(): bool {
         return $this->status === 'valid';
     }
 
     /**
      * Check if CoA is revoked
      */
-    public function isRevoked(): bool
-    {
+    public function isRevoked(): bool {
         return $this->status === 'revoked';
     }
 
     /**
      * Get the main PDF file (core_pdf or pdf)
      */
-    public function getMainPdf(): ?CoaFile
-    {
+    public function getMainPdf(): ?CoaFile {
         return $this->files()
             ->whereIn('kind', ['core_pdf', 'pdf'])
             ->orderByRaw("CASE WHEN kind = 'core_pdf' THEN 1 ELSE 2 END")
@@ -170,8 +158,7 @@ class Coa extends Model
     /**
      * Get the bundle PDF file (if exists)
      */
-    public function getBundlePdf(): ?CoaFile
-    {
+    public function getBundlePdf(): ?CoaFile {
         return $this->files()->where('kind', 'bundle_pdf')->first();
     }
 }

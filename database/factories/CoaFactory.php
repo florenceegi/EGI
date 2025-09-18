@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Coa>
  */
-class CoaFactory extends Factory
-{
+class CoaFactory extends Factory {
     protected $model = Coa::class;
 
     /**
@@ -18,11 +17,10 @@ class CoaFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition(): array
-    {
+    public function definition(): array {
         $year = $this->faker->year();
         $counter = $this->faker->numberBetween(1, 999);
-        
+
         return [
             'egi_id' => Egi::factory(),
             'serial' => sprintf('COA-EGI-%s-%06d', $year, $counter),
@@ -39,9 +37,8 @@ class CoaFactory extends Factory
     /**
      * Indicate that the CoA is revoked.
      */
-    public function revoked(string $reason = 'Test revocation'): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function revoked(string $reason = 'Test revocation'): static {
+        return $this->state(fn(array $attributes) => [
             'status' => 'revoked',
             'revoked_at' => $this->faker->dateTimeBetween($attributes['issued_at'], 'now'),
             'revoke_reason' => $reason,
@@ -51,9 +48,8 @@ class CoaFactory extends Factory
     /**
      * Set specific issuer type.
      */
-    public function issuerType(string $type): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function issuerType(string $type): static {
+        return $this->state(fn(array $attributes) => [
             'issuer_type' => $type,
         ]);
     }
@@ -61,9 +57,8 @@ class CoaFactory extends Factory
     /**
      * Set specific serial format.
      */
-    public function withSerial(string $serial): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function withSerial(string $serial): static {
+        return $this->state(fn(array $attributes) => [
             'serial' => $serial,
         ]);
     }

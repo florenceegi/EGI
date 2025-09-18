@@ -22,7 +22,7 @@ class CoaSignatureFactory extends Factory
     public function definition(): array
     {
         $type = $this->faker->randomElement(['digital', 'physical']);
-        
+
         return [
             'coa_id' => Coa::factory(),
             'user_id' => User::factory(),

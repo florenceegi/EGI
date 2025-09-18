@@ -26,8 +26,7 @@ use Illuminate\Support\Facades\Storage;
  * @property int|null $bytes File size in bytes
  * @property \Carbon\Carbon $created_at
  */
-class CoaFile extends Model
-{
+class CoaFile extends Model {
     use HasFactory;
 
     /**
@@ -79,8 +78,7 @@ class CoaFile extends Model
     /**
      * Get the CoA this file belongs to
      */
-    public function coa(): BelongsTo
-    {
+    public function coa(): BelongsTo {
         return $this->belongsTo(Coa::class);
     }
 
@@ -91,8 +89,7 @@ class CoaFile extends Model
     /**
      * Scope for PDF files
      */
-    public function scopePdfs($query)
-    {
+    public function scopePdfs($query) {
         return $query->whereIn('kind', [
             self::KIND_PDF,
             self::KIND_CORE_PDF,
@@ -103,8 +100,7 @@ class CoaFile extends Model
     /**
      * Scope for image files
      */
-    public function scopeImages($query)
-    {
+    public function scopeImages($query) {
         return $query->whereIn('kind', [
             self::KIND_IMAGE_FRONT,
             self::KIND_IMAGE_BACK,
@@ -115,24 +111,21 @@ class CoaFile extends Model
     /**
      * Check if file exists in storage
      */
-    public function exists(): bool
-    {
+    public function exists(): bool {
         return Storage::exists($this->path);
     }
 
     /**
      * Get file URL for download
      */
-    public function getUrl(): string
-    {
+    public function getUrl(): string {
         return Storage::url($this->path);
     }
 
     /**
      * Get human readable file size
      */
-    public function getHumanSizeAttribute(): string
-    {
+    public function getHumanSizeAttribute(): string {
         if (!$this->bytes) {
             return 'Unknown size';
         }
@@ -152,8 +145,7 @@ class CoaFile extends Model
     /**
      * Verify file integrity against stored hash
      */
-    public function verifyIntegrity(): bool
-    {
+    public function verifyIntegrity(): bool {
         if (!$this->exists()) {
             return false;
         }

@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CoaAnnex>
  */
-class CoaAnnexFactory extends Factory
-{
+class CoaAnnexFactory extends Factory {
     protected $model = CoaAnnex::class;
 
     /**
@@ -18,10 +17,9 @@ class CoaAnnexFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition(): array
-    {
+    public function definition(): array {
         $type = $this->faker->randomElement(['A_PROVENANCE', 'B_CONDITION', 'C_EXHIBITIONS', 'D_PHOTOS']);
-        
+
         return [
             'coa_id' => Coa::factory(),
             'type' => $type,
@@ -38,9 +36,8 @@ class CoaAnnexFactory extends Factory
     /**
      * Generate type-specific data.
      */
-    private function generateDataForType(string $type): array
-    {
-        return match($type) {
+    private function generateDataForType(string $type): array {
+        return match ($type) {
             'A_PROVENANCE' => [
                 'ownership_history' => [
                     [
@@ -62,7 +59,7 @@ class CoaAnnexFactory extends Factory
                     'material_analysis' => $this->faker->optional()->sentence(),
                 ]
             ],
-            
+
             'B_CONDITION' => [
                 'condition_reports' => [
                     [
@@ -81,7 +78,7 @@ class CoaAnnexFactory extends Factory
                     'handling_frequency' => $this->faker->randomElement(['rare', 'occasional', 'frequent']),
                 ],
             ],
-            
+
             'C_EXHIBITIONS' => [
                 'exhibition_history' => [
                     [
@@ -105,7 +102,7 @@ class CoaAnnexFactory extends Factory
                 ],
                 'critical_reception' => $this->faker->optional()->paragraphs(2),
             ],
-            
+
             'D_PHOTOS' => [
                 'documentation_photos' => [
                     'overall_views' => [
@@ -138,7 +135,7 @@ class CoaAnnexFactory extends Factory
                     'raw_files_preserved' => $this->faker->boolean(),
                 ],
             ],
-            
+
             default => ['data' => $this->faker->words(5, true)]
         };
     }
@@ -146,9 +143,8 @@ class CoaAnnexFactory extends Factory
     /**
      * Create annex of specific type.
      */
-    public function ofType(string $type): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function ofType(string $type): static {
+        return $this->state(fn(array $attributes) => [
             'type' => $type,
             'data' => $this->generateDataForType($type),
         ]);
@@ -157,9 +153,8 @@ class CoaAnnexFactory extends Factory
     /**
      * Create annex with specific version.
      */
-    public function version(int $version, ?int $supersedes = null): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function version(int $version, ?int $supersedes = null): static {
+        return $this->state(fn(array $attributes) => [
             'version' => $version,
             'supersedes_version' => $supersedes,
         ]);
@@ -168,9 +163,8 @@ class CoaAnnexFactory extends Factory
     /**
      * Create superseded annex.
      */
-    public function superseded(): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function superseded(): static {
+        return $this->state(fn(array $attributes) => [
             'status' => 'superseded',
         ]);
     }
@@ -178,9 +172,8 @@ class CoaAnnexFactory extends Factory
     /**
      * Create revoked annex.
      */
-    public function revoked(): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function revoked(): static {
+        return $this->state(fn(array $attributes) => [
             'status' => 'revoked',
         ]);
     }

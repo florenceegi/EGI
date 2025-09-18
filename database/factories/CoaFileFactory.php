@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CoaFile>
  */
-class CoaFileFactory extends Factory
-{
+class CoaFileFactory extends Factory {
     protected $model = CoaFile::class;
 
     /**
@@ -18,12 +17,11 @@ class CoaFileFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition(): array
-    {
+    public function definition(): array {
         $fileTypes = ['pdf', 'jpg', 'png', 'doc', 'docx'];
         $fileType = $this->faker->randomElement($fileTypes);
         $filename = $this->faker->slug() . '.' . $fileType;
-        
+
         return [
             'coa_id' => Coa::factory(),
             'type' => $this->faker->randomElement(['certificate', 'attachment', 'evidence', 'signature_image']),
@@ -41,9 +39,8 @@ class CoaFileFactory extends Factory
     /**
      * Get MIME type for file extension.
      */
-    private function getMimeType(string $extension): string
-    {
-        return match($extension) {
+    private function getMimeType(string $extension): string {
+        return match ($extension) {
             'pdf' => 'application/pdf',
             'jpg', 'jpeg' => 'image/jpeg',
             'png' => 'image/png',
@@ -56,14 +53,13 @@ class CoaFileFactory extends Factory
     /**
      * Generate metadata based on file type.
      */
-    private function generateMetadata(string $fileType): array
-    {
+    private function generateMetadata(string $fileType): array {
         $baseMetadata = [
             'uploaded_by' => $this->faker->name(),
             'upload_timestamp' => $this->faker->iso8601(),
         ];
 
-        return match($fileType) {
+        return match ($fileType) {
             'jpg', 'jpeg', 'png' => array_merge($baseMetadata, [
                 'width' => $this->faker->numberBetween(800, 4000),
                 'height' => $this->faker->numberBetween(600, 3000),
@@ -72,14 +68,14 @@ class CoaFileFactory extends Factory
                 'camera_model' => $this->faker->optional()->randomElement(['Canon EOS R5', 'Nikon D850', 'Sony A7R IV']),
                 'lens' => $this->faker->optional()->randomElement(['24-70mm f/2.8', '50mm f/1.4', '85mm f/1.8']),
             ]),
-            
+
             'pdf' => array_merge($baseMetadata, [
                 'pages' => $this->faker->numberBetween(1, 50),
                 'version' => $this->faker->randomElement(['1.4', '1.5', '1.6', '1.7']),
                 'encrypted' => $this->faker->boolean(20),
                 'has_signatures' => $this->faker->boolean(30),
             ]),
-            
+
             default => $baseMetadata
         };
     }
@@ -87,9 +83,8 @@ class CoaFileFactory extends Factory
     /**
      * Create file of specific type.
      */
-    public function ofType(string $type): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function ofType(string $type): static {
+        return $this->state(fn(array $attributes) => [
             'type' => $type,
         ]);
     }
@@ -97,12 +92,11 @@ class CoaFileFactory extends Factory
     /**
      * Create image file.
      */
-    public function image(): static
-    {
+    public function image(): static {
         $extension = $this->faker->randomElement(['jpg', 'png']);
         $filename = $this->faker->slug() . '.' . $extension;
-        
-        return $this->state(fn (array $attributes) => [
+
+        return $this->state(fn(array $attributes) => [
             'filename' => $filename,
             'original_name' => $this->faker->words(3, true) . '.' . $extension,
             'mime_type' => $this->getMimeType($extension),
@@ -114,11 +108,10 @@ class CoaFileFactory extends Factory
     /**
      * Create PDF file.
      */
-    public function pdf(): static
-    {
+    public function pdf(): static {
         $filename = $this->faker->slug() . '.pdf';
-        
-        return $this->state(fn (array $attributes) => [
+
+        return $this->state(fn(array $attributes) => [
             'filename' => $filename,
             'original_name' => $this->faker->words(3, true) . '.pdf',
             'mime_type' => 'application/pdf',
@@ -130,9 +123,8 @@ class CoaFileFactory extends Factory
     /**
      * Create large file.
      */
-    public function large(): static
-    {
-        return $this->state(fn (array $attributes) => [
+    public function large(): static {
+        return $this->state(fn(array $attributes) => [
             'size' => $this->faker->numberBetween(10485760, 104857600), // 10MB to 100MB
         ]);
     }
