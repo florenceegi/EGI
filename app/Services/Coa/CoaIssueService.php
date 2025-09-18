@@ -98,10 +98,13 @@ class CoaIssueService
      * @transparency-level High - complete certificate issuance process
      * @narrative-coherence Links artwork to permanent authenticity record
      */
-    public function issueCertificate(Egi $egi, array $issuerData = []): Coa
+    public function issueCertificate(Egi $egi, ?string $issuedBy = null, ?string $notes = null): Coa
     {
         try {
             $user = Auth::user();
+            
+            // Use provided issuer name or default to authenticated user
+            $issuerName = $issuedBy ?? $user->name ?? 'System';
 
             // Security check - user must own the EGI
             if ($egi->user_id !== $user->id) {
@@ -141,12 +144,13 @@ class CoaIssueService
                 'user_id' => $user->id,
                 'egi_id' => $egi->id,
                 'egi_title' => $egi->title,
-                'issuer_data' => $issuerData
+                'issuer_name' => $issuerName,
+                'notes' => $notes
             ]);
 
             // Use database transaction for atomic operation
-            $coa = DB::transaction(function () use ($egi, $issuerData, $user) {
-                return $this->issueCoaInTransaction($egi, $issuerData, $user);
+            $coa = DB::transaction(function () use ($egi, $issuerName, $notes, $user) {
+                return $this->issueCoaInTransaction($egi, $issuerName, $notes, $user);
             });
 
             $this->logger->info('[CoA Issue] Certificate issued successfully', [
@@ -174,7 +178,8 @@ class CoaIssueService
             $this->errorManager->handle('COA_ISSUE_CERTIFICATE_ERROR', [
                 'user_id' => Auth::id(),
                 'egi_id' => $egi->id,
-                'issuer_data' => $issuerData,
+                'issuer_name' => $issuerName,
+                'notes' => $notes,
                 'error' => $e->getMessage(),
                 'ip_address' => request()->ip(),
                 'timestamp' => now()->toIso8601String()
@@ -188,12 +193,13 @@ class CoaIssueService
      * Issue CoA within database transaction
      *
      * @param Egi $egi
-     * @param array $issuerData
+     * @param string $issuerName
+     * @param string|null $notes
      * @param \App\Models\User $user
      * @return Coa
      * @privacy-safe Internal transaction method
      */
-    protected function issueCoaInTransaction(Egi $egi, array $issuerData, $user): Coa
+    protected function issueCoaInTransaction(Egi $egi, string $issuerName, ?string $notes, $user): Coa
     {
         // 1. Generate unique serial number
         $serial = $this->serialGenerator->generateSerial();
@@ -206,9 +212,12 @@ class CoaIssueService
         );
 
         // 3. Prepare issuer information
-        $issuerInfo = $this->prepareIssuerData($issuerData, $user);
+        $issuerInfo = $this->prepareIssuerData($issuerName, $user);
 
-        // 4. Create CoA record
+        // 4. Prepare creator info for role distinction
+        $creatorInfo = $this->prepareCreatorInfo($egi, $user);
+
+        // 5. Create CoA record
         $coa = Coa::create([
             'egi_id' => $egi->id,
             'serial' => $serial,
@@ -217,6 +226,8 @@ class CoaIssueService
             'issuer_name' => $issuerInfo['name'],
             'issuer_location' => $issuerInfo['location'],
             'issued_at' => now(),
+            'notes' => $notes, // Add notes field
+            'creator_info' => $creatorInfo, // Store creator info when Creator ≠ Author
         ]);
 
         // 5. Create CoA snapshot
@@ -245,19 +256,102 @@ class CoaIssueService
     /**
      * Prepare issuer data with defaults
      *
-     * @param array $issuerData Raw issuer data
+     * @param string $issuerName Issuer name
      * @param \App\Models\User $user Current user
      * @return array Prepared issuer information
      * @privacy-safe Prepares issuer metadata only
      */
-    protected function prepareIssuerData(array $issuerData, $user): array
+    protected function prepareIssuerData(string $issuerName, $user): array
     {
         return [
-            'type' => $issuerData['type'] ?? 'platform',
-            'name' => $issuerData['name'] ?? $user->name ?? 'FlorenceEGI Platform',
-            'location' => $issuerData['location'] ?? 'Digital Platform',
-            'organization' => $issuerData['organization'] ?? 'FlorenceEGI'
+            'type' => 'platform',
+            'name' => $issuerName ?: ($user->name ?? 'FlorenceEGI Platform'),
+            'location' => 'Digital Platform',
+            'organization' => 'FlorenceEGI'
         ];
+    }
+
+    /**
+     * Prepare creator information for role distinction (Author vs Creator vs Issuer)
+     *
+     * @param Egi $egi
+     * @param \App\Models\User $user
+     * @return array|null
+     * @privacy-safe Extracts role distinction data from artwork
+     */
+    protected function prepareCreatorInfo(Egi $egi, $user): ?array
+    {
+        // Extract author from traits or metadata
+        $author = $this->extractArtworkAuthor($egi);
+        $creator = $egi->user->name ?? null;
+        
+        // Only store creator info when Creator ≠ Author
+        if ($creator && $creator !== $author && $egi->user) {
+            return [
+                'name' => $creator,
+                'user_id' => $egi->user->id,
+                'role' => 'creator',
+                'platform_role' => 'uploader',
+                'relationship_to_author' => $this->determineCreatorRelationship($egi),
+                'authorization_provided' => $this->hasAuthorizationDocuments($egi),
+                'created_at' => now()->toIso8601String()
+            ];
+        }
+        
+        return null;
+    }
+
+    /**
+     * Extract artwork author from traits or metadata
+     *
+     * @param Egi $egi
+     * @return string
+     * @privacy-safe Extracts author information from traits
+     */
+    protected function extractArtworkAuthor(Egi $egi): string
+    {
+        // Check for explicit author traits
+        $authorTraits = ['Autore', 'Author', 'Artist', 'Artista'];
+        
+        if ($egi->traits && is_array($egi->traits)) {
+            foreach ($egi->traits as $trait) {
+                if (isset($trait['trait_type'], $trait['value']) && 
+                    in_array($trait['trait_type'], $authorTraits)) {
+                    return $trait['value'];
+                }
+            }
+        }
+        
+        // Fallback to user name if no explicit author is set
+        return $egi->user->name ?? 'Unknown Author';
+    }
+
+    /**
+     * Determine relationship between creator and author
+     *
+     * @param Egi $egi
+     * @return string
+     * @privacy-safe Determines relationship from available data
+     */
+    protected function determineCreatorRelationship(Egi $egi): string
+    {
+        // In future versions, this could check Annex E authorization documents
+        // For now, return a generic relationship
+        return 'platform_uploader';
+    }
+
+    /**
+     * Check if authorization documents are available
+     *
+     * @param Egi $egi
+     * @return bool
+     * @privacy-safe Checks for authorization evidence
+     */
+    protected function hasAuthorizationDocuments(Egi $egi): bool
+    {
+        // In future versions, this would check for Annex E documents
+        // For now, return false until authorization system is implemented
+        return false;
     }
 
     /**
@@ -265,11 +359,12 @@ class CoaIssueService
      *
      * @param Coa $existingCoa The existing CoA to replace
      * @param string $reason Reason for re-issuance
-     * @param array $issuerData New issuer information
+     * @param string|null $issuedBy New issuer name
+     * @param string|null $notes Optional notes
      * @return Coa The new CoA certificate
      * @privacy-safe Re-issues only user's own certificates
      */
-    public function reIssueCertificate(Coa $existingCoa, string $reason, array $issuerData = []): Coa
+    public function reIssueCertificate(Coa $existingCoa, string $reason, ?string $issuedBy = null, ?string $notes = null): Coa
     {
         try {
             $user = Auth::user();
@@ -287,8 +382,8 @@ class CoaIssueService
             ]);
 
             // Use database transaction
-            $newCoa = DB::transaction(function () use ($existingCoa, $reason, $issuerData, $user) {
-                return $this->reIssueCoaInTransaction($existingCoa, $reason, $issuerData, $user);
+            $newCoa = DB::transaction(function () use ($existingCoa, $reason, $issuedBy, $notes, $user) {
+                return $this->reIssueCoaInTransaction($existingCoa, $reason, $issuedBy, $notes, $user);
             });
 
             $this->logger->info('[CoA Re-issue] Certificate re-issued successfully', [
@@ -337,7 +432,7 @@ class CoaIssueService
      * @return Coa
      * @privacy-safe Internal transaction method
      */
-    protected function reIssueCoaInTransaction(Coa $existingCoa, string $reason, array $issuerData, $user): Coa
+    protected function reIssueCoaInTransaction(Coa $existingCoa, string $reason, ?string $issuedBy, ?string $notes, $user): Coa
     {
         // 1. Revoke existing CoA
         $existingCoa->update([
@@ -354,7 +449,7 @@ class CoaIssueService
         ]);
 
         // 3. Issue new CoA
-        $newCoa = $this->issueCoaInTransaction($existingCoa->egi, $issuerData, $user);
+        $newCoa = $this->issueCoaInTransaction($existingCoa->egi, $issuedBy, $notes, $user);
 
         // 4. Create re-issuance event for new CoA
         $this->createCoaEvent($newCoa, 'coa_reissued', [

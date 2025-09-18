@@ -142,6 +142,9 @@
                             {{-- Traits Section - SPOSTATO IN ALTO --}}
                             @include('egis.partials.sidebar.traits-section', compact('egi'))
 
+                            {{-- CoA (Certificate of Authenticity) Section --}}
+                            @include('egis.partials.sidebar.coa-section', compact('egi', 'isCreator'))
+
                             {{-- Utility Display Section --}}
                             @include('egis.partials.sidebar.utility-section', compact('egi'))
 

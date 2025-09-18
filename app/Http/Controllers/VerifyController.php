@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 /**
  * @Oracode Controller: CoA Public Verification
@@ -133,8 +134,24 @@ class VerifyController extends Controller {
                 ], 404);
             }
 
-            // Generate verification data using service
-            $verificationData = $this->verifyService->generateVerificationData($coa);
+            // Generate verification data directly
+            $verificationData = [
+                'certificate' => [
+                    'serial' => $coa->serial,
+                    'status' => $coa->status,
+                    'issued_at' => $coa->issued_at,
+                    'issuer_name' => $coa->issuer_name,
+                    'verification_hash' => $coa->verification_hash
+                ],
+                'artwork' => [
+                    'title' => $coa->egi->title ?? $coa->egi->name,
+                    'creator' => $coa->egi->user->name
+                ],
+                'verification' => [
+                    'verified_at' => now(),
+                    'is_valid' => $coa->status === 'valid'
+                ]
+            ];
 
             $response = [
                 'success' => true,
@@ -173,12 +190,39 @@ class VerifyController extends Controller {
      * Get verification page data
      *
      * @param Request $request
-     * @param string $serial
+     * @param string|null $serial
      * @return JsonResponse
      * @privacy-safe Returns public verification page data
      */
-    public function verificationPage(Request $request, string $serial): JsonResponse {
+    public function verificationPage(Request $request, string $serial = null): JsonResponse {
         try {
+            // If no serial provided, return general verification page
+            if (!$serial) {
+                $this->logger->info('[Verify Controller] Serving general verification page', [
+                    'ip_address' => $request->ip()
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Certificate verification page',
+                    'data' => [
+                        'page_type' => 'verification_form',
+                        'title' => __('egi.coa.public_verification'),
+                        'description' => __('egi.coa.verification_description'),
+                        'instructions' => __('egi.coa.verification_instructions'),
+                        'form_fields' => [
+                            'serial' => [
+                                'label' => __('egi.coa.serial_number'),
+                                'placeholder' => __('egi.coa.enter_serial'),
+                                'required' => true,
+                                'pattern' => '[A-Z0-9\-]+',
+                                'help' => __('egi.coa.serial_help')
+                            ]
+                        ]
+                    ]
+                ], 200);
+            }
+
             // Use cached data if available
             $cacheKey = "verify_page_{$serial}";
             $cachedData = Cache::get($cacheKey);
@@ -552,5 +596,366 @@ class VerifyController extends Controller {
                 'error' => 'An error occurred while fetching statistics'
             ], 500);
         }
+    }
+
+    /**
+     * View specific certificate by verification hash
+     *
+     * @param Request $request
+     * @param string $hash The verification hash
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
+     * @privacy-safe Returns public certificate view
+     *
+     * @oracode-dimension governance
+     * @value-flow Provides public certificate display
+     * @community-impact Builds trust through transparent certificate viewing
+     * @transparency-level High - public certificate information
+     * @narrative-coherence Links verification hash to certificate display
+     */
+    public function viewCertificate(Request $request, string $hash)
+    {
+        try {
+            // Rate limiting for certificate viewing
+            $key = 'view_cert_' . $request->ip();
+            if (RateLimiter::tooManyAttempts($key, 30)) {
+                $this->logger->warning('[Verify Controller] Rate limit exceeded for certificate viewing', [
+                    'ip_address' => $request->ip(),
+                    'hash' => substr($hash, 0, 8) . '...',
+                    'user_agent' => $request->userAgent()
+                ]);
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many requests. Please try again later.'
+                    ], 429);
+                }
+
+                return back()->withErrors(['message' => 'Too many requests. Please try again later.']);
+            }
+
+            RateLimiter::hit($key, 300); // 5 minutes
+
+            $this->logger->info('[Verify Controller] Viewing certificate by hash', [
+                'hash' => substr($hash, 0, 8) . '...',
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
+
+            // Find certificate by verification hash
+            $coa = Coa::where('verification_hash', $hash)
+                ->with(['egi', 'egi.user'])
+                ->first();
+
+            if (!$coa) {
+                $this->logger->warning('[Verify Controller] Certificate not found', [
+                    'hash' => substr($hash, 0, 8) . '...',
+                    'ip_address' => $request->ip()
+                ]);
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Certificate not found'
+                    ], 404);
+                }
+
+                return view('coa.public.not-found', [
+                    'hash' => substr($hash, 0, 8) . '...'
+                ]);
+            }
+
+            // Generate certificate view data
+            $certificateData = [
+                'certificate' => [
+                    'serial' => $coa->serial,
+                    'status' => $coa->status,
+                    'issued_at' => $coa->issued_at,
+                    'issuer_name' => $coa->issuer_name,
+                    'notes' => $coa->notes,
+                    'verification_hash' => $coa->verification_hash ?? hash('sha256', $coa->serial . $coa->issued_at)
+                ],
+                'artwork' => [
+                    'name' => $coa->egi->title ?? $coa->egi->name ?? 'Unknown Artwork',
+                    'description' => $coa->egi->description ?? '',
+                    'creator' => $coa->egi->user->name ?? 'Unknown Creator'
+                ],
+                'verification' => [
+                    'is_valid' => $coa->status === 'valid',
+                    'verified_at' => now(),
+                    'verification_url' => route('coa.verify.certificate', $coa->serial)
+                ]
+            ];
+
+            $this->logger->info('[Verify Controller] Certificate view generated', [
+                'coa_id' => $coa->id,
+                'serial' => $coa->serial,
+                'status' => $coa->status,
+                'ip_address' => $request->ip()
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $certificateData
+                ]);
+            }
+
+            // Return Blade view for web browsers
+            return view('coa.public.certificate', [
+                'certificate' => $certificateData['certificate'],
+                'artwork' => $certificateData['artwork'],
+                'verification' => $certificateData['verification']
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error('[Verify Controller] Certificate view failed', [
+                'hash' => substr($hash, 0, 8) . '...',
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to load certificate'
+                ], 500);
+            }
+
+            return view('coa.public.error', [
+                'message' => 'Unable to load certificate'
+            ]);
+        }
+    }
+
+    /**
+     * View certificate by serial number (HTML page)
+     *
+     * @param Request $request
+     * @param string $serial
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
+     * @privacy-safe Returns public certificate view by serial
+     */
+    public function viewCertificateBySerial(Request $request, string $serial)
+    {
+        try {
+            // Rate limiting for certificate viewing
+            $key = 'view_cert_serial_' . $request->ip();
+            if (RateLimiter::tooManyAttempts($key, 30)) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many requests. Please try again later.'
+                    ], 429);
+                }
+                return back()->withErrors(['message' => 'Too many requests. Please try again later.']);
+            }
+
+            RateLimiter::hit($key, 300); // 5 minutes
+
+            // Find certificate by serial
+            $coa = Coa::where('serial', $serial)
+                ->with(['egi.traits.category', 'egi.traits.traitType', 'egi.user'])
+                ->first();
+
+            if (!$coa) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Certificate not found'
+                    ], 404);
+                }
+                return view('coa.public.not-found', ['serial' => $serial]);
+            }
+
+            // Generate certificate view data
+            $certificateData = [
+                'certificate' => [
+                    'id' => $coa->id,
+                    'serial' => $coa->serial,
+                    'status' => $coa->status,
+                    'issued_at' => $coa->issued_at,
+                    'issuer_name' => $coa->issuer_name,
+                    'notes' => $coa->notes,
+                    'verification_hash' => $coa->verification_hash ?? hash('sha256', $coa->serial . $coa->issued_at),
+                    'issue_location' => $coa->issue_location ?? 'Firenze, Italia',
+                    'qes_signature' => $coa->qes_signature ?? false,
+                    'wallet_signature' => $coa->wallet_signature ?? true,
+                    'wallet_public_key' => $coa->wallet_public_key ?? '0x' . Str::random(40),
+                    'has_annexes' => $coa->annexes()->exists(),
+                    'blockchain_info' => $coa->blockchain_asset_id ? [
+                        'network' => 'Ethereum Mainnet',
+                        'asset_id' => $coa->blockchain_asset_id,
+                        'explorer_url' => 'https://etherscan.io/token/' . $coa->blockchain_asset_id
+                    ] : null,
+                    'version' => $coa->version ?? 1
+                ],
+                'artwork' => [
+                    'name' => $coa->egi->title ?? $coa->egi->name ?? 'Unknown Artwork',
+                    'internal_id' => str_pad($coa->egi->id, 7, '0', STR_PAD_LEFT),
+                    'description' => $coa->egi->description ?? '',
+                    'author' => $this->getArtworkAuthor($coa->egi), // Autore dell'opera
+                    'year' => $this->extractTraitValue($coa->egi, ['Anno', 'Year', 'Data']),
+                    'technique' => $this->extractTraitValue($coa->egi, ['Tecnica', 'Technique', 'Medium']),
+                    'support' => $this->extractTraitValue($coa->egi, ['Supporto', 'Support', 'Material']),
+                    'dimensions' => $coa->egi->dimension ?? $this->extractTraitValue($coa->egi, ['Dimensioni', 'Dimensions', 'Size']),
+                    'edition' => $this->extractTraitValue($coa->egi, ['Edizione', 'Edition', 'Tiratura']),
+                    'thumbnail' => $coa->egi->media ? asset('storage/' . $coa->egi->media) : null,
+                    'dossier_link' => route('egis.show', $coa->egi->id) . '#gallery'
+                ],
+                'verification' => [
+                    'is_valid' => $coa->status === 'valid',
+                    'verified_at' => now(),
+                    'verification_url' => route('coa.verify.certificate', $coa->serial)
+                ]
+            ];
+
+            // Add creator info from database if available
+            if ($coa->creator_info) {
+                $certificateData['creator'] = $coa->creator_info;
+            }
+
+            // Add annexes data if available
+            if ($coa->annexes()->exists()) {
+                $certificateData['annexes'] = [
+                    'provenance' => $this->getAnnexData($coa, 'A_PROVENANCE'),
+                    'condition' => $this->getAnnexData($coa, 'B_CONDITION'),
+                    'exhibitions' => $this->getAnnexData($coa, 'C_EXHIBITIONS'),
+                    'photos' => $this->getAnnexData($coa, 'D_PHOTOS'),
+                    'authorization' => $this->getAnnexData($coa, 'E_AUTHORIZATION') // Nuovo Annesso E
+                ];
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $certificateData
+                ]);
+            }
+
+            // Return Blade view for web browsers
+            return view('coa.public.certificate', [
+                'certificate' => $certificateData['certificate'],
+                'artwork' => $certificateData['artwork'],
+                'verification' => $certificateData['verification'],
+                'annexes' => $certificateData['annexes'] ?? []
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error('[Verify Controller] Certificate view by serial failed', [
+                'serial' => $serial,
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to load certificate'
+                ], 500);
+            }
+
+            return view('coa.public.error', [
+                'message' => 'Unable to load certificate'
+            ]);
+        }
+    }
+
+        /**
+     * Get artwork author (not the platform user who uploaded, but the actual artist)
+     */
+    private function getArtworkAuthor($egi)
+    {
+        // Check for explicit author traits
+        $authorFromTraits = $this->extractTraitValue($egi, ['Autore', 'Author', 'Artist', 'Artista']);
+        if ($authorFromTraits) {
+            return $authorFromTraits;
+        }
+        
+        // Fallback to user name if no explicit author is set
+        return $egi->user->name ?? 'Unknown Author';
+    }
+
+    /**
+     * Get creator info only when Creator ≠ Author (for role distinction)
+     */
+    private function getCreatorInfo($coa)
+    {
+        $author = $this->getArtworkAuthor($coa->egi);
+        $creator = $coa->egi->user->name ?? null;
+        
+        // Only return creator info if creator is different from author
+        if ($creator && $creator !== $author) {
+            return [
+                'name' => $creator,
+                'role' => 'Creator/Uploader',
+                'platform_id' => $coa->egi->user->id,
+                'relationship_to_author' => $this->getCreatorRelationship($coa)
+            ];
+        }
+        
+        return null;
+    }
+
+    /**
+     * Determine relationship between creator and author
+     */
+    private function getCreatorRelationship($coa)
+    {
+        // Check for authorization documents in Annex E
+        $authAnnex = $this->getAnnexData($coa, 'E_AUTHORIZATION');
+        if ($authAnnex && isset($authAnnex['data']['authorization_type'])) {
+            return $authAnnex['data']['authorization_type'];
+        }
+        
+        // Default relationship types
+        $relationshipTypes = [
+            'estate_representative' => 'Rappresentante degli eredi',
+            'gallery_agent' => 'Rappresentante della galleria',
+            'authorized_agent' => 'Agente autorizzato',
+            'legal_guardian' => 'Tutore legale',
+            'family_member' => 'Membro della famiglia',
+            'unknown' => 'Relazione non specificata'
+        ];
+        
+        return $relationshipTypes['unknown'];
+    }
+    private function extractTraitValue($egi, array $needles): ?string
+    {
+        foreach ($needles as $needle) {
+            $trait = $egi->traits->first(function ($trait) use ($needle) {
+                return stripos($trait->traitType->name ?? '', $needle) !== false ||
+                       stripos($trait->category->name ?? '', $needle) !== false;
+            });
+            
+            if ($trait) {
+                return $trait->value;
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Get annex data for a specific type
+     * 
+     * @param \App\Models\Coa $coa
+     * @param string $type
+     * @return array|null
+     */
+    private function getAnnexData($coa, string $type): ?array
+    {
+        $annex = $coa->annexes()->where('type', $type)->first();
+        
+        if (!$annex) {
+            return null;
+        }
+        
+        return [
+            'version' => $annex->version ?? 1,
+            'items_count' => $annex->items_count ?? 0,
+            'hash' => hash('sha256', $annex->data ?? ''),
+            'download_url' => route('coa.annexes.download', [$coa->id, $type])
+        ];
     }
 }

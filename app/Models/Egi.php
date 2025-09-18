@@ -258,6 +258,15 @@ class Egi extends Model {
     }
 
     /**
+     * 🔗 CoA: Get current/active CoA (alias for convenience)
+     *
+     * @return HasOne
+     */
+    public function coa(): HasOne {
+        return $this->activeCoa();
+    }
+
+    /**
      * 🔗 CoA: Get traits version history for this EGI
      *
      * @return HasMany

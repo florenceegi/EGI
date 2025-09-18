@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Certificate of Authenticity - {{ $coa->serial }}</title>
+    <style>
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #d4af37;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .certificate-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .serial {
+            font-size: 14px;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        .artwork-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #d4af37;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #d4af37;
+        }
+
+        .artwork-grid {
+            display: table;
+            width: 100%;
+        }
+
+        .artwork-image {
+            display: table-cell;
+            width: 200px;
+            vertical-align: top;
+            padding-right: 20px;
+        }
+
+        .artwork-details {
+            display: table-cell;
+            vertical-align: top;
+        }
+
+        .detail-row {
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .traits-section {
+            margin-top: 20px;
+        }
+
+        .traits-grid {
+            display: table;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .trait-item {
+            display: table-row;
+        }
+
+        .trait-name {
+            display: table-cell;
+            padding: 5px 10px;
+            font-weight: bold;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+
+        .trait-value {
+            display: table-cell;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+        }
+
+        .provenance-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-left: 4px solid #2c5282;
+        }
+
+        .verification-section {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            border: 2px dashed #d4af37;
+        }
+
+        .qr-code {
+            margin: 15px 0;
+        }
+
+        .verification-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .signature-area {
+            margin-top: 30px;
+            display: table;
+            width: 100%;
+        }
+
+        .signature-block {
+            display: table-cell;
+            width: 50%;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .signature-line {
+            border-top: 1px solid #333;
+            margin-top: 40px;
+            padding-top: 5px;
+            font-size: 12px;
+        }
+
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">{{ $platform_info['name'] }}</div>
+        <div class="certificate-title">CERTIFICATE OF AUTHENTICITY</div>
+        <div class="serial">Serial: {{ $coa->serial }}</div>
+    </div>
+
+    <!-- Artwork Information -->
+    <div class="artwork-section">
+        <div class="section-title">Artwork Information</div>
+        <div class="artwork-grid">
+            @if($image_url)
+            <div class="artwork-image">
+                <img src="{{ $image_url }}" alt="Artwork" style="max-width: 180px; max-height: 180px; border: 1px solid #ddd;">
+            </div>
+            @endif
+            <div class="artwork-details">
+                <div class="detail-row">
+                    <span class="detail-label">Title:</span>
+                    <span>{{ $egi->title }}</span>
+                </div>
+                @if($egi->description)
+                <div class="detail-row">
+                    <span class="detail-label">Description:</span>
+                    <span>{{ is_string($egi->description) ? Str::limit($egi->description, 200) : 'Description not available' }}</span>
+                </div>
+                @endif
+                <div class="detail-row">
+                    <span class="detail-label">Creation Date:</span>
+                    <span>{{ $egi->creation_date ? $egi->creation_date->format('F j, Y') : 'Not specified' }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Current Owner:</span>
+                    <span>{{ $owner->name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Creator:</span>
+                    <span>{{ $creator->name }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Traits Information -->
+        @if($traits_snapshot && count($traits_snapshot) > 0)
+        <div class="traits-section">
+            <div class="section-title">🏷️ Artwork Traits</div>
+            <div class="traits-grid">
+                @foreach($traits_snapshot as $trait)
+                <div class="trait-item">
+                    <div class="trait-name">{{ $trait['value'] ?? 'Trait' }}</div>
+                    <div class="trait-value">{{ $trait['display_value'] ?? $trait['value'] ?? 'N/A' }}</div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+    </div>
+
+    <!-- Provenance Information -->
+    <div class="provenance-section">
+        <div class="section-title">Certificate Information</div>
+        <div class="detail-row">
+            <span class="detail-label">Issue Date:</span>
+            <span>{{ $coa->issued_at->format('F j, Y \a\t g:i A') }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Certificate ID:</span>
+            <span style="font-family: 'Courier New', monospace;">{{ $coa->serial }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span style="color: {{ $coa->status === 'active' ? '#059669' : '#dc2626' }}; font-weight: bold;">
+                {{ ucfirst($coa->status) }}
+            </span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Platform:</span>
+            <span>{{ $platform_info['name'] }} - {{ $platform_info['url'] }}</span>
+        </div>
+    </div>
+
+    <!-- Verification Section -->
+    <div class="verification-section">
+        <div class="section-title">Verification</div>
+        @if(isset($qr_code))
+        <div class="qr-code">
+            {!! $qr_code !!}
+        </div>
+        @endif
+        <div style="font-weight: bold; margin-bottom: 10px;">
+            Verification Hash: <span style="font-family: 'Courier New', monospace; font-size: 11px;">{{ $coa->verification_hash }}</span>
+        </div>
+        <div class="verification-text">
+            To verify this certificate, visit {{ $platform_info['url'] }}/verify/{{ $coa->serial }}<br>
+            or scan the QR code above with your mobile device.
+        </div>
+    </div>
+
+    <!-- Signature Area -->
+    <div class="signature-area">
+        <div class="signature-block">
+            <div class="signature-line">
+                Platform Authority<br>
+                {{ $platform_info['name'] }}
+            </div>
+        </div>
+        <div class="signature-block">
+            <div class="signature-line">
+                Generated on<br>
+                {{ $platform_info['issued_at']->format('F j, Y') }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>This certificate was generated electronically by {{ $platform_info['name'] }} and is valid without signature.</p>
+        <p>For questions about this certificate, please contact support at {{ $platform_info['url'] }}</p>
+        <p>Certificate generated on {{ $platform_info['issued_at']->format('Y-m-d H:i:s \U\T\C') }}</p>
+    </div>
+</body>
+</html>

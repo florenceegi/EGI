@@ -57,6 +57,14 @@ class Coa extends Model {
         'issued_at',
         'revoked_at',
         'revoke_reason',
+        'verification_hash',
+        'integrity_hash',
+        'signature_data',
+        'notes',
+        'expires_at',
+        'metadata',
+        'creator_info',
+        'qr_code_data',
     ];
 
     /**
@@ -65,6 +73,10 @@ class Coa extends Model {
     protected $casts = [
         'issued_at' => 'datetime',
         'revoked_at' => 'datetime',
+        'expires_at' => 'datetime',
+        'signature_data' => 'array',
+        'metadata' => 'array',
+        'creator_info' => 'array',
     ];
 
     //--------------------------------------------------------------------------

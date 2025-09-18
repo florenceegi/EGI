@@ -740,10 +740,10 @@ class CoaController extends Controller {
 
     /**
      * Check if an EGI already has a CoA certificate
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
-     * 
+     *
      * @uem-pattern Ultra Error Manager pattern for EGI certificate validation
      * @narrative-coherence Prevents duplicate certificate issuance
      */
@@ -798,7 +798,6 @@ class CoaController extends Controller {
                     ]
                 ]
             ], 200);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -822,10 +821,10 @@ class CoaController extends Controller {
 
     /**
      * Admin dashboard with comprehensive CoA statistics
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
-     * 
+     *
      * @uem-pattern Ultra Error Manager for admin operations
      * @narrative-coherence Provides administrative oversight of CoA system
      */
@@ -887,7 +886,6 @@ class CoaController extends Controller {
                     'generated_at' => now()->toIso8601String()
                 ]
             ], 200);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('COA_ADMIN_DASHBOARD_ERROR', [
                 'user_id' => Auth::id(),
@@ -904,10 +902,10 @@ class CoaController extends Controller {
 
     /**
      * Batch revoke multiple certificates
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
-     * 
+     *
      * @uem-pattern Ultra Error Manager for batch operations
      * @narrative-coherence Enables efficient mass certificate management
      */
@@ -939,7 +937,7 @@ class CoaController extends Controller {
             foreach ($certificateIds as $coaId) {
                 try {
                     $result = $this->coaService->revokeCertificate($coaId, $reason);
-                    
+
                     if ($result['success']) {
                         $results['successful'][] = [
                             'id' => $coaId,
@@ -951,7 +949,6 @@ class CoaController extends Controller {
                             'error' => $result['message']
                         ];
                     }
-
                 } catch (\Exception $e) {
                     $results['failed'][] = [
                         'id' => $coaId,
@@ -971,7 +968,6 @@ class CoaController extends Controller {
                 ),
                 'data' => $results
             ], 200);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -995,10 +991,10 @@ class CoaController extends Controller {
 
     /**
      * Generate comprehensive reports
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
-     * 
+     *
      * @uem-pattern Ultra Error Manager for reporting operations
      * @narrative-coherence Provides detailed analytical insights
      */
@@ -1109,7 +1105,6 @@ class CoaController extends Controller {
                     'data' => $reportData
                 ]
             ], 200);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -1133,10 +1128,10 @@ class CoaController extends Controller {
 
     /**
      * System settings management
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
-     * 
+     *
      * @uem-pattern Ultra Error Manager for settings operations
      * @narrative-coherence Manages CoA system configuration
      */
@@ -1183,7 +1178,6 @@ class CoaController extends Controller {
                     'last_updated' => cache('coa_settings_last_updated', now()->toIso8601String())
                 ]
             ], 200);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('COA_SETTINGS_ERROR', [
                 'user_id' => Auth::id(),
@@ -1200,10 +1194,10 @@ class CoaController extends Controller {
 
     /**
      * Export data in various formats
-     * 
+     *
      * @param Request $request
      * @return JsonResponse|\Symfony\Component\HttpFoundation\Response
-     * 
+     *
      * @uem-pattern Ultra Error Manager for export operations
      * @narrative-coherence Enables data portability and backup
      */
@@ -1240,11 +1234,11 @@ class CoaController extends Controller {
                 case 'certificates':
                     $query = Coa::with(['egi.user', 'annexes']) // TODO: Add 'addendums' when model is created
                         ->whereBetween('created_at', [$dateFrom, $dateTo]);
-                    
+
                     if (isset($filters['status'])) {
                         $query->where('status', $filters['status']);
                     }
-                    
+
                     $exportData = $query->get()->map(function ($coa) {
                         return [
                             'serial' => $coa->serial,
@@ -1302,7 +1296,6 @@ class CoaController extends Controller {
                     'data' => $exportData
                 ]
             ], 200);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -1326,10 +1319,10 @@ class CoaController extends Controller {
 
     /**
      * Search certificates with advanced filters
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
-     * 
+     *
      * @uem-pattern Ultra Error Manager for search operations
      * @narrative-coherence Enables comprehensive certificate discovery
      */
@@ -1367,13 +1360,13 @@ class CoaController extends Controller {
             if (!empty($query)) {
                 $searchQuery->where(function ($q) use ($query) {
                     $q->where('serial', 'like', "%{$query}%")
-                      ->orWhereHas('egi', function ($q) use ($query) {
-                          $q->where('name', 'like', "%{$query}%");
-                      })
-                      ->orWhereHas('egi.user', function ($q) use ($query) {
-                          $q->where('name', 'like', "%{$query}%")
-                            ->orWhere('email', 'like', "%{$query}%");
-                      });
+                        ->orWhereHas('egi', function ($q) use ($query) {
+                            $q->where('name', 'like', "%{$query}%");
+                        })
+                        ->orWhereHas('egi.user', function ($q) use ($query) {
+                            $q->where('name', 'like', "%{$query}%")
+                                ->orWhere('email', 'like', "%{$query}%");
+                        });
                 });
             }
 
@@ -1423,7 +1416,6 @@ class CoaController extends Controller {
                     ]
                 ]
             ], 200);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -1447,10 +1439,10 @@ class CoaController extends Controller {
 
     /**
      * Validate certificate serial format
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
-     * 
+     *
      * @uem-pattern Ultra Error Manager for validation operations
      * @narrative-coherence Ensures serial number integrity
      */
@@ -1488,7 +1480,6 @@ class CoaController extends Controller {
                     ] : null
                 ]
             ], 200);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -1512,11 +1503,11 @@ class CoaController extends Controller {
 
     /**
      * Preview certificate bundle before creation
-     * 
+     *
      * @param Request $request
      * @param int $coaId
      * @return JsonResponse
-     * 
+     *
      * @uem-pattern Ultra Error Manager for preview operations
      * @narrative-coherence Allows bundle review before finalization
      */
@@ -1586,7 +1577,6 @@ class CoaController extends Controller {
                     'ready_for_download' => $coa->status === 'active'
                 ]
             ], 200);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('COA_PREVIEW_BUNDLE_ERROR', [
                 'user_id' => Auth::id(),
@@ -1604,10 +1594,10 @@ class CoaController extends Controller {
 
     /**
      * Check requirements before certificate issuance
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
-     * 
+     *
      * @uem-pattern Ultra Error Manager for requirement validation
      * @narrative-coherence Validates all prerequisites for certificate issuance
      */
@@ -1642,20 +1632,20 @@ class CoaController extends Controller {
                 ],
                 'existing_certificate' => [
                     'status' => Coa::where('egi_id', $egiId)->exists() ? 'failed' : 'passed',
-                    'message' => Coa::where('egi_id', $egiId)->exists() 
-                        ? 'EGI already has a certificate' 
+                    'message' => Coa::where('egi_id', $egiId)->exists()
+                        ? 'EGI already has a certificate'
                         : 'No existing certificate found'
                 ],
                 'egi_completeness' => [
                     'status' => (!empty($egi->name) && !empty($egi->description)) ? 'passed' : 'failed',
-                    'message' => (!empty($egi->name) && !empty($egi->description)) 
-                        ? 'EGI has required information' 
+                    'message' => (!empty($egi->name) && !empty($egi->description))
+                        ? 'EGI has required information'
                         : 'EGI missing required information'
                 ],
                 'user_verification' => [
                     'status' => $user->email_verified_at ? 'passed' : 'failed',
-                    'message' => $user->email_verified_at 
-                        ? 'User email is verified' 
+                    'message' => $user->email_verified_at
+                        ? 'User email is verified'
                         : 'User email requires verification'
                 ],
                 'rate_limits' => [
@@ -1682,7 +1672,6 @@ class CoaController extends Controller {
                     ]
                 ]
             ], 200);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
