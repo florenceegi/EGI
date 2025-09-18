@@ -247,6 +247,44 @@ class Egi extends Model {
     }
 
     /**
+     * Check if this EGI is liked by the given user
+     *
+     * @param User|null $user
+     * @return bool
+     */
+    public function isLikedBy(?User $user = null): bool {
+        if (!$user) {
+            $user = auth()->user();
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        return $this->likes()
+            ->where('user_id', $user->id)
+            ->exists();
+    }
+
+    /**
+     * Get the likes count for this EGI
+     *
+     * @return int
+     */
+    public function getLikesCountAttribute(): int {
+        return $this->likes()->count();
+    }
+
+    /**
+     * Get whether this EGI is liked by current user
+     *
+     * @return bool
+     */
+    public function getIsLikedAttribute(): bool {
+        return $this->isLikedBy();
+    }
+
+    /**
      * Get the reservations associated with the EGI.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

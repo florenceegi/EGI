@@ -176,7 +176,7 @@ class Collection extends Model implements HasMedia {
     }
 
     /**
-     * Definisce la relazione polimorfica: una Collection può avere molti Like.
+     * Relation: Collection has many likes (polymorphic).
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
@@ -184,6 +184,44 @@ class Collection extends Model implements HasMedia {
         // Il secondo argomento 'likeable' deve corrispondere al nome usato
         // nel metodo morphs() nella migration della tabella likes.
         return $this->morphMany(Like::class, 'likeable');
+    }
+
+    /**
+     * Check if this Collection is liked by the given user
+     *
+     * @param User|null $user
+     * @return bool
+     */
+    public function isLikedBy(?User $user = null): bool {
+        if (!$user) {
+            $user = auth()->user();
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        return $this->likes()
+            ->where('user_id', $user->id)
+            ->exists();
+    }
+
+    /**
+     * Get the likes count for this Collection
+     *
+     * @return int
+     */
+    public function getLikesCountAttribute(): int {
+        return $this->likes()->count();
+    }
+
+    /**
+     * Get whether this Collection is liked by current user
+     *
+     * @return bool
+     */
+    public function getIsLikedAttribute(): bool {
+        return $this->isLikedBy();
     }
 
     /**
