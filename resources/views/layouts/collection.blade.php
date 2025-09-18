@@ -61,6 +61,9 @@
 
     <x-wallet-connect-modal />
 
+    <!-- Create Collection Modal (OS1 Integration) -->
+    @include('components.create-collection-modal')
+
     {{-- Asset JS (Vite) --}}
    @vite(['resources/js/guest.js', 'resources/js/polyfills.js', 'resources/ts/main.ts', 'resources/js/app.js', 'resources/css/reservation-history.css', 'resources/js/reservation-history.js'])
 

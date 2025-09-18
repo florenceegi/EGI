@@ -324,7 +324,7 @@ class CollectionsController extends Controller {
                 return response()->json([
                     'success' => false,
                     'error' => 'PERMISSION_DENIED',
-                    'message' => __('collections.creation_failed') . ' ' . __('errors.insufficient_permissions'),
+                    'message' => __('collection.creation_failed') . ' ' . __('errors.insufficient_permissions'),
                     'required_permission' => 'create_collection'
                 ], 403);
             }
@@ -359,7 +359,7 @@ class CollectionsController extends Controller {
                 return response()->json([
                     'success' => false,
                     'error' => 'COLLECTION_LIMIT_EXCEEDED',
-                    'message' => __('collections.limit_exceeded', ['max' => $maxCollections]),
+                    'message' => __('collection.limit_exceeded', ['max' => $maxCollections]),
                     'current_count' => $existingCollectionsCount,
                     'max_allowed' => $maxCollections
                 ], 422);
@@ -380,7 +380,7 @@ class CollectionsController extends Controller {
                 return response()->json([
                     'success' => false,
                     'error' => $errorData['error'] ?? 'COLLECTION_SERVICE_ERROR',
-                    'message' => $errorData['message'] ?? __('collections.creation_failed'),
+                    'message' => $errorData['message'] ?? __('collection.creation_failed'),
                     'service_context' => $operationContext
                 ], $result->getStatusCode());
             }
@@ -402,7 +402,7 @@ class CollectionsController extends Controller {
             // 🎯 OS1 Virtuous Response - Rich feedback for frontend
             return response()->json([
                 'success' => true,
-                'message' => __('collections.created_successfully', ['name' => $collection->collection_name]),
+                'message' => __('collection.created_successfully', ['name' => $collection->collection_name]),
                 'collection' => [
                     'id' => $collection->id,
                     'name' => $collection->collection_name,
@@ -413,8 +413,8 @@ class CollectionsController extends Controller {
                 ],
                 'next_action' => [
                     'type' => 'redirect',
-                    'url' => route('collections.open', ['collection' => $collection->id]),
-                    'message' => __('collections.redirecting_to_management')
+                    'url' => route('home.collections.show', ['id' => $collection->id]),
+                    'message' => __('collection.redirecting_to_view')
                 ],
                 'user_stats' => [
                     'total_collections' => $existingCollectionsCount + 1,
@@ -444,7 +444,7 @@ class CollectionsController extends Controller {
             return response()->json([
                 'success' => false,
                 'error' => 'UNEXPECTED_ERROR',
-                'message' => __('collections.creation_unexpected_error'),
+                'message' => __('collection.creation_unexpected_error'),
                 'support_reference' => Str::uuid()->toString() // For support tracking
             ], 500);
         }

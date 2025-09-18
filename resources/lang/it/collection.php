@@ -80,6 +80,7 @@ return [
     // Validation Messages
     'limit_exceeded' => 'Hai raggiunto il limite massimo di :max collezioni',
     'created_successfully' => 'Collezione ":name" creata con successo!',
+    'redirecting_to_view' => 'Reindirizzamento alla collezione...',
 
     // Stats and Info
     'loading_stats' => 'Caricamento delle statistiche della collezione...',

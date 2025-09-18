@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 
-class CreateCollection extends Component
-{
+class CreateCollection extends Component {
     public $collection = [
         'creator_id' => null,
         'type' => 'image',
@@ -36,8 +35,7 @@ class CreateCollection extends Component
         'collection.is_published' => 'nullable|boolean',
     ];
 
-    public function create()
-    {
+    public function create() {
         Log::channel('florenceegi')->info('Class: CreateCollection. Method: create()');
 
         try {
@@ -60,8 +58,7 @@ class CreateCollection extends Component
             // Reset dei campi
             $this->resetInputFields();
 
-            return redirect()->route('collections.edit', $collection->id);
-
+            return redirect()->route('home.collections.show', $collection->id);
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::channel('florenceegi')->warning('Validation failed during collection creation', [
                 'errors' => $e->errors(),
@@ -76,8 +73,7 @@ class CreateCollection extends Component
         }
     }
 
-    private function prepareCollectionData()
-    {
+    private function prepareCollectionData() {
         $this->collection['creator_id'] = FegiAuth::id();
         $this->collection['epp_id'] = config('app.epp_id');
         $this->collection['type'] = $this->collection['type'] ?? 'image';
@@ -88,8 +84,7 @@ class CreateCollection extends Component
         $this->collection['floor_price'] = $this->collection['floor_price'] ?? 0.0;
     }
 
-    private function resetInputFields()
-    {
+    private function resetInputFields() {
         $this->collection = [
             'creator_id' => null,
             'type' => 'image',
@@ -103,8 +98,7 @@ class CreateCollection extends Component
         ];
     }
 
-    public function render()
-    {
+    public function render() {
         return view('livewire.collections.create-collection');
     }
 }
