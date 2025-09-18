@@ -68,18 +68,33 @@
 
                 {{-- FIX: Questo 'absolute' ora è contenuto dal 'relative' sopra --}}
                 <div class="absolute bottom-0 left-0 right-0 p-4 md:p-5">
-                    <h3 class="text-lg font-bold text-white truncate transition-colors md:text-xl font-display group-hover:text-florence-gold" title="{{ $collection->collection_name }}">
-                        {{ $collection->collection_name }}
-                    </h3>
-                    @if($collection->creator)
-                        <p class="mt-1 text-sm text-gray-300 truncate transition-colors font-body group-hover:text-gray-100">
-                            {{ __('by') }} {{ $collection->creator->name }}
-                        </p>
-                    @endif
-                    <div class="mt-3 text-xs">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-florence-gold/20 text-florence-gold font-semibold">
-                            {{ $collection->egis_count ?? 0 }} {{ trans_choice('EGI|EGIs', $collection->egis_count ?? 0) }}
-                        </span>
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-bold text-white truncate transition-colors md:text-xl font-display group-hover:text-florence-gold" title="{{ $collection->collection_name }}">
+                                {{ $collection->collection_name }}
+                            </h3>
+                            @if($collection->creator)
+                                <p class="mt-1 text-sm text-gray-300 truncate transition-colors font-body group-hover:text-gray-100">
+                                    {{ __('by') }} {{ $collection->creator->name }}
+                                </p>
+                            @endif
+                            <div class="mt-3 text-xs">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-florence-gold/20 text-florence-gold font-semibold">
+                                    {{ $collection->egis_count ?? 0 }} {{ trans_choice('EGI|EGIs', $collection->egis_count ?? 0) }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Like Button -->
+                        <div class="flex-shrink-0 ml-2">
+                            <x-like-button
+                                :resourceType="'collection'"
+                                :resourceId="$collection->id"
+                                :isLiked="$collection->is_liked ?? false"
+                                :likesCount="$collection->likes_count ?? 0"
+                                size="small"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

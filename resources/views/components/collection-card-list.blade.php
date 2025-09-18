@@ -124,12 +124,24 @@ if ($collection) {
 
         <!-- Content Section -->
         <div class="flex-1 min-w-0 mr-4">
-            <!-- Title -->
-            <h3 class="mb-1 text-lg font-bold text-white truncate transition-colors group-hover:text-blue-300">
-                <a href="{{ route('home.collections.show', $collection->id) }}" class="hover:underline">
-                    {{ $collection->collection_name ?? '#' . $collection->id }}
-                </a>
-            </h3>
+            <!-- Title and Like Button -->
+            <div class="flex items-start justify-between mb-1">
+                <h3 class="flex-1 text-lg font-bold text-white truncate transition-colors group-hover:text-blue-300">
+                    <a href="{{ route('home.collections.show', $collection->id) }}" class="hover:underline">
+                        {{ $collection->collection_name ?? '#' . $collection->id }}
+                    </a>
+                </h3>
+
+                <div class="flex-shrink-0 ml-2">
+                    <x-like-button
+                        :resourceType="'collection'"
+                        :resourceId="$collection->id"
+                        :isLiked="$collection->is_liked ?? false"
+                        :likesCount="$collection->likes_count ?? 0"
+                        size="small"
+                    />
+                </div>
+            </div>
 
             <!-- Creator Info -->
             @if ($config['show_creator'] && $collection->user)

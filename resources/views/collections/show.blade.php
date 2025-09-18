@@ -165,20 +165,14 @@ if (is_array($collection)) {
 
         {{-- CTA Section - Positioned at bottom right --}}
         <div class="absolute z-20 flex gap-2 bottom-6 right-4 sm:bottom-8 sm:right-8">
-                {{-- Like Button - Compact --}}
-                <button
-                    class="btn-primary-glow flex items-center justify-center rounded-lg text-white font-medium like-button {{ $collection->is_liked ?? false ? 'is-liked' : '' }}
-                    w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 text-sm backdrop-blur-sm"
-                    data-collection-id="{{ $collection->id }}" data-resource-type="collection"
-                    data-resource-id="{{ $collection->id }}"
-                    data-like-url="{{ route('api.toggle.collection.like', $collection->id) }}"
-                    title="{{ $collection->is_liked ?? false ? __('collection.show.liked') : __('collection.show.like_collection') }}">
-                    <span class="material-symbols-outlined icon-heart text-lg sm:text-base {{ $collection->is_liked ?? false ? 'mr-0 sm:mr-1' : 'mr-0 sm:mr-1' }}">{{ $collection->is_liked ?? false ?
-                        'favorite' : 'favorite_border' }}</span>
-                    <span class="hidden text-sm like-text sm:inline">{{ $collection->is_liked ?? false ? __('collection.show.liked') :
-                        __('collection.show.like_collection') }}</span>
-                    <span class="ml-0 text-xs sm:ml-1 like-count-display">({{ $collection->likes_count ?? 0 }})</span>
-                </button>
+                {{-- Like Button - New Component --}}
+                <x-like-button
+                    :resourceType="'collection'"
+                    :resourceId="$collection->id"
+                    :isLiked="$collection->is_liked ?? false"
+                    :likesCount="$collection->likes_count ?? 0"
+                    size="medium"
+                />
 
                 {{-- Share Button - Compact --}}
                 <button
