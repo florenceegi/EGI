@@ -1,34 +1,34 @@
 {{-- resources/views/components/collection/view-selector.blade.php --}}
 @props(['totalItems' => 0, 'totalHolders' => 0])
 
-<div class="flex items-center bg-gray-800 rounded-lg p-1">
+<div class="flex items-center p-1 bg-gray-800 rounded-lg">
     {{-- Items (Grid) --}}
-    <button class="view-selector-btn px-4 py-2 text-sm font-medium text-gray-400 rounded-md transition-all duration-200 hover:text-white flex items-center space-x-2"
+    <button class="flex items-center px-4 py-2 space-x-2 text-sm font-medium text-gray-400 transition-all duration-200 rounded-md view-selector-btn hover:text-white"
             data-view="items">
-        <span class="material-symbols-outlined text-base">grid_view</span>
+        <span class="text-base material-symbols-outlined">grid_view</span>
         <span class="hidden sm:inline">{{ __('collection.view_selector.items') }}</span>
         <span class="text-xs bg-gray-600 text-gray-300 px-2 py-0.5 rounded-full ml-1">{{ $totalItems }}</span>
     </button>
 
     {{-- List --}}
-    <button class="view-selector-btn active px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
+    <button class="flex items-center px-4 py-2 space-x-2 text-sm font-medium transition-all duration-200 rounded-md view-selector-btn active"
             data-view="list">
-        <span class="material-symbols-outlined text-base">view_list</span>
+        <span class="text-base material-symbols-outlined">view_list</span>
         <span class="hidden sm:inline">{{ __('collection.view_selector.list') }}</span>
     </button>
 
     {{-- Holders --}}
-    <button class="view-selector-btn px-4 py-2 text-sm font-medium text-gray-400 rounded-md transition-all duration-200 hover:text-white flex items-center space-x-2"
+    <button class="flex items-center px-4 py-2 space-x-2 text-sm font-medium text-gray-400 transition-all duration-200 rounded-md view-selector-btn hover:text-white"
             data-view="holders">
-        <span class="material-symbols-outlined text-base">group</span>
+        <span class="text-base material-symbols-outlined">group</span>
         <span class="hidden sm:inline">{{ __('collection.view_selector.holders') }}</span>
         <span class="text-xs bg-gray-600 text-gray-300 px-2 py-0.5 rounded-full ml-1">{{ $totalHolders }}</span>
     </button>
 
     {{-- Traits --}}
-    <button class="view-selector-btn px-4 py-2 text-sm font-medium text-gray-400 rounded-md transition-all duration-200 hover:text-white flex items-center space-x-2"
+    <button class="flex items-center px-4 py-2 space-x-2 text-sm font-medium text-gray-400 transition-all duration-200 rounded-md view-selector-btn hover:text-white"
             data-view="traits">
-        <span class="material-symbols-outlined text-base">category</span>
+        <span class="text-base material-symbols-outlined">category</span>
         <span class="hidden sm:inline">{{ __('collection.view_selector.traits') }}</span>
     </button>
 </div>
