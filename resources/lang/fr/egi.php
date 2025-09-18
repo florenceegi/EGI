@@ -50,6 +50,16 @@ return [
         'outbid' => 'Surenchérir pour activer',
     ],
 
+    // Détails de réservation
+    'reservation' => [
+        'highest_bid' => 'Enchère la Plus Haute',
+        'fegi_reservation' => 'Réservation FEGI',
+        'strong_bidder' => 'Meilleur Enchérisseur',
+        'weak_bidder' => 'Code FEGI',
+        'activator' => 'Co Créateur',
+        'activated_by' => 'Activé par',
+    ],
+
     'carousel' => [
         // Dynamic Headers
         'headers' => [

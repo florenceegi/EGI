@@ -333,7 +333,7 @@ export class ReservationModalUI {
             newActivatorSection.innerHTML = `
                 ${avatarElement}
                 <span class="font-medium text-green-300" data-activator-name>${userName}</span>
-                <span class="text-xs text-gray-400">(Attivatore)</span>
+                <span class="text-xs text-gray-400">(Co Creatore)</span>
             `;
 
             // Sostituisci la sezione "Da Attivare" con quella dell'attivatore

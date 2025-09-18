@@ -82,6 +82,16 @@ return [
         'outbid' => 'Bid Higher to Activate',
     ],
 
+    // Reservation details
+    'reservation' => [
+        'highest_bid' => 'Highest Bid',
+        'fegi_reservation' => 'FEGI Reservation',
+        'strong_bidder' => 'Best Bidder',
+        'weak_bidder' => 'FEGI Code',
+        'activator' => 'Co Creator',
+        'activated_by' => 'Activated by',
+    ],
+
     // Original currency note
     'originally_reserved_in' => 'Originally reserved in :currency for :amount',
     'originally_reserved_in_short' => 'Res. :currency :amount',

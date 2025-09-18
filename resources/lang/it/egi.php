@@ -86,7 +86,7 @@ return [
         'fegi_reservation' => 'Prenotazione FEGI',
         'strong_bidder' => 'Miglior Offerente',
         'weak_bidder' => 'Codice FEGI',
-        'activator' => 'Attivatore',
+        'activator' => 'Co Creatore',
         'activated_by' => 'Attivato da',
     ],
 

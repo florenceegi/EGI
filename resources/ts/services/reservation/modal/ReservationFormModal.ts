@@ -205,7 +205,7 @@ export class ReservationFormModal {
                 if (data.activator) {
                     egiInfoHTML += `
                         <div class="border-t border-green-200 pt-3">
-                            <span class="text-sm font-medium text-green-700">Attuale Attivatore:</span>
+                            <span class="text-sm font-medium text-green-700">Attuale Co Creatore:</span>
                             <div class="flex items-center gap-2 mt-1">
                     `;
 

@@ -330,7 +330,7 @@ export class EgiDisplayUpdater {
                 activatorSubsection.innerHTML = `
                     ${avatarElement}
                     <span class="text-xs text-green-200 truncate">
-                        Attivatore: <span class="font-semibold" data-activator-name>${userName}</span>
+                        Co Creatore: <span class="font-semibold" data-activator-name>${userName}</span>
                     </span>
                 `;
 

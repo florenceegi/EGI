@@ -50,6 +50,16 @@ return [
         'outbid' => 'Dar lance maior para ativar',
     ],
 
+    // Detalhes da reserva
+    'reservation' => [
+        'highest_bid' => 'Lance Mais Alto',
+        'fegi_reservation' => 'Reserva FEGI',
+        'strong_bidder' => 'Melhor Licitante',
+        'weak_bidder' => 'Código FEGI',
+        'activator' => 'Co Criador',
+        'activated_by' => 'Ativado por',
+    ],
+
     'carousel' => [
         // Dynamic Headers
         'headers' => [

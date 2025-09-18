@@ -50,6 +50,16 @@ return [
         'outbid' => 'Höher bieten um zu aktivieren',
     ],
 
+    // Reservierungsdetails
+    'reservation' => [
+        'highest_bid' => 'Höchstgebot',
+        'fegi_reservation' => 'FEGI Reservierung',
+        'strong_bidder' => 'Bester Bieter',
+        'weak_bidder' => 'FEGI Code',
+        'activator' => 'Mit-Ersteller',
+        'activated_by' => 'Aktiviert von',
+    ],
+
     'carousel' => [
         // Dynamic Headers
         'headers' => [

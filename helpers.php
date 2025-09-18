@@ -241,7 +241,7 @@ if (!function_exists('getEgiActivationStatus')) {
                         ($activator->first_name && $activator->last_name ?
                             $activator->first_name . ' ' . $activator->last_name :
                             $activator->name) :
-                        'Attivatore',
+                        'Co Creatore',
                     'avatar' => $isCommissioner ? $activator->profile_photo_url : null,
                     'is_commissioner' => $isCommissioner,
                     'id' => $activator->id
