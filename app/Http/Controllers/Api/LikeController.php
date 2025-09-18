@@ -93,7 +93,7 @@ class LikeController extends Controller
 
             // Toggle the like
             $existingLike = $collection->likes()
-                ->where('creator_id', $userId)
+                ->where('user_id', $userId)
                 ->first();
 
             if ($existingLike) {
@@ -101,7 +101,7 @@ class LikeController extends Controller
                 $isLiked = false;
             } else {
                 $collection->likes()->create([
-                    'creator_id' => $userId
+                    'user_id' => $userId
                 ]);
                 $isLiked = true;
             }
@@ -110,7 +110,7 @@ class LikeController extends Controller
 
             $this->logger->info('Collection like toggled successfully', [
                 'collection_id' => $collection->id,
-                'creator_id' => $userId,
+                'user_id' => $userId,
                 'is_liked' => $isLiked,
                 'total_likes' => $likesCount
             ]);
@@ -138,14 +138,14 @@ class LikeController extends Controller
 
         } catch (\Exception $e) {
             $this->logger->error('Failed to toggle collection like', [
-                'collection_id' => $collection->id,
-                'creator_id' => $userId,
+                'collection_id' => $collectionId,
+                'user_id' => $userId,
                 'error' => $e->getMessage()
             ]);
 
             return $this->errorManager->handle('LIKE_TOGGLE_FAILED', [
                 'resource_type' => 'collection',
-                'resource_id' => $collection->id,
+                'resource_id' => $collectionId,
                 'error' => $e->getMessage()
             ], $e);
         }

@@ -53,6 +53,20 @@ Route::prefix('currency')->name('api.currency.')->group(function () {
 // === PROTECTED Legacy Currency Route (for authenticated users) ===
 // MOVED TO web.php - queste sono chiamate interne, non API esterne
 
+/*
+|--------------------------------------------------------------------------
+| Like System API Routes
+|--------------------------------------------------------------------------
+*/
+
+// Like/Unlike routes - Protected by web middleware for session auth
+Route::middleware(['web'])->group(function () {
+    Route::post('/collections/{collectionId}/toggle-like', [LikeController::class, 'toggleCollectionLike'])
+        ->name('api.collections.toggle-like');
+    Route::post('/egis/{egi}/toggle-like', [LikeController::class, 'toggleEgiLike'])
+        ->name('api.egis.toggle-like');
+});
+
 // 🚀 Portfolio API Routes - NEW (usando auth session invece di sanctum per ora)
 Route::middleware(['web'])->group(function () {
     Route::get('/portfolio/status-updates', [App\Http\Controllers\Api\PortfolioApiController::class, 'getStatusUpdates'])
