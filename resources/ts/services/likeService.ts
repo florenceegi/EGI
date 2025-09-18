@@ -29,7 +29,7 @@ export class LikeService {
     private static instance: LikeService;
     private abortControllers: Map<string, AbortController> = new Map();
 
-    private constructor() {}
+    private constructor() { }
 
     public static getInstance(): LikeService {
         if (!LikeService.instance) {

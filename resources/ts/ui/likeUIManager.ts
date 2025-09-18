@@ -174,12 +174,12 @@ export class LikeUIManager {
             // Remove all color classes first
             icon.classList.remove(
                 'text-red-500', 'fill-current',
-                'text-blue-500', 
+                'text-blue-500',
                 'text-gray-400'
             );
-            
+
             const hasLikes = likes_count && likes_count > 0;
-            
+
             if (is_liked) {
                 // User has liked it - RED
                 icon.classList.add('text-red-500', 'fill-current');
@@ -363,12 +363,12 @@ export class LikeUIManager {
                     // Remove all color classes first
                     icon.classList.remove(
                         'text-red-500', 'fill-current',
-                        'text-blue-500', 
+                        'text-blue-500',
                         'text-gray-400'
                     );
-                    
+
                     const hasLikes = likes_count && likes_count > 0;
-                    
+
                     if (is_liked) {
                         // User has liked it - RED
                         icon.classList.add('text-red-500', 'fill-current');

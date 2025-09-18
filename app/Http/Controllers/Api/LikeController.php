@@ -24,8 +24,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *
  * @signature [LikeController::v1.0] florence-egi-likes
  */
-class LikeController extends Controller
-{
+class LikeController extends Controller {
     /**
      * @Oracode Logger for tracking user actions
      *
@@ -39,8 +38,7 @@ class LikeController extends Controller
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager
-    )
-    {
+    ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
     }
@@ -55,8 +53,7 @@ class LikeController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function toggleCollectionLike($collectionId, Request $request): JsonResponse
-    {
+    public function toggleCollectionLike($collectionId, Request $request): JsonResponse {
         $this->logger->info('Collection like toggle attempt', [
             'collection_id' => $collectionId,
             'auth_check' => auth()->check(),
@@ -82,8 +79,8 @@ class LikeController extends Controller
             $collection = Collection::find($collectionId);
             if (!$collection) {
                 $this->logger->error('Collection not found for like toggle', [
-                'collection_id' => $collectionId,
-                'creator_id' => $userId
+                    'collection_id' => $collectionId,
+                    'creator_id' => $userId
                 ]);
 
                 throw new \Illuminate\Database\Eloquent\ModelNotFoundException(
@@ -121,8 +118,7 @@ class LikeController extends Controller
                 'likes_count' => $likesCount,
                 'message' => $isLiked ? 'Collection liked successfully' : 'Collection unliked successfully'
             ]);
-
-        } catch(\Illuminate\Auth\AuthenticationException $e) {
+        } catch (\Illuminate\Auth\AuthenticationException $e) {
             $this->logger->warning('Authentication required for collection like toggle', [
                 'collection_id' => $collectionId,
                 'error' => $e->getMessage()
@@ -134,8 +130,6 @@ class LikeController extends Controller
                 'resource_id' => $collectionId,
                 'auth_status' => $this->getAuthStatus($request)
             ], $e);
-
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to toggle collection like', [
                 'collection_id' => $collectionId,
@@ -161,8 +155,7 @@ class LikeController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function toggleEgiLike(Egi $egi, Request $request): JsonResponse
-    {
+    public function toggleEgiLike(Egi $egi, Request $request): JsonResponse {
 
         $this->logger->info('DEBUG: Session check', [
             'session_id' => $request->session()->getId(),
@@ -223,7 +216,6 @@ class LikeController extends Controller
                 'likes_count' => $likesCount,
                 'message' => $isLiked ? 'EGI liked successfully' : 'EGI unliked successfully'
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to toggle EGI like', [
                 'egi_id' => $egi->id,
@@ -247,8 +239,7 @@ class LikeController extends Controller
      * @param Request $request
      * @return int|null
      */
-    private function getAuthenticatedUserId(Request $request): ?int
-    {
+    private function getAuthenticatedUserId(Request $request): ?int {
         // First check strong auth
         if (auth()->check()) {
             return auth()->id();
@@ -291,8 +282,7 @@ class LikeController extends Controller
      * @param Request $request
      * @return string
      */
-    private function getAuthStatus(Request $request): string
-    {
+    private function getAuthStatus(Request $request): string {
         if (auth()->check()) {
             return 'logged-in';
         }

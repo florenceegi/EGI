@@ -11,8 +11,8 @@
     $isAvatarDisplay = ($displayType === 'avatar');
     $logo = config('app.logo_01');
     $imageUrl = '';
-    
-    
+
+
     // Prova ad usare Spatie Media se disponibile
     if ($collection) {
         if (method_exists($collection, 'getFirstMediaUrl')) {
@@ -27,8 +27,8 @@
             $imageUrl = asset($logo);
         }
     }
-    
-    
+
+
 @endphp
 
 @if($collection)
@@ -59,7 +59,7 @@
             {{-- Visualizzazione CARD (Desktop/Tablet) --}}
             {{-- FIX: Il contenitore ora ha 'relative' per contenere gli 'absolute' --}}
             <div class="relative w-full {{ $imageType === 'cover' ? 'aspect-[3/4]' : 'aspect-square' }} overflow-hidden">
-                
+
                 <img src="{{ $imageUrl }}"
                      alt="{{ $collection->collection_name }}"
                      class="object-cover w-full h-full transition-transform duration-300 ease-in-out group-hover:scale-105"
@@ -84,7 +84,7 @@
                                 </span>
                             </div>
                         </div>
-                        
+
                         <!-- Like Button -->
                         <div class="flex-shrink-0 ml-2">
                             <x-like-button

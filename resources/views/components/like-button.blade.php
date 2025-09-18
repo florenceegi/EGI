@@ -33,24 +33,24 @@
     ];
 
     $config = $sizes[$size] ?? $sizes['medium'];
-    
+
     // Handle both ways of passing resource data
     if ($resource) {
         $resourceType = $resource->getMorphClass();
         $resourceId = $resource->id;
     }
     // If $resource is null, we use the individual parameters as they are
-    
+
     // Determine heart color based on like state
     $hasLikes = $likesCount && $likesCount > 0;
     $userLiked = $isLiked;
-    
+
     if ($userLiked) {
         // User has liked it - RED
         $heartColor = 'text-red-500 fill-current';
         $hoverColor = 'hover:text-red-400';
     } elseif ($hasLikes) {
-        // Has likes but not from user - BLUE  
+        // Has likes but not from user - BLUE
         $heartColor = 'text-blue-500 fill-current';
         $hoverColor = 'hover:text-blue-400';
     } else {

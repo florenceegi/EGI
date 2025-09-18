@@ -656,7 +656,7 @@ class AppConfigController extends Controller {
             'like.unlike_success_message' => 'like.unlike_success_message',
             'like.unlike_error_title' => 'like.unlike_error_title',
             'like.unlike_error_message' => 'like.unlike_error_message',
-            
+
             // Toast notifications mappings
             'like.toast.egi.liked_title' => 'like.toast.egi.liked_title',
             'like.toast.egi.liked_message' => 'like.toast.egi.liked_message',
@@ -666,7 +666,7 @@ class AppConfigController extends Controller {
             'like.toast.collection.liked_message' => 'like.toast.collection.liked_message',
             'like.toast.collection.unliked_title' => 'like.toast.collection.unliked_title',
             'like.toast.collection.unliked_message' => 'like.toast.collection.unliked_message',
-            
+
             // Button labels
             'like.add_to_favorites' => 'like.add_to_favorites',
             'like.remove_from_favorites' => 'like.remove_from_favorites',

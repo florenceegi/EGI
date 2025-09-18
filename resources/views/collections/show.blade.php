@@ -465,88 +465,31 @@ if (is_array($collection)) {
     {{-- JavaScript Enhancements --}}
     @push('scripts')
     <script>
-        // Like button functionality
-document.querySelectorAll('.like-button').forEach(button => {
-    button.addEventListener('click', async function() {
-        const collectionId = this.dataset.collectionId;
-        const likeUrl = this.dataset.likeUrl;
-        const icon = this.querySelector('.icon-heart');
-        const text = this.querySelector('.like-text');
-        const countDisplay = this.querySelector('.like-count-display');
+        // EGI sorting functionality
+        document.getElementById('egis-sort').addEventListener('change', function() {
+            const sortValue = this.value;
+            const container = document.getElementById('egis-container');
+            const items = Array.from(container.querySelectorAll('.egi-item'));
 
-        // Visual feedback immediato
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            this.style.transform = 'scale(1)';
-        }, 150);
-
-        try {
-            const response = await fetch(likeUrl, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json',
-                },
+            items.sort((a, b) => {
+                switch(sortValue) {
+                    case 'newest':
+                        // Assume data-created attribute exists or implement accordingly
+                        return new Date(b.dataset.created || 0) - new Date(a.dataset.created || 0);
+                    case 'oldest':
+                        return new Date(a.dataset.created || 0) - new Date(b.dataset.created || 0);
+                    case 'price_low':
+                        return (parseFloat(a.dataset.price || 0) - parseFloat(b.dataset.price || 0));
+                    case 'price_high':
+                        return (parseFloat(b.dataset.price || 0) - parseFloat(a.dataset.price || 0));
+                    default: // position
+                        return (parseInt(a.dataset.position || 999) - parseInt(b.dataset.position || 999));
+                }
             });
 
-            const data = await response.json();
-
-            if (data.success) {
-                this.classList.toggle('is-liked', data.is_liked);
-
-                if (data.is_liked) {
-                    icon.textContent = 'favorite';
-                    text.textContent = '{{ __('collection.show.liked') }}';
-                    this.style.background = 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)';
-                } else {
-                    icon.textContent = 'favorite_border';
-                    text.textContent = '{{ __('collection.show.like_collection') }}';
-                    this.style.background = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)';
-                }
-
-                countDisplay.textContent = `(${data.likes_count ?? 0})`;
-
-                // Celebrazione visiva
-                if (data.is_liked) {
-                    icon.style.animation = 'heartBeat 0.6s ease-in-out';
-                    setTimeout(() => {
-                        icon.style.animation = '';
-                    }, 600);
-                }
-            }
-        } catch (error) {
-            console.error('Error toggling like:', error);
-        }
-    });
-});
-
-// View Toggle - Now handled by view-selector component
-
-// EGI sorting functionality
-document.getElementById('egis-sort').addEventListener('change', function() {
-    const sortValue = this.value;
-    const container = document.getElementById('egis-container');
-    const items = Array.from(container.querySelectorAll('.egi-item'));
-
-    items.sort((a, b) => {
-        switch(sortValue) {
-            case 'newest':
-                // Assume data-created attribute exists or implement accordingly
-                return new Date(b.dataset.created || 0) - new Date(a.dataset.created || 0);
-            case 'oldest':
-                return new Date(a.dataset.created || 0) - new Date(b.dataset.created || 0);
-            case 'price_low':
-                return (parseFloat(a.dataset.price || 0) - parseFloat(b.dataset.price || 0));
-            case 'price_high':
-                return (parseFloat(b.dataset.price || 0) - parseFloat(a.dataset.price || 0));
-            default: // position
-                return (parseInt(a.dataset.position || 999) - parseInt(b.dataset.position || 999));
-        }
-    });
-
-    // Re-append sorted items
-    items.forEach(item => container.appendChild(item));
-});
+            // Re-append sorted items
+            items.forEach(item => container.appendChild(item));
+        });
 
 // Parallax rimosso per evitare effetti strani sui pulsanti
 
