@@ -404,7 +404,7 @@ return [
     // Collaboratori della Collection
     'collection_collaborators' => 'Collaboratori',
     'owner' => 'Proprietario',
-    'creator' => 'Creatore',
+    // 'creator' => 'Creatore',
     'no_other_collaborators' => 'Nessun altro collaboratore',
 
 ];

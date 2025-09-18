@@ -77,7 +77,7 @@ return [
 
         // Primary Material values
         'Wood' => 'Holz',
-        
+
         // Spezifische Metalle
         'Iron' => 'Eisen',
         'Steel' => 'Stahl',
@@ -108,7 +108,7 @@ return [
         'Gold Filled' => 'Goldfilled',
         'Gold Plated' => 'Vergoldet',
         'Silver Plated' => 'Versilbert',
-        
+
         // Edelsteine
         'Diamond' => 'Diamant',
         'Emerald' => 'Smaragd',
@@ -140,7 +140,7 @@ return [
         'Tiger Eye' => 'Tigerauge',
         'Hematite' => 'Hämatit',
         'Obsidian' => 'Obsidian',
-        
+
         'Canvas' => 'Leinwand',
         'Paper' => 'Papier',
         'Ceramic' => 'Keramik',

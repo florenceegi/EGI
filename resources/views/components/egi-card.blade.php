@@ -32,6 +32,7 @@ $currentUserId = $isAuthenticated ? auth()->id() : null;
 $creatorId = $egi->user_id ?? $collection->creator_id ?? null;
 $isCreator = $isAuthenticated && $currentUserId === $creatorId;
 $egiCreator = $egi->user ?? null;
+$imageUrl = $egiCreator->profile_photo_url ?? '';
 
 // 📦 COLLECTION INFO
 $egiCollection = $egi->collection ?? $collection ?? null;
@@ -387,9 +388,9 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
             @if ($egiCreator)
                 <div class="flex items-center gap-2 p-2 mb-2 border rounded-lg border-gray-700/50 bg-gray-800/50" data-creator-info>
                     <div class="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
-                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                        </svg>
+                         <img src="{{ $imageUrl }}" alt="{{ $egiCreator->name }}"
+                            class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" loading="lazy"
+                            decoding="async">
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-xs font-medium text-gray-300">{{ __('egi.creator.created_by') }}</span>

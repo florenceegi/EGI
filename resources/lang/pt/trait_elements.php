@@ -77,7 +77,7 @@ return [
 
         // Primary Material values
         'Wood' => 'Madeira',
-        
+
         // Metais específicos
         'Iron' => 'Ferro',
         'Steel' => 'Aço',
@@ -139,7 +139,7 @@ return [
         'Pyrite' => 'Pirita',
         'Fluorite' => 'Fluorita',
         'Obsidian' => 'Obsidiana',
-        
+
         'Canvas' => 'Tela',
         'Paper' => 'Papel',
         'Ceramic' => 'Cerâmica',

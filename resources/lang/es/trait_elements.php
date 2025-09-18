@@ -77,7 +77,7 @@ return [
 
         // Primary Material values
         'Wood' => 'Madera',
-        
+
         // Metales específicos
         'Iron' => 'Hierro',
         'Steel' => 'Acero',
@@ -108,7 +108,7 @@ return [
         'Gold Filled' => 'Oro Relleno',
         'Gold Plated' => 'Chapado en Oro',
         'Silver Plated' => 'Chapado en Plata',
-        
+
         // Piedras preciosas
         'Diamond' => 'Diamante',
         'Emerald' => 'Esmeralda',
@@ -140,7 +140,7 @@ return [
         'Tiger Eye' => 'Ojo de Tigre',
         'Hematite' => 'Hematita',
         'Obsidian' => 'Obsidiana',
-        
+
         'Canvas' => 'Lienzo',
         'Paper' => 'Papel',
         'Ceramic' => 'Cerámica',

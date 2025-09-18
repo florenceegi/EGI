@@ -121,7 +121,7 @@ class TraitDefaultsSeeder extends Seeder {
                             'Gold Filled',
                             'Gold Plated',
                             'Silver Plated',
-                            
+
                             // Pietre preziose
                             'Diamond',
                             'Emerald',
@@ -153,7 +153,7 @@ class TraitDefaultsSeeder extends Seeder {
                             'Tiger Eye',
                             'Hematite',
                             'Obsidian',
-                            
+
                             // Altri materiali originali
                             'Canvas',
                             'Paper',
@@ -344,10 +344,26 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'accessory-type',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Bag','Backpack','Tote','Crossbody','Shoulder Bag','Clutch',
-                            'Wallet','Card Holder','Coin Purse','Belt','Keychain',
-                            'Phone Case','Laptop Sleeve','Watch Strap',
-                            'Sunglasses','Glasses Frame','Hat','Scarf','Gloves','Umbrella'
+                            'Bag',
+                            'Backpack',
+                            'Tote',
+                            'Crossbody',
+                            'Shoulder Bag',
+                            'Clutch',
+                            'Wallet',
+                            'Card Holder',
+                            'Coin Purse',
+                            'Belt',
+                            'Keychain',
+                            'Phone Case',
+                            'Laptop Sleeve',
+                            'Watch Strap',
+                            'Sunglasses',
+                            'Glasses Frame',
+                            'Hat',
+                            'Scarf',
+                            'Gloves',
+                            'Umbrella'
                         ]),
                     ],
                     [
@@ -385,8 +401,17 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'closure-type',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Zipper','Magnetic Snap','Buckle','Drawstring','Button',
-                            'Hook-and-Loop','Toggle','Twist Lock','Clip','Tie','Open Top'
+                            'Zipper',
+                            'Magnetic Snap',
+                            'Buckle',
+                            'Drawstring',
+                            'Button',
+                            'Hook-and-Loop',
+                            'Toggle',
+                            'Twist Lock',
+                            'Clip',
+                            'Tie',
+                            'Open Top'
                         ]),
                     ],
                     [
@@ -394,8 +419,16 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'hardware-finish',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Gold','Rose Gold','Silver','Nickel','Gunmetal','Brass',
-                            'Black','Matte','Polished','Antique'
+                            'Gold',
+                            'Rose Gold',
+                            'Silver',
+                            'Nickel',
+                            'Gunmetal',
+                            'Brass',
+                            'Black',
+                            'Matte',
+                            'Polished',
+                            'Antique'
                         ]),
                     ],
                     [
@@ -403,8 +436,16 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'strap-type',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Adjustable','Detachable','Chain','Leather','Fabric',
-                            'Crossbody','Shoulder','Wristlet','Top Handle','Backpack Straps'
+                            'Adjustable',
+                            'Detachable',
+                            'Chain',
+                            'Leather',
+                            'Fabric',
+                            'Crossbody',
+                            'Shoulder',
+                            'Wristlet',
+                            'Top Handle',
+                            'Backpack Straps'
                         ]),
                     ],
                     [
@@ -412,8 +453,14 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'pocket-layout',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'None','Card Slots','Coin Pocket','Internal Zipper Pocket',
-                            'External Pocket','Slip Pocket','Pen Loop','Multi-Compartment'
+                            'None',
+                            'Card Slots',
+                            'Coin Pocket',
+                            'Internal Zipper Pocket',
+                            'External Pocket',
+                            'Slip Pocket',
+                            'Pen Loop',
+                            'Multi-Compartment'
                         ]),
                     ],
                     [
@@ -421,7 +468,11 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'size-category',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Mini','Small','Medium','Large','Oversized'
+                            'Mini',
+                            'Small',
+                            'Medium',
+                            'Large',
+                            'Oversized'
                         ]),
                     ],
                     [
@@ -429,8 +480,15 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'texture',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Smooth','Pebbled','Saffiano','Quilted','Woven',
-                            'Embossed','Croc-Embossed','Suede Finish','Matelassé'
+                            'Smooth',
+                            'Pebbled',
+                            'Saffiano',
+                            'Quilted',
+                            'Woven',
+                            'Embossed',
+                            'Croc-Embossed',
+                            'Suede Finish',
+                            'Matelassé'
                         ]),
                     ],
                     [
@@ -438,8 +496,11 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'lining',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Unlined','Cotton Lining','Microfiber Lining',
-                            'Suede Lining','Satin Lining'
+                            'Unlined',
+                            'Cotton Lining',
+                            'Microfiber Lining',
+                            'Suede Lining',
+                            'Satin Lining'
                         ]),
                     ],
                     [
@@ -447,8 +508,13 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'occasion',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Everyday','Business','Travel','Evening','Formal',
-                            'Outdoor','Sport'
+                            'Everyday',
+                            'Business',
+                            'Travel',
+                            'Evening',
+                            'Formal',
+                            'Outdoor',
+                            'Sport'
                         ]),
                     ],
                     [
@@ -456,7 +522,13 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'compatibility',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Phone','Tablet','Laptop 13"','Laptop 14"','Laptop 15"','Laptop 16"','Passport'
+                            'Phone',
+                            'Tablet',
+                            'Laptop 13"',
+                            'Laptop 14"',
+                            'Laptop 15"',
+                            'Laptop 16"',
+                            'Passport'
                         ]),
                     ],
                     [
@@ -464,7 +536,10 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'water-protection',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'None','Splash Resistant','Water Resistant','Waterproof'
+                            'None',
+                            'Splash Resistant',
+                            'Water Resistant',
+                            'Waterproof'
                         ]),
                     ],
                     [
@@ -472,7 +547,11 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'personalization',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'None','Monogram','Engraving','Custom Patch','Custom Color'
+                            'None',
+                            'Monogram',
+                            'Engraving',
+                            'Custom Patch',
+                            'Custom Color'
                         ]),
                     ],
                     [
@@ -480,13 +559,16 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'structure',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                            'Soft','Semi-Structured','Structured','Padded'
+                            'Soft',
+                            'Semi-Structured',
+                            'Structured',
+                            'Padded'
                         ]),
                     ],
                 ];
                 break;
 
-            
+
             case 'visual':
                 $traitTypes = [
                     [
@@ -702,22 +784,22 @@ class TraitDefaultsSeeder extends Seeder {
                         'slug' => 'thematic-focus',
                         'display_type' => 'text',
                         'allowed_values' => json_encode([
-                        'Ecological Renaissance',
-                        'Sacred Art',
-                        'Inner Landscape',
-                        'Metamorphosis',
-                        'Collective Memory',
-                        'Identity and Belonging',
-                        'Migration and Borders',
-                        'Technology and Humanity',
-                        'Dreams and Myth',
-                        'Ritual and Ceremony',
-                        'Time and Impermanence',
-                        'Resistance and Resilience',
-                        'Nature and Cosmos',
-                        'Body and Spirit',
-                        'Other'
-                    ])
+                            'Ecological Renaissance',
+                            'Sacred Art',
+                            'Inner Landscape',
+                            'Metamorphosis',
+                            'Collective Memory',
+                            'Identity and Belonging',
+                            'Migration and Borders',
+                            'Technology and Humanity',
+                            'Dreams and Myth',
+                            'Ritual and Ceremony',
+                            'Time and Impermanence',
+                            'Resistance and Resilience',
+                            'Nature and Cosmos',
+                            'Body and Spirit',
+                            'Other'
+                        ])
 
                     ],
                     [
@@ -760,7 +842,7 @@ class TraitDefaultsSeeder extends Seeder {
                         ])
                     ]
                 ];
-               break;
+                break;
         }
         foreach ($traitTypes as $type) {
             // Insert trait type directly (since we truncated)
