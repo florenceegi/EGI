@@ -235,6 +235,41 @@ class Egi extends Model {
         return $this->hasMany(EgiAudit::class, 'egi_id');
     }
 
+    //--------------------------------------------------------------------------
+    // CoA (Certificate of Authenticity) Relationships
+    //--------------------------------------------------------------------------
+
+    /**
+     * 🔗 CoA: An EGI can have multiple Certificates of Authenticity
+     * 
+     * @return HasMany
+     */
+    public function coas(): HasMany {
+        return $this->hasMany(Coa::class, 'egi_id')->orderBy('issued_at', 'desc');
+    }
+
+    /**
+     * 🔗 CoA: Get the active (valid) CoA for this EGI
+     * 
+     * @return HasOne
+     */
+    public function activeCoa(): HasOne {
+        return $this->hasOne(Coa::class, 'egi_id')->where('status', 'valid')->latest('issued_at');
+    }
+
+    /**
+     * 🔗 CoA: Get traits version history for this EGI
+     * 
+     * @return HasMany
+     */
+    public function traitsVersions(): HasMany {
+        return $this->hasMany(EgiTraitsVersion::class, 'egi_id')->orderBy('version', 'desc');
+    }
+
+    //--------------------------------------------------------------------------
+    // Likes & Social Relationships
+    //--------------------------------------------------------------------------
+
     /**
      * @Oracode Polymorphic relationship for likes
      * 🎯 Purpose: Enable users to like EGIs
@@ -585,6 +620,51 @@ class Egi extends Model {
             'original', // Optimized original
             'public'
         );
+    }
+
+    //--------------------------------------------------------------------------
+    // CoA Helper Methods
+    //--------------------------------------------------------------------------
+
+    /**
+     * Check if this EGI has any valid CoA
+     */
+    public function hasValidCoa(): bool
+    {
+        return $this->coas()->where('status', 'valid')->exists();
+    }
+
+    /**
+     * Get the latest valid CoA
+     */
+    public function getLatestValidCoa(): ?Coa
+    {
+        return $this->activeCoa;
+    }
+
+    /**
+     * Check if this EGI can have a new CoA issued
+     * (business rule: only one valid CoA at a time)
+     */
+    public function canIssueNewCoa(): bool
+    {
+        return !$this->hasValidCoa();
+    }
+
+    /**
+     * Get CoA count for this EGI
+     */
+    public function getCoaCount(): int
+    {
+        return $this->coas()->count();
+    }
+
+    /**
+     * Get valid CoA count for this EGI
+     */
+    public function getValidCoaCount(): int
+    {
+        return $this->coas()->where('status', 'valid')->count();
     }
 
     // Add other relationships as needed (e.g., with Auction, Drop models later)
