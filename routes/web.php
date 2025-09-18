@@ -1083,3 +1083,16 @@ Route::middleware(['web', 'auth'])->prefix('traits')->name('traits.')->group(fun
     Route::get('/{trait}/image-info', [App\Http\Controllers\TraitImageController::class, 'getImageInfo'])
         ->name('image-info');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Certificate of Authenticity (CoA) Routes
+|--------------------------------------------------------------------------
+|
+| Routes per il sistema CoA integrato nella piattaforma FlorenceEGI.
+| Include funzionalità base e Pro con verifica pubblica, gestione
+| certificati, annessi, addendum e amministrazione.
+|
+*/
+
+require __DIR__ . '/coa.php';

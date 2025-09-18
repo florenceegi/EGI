@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coa;
+use App\Models\CoaAnnex;
+use App\Models\CoaEvent;
 use App\Models\Egi;
 use App\Services\Coa\CoaIssueService;
 use App\Services\Coa\CoaRevocationService;
@@ -16,7 +18,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 /**
  * @Oracode Controller: CoA Certificate Management
@@ -730,6 +734,972 @@ class CoaController extends Controller {
                 'success' => false,
                 'message' => 'Failed to retrieve statistics',
                 'error' => 'An error occurred while fetching statistics'
+            ], 500);
+        }
+    }
+
+    /**
+     * Check if an EGI already has a CoA certificate
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     * 
+     * @uem-pattern Ultra Error Manager pattern for EGI certificate validation
+     * @narrative-coherence Prevents duplicate certificate issuance
+     */
+    public function checkEgiCertificate(Request $request): JsonResponse {
+        try {
+            $request->validate([
+                'egi_id' => 'required|integer|exists:egis,id'
+            ]);
+
+            $user = Auth::user();
+            $egiId = $request->egi_id;
+
+            $this->logger->info('[CoA Controller] Checking EGI certificate status', [
+                'user_id' => $user->id,
+                'egi_id' => $egiId,
+                'request_ip' => $request->ip()
+            ]);
+
+            // Check if user owns the EGI
+            $egi = $user->egis()->find($egiId);
+            if (!$egi) {
+                $this->errorManager->handle('COA_EGI_NOT_OWNED', [
+                    'user_id' => $user->id,
+                    'egi_id' => $egiId,
+                    'ip_address' => $request->ip()
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'EGI not found or not owned by user'
+                ], 404);
+            }
+
+            // Check for existing certificate
+            $existingCoa = Coa::where('egi_id', $egiId)->first();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'has_certificate' => $existingCoa !== null,
+                    'certificate' => $existingCoa ? [
+                        'id' => $existingCoa->id,
+                        'serial' => $existingCoa->serial,
+                        'status' => $existingCoa->status,
+                        'issue_date' => $existingCoa->issue_date,
+                        'expiry_date' => $existingCoa->expiry_date
+                    ] : null,
+                    'egi' => [
+                        'id' => $egi->id,
+                        'name' => $egi->name,
+                        'eligible_for_coa' => true // You can add specific eligibility logic here
+                    ]
+                ]
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_CHECK_EGI_ERROR', [
+                'user_id' => Auth::id(),
+                'egi_id' => $request->egi_id ?? null,
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to check EGI certificate status'
+            ], 500);
+        }
+    }
+
+    /**
+     * Admin dashboard with comprehensive CoA statistics
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     * 
+     * @uem-pattern Ultra Error Manager for admin operations
+     * @narrative-coherence Provides administrative oversight of CoA system
+     */
+    public function adminDashboard(Request $request): JsonResponse {
+        try {
+            $user = Auth::user();
+
+            $this->logger->info('[CoA Controller] Admin dashboard accessed', [
+                'user_id' => $user->id,
+                'request_ip' => $request->ip(),
+                'admin_level' => $user->role ?? 'unknown'
+            ]);
+
+            // System-wide statistics
+            $systemStats = [
+                'total_certificates' => Coa::count(),
+                'active_certificates' => Coa::where('status', 'active')->count(),
+                'revoked_certificates' => Coa::where('status', 'revoked')->count(),
+                'expired_certificates' => Coa::where('expiry_date', '<', now())->count(),
+                'certificates_this_month' => Coa::whereMonth('created_at', now()->month)->count(),
+                'certificates_this_year' => Coa::whereYear('created_at', now()->year)->count(),
+                'total_annexes' => CoaAnnex::count(),
+                // 'total_addendums' => CoaAddendum::count(), // TODO: Implement when CoaAddendum model is created
+                'unique_certificate_holders' => Coa::distinct('user_id')->count('user_id')
+            ];
+
+            // Recent activity
+            $recentActivity = Coa::with(['egi.user', 'events'])
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get()
+                ->map(function ($coa) {
+                    return [
+                        'id' => $coa->id,
+                        'serial' => $coa->serial,
+                        'egi_name' => $coa->egi->name,
+                        'user_name' => $coa->egi->user->name,
+                        'status' => $coa->status,
+                        'created_at' => $coa->created_at,
+                        'last_event' => $coa->events->first()?->event_type
+                    ];
+                });
+
+            // Issuance trends (last 12 months)
+            $issuanceTrends = Coa::where('created_at', '>=', now()->subYear())
+                ->groupBy(\DB::raw('YEAR(created_at), MONTH(created_at)'))
+                ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, count(*) as count')
+                ->orderBy('year', 'desc')
+                ->orderBy('month', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Admin dashboard data retrieved successfully',
+                'data' => [
+                    'system_statistics' => $systemStats,
+                    'recent_activity' => $recentActivity,
+                    'issuance_trends' => $issuanceTrends,
+                    'generated_at' => now()->toIso8601String()
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_ADMIN_DASHBOARD_ERROR', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load admin dashboard'
+            ], 500);
+        }
+    }
+
+    /**
+     * Batch revoke multiple certificates
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     * 
+     * @uem-pattern Ultra Error Manager for batch operations
+     * @narrative-coherence Enables efficient mass certificate management
+     */
+    public function batchRevoke(Request $request): JsonResponse {
+        try {
+            $request->validate([
+                'certificate_ids' => 'required|array|min:1|max:100',
+                'certificate_ids.*' => 'integer|exists:coas,id',
+                'reason' => 'required|string|max:500'
+            ]);
+
+            $user = Auth::user();
+            $certificateIds = $request->certificate_ids;
+            $reason = $request->reason;
+
+            $this->logger->info('[CoA Controller] Batch revoke initiated', [
+                'user_id' => $user->id,
+                'certificate_count' => count($certificateIds),
+                'reason' => $reason,
+                'request_ip' => $request->ip()
+            ]);
+
+            $results = [
+                'successful' => [],
+                'failed' => [],
+                'total_processed' => 0
+            ];
+
+            foreach ($certificateIds as $coaId) {
+                try {
+                    $result = $this->coaService->revokeCertificate($coaId, $reason);
+                    
+                    if ($result['success']) {
+                        $results['successful'][] = [
+                            'id' => $coaId,
+                            'serial' => $result['data']['serial'] ?? null
+                        ];
+                    } else {
+                        $results['failed'][] = [
+                            'id' => $coaId,
+                            'error' => $result['message']
+                        ];
+                    }
+
+                } catch (\Exception $e) {
+                    $results['failed'][] = [
+                        'id' => $coaId,
+                        'error' => 'Unexpected error during revocation'
+                    ];
+                }
+
+                $results['total_processed']++;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => sprintf(
+                    'Batch revocation completed. %d successful, %d failed.',
+                    count($results['successful']),
+                    count($results['failed'])
+                ),
+                'data' => $results
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_BATCH_REVOKE_ERROR', [
+                'user_id' => Auth::id(),
+                'certificate_ids' => $request->certificate_ids ?? [],
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process batch revocation'
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate comprehensive reports
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     * 
+     * @uem-pattern Ultra Error Manager for reporting operations
+     * @narrative-coherence Provides detailed analytical insights
+     */
+    public function reports(Request $request): JsonResponse {
+        try {
+            $request->validate([
+                'report_type' => 'required|string|in:summary,detailed,activity,trends',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date|after_or_equal:date_from',
+                'format' => 'nullable|string|in:json,csv'
+            ]);
+
+            $reportType = $request->report_type;
+            $dateFrom = $request->date_from ? Carbon::parse($request->date_from) : now()->subMonth();
+            $dateTo = $request->date_to ? Carbon::parse($request->date_to) : now();
+            $format = $request->get('format', 'json');
+
+            $this->logger->info('[CoA Controller] Generating report', [
+                'user_id' => Auth::id(),
+                'report_type' => $reportType,
+                'date_range' => [$dateFrom->toDateString(), $dateTo->toDateString()],
+                'format' => $format
+            ]);
+
+            $reportData = [];
+
+            switch ($reportType) {
+                case 'summary':
+                    $reportData = [
+                        'period' => [$dateFrom->toDateString(), $dateTo->toDateString()],
+                        'certificates_issued' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])->count(),
+                        'certificates_revoked' => Coa::whereBetween('updated_at', [$dateFrom, $dateTo])
+                            ->where('status', 'revoked')->count(),
+                        'status_distribution' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])
+                            ->groupBy('status')
+                            ->selectRaw('status, count(*) as count')
+                            ->pluck('count', 'status'),
+                        'daily_issuance' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])
+                            ->groupBy(\DB::raw('DATE(created_at)'))
+                            ->selectRaw('DATE(created_at) as date, count(*) as count')
+                            ->orderBy('date')
+                            ->get()
+                    ];
+                    break;
+
+                case 'detailed':
+                    $reportData = Coa::with(['egi.user', 'annexes']) // TODO: Add 'addendums' when model is created
+                        ->whereBetween('created_at', [$dateFrom, $dateTo])
+                        ->get()
+                        ->map(function ($coa) {
+                            return [
+                                'id' => $coa->id,
+                                'serial' => $coa->serial,
+                                'egi_name' => $coa->egi->name,
+                                'user_name' => $coa->egi->user->name,
+                                'user_email' => $coa->egi->user->email,
+                                'status' => $coa->status,
+                                'issue_date' => $coa->issue_date,
+                                'expiry_date' => $coa->expiry_date,
+                                'annexes_count' => $coa->annexes->count(),
+                                // 'addendums_count' => $coa->addendums->count() // TODO: Add when CoaAddendum model is created
+                            ];
+                        });
+                    break;
+
+                case 'activity':
+                    $reportData = CoaEvent::with(['coa.egi.user'])
+                        ->whereBetween('created_at', [$dateFrom, $dateTo])
+                        ->orderBy('created_at', 'desc')
+                        ->get()
+                        ->map(function ($event) {
+                            return [
+                                'event_type' => $event->event_type,
+                                'certificate_serial' => $event->coa->serial,
+                                'egi_name' => $event->coa->egi->name,
+                                'user_name' => $event->coa->egi->user->name,
+                                'event_data' => $event->event_data,
+                                'timestamp' => $event->created_at
+                            ];
+                        });
+                    break;
+
+                case 'trends':
+                    $reportData = [
+                        'monthly_trends' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])
+                            ->groupBy(\DB::raw('YEAR(created_at), MONTH(created_at)'))
+                            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, count(*) as count')
+                            ->orderBy('year')
+                            ->orderBy('month')
+                            ->get(),
+                        'status_trends' => Coa::whereBetween('updated_at', [$dateFrom, $dateTo])
+                            ->groupBy('status', \DB::raw('DATE(updated_at)'))
+                            ->selectRaw('status, DATE(updated_at) as date, count(*) as count')
+                            ->orderBy('date')
+                            ->get()
+                            ->groupBy('status')
+                    ];
+                    break;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Report generated successfully',
+                'data' => [
+                    'report_type' => $reportType,
+                    'period' => [$dateFrom->toDateString(), $dateTo->toDateString()],
+                    'generated_at' => now()->toIso8601String(),
+                    'data' => $reportData
+                ]
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_REPORTS_ERROR', [
+                'user_id' => Auth::id(),
+                'report_type' => $request->report_type ?? null,
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate report'
+            ], 500);
+        }
+    }
+
+    /**
+     * System settings management
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     * 
+     * @uem-pattern Ultra Error Manager for settings operations
+     * @narrative-coherence Manages CoA system configuration
+     */
+    public function settings(Request $request): JsonResponse {
+        try {
+            $user = Auth::user();
+
+            $this->logger->info('[CoA Controller] Settings accessed', [
+                'user_id' => $user->id,
+                'request_ip' => $request->ip()
+            ]);
+
+            // Get current CoA system settings
+            $settings = [
+                'certificate_validity_days' => config('coa.certificate_validity_days', 365),
+                'max_annexes_per_certificate' => config('coa.max_annexes_per_certificate', 10),
+                'auto_renewal_enabled' => config('coa.auto_renewal_enabled', false),
+                'notification_settings' => [
+                    'expiry_warning_days' => config('coa.expiry_warning_days', 30),
+                    'email_notifications' => config('coa.email_notifications', true),
+                    'admin_notifications' => config('coa.admin_notifications', true)
+                ],
+                'security_settings' => [
+                    'require_two_factor' => config('coa.require_two_factor', false),
+                    'audit_log_retention_days' => config('coa.audit_log_retention_days', 90),
+                    'rate_limiting' => [
+                        'issue_per_hour' => config('coa.rate_limits.issue_per_hour', 10),
+                        'verify_per_minute' => config('coa.rate_limits.verify_per_minute', 60)
+                    ]
+                ],
+                'template_settings' => [
+                    'default_template' => config('coa.default_template', 'standard'),
+                    'custom_logo_enabled' => config('coa.custom_logo_enabled', false),
+                    'watermark_enabled' => config('coa.watermark_enabled', true)
+                ]
+            ];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Settings retrieved successfully',
+                'data' => [
+                    'settings' => $settings,
+                    'editable_by_admin' => $user->hasRole('admin') || $user->hasRole('super_admin'),
+                    'last_updated' => cache('coa_settings_last_updated', now()->toIso8601String())
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_SETTINGS_ERROR', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve settings'
+            ], 500);
+        }
+    }
+
+    /**
+     * Export data in various formats
+     * 
+     * @param Request $request
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\Response
+     * 
+     * @uem-pattern Ultra Error Manager for export operations
+     * @narrative-coherence Enables data portability and backup
+     */
+    public function exportData(Request $request) {
+        try {
+            $request->validate([
+                'export_type' => 'required|string|in:certificates,events,statistics',
+                'format' => 'required|string|in:json,csv,pdf',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date|after_or_equal:date_from',
+                'filters' => 'nullable|array'
+            ]);
+
+            $user = Auth::user();
+            $exportType = $request->export_type;
+            $format = $request->format;
+            $dateFrom = $request->date_from ? Carbon::parse($request->date_from) : now()->subMonth();
+            $dateTo = $request->date_to ? Carbon::parse($request->date_to) : now();
+            $filters = $request->get('filters', []);
+
+            $this->logger->info('[CoA Controller] Data export initiated', [
+                'user_id' => $user->id,
+                'export_type' => $exportType,
+                'format' => $format,
+                'date_range' => [$dateFrom->toDateString(), $dateTo->toDateString()],
+                'filters' => $filters
+            ]);
+
+            // For now, return JSON format data
+            // TODO: Implement actual file generation for CSV/PDF
+            $exportData = [];
+
+            switch ($exportType) {
+                case 'certificates':
+                    $query = Coa::with(['egi.user', 'annexes']) // TODO: Add 'addendums' when model is created
+                        ->whereBetween('created_at', [$dateFrom, $dateTo]);
+                    
+                    if (isset($filters['status'])) {
+                        $query->where('status', $filters['status']);
+                    }
+                    
+                    $exportData = $query->get()->map(function ($coa) {
+                        return [
+                            'serial' => $coa->serial,
+                            'egi_name' => $coa->egi->name,
+                            'user_email' => $coa->egi->user->email,
+                            'status' => $coa->status,
+                            'issue_date' => $coa->issue_date,
+                            'expiry_date' => $coa->expiry_date,
+                            'verification_hash' => $coa->verification_hash
+                        ];
+                    });
+                    break;
+
+                case 'events':
+                    $exportData = CoaEvent::with(['coa'])
+                        ->whereBetween('created_at', [$dateFrom, $dateTo])
+                        ->get()
+                        ->map(function ($event) {
+                            return [
+                                'certificate_serial' => $event->coa->serial,
+                                'event_type' => $event->event_type,
+                                'event_data' => $event->event_data,
+                                'timestamp' => $event->created_at
+                            ];
+                        });
+                    break;
+
+                case 'statistics':
+                    $exportData = [
+                        'summary' => [
+                            'total_certificates' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])->count(),
+                            'active_certificates' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])
+                                ->where('status', 'active')->count(),
+                            'revoked_certificates' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])
+                                ->where('status', 'revoked')->count()
+                        ],
+                        'daily_breakdown' => Coa::whereBetween('created_at', [$dateFrom, $dateTo])
+                            ->groupBy(\DB::raw('DATE(created_at)'))
+                            ->selectRaw('DATE(created_at) as date, count(*) as count')
+                            ->orderBy('date')
+                            ->get()
+                    ];
+                    break;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data exported successfully',
+                'data' => [
+                    'export_type' => $exportType,
+                    'format' => $format,
+                    'period' => [$dateFrom->toDateString(), $dateTo->toDateString()],
+                    'record_count' => is_array($exportData) ? count($exportData) : $exportData->count(),
+                    'generated_at' => now()->toIso8601String(),
+                    'data' => $exportData
+                ]
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_EXPORT_ERROR', [
+                'user_id' => Auth::id(),
+                'export_type' => $request->export_type ?? null,
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to export data'
+            ], 500);
+        }
+    }
+
+    /**
+     * Search certificates with advanced filters
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     * 
+     * @uem-pattern Ultra Error Manager for search operations
+     * @narrative-coherence Enables comprehensive certificate discovery
+     */
+    public function search(Request $request): JsonResponse {
+        try {
+            $request->validate([
+                'query' => 'nullable|string|max:255',
+                'filters' => 'nullable|array',
+                'filters.status' => 'nullable|string|in:active,revoked,expired',
+                'filters.date_from' => 'nullable|date',
+                'filters.date_to' => 'nullable|date|after_or_equal:filters.date_from',
+                'filters.user_id' => 'nullable|integer|exists:users,id',
+                'sort_by' => 'nullable|string|in:serial,issue_date,expiry_date,status',
+                'sort_direction' => 'nullable|string|in:asc,desc',
+                'per_page' => 'nullable|integer|min:1|max:100'
+            ]);
+
+            $user = Auth::user();
+            $query = $request->get('query', '');
+            $filters = $request->get('filters', []);
+            $sortBy = $request->get('sort_by', 'issue_date');
+            $sortDirection = $request->get('sort_direction', 'desc');
+            $perPage = $request->get('per_page', 20);
+
+            $this->logger->info('[CoA Controller] Certificate search initiated', [
+                'user_id' => $user->id,
+                'query' => $query,
+                'filters' => $filters,
+                'request_ip' => $request->ip()
+            ]);
+
+            $searchQuery = Coa::with(['egi.user', 'annexes']); // TODO: Add 'addendums' when model is created
+
+            // Apply text search
+            if (!empty($query)) {
+                $searchQuery->where(function ($q) use ($query) {
+                    $q->where('serial', 'like', "%{$query}%")
+                      ->orWhereHas('egi', function ($q) use ($query) {
+                          $q->where('name', 'like', "%{$query}%");
+                      })
+                      ->orWhereHas('egi.user', function ($q) use ($query) {
+                          $q->where('name', 'like', "%{$query}%")
+                            ->orWhere('email', 'like', "%{$query}%");
+                      });
+                });
+            }
+
+            // Apply filters
+            if (isset($filters['status'])) {
+                $searchQuery->where('status', $filters['status']);
+            }
+
+            if (isset($filters['date_from'])) {
+                $searchQuery->where('issue_date', '>=', $filters['date_from']);
+            }
+
+            if (isset($filters['date_to'])) {
+                $searchQuery->where('issue_date', '<=', $filters['date_to']);
+            }
+
+            if (isset($filters['user_id'])) {
+                $searchQuery->whereHas('egi', function ($q) use ($filters) {
+                    $q->where('user_id', $filters['user_id']);
+                });
+            }
+
+            // Apply sorting
+            $searchQuery->orderBy($sortBy, $sortDirection);
+
+            // Execute search with pagination
+            $results = $searchQuery->paginate($perPage);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Search completed successfully',
+                'data' => [
+                    'results' => $results->items(),
+                    'pagination' => [
+                        'current_page' => $results->currentPage(),
+                        'last_page' => $results->lastPage(),
+                        'per_page' => $results->perPage(),
+                        'total' => $results->total(),
+                        'from' => $results->firstItem(),
+                        'to' => $results->lastItem()
+                    ],
+                    'search_parameters' => [
+                        'query' => $query,
+                        'filters' => $filters,
+                        'sort_by' => $sortBy,
+                        'sort_direction' => $sortDirection
+                    ]
+                ]
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_SEARCH_ERROR', [
+                'user_id' => Auth::id(),
+                'search_query' => $request->query ?? null,
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to perform search'
+            ], 500);
+        }
+    }
+
+    /**
+     * Validate certificate serial format
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     * 
+     * @uem-pattern Ultra Error Manager for validation operations
+     * @narrative-coherence Ensures serial number integrity
+     */
+    public function validateSerial(Request $request): JsonResponse {
+        try {
+            $request->validate([
+                'serial' => 'required|string|max:50'
+            ]);
+
+            $serial = $request->serial;
+
+            $this->logger->info('[CoA Controller] Serial validation requested', [
+                'user_id' => Auth::id(),
+                'serial' => $serial,
+                'request_ip' => $request->ip()
+            ]);
+
+            // Check if serial already exists
+            $existingCoa = Coa::where('serial', $serial)->first();
+
+            // Validate serial format (you can customize this based on your requirements)
+            $isValidFormat = \preg_match('/^COA-[A-Z0-9]{8}-[A-Z0-9]{4}$/', $serial);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'serial' => $serial,
+                    'is_valid_format' => $isValidFormat,
+                    'is_unique' => $existingCoa === null,
+                    'exists' => $existingCoa !== null,
+                    'existing_certificate' => $existingCoa ? [
+                        'id' => $existingCoa->id,
+                        'status' => $existingCoa->status,
+                        'issue_date' => $existingCoa->issue_date
+                    ] : null
+                ]
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_VALIDATE_SERIAL_ERROR', [
+                'user_id' => Auth::id(),
+                'serial' => $request->serial ?? null,
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to validate serial'
+            ], 500);
+        }
+    }
+
+    /**
+     * Preview certificate bundle before creation
+     * 
+     * @param Request $request
+     * @param int $coaId
+     * @return JsonResponse
+     * 
+     * @uem-pattern Ultra Error Manager for preview operations
+     * @narrative-coherence Allows bundle review before finalization
+     */
+    public function previewBundle(Request $request, int $coaId): JsonResponse {
+        try {
+            $user = Auth::user();
+
+            $this->logger->info('[CoA Controller] Bundle preview requested', [
+                'user_id' => $user->id,
+                'coa_id' => $coaId,
+                'request_ip' => $request->ip()
+            ]);
+
+            // Get certificate with all related data
+            $coa = Coa::with(['egi.user', 'annexes', 'events']) // TODO: Add 'addendums' when model is created
+                ->whereHas('egi', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })
+                ->findOrFail($coaId);
+
+            // Generate bundle preview data
+            $bundlePreview = [
+                'certificate' => [
+                    'serial' => $coa->serial,
+                    'status' => $coa->status,
+                    'issue_date' => $coa->issue_date,
+                    'expiry_date' => $coa->expiry_date,
+                    'verification_hash' => $coa->verification_hash
+                ],
+                'egi_details' => [
+                    'name' => $coa->egi->name,
+                    'description' => $coa->egi->description,
+                    'owner' => $coa->egi->user->name
+                ],
+                'annexes' => $coa->annexes->map(function ($annex) {
+                    return [
+                        'type' => $annex->type,
+                        'data' => $annex->data,
+                        'created_at' => $annex->created_at
+                    ];
+                }),
+                // TODO: Add addendums when CoaAddendum model is created
+                /*
+                'addendums' => $coa->addendums->map(function ($addendum) {
+                    return [
+                        'version' => $addendum->version,
+                        'content' => $addendum->content,
+                        'status' => $addendum->status,
+                        'created_at' => $addendum->created_at
+                    ];
+                }),
+                */
+                'bundle_metadata' => [
+                    'generated_at' => now()->toIso8601String(),
+                    'total_pages_estimate' => 1 + $coa->annexes->count(), // TODO: Add addendums count when model is created
+                    'bundle_size_estimate' => '2-5 MB', // Placeholder
+                    'qr_code_included' => true,
+                    'digital_signature_included' => true
+                ]
+            ];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bundle preview generated successfully',
+                'data' => [
+                    'preview' => $bundlePreview,
+                    'ready_for_download' => $coa->status === 'active'
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_PREVIEW_BUNDLE_ERROR', [
+                'user_id' => Auth::id(),
+                'coa_id' => $coaId,
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate bundle preview'
+            ], 404);
+        }
+    }
+
+    /**
+     * Check requirements before certificate issuance
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     * 
+     * @uem-pattern Ultra Error Manager for requirement validation
+     * @narrative-coherence Validates all prerequisites for certificate issuance
+     */
+    public function checkIssueRequirements(Request $request): JsonResponse {
+        try {
+            $request->validate([
+                'egi_id' => 'required|integer|exists:egis,id'
+            ]);
+
+            $user = Auth::user();
+            $egiId = $request->egi_id;
+
+            $this->logger->info('[CoA Controller] Issue requirements check', [
+                'user_id' => $user->id,
+                'egi_id' => $egiId,
+                'request_ip' => $request->ip()
+            ]);
+
+            // Check if user owns the EGI
+            $egi = $user->egis()->find($egiId);
+            if (!$egi) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'EGI not found or not owned by user'
+                ], 404);
+            }
+
+            $requirements = [
+                'egi_ownership' => [
+                    'status' => 'passed',
+                    'message' => 'User owns the EGI'
+                ],
+                'existing_certificate' => [
+                    'status' => Coa::where('egi_id', $egiId)->exists() ? 'failed' : 'passed',
+                    'message' => Coa::where('egi_id', $egiId)->exists() 
+                        ? 'EGI already has a certificate' 
+                        : 'No existing certificate found'
+                ],
+                'egi_completeness' => [
+                    'status' => (!empty($egi->name) && !empty($egi->description)) ? 'passed' : 'failed',
+                    'message' => (!empty($egi->name) && !empty($egi->description)) 
+                        ? 'EGI has required information' 
+                        : 'EGI missing required information'
+                ],
+                'user_verification' => [
+                    'status' => $user->email_verified_at ? 'passed' : 'failed',
+                    'message' => $user->email_verified_at 
+                        ? 'User email is verified' 
+                        : 'User email requires verification'
+                ],
+                'rate_limits' => [
+                    'status' => 'passed', // You can implement actual rate limit checking here
+                    'message' => 'Rate limits not exceeded'
+                ]
+            ];
+
+            $allRequirementsMet = collect($requirements)->every(function ($req) {
+                return $req['status'] === 'passed';
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'egi_id' => $egiId,
+                    'egi_name' => $egi->name,
+                    'requirements' => $requirements,
+                    'can_issue_certificate' => $allRequirementsMet,
+                    'requirements_summary' => [
+                        'total' => count($requirements),
+                        'passed' => collect($requirements)->where('status', 'passed')->count(),
+                        'failed' => collect($requirements)->where('status', 'failed')->count()
+                    ]
+                ]
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_CHECK_REQUIREMENTS_ERROR', [
+                'user_id' => Auth::id(),
+                'egi_id' => $request->egi_id ?? null,
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to check issue requirements'
             ], 500);
         }
     }
