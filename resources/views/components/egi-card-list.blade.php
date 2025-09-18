@@ -134,23 +134,6 @@ $showBadge = $showBadge ?? $showOwnershipBadge;
                 </svg>
             </div>
 
-            <!-- Like Button - Top Right -->
-            @if(!$isCreator)
-            <div class="absolute z-10 top-2 right-2">
-                <button
-                    class="p-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 border border-white/20 like-button {{ $egi->is_liked ?? false ? 'is-liked bg-pink-500/20 border-pink-400/50' : '' }}"
-                    data-resource-type="egi" data-resource-id="{{ $egi->id }}"
-                    title="{{ __('egi.like_button_title') }}">
-                    <svg class="w-4 h-4 icon-heart {{ $egi->is_liked ?? false ? 'text-pink-400' : 'text-white' }}"
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656Z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </div>
-            @endif
-
             {{-- Badge Categoria (top-left) --}}
             @php
                 $categoryName = $egi->category_name;
@@ -200,13 +183,27 @@ $showBadge = $showBadge ?? $showOwnershipBadge;
 
         <!-- Content Section -->
         <div class="flex-1 min-w-0 mr-4">
-            <!-- Title -->
-            <h3 class="mb-1 text-lg font-bold text-white truncate transition-colors
-                {{ $isHyper ? 'group-hover:text-yellow-300' : 'group-hover:text-purple-300' }}">
-                <a href="{{ route('egis.show', $egi->id) }}" class="hover:underline">
-                    {{ $egi->title ?? '#' . $egi->id }}
-                </a>
-            </h3>
+            <!-- Title and Like Button -->
+            <div class="flex items-start justify-between mb-1">
+                <h3 class="flex-1 text-lg font-bold text-white truncate transition-colors
+                    {{ $isHyper ? 'group-hover:text-yellow-300' : 'group-hover:text-purple-300' }}">
+                    <a href="{{ route('egis.show', $egi->id) }}" class="hover:underline">
+                        {{ $egi->title ?? '#' . $egi->id }}
+                    </a>
+                </h3>
+
+                @if(!$isCreator)
+                    <div class="flex-shrink-0 ml-2">
+                        <x-like-button
+                            :resourceType="'egi'"
+                            :resourceId="$egi->id"
+                            :isLiked="$egi->is_liked ?? false"
+                            :likesCount="$egi->likes_count ?? 0"
+                            size="small"
+                        />
+                    </div>
+                @endif
+            </div>
 
             <!-- Collection and Creator Info -->
             <div class="flex flex-wrap items-center gap-4 mb-2 text-sm text-gray-400">
