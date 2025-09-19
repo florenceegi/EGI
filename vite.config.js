@@ -61,6 +61,7 @@ export default defineConfig(({ mode }) => {
                     'resources/js/components/vanilla-mobile-menu.js',
                     'resources/js/components/vanilla-desktop-menu.js',
                     'resources/js/collection-edit-modal.js', // Modal per editing collection metadata
+                    'resources/js/coa/vocabulary-modal.js', // Vocabulary traits modal for CoA certificates
                     'resources/js/traits-viewer-integrated.js', // Integrated traits viewer & image manager
                     'public/js/collection-edit-modal.js',
                     // Notifications system

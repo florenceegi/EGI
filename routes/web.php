@@ -1086,6 +1086,54 @@ Route::middleware(['web', 'auth'])->prefix('traits')->name('traits.')->group(fun
 
 /*
 |--------------------------------------------------------------------------
+| CoA Vocabulary Routes (Internal)
+|--------------------------------------------------------------------------
+|
+| Routes web interne per la gestione del vocabolario CoA traits.
+| Utilizzate dalla modale traits nel CRUD panel EGI.
+|
+*/
+
+Route::middleware(['auth'])->prefix('vocabulary')->name('vocabulary.')->group(function () {
+    // Get categories for modal tabs
+    Route::get('/categories', [App\Http\Controllers\VocabularyController::class, 'getCategories'])
+        ->name('categories');
+
+    // Get terms by category for modal content
+    Route::get('/category/{category}', [App\Http\Controllers\VocabularyController::class, 'getByCategory'])
+        ->name('category');
+
+    // Search terms (AJAX endpoint for modal search)
+    Route::get('/search', [App\Http\Controllers\VocabularyController::class, 'search'])
+        ->name('search');
+});
+
+/*
+|--------------------------------------------------------------------------
+| EGI CoA Traits Routes
+|--------------------------------------------------------------------------
+|
+| Routes per la gestione dei traits CoA associati agli EGI.
+| Utilizzate dal sistema di gestione vocabulary traits.
+|
+*/
+
+Route::middleware(['auth'])->name('egi.coa-traits.')->group(function () {
+    // Update CoA traits for an EGI
+    Route::put('/egi/{egi}/coa-traits', [App\Http\Controllers\CoaEgiTraitsController::class, 'update'])
+        ->name('update');
+
+    // Get CoA traits for an EGI (AJAX)
+    Route::get('/egi/{egi}/coa-traits', [App\Http\Controllers\CoaEgiTraitsController::class, 'show'])
+        ->name('show');
+
+    // Delete CoA traits for an EGI
+    Route::delete('/egi/{egi}/coa-traits', [App\Http\Controllers\CoaEgiTraitsController::class, 'destroy'])
+        ->name('destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Certificate of Authenticity (CoA) Routes
 |--------------------------------------------------------------------------
 |

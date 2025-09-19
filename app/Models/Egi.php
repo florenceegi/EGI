@@ -275,6 +275,15 @@ class Egi extends Model {
         return $this->hasMany(EgiTraitsVersion::class, 'egi_id')->orderBy('version', 'desc');
     }
 
+    /**
+     * 🔗 CoA: Get vocabulary traits for Certificate of Authenticity
+     *
+     * @return HasOne
+     */
+    public function coaTraits(): HasOne {
+        return $this->hasOne(EgiCoaTrait::class, 'egi_id');
+    }
+
     //--------------------------------------------------------------------------
     // Likes & Social Relationships
     //--------------------------------------------------------------------------

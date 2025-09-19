@@ -4,7 +4,7 @@ return [
     // ========================================
     // TECHNIQUES - TÉCNICAS ARTÍSTICAS
     // ========================================
-    
+
     // Pintura
     'painting-oil' => 'Pintura al óleo',
     'painting-acrylic' => 'Pintura acrílica',
@@ -13,20 +13,20 @@ return [
     'painting-gouache' => 'Gouache',
     'painting-encaustic' => 'Encáustica',
     'painting-fresco' => 'Fresco',
-    
+
     // Dibujo
     'drawing-graphite' => 'Dibujo a grafito',
     'drawing-charcoal' => 'Dibujo a carboncillo',
     'drawing-ink' => 'Dibujo a tinta',
     'drawing-colored-pencil' => 'Lápices de colores',
     'pastel' => 'Pastel',
-    
+
     // Contemporáneo
     'spray-painting' => 'Pintura en spray',
     'mixed-media' => 'Técnica mixta',
     'collage' => 'Collage',
     'assemblage' => 'Ensamblaje',
-    
+
     // Grabado
     'printmaking-etching' => 'Aguafuerte',
     'printmaking-engraving' => 'Grabado',
@@ -38,7 +38,7 @@ return [
     'printmaking-woodcut' => 'Xilografía',
     'printmaking-linocut' => 'Linograbado',
     'printmaking-monotype' => 'Monotipo',
-    
+
     // Escultura
     'sculpture-carving' => 'Escultura tallada',
     'sculpture-modeling' => 'Modelado',
@@ -46,7 +46,7 @@ return [
     'sculpture-lost-wax' => 'Cera perdida',
     'sculpture-welding' => 'Soldadura',
     'sculpture-3dprint' => 'Impresión 3D',
-    
+
     // Fotografía
     'photography-gelatin-silver' => 'Impresión de plata-gelatina',
     'photography-albumen' => 'Impresión de albúmina',
@@ -54,7 +54,7 @@ return [
     'photography-platinum' => 'Impresión de platino',
     'photography-chromogenic' => 'Impresión cromogénica',
     'photography-inkjet' => 'Impresión de inyección',
-    
+
     // Digital
     'digital-print' => 'Impresión digital',
     'digital-generative' => 'Arte generativo',
@@ -62,7 +62,7 @@ return [
     'video-single-channel' => 'Video monocanal',
     'installation-interactive' => 'Instalación interactiva',
     'ar-vr' => 'Realidad aumentada/virtual',
-    
+
     // Textil
     'textile-weaving' => 'Tejido',
     'textile-embroidery' => 'Bordado',
@@ -73,13 +73,13 @@ return [
     'textile-knitting' => 'Punto',
     'textile-crochet' => 'Ganchillo',
     'textile-needle-felting' => 'Fieltro con aguja',
-    
+
     // Cerámica
     'ceramic-wheel-thrown' => 'Cerámica al torno',
     'ceramic-handbuilt' => 'Cerámica manual',
     'ceramic-slip-cast' => 'Colado en barbotina',
     'ceramic-raku' => 'Raku',
-    
+
     // Vidrio
     'glass-blown' => 'Vidrio soplado',
     'glass-kilnformed' => 'Vidrio fundido',
@@ -87,17 +87,17 @@ return [
     'glass-stained' => 'Vidrieras',
     'glass-pate-de-verre' => 'Pâte de verre',
     'glass-coldworking' => 'Trabajo en frío',
-    
+
     // Madera
     'wood-marquetry' => 'Marquetería',
     'wood-turning' => 'Torneado',
     'wood-pyrography' => 'Pirografía',
     'wood-lacquer' => 'Lacado',
-    
+
     // Cuero
     'leather-tooling' => 'Trabajo en cuero',
     'leather-dyeing' => 'Teñido de cuero',
-    
+
     // Joyería
     'jewelry-fabrication' => 'Fabricación de joyas',
     'jewelry-forging' => 'Forjado',
@@ -119,14 +119,14 @@ return [
     'jewelry-laser-welding' => 'Soldadura láser',
     'jewelry-electroforming' => 'Electroformado',
     'jewelry-wax-carving' => 'Tallado en cera',
-    
+
     // Mosaico
     'mosaic' => 'Mosaico',
-    
+
     // ========================================
     // MATERIALS - MATERIALES ARTÍSTICOS
     // ========================================
-    
+
     // Colores
     'material-paint-oil' => 'Pinturas al óleo',
     'material-paint-acrylic' => 'Pinturas acrílicas',
@@ -135,7 +135,7 @@ return [
     'material-paint-gouache' => 'Gouache',
     'material-wax-encaustic' => 'Cera para encáustica',
     'material-pigment' => 'Pigmentos',
-    
+
     // Herramientas
     'material-graphite' => 'Grafito',
     'material-charcoal' => 'Carboncillo',
@@ -143,16 +143,16 @@ return [
     'material-pastel-oil' => 'Pasteles al óleo',
     'material-ink' => 'Tinta',
     'material-spray-paint' => 'Pintura en spray',
-    
+
     // Acabados
     'material-gold-leaf' => 'Pan de oro',
     'material-silver-leaf' => 'Pan de plata',
     'material-gesso' => 'Gesso',
-    
+
     // Resinas
     'material-resin-epoxy' => 'Resina epoxi',
     'material-fiberglass' => 'Fibra de vidrio',
-    
+
     // Metales
     'material-metal-bronze' => 'Bronce',
     'material-metal-brass' => 'Latón',
@@ -160,7 +160,7 @@ return [
     'material-metal-steel' => 'Acero',
     'material-metal-iron' => 'Hierro',
     'material-metal-copper' => 'Cobre',
-    
+
     // Metales Preciosos
     'material-metal-gold' => 'Oro',
     'material-metal-silver-sterling' => 'Plata de ley',
@@ -171,28 +171,28 @@ return [
     'material-metal-tantalum' => 'Tantalio',
     'material-metal-white-gold' => 'Oro blanco',
     'material-metal-rose-gold' => 'Oro rosa',
-    
+
     // Naturales
     'material-wood' => 'Madera',
     'material-stone-marble' => 'Mármol',
     'material-stone-limestone' => 'Piedra caliza',
     'material-stone-granite' => 'Granito',
-    
+
     // Cerámica
     'material-clay' => 'Arcilla',
     'material-porcelain' => 'Porcelana',
     'material-stoneware' => 'Gres',
     'material-earthenware' => 'Terracota',
-    
+
     // Vidrio
     'material-glass' => 'Vidrio',
-    
+
     // Papeles
     'material-paper-rag' => 'Papel de trapo',
     'material-paper-baryta' => 'Papel baritado',
     'material-paper-rc' => 'Papel RC',
     'material-paper-handmade' => 'Papel hecho a mano',
-    
+
     // Soportes
     'material-canvas-cotton' => 'Lienzo de algodón',
     'material-canvas-linen' => 'Lienzo de lino',
@@ -200,13 +200,13 @@ return [
     'material-panel-mdf' => 'Panel MDF',
     'material-panel-dibond' => 'Dibond',
     'material-acrylic-sheet' => 'Plancha acrílica',
-    
+
     // Tejidos
     'material-fabric-silk' => 'Seda',
     'material-fabric-wool' => 'Lana',
     'material-fabric-cotton' => 'Algodón',
     'material-fabric-linen' => 'Lino',
-    
+
     // Gemas
     'material-gem-diamond' => 'Diamante',
     'material-gem-corundum' => 'Corindón',
@@ -219,34 +219,34 @@ return [
     'material-gem-coral' => 'Coral',
     'material-gem-pearl' => 'Perla',
     'material-gem-synthetic' => 'Piedra sintética',
-    
+
     // Otros
     'material-leather' => 'Cuero',
     'material-found-objects' => 'Objetos encontrados',
-    
+
     // Electrónicos
     'material-electronics-led' => 'LED',
     'material-electronics-general' => 'Componentes electrónicos',
-    
+
     // Componentes
     'material-metal-wire' => 'Alambre metálico',
     'material-metal-sheet' => 'Chapa metálica',
     'material-solder-jewelry' => 'Soldadura joyería',
-    
+
     // Esmaltes
     'material-enamel-vitreous' => 'Esmalte vítreo',
     'material-patina-oxidation' => 'Pátina de oxidación',
-    
+
     // ========================================
     // SUPPORTS - SOPORTES ARTÍSTICOS
     // ========================================
-    
+
     // Lienzos
     'support-canvas-cotton' => 'Lienzo de algodón',
     'support-canvas-linen' => 'Lienzo de lino',
     'support-canvas-jute' => 'Lienzo de yute',
     'support-canvas-hemp' => 'Lienzo de cáñamo',
-    
+
     // Paneles
     'support-panel-wood' => 'Panel de madera',
     'support-panel-mdf' => 'Panel MDF',
@@ -254,7 +254,7 @@ return [
     'support-panel-plywood' => 'Contrachapado',
     'support-panel-dibond' => 'Dibond',
     'support-acrylic-sheet' => 'Plancha acrílica',
-    
+
     // Papeles
     'support-paper-watercolor' => 'Papel acuarela',
     'support-paper-drawing' => 'Papel dibujo',
@@ -264,36 +264,36 @@ return [
     'support-paper-handmade' => 'Papel hecho a mano',
     'support-parchment' => 'Pergamino',
     'support-vellum' => 'Vitela',
-    
+
     // Impresión
     'support-paper-print-rag' => 'Papel trapo impresión',
     'support-paper-print-baryta' => 'Papel baritado impresión',
     'support-paper-print-rc' => 'Papel RC impresión',
-    
+
     // Piedras
     'support-stone-marble' => 'Mármol',
     'support-stone-limestone' => 'Piedra caliza',
     'support-stone-granite' => 'Granito',
     'support-stone-travertine' => 'Travertino',
     'support-stone-sandstone' => 'Arenisca',
-    
+
     // Metales
     'support-metal-copper' => 'Cobre',
     'support-metal-zinc' => 'Zinc',
     'support-metal-aluminum' => 'Aluminio',
     'support-metal-steel' => 'Acero',
-    
+
     // Otros
     'support-glass' => 'Vidrio',
     'support-ceramic' => 'Cerámica',
     'support-leather-hide' => 'Cuero crudo',
     'support-fabric-silk' => 'Seda',
     'support-fabric-cotton' => 'Algodón',
-    
+
     // Frescos
     'support-wall' => 'Pared',
     'support-plaster' => 'Enlucido',
-    
+
     // Digital
     'support-digital-file' => 'Archivo digital',
 ];

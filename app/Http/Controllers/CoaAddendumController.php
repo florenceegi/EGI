@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Services\ErrorManager\ErrorManager;
-use App\Services\UltraLogManager\UltraLogManager;
-use App\Services\Auth\AuthService;
-use App\Services\AuditLog\AuditLogService;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use Ultra\UltraLogManager\UltraLogManager;
+use App\Services\Gdpr\AuditLogService;
 use App\Services\Coa\CoaAddendumService;
 use App\Services\Coa\CoaIssueService;
 use App\Services\Coa\AnnexService;
@@ -30,18 +29,16 @@ use Illuminate\Support\Facades\DB;
  * @version 2.0.0 Pro
  */
 class CoaAddendumController extends Controller {
-    protected ErrorManager $errorManager;
+    protected ErrorManagerInterface $errorManager;
     protected UltraLogManager $logger;
-    protected AuthService $authService;
     protected AuditLogService $auditService;
     protected CoaAddendumService $addendumService;
     protected CoaIssueService $issueService;
     protected AnnexService $annexService;
 
     public function __construct(
-        ErrorManager $errorManager,
+        ErrorManagerInterface $errorManager,
         UltraLogManager $logger,
-        AuthService $authService,
         AuditLogService $auditService,
         CoaAddendumService $addendumService,
         CoaIssueService $issueService,
@@ -49,7 +46,6 @@ class CoaAddendumController extends Controller {
     ) {
         $this->errorManager = $errorManager;
         $this->logger = $logger;
-        $this->authService = $authService;
         $this->auditService = $auditService;
         $this->addendumService = $addendumService;
         $this->issueService = $issueService;

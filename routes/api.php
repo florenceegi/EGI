@@ -53,6 +53,8 @@ Route::prefix('currency')->name('api.currency.')->group(function () {
 // === PROTECTED Legacy Currency Route (for authenticated users) ===
 // MOVED TO web.php - queste sono chiamate interne, non API esterne
 
+// Vocabulary API routes removed - converted to web routes for internal CoA traits modal
+
 /*
 |--------------------------------------------------------------------------
 | Like System API Routes

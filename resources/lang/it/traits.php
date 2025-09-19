@@ -122,10 +122,10 @@ return [
     // ===============================
     // CoA VOCABULARY (Vocabolario CoA)
     // ===============================
-    
+
     'technique' => [
         'painting-oil' => 'pittura a olio',
-        'painting-acrylic' => 'pittura acrilica', 
+        'painting-acrylic' => 'pittura acrilica',
         'painting-watercolor' => 'acquerello',
         'painting-tempera' => 'tempera',
         'painting-gouache' => 'guazzo (gouache)',
@@ -135,14 +135,14 @@ return [
         'sculpture-carving' => 'scultura per sottrazione',
         'jewelry-fabrication' => 'fabbricazione (gioielleria)',
     ],
-    
+
     'materials' => [
         'paint-oil' => 'colore a olio',
         'paint-acrylic' => 'colore acrilico',
         'metal-bronze' => 'bronzo',
         'metal-gold' => 'oro',
     ],
-    
+
     'support' => [
         'support-canvas-stretched-cotton' => 'tela di cotone intelaiata',
         'support-canvas-stretched-linen' => 'tela di lino intelaiata',

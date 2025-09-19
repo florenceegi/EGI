@@ -121,7 +121,7 @@ return [
     // ===============================
     // CoA VOCABULARY (Vocabolario CoA)
     // ===============================
-    
+
     'technique' => [
         'painting-oil' => 'oil painting',
         'painting-acrylic' => 'acrylic painting',
@@ -134,14 +134,14 @@ return [
         'sculpture-carving' => 'carving',
         'jewelry-fabrication' => 'fabrication (jewelry)',
     ],
-    
+
     'materials' => [
         'paint-oil' => 'oil paint',
         'paint-acrylic' => 'acrylic paint',
         'metal-bronze' => 'bronze',
         'metal-gold' => 'gold',
     ],
-    
+
     'support' => [
         'support-canvas-stretched-cotton' => 'stretched cotton canvas',
         'support-canvas-stretched-linen' => 'stretched linen canvas',

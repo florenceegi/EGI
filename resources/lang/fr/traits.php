@@ -88,7 +88,7 @@ return [
         'recycled_content' => 'Contenu Recyclé',
         'carbon_footprint' => 'Empreinte Carbone',
         'eco_certification' => 'Certification Éco',
-                'sustainability_score' => 'Score de Durabilité',
+        'sustainability_score' => 'Score de Durabilité',
     ],
 
     // Image Management
@@ -116,12 +116,12 @@ return [
     'invalid_file_type' => 'Type de fichier invalide',
     'click_to_view_details' => 'Cliquez pour voir les détails',
     'has_image' => 'A une image',
-        'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer cette image?',
+    'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer cette image?',
 
     // ===============================
     // CoA VOCABULARY (Vocabolario CoA)
     // ===============================
-    
+
     'technique' => [
         'painting-oil' => 'peinture à l\'huile',
         'painting-acrylic' => 'peinture acrylique',
@@ -134,20 +134,18 @@ return [
         'sculpture-carving' => 'sculpture taille directe',
         'jewelry-fabrication' => 'fabrication',
     ],
-    
+
     'materials' => [
         'paint-oil' => 'peinture à l\'huile',
         'paint-acrylic' => 'peinture acrylique',
         'metal-bronze' => 'bronze',
         'metal-gold' => 'or',
     ],
-    
+
     'support' => [
         'support-canvas-stretched-cotton' => 'toile de coton tendue',
         'support-canvas-stretched-linen' => 'toile de lin tendue',
         'support-wood-panel' => 'panneau de bois',
         'support-paper-rag' => 'papier chiffon',
     ],
-];
-
 ];

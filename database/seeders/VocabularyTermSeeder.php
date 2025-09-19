@@ -6,22 +6,20 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class VocabularyTermSeeder extends Seeder
-{
+class VocabularyTermSeeder extends Seeder {
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
+    public function run(): void {
         // Svuota tabella se esistente
         DB::table('vocabulary_terms')->truncate();
-        
+
         $terms = [];
-        
+
         // ========================================
         // TECHNIQUES - TUTTE LE TECNICHE COMPLETE DAI FILE MD
         // ========================================
-        
+
         // TECHNIQUE - Pittura
         $terms = array_merge($terms, [
             ['slug' => 'painting-oil', 'category' => 'technique', 'ui_group' => 'Pittura', 'sort_order' => 10],
@@ -32,7 +30,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'painting-encaustic', 'category' => 'technique', 'ui_group' => 'Pittura', 'sort_order' => 60],
             ['slug' => 'painting-fresco', 'category' => 'technique', 'ui_group' => 'Pittura', 'sort_order' => 70],
         ]);
-        
+
         // TECHNIQUE - Disegno
         $terms = array_merge($terms, [
             ['slug' => 'drawing-graphite', 'category' => 'technique', 'ui_group' => 'Disegno', 'sort_order' => 110],
@@ -41,7 +39,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'drawing-colored-pencil', 'category' => 'technique', 'ui_group' => 'Disegno', 'sort_order' => 140],
             ['slug' => 'pastel', 'category' => 'technique', 'ui_group' => 'Disegno', 'sort_order' => 150],
         ]);
-        
+
         // TECHNIQUE - Contemporaneo
         $terms = array_merge($terms, [
             ['slug' => 'spray-painting', 'category' => 'technique', 'ui_group' => 'Contemporaneo', 'sort_order' => 210],
@@ -49,7 +47,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'collage', 'category' => 'technique', 'ui_group' => 'Contemporaneo', 'sort_order' => 230],
             ['slug' => 'assemblage', 'category' => 'technique', 'ui_group' => 'Contemporaneo', 'sort_order' => 240],
         ]);
-        
+
         // TECHNIQUE - Incisione COMPLETA
         $terms = array_merge($terms, [
             ['slug' => 'printmaking-etching', 'category' => 'technique', 'ui_group' => 'Incisione', 'sort_order' => 310],
@@ -63,7 +61,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'printmaking-linocut', 'category' => 'technique', 'ui_group' => 'Incisione', 'sort_order' => 390],
             ['slug' => 'printmaking-monotype', 'category' => 'technique', 'ui_group' => 'Incisione', 'sort_order' => 400],
         ]);
-        
+
         // TECHNIQUE - Scultura
         $terms = array_merge($terms, [
             ['slug' => 'sculpture-carving', 'category' => 'technique', 'ui_group' => 'Scultura', 'sort_order' => 410],
@@ -73,7 +71,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'sculpture-welding', 'category' => 'technique', 'ui_group' => 'Scultura', 'sort_order' => 450],
             ['slug' => 'sculpture-3dprint', 'category' => 'technique', 'ui_group' => 'Scultura', 'sort_order' => 460],
         ]);
-        
+
         // TECHNIQUE - Fotografia
         $terms = array_merge($terms, [
             ['slug' => 'photography-gelatin-silver', 'category' => 'technique', 'ui_group' => 'Fotografia', 'sort_order' => 510],
@@ -83,7 +81,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'photography-chromogenic', 'category' => 'technique', 'ui_group' => 'Fotografia', 'sort_order' => 550],
             ['slug' => 'photography-inkjet', 'category' => 'technique', 'ui_group' => 'Fotografia', 'sort_order' => 560],
         ]);
-        
+
         // TECHNIQUE - Digitale
         $terms = array_merge($terms, [
             ['slug' => 'digital-print', 'category' => 'technique', 'ui_group' => 'Digitale', 'sort_order' => 610],
@@ -93,7 +91,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'installation-interactive', 'category' => 'technique', 'ui_group' => 'Digitale', 'sort_order' => 650],
             ['slug' => 'ar-vr', 'category' => 'technique', 'ui_group' => 'Digitale', 'sort_order' => 660],
         ]);
-        
+
         // TECHNIQUE - Tessile
         $terms = array_merge($terms, [
             ['slug' => 'textile-weaving', 'category' => 'technique', 'ui_group' => 'Tessile', 'sort_order' => 710],
@@ -106,15 +104,15 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'textile-crochet', 'category' => 'technique', 'ui_group' => 'Tessile', 'sort_order' => 780],
             ['slug' => 'textile-needle-felting', 'category' => 'technique', 'ui_group' => 'Tessile', 'sort_order' => 790],
         ]);
-        
-        // TECHNIQUE - Ceramica  
+
+        // TECHNIQUE - Ceramica
         $terms = array_merge($terms, [
             ['slug' => 'ceramic-wheel-thrown', 'category' => 'technique', 'ui_group' => 'Ceramica', 'sort_order' => 810],
             ['slug' => 'ceramic-handbuilt', 'category' => 'technique', 'ui_group' => 'Ceramica', 'sort_order' => 820],
             ['slug' => 'ceramic-slip-cast', 'category' => 'technique', 'ui_group' => 'Ceramica', 'sort_order' => 830],
             ['slug' => 'ceramic-raku', 'category' => 'technique', 'ui_group' => 'Ceramica', 'sort_order' => 840],
         ]);
-        
+
         // TECHNIQUE - Vetro
         $terms = array_merge($terms, [
             ['slug' => 'glass-blown', 'category' => 'technique', 'ui_group' => 'Vetro', 'sort_order' => 910],
@@ -124,7 +122,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'glass-pate-de-verre', 'category' => 'technique', 'ui_group' => 'Vetro', 'sort_order' => 950],
             ['slug' => 'glass-coldworking', 'category' => 'technique', 'ui_group' => 'Vetro', 'sort_order' => 960],
         ]);
-        
+
         // TECHNIQUE - Legno
         $terms = array_merge($terms, [
             ['slug' => 'wood-marquetry', 'category' => 'technique', 'ui_group' => 'Legno', 'sort_order' => 1010],
@@ -132,13 +130,13 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'wood-pyrography', 'category' => 'technique', 'ui_group' => 'Legno', 'sort_order' => 1030],
             ['slug' => 'wood-lacquer', 'category' => 'technique', 'ui_group' => 'Legno', 'sort_order' => 1040],
         ]);
-        
+
         // TECHNIQUE - Cuoio
         $terms = array_merge($terms, [
             ['slug' => 'leather-tooling', 'category' => 'technique', 'ui_group' => 'Cuoio', 'sort_order' => 1110],
             ['slug' => 'leather-dyeing', 'category' => 'technique', 'ui_group' => 'Cuoio', 'sort_order' => 1120],
         ]);
-        
+
         // TECHNIQUE - Gioielleria COMPLETA
         $terms = array_merge($terms, [
             ['slug' => 'jewelry-fabrication', 'category' => 'technique', 'ui_group' => 'Gioielleria', 'sort_order' => 1210],
@@ -162,16 +160,16 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'jewelry-electroforming', 'category' => 'technique', 'ui_group' => 'Gioielleria', 'sort_order' => 1390],
             ['slug' => 'jewelry-wax-carving', 'category' => 'technique', 'ui_group' => 'Gioielleria', 'sort_order' => 1400],
         ]);
-        
+
         // TECHNIQUE - Mosaico
         $terms = array_merge($terms, [
             ['slug' => 'mosaic', 'category' => 'technique', 'ui_group' => 'Mosaico', 'sort_order' => 1510],
         ]);
-        
+
         // =======================================
-        // MATERIALS - TUTTI I MATERIALI COMPLETI DAI FILE MD  
+        // MATERIALS - TUTTI I MATERIALI COMPLETI DAI FILE MD
         // =======================================
-        
+
         // MATERIALS - Colori e Pittura
         $terms = array_merge($terms, [
             ['slug' => 'material-paint-oil', 'category' => 'materials', 'ui_group' => 'Colori', 'sort_order' => 2010],
@@ -182,7 +180,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'material-wax-encaustic', 'category' => 'materials', 'ui_group' => 'Colori', 'sort_order' => 2060],
             ['slug' => 'material-pigment', 'category' => 'materials', 'ui_group' => 'Colori', 'sort_order' => 2070],
         ]);
-        
+
         // MATERIALS - Strumenti da Disegno
         $terms = array_merge($terms, [
             ['slug' => 'material-graphite', 'category' => 'materials', 'ui_group' => 'Strumenti', 'sort_order' => 2110],
@@ -192,20 +190,20 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'material-ink', 'category' => 'materials', 'ui_group' => 'Strumenti', 'sort_order' => 2150],
             ['slug' => 'material-spray-paint', 'category' => 'materials', 'ui_group' => 'Strumenti', 'sort_order' => 2160],
         ]);
-        
+
         // MATERIALS - Finiture e Preparazioni
         $terms = array_merge($terms, [
             ['slug' => 'material-gold-leaf', 'category' => 'materials', 'ui_group' => 'Finiture', 'sort_order' => 2210],
             ['slug' => 'material-silver-leaf', 'category' => 'materials', 'ui_group' => 'Finiture', 'sort_order' => 2220],
             ['slug' => 'material-gesso', 'category' => 'materials', 'ui_group' => 'Finiture', 'sort_order' => 2230],
         ]);
-        
+
         // MATERIALS - Resine e Compositi
         $terms = array_merge($terms, [
             ['slug' => 'material-resin-epoxy', 'category' => 'materials', 'ui_group' => 'Resine', 'sort_order' => 2310],
             ['slug' => 'material-fiberglass', 'category' => 'materials', 'ui_group' => 'Resine', 'sort_order' => 2320],
         ]);
-        
+
         // MATERIALS - Metalli Generici
         $terms = array_merge($terms, [
             ['slug' => 'material-metal-bronze', 'category' => 'materials', 'ui_group' => 'Metalli', 'sort_order' => 2410],
@@ -215,7 +213,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'material-metal-iron', 'category' => 'materials', 'ui_group' => 'Metalli', 'sort_order' => 2450],
             ['slug' => 'material-metal-copper', 'category' => 'materials', 'ui_group' => 'Metalli', 'sort_order' => 2460],
         ]);
-        
+
         // MATERIALS - Metalli Preziosi
         $terms = array_merge($terms, [
             ['slug' => 'material-metal-gold', 'category' => 'materials', 'ui_group' => 'Metalli Preziosi', 'sort_order' => 2510],
@@ -228,15 +226,15 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'material-metal-white-gold', 'category' => 'materials', 'ui_group' => 'Metalli Preziosi', 'sort_order' => 2580],
             ['slug' => 'material-metal-rose-gold', 'category' => 'materials', 'ui_group' => 'Metalli Preziosi', 'sort_order' => 2590],
         ]);
-        
-        // MATERIALS - Materiali Naturali  
+
+        // MATERIALS - Materiali Naturali
         $terms = array_merge($terms, [
             ['slug' => 'material-wood', 'category' => 'materials', 'ui_group' => 'Naturali', 'sort_order' => 2610],
             ['slug' => 'material-stone-marble', 'category' => 'materials', 'ui_group' => 'Naturali', 'sort_order' => 2620],
             ['slug' => 'material-stone-limestone', 'category' => 'materials', 'ui_group' => 'Naturali', 'sort_order' => 2630],
             ['slug' => 'material-stone-granite', 'category' => 'materials', 'ui_group' => 'Naturali', 'sort_order' => 2640],
         ]);
-        
+
         // MATERIALS - Ceramica
         $terms = array_merge($terms, [
             ['slug' => 'material-clay', 'category' => 'materials', 'ui_group' => 'Ceramica', 'sort_order' => 2710],
@@ -244,12 +242,12 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'material-stoneware', 'category' => 'materials', 'ui_group' => 'Ceramica', 'sort_order' => 2730],
             ['slug' => 'material-earthenware', 'category' => 'materials', 'ui_group' => 'Ceramica', 'sort_order' => 2740],
         ]);
-        
+
         // MATERIALS - Vetro
         $terms = array_merge($terms, [
             ['slug' => 'material-glass', 'category' => 'materials', 'ui_group' => 'Vetro', 'sort_order' => 2810],
         ]);
-        
+
         // MATERIALS - Carte Speciali
         $terms = array_merge($terms, [
             ['slug' => 'material-paper-rag', 'category' => 'materials', 'ui_group' => 'Carte', 'sort_order' => 2910],
@@ -257,7 +255,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'material-paper-rc', 'category' => 'materials', 'ui_group' => 'Carte', 'sort_order' => 2930],
             ['slug' => 'material-paper-handmade', 'category' => 'materials', 'ui_group' => 'Carte', 'sort_order' => 2940],
         ]);
-        
+
         // MATERIALS - Supporti come Materiali (quando la tela è IL materiale usato)
         $terms = array_merge($terms, [
             ['slug' => 'material-canvas-cotton', 'category' => 'materials', 'ui_group' => 'Supporti', 'sort_order' => 3010],
@@ -267,7 +265,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'material-panel-dibond', 'category' => 'materials', 'ui_group' => 'Supporti', 'sort_order' => 3050],
             ['slug' => 'material-acrylic-sheet', 'category' => 'materials', 'ui_group' => 'Supporti', 'sort_order' => 3060],
         ]);
-        
+
         // MATERIALS - Tessuti
         $terms = array_merge($terms, [
             ['slug' => 'material-fabric-silk', 'category' => 'materials', 'ui_group' => 'Tessuti', 'sort_order' => 3110],
@@ -275,7 +273,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'material-fabric-cotton', 'category' => 'materials', 'ui_group' => 'Tessuti', 'sort_order' => 3130],
             ['slug' => 'material-fabric-linen', 'category' => 'materials', 'ui_group' => 'Tessuti', 'sort_order' => 3140],
         ]);
-        
+
         // MATERIALS - Pietre e Gemme COMPLETE
         $terms = array_merge($terms, [
             ['slug' => 'material-gem-diamond', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3210],
@@ -290,36 +288,36 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'material-gem-pearl', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3300],
             ['slug' => 'material-gem-synthetic', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3310],
         ]);
-        
+
         // MATERIALS - Altri Materiali
         $terms = array_merge($terms, [
             ['slug' => 'material-leather', 'category' => 'materials', 'ui_group' => 'Altri', 'sort_order' => 3410],
             ['slug' => 'material-found-objects', 'category' => 'materials', 'ui_group' => 'Altri', 'sort_order' => 3420],
         ]);
-        
+
         // MATERIALS - Elettronica
         $terms = array_merge($terms, [
             ['slug' => 'material-electronics-led', 'category' => 'materials', 'ui_group' => 'Elettronica', 'sort_order' => 3510],
             ['slug' => 'material-electronics-general', 'category' => 'materials', 'ui_group' => 'Elettronica', 'sort_order' => 3520],
         ]);
-        
+
         // MATERIALS - Componenti Gioielleria
         $terms = array_merge($terms, [
             ['slug' => 'material-metal-wire', 'category' => 'materials', 'ui_group' => 'Componenti', 'sort_order' => 3610],
             ['slug' => 'material-metal-sheet', 'category' => 'materials', 'ui_group' => 'Componenti', 'sort_order' => 3620],
             ['slug' => 'material-solder-jewelry', 'category' => 'materials', 'ui_group' => 'Componenti', 'sort_order' => 3630],
         ]);
-        
+
         // MATERIALS - Smalti e Trattamenti
         $terms = array_merge($terms, [
             ['slug' => 'material-enamel-vitreous', 'category' => 'materials', 'ui_group' => 'Smalti', 'sort_order' => 3710],
             ['slug' => 'material-patina-oxidation', 'category' => 'materials', 'ui_group' => 'Smalti', 'sort_order' => 3720],
         ]);
-        
+
         // ======================================
-        // SUPPORTS - TUTTI I SUPPORTI COMPLETI DAI FILE MD  
+        // SUPPORTS - TUTTI I SUPPORTI COMPLETI DAI FILE MD
         // ======================================
-        
+
         // SUPPORTS - Tele e Tessuti (quando la tela è IL supporto dell'opera)
         $terms = array_merge($terms, [
             ['slug' => 'support-canvas-cotton', 'category' => 'support', 'ui_group' => 'Tele', 'sort_order' => 4010],
@@ -327,7 +325,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'support-canvas-jute', 'category' => 'support', 'ui_group' => 'Tele', 'sort_order' => 4030],
             ['slug' => 'support-canvas-hemp', 'category' => 'support', 'ui_group' => 'Tele', 'sort_order' => 4040],
         ]);
-        
+
         // SUPPORTS - Pannelli
         $terms = array_merge($terms, [
             ['slug' => 'support-panel-wood', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4110],
@@ -337,7 +335,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'support-panel-dibond', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4150],
             ['slug' => 'support-acrylic-sheet', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4160],
         ]);
-        
+
         // SUPPORTS - Carte COMPLETE
         $terms = array_merge($terms, [
             ['slug' => 'support-paper-watercolor', 'category' => 'support', 'ui_group' => 'Carte', 'sort_order' => 4210],
@@ -349,14 +347,14 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'support-parchment', 'category' => 'support', 'ui_group' => 'Carte', 'sort_order' => 4270],
             ['slug' => 'support-vellum', 'category' => 'support', 'ui_group' => 'Carte', 'sort_order' => 4280],
         ]);
-        
+
         // SUPPORTS - Carte per Stampa
         $terms = array_merge($terms, [
             ['slug' => 'support-paper-print-rag', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4310],
             ['slug' => 'support-paper-print-baryta', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4320],
             ['slug' => 'support-paper-print-rc', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4330],
         ]);
-        
+
         // SUPPORTS - Pietre COMPLETE
         $terms = array_merge($terms, [
             ['slug' => 'support-stone-marble', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4410],
@@ -365,7 +363,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'support-stone-travertine', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4440],
             ['slug' => 'support-stone-sandstone', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4450],
         ]);
-        
+
         // SUPPORTS - Metalli
         $terms = array_merge($terms, [
             ['slug' => 'support-metal-copper', 'category' => 'support', 'ui_group' => 'Metalli', 'sort_order' => 4510],
@@ -373,7 +371,7 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'support-metal-aluminum', 'category' => 'support', 'ui_group' => 'Metalli', 'sort_order' => 4530],
             ['slug' => 'support-metal-steel', 'category' => 'support', 'ui_group' => 'Metalli', 'sort_order' => 4540],
         ]);
-        
+
         // SUPPORTS - Altri Materiali
         $terms = array_merge($terms, [
             ['slug' => 'support-glass', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4610],
@@ -382,18 +380,18 @@ class VocabularyTermSeeder extends Seeder
             ['slug' => 'support-fabric-silk', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4640],
             ['slug' => 'support-fabric-cotton', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4650],
         ]);
-        
+
         // SUPPORTS - Muro e Affreschi
         $terms = array_merge($terms, [
             ['slug' => 'support-wall', 'category' => 'support', 'ui_group' => 'Affreschi', 'sort_order' => 4710],
             ['slug' => 'support-plaster', 'category' => 'support', 'ui_group' => 'Affreschi', 'sort_order' => 4720],
         ]);
-        
+
         // SUPPORTS - Digitale
         $terms = array_merge($terms, [
             ['slug' => 'support-digital-file', 'category' => 'support', 'ui_group' => 'Digitale', 'sort_order' => 4810],
         ]);
-        
+
         // Aggiungi timestamps
         $now = now();
         foreach ($terms as &$term) {
@@ -401,10 +399,10 @@ class VocabularyTermSeeder extends Seeder
             $term['created_at'] = $now;
             $term['updated_at'] = $now;
         }
-        
+
         // Bulk insert
         DB::table('vocabulary_terms')->insert($terms);
-        
+
         $this->command->info('✅ Vocabulary terms seeded: ' . count($terms) . ' terms');
         $this->command->info('📊 Techniques: ' . collect($terms)->where('category', 'technique')->count());
         $this->command->info('📊 Materials: ' . collect($terms)->where('category', 'materials')->count());

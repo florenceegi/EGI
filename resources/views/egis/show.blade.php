@@ -1175,3 +1175,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+@push('scripts')
+    @vite('resources/js/coa/vocabulary-modal.js')
+@endpush

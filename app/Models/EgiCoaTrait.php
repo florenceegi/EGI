@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class EgiCoaTrait extends Model
-{
+class EgiCoaTrait extends Model {
     use HasFactory;
 
     protected $fillable = [
@@ -34,8 +33,7 @@ class EgiCoaTrait extends Model
     /**
      * Relazione con il modello Egi
      */
-    public function egi(): BelongsTo
-    {
+    public function egi(): BelongsTo {
         return $this->belongsTo(Egi::class, 'egi_id');
     }
 
@@ -46,32 +44,28 @@ class EgiCoaTrait extends Model
     /**
      * Scope per filtrare per EGI specifico
      */
-    public function scopeForEgi(Builder $query, int $egiId): Builder
-    {
+    public function scopeForEgi(Builder $query, int $egiId): Builder {
         return $query->where('egi_id', $egiId);
     }
 
     /**
      * Scope per EGI con tecniche specifiche
      */
-    public function scopeWithTechnique(Builder $query, string $techniqueSlug): Builder
-    {
+    public function scopeWithTechnique(Builder $query, string $techniqueSlug): Builder {
         return $query->whereJsonContains('technique_slugs', $techniqueSlug);
     }
 
     /**
      * Scope per EGI con materiali specifici
      */
-    public function scopeWithMaterial(Builder $query, string $materialSlug): Builder
-    {
+    public function scopeWithMaterial(Builder $query, string $materialSlug): Builder {
         return $query->whereJsonContains('materials_slugs', $materialSlug);
     }
 
     /**
      * Scope per EGI con supporti specifici
      */
-    public function scopeWithSupport(Builder $query, string $supportSlug): Builder
-    {
+    public function scopeWithSupport(Builder $query, string $supportSlug): Builder {
         return $query->whereJsonContains('support_slugs', $supportSlug);
     }
 
@@ -82,8 +76,7 @@ class EgiCoaTrait extends Model
     /**
      * Ottieni le tecniche come oggetti VocabularyTerm
      */
-    public function getTechniqueTerms()
-    {
+    public function getTechniqueTerms() {
         if (empty($this->technique_slugs)) {
             return collect();
         }
@@ -98,8 +91,7 @@ class EgiCoaTrait extends Model
     /**
      * Ottieni le tecniche con traduzioni
      */
-    public function getTechniquesWithTranslations(): array
-    {
+    public function getTechniquesWithTranslations(): array {
         $terms = $this->getTechniqueTerms();
         $translated = $terms->map(function ($term) {
             return [
@@ -128,8 +120,7 @@ class EgiCoaTrait extends Model
     /**
      * Ottieni i materiali come oggetti VocabularyTerm
      */
-    public function getMaterialTerms()
-    {
+    public function getMaterialTerms() {
         if (empty($this->materials_slugs)) {
             return collect();
         }
@@ -144,8 +135,7 @@ class EgiCoaTrait extends Model
     /**
      * Ottieni i materiali con traduzioni
      */
-    public function getMaterialsWithTranslations(): array
-    {
+    public function getMaterialsWithTranslations(): array {
         $terms = $this->getMaterialTerms();
         $translated = $terms->map(function ($term) {
             return [
@@ -174,8 +164,7 @@ class EgiCoaTrait extends Model
     /**
      * Ottieni i supporti come oggetti VocabularyTerm
      */
-    public function getSupportTerms()
-    {
+    public function getSupportTerms() {
         if (empty($this->support_slugs)) {
             return collect();
         }
@@ -190,8 +179,7 @@ class EgiCoaTrait extends Model
     /**
      * Ottieni i supporti con traduzioni
      */
-    public function getSupportsWithTranslations(): array
-    {
+    public function getSupportsWithTranslations(): array {
         $terms = $this->getSupportTerms();
         $translated = $terms->map(function ($term) {
             return [
@@ -220,8 +208,7 @@ class EgiCoaTrait extends Model
     /**
      * Ottieni tutti i trait completi con traduzioni
      */
-    public function getAllTraitsWithTranslations(): array
-    {
+    public function getAllTraitsWithTranslations(): array {
         return [
             'techniques' => $this->getTechniquesWithTranslations(),
             'materials' => $this->getMaterialsWithTranslations(),
@@ -232,29 +219,27 @@ class EgiCoaTrait extends Model
     /**
      * Ottieni tutti i trait per una lingua specifica
      */
-    public function getAllTraitsForLocale(string $locale): array
-    {
+    public function getAllTraitsForLocale(string $locale): array {
         $currentLocale = app()->getLocale();
         app()->setLocale($locale);
-        
+
         $traits = $this->getAllTraitsWithTranslations();
-        
+
         app()->setLocale($currentLocale);
-        
+
         return $traits;
     }
 
     /**
      * Verifica se l'EGI ha traits definiti
      */
-    public function hasTraits(): bool
-    {
+    public function hasTraits(): bool {
         return !empty($this->technique_slugs) ||
-               !empty($this->materials_slugs) ||
-               !empty($this->support_slugs) ||
-               !empty($this->technique_other) ||
-               !empty($this->materials_other) ||
-               !empty($this->support_other);
+            !empty($this->materials_slugs) ||
+            !empty($this->support_slugs) ||
+            !empty($this->technique_other) ||
+            !empty($this->materials_other) ||
+            !empty($this->support_other);
     }
 
     // ========================================
@@ -264,8 +249,7 @@ class EgiCoaTrait extends Model
     /**
      * Imposta le tecniche (normalizza l'input)
      */
-    public function setTechniques(array $slugs, ?string $other = null): void
-    {
+    public function setTechniques(array $slugs, ?string $other = null): void {
         $this->technique_slugs = array_filter($slugs);
         $this->technique_other = $other;
     }
@@ -273,8 +257,7 @@ class EgiCoaTrait extends Model
     /**
      * Imposta i materiali (normalizza l'input)
      */
-    public function setMaterials(array $slugs, ?string $other = null): void
-    {
+    public function setMaterials(array $slugs, ?string $other = null): void {
         $this->materials_slugs = array_filter($slugs);
         $this->materials_other = $other;
     }
@@ -282,8 +265,7 @@ class EgiCoaTrait extends Model
     /**
      * Imposta i supporti (normalizza l'input)
      */
-    public function setSupports(array $slugs, ?string $other = null): void
-    {
+    public function setSupports(array $slugs, ?string $other = null): void {
         $this->support_slugs = array_filter($slugs);
         $this->support_other = $other;
     }
@@ -295,8 +277,7 @@ class EgiCoaTrait extends Model
     /**
      * Regole di validazione per il modello
      */
-    public static function validationRules(): array
-    {
+    public static function validationRules(): array {
         return [
             'egi_id' => 'required|exists:egis,id',
             'technique_slugs' => 'nullable|array',
@@ -318,16 +299,14 @@ class EgiCoaTrait extends Model
     /**
      * Trova o crea CoA traits per un EGI
      */
-    public static function findOrCreateForEgi(int $egiId): self
-    {
+    public static function findOrCreateForEgi(int $egiId): self {
         return static::firstOrCreate(['egi_id' => $egiId]);
     }
 
     /**
      * Aggiorna o crea i traits per un EGI
      */
-    public static function updateOrCreateForEgi(int $egiId, array $data): self
-    {
+    public static function updateOrCreateForEgi(int $egiId, array $data): self {
         return static::updateOrCreate(
             ['egi_id' => $egiId],
             $data
@@ -337,8 +316,7 @@ class EgiCoaTrait extends Model
     /**
      * Ottieni statistiche utilizzo termini
      */
-    public static function getTermUsageStats(): array
-    {
+    public static function getTermUsageStats(): array {
         $stats = [
             'total_egis_with_traits' => static::count(),
             'technique_usage' => [],
@@ -348,7 +326,7 @@ class EgiCoaTrait extends Model
 
         // Conta l'utilizzo dei termini (query complessa per JSON)
         $allTraits = static::all();
-        
+
         foreach ($allTraits as $trait) {
             // Tecniche
             if (!empty($trait->technique_slugs)) {
@@ -356,14 +334,14 @@ class EgiCoaTrait extends Model
                     $stats['technique_usage'][$slug] = ($stats['technique_usage'][$slug] ?? 0) + 1;
                 }
             }
-            
+
             // Materiali
             if (!empty($trait->materials_slugs)) {
                 foreach ($trait->materials_slugs as $slug) {
                     $stats['material_usage'][$slug] = ($stats['material_usage'][$slug] ?? 0) + 1;
                 }
             }
-            
+
             // Supporti
             if (!empty($trait->support_slugs)) {
                 foreach ($trait->support_slugs as $slug) {
