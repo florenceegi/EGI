@@ -7,7 +7,7 @@
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
-                Categorie
+                {{ __('coa_traits.categories') }}
             </button>
             <span class="text-gray-400">›</span>
             <h3 class="text-lg font-medium text-gray-900">{{ ucfirst($category) }}</h3>
@@ -15,7 +15,7 @@
 
         @if($search)
             <div class="text-sm text-gray-500">
-                Risultati per: "{{ $search }}"
+                                {{ __('coa_traits.results_for') }}: "{{ $search }}"
             </div>
         @endif
     </div>
@@ -72,7 +72,7 @@
         </div>
 
         <div class="mt-4 text-xs text-gray-500 text-center">
-            {{ $terms->count() }} termini trovati
+            {{ $terms->count() }} {{ __('coa_traits.terms_found') }}
         </div>
     @else
         <div class="text-center py-12">
@@ -81,16 +81,16 @@
             </svg>
             <h3 class="mt-2 text-sm font-medium text-gray-900">
                 @if($search)
-                    Nessun risultato trovato
+                    {{ __('coa_traits.no_results_found') }}
                 @else
-                    Nessun termine disponibile
+                    {{ __('coa_traits.no_terms_available') }}
                 @endif
             </h3>
             <p class="mt-1 text-sm text-gray-500">
                 @if($search)
-                    Nessun termine corrisponde alla ricerca "{{ $search }}" in {{ $category }}.
+                    {{ __('coa_traits.no_terms_match_search') }} "{{ $search }}" {{ __('coa_traits.in_category') }} {{ $category }}.
                 @else
-                    Non sono stati trovati termini per la categoria {{ $category }}.
+                    {{ __('coa_traits.no_terms_found_category') }} {{ $category }}.
                 @endif
             </p>
         </div>

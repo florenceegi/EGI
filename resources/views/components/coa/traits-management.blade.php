@@ -232,6 +232,14 @@
 <script>
 window.CoaTraitsManager = window.CoaTraitsManager || {};
 
+// Define translations for JavaScript
+window.coaTraitsTranslations = {
+    no_technique_selected: @json(__('coa_traits.no_technique_selected')),
+    no_materials_selected: @json(__('coa_traits.no_materials_selected')),
+    no_support_selected: @json(__('coa_traits.no_support_selected')),
+    custom: @json(__('coa_traits.custom'))
+};
+
 (function() {
     'use strict';
 
@@ -366,7 +374,9 @@ window.CoaTraitsManager = window.CoaTraitsManager || {};
 
             const items = selections[category];
             if (items.length === 0) {
-                displayElement.innerHTML = `<p class="text-sm text-gray-500 italic">Nessun elemento selezionato per ${category}</p>`;
+                const messageKey = `no_${category}_selected`;
+                const message = window.coaTraitsTranslations[messageKey] || `No ${category} selected`;
+                displayElement.innerHTML = `<p class="text-sm text-gray-500 italic">${message}</p>`;
                 return;
             }
 
@@ -388,7 +398,8 @@ window.CoaTraitsManager = window.CoaTraitsManager || {};
             if (customItems.length > 0) {
                 html += customItems.length > 0 && regularItems.length > 0 ? '<div class="mt-2">' : '';
                 customItems.forEach(item => {
-                    html += `<span class="inline-block px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-md">${item.name} <span class="text-xs">(custom)</span></span>`;
+                    const customLabel = window.coaTraitsTranslations.custom || 'custom';
+                    html += `<span class="inline-block px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-md">${item.name} <span class="text-xs">(${customLabel})</span></span>`;
                 });
                 html += customItems.length > 0 && regularItems.length > 0 ? '</div>' : '';
             }

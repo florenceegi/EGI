@@ -4,9 +4,9 @@
         <svg class="mx-auto h-12 w-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"/>
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">Errore</h3>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('coa_traits.error') }}</h3>
         <p class="mt-1 text-sm text-gray-500">
-            {{ $error ?? 'Si è verificato un errore imprevisto.' }}
+            {{ $error ?? __('coa_traits.unexpected_error') }}
         </p>
         <div class="mt-6 flex justify-center space-x-3">
             <button onclick="retryOperation()"
@@ -14,14 +14,14 @@
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                 </svg>
-                Riprova
+                {{ __('coa_traits.retry') }}
             </button>
             <button onclick="goBackToStart()"
                     class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
                 </svg>
-                Torna all'inizio
+                {{ __('coa_traits.back_to_start') }}
             </button>
         </div>
     </div>

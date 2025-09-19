@@ -2,7 +2,7 @@
 <div class="vocabulary-search-results-container" data-component="vocabulary-search-results">
     <div class="flex items-center justify-between mb-4">
         <div class="flex items-center space-x-2">
-            <h3 class="text-lg font-medium text-gray-900">Risultati ricerca</h3>
+            <h3 class="text-lg font-medium text-gray-900">{{ __('coa_traits.search_results') }}</h3>
             @if($category)
                 <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
                     {{ ucfirst($category) }}
@@ -11,7 +11,7 @@
         </div>
 
         <div class="text-sm text-gray-500">
-            Per: "{{ $query }}"
+            {{ __('coa_traits.results_for') }}: "{{ $query }}"
         </div>
     </div>
 
@@ -72,9 +72,9 @@
         </div>
 
         <div class="mt-4 text-xs text-gray-500 text-center">
-            {{ $terms->count() }} risultati trovati
+            {{ $terms->count() }} {{ __('coa_traits.results_found') }}
             @if($category)
-                in {{ $category }}
+                {{ __('coa_traits.in_category') }} {{ $category }}
             @endif
         </div>
     @else
@@ -82,17 +82,17 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">Nessun risultato trovato</h3>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('coa_traits.no_results_found') }}</h3>
             <p class="mt-1 text-sm text-gray-500">
-                Nessun termine corrisponde alla ricerca "{{ $query }}"
+                {{ __('coa_traits.no_terms_match_search') }} "{{ $query }}"
                 @if($category)
-                    nella categoria {{ $category }}
+                    {{ __('coa_traits.in_category') }} {{ $category }}
                 @endif
                 .
             </p>
             <div class="mt-4">
                 <button onclick="clearSearch()" class="text-sm text-blue-600 hover:text-blue-500">
-                    Cancella ricerca
+                    {{ __('coa_traits.clear_search') }}
                 </button>
             </div>
         </div>
