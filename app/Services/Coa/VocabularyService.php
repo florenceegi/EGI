@@ -86,7 +86,7 @@ class VocabularyService {
             ]);
 
             // Validate category
-            $validCategories = ['technique', 'material', 'support'];
+            $validCategories = ['technique', 'materials', 'support'];
             if (!in_array($category, $validCategories)) {
                 $this->errorManager->handle('VOCABULARY_INVALID_CATEGORY', [
                     'category' => $category,
@@ -434,7 +434,7 @@ class VocabularyService {
 
         // Add translated fields
         $term->name = __("coa_vocabulary.{$term->slug}", [], $currentLocale);
-        
+
         // Get professional description - all terms now have specific descriptions
         $descriptionKey = "coa_vocabulary.{$term->slug}_description";
         $term->description = __($descriptionKey, [], $currentLocale);
