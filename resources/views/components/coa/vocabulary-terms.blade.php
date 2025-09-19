@@ -26,7 +26,7 @@
                 <div class="term-item p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
                      data-term-id="{{ $term->id }}"
                      data-term-slug="{{ $term->slug }}"
-                     onclick="selectTerm('{{ $term->slug }}', '{{ addslashes($term->name) }}')">
+                     onclick="VocabularyModalController.selectTerm('{{ $term->slug }}', '{{ addslashes($term->name) }}')">>
                     <div class="flex items-start justify-between">
                         <div class="flex-1 min-w-0">
                             <h4 class="text-sm font-medium text-gray-900">

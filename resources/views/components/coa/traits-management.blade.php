@@ -355,7 +355,7 @@ window.coaTraitsTranslations = {
             }
         });
 
-        // Submit form via AJAX
+        // Submit form via AJAX using UEM safeFetch
         const form = document.getElementById(`coa-traits-form-${egiId}`);
         if (!form) {
             console.error('CoaTraitsManager: Form not found for EGI', egiId);
@@ -364,7 +364,10 @@ window.coaTraitsTranslations = {
 
         const formData = new FormData(form);
 
-        fetch(form.action, {
+        // Use UEM safeFetch if available, fallback to regular fetch
+        const fetchFunction = (window.UEM && window.UEM.safeFetch) ? window.UEM.safeFetch : fetch;
+
+        fetchFunction(form.action, {
             method: 'POST',
             body: formData,
             headers: {

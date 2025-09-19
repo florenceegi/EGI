@@ -151,7 +151,7 @@ class VocabularyController extends Controller {
     public function getByCategory(Request $request, string $category) {
         try {
             $validator = Validator::make(array_merge($request->all(), ['category' => $category]), [
-                'category' => 'required|string|in:technique,material,support',
+                'category' => 'required|string|in:technique,materials,support',
                 'search' => 'sometimes|string|max:100',
                 'locale' => 'sometimes|string|size:2'
             ]);
@@ -248,7 +248,7 @@ class VocabularyController extends Controller {
         try {
             $validator = Validator::make($request->all(), [
                 'q' => 'required|string|min:2|max:100',
-                'category' => 'sometimes|string|in:technique,material,support',
+                'category' => 'sometimes|string|in:technique,materials,support',
                 'locale' => 'sometimes|string|size:2'
             ]);
 

@@ -278,7 +278,7 @@ class CoaEgiTraitsController extends Controller {
                     ],
                     'previous_traits_existed' => $coaTraits->wasRecentlyCreated ? false : true
                 ],
-                GdprActivityCategory::DATA_UPDATE
+                GdprActivityCategory::CONTENT_MODIFICATION
             );
 
             $this->logger->info('[CoA EGI Traits] Traits updated successfully', [
@@ -299,7 +299,7 @@ class CoaEgiTraitsController extends Controller {
                         'technique_free_text' => $coaTraits->technique_free_text ?? [],
                         'materials_free_text' => $coaTraits->materials_free_text ?? [],
                         'support_free_text' => $coaTraits->support_free_text ?? [],
-                        'last_updated_at' => $coaTraits->last_updated_at->toISOString(),
+                        'last_updated_at' => $coaTraits->last_updated_at?->toISOString() ?? now()->toISOString(),
                         'updated_by_user_id' => $coaTraits->updated_by_user_id
                     ]
                 ]
