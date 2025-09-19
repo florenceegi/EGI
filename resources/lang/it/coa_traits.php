@@ -25,7 +25,7 @@ return [
 
     // Categorie
     'category_technique' => 'Tecnica',
-    'category_materials' => 'Materiali', 
+    'category_materials' => 'Materiali',
     'category_support' => 'Supporto',
 
     // Selezioni per Categoria
@@ -71,4 +71,10 @@ return [
     'unexpected_error' => 'Si è verificato un errore imprevisto.',
     'retry' => 'Riprova',
     'back_to_start' => 'Torna all\'inizio',
+
+    // Errori specifici del modal
+    'errors' => [
+        'modal_not_ready' => 'Il sistema di selezione vocabolario non è ancora caricato. Riprova tra qualche secondo.',
+        'modal_malfunction' => 'Errore nel sistema di selezione. Ricarica la pagina e riprova.',
+    ],
 ];

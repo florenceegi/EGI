@@ -22,41 +22,20 @@
                     </button>
                 </div>
 
-                {{-- Tabs + Search --}}
+                {{-- Search Bar --}}
                 <div class="mt-4">
-                    <div class="flex items-center justify-between border-b border-gray-200">
-                        {{-- Tabs Navigation --}}
-                        <nav class="flex space-x-8" aria-label="Tabs">
-                            <button class="vocabulary-tab border-b-2 border-blue-500 py-2 px-1 text-sm font-medium text-blue-600 whitespace-nowrap active"
-                                    data-tab="technique"
-                                    onclick="vocabularyModal.switchTab('technique')">
-                                {{ __('coa_traits.category_technique') }}
-                            </button>
-                            <button class="vocabulary-tab border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap"
-                                    data-tab="materials"
-                                    onclick="vocabularyModal.switchTab('materials')">
-                                {{ __('coa_traits.category_materials') }}
-                            </button>
-                            <button class="vocabulary-tab border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap"
-                                    data-tab="support"
-                                    onclick="vocabularyModal.switchTab('support')">
-                                {{ __('coa_traits.category_support') }}
-                            </button>
-                        </nav>
-
+                    <div class="flex items-center justify-end border-b border-gray-200 pb-3">
                         {{-- Search Box --}}
-                        <div class="ml-auto">
-                            <div class="relative">
-                                <input id="vocabularySearch"
-                                       type="search"
-                                       placeholder="{{ __('coa_traits.search_placeholder') }}"
-                                       class="block w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                       autocomplete="off">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                    </svg>
-                                </div>
+                        <div class="relative">
+                            <input id="vocabularySearch"
+                                   type="search"
+                                   placeholder="{{ __('coa_traits.search_placeholder') }}"
+                                   class="block w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                   autocomplete="off">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
                             </div>
                         </div>
                     </div>

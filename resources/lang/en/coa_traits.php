@@ -71,4 +71,10 @@ return [
     'unexpected_error' => 'An unexpected error occurred.',
     'retry' => 'Retry',
     'back_to_start' => 'Back to start',
+
+    // Modal specific errors
+    'errors' => [
+        'modal_not_ready' => 'The vocabulary selection system is not loaded yet. Please try again in a few seconds.',
+        'modal_malfunction' => 'Error in selection system. Please reload the page and try again.',
+    ],
 ];

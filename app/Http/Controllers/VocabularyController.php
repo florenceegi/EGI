@@ -88,26 +88,28 @@ class VocabularyController extends Controller {
      * @transparency-level High - complete category transparency
      * @narrative-coherence Links categories to CoA traits system
      */
-    public function getCategories(Request $request): View {
+    public function getCategories(Request $request) {
         try {
             $this->logger->info('[Vocabulary Web] Categories requested for modal', [
                 'user_id' => Auth::id(),
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'locale' => app()->getLocale()
+                'locale' => app()->getLocale(),
+                'is_ajax' => $request->ajax()
             ]);
 
             $locale = $request->get('locale', app()->getLocale());
             $categories = $this->vocabularyService->getCategories($locale);
 
-            $this->auditService->log(
-                GdprActivityCategory::DATA_ACCESS,
+            $this->auditService->logUserAction(
+                Auth::user(),
                 'vocabulary_categories_accessed',
                 [
                     'categories_count' => count($categories),
                     'locale' => $locale,
                     'access_type' => 'modal_interface'
-                ]
+                ],
+                GdprActivityCategory::DATA_ACCESS
             );
 
             $this->logger->info('[Vocabulary Web] Categories retrieved for modal', [
@@ -116,11 +118,12 @@ class VocabularyController extends Controller {
                 'user_id' => Auth::id()
             ]);
 
+            // Return view for both AJAX and regular HTTP requests
+            // The modal system expects HTML, not JSON
             return view('components.coa.vocabulary-categories', [
-                'categories' => $categories,
+                'categories' => collect($categories),
                 'locale' => $locale
             ]);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('VOCABULARY_WEB_CATEGORIES_ERROR', [
                 'error' => $e->getMessage(),
@@ -130,6 +133,7 @@ class VocabularyController extends Controller {
                 'timestamp' => now()->toIso8601String()
             ], $e);
 
+            // Return view error for both AJAX and regular HTTP requests
             return view('components.coa.vocabulary-error', [
                 'error' => 'Errore nel caricamento delle categorie'
             ]);
@@ -144,7 +148,7 @@ class VocabularyController extends Controller {
      * @return View
      * @privacy-safe Returns public vocabulary data only
      */
-    public function getByCategory(Request $request, string $category): View {
+    public function getByCategory(Request $request, string $category) {
         try {
             $validator = Validator::make(array_merge($request->all(), ['category' => $category]), [
                 'category' => 'required|string|in:technique,material,support',
@@ -153,6 +157,14 @@ class VocabularyController extends Controller {
             ]);
 
             if ($validator->fails()) {
+                if ($request->ajax() || $request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'Parametri non validi per la categoria',
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
+
                 return view('components.coa.vocabulary-error', [
                     'error' => 'Parametri non validi per la categoria'
                 ]);
@@ -162,16 +174,23 @@ class VocabularyController extends Controller {
                 'category' => $category,
                 'search' => $request->get('search'),
                 'user_id' => Auth::id(),
-                'ip_address' => $request->ip()
+                'ip_address' => $request->ip(),
+                'is_ajax' => $request->ajax()
             ]);
 
             $search = $request->get('search');
             $locale = $request->get('locale', app()->getLocale());
+            $perPage = $request->get('per_page', 20);
 
-            $terms = $this->vocabularyService->getTermsByCategory($category, 50, $locale, $search);
+            // Use search if provided, otherwise get all terms for category
+            if (!empty($search)) {
+                $terms = $this->vocabularyService->searchTerms($search, $perPage, $category, $locale);
+            } else {
+                $terms = $this->vocabularyService->getTermsByCategory($category, $perPage, $locale);
+            }
 
-            $this->auditService->log(
-                GdprActivityCategory::DATA_ACCESS,
+            $this->auditService->logUserAction(
+                Auth::user(),
                 'vocabulary_terms_accessed',
                 [
                     'category' => $category,
@@ -179,16 +198,18 @@ class VocabularyController extends Controller {
                     'search_query' => $search,
                     'locale' => $locale,
                     'access_type' => 'modal_interface'
-                ]
+                ],
+                GdprActivityCategory::DATA_ACCESS
             );
 
+            // Return view for both AJAX and regular HTTP requests
+            // The modal system expects HTML, not JSON
             return view('components.coa.vocabulary-terms', [
                 'category' => $category,
                 'terms' => $terms,
                 'search' => $search,
                 'locale' => $locale
             ]);
-
         } catch (\InvalidArgumentException $e) {
             return view('components.coa.vocabulary-error', [
                 'error' => 'Categoria non valida: ' . $e->getMessage()
@@ -201,6 +222,14 @@ class VocabularyController extends Controller {
                 'ip_address' => $request->ip(),
                 'timestamp' => now()->toIso8601String()
             ], $e);
+
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Errore nel caricamento dei termini',
+                    'message' => 'Si è verificato un errore durante il caricamento dei termini del vocabolario.'
+                ], 500);
+            }
 
             return view('components.coa.vocabulary-error', [
                 'error' => 'Errore nel caricamento dei termini'
@@ -260,7 +289,6 @@ class VocabularyController extends Controller {
                 'terms' => $terms,
                 'locale' => $locale
             ]);
-
         } catch (ValidationException $e) {
             return view('components.coa.vocabulary-error', [
                 'error' => 'Errore di validazione nella ricerca'

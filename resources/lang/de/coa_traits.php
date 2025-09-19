@@ -71,4 +71,10 @@ return [
     'unexpected_error' => 'Ein unerwarteter Fehler ist aufgetreten.',
     'retry' => 'Wiederholen',
     'back_to_start' => 'Zurück zum Start',
+
+    // Modal specific errors
+    'errors' => [
+        'modal_not_ready' => 'Das Vokabular-Auswahlsystem ist noch nicht geladen. Bitte versuchen Sie es in einigen Sekunden erneut.',
+        'modal_malfunction' => 'Fehler im Auswahlsystem. Bitte laden Sie die Seite neu und versuchen Sie es erneut.',
+    ],
 ];

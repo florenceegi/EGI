@@ -71,4 +71,10 @@ return [
     'unexpected_error' => 'Ocurrió un error inesperado.',
     'retry' => 'Reintentar',
     'back_to_start' => 'Volver al inicio',
+
+    // Modal specific errors
+    'errors' => [
+        'modal_not_ready' => 'El sistema de selección de vocabulario aún no está cargado. Inténtelo de nuevo en unos segundos.',
+        'modal_malfunction' => 'Error en el sistema de selección. Recargue la página e inténtelo de nuevo.',
+    ],
 ];

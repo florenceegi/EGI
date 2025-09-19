@@ -253,7 +253,7 @@ const TraitsViewer = {
                 `;
             }
 
-            console.log('TraitsViewer: Modal opened successfully');
+            // console.log('TraitsViewer: Modal opened successfully');
         } else {
             console.error('TraitsViewer: Modal not found');
         }
@@ -266,7 +266,7 @@ const TraitsViewer = {
 
 class TraitImageManager {
     constructor() {
-        console.log('TraitImageManager: Initializing clean version...');
+        // console.log('TraitImageManager: Initializing clean version...');
 
         this.translations = window.traitTranslations || {};
         this.uploadInProgress = new Set();

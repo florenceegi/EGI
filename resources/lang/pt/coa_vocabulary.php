@@ -296,4 +296,20 @@ return [
 
     // Digital
     'support-digital-file' => 'Arquivo digital',
+
+    // ========================================
+    // CATEGORY NAMES & DESCRIPTIONS
+    // ========================================
+
+    // Category names
+    'category_technique' => 'Técnica',
+    'category_materials' => 'Materiais',
+    'category_support' => 'Suporte',
+    'category_material' => 'Material', // singular version
+
+    // Category descriptions
+    'category_technique_description' => 'Técnicas artísticas utilizadas para criar a obra de arte',
+    'category_materials_description' => 'Materiais utilizados para criar a obra de arte',
+    'category_support_description' => 'Suporte físico no qual a obra de arte foi criada',
+    'category_material_description' => 'Material utilizado para criar a obra de arte',
 ];

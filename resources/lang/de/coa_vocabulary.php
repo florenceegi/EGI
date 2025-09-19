@@ -296,4 +296,20 @@ return [
 
     // Digital
     'support-digital-file' => 'Digitale Datei',
+
+    // ========================================
+    // CATEGORY NAMES & DESCRIPTIONS
+    // ========================================
+
+    // Category names
+    'category_technique' => 'Technik',
+    'category_materials' => 'Materialien',
+    'category_support' => 'Träger',
+    'category_material' => 'Material', // singular version
+
+    // Category descriptions
+    'category_technique_description' => 'Künstlerische Techniken zur Erstellung des Kunstwerks',
+    'category_materials_description' => 'Materialien zur Erstellung des Kunstwerks',
+    'category_support_description' => 'Physischer Träger, auf dem das Kunstwerk erstellt wurde',
+    'category_material_description' => 'Material zur Erstellung des Kunstwerks',
 ];

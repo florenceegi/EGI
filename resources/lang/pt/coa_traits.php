@@ -2,7 +2,22 @@
 
 return [
     /*
-    |--------------------------------------------------------------------------
+    |------------------------------------    'no_terms_match_search' => 'Nenhum termo corresponde à pesquisa',
+    'in_category' => 'na categoria',
+    'clear_search' => 'Limpar pesquisa',
+
+    // Vocabulary Components - Errors
+    'error' => 'Erro',
+    'unexpected_error' => 'Ocorreu um erro inesperado.',
+    'retry' => 'Tentar novamente',
+    'back_to_start' => 'Voltar ao início',
+
+    // Modal specific errors
+    'errors' => [
+        'modal_not_ready' => 'O sistema de seleção de vocabulário ainda não foi carregado. Tente novamente em alguns segundos.',
+        'modal_malfunction' => 'Erro no sistema de seleção. Recarregue a página e tente novamente.',
+    ],
+];----------------------------
     | CoA Traits Management - Portuguese Translations
     |--------------------------------------------------------------------------
     |

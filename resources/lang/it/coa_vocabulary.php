@@ -409,70 +409,108 @@ return [
 
     // Tele
     'support-canvas-cotton' => 'Tela di cotone',
+    'support-canvas-cotton_description' => 'Supporto tessile in fibra di cotone preparato con primer, caratterizzato da trama uniforme, elasticità moderata e utilizzo standard per pittura a olio e acrilico',
     'support-canvas-linen' => 'Tela di lino',
+    'support-canvas-linen_description' => 'Supporto tessile premium in fibra di lino, caratterizzato da resistenza superiore, stabilità dimensionale eccellente e superficie fine per opere di conservazione',
     'support-canvas-jute' => 'Tela di juta',
+    'support-canvas-jute_description' => 'Supporto tessile in fibra vegetale grossolana, caratterizzato da texture pronunciata, economia e utilizzo per opere rustiche o di grande formato',
     'support-canvas-hemp' => 'Tela di canapa',
+    'support-canvas-hemp_description' => 'Supporto tessile in fibra di canapa, caratterizzato da resistenza elevata, durabilità naturale e proprietà ecosostenibili per pittura contemporanea',
 
     // Pannelli
     'support-panel-wood' => 'Pannello di legno',
+    'support-panel-wood_description' => 'Supporto rigido in legno massiccio o multistrato preparato, caratterizzato da stabilità dimensionale, superficie uniforme e tradizione pittorica classica',
     'support-panel-mdf' => 'Pannello MDF',
+    'support-panel-mdf_description' => 'Medium Density Fiberboard, supporto economico caratterizzato da superficie perfettamente liscia, assenza di venature e facilità di preparazione',
     'support-panel-hardboard' => 'Pannello rigido',
+    'support-panel-hardboard_description' => 'Supporto in fibra di legno pressata ad alta densità, caratterizzato da superficie liscia, economicità e utilizzo per studi e opere temporanee',
     'support-panel-plywood' => 'Compensato',
+    'support-panel-plywood_description' => 'Supporto multistrato in fogli di legno incollati, caratterizzato da resistenza strutturale, stabilità dimensionale e utilizzo per opere di grande formato',
     'support-panel-dibond' => 'Dibond',
+    'support-panel-dibond_description' => 'Pannello composito alluminio-polietilene, caratterizzato da leggerezza, planarità perfetta e resistenza agenti atmosferici per installazioni esterne',
     'support-acrylic-sheet' => 'Lastra acrilica',
+    'support-acrylic-sheet_description' => 'Supporto in polimetilmetacrilato trasparente o opaco, caratterizzato da lavorabilità, resistenza UV e possibilità di effetti ottici contemporanei',
 
     // Carte
     'support-paper-watercolor' => 'Carta per acquerello',
+    'support-paper-watercolor_description' => 'Supporto cartaceo specifico per tecniche ad acqua, caratterizzato da assorbimento controllato, resistenza all\'umidità e texture appropriata per acquerello',
     'support-paper-drawing' => 'Carta da disegno',
+    'support-paper-drawing_description' => 'Supporto cartaceo universale per disegno, caratterizzato da superficie liscia o lievemente texturata, peso medio e versatilità per diverse tecniche secche',
     'support-paper-pastel' => 'Carta per pastello',
+    'support-paper-pastel_description' => 'Supporto cartaceo con texture pronunciata per pastelli, caratterizzato da superficie ruvida che trattiene il pigmento e facilita sfumature e sovrapposizioni',
     'support-paper-newsprint' => 'Carta di giornale',
+    'support-paper-newsprint_description' => 'Supporto cartaceo economico e assorbente, caratterizzato da bassa permanenza, utilizzo per schizzi rapidi e studi preparatori non conservativi',
     'support-paper-rice' => 'Carta di riso',
+    'support-paper-rice_description' => 'Supporto cartaceo orientale in fibre vegetali, caratterizzato da trasparenza delicata, texture fine e utilizzo tradizionale per calligrafia e pittura asiatica',
     'support-paper-handmade' => 'Carta fatta a mano',
+    'support-paper-handmade_description' => 'Supporto cartaceo artigianale con bordi irregolari, caratterizzato da qualità archivistica, texture unica e utilizzo per opere d\'arte preziose',
     'support-parchment' => 'Pergamena',
+    'support-parchment_description' => 'Supporto in pelle animale trattata, caratterizzato da durata secolare, superficie liscia e utilizzo tradizionale per manoscritti e miniature',
     'support-vellum' => 'Velina',
+    'support-vellum_description' => 'Supporto in pelle di vitello finemente preparata, caratterizzato da superficie perfettamente liscia, qualità suprema e utilizzo per opere miniaturistiche',
 
     // Stampa
     'support-paper-print-rag' => 'Carta di stracci per stampa',
+    'support-paper-print-rag_description' => 'Supporto di alta qualità per stampe d\'arte, caratterizzato da fibre tessili pure, durata secolare e utilizzo per edizioni limitate e conservazione',
     'support-paper-print-baryta' => 'Carta baritata per stampa',
+    'support-paper-print-baryta_description' => 'Supporto fotografico con strato di solfato di bario, caratterizzato da superficie lucida, gamma tonale massima e qualità archivistica per stampe fotografiche',
     'support-paper-print-rc' => 'Carta RC per stampa',
+    'support-paper-print-rc_description' => 'Supporto fotografico con base plastificata, caratterizzato da processing rapido, resistenza umidità e utilizzo per stampe commerciali e prove',
 
     // Pietre
     'support-stone-marble' => 'Marmo',
+    'support-stone-marble_description' => 'Supporto scultoreo in roccia metamorfica calcarea, caratterizzato da durezza media, lucidabilità eccellente e tradizione scultorea classica per statue',
     'support-stone-limestone' => 'Pietra calcarea',
+    'support-stone-limestone_description' => 'Supporto scultoreo sedimentario, caratterizzato da facilità di lavorazione, porosità variabile e utilizzo per scultura architettonica e decorativa',
     'support-stone-granite' => 'Granito',
+    'support-stone-granite_description' => 'Supporto scultoreo in roccia ignea, caratterizzato da durezza estrema, resistenza agenti atmosferici e utilizzo per monumenti e sculture permanenti',
     'support-stone-travertine' => 'Travertino',
+    'support-stone-travertine_description' => 'Supporto scultoreo in roccia calcarea sedimentaria, caratterizzato da texture porosa, lavorabilità media e utilizzo architettonico e scultoreo tradizionale',
     'support-stone-sandstone' => 'Arenaria',
+    'support-stone-sandstone_description' => 'Supporto scultoreo sedimentario, caratterizzato da granulometria variabile, facilità di taglio e utilizzo per scultura decorativa e architettonica',
 
     // Metalli
     'support-metal-copper' => 'Rame',
+    'support-metal-copper_description' => 'Supporto metallico per incisione e scultura, caratterizzato da malleabilità, conducibilità termica e sviluppo di patina verde naturale nel tempo',
     'support-metal-zinc' => 'Zinco',
+    'support-metal-zinc_description' => 'Supporto metallico per litografia e incisione, caratterizzato da durezza appropriata, superficie uniforme e utilizzo tradizionale per stampa artistica',
     'support-metal-aluminum' => 'Alluminio',
+    'support-metal-aluminum_description' => 'Supporto metallico leggero per scultura moderna, caratterizzato da resistenza corrosione, leggerezza e possibilità di anodizzazione colorata',
     'support-metal-steel' => 'Acciaio',
+    'support-metal-steel_description' => 'Supporto metallico strutturale per scultura, caratterizzato da resistenza meccanica elevata, saldabilità e utilizzo per opere monumentali e industriali',
 
     // Altri
     'support-glass' => 'Vetro',
+    'support-glass_description' => 'Supporto vitreo per tecniche specifiche, caratterizzato da trasparenza, fragilità e utilizzo per vetrate artistiche, incisioni su vetro e installazioni luminose',
     'support-ceramic' => 'Ceramica',
+    'support-ceramic_description' => 'Supporto ceramico per decorazione, caratterizzato da superficie porosa o smaltata, resistenza termica e utilizzo per maioliche, piastrelle artistiche',
     'support-leather-hide' => 'Pelle grezza',
+    'support-leather-hide_description' => 'Supporto organico in pelle non conciata, caratterizzato da texture naturale, flessibilità e utilizzo per decorazioni etniche e arte primitiva',
     'support-fabric-silk' => 'Seta',
+    'support-fabric-silk_description' => 'Supporto tessile pregiato, caratterizzato da superficie liscia, lucentezza naturale e utilizzo tradizionale per pittura orientale e arazzi fini',
     'support-fabric-cotton' => 'Cotone',
+    'support-fabric-cotton_description' => 'Supporto tessile versatile, caratterizzato da assorbimento controllato, facilità di preparazione e utilizzo per pittura su tessuto e banner artistici',
 
     // Affreschi
     'support-wall' => 'Muro',
+    'support-wall_description' => 'Supporto architettonico per pittura murale, caratterizzato da stabilità strutturale, integrazione architettonica e utilizzo per affreschi e murales permanenti',
     'support-plaster' => 'Intonaco',
+    'support-plaster_description' => 'Supporto murale in malta di calce per affresco, caratterizzato da alcalinità, porosità controllata e reazione chimica con pigmenti per fissaggio permanente',
 
     // Digitale
     'support-digital-file' => 'File digitale',
+    'support-digital-file_description' => 'Supporto virtuale per arte digitale, caratterizzato da risoluzione variabile, modificabilità e archiviazione elettronica per opere multimediali e NFT',
 
     // ========================================
     // CATEGORY NAMES & DESCRIPTIONS
     // ========================================
-    
+
     // Category names
     'category_technique' => 'Tecnica',
-    'category_materials' => 'Materiali', 
+    'category_materials' => 'Materiali',
     'category_support' => 'Supporto',
     'category_material' => 'Materiale', // singular version
-    
+
     // Category descriptions
     'category_technique_description' => 'Tecniche artistiche utilizzate per la realizzazione dell\'opera',
     'category_materials_description' => 'Materiali utilizzati per la creazione dell\'opera d\'arte',

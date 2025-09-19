@@ -434,7 +434,10 @@ class VocabularyService {
 
         // Add translated fields
         $term->name = __("coa_vocabulary.{$term->slug}", [], $currentLocale);
-        $term->description = __("coa_vocabulary.{$term->slug}_description", [], $currentLocale);
+        
+        // Get professional description - all terms now have specific descriptions
+        $descriptionKey = "coa_vocabulary.{$term->slug}_description";
+        $term->description = __($descriptionKey, [], $currentLocale);
 
         // Add locale metadata
         $term->locale = $currentLocale;

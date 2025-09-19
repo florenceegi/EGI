@@ -9,8 +9,12 @@
  * @date 2025-09-19
  */
 
-window.vocabularyModal = (function () {
+console.log("🚀 VocabularyModal: JavaScript file loading...");
+
+window.VocabularyModalController = (function () {
     "use strict";
+
+    console.log("🚀 VocabularyModal: IIFE starting...");
 
     // Private state
     let state = {
@@ -35,6 +39,8 @@ window.vocabularyModal = (function () {
 
     // Private methods
     function initializeElements() {
+        console.log("VocabularyModal: Initializing DOM elements...");
+
         elements = {
             modal: document.getElementById("vocabularyModal"),
             content: document.getElementById("vocabularyContent"),
@@ -48,6 +54,29 @@ window.vocabularyModal = (function () {
             customTermInput: document.getElementById("customTermInput"),
             customTermText: document.getElementById("customTermText"),
         };
+
+        // Debug: Log which elements were found
+        Object.keys(elements).forEach((key) => {
+            const element = elements[key];
+            console.log(
+                `VocabularyModal: Element '${key}':`,
+                element ? "FOUND" : "NOT FOUND"
+            );
+        });
+
+        const foundElements = Object.values(elements).filter(
+            (el) => el !== null
+        ).length;
+        const totalElements = Object.keys(elements).length;
+        console.log(
+            `VocabularyModal: Found ${foundElements}/${totalElements} DOM elements`
+        );
+
+        if (foundElements === 0) {
+            console.error(
+                "VocabularyModal: No DOM elements found! Modal HTML may not be present."
+            );
+        }
 
         // Validate all elements exist
         for (const [key, element] of Object.entries(elements)) {
@@ -170,12 +199,19 @@ window.vocabularyModal = (function () {
         const urlParams = new URLSearchParams(params);
         const fullUrl = `${url}?${urlParams.toString()}`;
 
+        // Get CSRF token from meta tag
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+
         fetch(fullUrl, {
             method: "GET",
             headers: {
                 "X-Requested-With": "XMLHttpRequest",
-                Accept: "text/html",
+                Accept: "application/json",
+                ...(csrfToken && { "X-CSRF-TOKEN": csrfToken }),
             },
+            credentials: "same-origin", // Include cookies for authentication
         })
             .then((response) => {
                 if (!response.ok) {
@@ -227,22 +263,6 @@ window.vocabularyModal = (function () {
     function loadCategories() {
         loadContent("/vocabulary/categories", {
             locale: document.documentElement.lang || "it",
-        });
-    }
-
-    function updateTabsUI() {
-        const tabs = document.querySelectorAll(".vocabulary-tab");
-        tabs.forEach((tab) => {
-            const tabName = tab.dataset.tab;
-            if (tabName === state.currentTab) {
-                tab.classList.add("active");
-                tab.classList.remove("border-transparent", "text-gray-500");
-                tab.classList.add("border-blue-500", "text-blue-600");
-            } else {
-                tab.classList.remove("active");
-                tab.classList.remove("border-blue-500", "text-blue-600");
-                tab.classList.add("border-transparent", "text-gray-500");
-            }
         });
     }
 
@@ -360,8 +380,8 @@ window.vocabularyModal = (function () {
             // Show modal
             elements.modal?.classList.remove("hidden");
 
-            // Load initial content
-            this.switchTab("technique");
+            // Load initial content - show categories directly
+            loadCategories();
 
             // Focus on search input
             setTimeout(() => {
@@ -394,34 +414,6 @@ window.vocabularyModal = (function () {
 
             // Dispatch close event
             window.dispatchEvent(new CustomEvent("vocabularyModal:closed"));
-        },
-
-        /**
-         * Switch to a different tab
-         * @param {string} tab - Tab name: 'technique', 'materials', 'support'
-         */
-        switchTab: function (tab) {
-            console.log("VocabularyModal: Switching to tab:", tab);
-
-            if (!["technique", "materials", "support"].includes(tab)) {
-                console.error("VocabularyModal: Invalid tab:", tab);
-                return;
-            }
-
-            state.currentTab = tab;
-
-            // Update UI
-            updateTabsUI();
-            updateChipsDisplay();
-
-            // Clear search
-            if (elements.search) {
-                elements.search.value = "";
-            }
-            state.searchQuery = "";
-
-            // Load categories for the new tab
-            loadCategories();
         },
 
         /**
@@ -624,12 +616,20 @@ window.vocabularyModal = (function () {
     };
 })();
 
+console.log(
+    "🚀 VocabularyModal: IIFE completed, object created:",
+    window.VocabularyModalController
+);
+
 // Initialize when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("VocabularyModal: Controller loaded and ready");
+    console.log("VocabularyModalController: Controller loaded and ready");
+
+    // Also expose as vocabularyModal for backward compatibility
+    window.vocabularyModal = window.VocabularyModalController;
 });
 
 // Export for CommonJS/ES6 if needed
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = window.vocabularyModal;
+    module.exports = window.VocabularyModalController;
 }

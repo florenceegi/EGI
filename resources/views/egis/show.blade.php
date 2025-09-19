@@ -1176,6 +1176,42 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+{{-- Debug Script for Vocabulary Modal --}}
+<script>
+    console.log("🔍 DEBUG: Inline script loading...");
+    console.log("🔍 DEBUG: VocabularyModalController at page load:", window.VocabularyModalController);
+
+    // Check if script files are loading
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("🔍 DEBUG: DOM loaded, checking VocabularyModalController:", window.VocabularyModalController);
+
+        // Also check after a delay
+        setTimeout(function() {
+            console.log("🔍 DEBUG: After 2s, VocabularyModalController:", window.VocabularyModalController);
+            console.log("🔍 DEBUG: Available window properties with 'vocabulary':", Object.keys(window).filter(k => k.toLowerCase().includes('vocabulary')));
+
+            // Try to manually load the script if it's not loaded
+            if (!window.VocabularyModalController) {
+                console.log("🔧 DEBUG: Attempting manual script load...");
+                const script = document.createElement('script');
+                script.src = '/build/assets/vocabulary-modal-DfF2CEeZ.js';
+                script.onload = function() {
+                    console.log("✅ DEBUG: Manual script loaded successfully");
+                    console.log("🔍 DEBUG: VocabularyModalController after manual load:", window.VocabularyModalController);
+                };
+                script.onerror = function() {
+                    console.error("❌ DEBUG: Manual script load failed");
+                };
+                document.head.appendChild(script);
+            }
+        }, 2000);
+    });
+</script>
+
+{{-- Direct Vite inclusion --}}
+@vite('resources/js/coa/vocabulary-modal.js')
+
 @push('scripts')
+    {{-- Also try in push for redundancy --}}
     @vite('resources/js/coa/vocabulary-modal.js')
 @endpush

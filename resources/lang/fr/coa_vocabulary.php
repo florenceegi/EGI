@@ -296,4 +296,20 @@ return [
 
     // Numérique
     'support-digital-file' => 'Fichier numérique',
+
+    // ========================================
+    // CATEGORY NAMES & DESCRIPTIONS
+    // ========================================
+
+    // Category names
+    'category_technique' => 'Technique',
+    'category_materials' => 'Matériaux',
+    'category_support' => 'Support',
+    'category_material' => 'Matériau', // singular version
+
+    // Category descriptions
+    'category_technique_description' => 'Techniques artistiques utilisées pour créer l\'œuvre d\'art',
+    'category_materials_description' => 'Matériaux utilisés pour créer l\'œuvre d\'art',
+    'category_support_description' => 'Support physique sur lequel l\'œuvre d\'art a été créée',
+    'category_material_description' => 'Matériau utilisé pour créer l\'œuvre d\'art',
 ];

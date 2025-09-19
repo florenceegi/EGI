@@ -225,9 +225,6 @@
     </form>
 </div>
 
-{{-- Include the vocabulary modal --}}
-@include('components.coa.vocabulary-modal')
-
 {{-- JavaScript Controller --}}
 <script>
 window.CoaTraitsManager = window.CoaTraitsManager || {};
@@ -246,6 +243,32 @@ window.coaTraitsTranslations = {
     // Initialize manager for this EGI
     CoaTraitsManager.openModal = function(egiId) {
         console.log('CoaTraitsManager: Opening modal for EGI', egiId);
+
+        // Try to open modal with retry mechanism
+        CoaTraitsManager.tryOpenModal(egiId, 0);
+    };
+
+    CoaTraitsManager.tryOpenModal = function(egiId, retryCount) {
+        const maxRetries = 10;
+        const retryDelay = 200; // ms
+
+        // Debug: Check if VocabularyModalController is available
+        console.log('VocabularyModalController available:', typeof window.VocabularyModalController);
+        console.log('VocabularyModalController object:', window.VocabularyModalController);
+
+        if (!window.VocabularyModalController || typeof window.VocabularyModalController.open !== 'function') {
+            if (retryCount < maxRetries) {
+                console.log(`CoaTraitsManager: VocabularyModalController not ready, retrying in ${retryDelay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+                setTimeout(() => {
+                    CoaTraitsManager.tryOpenModal(egiId, retryCount + 1);
+                }, retryDelay);
+                return;
+            } else {
+                console.error('CoaTraitsManager: VocabularyModalController not available after maximum retries');
+                alert('{{ __("coa_traits.errors.modal_not_ready") }}');
+                return;
+            }
+        }
 
         // Get current selections from hidden inputs
         const currentSelections = {
@@ -291,7 +314,7 @@ window.coaTraitsTranslations = {
         });
 
         // Open vocabulary modal
-        vocabularyModal.open({
+        window.VocabularyModalController.open({
             selections: currentSelections,
             onConfirm: function(selections) {
                 CoaTraitsManager.saveSelections(egiId, selections);
@@ -434,6 +457,3 @@ window.coaTraitsTranslations = {
 
 })();
 </script>
-
-{{-- Load the vocabulary modal JavaScript --}}
-<script src="{{ asset('js/coa/vocabulary-modal.js') }}"></script>
