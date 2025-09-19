@@ -1094,7 +1094,13 @@ Route::middleware(['web', 'auth'])->prefix('traits')->name('traits.')->group(fun
 |
 */
 
-Route::middleware(['auth'])->prefix('vocabulary')->name('vocabulary.')->group(function () {
+// Test route senza middleware
+Route::get('/vocabulary-test', function () {
+    return response()->json(['message' => 'Test senza middleware', 'time' => now()]);
+})->withoutMiddleware('auth');
+
+// Public vocabulary routes (no auth required) 
+Route::prefix('vocabulary')->name('vocabulary.')->withoutMiddleware('auth')->group(function () {
     // Get categories for modal tabs
     Route::get('/categories', [App\Http\Controllers\VocabularyController::class, 'getCategories'])
         ->name('categories');
@@ -1106,6 +1112,15 @@ Route::middleware(['auth'])->prefix('vocabulary')->name('vocabulary.')->group(fu
     // Search terms (AJAX endpoint for modal search)
     Route::get('/search', [App\Http\Controllers\VocabularyController::class, 'search'])
         ->name('search');
+        
+    // Debug search endpoint
+    Route::get('/debug-search', [App\Http\Controllers\VocabularyController::class, 'debugSearch'])
+        ->name('debug-search');
+});
+
+// Authenticated vocabulary management routes
+Route::middleware(['auth'])->prefix('vocabulary')->name('vocabulary.admin.')->group(function () {
+    // Add any admin-only vocabulary routes here if needed
 });
 
 /*

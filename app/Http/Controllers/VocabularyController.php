@@ -13,6 +13,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 
 /**
  * @Oracode Controller: CoA Pro Vocabulary Web Controller
@@ -72,7 +73,7 @@ class VocabularyController extends Controller {
         $this->vocabularyService = $vocabularyService;
 
         // Apply web middleware for authenticated EGI management
-        $this->middleware('auth')->except(['getCategories', 'getByCategory', 'search']);
+        $this->middleware('auth')->except(['getCategories', 'getByCategory', 'search', 'debugSearch']);
     }
 
     /**
@@ -101,16 +102,18 @@ class VocabularyController extends Controller {
             $locale = $request->get('locale', app()->getLocale());
             $categories = $this->vocabularyService->getCategories($locale);
 
-            $this->auditService->logUserAction(
-                Auth::user(),
-                'vocabulary_categories_accessed',
-                [
-                    'categories_count' => count($categories),
-                    'locale' => $locale,
-                    'access_type' => 'modal_interface'
-                ],
-                GdprActivityCategory::DATA_ACCESS
-            );
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_categories_accessed',
+                    [
+                        'categories_count' => count($categories),
+                        'locale' => $locale,
+                        'access_type' => 'modal_interface'
+                    ],
+                    GdprActivityCategory::DATA_ACCESS
+                );
+            }
 
             $this->logger->info('[Vocabulary Web] Categories retrieved for modal', [
                 'categories_count' => count($categories),
@@ -184,23 +187,25 @@ class VocabularyController extends Controller {
 
             // Use search if provided, otherwise get all terms for category
             if (!empty($search)) {
-                $terms = $this->vocabularyService->searchTerms($search, $perPage, $category, $locale);
+                $terms = $this->vocabularyService->searchTermsCollection($search, $category, $locale);
             } else {
                 $terms = $this->vocabularyService->getTermsByCategory($category, $perPage, $locale);
             }
 
-            $this->auditService->logUserAction(
-                Auth::user(),
-                'vocabulary_terms_accessed',
-                [
-                    'category' => $category,
-                    'terms_count' => $terms->count(),
-                    'search_query' => $search,
-                    'locale' => $locale,
-                    'access_type' => 'modal_interface'
-                ],
-                GdprActivityCategory::DATA_ACCESS
-            );
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_terms_accessed',
+                    [
+                        'category' => $category,
+                        'terms_count' => $terms->count(),
+                        'search_query' => $search,
+                        'locale' => $locale,
+                        'access_type' => 'modal_interface'
+                    ],
+                    GdprActivityCategory::DATA_ACCESS
+                );
+            }
 
             // Return view for both AJAX and regular HTTP requests
             // The modal system expects HTML, not JSON
@@ -210,7 +215,7 @@ class VocabularyController extends Controller {
                 'search' => $search,
                 'locale' => $locale
             ]);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return view('components.coa.vocabulary-error', [
                 'error' => 'Categoria non valida: ' . $e->getMessage()
             ]);
@@ -238,13 +243,39 @@ class VocabularyController extends Controller {
     }
 
     /**
+     * Debug search endpoint
+     */
+    public function debugSearch(Request $request) {
+        $query = $request->get('q', 'oro');
+        $category = $request->get('category');
+        $locale = $request->get('locale', 'it');
+
+        $terms = $this->vocabularyService->searchTermsCollection($query, $category, $locale);
+
+        $response = [
+            'query' => $query,
+            'total_found' => $terms->count(),
+            'terms' => $terms->map(function ($term) {
+                return [
+                    'slug' => $term->slug,
+                    'translated_name' => $term->translated_name ?? 'MISSING',
+                    'translated_description' => substr($term->translated_description ?? 'MISSING', 0, 100),
+                    'category' => $term->category
+                ];
+            })->values()
+        ];
+
+        return response()->json($response, 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
      * Search vocabulary terms for modal
      *
      * @param Request $request
-     * @return View
+     * @return \Illuminate\Http\JsonResponse
      * @privacy-safe Returns public vocabulary data only
      */
-    public function search(Request $request): View {
+    public function search(Request $request) {
         try {
             $validator = Validator::make($request->all(), [
                 'q' => 'required|string|min:2|max:100',
@@ -254,7 +285,7 @@ class VocabularyController extends Controller {
 
             if ($validator->fails()) {
                 return view('components.coa.vocabulary-error', [
-                    'error' => 'Query di ricerca non valida'
+                    'error' => 'Query di ricerca non valida: ' . implode(', ', $validator->errors()->all())
                 ]);
             }
 
@@ -262,43 +293,53 @@ class VocabularyController extends Controller {
             $category = $request->get('category');
             $locale = $request->get('locale', app()->getLocale());
 
+            $userId = Auth::check() ? Auth::id() : null;
+
             $this->logger->info('[Vocabulary Web] Search requested for modal', [
                 'query' => $query,
                 'category' => $category,
-                'user_id' => Auth::id(),
-                'ip_address' => $request->ip()
+                'user_id' => $userId,
+                'ip_address' => $request->ip(),
+                'authenticated' => Auth::check()
             ]);
 
-            $terms = $this->vocabularyService->searchTerms($query, 50, $category, $locale);
+            // Use collection method instead of paginated for grouped display
+            $terms = $this->vocabularyService->searchTermsCollection($query, $category, $locale);
 
-            $this->auditService->log(
-                GdprActivityCategory::DATA_ACCESS,
-                'vocabulary_search_performed',
-                [
-                    'search_query' => $query,
-                    'category_filter' => $category,
-                    'results_count' => $terms->count(),
-                    'locale' => $locale,
-                    'access_type' => 'modal_search'
-                ]
-            );
+            // Only log audit if user is authenticated
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_search_performed',
+                    [
+                        'search_query' => $query,
+                        'category_filter' => $category,
+                        'results_count' => $terms->count(),
+                        'locale' => $locale,
+                        'access_type' => 'modal_search'
+                    ],
+                    GdprActivityCategory::DATA_ACCESS
+                );
+            }
 
-            return view('components.coa.vocabulary-search-results', [
-                'query' => $query,
-                'category' => $category,
+            // Return view for both AJAX and regular HTTP requests
+            // The modal system expects HTML, not JSON
+            return view('components.coa.vocabulary-terms', [
+                'category' => $category, // May be null for search across all categories
                 'terms' => $terms,
+                'search' => $query,
                 'locale' => $locale
             ]);
         } catch (ValidationException $e) {
             return view('components.coa.vocabulary-error', [
-                'error' => 'Errore di validazione nella ricerca'
+                'error' => 'Query di ricerca non valida: ' . implode(', ', $e->validator->errors()->all())
             ]);
         } catch (\Exception $e) {
             $this->errorManager->handle('VOCABULARY_WEB_SEARCH_ERROR', [
                 'query' => $request->get('q'),
                 'category' => $request->get('category'),
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id(),
+                'user_id' => Auth::check() ? Auth::id() : null,
                 'ip_address' => $request->ip(),
                 'timestamp' => now()->toIso8601String()
             ], $e);

@@ -93,33 +93,47 @@ class VocabularyService {
                     'valid_categories' => $validCategories,
                     'user_id' => Auth::id(),
                     'timestamp' => now()->toIso8601String()
-                ], new \InvalidArgumentException('Invalid vocabulary category'));
+                ], new \Exception('Invalid vocabulary category'));
 
-                throw new \InvalidArgumentException('Invalid vocabulary category provided.');
+                throw new \Exception('Invalid vocabulary category provided.');
             }
 
-            // Get paginated terms with translations
-            $terms = VocabularyTerm::byCategory($category)
-                ->orderBy('slug')
-                ->paginate($perPage);
+            // Get ALL terms for category (no pagination for grouped display)
+            // Order by ui_group first, then by sort_order
+            $allTerms = VocabularyTerm::byCategory($category)
+                ->orderBy('ui_group')
+                ->orderBy('sort_order')
+                ->get();
 
             // Transform with translations
-            $terms->getCollection()->transform(function ($term) use ($locale) {
+            $transformedTerms = $allTerms->transform(function ($term) use ($locale) {
                 return $this->transformTermWithTranslation($term, $locale);
             });
 
-            // Log audit trail for GDPR compliance
-            $this->auditService->logUserAction(
-                Auth::user(),
-                'vocabulary_category_accessed',
-                [
-                    'category' => $category,
-                    'terms_count' => $terms->total(),
-                    'locale' => $locale ?? app()->getLocale(),
-                    'page' => $terms->currentPage()
-                ],
-                GdprActivityCategory::PLATFORM_USAGE
+            // Create a fake pagination object to maintain API compatibility
+            // but with all terms included
+            $terms = new \Illuminate\Pagination\LengthAwarePaginator(
+                $transformedTerms,
+                $transformedTerms->count(),
+                $transformedTerms->count(), // Show all terms on one "page"
+                1, // Current page
+                ['path' => request()->url(), 'pageName' => 'page']
             );
+
+            // Log audit trail for GDPR compliance (only if user is authenticated)
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_category_accessed',
+                    [
+                        'category' => $category,
+                        'terms_count' => $terms->total(),
+                        'locale' => $locale ?? app()->getLocale(),
+                        'page' => $terms->currentPage()
+                    ],
+                    GdprActivityCategory::PLATFORM_USAGE
+                );
+            }
 
             $this->logger->info('[Vocabulary Service] Terms retrieved successfully', [
                 'category' => $category,
@@ -179,16 +193,18 @@ class VocabularyService {
                 })
                 ->toArray();
 
-            // Log audit trail
-            $this->auditService->logUserAction(
-                Auth::user(),
-                'vocabulary_categories_accessed',
-                [
-                    'categories_count' => count($categories),
-                    'locale' => $locale ?? app()->getLocale()
-                ],
-                GdprActivityCategory::PLATFORM_USAGE
-            );
+            // Log audit trail (only if user is authenticated)
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_categories_accessed',
+                    [
+                        'categories_count' => count($categories),
+                        'locale' => $locale ?? app()->getLocale()
+                    ],
+                    GdprActivityCategory::PLATFORM_USAGE
+                );
+            }
 
             $this->logger->info('[Vocabulary Service] Categories retrieved successfully', [
                 'categories_count' => count($categories),
@@ -225,45 +241,88 @@ class VocabularyService {
      * @transparency-level High - complete search transparency
      * @narrative-coherence Links search to CoA trait selection
      */
+    /**
+     * Search vocabulary terms with translation support (Collection version for debugging)
+     */
+    public function searchTermsCollection(string $query, ?string $category = null, ?string $locale = null): \Illuminate\Support\Collection {
+        $currentLocale = $locale ?? app()->getLocale();
+
+        $this->logger->info('[Vocabulary Service] Collection search debug', [
+            'query' => $query,
+            'category' => $category,
+            'locale' => $currentLocale
+        ]);
+
+        // Strategy 1: Search in translated terms
+        $translatedResults = $this->searchInTranslations($query, $category, $currentLocale);
+
+        // Strategy 2: Search in original fields  
+        $originalResults = $this->searchInOriginalFields($query, $category);
+
+        // Merge and make unique
+        $allResults = $translatedResults->merge($originalResults)->unique('id');
+
+        // Transform with translations
+        $transformed = $allResults->map(function ($term) use ($currentLocale) {
+            return $this->transformTermWithTranslation($term, $currentLocale);
+        });
+
+        return $transformed;
+    }
+
     public function searchTerms(string $query, int $perPage = 20, ?string $category = null, ?string $locale = null): LengthAwarePaginator {
         try {
+            $currentLocale = $locale ?? app()->getLocale();
+
             $this->logger->info('[Vocabulary Service] Searching terms', [
                 'query' => $query,
                 'category' => $category,
                 'per_page' => $perPage,
-                'locale' => $locale ?? app()->getLocale(),
+                'locale' => $currentLocale,
                 'user_id' => Auth::id(),
                 'ip_address' => request()->ip()
             ]);
 
-            // Build search query
-            $searchQuery = VocabularyTerm::search($query);
+            // Strategy 1: Search in translated terms for the current locale
+            $translatedResults = $this->searchInTranslations($query, $category, $currentLocale);
 
-            // Apply category filter if provided
-            if ($category) {
-                $searchQuery->where('category', $category);
-            }
+            // Strategy 2: Search in original database fields (slug, etc.)
+            $originalResults = $this->searchInOriginalFields($query, $category);
 
-            // Get paginated results
-            $terms = $searchQuery->orderBy('slug')->paginate($perPage);
+            // Merge results, prioritizing translated matches
+            $allResults = $translatedResults->merge($originalResults)->unique('id');
 
-            // Transform with translations
-            $terms->getCollection()->transform(function ($term) use ($locale) {
-                return $this->transformTermWithTranslation($term, $locale);
+            // Transform with translations BEFORE pagination
+            $transformedResults = $allResults->map(function ($term) use ($currentLocale) {
+                if ($term instanceof VocabularyTerm) {
+                    return $this->transformTermWithTranslation($term, $currentLocale);
+                }
+                return $term;
             });
 
-            // Log audit trail
-            $this->auditService->logUserAction(
-                Auth::user(),
-                'vocabulary_search_performed',
-                [
-                    'query' => $query,
-                    'category' => $category,
-                    'results_count' => $terms->total(),
-                    'locale' => $locale ?? app()->getLocale()
-                ],
-                GdprActivityCategory::PLATFORM_USAGE
+            // Create pagination AFTER transformation
+            $terms = new \Illuminate\Pagination\LengthAwarePaginator(
+                $transformedResults->take($perPage)->values(),
+                $transformedResults->count(),
+                $perPage,
+                1,
+                ['path' => request()->url(), 'pageName' => 'page']
             );
+
+            // Log audit trail
+            if (Auth::user()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_search_performed',
+                    [
+                        'query' => $query,
+                        'category' => $category,
+                        'results_count' => $terms->total(),
+                        'locale' => $locale ?? app()->getLocale()
+                    ],
+                    GdprActivityCategory::PLATFORM_USAGE
+                );
+            }
 
             $this->logger->info('[Vocabulary Service] Search completed successfully', [
                 'query' => $query,
@@ -325,17 +384,19 @@ class VocabularyService {
             // Transform with translations
             $transformedTerm = $this->transformTermWithTranslation($term, $locale);
 
-            // Log audit trail
-            $this->auditService->logUserAction(
-                Auth::user(),
-                'vocabulary_term_accessed',
-                [
-                    'slug' => $slug,
-                    'category' => $term->category,
-                    'locale' => $locale ?? app()->getLocale()
-                ],
-                GdprActivityCategory::PLATFORM_USAGE
-            );
+            // Log audit trail (only if user is authenticated)
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_term_accessed',
+                    [
+                        'slug' => $slug,
+                        'category' => $term->category,
+                        'locale' => $locale ?? app()->getLocale()
+                    ],
+                    GdprActivityCategory::PLATFORM_USAGE
+                );
+            }
 
             return $transformedTerm;
         } catch (\Exception $e) {
@@ -388,18 +449,20 @@ class VocabularyService {
                 ->values()
                 ->toArray();
 
-            // Log audit trail
+            // Log audit trail (only if user is authenticated)
             $totalTerms = collect($grouped)->sum('count');
-            $this->auditService->logUserAction(
-                Auth::user(),
-                'vocabulary_grouped_accessed',
-                [
-                    'categories_count' => count($grouped),
-                    'total_terms' => $totalTerms,
-                    'locale' => $locale ?? app()->getLocale()
-                ],
-                GdprActivityCategory::PLATFORM_USAGE
-            );
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_grouped_accessed',
+                    [
+                        'categories_count' => count($grouped),
+                        'total_terms' => $totalTerms,
+                        'locale' => $locale ?? app()->getLocale()
+                    ],
+                    GdprActivityCategory::PLATFORM_USAGE
+                );
+            }
 
             $this->logger->info('[Vocabulary Service] Grouped terms retrieved successfully', [
                 'categories_count' => count($grouped),
@@ -426,23 +489,82 @@ class VocabularyService {
      *
      * @param VocabularyTerm $term
      * @param string|null $locale
-     * @return VocabularyTerm
+     * @return object
      * @privacy-safe Handles only public vocabulary data
      */
-    private function transformTermWithTranslation(VocabularyTerm $term, ?string $locale = null): VocabularyTerm {
+    private function transformTermWithTranslation(VocabularyTerm $term, ?string $locale = null): object {
         $currentLocale = $locale ?? app()->getLocale();
 
-        // Add translated fields
-        $term->name = __("coa_vocabulary.{$term->slug}", [], $currentLocale);
-
-        // Get professional description - all terms now have specific descriptions
+        // Get translated name and description
+        $translatedName = __("coa_vocabulary.{$term->slug}", [], $currentLocale);
         $descriptionKey = "coa_vocabulary.{$term->slug}_description";
-        $term->description = __($descriptionKey, [], $currentLocale);
+        $translatedDescription = __($descriptionKey, [], $currentLocale);
 
-        // Add locale metadata
-        $term->locale = $currentLocale;
-        $term->original_slug = $term->slug;
+        // Create object with all necessary properties for the view
+        $transformedTerm = new \stdClass();
+        $transformedTerm->id = $term->id;
+        $transformedTerm->slug = $term->slug;
+        $transformedTerm->key = $term->slug; // Legacy compatibility
+        $transformedTerm->name = $translatedName;
+        $transformedTerm->description = $translatedDescription;
+        $transformedTerm->category = $term->category;
+        $transformedTerm->ui_group = $term->ui_group;
+        $transformedTerm->sort_order = $term->sort_order;
+        $transformedTerm->locale = $currentLocale;
 
-        return $term;
+        return $transformedTerm;
+    }
+
+    /**
+     * Search in translated terms by checking translation files
+     */
+    private function searchInTranslations(string $query, ?string $category, string $locale): \Illuminate\Support\Collection {
+        // Get all translation keys that match the search query
+        $matchingSlugs = [];
+
+        // Get all vocabulary terms to check their translations
+        $allTermsQuery = VocabularyTerm::query();
+        if ($category) {
+            $allTermsQuery->where('category', $category);
+        }
+        $allTerms = $allTermsQuery->get();
+
+        foreach ($allTerms as $term) {
+            $translatedName = __("coa_vocabulary.{$term->slug}", [], $locale);
+            $translatedDescription = __("coa_vocabulary.{$term->slug}_description", [], $locale);
+
+            // Check if query matches translated name or description (case insensitive)
+            if (
+                stripos($translatedName, $query) !== false ||
+                stripos($translatedDescription, $query) !== false
+            ) {
+                $matchingSlugs[] = $term->slug;
+            }
+        }
+
+        // Return terms that match in translations
+        $matchingTermsQuery = VocabularyTerm::whereIn('slug', $matchingSlugs);
+        if ($category) {
+            $matchingTermsQuery->where('category', $category);
+        }
+
+        return $matchingTermsQuery->get();
+    }
+
+    /**
+     * Search in original database fields (slug, etc.)
+     */
+    private function searchInOriginalFields(string $query, ?string $category): \Illuminate\Support\Collection {
+        $searchQuery = VocabularyTerm::where(function ($q) use ($query) {
+            $q->where('slug', 'LIKE', "%{$query}%")
+                ->orWhere('slug', 'LIKE', "%" . str_replace(' ', '-', strtolower($query)) . "%")
+                ->orWhere('slug', 'LIKE', "%" . str_replace(' ', '_', strtolower($query)) . "%");
+        });
+
+        if ($category) {
+            $searchQuery->where('category', $category);
+        }
+
+        return $searchQuery->get();
     }
 }
