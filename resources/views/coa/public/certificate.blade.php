@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
     <title>Certificate of Authenticity - {{ $certificate['serial'] }}</title>
-    
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-gradient-to-br from-amber-50 to-yellow-50">
@@ -14,7 +14,7 @@
 {{-- Certificate Header --}}
 <div class="min-h-screen py-8">
     <div class="container mx-auto px-4">
-        
+
         {{-- Title Header --}}
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-amber-900 mb-2">
@@ -61,10 +61,10 @@
         {{-- Main Certificate Content --}}
         <div class="max-w-5xl mx-auto">
             <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
-                
+
                 {{-- Certificate Body --}}
                 <div class="grid md:grid-cols-2 gap-8 p-8">
-                    
+
                     {{-- LEFT: Identità Opera --}}
                     <div class="space-y-6">
                         <h2 class="text-2xl font-bold text-gray-900 border-b pb-2">
@@ -118,6 +118,28 @@
                             <div class="text-lg text-gray-900 font-semibold">{{ $artwork['author'] }}</div>
                         </div>
 
+                        {{-- Tutti i Traits / Metadati dell'Opera --}}
+                        @if(isset($artwork['traits']) && count($artwork['traits']) > 0)
+                        <div class="bg-gray-50 border rounded-lg p-4">
+                            <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Metadati e Caratteristiche dell'Opera
+                            </h3>
+                            <div class="grid grid-cols-1 gap-2 text-sm">
+                                @foreach($artwork['traits'] as $trait)
+                                    @if($trait['value'] && trim($trait['value']) !== '')
+                                    <div class="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
+                                        <span class="font-medium text-gray-700">{{ $trait['trait_type'] }}:</span>
+                                        <span class="text-gray-900 text-right">{{ $trait['value'] }}</span>
+                                    </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
                         {{-- Creator Block (mostrato solo quando Creator ≠ Autore) --}}
                         @if(isset($creator))
                         <div class="col-span-full bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -130,7 +152,7 @@
                                 <div class="flex-1">
                                     <h4 class="text-sm font-semibold text-blue-900">Pubblicato da</h4>
                                     <p class="text-sm text-blue-800">
-                                        <span class="font-medium">{{ $creator['name'] }}</span> 
+                                        <span class="font-medium">{{ $creator['name'] }}</span>
                                         <span class="text-blue-600">({{ $creator['role'] }})</span>
                                     </p>
                                     <p class="text-xs text-blue-600 mt-1">
@@ -154,11 +176,11 @@
                             <label class="text-sm font-medium text-gray-600">Immagine</label>
                             <div class="mt-2">
                                 <a href="{{ $artwork['dossier_link'] ?? '#' }}" target="_blank" class="block">
-                                    <img src="{{ $artwork['thumbnail'] }}" alt="{{ $artwork['name'] }}" 
+                                    <img src="{{ $artwork['thumbnail'] }}" alt="{{ $artwork['name'] }}"
                                          class="w-32 h-32 object-cover rounded-lg border hover:shadow-lg transition-shadow">
                                 </a>
                                 @if($artwork['dossier_link'])
-                                <a href="{{ $artwork['dossier_link'] }}" target="_blank" 
+                                <a href="{{ $artwork['dossier_link'] }}" target="_blank"
                                    class="text-xs text-blue-600 hover:underline mt-1 inline-block">
                                     → Visualizza dossier immagini completo
                                 </a>
@@ -215,7 +237,7 @@
                             <div class="bg-gray-50 p-3 rounded border mt-1">
                                 <div class="flex items-center justify-between">
                                     <code class="text-xs font-mono text-gray-800 break-all">{{ $certificate['verification_hash'] }}</code>
-                                    <button onclick="copyHash()" aria-label="Copia hash" 
+                                    <button onclick="copyHash()" aria-label="Copia hash"
                                             class="ml-2 text-gray-500 hover:text-gray-700 flex-shrink-0">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
@@ -266,7 +288,7 @@
                 <div class="border-t border-gray-200 p-8">
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Annessi Professionali</h2>
                     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        
+
                         {{-- Annex A: Provenienza --}}
                         @if($annexes['provenance'] ?? false)
                         <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -277,7 +299,7 @@
                             <h3 class="font-medium text-gray-900 mb-1">Provenienza</h3>
                             <div class="text-xs text-gray-600 mb-2">{{ $annexes['provenance']['items_count'] ?? 0 }} documenti</div>
                             <div class="text-xs font-mono text-gray-500 mb-2">SHA-256: {{ Str::limit($annexes['provenance']['hash'], 16) }}...</div>
-                            <a href="{{ $annexes['provenance']['download_url'] }}" 
+                            <a href="{{ $annexes['provenance']['download_url'] }}"
                                class="text-xs text-blue-600 hover:underline">scarica →</a>
                         </div>
                         @endif
@@ -292,7 +314,7 @@
                             <h3 class="font-medium text-gray-900 mb-1">Condition Report</h3>
                             <div class="text-xs text-gray-600 mb-2">{{ $annexes['condition']['items_count'] ?? 0 }} rapporti</div>
                             <div class="text-xs font-mono text-gray-500 mb-2">SHA-256: {{ Str::limit($annexes['condition']['hash'], 16) }}...</div>
-                            <a href="{{ $annexes['condition']['download_url'] }}" 
+                            <a href="{{ $annexes['condition']['download_url'] }}"
                                class="text-xs text-blue-600 hover:underline">scarica →</a>
                         </div>
                         @endif
@@ -307,7 +329,7 @@
                             <h3 class="font-medium text-gray-900 mb-1">Mostre/Pubblicazioni</h3>
                             <div class="text-xs text-gray-600 mb-2">{{ $annexes['exhibitions']['items_count'] ?? 0 }} eventi</div>
                             <div class="text-xs font-mono text-gray-500 mb-2">SHA-256: {{ Str::limit($annexes['exhibitions']['hash'], 16) }}...</div>
-                            <a href="{{ $annexes['exhibitions']['download_url'] }}" 
+                            <a href="{{ $annexes['exhibitions']['download_url'] }}"
                                class="text-xs text-blue-600 hover:underline">scarica →</a>
                         </div>
                         @endif
@@ -324,7 +346,7 @@
                             <h3 class="font-medium text-gray-900 mb-1">Fotografie Aggiuntive</h3>
                             <div class="text-xs text-gray-600 mb-2">{{ $annexes['photos']['items_count'] ?? 0 }} immagini</div>
                             <div class="text-xs font-mono text-gray-500 mb-2">SHA-256: {{ Str::limit($annexes['photos']['hash'], 16) }}...</div>
-                            <a href="{{ $annexes['photos']['download_url'] }}" 
+                            <a href="{{ $annexes['photos']['download_url'] }}"
                                class="text-xs text-blue-600 hover:underline">scarica →</a>
                         </div>
                         @endif
@@ -350,10 +372,10 @@
                             </div>
                             <div class="text-xs font-mono text-gray-500 mb-2">SHA-256: {{ Str::limit($annexes['authorization']['hash'], 16) }}...</div>
                             <div class="flex space-x-2">
-                                <a href="{{ $annexes['authorization']['download_url'] }}" 
+                                <a href="{{ $annexes['authorization']['download_url'] }}"
                                    class="text-xs text-blue-600 hover:underline">scarica documenti →</a>
                                 @if($annexes['authorization']['data']['legal_verification_url'] ?? false)
-                                <a href="{{ $annexes['authorization']['data']['legal_verification_url'] }}" 
+                                <a href="{{ $annexes['authorization']['data']['legal_verification_url'] }}"
                                    class="text-xs text-green-600 hover:underline">verifica legale →</a>
                                 @endif
                             </div>
@@ -369,7 +391,7 @@
                 <div class="border-t border-gray-200 p-8">
                     <h2 class="text-2xl font-bold text-gray-900 mb-6">Informazioni On-chain</h2>
                     <div class="grid md:grid-cols-3 gap-6">
-                        
+
                         <div>
                             <label class="text-sm font-medium text-gray-600">Rete</label>
                             <div class="text-lg text-gray-900">{{ $certificate['blockchain_info']['network'] }}</div>
@@ -392,7 +414,7 @@
                 {{-- Actions Section --}}
                 <div class="border-t border-gray-200 p-8">
                     <div class="flex flex-wrap gap-4 justify-center">
-                        
+
                         {{-- Download PDF --}}
                         <button onclick="downloadPDF()" aria-label="Scarica PDF del certificato"
                                 class="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center">

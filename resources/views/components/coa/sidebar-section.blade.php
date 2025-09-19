@@ -217,14 +217,14 @@ function downloadCoaBundle(coaId) {
     form.method = 'POST';
     form.action = `{{ route('coa.bundle', ':id') }}`.replace(':id', coaId);
     form.style.display = 'none';
-    
+
     // Add CSRF token
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
     csrfInput.name = '_token';
     csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     form.appendChild(csrfInput);
-    
+
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);

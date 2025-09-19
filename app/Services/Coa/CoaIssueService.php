@@ -9,6 +9,7 @@ use App\Models\EgiTraitsVersion;
 use App\Models\CoaEvent;
 use App\Services\Coa\TraitsSnapshotService;
 use App\Services\Coa\SerialGenerator;
+use App\Traits\EgiTraitsExtraction;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
@@ -28,8 +29,8 @@ use Illuminate\Support\Facades\DB;
  * @date 2025-09-18
  * @purpose Professional certificate issuance for artwork authenticity
  */
-class CoaIssueService
-{
+class CoaIssueService {
+    use EgiTraitsExtraction;
     /**
      * Logger instance for audit trail
      * @var UltraLogManager
@@ -98,11 +99,10 @@ class CoaIssueService
      * @transparency-level High - complete certificate issuance process
      * @narrative-coherence Links artwork to permanent authenticity record
      */
-    public function issueCertificate(Egi $egi, ?string $issuedBy = null, ?string $notes = null): Coa
-    {
+    public function issueCertificate(Egi $egi, ?string $issuedBy = null, ?string $notes = null): Coa {
         try {
             $user = Auth::user();
-            
+
             // Use provided issuer name or default to authenticated user
             $issuerName = $issuedBy ?? $user->name ?? 'System';
 
@@ -171,7 +171,6 @@ class CoaIssueService
             ], GdprActivityCategory::GDPR_ACTIONS);
 
             return $coa;
-
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             throw $e; // Re-throw auth exceptions
         } catch (\Exception $e) {
@@ -199,8 +198,7 @@ class CoaIssueService
      * @return Coa
      * @privacy-safe Internal transaction method
      */
-    protected function issueCoaInTransaction(Egi $egi, string $issuerName, ?string $notes, $user): Coa
-    {
+    protected function issueCoaInTransaction(Egi $egi, string $issuerName, ?string $notes, $user): Coa {
         // 1. Generate unique serial number
         $serial = $this->serialGenerator->generateSerial();
 
@@ -261,8 +259,7 @@ class CoaIssueService
      * @return array Prepared issuer information
      * @privacy-safe Prepares issuer metadata only
      */
-    protected function prepareIssuerData(string $issuerName, $user): array
-    {
+    protected function prepareIssuerData(string $issuerName, $user): array {
         return [
             'type' => 'platform',
             'name' => $issuerName ?: ($user->name ?? 'FlorenceEGI Platform'),
@@ -277,14 +274,13 @@ class CoaIssueService
      * @param Egi $egi
      * @param \App\Models\User $user
      * @return array|null
-     * @privacy-safe Extracts role distinction data from artwork
+     * @privacy-safe Extracts role distinction data from artwork using traits
      */
-    protected function prepareCreatorInfo(Egi $egi, $user): ?array
-    {
-        // Extract author from traits or metadata
-        $author = $this->extractArtworkAuthor($egi);
+    protected function prepareCreatorInfo(Egi $egi, $user): ?array {
+        // Extract author from traits using the trait helper
+        $author = $this->extractAuthorFromTraits($egi);
         $creator = $egi->user->name ?? null;
-        
+
         // Only store creator info when Creator ≠ Author
         if ($creator && $creator !== $author && $egi->user) {
             return [
@@ -292,66 +288,101 @@ class CoaIssueService
                 'user_id' => $egi->user->id,
                 'role' => 'creator',
                 'platform_role' => 'uploader',
-                'relationship_to_author' => $this->determineCreatorRelationship($egi),
-                'authorization_provided' => $this->hasAuthorizationDocuments($egi),
+                'relationship_to_author' => $this->determineCreatorRelationshipFromTraits($egi),
+                'authorization_provided' => $this->hasAuthorizationInTraits($egi),
+                'verification_method' => $this->extractVerificationMethod($egi),
                 'created_at' => now()->toIso8601String()
             ];
         }
-        
+
         return null;
     }
 
     /**
-     * Extract artwork author from traits or metadata
+     * Determine relationship between creator and author using traits
      *
      * @param Egi $egi
      * @return string
-     * @privacy-safe Extracts author information from traits
+     * @privacy-safe Determines relationship from traits data
      */
-    protected function extractArtworkAuthor(Egi $egi): string
-    {
-        // Check for explicit author traits
-        $authorTraits = ['Autore', 'Author', 'Artist', 'Artista'];
-        
-        if ($egi->traits && is_array($egi->traits)) {
-            foreach ($egi->traits as $trait) {
-                if (isset($trait['trait_type'], $trait['value']) && 
-                    in_array($trait['trait_type'], $authorTraits)) {
-                    return $trait['value'];
-                }
+    protected function determineCreatorRelationshipFromTraits(Egi $egi): string {
+        // Check for relationship information in traits first
+        $relationshipFromTraits = $this->extractRelationshipFromTraits($egi);
+
+        if ($relationshipFromTraits) {
+            return $relationshipFromTraits;
+        }
+
+        // Check for authorization-related traits
+        $authTraits = [
+            'Autorizzazione',
+            'Authorization',
+            'Delega',
+            'Mandate',
+            'Rappresentanza',
+            'Representation',
+            'Procura',
+            'Power of attorney'
+        ];
+
+        foreach ($authTraits as $traitName) {
+            $authValue = $this->extractTraitValue($egi, [$traitName]);
+            if ($authValue) {
+                return 'Autorizzato: ' . $authValue;
             }
         }
-        
-        // Fallback to user name if no explicit author is set
-        return $egi->user->name ?? 'Unknown Author';
+
+        $author = $this->extractAuthorFromTraits($egi);
+        $creator = $egi->user->name ?? null;
+
+        if ($creator && $author) {
+            // Simple heuristics based on names
+            if (stripos($creator, 'gallery') !== false || stripos($creator, 'galleria') !== false) {
+                return 'Rappresentante della galleria';
+            }
+
+            if (stripos($creator, 'estate') !== false || stripos($creator, 'eredi') !== false) {
+                return 'Rappresentante degli eredi';
+            }
+
+            if (stripos($creator, 'archive') !== false || stripos($creator, 'archivio') !== false) {
+                return 'Archivio autorizzato';
+            }
+        }
+
+        return 'Caricatore della piattaforma';
     }
 
     /**
-     * Determine relationship between creator and author
+     * Extract verification method from traits
      *
      * @param Egi $egi
      * @return string
-     * @privacy-safe Determines relationship from available data
      */
-    protected function determineCreatorRelationship(Egi $egi): string
-    {
-        // In future versions, this could check Annex E authorization documents
-        // For now, return a generic relationship
-        return 'platform_uploader';
-    }
+    protected function extractVerificationMethod(Egi $egi): string {
+        $verificationTraits = [
+            'Verifica',
+            'Verification',
+            'Metodo verifica',
+            'Verification method',
+            'Convalida',
+            'Validation',
+            'Conferma',
+            'Confirmation'
+        ];
 
-    /**
-     * Check if authorization documents are available
-     *
-     * @param Egi $egi
-     * @return bool
-     * @privacy-safe Checks for authorization evidence
-     */
-    protected function hasAuthorizationDocuments(Egi $egi): bool
-    {
-        // In future versions, this would check for Annex E documents
-        // For now, return false until authorization system is implemented
-        return false;
+        $verification = $this->extractTraitValue($egi, $verificationTraits);
+
+        if ($verification) {
+            return $verification;
+        }
+
+        // Check if there are authorization documents in traits
+        if ($this->hasAuthorizationInTraits($egi)) {
+            return 'Documentazione in traits';
+        }
+
+        return 'Non specificato';
     }
 
     /**
@@ -364,8 +395,7 @@ class CoaIssueService
      * @return Coa The new CoA certificate
      * @privacy-safe Re-issues only user's own certificates
      */
-    public function reIssueCertificate(Coa $existingCoa, string $reason, ?string $issuedBy = null, ?string $notes = null): Coa
-    {
+    public function reIssueCertificate(Coa $existingCoa, string $reason, ?string $issuedBy = null, ?string $notes = null): Coa {
         try {
             $user = Auth::user();
 
@@ -405,7 +435,6 @@ class CoaIssueService
             ], GdprActivityCategory::GDPR_ACTIONS);
 
             return $newCoa;
-
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             throw $e;
         } catch (\Exception $e) {
@@ -432,8 +461,7 @@ class CoaIssueService
      * @return Coa
      * @privacy-safe Internal transaction method
      */
-    protected function reIssueCoaInTransaction(Coa $existingCoa, string $reason, ?string $issuedBy, ?string $notes, $user): Coa
-    {
+    protected function reIssueCoaInTransaction(Coa $existingCoa, string $reason, ?string $issuedBy, ?string $notes, $user): Coa {
         // 1. Revoke existing CoA
         $existingCoa->update([
             'status' => 'revoked',
@@ -468,8 +496,7 @@ class CoaIssueService
      * @return array Validation result with status and messages
      * @privacy-safe Validation only for user's own artwork
      */
-    public function canIssueCoaForEgi(Egi $egi): array
-    {
+    public function canIssueCoaForEgi(Egi $egi): array {
         try {
             $user = Auth::user();
 
@@ -521,7 +548,6 @@ class CoaIssueService
                 'reason' => 'valid',
                 'message' => 'Artwork is ready for CoA issuance.'
             ];
-
         } catch (\Exception $e) {
             $this->errorManager->handle('COA_ISSUE_VALIDATION_ERROR', [
                 'user_id' => Auth::id(),
@@ -548,8 +574,7 @@ class CoaIssueService
      * @return CoaEvent
      * @privacy-safe Creates audit event for user's own CoA
      */
-    protected function createCoaEvent(Coa $coa, string $eventType, array $eventData = []): CoaEvent
-    {
+    protected function createCoaEvent(Coa $coa, string $eventType, array $eventData = []): CoaEvent {
         $baseData = [
             'timestamp' => now()->toIso8601String(),
             'session_id' => session()->getId(),
@@ -586,9 +611,8 @@ class CoaIssueService
      * @return string
      * @privacy-safe Generates description from event metadata
      */
-    protected function getEventDescription(string $eventType, array $eventData): string
-    {
-        return match($eventType) {
+    protected function getEventDescription(string $eventType, array $eventData): string {
+        return match ($eventType) {
             'coa_issued' => 'Certificate of Authenticity issued',
             'coa_reissued' => 'Certificate of Authenticity re-issued',
             'coa_revoked' => 'Certificate of Authenticity revoked',

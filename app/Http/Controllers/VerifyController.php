@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Coa;
 use App\Services\Coa\VerifyPageService;
 use App\Services\Coa\AnnexService;
+use App\Traits\EgiTraitsExtraction;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ use Illuminate\Support\Str;
  * @purpose Public certificate verification following FlorenceEGI architecture
  */
 class VerifyController extends Controller {
+    use EgiTraitsExtraction;
     /**
      * Logger instance for audit trail
      * @var UltraLogManager
@@ -612,8 +614,7 @@ class VerifyController extends Controller {
      * @transparency-level High - public certificate information
      * @narrative-coherence Links verification hash to certificate display
      */
-    public function viewCertificate(Request $request, string $hash)
-    {
+    public function viewCertificate(Request $request, string $hash) {
         try {
             // Rate limiting for certificate viewing
             $key = 'view_cert_' . $request->ip();
@@ -678,7 +679,15 @@ class VerifyController extends Controller {
                 'artwork' => [
                     'name' => $coa->egi->title ?? $coa->egi->name ?? 'Unknown Artwork',
                     'description' => $coa->egi->description ?? '',
-                    'creator' => $coa->egi->user->name ?? 'Unknown Creator'
+                    'creator' => $coa->egi->user->name ?? 'Unknown Creator',
+                    'author' => $this->extractAuthorFromTraits($coa->egi),
+                    'year' => $this->extractYearFromTraits($coa->egi),
+                    'technique' => $this->extractTechniqueFromTraits($coa->egi),
+                    'support' => $this->extractSupportFromTraits($coa->egi),
+                    'dimensions' => $this->extractDimensionsFromTraits($coa->egi),
+                    'edition' => $this->extractEditionFromTraits($coa->egi),
+                    'traits' => $this->extractAllArtworkMetadata($coa->egi),
+                    'internal_id' => $coa->egi->id
                 ],
                 'verification' => [
                     'is_valid' => $coa->status === 'valid',
@@ -707,7 +716,6 @@ class VerifyController extends Controller {
                 'artwork' => $certificateData['artwork'],
                 'verification' => $certificateData['verification']
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('[Verify Controller] Certificate view failed', [
                 'hash' => substr($hash, 0, 8) . '...',
@@ -736,8 +744,7 @@ class VerifyController extends Controller {
      * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
      * @privacy-safe Returns public certificate view by serial
      */
-    public function viewCertificateBySerial(Request $request, string $serial)
-    {
+    public function viewCertificateBySerial(Request $request, string $serial) {
         try {
             // Rate limiting for certificate viewing
             $key = 'view_cert_serial_' . $request->ip();
@@ -794,12 +801,13 @@ class VerifyController extends Controller {
                     'name' => $coa->egi->title ?? $coa->egi->name ?? 'Unknown Artwork',
                     'internal_id' => str_pad($coa->egi->id, 7, '0', STR_PAD_LEFT),
                     'description' => $coa->egi->description ?? '',
-                    'author' => $this->getArtworkAuthor($coa->egi), // Autore dell'opera
-                    'year' => $this->extractTraitValue($coa->egi, ['Anno', 'Year', 'Data']),
-                    'technique' => $this->extractTraitValue($coa->egi, ['Tecnica', 'Technique', 'Medium']),
-                    'support' => $this->extractTraitValue($coa->egi, ['Supporto', 'Support', 'Material']),
-                    'dimensions' => $coa->egi->dimension ?? $this->extractTraitValue($coa->egi, ['Dimensioni', 'Dimensions', 'Size']),
-                    'edition' => $this->extractTraitValue($coa->egi, ['Edizione', 'Edition', 'Tiratura']),
+                    'author' => $this->extractAuthorFromTraits($coa->egi), // Using trait method
+                    'year' => $this->extractYearFromTraits($coa->egi),
+                    'technique' => $this->extractTechniqueFromTraits($coa->egi),
+                    'support' => $this->extractSupportFromTraits($coa->egi),
+                    'dimensions' => $this->extractDimensionsFromTraits($coa->egi),
+                    'edition' => $this->extractEditionFromTraits($coa->egi),
+                    'traits' => $this->extractAllArtworkMetadata($coa->egi),
                     'thumbnail' => $coa->egi->media ? asset('storage/' . $coa->egi->media) : null,
                     'dossier_link' => route('egis.show', $coa->egi->id) . '#gallery'
                 ],
@@ -838,9 +846,9 @@ class VerifyController extends Controller {
                 'certificate' => $certificateData['certificate'],
                 'artwork' => $certificateData['artwork'],
                 'verification' => $certificateData['verification'],
+                'creator' => $certificateData['creator'] ?? null,
                 'annexes' => $certificateData['annexes'] ?? []
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('[Verify Controller] Certificate view by serial failed', [
                 'serial' => $serial,
@@ -861,96 +869,127 @@ class VerifyController extends Controller {
         }
     }
 
-        /**
-     * Get artwork author (not the platform user who uploaded, but the actual artist)
-     */
-    private function getArtworkAuthor($egi)
-    {
-        // Check for explicit author traits
-        $authorFromTraits = $this->extractTraitValue($egi, ['Autore', 'Author', 'Artist', 'Artista']);
-        if ($authorFromTraits) {
-            return $authorFromTraits;
-        }
-        
-        // Fallback to user name if no explicit author is set
-        return $egi->user->name ?? 'Unknown Author';
-    }
-
     /**
      * Get creator info only when Creator ≠ Author (for role distinction)
      */
-    private function getCreatorInfo($coa)
-    {
-        $author = $this->getArtworkAuthor($coa->egi);
+    private function getCreatorInfo($coa) {
+        $author = $this->extractAuthorFromTraits($coa->egi);
         $creator = $coa->egi->user->name ?? null;
-        
+
         // Only return creator info if creator is different from author
         if ($creator && $creator !== $author) {
             return [
                 'name' => $creator,
                 'role' => 'Creator/Uploader',
                 'platform_id' => $coa->egi->user->id,
-                'relationship_to_author' => $this->getCreatorRelationship($coa)
+                'relationship_to_author' => $this->getCreatorRelationship($coa),
+                'upload_date' => $coa->egi->created_at?->format('Y-m-d'),
+                'verification_method' => $this->getVerificationMethod($coa)
             ];
         }
-        
+
         return null;
     }
 
     /**
-     * Determine relationship between creator and author
+     * Determine relationship between creator and author using traits
      */
-    private function getCreatorRelationship($coa)
-    {
+    private function getCreatorRelationship($coa) {
+        // First check for relationship information in traits
+        $relationshipFromTraits = $this->extractRelationshipFromTraits($coa->egi);
+
+        if ($relationshipFromTraits) {
+            return $relationshipFromTraits;
+        }
+
         // Check for authorization documents in Annex E
         $authAnnex = $this->getAnnexData($coa, 'E_AUTHORIZATION');
         if ($authAnnex && isset($authAnnex['data']['authorization_type'])) {
             return $authAnnex['data']['authorization_type'];
         }
-        
-        // Default relationship types
-        $relationshipTypes = [
-            'estate_representative' => 'Rappresentante degli eredi',
-            'gallery_agent' => 'Rappresentante della galleria',
-            'authorized_agent' => 'Agente autorizzato',
-            'legal_guardian' => 'Tutore legale',
-            'family_member' => 'Membro della famiglia',
-            'unknown' => 'Relazione non specificata'
-        ];
-        
-        return $relationshipTypes['unknown'];
+
+        // Check if traits contain authorization info
+        if ($this->hasAuthorizationInTraits($coa->egi)) {
+            return 'Autorizzato (vedi traits)';
+        }
+
+        // Default relationship types based on common scenarios
+        $creator = $coa->egi->user->name ?? '';
+
+        // Simple heuristics based on creator name patterns
+        if (stripos($creator, 'gallery') !== false || stripos($creator, 'galleria') !== false) {
+            return 'Rappresentante della galleria';
+        }
+
+        if (stripos($creator, 'estate') !== false || stripos($creator, 'eredi') !== false) {
+            return 'Rappresentante degli eredi';
+        }
+
+        if (stripos($creator, 'archive') !== false || stripos($creator, 'archivio') !== false) {
+            return 'Archivio autorizzato';
+        }
+
+        return 'Caricatore della piattaforma';
     }
-    private function extractTraitValue($egi, array $needles): ?string
-    {
+
+    /**
+     * Get verification method for creator authorization
+     */
+    private function getVerificationMethod($coa) {
+        // Check for verification method in traits
+        $verificationFromTraits = $this->extractTraitValue($coa->egi, [
+            'Verifica',
+            'Verification',
+            'Metodo verifica',
+            'Verification method'
+        ]);
+
+        if ($verificationFromTraits) {
+            return $verificationFromTraits;
+        }
+
+        // Check if there's an Annex E with verification documents
+        $authAnnex = $this->getAnnexData($coa, 'E_AUTHORIZATION');
+        if ($authAnnex) {
+            return 'Documentazione allegata (Annesso E)';
+        }
+
+        // Check if traits contain authorization references
+        if ($this->hasAuthorizationInTraits($coa->egi)) {
+            return 'Autorizzazione documentata nei traits';
+        }
+
+        return 'Non specificato';
+    }
+    private function extractTraitValue($egi, array $needles): ?string {
         foreach ($needles as $needle) {
             $trait = $egi->traits->first(function ($trait) use ($needle) {
                 return stripos($trait->traitType->name ?? '', $needle) !== false ||
-                       stripos($trait->category->name ?? '', $needle) !== false;
+                    stripos($trait->category->name ?? '', $needle) !== false;
             });
-            
+
             if ($trait) {
                 return $trait->value;
             }
         }
-        
+
         return null;
     }
 
     /**
      * Get annex data for a specific type
-     * 
+     *
      * @param \App\Models\Coa $coa
      * @param string $type
      * @return array|null
      */
-    private function getAnnexData($coa, string $type): ?array
-    {
+    private function getAnnexData($coa, string $type): ?array {
         $annex = $coa->annexes()->where('type', $type)->first();
-        
+
         if (!$annex) {
             return null;
         }
-        
+
         return [
             'version' => $annex->version ?? 1,
             'items_count' => $annex->items_count ?? 0,

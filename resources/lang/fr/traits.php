@@ -116,6 +116,38 @@ return [
     'invalid_file_type' => 'Type de fichier invalide',
     'click_to_view_details' => 'Cliquez pour voir les détails',
     'has_image' => 'A une image',
-    'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer cette image?',
+        'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer cette image?',
+
+    // ===============================
+    // CoA VOCABULARY (Vocabolario CoA)
+    // ===============================
+    
+    'technique' => [
+        'painting-oil' => 'peinture à l\'huile',
+        'painting-acrylic' => 'peinture acrylique',
+        'painting-watercolor' => 'aquarelle',
+        'painting-tempera' => 'tempera',
+        'painting-gouache' => 'gouache',
+        'printmaking-etching' => 'eau-forte',
+        'printmaking-lithography' => 'lithographie',
+        'photography-inkjet' => 'impression jet d\'encre',
+        'sculpture-carving' => 'sculpture taille directe',
+        'jewelry-fabrication' => 'fabrication',
+    ],
+    
+    'materials' => [
+        'paint-oil' => 'peinture à l\'huile',
+        'paint-acrylic' => 'peinture acrylique',
+        'metal-bronze' => 'bronze',
+        'metal-gold' => 'or',
+    ],
+    
+    'support' => [
+        'support-canvas-stretched-cotton' => 'toile de coton tendue',
+        'support-canvas-stretched-linen' => 'toile de lin tendue',
+        'support-wood-panel' => 'panneau de bois',
+        'support-paper-rag' => 'papier chiffon',
+    ],
+];
 
 ];

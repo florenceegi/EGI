@@ -44,14 +44,14 @@ echo "\n3. Verifico le rotte...\n";
 $routeFile = 'routes/coa.php';
 if (file_exists($routeFile)) {
     $routeContent = file_get_contents($routeFile);
-    
+
     $requiredRoutes = [
         'coa.issue' => "name('issue')",
         'coa.reissue' => "name('reissue')",
         'coa.revoke' => "name('revoke')",
         'verify.certificate' => 'viewCertificate',
     ];
-    
+
     foreach ($requiredRoutes as $routeName => $pattern) {
         if (strpos($routeContent, $pattern) !== false) {
             echo "✅ Rotta $routeName - TROVATA\n";
@@ -90,15 +90,15 @@ echo "\n5. Verifico le traduzioni...\n";
 $langFile = 'resources/lang/it/egi.php';
 if (file_exists($langFile)) {
     $langContent = file_get_contents($langFile);
-    
+
     $requiredTranslations = [
         "'issue' =>",
-        "'confirm_issue' =>", 
+        "'confirm_issue' =>",
         "'issued_success' =>",
         "'reissue' =>",
         "'view' =>",
     ];
-    
+
     foreach ($requiredTranslations as $translation) {
         if (strpos($langContent, $translation) !== false) {
             echo "✅ Traduzione $translation - TROVATA\n";
