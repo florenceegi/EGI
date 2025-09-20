@@ -99,7 +99,7 @@ class CoaIssueService {
      * @transparency-level High - complete certificate issuance process
      * @narrative-coherence Links artwork to permanent authenticity record
      */
-    public function issueCertificate(Egi $egi, ?string $issuedBy = null, ?string $notes = null): Coa {
+    public function issueCertificate(Egi $egi, ?string $issuedBy = null, ?string $notes = null): ?Coa {
         try {
             $user = Auth::user();
 
@@ -174,10 +174,10 @@ class CoaIssueService {
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             throw $e; // Re-throw auth exceptions
         } catch (\Exception $e) {
-            // Utilizziamo la convenzione UEM standard senza parametri extra problematici
+            // Utilizziamo la convenzione UEM standard - l'ErrorManager gestisce tutto
             $this->errorManager->handle('COA_ISSUE_CERTIFICATE_ERROR', [], $e);
-
-            throw $e;
+            // UEM ha gestito l'errore, non ri-lanciamo l'eccezione
+            return null; // Indica che l'operazione è fallita
         }
     }
 

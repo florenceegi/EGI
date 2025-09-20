@@ -300,10 +300,10 @@ class CoaController extends Controller {
      * Issue a new CoA certificate for an EGI
      *
      * @param Request $request
-     * @return JsonResponse
+     * @return JsonResponse|void UEM può gestire la risposta automaticamente
      * @privacy-safe Issues certificate only for authenticated user's EGI
      */
-    public function issue(Request $request): JsonResponse {
+    public function issue(Request $request) {
 
         try {
             $user = Auth::user();
@@ -354,6 +354,11 @@ class CoaController extends Controller {
                 $request->notes
             );
 
+            // Se il service restituisce null, l'ErrorManager ha già gestito l'errore
+            if (!$coa) {
+                return; // UEM ha già gestito la risposta di errore
+            }
+
             $response = [
                 'success' => true,
                 'message' => 'Certificate issued successfully',
@@ -379,14 +384,9 @@ class CoaController extends Controller {
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            // Utilizziamo la convenzione UEM standard senza parametri extra problematici
+            // Utilizziamo la convenzione UEM standard - l'ErrorManager gestisce tutto
             $this->errorManager->handle('COA_ISSUE_ERROR', [], $e);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to issue certificate',
-                'error' => 'An error occurred while issuing the certificate'
-            ], 500);
+            // UEM gestisce automaticamente la risposta, non restituiamo nulla manualmente
         }
     }
 
