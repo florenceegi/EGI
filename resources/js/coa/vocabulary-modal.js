@@ -37,6 +37,68 @@ window.VocabularyModalController = (function () {
     // Private DOM references
     let elements = {};
 
+    // Utility function to determine category from slug
+    function getCategoryFromSlug(slug) {
+        console.log("VocabularyModal: Analyzing slug:", slug);
+
+        // Pattern: {category}-{term-name}
+        // Esempi: material-leather, support-wall, technique-something, ceramic-wheel-thrown
+
+        if (slug.startsWith("material-")) {
+            console.log(
+                "VocabularyModal: Slug starts with 'material-' → materials"
+            );
+            return "materials";
+        }
+
+        if (slug.startsWith("support-")) {
+            console.log(
+                "VocabularyModal: Slug starts with 'support-' → support"
+            );
+            return "support";
+        }
+
+        // Per technique, potrebbe essere sia 'technique-' che altri pattern come 'ceramic-'
+        // Quindi tutto il resto va in technique come fallback
+        console.log("VocabularyModal: Slug categorized as → technique");
+        return "technique";
+    }
+
+    // Utility function to get translated name from slug by looking in the current DOM
+    function getTranslatedNameFromSlug(slug) {
+        console.log(
+            "VocabularyModal: Attempting to resolve translated name for slug:",
+            slug
+        );
+
+        // Cerca nel DOM corrente per l'elemento con questo slug
+        const termElement = document.querySelector(`[data-slug="${slug}"]`);
+        if (termElement) {
+            // Cerca il nome all'interno dell'elemento
+            const nameElement =
+                termElement.querySelector(".term-name") ||
+                termElement.querySelector(".font-medium") ||
+                termElement;
+
+            if (nameElement && nameElement.textContent) {
+                const translatedName = nameElement.textContent.trim();
+                console.log(
+                    "VocabularyModal: Found translated name in DOM:",
+                    translatedName,
+                    "for slug:",
+                    slug
+                );
+                return translatedName;
+            }
+        }
+
+        console.log(
+            "VocabularyModal: Could not find translated name for slug:",
+            slug
+        );
+        return null;
+    }
+
     // Private methods
     function initializeElements() {
         console.log("VocabularyModal: Initializing DOM elements...");
@@ -88,7 +150,7 @@ window.VocabularyModalController = (function () {
         }
 
         // Validate critical elements exist
-        const criticalElements = ['modal', 'search', 'chips', 'dynamicContent'];
+        const criticalElements = ["modal", "search", "chips", "dynamicContent"];
         for (const key of criticalElements) {
             if (!elements[key]) {
                 console.error(
@@ -104,10 +166,10 @@ window.VocabularyModalController = (function () {
             elements.search.addEventListener("input", function (e) {
                 clearTimeout(state.searchTimeout);
                 const query = e.target.value;
-                
+
                 // Show/hide clear button
                 updateClearSearchButton(query);
-                
+
                 state.searchTimeout = setTimeout(() => {
                     handleSearch(query);
                 }, 250);
@@ -125,7 +187,7 @@ window.VocabularyModalController = (function () {
 
         // Clear search button
         if (elements.clearSearchBtn) {
-            elements.clearSearchBtn.addEventListener("click", function() {
+            elements.clearSearchBtn.addEventListener("click", function () {
                 elements.search.value = "";
                 handleSearch("");
                 updateClearSearchButton("");
@@ -157,7 +219,7 @@ window.VocabularyModalController = (function () {
 
     function updateClearSearchButton(query) {
         if (!elements.clearSearchBtn) return;
-        
+
         if (query && query.trim().length > 0) {
             elements.clearSearchBtn.classList.add("visible");
             elements.clearSearchBtn.style.opacity = "1";
@@ -299,7 +361,7 @@ window.VocabularyModalController = (function () {
                 locale: document.documentElement.lang || "it",
             });
         }
-        
+
         // Update selected states after search results load
         setTimeout(() => {
             updateSelectedStatesInView();
@@ -315,25 +377,36 @@ window.VocabularyModalController = (function () {
     function updateChipsDisplay() {
         if (!elements.chips) return;
 
-        const currentSelections = state.selections[state.currentTab] || [];
+        // Raccoglie TUTTE le selezioni da TUTTE le categorie
+        const allSelections = [];
 
-        if (currentSelections.length === 0) {
+        // Aggiungi selezioni da tutte le categorie con informazione sulla categoria
+        Object.keys(state.selections).forEach((category) => {
+            state.selections[category].forEach((item) => {
+                allSelections.push({
+                    ...item,
+                    category: category, // Aggiungi info categoria per styling
+                });
+            });
+        });
+
+        if (allSelections.length === 0) {
             elements.chips.innerHTML = `
                 <div id="vocabularyChipsEmpty" class="text-sm text-gray-500 italic">
-                    {{ __('coa_traits.no_items_selected_for') }} ${state.currentTab}
+                    Nessun elemento selezionato
                 </div>
             `;
         } else {
-            const chipsHtml = currentSelections
+            const chipsHtml = allSelections
                 .map(
                     (item) => `
                 <div class="vocabulary-chip ${
-                    item.isCustom ? "custom" : state.currentTab
-                }" data-slug="${item.slug}">
+                    item.isCustom ? "custom" : item.category
+                }" data-slug="${item.slug}" data-category="${item.category}">
                     <span>${item.name}</span>
                     <svg class="remove-btn" onclick="vocabularyModal.removeSelection('${
                         item.slug
-                    }')"
+                    }', '${item.category}')"
                          fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -365,43 +438,47 @@ window.VocabularyModalController = (function () {
         if (elements.techniqueCount) {
             const count = state.selections.technique.length;
             elements.techniqueCount.textContent = count;
-            elements.techniqueCount.className = count > 0 
-                ? "ml-2 bg-green-100 text-green-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge"
-                : "ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge";
+            elements.techniqueCount.className =
+                count > 0
+                    ? "ml-2 bg-green-100 text-green-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge"
+                    : "ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge";
         }
 
         if (elements.materialsCount) {
             const count = state.selections.materials.length;
             elements.materialsCount.textContent = count;
-            elements.materialsCount.className = count > 0 
-                ? "ml-2 bg-purple-100 text-purple-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge"
-                : "ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge";
+            elements.materialsCount.className =
+                count > 0
+                    ? "ml-2 bg-purple-100 text-purple-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge"
+                    : "ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge";
         }
 
         if (elements.supportCount) {
             const count = state.selections.support.length;
             elements.supportCount.textContent = count;
-            elements.supportCount.className = count > 0 
-                ? "ml-2 bg-indigo-100 text-indigo-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge"
-                : "ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge";
+            elements.supportCount.className =
+                count > 0
+                    ? "ml-2 bg-indigo-100 text-indigo-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge"
+                    : "ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge";
         }
     }
 
     function switchTab(tabName) {
         console.log("VocabularyModal: Switching to tab:", tabName);
-        
+
         // Update state
         state.currentTab = tabName;
 
         // Update tab visual states
-        const tabs = ['technique', 'materials', 'support'];
-        tabs.forEach(tab => {
-            const tabElement = elements[`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`];
+        const tabs = ["technique", "materials", "support"];
+        tabs.forEach((tab) => {
+            const tabElement =
+                elements[`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`];
             if (tabElement) {
                 if (tab === tabName) {
-                    tabElement.classList.add('active');
+                    tabElement.classList.add("active");
                 } else {
-                    tabElement.classList.remove('active');
+                    tabElement.classList.remove("active");
                 }
             }
         });
@@ -415,7 +492,7 @@ window.VocabularyModalController = (function () {
             updateClearSearchButton("");
         }
         state.searchQuery = "";
-        
+
         // Load categories filtered by current tab
         loadContent("/vocabulary/categories", {
             tab: tabName,
@@ -430,16 +507,16 @@ window.VocabularyModalController = (function () {
 
     function updateSelectedStatesInView() {
         const currentSelections = state.selections[state.currentTab] || [];
-        const selectedSlugs = currentSelections.map(item => item.slug);
+        const selectedSlugs = currentSelections.map((item) => item.slug);
 
         // Update visual state of term items
-        const termItems = document.querySelectorAll('.term-item');
-        termItems.forEach(item => {
-            const slug = item.getAttribute('data-term-slug');
+        const termItems = document.querySelectorAll(".term-item");
+        termItems.forEach((item) => {
+            const slug = item.getAttribute("data-term-slug");
             if (selectedSlugs.includes(slug)) {
-                item.classList.add('selected');
+                item.classList.add("selected");
             } else {
-                item.classList.remove('selected');
+                item.classList.remove("selected");
             }
         });
     }
@@ -514,6 +591,9 @@ window.VocabularyModalController = (function () {
             // Initialize tab states
             switchTab("technique");
 
+            // Update chips and tab counts after modal is visible
+            updateChipsDisplay();
+
             // Load initial content - show categories for technique tab
             loadContent("/vocabulary/categories", {
                 tab: "technique",
@@ -585,19 +665,22 @@ window.VocabularyModalController = (function () {
         selectTerm: function (termSlug, termName) {
             console.log("VocabularyModal: Selecting term:", termSlug, termName);
 
-            const currentSelections = state.selections[state.currentTab];
+            // Determina la categoria corretta dal slug
+            const correctCategory = getCategoryFromSlug(termSlug);
+
+            const correctSelections = state.selections[correctCategory];
 
             // Check if already selected
-            const existingIndex = currentSelections.findIndex(
+            const existingIndex = correctSelections.findIndex(
                 (item) => item.slug === termSlug
             );
 
             if (existingIndex >= 0) {
                 // Remove if already selected
-                currentSelections.splice(existingIndex, 1);
+                correctSelections.splice(existingIndex, 1);
             } else {
-                // Add new selection
-                currentSelections.push({
+                // Add new selection to CORRECT category
+                correctSelections.push({
                     slug: termSlug,
                     name: termName,
                     isCustom: false,
@@ -605,7 +688,8 @@ window.VocabularyModalController = (function () {
             }
 
             updateChipsDisplay();
-            
+            updateTabCounts(); // Aggiorna anche i contatori dei tab
+
             // Update visual states immediately
             setTimeout(() => {
                 updateSelectedStatesInView();
@@ -617,7 +701,7 @@ window.VocabularyModalController = (function () {
          * @param {string} tabName - Tab name to switch to
          */
         switchTab: function (tabName) {
-            if (['technique', 'materials', 'support'].includes(tabName)) {
+            if (["technique", "materials", "support"].includes(tabName)) {
                 switchTab(tabName);
             }
         },
@@ -625,19 +709,46 @@ window.VocabularyModalController = (function () {
         /**
          * Remove a selection
          * @param {string} slug - Term slug to remove
+         * @param {string} category - Category of the term (optional, if not provided will search all)
          */
-        removeSelection: function (slug) {
-            console.log("VocabularyModal: Removing selection:", slug);
-
-            const currentSelections = state.selections[state.currentTab];
-            const index = currentSelections.findIndex(
-                (item) => item.slug === slug
+        removeSelection: function (slug, category = null) {
+            console.log(
+                "VocabularyModal: Removing selection:",
+                slug,
+                "from category:",
+                category
             );
 
-            if (index >= 0) {
-                currentSelections.splice(index, 1);
-                updateChipsDisplay();
+            if (category) {
+                // Rimuovi dalla categoria specifica
+                const categorySelections = state.selections[category];
+                if (categorySelections) {
+                    const index = categorySelections.findIndex(
+                        (item) => item.slug === slug
+                    );
+                    if (index >= 0) {
+                        categorySelections.splice(index, 1);
+                    }
+                }
+            } else {
+                // Cerca e rimuovi da tutte le categorie
+                Object.keys(state.selections).forEach((cat) => {
+                    const categorySelections = state.selections[cat];
+                    const index = categorySelections.findIndex(
+                        (item) => item.slug === slug
+                    );
+                    if (index >= 0) {
+                        categorySelections.splice(index, 1);
+                    }
+                });
             }
+
+            updateChipsDisplay();
+
+            // Aggiorna stati visivi se siamo nel tab giusto
+            setTimeout(() => {
+                updateSelectedStatesInView();
+            }, 50);
         },
 
         /**
@@ -692,7 +803,7 @@ window.VocabularyModalController = (function () {
             }
             state.searchQuery = "";
             updateClearSearchButton("");
-            
+
             // Load categories for current tab
             loadContent("/vocabulary/categories", {
                 tab: state.currentTab,
@@ -764,7 +875,37 @@ window.VocabularyModalController = (function () {
          * @param {Object} selections - New selections
          */
         setSelections: function (selections) {
-            state.selections = JSON.parse(JSON.stringify(selections));
+            // Prima di impostare le selezioni, risolviamo i nomi tradotti per gli slug
+            const resolvedSelections = JSON.parse(JSON.stringify(selections));
+
+            Object.keys(resolvedSelections).forEach((category) => {
+                resolvedSelections[category] = resolvedSelections[category].map(
+                    (item) => {
+                        if (
+                            !item.isCustom &&
+                            item.name &&
+                            item.name.includes("-")
+                        ) {
+                            // Se il nome sembra essere un slug, proviamo a risolverlo
+                            console.log(
+                                "VocabularyModal: Attempting to resolve name for slug:",
+                                item.slug,
+                                "current name:",
+                                item.name
+                            );
+                            return {
+                                ...item,
+                                name:
+                                    getTranslatedNameFromSlug(item.slug) ||
+                                    item.name,
+                            };
+                        }
+                        return item;
+                    }
+                );
+            });
+
+            state.selections = resolvedSelections;
             updateChipsDisplay();
         },
 

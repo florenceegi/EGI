@@ -27,21 +27,21 @@
                     {{-- Tab Navigation --}}
                     <div class="border-b border-gray-200">
                         <nav class="flex space-x-8" aria-label="Tabs">
-                            <button id="tabTechnique" 
+                            <button id="tabTechnique"
                                     class="vocabulary-tab py-2 px-1 border-b-2 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active"
                                     onclick="vocabularyModal.switchTab('technique')"
                                     data-tab="technique">
                                 {{ __('coa_traits.technique') }}
                                 <span id="techniqueCount" class="ml-2 bg-blue-100 text-blue-600 py-0.5 px-2 rounded-full text-xs font-medium">0</span>
                             </button>
-                            <button id="tabMaterials" 
+                            <button id="tabMaterials"
                                     class="vocabulary-tab py-2 px-1 border-b-2 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                     onclick="vocabularyModal.switchTab('materials')"
                                     data-tab="materials">
                                 {{ __('coa_traits.materials') }}
                                 <span id="materialsCount" class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium">0</span>
                             </button>
-                            <button id="tabSupport" 
+                            <button id="tabSupport"
                                     class="vocabulary-tab py-2 px-1 border-b-2 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                     onclick="vocabularyModal.switchTab('support')"
                                     data-tab="support">
@@ -64,7 +64,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </div>
-                            <button id="clearSearchBtn" 
+                            <button id="clearSearchBtn"
                                     class="absolute inset-y-0 right-0 pr-3 flex items-center opacity-0 transition-opacity"
                                     onclick="vocabularyModal.clearSearch()">
                                 <svg class="h-4 w-4 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

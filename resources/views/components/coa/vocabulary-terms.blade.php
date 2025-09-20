@@ -121,17 +121,18 @@
                         <div class="p-3 transition-all border border-gray-200 rounded-lg cursor-pointer term-item hover:border-blue-300 hover:shadow-sm"
                              data-term-id="{{ $term->id }}"
                              data-term-slug="{{ $term->slug }}"
-                             onclick="VocabularyModalController.selectTerm('{{ $term->slug }}', '{{ addslashes($term->name) }}')">
+                             onclick="VocabularyModalController.selectTerm('{{ $term->slug }}', '{{ addslashes(__('coa_vocabulary.' . $term->slug)) }}')">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1 min-w-0">
-                                    <h4 class="text-sm font-medium text-gray-900">
+                                    <h4 class="text-sm font-medium text-gray-900 term-name">
                                         @php
-                                            $highlightedName = $term->name;
+                                            $translatedName = __('coa_vocabulary.' . $term->slug);
+                                            $highlightedName = $translatedName;
                                             if ($search && strlen($search) >= 2) {
                                                 $highlightedName = str_ireplace(
                                                     $search,
                                                     '<mark class="px-1 bg-yellow-200 rounded">' . $search . '</mark>',
-                                                    $term->name
+                                                    $translatedName
                                                 );
                                             }
                                         @endphp

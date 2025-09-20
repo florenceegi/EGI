@@ -69,7 +69,7 @@
                     <div class="space-y-2">
                         @foreach($coaTraits->technique_slugs as $slug)
                             <span class="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-md">
-                                {{ __("vocabulary.{$slug}", [], null) ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
+                                {{ __("coa_vocabulary.{$slug}") ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
                             </span>
                         @endforeach
                     </div>
@@ -105,7 +105,7 @@
                     <div class="space-y-2">
                         @foreach($coaTraits->materials_slugs as $slug)
                             <span class="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-md">
-                                {{ __("vocabulary.{$slug}", [], null) ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
+                                {{ __("coa_vocabulary.{$slug}") ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
                             </span>
                         @endforeach
                     </div>
@@ -141,7 +141,7 @@
                     <div class="space-y-2">
                         @foreach($coaTraits->support_slugs as $slug)
                             <span class="inline-block px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-md">
-                                {{ __("vocabulary.{$slug}", [], null) ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
+                                {{ __("coa_vocabulary.{$slug}") ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
                             </span>
                         @endforeach
                     </div>
@@ -285,10 +285,26 @@ window.coaTraitsTranslations = {
             if (slugsInput && slugsInput.value) {
                 try {
                     const slugs = JSON.parse(slugsInput.value);
+                    const coaVocabularyTranslations = @json(__('coa_vocabulary'));
+
                     slugs.forEach(slug => {
+                        // Prova prima con la chiave diretta
+                        let translatedName = coaVocabularyTranslations[slug];
+
+                        // Se non trovata, rimuovi il prefisso 'vocabulary.' se presente
+                        if (!translatedName && slug.startsWith('vocabulary.')) {
+                            const cleanSlug = slug.replace('vocabulary.', '');
+                            translatedName = coaVocabularyTranslations[cleanSlug];
+                        }
+
+                        // Fallback: formatta il slug
+                        if (!translatedName) {
+                            translatedName = slug.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        }
+
                         currentSelections[category].push({
                             slug: slug,
-                            name: slug.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), // Format slug as readable name
+                            name: translatedName, // Ora dovrebbe essere tradotto correttamente
                             isCustom: false
                         });
                     });
