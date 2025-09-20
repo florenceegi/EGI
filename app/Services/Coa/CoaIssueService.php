@@ -265,6 +265,11 @@ class CoaIssueService {
 
         // 5. Create CoA snapshot
         $snapshot = $this->snapshotService->createCoaSnapshot($coa, $traitsVersion);
+        
+        // Se la creazione dello snapshot fallisce, usciamo dall'operazione
+        if (!$snapshot) {
+            throw new \Exception('Failed to create CoA snapshot');
+        }
 
         // 6. Create issuance event
         $this->createCoaEvent($coa, 'coa_issued', [
