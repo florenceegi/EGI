@@ -238,6 +238,11 @@ class CoaIssueService {
             'CoA issuance',
             ['all'] // All fields are included in initial CoA
         );
+        
+        // Se la creazione dello snapshot fallisce, usciamo dall'operazione
+        if (!$traitsVersion) {
+            throw new \Exception('Failed to create traits version snapshot');
+        }
 
         // 3. Prepare issuer information
         $issuerInfo = $this->prepareIssuerData($issuerName, $user);

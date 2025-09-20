@@ -76,7 +76,7 @@ class TraitsSnapshotService {
      * @transparency-level High - complete traits preservation
      * @narrative-coherence Links current state to historical record
      */
-    public function createTraitsVersion(Egi $egi, string $changeReason = 'CoA issuance', array $changedFields = []): EgiTraitsVersion {
+    public function createTraitsVersion(Egi $egi, string $changeReason = 'CoA issuance', array $changedFields = []): ?EgiTraitsVersion {
         try {
             $user = Auth::user();
 
@@ -138,16 +138,21 @@ class TraitsSnapshotService {
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             throw $e; // Re-throw auth exceptions
         } catch (\Exception $e) {
-            $this->errorManager->handle('COA_TRAITS_VERSION_CREATE_ERROR', [
-                'user_id' => Auth::id(),
+            // Log dell'errore originale per debug
+            \Log::error('[TraitsSnapshot Service] Errore durante createTraitsVersion', [
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'error_trace' => $e->getTraceAsString(),
                 'egi_id' => $egi->id,
-                'change_reason' => $changeReason,
-                'error' => $e->getMessage(),
-                'ip_address' => request()->ip(),
-                'timestamp' => now()->toIso8601String()
-            ], $e);
-
-            throw $e;
+                'user_id' => Auth::id(),
+                'change_reason' => $changeReason
+            ]);
+            
+            // Utilizziamo la convenzione UEM standard senza parametri extra problematici
+            $this->errorManager->handle('COA_TRAITS_VERSION_CREATE_ERROR', [], $e);
+            // UEM ha gestito l'errore, non ri-lanciamo l'eccezione
+            return null; // Indica che l'operazione è fallita
         }
     }
 
