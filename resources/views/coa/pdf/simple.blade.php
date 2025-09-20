@@ -19,11 +19,11 @@
     <p>Status: {{ $coa->status }}</p>
     <p>Issue Date: {{ $coa->issued_at->format('Y-m-d') }}</p>
 
-    @if($traits_snapshot && (isset($traits_snapshot['coa_traits']) || count($traits_snapshot) > 0))
+    @if($traits_snapshot && (isset($traits_snapshot['coa_traits']) || isset($traits_snapshot['data']) || count($traits_snapshot) > 0))
     <h3>Traits:</h3>
     <ul>
         @if(isset($traits_snapshot['coa_traits']))
-            {{-- New CoA Traits Structure --}}
+            {{-- Old CoA Traits Structure (deprecated) --}}
             @foreach(['technique', 'materials', 'support'] as $category)
                 @if(isset($traits_snapshot['coa_traits'][$category]))
                     @php $categoryData = $traits_snapshot['coa_traits'][$category]; @endphp
@@ -43,6 +43,11 @@
                     @endif
                 @endif
             @endforeach
+        @elseif(isset($traits_snapshot['data']))
+            {{-- New Enhanced Traits Structure --}}
+            @foreach($traits_snapshot['data'] as $trait)
+            <li>{{ $trait['trait_type'] ?? 'Trait' }}: {{ $trait['value'] ?? 'N/A' }}</li>
+            @endforeach
         @else
             {{-- Backward Compatibility: Generic Traits --}}
             @foreach($traits_snapshot as $trait)
@@ -52,6 +57,15 @@
             @endforeach
         @endif
     </ul>
+    
+    @if(isset($traits_snapshot['metadata']) && count($traits_snapshot['metadata']) > 0)
+    <h3>Additional Metadata:</h3>
+    <ul>
+        @foreach($traits_snapshot['metadata'] as $metadata)
+        <li>{{ $metadata['label'] ?? 'Info' }}: {{ $metadata['value'] ?? 'N/A' }}</li>
+        @endforeach
+    </ul>
+    @endif
     @endif
 
     <p>Platform: {{ $platform_info['name'] }}</p>

@@ -1206,6 +1206,7 @@ class VerifyController extends Controller {
      */
     private function extractAllArtworkMetadata($egi): array {
         $traits = [];
+        $metadata = [];
         $coaTraits = $egi->coaTraits;
         $hasValidCoaTraits = false;
         
@@ -1286,14 +1287,21 @@ class VerifyController extends Controller {
                 }
             }
             
-            // Return complete CoA traits
-            return [
-                'data' => $traits,
-                'source_type' => 'coa_traits',
-                'traits_incomplete' => false
-            ];
+            // Add generic EGI traits as additional metadata when using CoA traits
+            if ($egi->traits && $egi->traits->count() > 0) {
+                foreach ($egi->traits as $trait) {
+                    if ($trait->value && trim($trait->value) !== '') {
+                        $traits[] = [
+                            'trait_type' => $trait->traitType->name ?? 'Trait',
+                            'value' => $trait->value,
+                            'category' => 'platform_metadata'
+                        ];
+                    }
+                }
+            }
+            
         } else {
-            // Fallback to generic EGI traits
+            // Fallback to generic EGI traits as primary traits
             if ($egi->traits && $egi->traits->count() > 0) {
                 foreach ($egi->traits as $trait) {
                     if ($trait->value && trim($trait->value) !== '') {
@@ -1305,14 +1313,129 @@ class VerifyController extends Controller {
                     }
                 }
             }
-            
-            // Return generic traits with incomplete flag
-            return [
-                'data' => $traits,
-                'source_type' => 'generic_egi',
-                'traits_incomplete' => true
+        }
+        
+        // Always add EGI description and technical metadata
+        $metadata = $this->extractAdditionalMetadata($egi);
+        
+        return [
+            'data' => $traits,
+            'metadata' => $metadata,
+            'source_type' => $hasValidCoaTraits ? 'coa_traits' : 'generic_egi',
+            'traits_incomplete' => !$hasValidCoaTraits
+        ];
+    }
+    
+    /**
+     * Extract additional metadata from EGI (description, technical info, etc.)
+     *
+     * @param \App\Models\Egi $egi
+     * @return array
+     */
+    private function extractAdditionalMetadata($egi): array {
+        $metadata = [];
+        
+        // Description (often missing in certificates)
+        if (!empty($egi->description)) {
+            $metadata[] = [
+                'type' => 'description',
+                'label' => 'Descrizione Opera',
+                'value' => $egi->description,
+                'category' => 'artwork_info'
             ];
         }
+        
+        // File technical information
+        if (!empty($egi->size)) {
+            $metadata[] = [
+                'type' => 'file_size',
+                'label' => 'Dimensioni File',
+                'value' => $egi->size,
+                'category' => 'technical'
+            ];
+        }
+        
+        if (!empty($egi->dimension)) {
+            $metadata[] = [
+                'type' => 'image_dimensions',
+                'label' => 'Dimensioni Immagine',
+                'value' => $egi->dimension,
+                'category' => 'technical'
+            ];
+        }
+        
+        if (!empty($egi->file_mime)) {
+            $metadata[] = [
+                'type' => 'mime_type',
+                'label' => 'Tipo File',
+                'value' => $egi->file_mime,
+                'category' => 'technical'
+            ];
+        }
+        
+        if (!empty($egi->extension)) {
+            $metadata[] = [
+                'type' => 'extension',
+                'label' => 'Estensione',
+                'value' => strtoupper($egi->extension),
+                'category' => 'technical'
+            ];
+        }
+        
+        // Additional JSON metadata
+        if (!empty($egi->jsonMetadata) && is_array($egi->jsonMetadata)) {
+            foreach ($egi->jsonMetadata as $key => $value) {
+                if (!empty($value) && !is_array($value) && !is_object($value)) {
+                    $metadata[] = [
+                        'type' => 'json_metadata',
+                        'label' => ucfirst(str_replace(['_', '-'], ' ', $key)),
+                        'value' => (string) $value,
+                        'category' => 'platform_metadata'
+                    ];
+                }
+            }
+        }
+        
+        // Creation and publishing dates
+        if (!empty($egi->creation_date)) {
+            $metadata[] = [
+                'type' => 'creation_date',
+                'label' => 'Data Creazione Artistica',
+                'value' => $egi->creation_date->format('d/m/Y'),
+                'category' => 'artwork_info'
+            ];
+        }
+        
+        if (!empty($egi->created_at)) {
+            $metadata[] = [
+                'type' => 'upload_date',
+                'label' => 'Data Caricamento Piattaforma',
+                'value' => $egi->created_at->format('d/m/Y H:i'),
+                'category' => 'platform_metadata'
+            ];
+        }
+        
+        // Publication status
+        if (isset($egi->is_published)) {
+            $metadata[] = [
+                'type' => 'publication_status',
+                'label' => 'Stato Pubblicazione',
+                'value' => $egi->is_published ? 'Pubblicato' : 'Non Pubblicato',
+                'category' => 'platform_metadata'
+            ];
+        }
+        
+        // Collection information
+        if ($egi->collection && !empty($egi->collection->name)) {
+            $metadata[] = [
+                'type' => 'collection',
+                'label' => 'Collezione',
+                'value' => $egi->collection->name,
+                'category' => 'artwork_info'
+            ];
+        }
+        
+        return $metadata;
     }
 
     //--------------------------------------------------------------------------

@@ -153,7 +153,7 @@
                         </div>
 
                         {{-- Tutti i Traits / Metadati dell'Opera --}}
-                        @if(isset($artwork['traits']) && count($artwork['traits']) > 0)
+                        @if(isset($artwork['traits']['data']) && count($artwork['traits']['data']) > 0)
                         <div class="bg-gray-50 border rounded-lg p-4">
                             <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
                                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -162,7 +162,7 @@
                                 Metadati e Caratteristiche dell'Opera
                             </h3>
                             <div class="grid grid-cols-1 gap-2 text-sm">
-                                @foreach($artwork['traits'] as $trait)
+                                @foreach($artwork['traits']['data'] as $trait)
                                     @if(isset($trait['value']) && $trait['value'] && trim($trait['value']) !== '')
                                     <div class="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
                                         <span class="font-medium text-gray-700 flex items-center">
@@ -174,9 +174,80 @@
                                                     <span class="ml-1 text-xs bg-green-100 text-green-600 px-1 rounded">Materiale</span>
                                                 @elseif($trait['category'] === 'support')
                                                     <span class="ml-1 text-xs bg-amber-100 text-amber-600 px-1 rounded">Supporto</span>
+                                                @elseif($trait['category'] === 'platform_metadata')
+                                                    <span class="ml-1 text-xs bg-purple-100 text-purple-600 px-1 rounded">Piattaforma</span>
                                                 @endif
                                             @endif
                                         </span>
+                                        <span class="text-gray-900 text-right">{{ $trait['value'] }}</span>
+                                    </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Metadata Aggiuntivi (descrizione, info tecniche, ecc.) --}}
+                        @if(isset($artwork['traits']['metadata']) && count($artwork['traits']['metadata']) > 0)
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h3 class="text-sm font-semibold text-blue-800 mb-3 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Informazioni Aggiuntive
+                            </h3>
+                            <div class="space-y-3">
+                                @php 
+                                    $groupedMetadata = collect($artwork['traits']['metadata'])->groupBy('category');
+                                @endphp
+                                
+                                @foreach($groupedMetadata as $category => $items)
+                                    <div>
+                                        <h4 class="text-xs font-medium text-blue-700 uppercase tracking-wide mb-2">
+                                            @if($category === 'artwork_info')
+                                                📝 Informazioni Opera
+                                            @elseif($category === 'technical')
+                                                ⚙️ Informazioni Tecniche
+                                            @elseif($category === 'platform_metadata')
+                                                🏛️ Metadati Piattaforma
+                                            @else
+                                                {{ ucfirst(str_replace('_', ' ', $category)) }}
+                                            @endif
+                                        </h4>
+                                        <div class="grid grid-cols-1 gap-1 text-sm">
+                                            @foreach($items as $item)
+                                                <div class="flex justify-between items-start py-1">
+                                                    <span class="font-medium text-blue-700 text-xs">{{ $item['label'] }}:</span>
+                                                    <span class="text-blue-900 text-right text-xs max-w-xs">
+                                                        @if($item['type'] === 'description' && strlen($item['value']) > 100)
+                                                            {{ Str::limit($item['value'], 100) }}
+                                                        @else
+                                                            {{ $item['value'] }}
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Backward compatibility for old format --}}
+                        @if(isset($artwork['traits']) && !isset($artwork['traits']['data']) && count($artwork['traits']) > 0)
+                        <div class="bg-gray-50 border rounded-lg p-4">
+                            <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Metadati e Caratteristiche dell'Opera
+                            </h3>
+                            <div class="grid grid-cols-1 gap-2 text-sm">
+                                @foreach($artwork['traits'] as $trait)
+                                    @if(isset($trait['value']) && $trait['value'] && trim($trait['value']) !== '')
+                                    <div class="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
+                                        <span class="font-medium text-gray-700">{{ $trait['trait_type'] ?? 'Trait' }}:</span>
                                         <span class="text-gray-900 text-right">{{ $trait['value'] }}</span>
                                     </div>
                                     @endif

@@ -7,6 +7,7 @@ use App\Models\CoaAnnex;
 // use App\Models\CoaAddendum; // TODO: Create this model later
 use App\Models\CoaFile;
 use App\Models\User;
+use App\Traits\EgiTraitsExtraction;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -32,6 +33,7 @@ use Carbon\Carbon;
  * GDPR: Full audit trail compliance for certificate generation
  */
 class CoaPdfService {
+    use EgiTraitsExtraction;
     /**
      * PDF Format configurations
      */
@@ -450,7 +452,7 @@ class CoaPdfService {
      * @return array Prepared data for PDF template
      */
     private function prepareCorePdfData(Coa $coa, array $options = []): array {
-        $egi = $coa->egi()->with(['traits', 'user'])->first();
+        $egi = $coa->egi()->with(['traits', 'user', 'coaTraits', 'collection'])->first();
 
         return [
             'coa' => $coa,
@@ -458,7 +460,7 @@ class CoaPdfService {
             'serial' => $coa->serial,
             'issued_at' => $coa->issued_at,
             'verification_hash' => $coa->verification_hash ?? hash('sha256', $coa->serial),
-            'traits_snapshot' => $egi->traits->toArray(), // Convert traits relation to array
+            'traits_snapshot' => $this->extractAllArtworkMetadata($egi), // NEW: Use enhanced metadata extraction
             'creator' => $egi->user, // The user who created the EGI
             'owner' => $egi->user,   // Current owner (same as creator for now)
             'title' => $egi->title,
@@ -709,5 +711,249 @@ class CoaPdfService {
                 'version' => '1.0'
             ]
         ]);
+    }
+
+    //--------------------------------------------------------------------------
+    // Metadata Extraction Methods (shared with VerifyController)
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Extract all artwork metadata in structured format for PDF certificate display
+     *
+     * @param \App\Models\Egi $egi
+     * @return array
+     */
+    private function extractAllArtworkMetadata($egi): array {
+        $traits = [];
+        $metadata = [];
+        $coaTraits = $egi->coaTraits;
+        $hasValidCoaTraits = false;
+        
+        if ($coaTraits) {
+            // Check if has any valid CoA traits
+            $hasValidCoaTraits = !empty($coaTraits->technique_slugs) ||
+                               !empty($coaTraits->materials_slugs) ||
+                               !empty($coaTraits->support_slugs) ||
+                               !empty($coaTraits->technique_free_text) ||
+                               !empty($coaTraits->materials_free_text) ||
+                               !empty($coaTraits->support_free_text);
+        }
+        
+        if ($hasValidCoaTraits) {
+            // Use structured CoA traits
+            $vocabularyTranslations = __('coa_vocabulary');
+            
+            // Technique traits
+            if (!empty($coaTraits->technique_slugs)) {
+                foreach ($coaTraits->technique_slugs as $slug) {
+                    $traits[] = [
+                        'trait_type' => 'Tecnica',
+                        'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                        'category' => 'technique'
+                    ];
+                }
+            }
+            
+            if (!empty($coaTraits->technique_free_text)) {
+                foreach ($coaTraits->technique_free_text as $text) {
+                    $traits[] = [
+                        'trait_type' => 'Tecnica (Custom)',
+                        'value' => $text,
+                        'category' => 'technique'
+                    ];
+                }
+            }
+            
+            // Materials traits
+            if (!empty($coaTraits->materials_slugs)) {
+                foreach ($coaTraits->materials_slugs as $slug) {
+                    $traits[] = [
+                        'trait_type' => 'Materiale',
+                        'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                        'category' => 'materials'
+                    ];
+                }
+            }
+            
+            if (!empty($coaTraits->materials_free_text)) {
+                foreach ($coaTraits->materials_free_text as $text) {
+                    $traits[] = [
+                        'trait_type' => 'Materiale (Custom)',
+                        'value' => $text,
+                        'category' => 'materials'
+                    ];
+                }
+            }
+            
+            // Support traits
+            if (!empty($coaTraits->support_slugs)) {
+                foreach ($coaTraits->support_slugs as $slug) {
+                    $traits[] = [
+                        'trait_type' => 'Supporto',
+                        'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                        'category' => 'support'
+                    ];
+                }
+            }
+            
+            if (!empty($coaTraits->support_free_text)) {
+                foreach ($coaTraits->support_free_text as $text) {
+                    $traits[] = [
+                        'trait_type' => 'Supporto (Custom)',
+                        'value' => $text,
+                        'category' => 'support'
+                    ];
+                }
+            }
+            
+            // Add generic EGI traits as additional metadata when using CoA traits
+            if ($egi->traits && $egi->traits->count() > 0) {
+                foreach ($egi->traits as $trait) {
+                    if ($trait->value && trim($trait->value) !== '') {
+                        $traits[] = [
+                            'trait_type' => $trait->traitType->name ?? 'Trait',
+                            'value' => $trait->value,
+                            'category' => 'platform_metadata'
+                        ];
+                    }
+                }
+            }
+            
+        } else {
+            // Fallback to generic EGI traits as primary traits
+            if ($egi->traits && $egi->traits->count() > 0) {
+                foreach ($egi->traits as $trait) {
+                    if ($trait->value && trim($trait->value) !== '') {
+                        $traits[] = [
+                            'trait_type' => $trait->traitType->name ?? 'Unknown',
+                            'value' => $trait->value,
+                            'category' => 'generic'
+                        ];
+                    }
+                }
+            }
+        }
+        
+        // Always add EGI description and technical metadata
+        $metadata = $this->extractAdditionalMetadata($egi);
+        
+        return [
+            'data' => $traits,
+            'metadata' => $metadata,
+            'source_type' => $hasValidCoaTraits ? 'coa_traits' : 'generic_egi',
+            'traits_incomplete' => !$hasValidCoaTraits
+        ];
+    }
+    
+    /**
+     * Extract additional metadata from EGI for PDF display
+     *
+     * @param \App\Models\Egi $egi
+     * @return array
+     */
+    private function extractAdditionalMetadata($egi): array {
+        $metadata = [];
+        
+        // Description (often missing in certificates)
+        if (!empty($egi->description)) {
+            $metadata[] = [
+                'type' => 'description',
+                'label' => 'Descrizione Opera',
+                'value' => $egi->description,
+                'category' => 'artwork_info'
+            ];
+        }
+        
+        // File technical information
+        if (!empty($egi->size)) {
+            $metadata[] = [
+                'type' => 'file_size',
+                'label' => 'Dimensioni File',
+                'value' => $egi->size,
+                'category' => 'technical'
+            ];
+        }
+        
+        if (!empty($egi->dimension)) {
+            $metadata[] = [
+                'type' => 'image_dimensions',
+                'label' => 'Dimensioni Immagine',
+                'value' => $egi->dimension,
+                'category' => 'technical'
+            ];
+        }
+        
+        if (!empty($egi->file_mime)) {
+            $metadata[] = [
+                'type' => 'mime_type',
+                'label' => 'Tipo File',
+                'value' => $egi->file_mime,
+                'category' => 'technical'
+            ];
+        }
+        
+        if (!empty($egi->extension)) {
+            $metadata[] = [
+                'type' => 'extension',
+                'label' => 'Estensione',
+                'value' => strtoupper($egi->extension),
+                'category' => 'technical'
+            ];
+        }
+        
+        // Additional JSON metadata
+        if (!empty($egi->jsonMetadata) && is_array($egi->jsonMetadata)) {
+            foreach ($egi->jsonMetadata as $key => $value) {
+                if (!empty($value) && !is_array($value) && !is_object($value)) {
+                    $metadata[] = [
+                        'type' => 'json_metadata',
+                        'label' => ucfirst(str_replace(['_', '-'], ' ', $key)),
+                        'value' => (string) $value,
+                        'category' => 'platform_metadata'
+                    ];
+                }
+            }
+        }
+        
+        // Creation and publishing dates
+        if (!empty($egi->creation_date)) {
+            $metadata[] = [
+                'type' => 'creation_date',
+                'label' => 'Data Creazione Artistica',
+                'value' => $egi->creation_date->format('d/m/Y'),
+                'category' => 'artwork_info'
+            ];
+        }
+        
+        if (!empty($egi->created_at)) {
+            $metadata[] = [
+                'type' => 'upload_date',
+                'label' => 'Data Caricamento Piattaforma',
+                'value' => $egi->created_at->format('d/m/Y H:i'),
+                'category' => 'platform_metadata'
+            ];
+        }
+        
+        // Publication status
+        if (isset($egi->is_published)) {
+            $metadata[] = [
+                'type' => 'publication_status',
+                'label' => 'Stato Pubblicazione',
+                'value' => $egi->is_published ? 'Pubblicato' : 'Non Pubblicato',
+                'category' => 'platform_metadata'
+            ];
+        }
+        
+        // Collection information
+        if ($egi->collection && !empty($egi->collection->name)) {
+            $metadata[] = [
+                'type' => 'collection',
+                'label' => 'Collezione',
+                'value' => $egi->collection->name,
+                'category' => 'artwork_info'
+            ];
+        }
+        
+        return $metadata;
     }
 }

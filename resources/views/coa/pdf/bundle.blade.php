@@ -339,12 +339,12 @@
         </div>
 
         <!-- Traits Information -->
-        @if($traits_snapshot && (isset($traits_snapshot['coa_traits']) || count($traits_snapshot) > 0))
+        @if($traits_snapshot && (isset($traits_snapshot['coa_traits']) || isset($traits_snapshot['data']) || count($traits_snapshot) > 0))
         <div class="traits-section">
             <div class="section-title">🏷️ Artwork Traits</div>
             <div class="traits-grid">
                 @if(isset($traits_snapshot['coa_traits']))
-                    {{-- New CoA Traits Structure --}}
+                    {{-- Old CoA Traits Structure (deprecated) --}}
                     @foreach(['technique', 'materials', 'support'] as $category)
                         @if(isset($traits_snapshot['coa_traits'][$category]))
                             @php $categoryData = $traits_snapshot['coa_traits'][$category]; @endphp
@@ -370,6 +370,14 @@
                             @endif
                         @endif
                     @endforeach
+                @elseif(isset($traits_snapshot['data']))
+                    {{-- New Enhanced Traits Structure --}}
+                    @foreach($traits_snapshot['data'] as $trait)
+                    <div class="trait-item">
+                        <div class="trait-name">{{ $trait['trait_type'] ?? 'Trait' }}</div>
+                        <div class="trait-value">{{ $trait['value'] ?? 'N/A' }}</div>
+                    </div>
+                    @endforeach
                 @else
                     {{-- Backward Compatibility: Generic Traits --}}
                     @foreach($traits_snapshot as $trait)
@@ -382,6 +390,27 @@
                     @endforeach
                 @endif
             </div>
+            
+            {{-- Additional Metadata for Bundle --}}
+            @if(isset($traits_snapshot['metadata']) && count($traits_snapshot['metadata']) > 0)
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd;">
+                <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 10px; color: #666;">📋 Additional Information</h4>
+                <div class="traits-grid">
+                    @foreach($traits_snapshot['metadata'] as $metadata)
+                    <div class="trait-item">
+                        <div class="trait-name">{{ $metadata['label'] ?? 'Info' }}</div>
+                        <div class="trait-value">
+                            @if($metadata['type'] === 'description' && strlen($metadata['value']) > 200)
+                                {{ Str::limit($metadata['value'], 200) }}
+                            @else
+                                {{ $metadata['value'] ?? 'N/A' }}
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
         @endif
     </div>
