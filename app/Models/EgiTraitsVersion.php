@@ -35,7 +35,7 @@ class EgiTraitsVersion extends Model {
     /**
      * Indicates if the model should be timestamped.
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -44,6 +44,9 @@ class EgiTraitsVersion extends Model {
         'egi_id',
         'version',
         'traits_json',
+        'traits_hash',
+        'change_reason',
+        'changed_fields',
         'created_by',
     ];
 
@@ -52,8 +55,10 @@ class EgiTraitsVersion extends Model {
      */
     protected $casts = [
         'traits_json' => 'array',
+        'changed_fields' => 'array',
         'version' => 'integer',
         'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     //--------------------------------------------------------------------------
