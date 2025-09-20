@@ -58,6 +58,26 @@
             @endif
         </div>
 
+        {{-- CoA Traits Completeness Warning --}}
+        @if(isset($artwork['traits']) && isset($artwork['traits']['traits_incomplete']) && $artwork['traits']['traits_incomplete'])
+            <div class="max-w-5xl mx-auto mb-6">
+                <div class="bg-amber-100 border border-amber-400 text-amber-800 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <div class="font-semibold text-base">Certificato con Traits Generici</div>
+                            <div class="text-sm mt-1">
+                                Questo certificato è stato generato utilizzando i traits generici EGI invece dei traits CoA specifici. 
+                                Per una certificazione più professionale e dettagliata, si consiglia di configurare i CoA traits (tecnica, materiali, supporto) dal pannello di gestione dell'opera.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         {{-- Main Certificate Content --}}
         <div class="max-w-5xl mx-auto">
             <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
@@ -86,13 +106,27 @@
                         </div>
                         @endif
 
-                        {{-- Tecnica/Supporto --}}
-                        @if($artwork['technique'] || $artwork['support'])
+                        {{-- Tecnica --}}
+                        @if($artwork['technique'])
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Tecnica/Supporto</label>
-                            <div class="text-lg text-gray-900">
-                                {{ $artwork['technique'] }}@if($artwork['technique'] && $artwork['support']) su @endif{{ $artwork['support'] }}
-                            </div>
+                            <label class="text-sm font-medium text-gray-600">Tecnica</label>
+                            <div class="text-lg text-gray-900">{{ $artwork['technique'] }}</div>
+                        </div>
+                        @endif
+
+                        {{-- Materiali --}}
+                        @if($artwork['materials'])
+                        <div>
+                            <label class="text-sm font-medium text-gray-600">Materiali</label>
+                            <div class="text-lg text-gray-900">{{ $artwork['materials'] }}</div>
+                        </div>
+                        @endif
+
+                        {{-- Supporto --}}
+                        @if($artwork['support'])
+                        <div>
+                            <label class="text-sm font-medium text-gray-600">Supporto</label>
+                            <div class="text-lg text-gray-900">{{ $artwork['support'] }}</div>
                         </div>
                         @endif
 
@@ -129,9 +163,20 @@
                             </h3>
                             <div class="grid grid-cols-1 gap-2 text-sm">
                                 @foreach($artwork['traits'] as $trait)
-                                    @if($trait['value'] && trim($trait['value']) !== '')
+                                    @if(isset($trait['value']) && $trait['value'] && trim($trait['value']) !== '')
                                     <div class="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
-                                        <span class="font-medium text-gray-700">{{ $trait['trait_type'] }}:</span>
+                                        <span class="font-medium text-gray-700 flex items-center">
+                                            {{ $trait['trait_type'] }}:
+                                            @if(isset($trait['category']) && $trait['category'] !== 'generic')
+                                                @if($trait['category'] === 'technique')
+                                                    <span class="ml-1 text-xs bg-blue-100 text-blue-600 px-1 rounded">Tecnica</span>
+                                                @elseif($trait['category'] === 'materials')
+                                                    <span class="ml-1 text-xs bg-green-100 text-green-600 px-1 rounded">Materiale</span>
+                                                @elseif($trait['category'] === 'support')
+                                                    <span class="ml-1 text-xs bg-amber-100 text-amber-600 px-1 rounded">Supporto</span>
+                                                @endif
+                                            @endif
+                                        </span>
                                         <span class="text-gray-900 text-right">{{ $trait['value'] }}</span>
                                     </div>
                                     @endif

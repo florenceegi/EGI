@@ -48,6 +48,29 @@
         .section-title {
             font-size: 16px;
             font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .traits-warning {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .traits-warning .title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .traits-warning .message {
+            color: #856404;
+            font-size: 12px;
+            line-height: 1.4;
+        };
             margin-bottom: 15px;
             color: #d4af37;
         }
@@ -209,17 +232,61 @@
             </div>
         </div>
 
+        <!-- CoA Traits Completeness Warning -->
+        @if(isset($traits_snapshot['traits_incomplete']) && $traits_snapshot['traits_incomplete'])
+        <div class="traits-warning">
+            <div class="title">⚠️ Certificato con Traits Generici</div>
+            <div class="message">
+                Questo certificato è stato generato utilizzando i traits generici EGI invece dei traits CoA specifici. 
+                Per una certificazione più professionale e dettagliata, si consiglia di configurare i CoA traits 
+                (tecnica, materiali, supporto) dal pannello di gestione dell'opera.
+            </div>
+        </div>
+        @endif
+
         <!-- Traits Information -->
-        @if($traits_snapshot && count($traits_snapshot) > 0)
+        @if($traits_snapshot && (isset($traits_snapshot['coa_traits']) || count($traits_snapshot) > 0))
         <div class="traits-section">
             <div class="section-title">🏷️ Artwork Traits</div>
             <div class="traits-grid">
-                @foreach($traits_snapshot as $trait)
-                <div class="trait-item">
-                    <div class="trait-name">{{ $trait['value'] ?? 'Trait' }}</div>
-                    <div class="trait-value">{{ $trait['display_value'] ?? $trait['value'] ?? 'N/A' }}</div>
-                </div>
-                @endforeach
+                @if(isset($traits_snapshot['coa_traits']))
+                    {{-- New CoA Traits Structure --}}
+                    @foreach(['technique', 'materials', 'support'] as $category)
+                        @if(isset($traits_snapshot['coa_traits'][$category]))
+                            @php $categoryData = $traits_snapshot['coa_traits'][$category]; @endphp
+                            
+                            {{-- Vocabulary Terms --}}
+                            @if(!empty($categoryData['vocabulary_terms']))
+                                @foreach($categoryData['vocabulary_terms'] as $term)
+                                <div class="trait-item">
+                                    <div class="trait-name">{{ ucfirst($category) }}</div>
+                                    <div class="trait-value">{{ $term['translated_name'] }}</div>
+                                </div>
+                                @endforeach
+                            @endif
+                            
+                            {{-- Custom Terms --}}
+                            @if(!empty($categoryData['custom_terms']))
+                                @foreach($categoryData['custom_terms'] as $term)
+                                <div class="trait-item">
+                                    <div class="trait-name">{{ ucfirst($category) }} (Custom)</div>
+                                    <div class="trait-value">{{ $term['text'] }}</div>
+                                </div>
+                                @endforeach
+                            @endif
+                        @endif
+                    @endforeach
+                @else
+                    {{-- Backward Compatibility: Generic Traits --}}
+                    @foreach($traits_snapshot as $trait)
+                        @if(is_array($trait) && isset($trait['value']))
+                        <div class="trait-item">
+                            <div class="trait-name">{{ $trait['value'] ?? 'Trait' }}</div>
+                            <div class="trait-value">{{ $trait['display_value'] ?? $trait['value'] ?? 'N/A' }}</div>
+                        </div>
+                        @endif
+                    @endforeach
+                @endif
             </div>
         </div>
         @endif

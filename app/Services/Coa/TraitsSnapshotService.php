@@ -274,9 +274,145 @@ class TraitsSnapshotService {
      * @privacy-safe Extracts only artwork metadata, no personal data
      */
     protected function extractTraitsData(Egi $egi): array {
-        // Extract all relevant traits from the EGI
-        // This should match the structure expected by the CoA system
+        // NEW: Use CoA traits if available and has data, fallback to generic EGI traits
+        $coaTraits = $egi->coaTraits;
+        
+        if ($coaTraits && $this->hasValidCoaTraits($coaTraits)) {
+            return $this->extractCoaTraitsData($egi, $coaTraits);
+        }
+        
+        // Fallback to generic EGI traits for backward compatibility
+        return $this->extractGenericTraitsData($egi);
+    }
+
+    /**
+     * Check if CoA traits has any valid data
+     *
+     * @param EgiCoaTrait $coaTraits
+     * @return bool
+     */
+    protected function hasValidCoaTraits($coaTraits): bool {
+        return !empty($coaTraits->technique_slugs) ||
+               !empty($coaTraits->materials_slugs) ||
+               !empty($coaTraits->support_slugs) ||
+               !empty($coaTraits->technique_free_text) ||
+               !empty($coaTraits->materials_free_text) ||
+               !empty($coaTraits->support_free_text);
+    }
+    
+    /**
+     * Extract CoA-specific traits data with vocabulary translations
+     *
+     * @param Egi $egi The EGI to extract traits from
+     * @param EgiCoaTrait $coaTraits The CoA traits data
+     * @return array The structured CoA traits data
+     * @privacy-safe Extracts only artwork metadata with proper translations
+     */
+    protected function extractCoaTraitsData(Egi $egi, $coaTraits): array {
+        // Load all vocabulary translations for performance
+        $vocabularyTranslations = __('coa_vocabulary');
+        
         return [
+            'source_type' => 'coa_traits',
+            'extraction_date' => now()->toIso8601String(),
+            'egi_id' => $egi->id,
+            'version' => '2.0', // CoA traits version
+            
+            // Basic EGI data
+            'basic_info' => [
+                'title' => $egi->title,
+                'description' => $egi->description,
+                'author' => $egi->author,
+                'year' => $egi->year,
+            ],
+            
+            // CoA Traits - organized by categories
+            'coa_traits' => [
+                'technique' => [
+                    'vocabulary_terms' => $this->extractCategoryTerms($coaTraits->technique_slugs, $vocabularyTranslations),
+                    'custom_terms' => $this->extractCustomTerms($coaTraits->technique_free_text)
+                ],
+                'materials' => [
+                    'vocabulary_terms' => $this->extractCategoryTerms($coaTraits->materials_slugs, $vocabularyTranslations),
+                    'custom_terms' => $this->extractCustomTerms($coaTraits->materials_free_text)
+                ],
+                'support' => [
+                    'vocabulary_terms' => $this->extractCategoryTerms($coaTraits->support_slugs, $vocabularyTranslations),
+                    'custom_terms' => $this->extractCustomTerms($coaTraits->support_free_text)
+                ]
+            ],
+            
+            // Metadata
+            'metadata' => [
+                'coa_traits_id' => $coaTraits->id,
+                'last_updated' => $coaTraits->updated_at?->toIso8601String(),
+                'has_vocabulary_terms' => !empty($coaTraits->technique_slugs) || !empty($coaTraits->materials_slugs) || !empty($coaTraits->support_slugs),
+                'has_custom_terms' => !empty($coaTraits->technique_free_text) || !empty($coaTraits->materials_free_text) || !empty($coaTraits->support_free_text),
+                'total_categories' => 3,
+                'populated_categories' => collect([
+                    'technique' => !empty($coaTraits->technique_slugs) || !empty($coaTraits->technique_free_text),
+                    'materials' => !empty($coaTraits->materials_slugs) || !empty($coaTraits->materials_free_text),
+                    'support' => !empty($coaTraits->support_slugs) || !empty($coaTraits->support_free_text)
+                ])->filter()->count()
+            ]
+        ];
+    }
+    
+    /**
+     * Extract category terms with translations
+     *
+     * @param array $slugs
+     * @param array $vocabularyTranslations
+     * @return array
+     */
+    protected function extractCategoryTerms($slugs, $vocabularyTranslations): array {
+        if (empty($slugs)) {
+            return [];
+        }
+        
+        return collect($slugs)->map(function ($slug) use ($vocabularyTranslations) {
+            return [
+                'slug' => $slug,
+                'name' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                'translation_key' => "coa_vocabulary.{$slug}"
+            ];
+        })->toArray();
+    }
+    
+    /**
+     * Extract custom terms
+     *
+     * @param array $customTexts
+     * @return array
+     */
+    protected function extractCustomTerms($customTexts): array {
+        if (empty($customTexts)) {
+            return [];
+        }
+        
+        return collect($customTexts)->map(function ($text, $index) {
+            return [
+                'id' => $index,
+                'text' => $text,
+                'type' => 'custom'
+            ];
+        })->toArray();
+    }
+    
+    /**
+     * Extract generic EGI traits for backward compatibility
+     *
+     * @param Egi $egi
+     * @return array
+     */
+    protected function extractGenericTraitsData(Egi $egi): array {
+        // Extract all relevant traits from the EGI for backward compatibility
+        return [
+            'source_type' => 'generic_egi',
+            'extraction_date' => now()->toIso8601String(),
+            'version' => '1.0', // Generic traits version
+            
+            // Basic EGI data
             'id' => $egi->id,
             'title' => $egi->title,
             'description' => $egi->description,
@@ -301,6 +437,10 @@ class TraitsSnapshotService {
             'awards' => $egi->awards,
             'created_at' => $egi->created_at?->toIso8601String(),
             'updated_at' => $egi->updated_at?->toIso8601String(),
+            
+            // Status indicators
+            'has_coa_traits' => false,
+            'traits_incomplete' => true // This indicates the certificate should show a warning
         ];
     }
 

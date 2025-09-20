@@ -339,16 +339,48 @@
         </div>
 
         <!-- Traits Information -->
-        @if($traits_snapshot && count($traits_snapshot) > 0)
+        @if($traits_snapshot && (isset($traits_snapshot['coa_traits']) || count($traits_snapshot) > 0))
         <div class="traits-section">
             <div class="section-title">🏷️ Artwork Traits</div>
             <div class="traits-grid">
-                @foreach($traits_snapshot as $trait)
-                <div class="trait-item">
-                    <div class="trait-name">{{ $trait['value'] ?? 'Trait' }}</div>
-                    <div class="trait-value">{{ $trait['display_value'] ?? $trait['value'] ?? 'N/A' }}</div>
-                </div>
-                @endforeach
+                @if(isset($traits_snapshot['coa_traits']))
+                    {{-- New CoA Traits Structure --}}
+                    @foreach(['technique', 'materials', 'support'] as $category)
+                        @if(isset($traits_snapshot['coa_traits'][$category]))
+                            @php $categoryData = $traits_snapshot['coa_traits'][$category]; @endphp
+                            
+                            {{-- Vocabulary Terms --}}
+                            @if(!empty($categoryData['vocabulary_terms']))
+                                @foreach($categoryData['vocabulary_terms'] as $term)
+                                <div class="trait-item">
+                                    <div class="trait-name">{{ ucfirst($category) }}</div>
+                                    <div class="trait-value">{{ $term['translated_name'] }}</div>
+                                </div>
+                                @endforeach
+                            @endif
+                            
+                            {{-- Custom Terms --}}
+                            @if(!empty($categoryData['custom_terms']))
+                                @foreach($categoryData['custom_terms'] as $term)
+                                <div class="trait-item">
+                                    <div class="trait-name">{{ ucfirst($category) }} (Custom)</div>
+                                    <div class="trait-value">{{ $term['text'] }}</div>
+                                </div>
+                                @endforeach
+                            @endif
+                        @endif
+                    @endforeach
+                @else
+                    {{-- Backward Compatibility: Generic Traits --}}
+                    @foreach($traits_snapshot as $trait)
+                        @if(is_array($trait) && isset($trait['value']))
+                        <div class="trait-item">
+                            <div class="trait-name">{{ $trait['value'] ?? 'Trait' }}</div>
+                            <div class="trait-value">{{ $trait['display_value'] ?? $trait['value'] ?? 'N/A' }}</div>
+                        </div>
+                        @endif
+                    @endforeach
+                @endif
             </div>
         </div>
         @endif

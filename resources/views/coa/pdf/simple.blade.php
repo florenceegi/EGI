@@ -19,12 +19,38 @@
     <p>Status: {{ $coa->status }}</p>
     <p>Issue Date: {{ $coa->issued_at->format('Y-m-d') }}</p>
 
-    @if($traits_snapshot && count($traits_snapshot) > 0)
+    @if($traits_snapshot && (isset($traits_snapshot['coa_traits']) || count($traits_snapshot) > 0))
     <h3>Traits:</h3>
     <ul>
-        @foreach($traits_snapshot as $trait)
-        <li>{{ $trait['value'] ?? 'Unknown' }}: {{ $trait['display_value'] ?? 'N/A' }}</li>
-        @endforeach
+        @if(isset($traits_snapshot['coa_traits']))
+            {{-- New CoA Traits Structure --}}
+            @foreach(['technique', 'materials', 'support'] as $category)
+                @if(isset($traits_snapshot['coa_traits'][$category]))
+                    @php $categoryData = $traits_snapshot['coa_traits'][$category]; @endphp
+                    
+                    {{-- Vocabulary Terms --}}
+                    @if(!empty($categoryData['vocabulary_terms']))
+                        @foreach($categoryData['vocabulary_terms'] as $term)
+                        <li>{{ ucfirst($category) }}: {{ $term['translated_name'] }}</li>
+                        @endforeach
+                    @endif
+                    
+                    {{-- Custom Terms --}}
+                    @if(!empty($categoryData['custom_terms']))
+                        @foreach($categoryData['custom_terms'] as $term)
+                        <li>{{ ucfirst($category) }} (Custom): {{ $term['text'] }}</li>
+                        @endforeach
+                    @endif
+                @endif
+            @endforeach
+        @else
+            {{-- Backward Compatibility: Generic Traits --}}
+            @foreach($traits_snapshot as $trait)
+                @if(is_array($trait) && isset($trait['value']))
+                <li>{{ $trait['value'] ?? 'Unknown' }}: {{ $trait['display_value'] ?? 'N/A' }}</li>
+                @endif
+            @endforeach
+        @endif
     </ul>
     @endif
 

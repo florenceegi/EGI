@@ -683,6 +683,7 @@ class VerifyController extends Controller {
                     'author' => $this->extractAuthorFromTraits($coa->egi),
                     'year' => $this->extractYearFromTraits($coa->egi),
                     'technique' => $this->extractTechniqueFromTraits($coa->egi),
+                    'materials' => $this->extractMaterialsFromTraits($coa->egi), // AGGIUNTO: estrazione materiali
                     'support' => $this->extractSupportFromTraits($coa->egi),
                     'dimensions' => $this->extractDimensionsFromTraits($coa->egi),
                     'edition' => $this->extractEditionFromTraits($coa->egi),
@@ -804,6 +805,7 @@ class VerifyController extends Controller {
                     'author' => $this->extractAuthorFromTraits($coa->egi), // Using trait method
                     'year' => $this->extractYearFromTraits($coa->egi),
                     'technique' => $this->extractTechniqueFromTraits($coa->egi),
+                    'materials' => $this->extractMaterialsFromTraits($coa->egi), // AGGIUNTO: estrazione materiali
                     'support' => $this->extractSupportFromTraits($coa->egi),
                     'dimensions' => $this->extractDimensionsFromTraits($coa->egi),
                     'edition' => $this->extractEditionFromTraits($coa->egi),
@@ -996,5 +998,450 @@ class VerifyController extends Controller {
             'hash' => hash('sha256', $annex->data ?? ''),
             'download_url' => route('coa.annexes.download', [$coa->id, $type])
         ];
+    }
+
+    //--------------------------------------------------------------------------
+    // CoA Traits Extraction Methods
+    //--------------------------------------------------------------------------
+
+    /**
+     * Extract author from CoA traits or EGI data
+     *
+     * @param \App\Models\Egi $egi
+     * @return string
+     */
+    private function extractAuthorFromTraits($egi): string {
+        $coaTraits = $egi->coaTraits;
+        
+        if ($coaTraits) {
+            // Check for author in CoA traits custom text
+            $authorFromCustom = $this->findAuthorInCustomTraits($coaTraits);
+            if ($authorFromCustom) {
+                return $authorFromCustom;
+            }
+        }
+        
+        // Fallback to EGI author field or generic trait extraction
+        if (!empty($egi->author)) {
+            return $egi->author;
+        }
+        
+        $authorFromTraits = $this->extractTraitValue($egi, ['Autore', 'Author', 'Artist', 'Artista']);
+        if ($authorFromTraits) {
+            return $authorFromTraits;
+        }
+        
+        return $egi->user->name ?? 'Unknown Author';
+    }
+
+    /**
+     * Extract year from CoA traits or EGI data
+     *
+     * @param \App\Models\Egi $egi
+     * @return string|null
+     */
+    private function extractYearFromTraits($egi): ?string {
+        // Try CoA traits first (check if any custom text contains year)
+        $coaTraits = $egi->coaTraits;
+        if ($coaTraits) {
+            $yearFromCoaTraits = $this->findYearInCoaTraits($coaTraits);
+            if ($yearFromCoaTraits) {
+                return $yearFromCoaTraits;
+            }
+        }
+        
+        // Fallback to EGI year field or generic traits
+        if (!empty($egi->year)) {
+            return (string) $egi->year;
+        }
+        
+        return $this->extractTraitValue($egi, ['Anno', 'Year', 'Data', 'Date']);
+    }
+
+    /**
+     * Extract technique from CoA traits
+     *
+     * @param \App\Models\Egi $egi
+     * @return string|null
+     */
+    private function extractTechniqueFromTraits($egi): ?string {
+        $coaTraits = $egi->coaTraits;
+        
+        if ($coaTraits && !empty($coaTraits->technique_slugs)) {
+            $vocabularyTranslations = __('coa_vocabulary');
+            $techniques = [];
+            
+            foreach ($coaTraits->technique_slugs as $slug) {
+                $techniques[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
+            }
+            
+            // Add custom technique if present
+            if (!empty($coaTraits->technique_other)) {
+                $techniques[] = $coaTraits->technique_other;
+            }
+            
+            return implode(', ', $techniques);
+        }
+        
+        // Fallback to EGI technique field or generic traits
+        if (!empty($egi->technique)) {
+            return $egi->technique;
+        }
+        
+        return $this->extractTraitValue($egi, ['Tecnica', 'Technique', 'Medium']);
+    }
+
+    /**
+     * Extract materials from CoA traits
+     *
+     * @param \App\Models\Egi $egi
+     * @return string|null
+     */
+    private function extractMaterialsFromTraits($egi): ?string {
+        $coaTraits = $egi->coaTraits;
+        
+        if ($coaTraits && !empty($coaTraits->materials_slugs)) {
+            $vocabularyTranslations = __('coa_vocabulary');
+            $materials = [];
+            
+            foreach ($coaTraits->materials_slugs as $slug) {
+                $materials[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
+            }
+            
+            // Add custom materials if present
+            if (!empty($coaTraits->materials_free_text)) {
+                foreach ($coaTraits->materials_free_text as $customMaterial) {
+                    $materials[] = $customMaterial;
+                }
+            }
+            
+            return implode(', ', $materials);
+        }
+        
+        // Fallback to EGI materials field or generic traits
+        if (!empty($egi->materials)) {
+            return $egi->materials;
+        }
+        
+        return $this->extractTraitValue($egi, ['Materiale', 'Materials', 'Material']);
+    }
+
+    /**
+     * Extract support from CoA traits
+     *
+     * @param \App\Models\Egi $egi
+     * @return string|null
+     */
+    private function extractSupportFromTraits($egi): ?string {
+        $coaTraits = $egi->coaTraits;
+        
+        if ($coaTraits && !empty($coaTraits->support_slugs)) {
+            $vocabularyTranslations = __('coa_vocabulary');
+            $supports = [];
+            
+            foreach ($coaTraits->support_slugs as $slug) {
+                $supports[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
+            }
+            
+            // Add custom support if present
+            if (!empty($coaTraits->support_other)) {
+                $supports[] = $coaTraits->support_other;
+            }
+            
+            return implode(', ', $supports);
+        }
+        
+        // Fallback to generic traits or EGI fields
+        return $this->extractTraitValue($egi, ['Supporto', 'Support', 'Material']);
+    }
+
+    /**
+     * Extract dimensions from CoA traits or EGI data
+     *
+     * @param \App\Models\Egi $egi
+     * @return string|null
+     */
+    private function extractDimensionsFromTraits($egi): ?string {
+        // Check if dimensions info is in CoA custom text
+        $coaTraits = $egi->coaTraits;
+        if ($coaTraits) {
+            $dimensionsFromCoaTraits = $this->findDimensionsInCoaTraits($coaTraits);
+            if ($dimensionsFromCoaTraits) {
+                return $dimensionsFromCoaTraits;
+            }
+        }
+        
+        // Fallback to EGI dimensions field or generic traits
+        if (!empty($egi->dimensions)) {
+            return $egi->dimensions;
+        }
+        
+        return $this->extractTraitValue($egi, ['Dimensioni', 'Dimensions', 'Size']);
+    }
+
+    /**
+     * Extract edition from CoA traits or EGI data
+     *
+     * @param \App\Models\Egi $egi
+     * @return string|null
+     */
+    private function extractEditionFromTraits($egi): ?string {
+        // Check if edition info is in CoA custom text
+        $coaTraits = $egi->coaTraits;
+        if ($coaTraits) {
+            $editionFromCoaTraits = $this->findEditionInCoaTraits($coaTraits);
+            if ($editionFromCoaTraits) {
+                return $editionFromCoaTraits;
+            }
+        }
+        
+        return $this->extractTraitValue($egi, ['Edizione', 'Edition', 'Tiratura']);
+    }
+
+    /**
+     * Extract all artwork metadata in structured format for certificate display
+     *
+     * @param \App\Models\Egi $egi
+     * @return array
+     */
+    private function extractAllArtworkMetadata($egi): array {
+        $traits = [];
+        $coaTraits = $egi->coaTraits;
+        $hasValidCoaTraits = false;
+        
+        if ($coaTraits) {
+            // Check if has any valid CoA traits
+            $hasValidCoaTraits = !empty($coaTraits->technique_slugs) ||
+                               !empty($coaTraits->materials_slugs) ||
+                               !empty($coaTraits->support_slugs) ||
+                               !empty($coaTraits->technique_free_text) ||
+                               !empty($coaTraits->materials_free_text) ||
+                               !empty($coaTraits->support_free_text);
+        }
+        
+        if ($hasValidCoaTraits) {
+            // Use structured CoA traits
+            $vocabularyTranslations = __('coa_vocabulary');
+            
+            // Technique traits
+            if (!empty($coaTraits->technique_slugs)) {
+                foreach ($coaTraits->technique_slugs as $slug) {
+                    $traits[] = [
+                        'trait_type' => 'Tecnica',
+                        'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                        'category' => 'technique'
+                    ];
+                }
+            }
+            
+            if (!empty($coaTraits->technique_free_text)) {
+                foreach ($coaTraits->technique_free_text as $text) {
+                    $traits[] = [
+                        'trait_type' => 'Tecnica (Custom)',
+                        'value' => $text,
+                        'category' => 'technique'
+                    ];
+                }
+            }
+            
+            // Materials traits
+            if (!empty($coaTraits->materials_slugs)) {
+                foreach ($coaTraits->materials_slugs as $slug) {
+                    $traits[] = [
+                        'trait_type' => 'Materiale',
+                        'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                        'category' => 'materials'
+                    ];
+                }
+            }
+            
+            if (!empty($coaTraits->materials_free_text)) {
+                foreach ($coaTraits->materials_free_text as $text) {
+                    $traits[] = [
+                        'trait_type' => 'Materiale (Custom)',
+                        'value' => $text,
+                        'category' => 'materials'
+                    ];
+                }
+            }
+            
+            // Support traits
+            if (!empty($coaTraits->support_slugs)) {
+                foreach ($coaTraits->support_slugs as $slug) {
+                    $traits[] = [
+                        'trait_type' => 'Supporto',
+                        'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                        'category' => 'support'
+                    ];
+                }
+            }
+            
+            if (!empty($coaTraits->support_free_text)) {
+                foreach ($coaTraits->support_free_text as $text) {
+                    $traits[] = [
+                        'trait_type' => 'Supporto (Custom)',
+                        'value' => $text,
+                        'category' => 'support'
+                    ];
+                }
+            }
+            
+            // Return complete CoA traits
+            return [
+                'data' => $traits,
+                'source_type' => 'coa_traits',
+                'traits_incomplete' => false
+            ];
+        } else {
+            // Fallback to generic EGI traits
+            if ($egi->traits && $egi->traits->count() > 0) {
+                foreach ($egi->traits as $trait) {
+                    if ($trait->value && trim($trait->value) !== '') {
+                        $traits[] = [
+                            'trait_type' => $trait->traitType->name ?? 'Unknown',
+                            'value' => $trait->value,
+                            'category' => 'generic'
+                        ];
+                    }
+                }
+            }
+            
+            // Return generic traits with incomplete flag
+            return [
+                'data' => $traits,
+                'source_type' => 'generic_egi',
+                'traits_incomplete' => true
+            ];
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // CoA Traits Helper Methods
+    //--------------------------------------------------------------------------
+
+    /**
+     * Find author in CoA custom traits text
+     */
+    private function findAuthorInCustomTraits($coaTraits): ?string {
+        $customTexts = [
+            $coaTraits->technique_other,
+            $coaTraits->materials_other,
+            $coaTraits->support_other
+        ];
+        
+        foreach ($customTexts as $text) {
+            if (empty($text)) continue;
+            
+            // Look for patterns like "Author: Name" or "Autore: Nome"
+            $patterns = ['autore:', 'author:', 'artist:', 'artista:'];
+            foreach ($patterns as $pattern) {
+                $pos = stripos($text, $pattern);
+                if ($pos !== false) {
+                    $afterPattern = substr($text, $pos + strlen($pattern));
+                    $name = trim(explode(',', explode(';', $afterPattern)[0])[0]);
+                    if (!empty($name)) {
+                        return $name;
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Find year in CoA traits
+     */
+    private function findYearInCoaTraits($coaTraits): ?string {
+        $customTexts = [
+            $coaTraits->technique_other,
+            $coaTraits->materials_other,
+            $coaTraits->support_other
+        ];
+        
+        foreach ($customTexts as $text) {
+            if (empty($text)) continue;
+            
+            // Look for 4-digit years (1900-2099)
+            for ($year = 1900; $year <= 2099; $year++) {
+                if (strpos($text, (string)$year) !== false) {
+                    return (string)$year;
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Find dimensions in CoA traits
+     */
+    private function findDimensionsInCoaTraits($coaTraits): ?string {
+        $customTexts = [
+            $coaTraits->technique_other,
+            $coaTraits->materials_other,
+            $coaTraits->support_other
+        ];
+        
+        foreach ($customTexts as $text) {
+            if (empty($text)) continue;
+            
+            // Look for dimension patterns like "120x80" or "120 x 80"
+            $text = str_replace(['X', '×'], 'x', strtolower($text));
+            $words = explode(' ', $text);
+            foreach ($words as $word) {
+                if (strpos($word, 'x') !== false) {
+                    $parts = explode('x', $word);
+                    if (count($parts) == 2 && is_numeric(trim($parts[0])) && is_numeric(trim($parts[1]))) {
+                        return trim($parts[0]) . 'x' . trim($parts[1]);
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Find edition in CoA traits
+     */
+    private function findEditionInCoaTraits($coaTraits): ?string {
+        $customTexts = [
+            $coaTraits->technique_other,
+            $coaTraits->materials_other,
+            $coaTraits->support_other
+        ];
+        
+        foreach ($customTexts as $text) {
+            if (empty($text)) continue;
+            
+            // Look for edition patterns
+            $patterns = ['edizione:', 'edition:', 'tiratura:'];
+            foreach ($patterns as $pattern) {
+                $pos = stripos($text, $pattern);
+                if ($pos !== false) {
+                    $afterPattern = substr($text, $pos + strlen($pattern));
+                    $edition = trim(explode(',', explode(';', $afterPattern)[0])[0]);
+                    if (!empty($edition)) {
+                        return $edition;
+                    }
+                }
+            }
+            
+            // Look for fraction patterns like "1/10"
+            if (strpos($text, '/') !== false) {
+                $words = explode(' ', $text);
+                foreach ($words as $word) {
+                    if (strpos($word, '/') !== false) {
+                        $parts = explode('/', $word);
+                        if (count($parts) == 2 && is_numeric($parts[0]) && is_numeric($parts[1])) {
+                            return $word;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return null;
     }
 }
