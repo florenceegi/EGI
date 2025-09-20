@@ -102,6 +102,13 @@ class CoaIssueService {
     public function issueCertificate(Egi $egi, ?string $issuedBy = null, ?string $notes = null): ?Coa {
         try {
             $user = Auth::user();
+            
+            // Controllo che l'utente sia autenticato
+            if (!$user) {
+                $this->errorManager->handle('COA_ISSUE_UNAUTHENTICATED', [], 
+                    new \Illuminate\Auth\AuthenticationException('User not authenticated for CoA issuance'));
+                return null;
+            }
 
             // Use provided issuer name or default to authenticated user
             $issuerName = $issuedBy ?? $user->name ?? 'System';
