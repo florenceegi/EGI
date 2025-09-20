@@ -242,32 +242,54 @@ class VocabularyService {
      * @narrative-coherence Links search to CoA trait selection
      */
     /**
-     * Search vocabulary terms with translation support (Collection version for debugging)
+     * Search vocabulary terms with translation support (Collection version)
+     * RIFATTO DA CAPO - LOGICA SEMPLICE E FUNZIONANTE
      */
     public function searchTermsCollection(string $query, ?string $category = null, ?string $locale = null): \Illuminate\Support\Collection {
+
         $currentLocale = $locale ?? app()->getLocale();
 
-        $this->logger->info('[Vocabulary Service] Collection search debug', [
+        $this->logger->info('[Vocabulary Service] Simple search', [
             'query' => $query,
             'category' => $category,
             'locale' => $currentLocale
         ]);
 
-        // Strategy 1: Search in translated terms
-        $translatedResults = $this->searchInTranslations($query, $category, $currentLocale);
+        // PASSO 1: Prendo TUTTI i termini dal database (con eventuale filtro categoria)
+        $allTermsQuery = VocabularyTerm::query();
+        if ($category) {
+            $allTermsQuery->where('category', $category);
+        }
+        $allTerms = $allTermsQuery->get();
 
-        // Strategy 2: Search in original fields  
-        $originalResults = $this->searchInOriginalFields($query, $category);
+        // PASSO 2: Per ogni termine, controllo se la query è contenuta nelle traduzioni locali
+        $matchingTerms = collect();
 
-        // Merge and make unique
-        $allResults = $translatedResults->merge($originalResults)->unique('id');
+        foreach ($allTerms as $term) {
+            $translationKey = "coa_vocabulary.{$term->slug}";
+            $descriptionKey = "coa_vocabulary.{$term->slug}_description";
 
-        // Transform with translations
-        $transformed = $allResults->map(function ($term) use ($currentLocale) {
-            return $this->transformTermWithTranslation($term, $currentLocale);
-        });
+            $translatedName = __($translationKey, [], $currentLocale);
+            $translatedDescription = __($descriptionKey, [], $currentLocale);
 
-        return $transformed;
+            // Controllo se la query è contenuta nel nome tradotto O nella descrizione tradotta
+            $foundInName = stripos($translatedName, $query) !== false;
+            $foundInDescription = stripos($translatedDescription, $query) !== false;
+
+            // Se trovo match, aggiungo il termine
+            if ($foundInName || $foundInDescription) {
+                $transformedTerm = $this->transformTermWithTranslation($term, $currentLocale);
+                $matchingTerms->push($transformedTerm);
+            }
+        }
+
+        $this->logger->info('[Vocabulary Service] Search completed', [
+            'query' => $query,
+            'total_checked' => $allTerms->count(),
+            'matches_found' => $matchingTerms->count()
+        ]);
+
+        return $matchingTerms;
     }
 
     public function searchTerms(string $query, int $perPage = 20, ?string $category = null, ?string $locale = null): LengthAwarePaginator {
@@ -496,17 +518,24 @@ class VocabularyService {
         $currentLocale = $locale ?? app()->getLocale();
 
         // Get translated name and description
-        $translatedName = __("coa_vocabulary.{$term->slug}", [], $currentLocale);
+        $translationKey = "coa_vocabulary.{$term->slug}";
         $descriptionKey = "coa_vocabulary.{$term->slug}_description";
+
+        $translatedName = __($translationKey, [], $currentLocale);
         $translatedDescription = __($descriptionKey, [], $currentLocale);
+
+        // If translation is missing (returns the key), use the slug as fallback
+        // NEVER use $term->name because that field doesn't exist!
+        $finalName = ($translatedName === $translationKey) ? $term->slug : $translatedName;
+        $finalDescription = ($translatedDescription === $descriptionKey) ? null : $translatedDescription;
 
         // Create object with all necessary properties for the view
         $transformedTerm = new \stdClass();
         $transformedTerm->id = $term->id;
         $transformedTerm->slug = $term->slug;
         $transformedTerm->key = $term->slug; // Legacy compatibility
-        $transformedTerm->name = $translatedName;
-        $transformedTerm->description = $translatedDescription;
+        $transformedTerm->name = $finalName;
+        $transformedTerm->description = $finalDescription;
         $transformedTerm->category = $term->category;
         $transformedTerm->ui_group = $term->ui_group;
         $transformedTerm->sort_order = $term->sort_order;

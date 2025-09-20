@@ -41,7 +41,13 @@
                 {{ __('coa_traits.categories') }}
             </button>
             <span class="text-gray-400">›</span>
-            <h3 class="text-lg font-medium text-gray-900">{{ __('coa_vocabulary.category_' . $category) }}</h3>
+            <h3 class="text-lg font-medium text-gray-900">
+                @if($category)
+                    {{ __('coa_vocabulary.category_' . $category) }}
+                @else
+                    {{ __('coa_traits.search_results') }}
+                @endif
+            </h3>
         </div>
 
         @if($search)
@@ -81,12 +87,36 @@
                             <div class="flex items-start justify-between">
                                 <div class="flex-1 min-w-0">
                                     <h4 class="text-sm font-medium text-gray-900">
-                                        {{ $term->name }}
+                                        @php
+                                            $highlightedName = $term->name;
+                                            if ($search && strlen($search) >= 2) {
+                                                $highlightedName = str_ireplace(
+                                                    $search,
+                                                    '<mark class="px-1 bg-yellow-200">' . $search . '</mark>',
+                                                    $term->name
+                                                );
+                                            }
+                                        @endphp
+                                        {!! $highlightedName !!}
+                                        {{-- Debug temporaneo --}}
+                                        @if($search && strlen($search) >= 2)
+                                            <small class="text-xs text-red-500 ml-2">[Q: "{{ $search }}"]</small>
+                                        @endif
                                     </h4>
 
                                     @if($term->description)
                                         <p class="mt-1 text-xs text-gray-600 line-clamp-2">
-                                            {{ $term->description }}
+                                            @php
+                                                $highlightedDescription = $term->description;
+                                                if ($search && strlen($search) >= 2) {
+                                                    $highlightedDescription = str_ireplace(
+                                                        $search,
+                                                        '<mark class="px-1 bg-yellow-200">' . $search . '</mark>',
+                                                        $term->description
+                                                    );
+                                                }
+                                            @endphp
+                                            {!! $highlightedDescription !!}
                                         </p>
                                     @endif
 
@@ -150,9 +180,18 @@
             </h3>
             <p class="mt-1 text-sm text-gray-500">
                 @if($search)
-                    {{ __('coa_traits.no_terms_match_search') }} "{{ $search }}" {{ __('coa_traits.in_category') }} {{ $category }}.
+                    {{ __('coa_traits.no_terms_match_search') }} "{{ $search }}"
+                    @if($category)
+                        {{ __('coa_traits.in_category') }} {{ __('coa_vocabulary.category_' . $category) }}.
+                    @else
+                        {{ __('coa_traits.in_all_categories') }}.
+                    @endif
                 @else
-                    {{ __('coa_traits.no_terms_found_category') }} {{ $category }}.
+                    @if($category)
+                        {{ __('coa_traits.no_terms_found_category') }} {{ __('coa_vocabulary.category_' . $category) }}.
+                    @else
+                        {{ __('coa_traits.no_terms_available') }}.
+                    @endif
                 @endif
             </p>
         </div>

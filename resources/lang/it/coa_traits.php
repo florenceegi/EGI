@@ -34,6 +34,7 @@ return [
     'no_support_selected' => 'Nessun supporto selezionato',
 
     // Modal Vocabolario
+    'terms' => 'termine',
     'modal_title' => 'Seleziona Traits CoA',
     'search_placeholder' => 'Cerca termini...',
     'loading' => 'Caricamento...',
@@ -64,6 +65,7 @@ return [
     'no_results_found' => 'Nessun risultato trovato',
     'no_terms_match_search' => 'Nessun termine corrisponde alla ricerca',
     'in_category' => 'nella categoria',
+    'in_all_categories' => 'in tutte le categorie',
     'clear_search' => 'Cancella ricerca',
 
     // Componenti Vocabolario - Errori

@@ -34,6 +34,7 @@ return [
     'no_support_selected' => 'Ningún soporte seleccionado',
 
     // Vocabulary Modal
+    'terms' => 'término',
     'modal_title' => 'Seleccionar Traits CoA',
     'search_placeholder' => 'Buscar términos...',
     'loading' => 'Cargando...',

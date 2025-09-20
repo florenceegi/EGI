@@ -34,16 +34,20 @@
                                     @php
                                         $highlightedName = $translatedName;
                                         if ($query && strlen($query) >= 2) {
-                                            $highlightedName = preg_replace_callback(
-                                                '/(' . preg_quote($query, '/') . ')/i',
-                                                function($matches) {
-                                                    return '<mark class="px-1 bg-yellow-200">' . $matches[0] . '</mark>';
-                                                },
+                                            // Debug: mostriamo query e nome per capire cosa succede
+                                            // Temporaneamente mostriamo anche la query per debug
+                                            $highlightedName = str_ireplace(
+                                                $query,
+                                                '<mark class="px-1 bg-yellow-200">' . $query . '</mark>',
                                                 $translatedName
                                             );
                                         }
                                     @endphp
                                     {!! $highlightedName !!}
+                                    {{-- Debug temporaneo --}}
+                                    @if($query && strlen($query) >= 2)
+                                        <small class="text-xs text-red-500 ml-2">[Q: "{{ $query }}"]</small>
+                                    @endif
                                 </h4>
                                 <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 rounded">
                                     {{ $term->category }}
@@ -55,11 +59,9 @@
                                     @php
                                         $highlightedDescription = $translatedDescription;
                                         if ($query && strlen($query) >= 2) {
-                                            $highlightedDescription = preg_replace_callback(
-                                                '/(' . preg_quote($query, '/') . ')/i',
-                                                function($matches) {
-                                                    return '<mark class="px-1 bg-yellow-200">' . $matches[0] . '</mark>';
-                                                },
+                                            $highlightedDescription = str_ireplace(
+                                                $query,
+                                                '<mark class="px-1 bg-yellow-200">' . $query . '</mark>',
                                                 $translatedDescription
                                             );
                                         }

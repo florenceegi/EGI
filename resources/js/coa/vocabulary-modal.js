@@ -248,10 +248,10 @@ window.VocabularyModalController = (function () {
         state.searchQuery = query.trim();
 
         if (state.searchQuery.length >= 2) {
-            // Search across all categories
+            // Search across all categories - do not filter by current tab
             loadContent("/vocabulary/search", {
                 q: state.searchQuery,
-                category: state.currentTab,
+                // category: state.currentTab, // Rimosso: ricerca globale
                 locale: document.documentElement.lang || "it",
             });
         } else if (state.searchQuery.length === 0) {
