@@ -92,8 +92,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Emissione nuovo certificato (richiede permessi)
         Route::post('/issue', [CoaController::class, 'issue'])
-            ->name('issue')
-            ->middleware(['throttle:coa_issue,10,1', 'role:admin|expert']);
+            ->name('issue');
 
         // Ri-emissione certificato esistente
         Route::post('/{coa}/reissue', [CoaController::class, 'reissue'])
@@ -245,8 +244,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Emissione certificato per EGI
         Route::post('/issue', [CoaController::class, 'issue'])
             ->name('issue')
-            ->where('egi', '[0-9]+')
-            ->middleware(['throttle:coa_issue,10,1', 'role:admin|expert']);
+            ->where('egi', '[0-9]+');
 
         // Mostra certificato EGI (se esiste)
         Route::get('/', function ($egi) {

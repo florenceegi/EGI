@@ -46,6 +46,7 @@ class CoaEvent extends Model {
         'type',
         'payload',
         'actor_id',
+        'created_at',
     ];
 
     /**

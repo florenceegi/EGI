@@ -120,7 +120,7 @@ class CoaIssueService {
             }
 
             // Check if EGI already has an active CoA
-            $existingCoa = $egi->activeCoa();
+            $existingCoa = $egi->activeCoa()->first();
             if ($existingCoa) {
                 $this->logger->warning('[CoA Issue] EGI already has active CoA', [
                     'user_id' => $user->id,
@@ -582,15 +582,20 @@ class CoaIssueService {
             'user_agent' => request()->userAgent()
         ];
 
+        // Map event types to enum values
+        $enumType = match ($eventType) {
+            'coa_issued' => 'ISSUED',
+            'coa_revoked' => 'REVOKED',
+            'coa_reissued' => 'ISSUED', // Re-issuance is still an issuance
+            default => 'ISSUED'
+        };
+
         $event = CoaEvent::create([
             'coa_id' => $coa->id,
-            'user_id' => Auth::id(),
-            'event_type' => $eventType,
-            'description' => $this->getEventDescription($eventType, $eventData),
-            'event_data' => array_merge($baseData, $eventData),
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'occurred_at' => now(),
+            'type' => $enumType,
+            'payload' => array_merge($baseData, $eventData),
+            'actor_id' => Auth::id(),
+            'created_at' => now(),
         ]);
 
         $this->logger->info('[CoA Event] Event created', [

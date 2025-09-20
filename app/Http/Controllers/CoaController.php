@@ -304,6 +304,7 @@ class CoaController extends Controller {
      * @privacy-safe Issues certificate only for authenticated user's EGI
      */
     public function issue(Request $request): JsonResponse {
+
         try {
             $user = Auth::user();
 

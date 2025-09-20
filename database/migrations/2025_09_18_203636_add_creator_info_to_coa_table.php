@@ -15,7 +15,7 @@ return new class extends Migration {
                 // JSON field to store creator information when Creator ≠ Author
                 $table->json('creator_info')->nullable()->after('metadata');
             }
-            
+
             // Note: Direct indexing on JSON columns is not supported in MySQL
             // If indexing is needed, use generated columns on specific JSON paths
         });

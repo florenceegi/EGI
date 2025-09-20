@@ -666,6 +666,18 @@ class VerifyController extends Controller {
                 ]);
             }
 
+            // Check if has CoA specific traits
+            $hasValidCoaTraits = false;
+            $coaTraits = $coa->egi->coaTraits;
+            if ($coaTraits) {
+                $hasValidCoaTraits = !empty($coaTraits->technique_slugs) ||
+                    !empty($coaTraits->materials_slugs) ||
+                    !empty($coaTraits->support_slugs) ||
+                    !empty($coaTraits->technique_free_text) ||
+                    !empty($coaTraits->materials_free_text) ||
+                    !empty($coaTraits->support_free_text);
+            }
+
             // Generate certificate view data
             $certificateData = [
                 'certificate' => [
@@ -674,7 +686,9 @@ class VerifyController extends Controller {
                     'issued_at' => $coa->issued_at,
                     'issuer_name' => $coa->issuer_name,
                     'notes' => $coa->notes,
-                    'verification_hash' => $coa->verification_hash ?? hash('sha256', $coa->serial . $coa->issued_at)
+                    'verification_hash' => $coa->verification_hash ?? hash('sha256', $coa->serial . $coa->issued_at),
+                    'has_coa_traits' => $hasValidCoaTraits,
+                    'effective_status' => ($coa->status === 'valid' && $hasValidCoaTraits) ? 'valid' : 'incomplete'
                 ],
                 'artwork' => [
                     'name' => $coa->egi->title ?? $coa->egi->name ?? 'Unknown Artwork',
@@ -778,6 +792,18 @@ class VerifyController extends Controller {
                 return view('coa.public.not-found', ['serial' => $serial]);
             }
 
+            // Check if has CoA specific traits
+            $hasValidCoaTraits = false;
+            $coaTraits = $coa->egi->coaTraits;
+            if ($coaTraits) {
+                $hasValidCoaTraits = !empty($coaTraits->technique_slugs) ||
+                    !empty($coaTraits->materials_slugs) ||
+                    !empty($coaTraits->support_slugs) ||
+                    !empty($coaTraits->technique_free_text) ||
+                    !empty($coaTraits->materials_free_text) ||
+                    !empty($coaTraits->support_free_text);
+            }
+
             // Generate certificate view data
             $certificateData = [
                 'certificate' => [
@@ -798,7 +824,9 @@ class VerifyController extends Controller {
                         'asset_id' => $coa->blockchain_asset_id,
                         'explorer_url' => 'https://etherscan.io/token/' . $coa->blockchain_asset_id
                     ] : null,
-                    'version' => $coa->version ?? 1
+                    'version' => $coa->version ?? 1,
+                    'has_coa_traits' => $hasValidCoaTraits,
+                    'effective_status' => ($coa->status === 'valid' && $hasValidCoaTraits) ? 'valid' : 'incomplete'
                 ],
                 'artwork' => [
                     'name' => $coa->egi->title ?? $coa->egi->name ?? 'Unknown Artwork',

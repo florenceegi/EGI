@@ -111,7 +111,7 @@ class TraitsSnapshotService {
             $traitsVersion = EgiTraitsVersion::create([
                 'egi_id' => $egi->id,
                 'version' => $nextVersion,
-                'traits_data' => $currentTraits,
+                'traits_json' => $currentTraits,
                 'traits_hash' => $traitsHash,
                 'change_reason' => $changeReason,
                 'changed_fields' => $changedFields,
@@ -178,10 +178,7 @@ class TraitsSnapshotService {
             // Create snapshot record
             $snapshot = CoaSnapshot::create([
                 'coa_id' => $coa->id,
-                'traits_version_id' => $traitsVersion->id,
-                'traits_hash' => $traitsVersion->traits_hash,
-                'traits_data' => $traitsVersion->traits_data,
-                'snapshot_at' => now(),
+                'snapshot_json' => $traitsVersion->traits_json,
             ]);
 
             $this->logger->info('[CoA Snapshot] CoA snapshot created', [

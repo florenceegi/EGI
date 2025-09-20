@@ -23,13 +23,13 @@
             <p class="text-amber-700 text-base">
                 Visualizzazione Pubblica di Verifica
             </p>
-            
+
             {{-- EGI Image --}}
             @if(isset($artwork['image_url']) && $artwork['image_url'])
                 <div class="mt-6 flex justify-center">
                     <div class="relative">
-                        <img src="{{ $artwork['image_url'] }}" 
-                             alt="{{ $artwork['name'] }}" 
+                        <img src="{{ $artwork['image_url'] }}"
+                             alt="{{ $artwork['name'] }}"
                              class="w-64 h-64 object-cover rounded-lg shadow-lg border-4 border-amber-200">
                         <div class="absolute -bottom-2 -right-2 bg-amber-600 text-white text-xs px-2 py-1 rounded-full">
                             ID: {{ $artwork['internal_id'] ?? 'N/A' }}
@@ -41,7 +41,7 @@
 
         {{-- Status Banner --}}
         <div class="max-w-5xl mx-auto mb-6">
-            @if($certificate['status'] === 'valid')
+            @if($certificate['effective_status'] === 'valid')
                 <div class="bg-green-500 text-white rounded-lg p-4 flex items-center justify-between">
                     <div class="flex items-center">
                         <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -50,6 +50,22 @@
                         <div>
                             <div class="font-bold text-lg">Certificato Verificato e Autentico</div>
                             <div class="text-sm opacity-90">Verificato il: {{ now()->format('d/m/Y H:i') }}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold">{{ $certificate['serial'] }}</div>
+                        <div class="text-sm opacity-90">Numero Seriale</div>
+                    </div>
+                </div>
+            @elseif($certificate['effective_status'] === 'incomplete')
+                <div class="bg-amber-500 text-white rounded-lg p-4 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <div class="font-bold text-lg">Certificato Non Pronto</div>
+                            <div class="text-sm opacity-90">Emesso il: {{ $certificate['issued_at']->format('d/m/Y H:i') }} - Requires CoA Traits</div>
                         </div>
                     </div>
                     <div class="text-right">
@@ -74,22 +90,25 @@
 
         {{-- CoA Traits Completeness Warning --}}
         @if(isset($artwork['traits']) && isset($artwork['traits']['traits_incomplete']) && $artwork['traits']['traits_incomplete'])
+                    {{-- Warning for Generic Traits (only if no CoA traits) --}}
+        @if(!$certificate['has_coa_traits'])
             <div class="max-w-5xl mx-auto mb-6">
-                <div class="bg-amber-100 border border-amber-400 text-amber-800 rounded-lg p-4">
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
                     <div class="flex items-start">
                         <svg class="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                         </svg>
                         <div>
-                            <div class="font-semibold text-base">Certificato con Traits Generici</div>
+                            <div class="font-semibold text-base">Certificato Non Pronto - Traits Generici</div>
                             <div class="text-sm mt-1">
                                 Questo certificato è stato generato utilizzando i traits generici EGI invece dei traits CoA specifici.
-                                Per una certificazione più professionale e dettagliata, si consiglia di configurare i CoA traits (tecnica, materiali, supporto) dal pannello di gestione dell'opera.
+                                Il certificato NON È VALIDO finché non vengono configurati i CoA traits (tecnica, materiali, supporto) dal pannello di gestione dell'opera.
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        @endif
         @endif
 
         {{-- Main Certificate Content --}}
@@ -139,7 +158,7 @@
                                     </div>
                                 </div>
                                 @endif
-                                
+
                                 @if($artwork['materials'])
                                 <div class="flex items-center space-x-2">
                                     <div class="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
@@ -149,7 +168,7 @@
                                     </div>
                                 </div>
                                 @endif
-                                
+
                                 @if($artwork['support'])
                                 <div class="flex items-center space-x-2">
                                     <div class="w-3 h-3 bg-amber-500 rounded-full flex-shrink-0"></div>
@@ -412,8 +431,10 @@
                         <div>
                             <label class="text-sm font-medium text-gray-600">Stato</label>
                             <div class="mt-1">
-                                @if($certificate['status'] === 'valid')
+                                @if($certificate['effective_status'] === 'valid')
                                     <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Valid</span>
+                                @elseif($certificate['effective_status'] === 'incomplete')
+                                    <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">Non Pronto</span>
                                 @elseif($certificate['status'] === 'revoked')
                                     <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">Revoked</span>
                                 @endif
