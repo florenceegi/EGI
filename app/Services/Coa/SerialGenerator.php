@@ -94,12 +94,13 @@ class SerialGenerator {
 
             // Safety check: ensure generated serial is a string
             if (!is_string($serial)) {
+                $serialType = is_array(gettype($serial)) ? 'array' : (string) gettype($serial);
                 $this->logger->error('[CoA Serial] Generated serial is not a string', [
-                    'serial_type' => gettype($serial),
-                    'serial_value' => $serial,
+                    'serial_type' => $serialType,
+                    'serial_value' => is_array($serial) ? json_encode($serial) : (string) $serial,
                     'year' => $year
                 ]);
-                throw new \TypeError('Generated serial must be a string, ' . gettype($serial) . ' given');
+                throw new \TypeError('Generated serial must be a string, ' . $serialType . ' given');
             }
 
             $this->logger->info('[CoA Serial] Serial number generated successfully', [
@@ -180,18 +181,21 @@ class SerialGenerator {
         try {
             // Ensure parameters are of correct type
             if (!is_string($year) && !is_numeric($year)) {
-                throw new \TypeError('Year must be string or numeric, ' . gettype($year) . ' given');
+                $yearType = is_array(gettype($year)) ? 'array' : (string) gettype($year);
+                throw new \TypeError('Year must be string or numeric, ' . $yearType . ' given');
             }
             
             if (!is_int($nextCounter) && !is_numeric($nextCounter)) {
-                throw new \TypeError('Counter must be numeric, ' . gettype($nextCounter) . ' given');
+                $counterType = is_array(gettype($nextCounter)) ? 'array' : (string) gettype($nextCounter);
+                throw new \TypeError('Counter must be numeric, ' . $counterType . ' given');
             }
             
             $newSerial = sprintf(self::SERIAL_FORMAT, (string)$year, (int)$nextCounter);
             
             // Ensure result is a string
             if (!is_string($newSerial)) {
-                throw new \TypeError('sprintf returned ' . gettype($newSerial) . ' instead of string');
+                $resultType = is_array(gettype($newSerial)) ? 'array' : (string) gettype($newSerial);
+                throw new \TypeError('sprintf returned ' . $resultType . ' instead of string');
             }
             
         } catch (\Exception $e) {
