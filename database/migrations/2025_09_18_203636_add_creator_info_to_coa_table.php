@@ -15,11 +15,9 @@ return new class extends Migration {
                 // JSON field to store creator information when Creator ≠ Author
                 $table->json('creator_info')->nullable()->after('metadata');
             }
-
-            // Add index for creator queries if it doesn't exist
-            if (!Schema::hasIndex('coa', ['creator_info'])) {
-                $table->index('creator_info');
-            }
+            
+            // Note: Direct indexing on JSON columns is not supported in MySQL
+            // If indexing is needed, use generated columns on specific JSON paths
         });
     }
 
@@ -28,11 +26,6 @@ return new class extends Migration {
      */
     public function down(): void {
         Schema::table('coa', function (Blueprint $table) {
-            // Drop index if it exists
-            if (Schema::hasIndex('coa', ['creator_info'])) {
-                $table->dropIndex(['creator_info']);
-            }
-            
             // Drop column if it exists
             if (Schema::hasColumn('coa', 'creator_info')) {
                 $table->dropColumn('creator_info');
