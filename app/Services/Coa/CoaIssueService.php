@@ -200,7 +200,33 @@ class CoaIssueService {
      */
     protected function issueCoaInTransaction(Egi $egi, string $issuerName, ?string $notes, $user): Coa {
         // 1. Generate unique serial number
-        $serial = $this->serialGenerator->generateSerial();
+        try {
+            $serial = $this->serialGenerator->generateSerial();
+            
+            // Ensure we have a valid string (handle staging environment quirks)
+            if (is_array($serial)) {
+                $serial = reset($serial);
+                $this->logger->warning('[CoA Issue] Generated serial was array, converted', [
+                    'converted_serial' => $serial,
+                    'egi_id' => $egi->id
+                ]);
+            }
+            
+            $serial = (string)$serial;
+            
+            if (empty($serial) || !str_contains($serial, 'COA-EGI')) {
+                throw new \Exception('Invalid serial generated: ' . $serial);
+            }
+            
+        } catch (\Exception $e) {
+            $this->logger->error('[CoA Issue] Error generating serial', [
+                'error' => $e->getMessage(),
+                'error_type' => get_class($e),
+                'egi_id' => $egi->id,
+                'user_id' => $user->id
+            ]);
+            throw $e;
+        }
 
         // 2. Create traits version snapshot
         $traitsVersion = $this->snapshotService->createTraitsVersion(

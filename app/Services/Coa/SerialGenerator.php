@@ -75,9 +75,15 @@ class SerialGenerator {
     public function generateSerial(?string $year = null): string {
         try {
             $year = $year ?? Carbon::now()->year;
+            
+            // Ensure year is a string
+            if (!is_string($year)) {
+                $year = (string)$year;
+            }
 
             $this->logger->info('[CoA Serial] Generating new serial number', [
                 'year' => $year,
+                'year_type' => gettype($year),
                 'timestamp' => now()->toIso8601String()
             ]);
 
@@ -85,6 +91,16 @@ class SerialGenerator {
             $serial = DB::transaction(function () use ($year) {
                 return $this->generateSerialInTransaction($year);
             });
+
+            // Safety check: ensure generated serial is a string
+            if (!is_string($serial)) {
+                $this->logger->error('[CoA Serial] Generated serial is not a string', [
+                    'serial_type' => gettype($serial),
+                    'serial_value' => $serial,
+                    'year' => $year
+                ]);
+                throw new \TypeError('Generated serial must be a string, ' . gettype($serial) . ' given');
+            }
 
             $this->logger->info('[CoA Serial] Serial number generated successfully', [
                 'serial' => $serial,
@@ -121,13 +137,74 @@ class SerialGenerator {
         $nextCounter = 1;
 
         if ($lastSerial) {
-            // Extract counter from last serial
-            $lastCounter = $this->extractCounterFromSerial($lastSerial->serial);
-            $nextCounter = $lastCounter + 1;
+            // Robust handling: convert to string if needed
+            $serialValue = $lastSerial->serial;
+            
+            // Handle the case where serial might be an array (staging environment issue)
+            if (is_array($serialValue)) {
+                // Try to get first element if it's an array
+                $serialValue = reset($serialValue);
+                $this->logger->warning('[CoA Serial] Serial was array, converted to string', [
+                    'model_id' => $lastSerial->id,
+                    'original_value' => $lastSerial->serial,
+                    'converted_value' => $serialValue
+                ]);
+            }
+            
+            // Ensure it's a string
+            if (!is_string($serialValue)) {
+                $serialValue = (string)$serialValue;
+                $this->logger->warning('[CoA Serial] Serial converted to string', [
+                    'model_id' => $lastSerial->id,
+                    'original_type' => gettype($lastSerial->serial),
+                    'converted_value' => $serialValue
+                ]);
+            }
+            
+            // Validate it looks like a serial
+            if (empty($serialValue) || !str_contains($serialValue, 'COA-EGI')) {
+                $this->logger->error('[CoA Serial] Invalid serial format after conversion', [
+                    'model_id' => $lastSerial->id,
+                    'serial_value' => $serialValue
+                ]);
+                // Fallback: start from 1
+                $nextCounter = 1;
+            } else {
+                // Extract counter from last serial
+                $lastCounter = $this->extractCounterFromSerial($serialValue);
+                $nextCounter = $lastCounter + 1;
+            }
         }
 
         // Generate the new serial
-        $newSerial = sprintf(self::SERIAL_FORMAT, $year, $nextCounter);
+        try {
+            // Ensure parameters are of correct type
+            if (!is_string($year) && !is_numeric($year)) {
+                throw new \TypeError('Year must be string or numeric, ' . gettype($year) . ' given');
+            }
+            
+            if (!is_int($nextCounter) && !is_numeric($nextCounter)) {
+                throw new \TypeError('Counter must be numeric, ' . gettype($nextCounter) . ' given');
+            }
+            
+            $newSerial = sprintf(self::SERIAL_FORMAT, (string)$year, (int)$nextCounter);
+            
+            // Ensure result is a string
+            if (!is_string($newSerial)) {
+                throw new \TypeError('sprintf returned ' . gettype($newSerial) . ' instead of string');
+            }
+            
+        } catch (\Exception $e) {
+            $this->logger->error('[CoA Serial] Error in sprintf generation', [
+                'year' => $year,
+                'year_type' => gettype($year),
+                'counter' => $nextCounter,
+                'counter_type' => gettype($nextCounter),
+                'format' => self::SERIAL_FORMAT,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
 
         // Double-check uniqueness (paranoid check)
         $attempts = 0;
@@ -159,6 +236,23 @@ class SerialGenerator {
      * @privacy-safe Parsing public identifier only
      */
     protected function extractCounterFromSerial(string $serial): int {
+        // Robust handling: ensure serial is actually a string
+        if (is_array($serial)) {
+            $serial = reset($serial); // Get first element
+            $this->logger->warning('[CoA Serial] Serial extraction from array', [
+                'converted_value' => $serial
+            ]);
+        }
+        
+        // Convert to string if not already
+        $serial = (string)$serial;
+        
+        // Validate basic format
+        if (empty($serial)) {
+            $this->logger->warning('[CoA Serial] Empty serial for extraction');
+            return 0;
+        }
+
         // Expected format: COA-EGI-YYYY-NNNNNN
         $parts = explode('-', $serial);
 
