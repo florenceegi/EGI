@@ -384,6 +384,16 @@ class CoaController extends Controller {
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            // Log dell'errore originale per debug
+            \Log::error('[CoA Controller] Errore durante emissione certificato', [
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'error_trace' => $e->getTraceAsString(),
+                'user_id' => Auth::id(),
+                'request_data' => $request->all()
+            ]);
+            
             // Utilizziamo la convenzione UEM standard - l'ErrorManager gestisce tutto
             $this->errorManager->handle('COA_ISSUE_ERROR', [], $e);
             // UEM gestisce automaticamente la risposta, non restituiamo nulla manualmente

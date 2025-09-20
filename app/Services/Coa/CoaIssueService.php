@@ -102,13 +102,6 @@ class CoaIssueService {
     public function issueCertificate(Egi $egi, ?string $issuedBy = null, ?string $notes = null): ?Coa {
         try {
             $user = Auth::user();
-            
-            // Controllo che l'utente sia autenticato
-            if (!$user) {
-                $this->errorManager->handle('COA_ISSUE_UNAUTHENTICATED', [], 
-                    new \Illuminate\Auth\AuthenticationException('User not authenticated for CoA issuance'));
-                return null;
-            }
 
             // Use provided issuer name or default to authenticated user
             $issuerName = $issuedBy ?? $user->name ?? 'System';
@@ -181,6 +174,18 @@ class CoaIssueService {
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             throw $e; // Re-throw auth exceptions
         } catch (\Exception $e) {
+            // Log dell'errore originale per debug
+            \Log::error('[CoA Service] Errore durante issueCertificate', [
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'error_trace' => $e->getTraceAsString(),
+                'egi_id' => $egi->id,
+                'user_id' => Auth::id(),
+                'issued_by' => $issuedBy,
+                'notes' => $notes
+            ]);
+            
             // Utilizziamo la convenzione UEM standard - l'ErrorManager gestisce tutto
             $this->errorManager->handle('COA_ISSUE_CERTIFICATE_ERROR', [], $e);
             // UEM ha gestito l'errore, non ri-lanciamo l'eccezione
