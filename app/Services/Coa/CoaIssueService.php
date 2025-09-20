@@ -174,16 +174,8 @@ class CoaIssueService {
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             throw $e; // Re-throw auth exceptions
         } catch (\Exception $e) {
-            // Utilizziamo la convenzione UEM standard con parametri appropriati
-            $this->errorManager->handle('COA_ISSUE_CERTIFICATE_ERROR', [
-                'user_id' => Auth::id(),
-                'egi_id' => $egi->id,
-                'issuer_name' => $issuerName,
-                'notes' => $notes,
-                'error' => $e->getMessage(),
-                'ip_address' => request()->ip(),
-                'timestamp' => now()->toIso8601String()
-            ], $e);
+            // Utilizziamo la convenzione UEM standard senza parametri extra problematici
+            $this->errorManager->handle('COA_ISSUE_CERTIFICATE_ERROR', [], $e);
 
             throw $e;
         }

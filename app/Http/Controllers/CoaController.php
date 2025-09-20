@@ -111,28 +111,6 @@ class CoaController extends Controller {
     }
 
     /**
-     * Converte tutti i valori in stringhe per evitare errori mb_substr in staging
-     *
-     * @param array $params Array di parametri da sanificare
-     * @return array Array con tutti i valori convertiti in stringhe
-     */
-    private function sanitizeErrorParams(array $params): array {
-        $sanitized = [];
-        foreach ($params as $key => $value) {
-            if (is_array($value)) {
-                $sanitized[$key] = json_encode($value);
-            } elseif (is_object($value)) {
-                $sanitized[$key] = method_exists($value, '__toString') ? (string) $value : json_encode($value);
-            } elseif (is_null($value)) {
-                $sanitized[$key] = '';
-            } else {
-                $sanitized[$key] = (string) $value;
-            }
-        }
-        return $sanitized;
-    }
-
-    /**
      * Display a listing of user's CoA certificates
      *
      * @param Request $request
@@ -401,15 +379,8 @@ class CoaController extends Controller {
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            // Utilizziamo la convenzione UEM standard
-            $this->errorManager->handle('COA_ISSUE_ERROR', [
-                'user_id' => Auth::id(),
-                'egi_id' => $request->egi_id,
-                'error' => $e->getMessage(),
-                'request_data' => $request->all(),
-                'ip_address' => $request->ip(),
-                'timestamp' => now()->toIso8601String()
-            ], $e);
+            // Utilizziamo la convenzione UEM standard senza parametri extra problematici
+            $this->errorManager->handle('COA_ISSUE_ERROR', [], $e);
 
             return response()->json([
                 'success' => false,
