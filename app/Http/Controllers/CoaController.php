@@ -402,23 +402,19 @@ class CoaController extends Controller {
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            // Assicuriamoci che tutti i valori siano stringhe per evitare errori mb_substr in staging
+            // Utilizziamo una chiave di errore senza placeholders per evitare problemi con mb_substr()
             try {
-                $this->errorManager->handle('COA_ISSUE_ERROR', $this->sanitizeErrorParams([
-                    'user_id' => Auth::id(),
-                    'egi_id' => $request->egi_id,
-                    'error' => $e->getMessage(),
-                    'request_data' => $request->all(),
-                    'ip_address' => $request->ip(),
-                    'timestamp' => now()->toIso8601String()
-                ]), $e);
+                $this->errorManager->handle('coa_issue_error', [], $e);
             } catch (\Exception $errorManagerException) {
                 // Fallback: log direttamente se l'ErrorManager fallisce
                 \Log::error('ErrorManager failed in CoaController::issue', [
                     'original_error' => $e->getMessage(),
                     'error_manager_error' => $errorManagerException->getMessage(),
                     'user_id' => Auth::id(),
-                    'egi_id' => $request->egi_id ?? 'unknown'
+                    'egi_id' => is_array($request->egi_id) ? json_encode($request->egi_id) : (string) ($request->egi_id ?? 'unknown'),
+                    'stack_trace' => $e->getTraceAsString(),
+                    'error_file' => $e->getFile(),
+                    'error_line' => $e->getLine()
                 ]);
             }
 
@@ -1499,7 +1495,7 @@ class CoaController extends Controller {
             $existingCoa = Coa::where('serial', $serial)->first();
 
             // Validate serial format (you can customize this based on your requirements)
-            $isValidFormat = \preg_match('/^COA-[A-Z0-9]{8}-[A-Z0-9]{4}$/', $serial);
+            $isValidFormat = \Illuminate\Support\Str::isMatch('/^COA-[A-Z0-9]{8}-[A-Z0-9]{4}$/', $serial);
 
             return response()->json([
                 'success' => true,

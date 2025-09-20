@@ -374,7 +374,6 @@ return [
         // Sistema CoA - Livello Controllers (Messaggi Dev)
         'coa_index_error' => 'Operazione listing CoA fallita. Filtri: :filters, Errore: :error',
         'coa_show_error' => 'Recupero dettagli CoA fallito. CoA ID: :coa_id, Errore: :error',
-        'coa_issue_error' => 'Errore controller emissione CoA. EGI ID: :egi_id, Errore: :error',
         'coa_reissue_error' => 'Errore controller ri-emissione CoA. CoA ID: :coa_id, Errore: :error',
         'coa_revoke_error' => 'Errore controller revoca CoA. CoA ID: :coa_id, Errore: :error',
         'coa_bundle_error' => 'Errore controller generazione bundle. CoA ID: :coa_id, Errore: :error',

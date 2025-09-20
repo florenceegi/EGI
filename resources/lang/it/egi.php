@@ -415,6 +415,7 @@ return [
     */
 
     'coa' => [
+        'none' => 'Nessun Certificato di Autenticità',
         'title' => 'Certificato di Autenticità',
         'status' => 'Stato',
         'issued' => 'Emesso il',
