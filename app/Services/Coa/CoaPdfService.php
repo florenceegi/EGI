@@ -854,6 +854,20 @@ class CoaPdfService {
     private function extractAdditionalMetadata($egi): array {
         $metadata = [];
         
+        // PLATFORM TRAITS (from egi_traits table) - These are separate from CoA traits
+        if ($egi->traits && $egi->traits->count() > 0) {
+            foreach ($egi->traits as $trait) {
+                if ($trait->value && trim($trait->value) !== '') {
+                    $metadata[] = [
+                        'type' => 'platform_trait',
+                        'label' => $trait->traitType->name ?? 'Trait Piattaforma',
+                        'value' => $trait->value,
+                        'category' => 'platform_metadata'
+                    ];
+                }
+            }
+        }
+        
         // Description (often missing in certificates)
         if (!empty($egi->description)) {
             $metadata[] = [

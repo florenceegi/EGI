@@ -1221,7 +1221,7 @@ class VerifyController extends Controller {
         }
         
         if ($hasValidCoaTraits) {
-            // Use structured CoA traits
+            // Use structured CoA traits (ONLY for the main certificate sections)
             $vocabularyTranslations = __('coa_vocabulary');
             
             // Technique traits
@@ -1287,21 +1287,12 @@ class VerifyController extends Controller {
                 }
             }
             
-            // Add generic EGI traits as additional metadata when using CoA traits
-            if ($egi->traits && $egi->traits->count() > 0) {
-                foreach ($egi->traits as $trait) {
-                    if ($trait->value && trim($trait->value) !== '') {
-                        $traits[] = [
-                            'trait_type' => $trait->traitType->name ?? 'Trait',
-                            'value' => $trait->value,
-                            'category' => 'platform_metadata'
-                        ];
-                    }
-                }
-            }
+            // IMPORTANT: When CoA traits exist, do NOT put them in 'data' field
+            // They are already handled by the structured template sections
+            // The 'data' field should remain empty to avoid duplication
             
         } else {
-            // Fallback to generic EGI traits as primary traits
+            // Fallback to generic EGI traits as primary traits (when no CoA traits exist)
             if ($egi->traits && $egi->traits->count() > 0) {
                 foreach ($egi->traits as $trait) {
                     if ($trait->value && trim($trait->value) !== '') {
@@ -1319,7 +1310,7 @@ class VerifyController extends Controller {
         $metadata = $this->extractAdditionalMetadata($egi);
         
         return [
-            'data' => $traits,
+            'data' => $hasValidCoaTraits ? [] : $traits, // When CoA traits exist, don't duplicate in 'data'
             'metadata' => $metadata,
             'source_type' => $hasValidCoaTraits ? 'coa_traits' : 'generic_egi',
             'traits_incomplete' => !$hasValidCoaTraits
@@ -1327,13 +1318,27 @@ class VerifyController extends Controller {
     }
     
     /**
-     * Extract additional metadata from EGI (description, technical info, etc.)
+     * Extract additional metadata from EGI (description, technical info, platform traits)
      *
      * @param \App\Models\Egi $egi
      * @return array
      */
     private function extractAdditionalMetadata($egi): array {
         $metadata = [];
+        
+        // PLATFORM TRAITS (from egi_traits table) - These are separate from CoA traits
+        if ($egi->traits && $egi->traits->count() > 0) {
+            foreach ($egi->traits as $trait) {
+                if ($trait->value && trim($trait->value) !== '') {
+                    $metadata[] = [
+                        'type' => 'platform_trait',
+                        'label' => $trait->traitType->name ?? 'Trait Piattaforma',
+                        'value' => $trait->value,
+                        'category' => 'platform_metadata'
+                    ];
+                }
+            }
+        }
         
         // Description (often missing in certificates)
         if (!empty($egi->description)) {
