@@ -374,6 +374,7 @@ return [
         // COA System - Controllers Layer (Dev Messages)
         'coa_index_error' => 'CoA listing operation failed. Filters: :filters, Error: :error',
         'coa_show_error' => 'CoA detail retrieval failed. CoA ID: :coa_id, Error: :error',
+        'coa_issue_error' => 'CoA issuance controller error. EGI ID: :egi_id, Error: :error',
         'coa_reissue_error' => 'CoA re-issuance controller error. CoA ID: :coa_id, Error: :error',
         'coa_revoke_error' => 'CoA revocation controller error. CoA ID: :coa_id, Error: :error',
         'coa_bundle_error' => 'Bundle generation controller error. CoA ID: :coa_id, Error: :error',

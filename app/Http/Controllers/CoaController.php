@@ -112,12 +112,11 @@ class CoaController extends Controller {
 
     /**
      * Converte tutti i valori in stringhe per evitare errori mb_substr in staging
-     * 
+     *
      * @param array $params Array di parametri da sanificare
      * @return array Array con tutti i valori convertiti in stringhe
      */
-    private function sanitizeErrorParams(array $params): array
-    {
+    private function sanitizeErrorParams(array $params): array {
         $sanitized = [];
         foreach ($params as $key => $value) {
             if (is_array($value)) {
@@ -402,21 +401,15 @@ class CoaController extends Controller {
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            // Utilizziamo una chiave di errore senza placeholders per evitare problemi con mb_substr()
-            try {
-                $this->errorManager->handle('coa_issue_error', [], $e);
-            } catch (\Exception $errorManagerException) {
-                // Fallback: log direttamente se l'ErrorManager fallisce
-                \Log::error('ErrorManager failed in CoaController::issue', [
-                    'original_error' => $e->getMessage(),
-                    'error_manager_error' => $errorManagerException->getMessage(),
-                    'user_id' => Auth::id(),
-                    'egi_id' => is_array($request->egi_id) ? json_encode($request->egi_id) : (string) ($request->egi_id ?? 'unknown'),
-                    'stack_trace' => $e->getTraceAsString(),
-                    'error_file' => $e->getFile(),
-                    'error_line' => $e->getLine()
-                ]);
-            }
+            // Utilizziamo la convenzione UEM standard
+            $this->errorManager->handle('COA_ISSUE_ERROR', [
+                'user_id' => Auth::id(),
+                'egi_id' => $request->egi_id,
+                'error' => $e->getMessage(),
+                'request_data' => $request->all(),
+                'ip_address' => $request->ip(),
+                'timestamp' => now()->toIso8601String()
+            ], $e);
 
             return response()->json([
                 'success' => false,

@@ -174,6 +174,7 @@ class CoaIssueService {
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             throw $e; // Re-throw auth exceptions
         } catch (\Exception $e) {
+            // Utilizziamo la convenzione UEM standard con parametri appropriati
             $this->errorManager->handle('COA_ISSUE_CERTIFICATE_ERROR', [
                 'user_id' => Auth::id(),
                 'egi_id' => $egi->id,
@@ -202,7 +203,7 @@ class CoaIssueService {
         // 1. Generate unique serial number
         try {
             $serial = $this->serialGenerator->generateSerial();
-            
+
             // Ensure we have a valid string (handle staging environment quirks)
             if (is_array($serial)) {
                 $serial = reset($serial);
@@ -211,13 +212,12 @@ class CoaIssueService {
                     'egi_id' => $egi->id
                 ]);
             }
-            
+
             $serial = (string)$serial;
-            
+
             if (empty($serial) || !str_contains($serial, 'COA-EGI')) {
                 throw new \Exception('Invalid serial generated: ' . $serial);
             }
-            
         } catch (\Exception $e) {
             $this->logger->error('[CoA Issue] Error generating serial', [
                 'error' => $e->getMessage(),

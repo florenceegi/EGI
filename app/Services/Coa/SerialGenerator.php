@@ -75,7 +75,7 @@ class SerialGenerator {
     public function generateSerial(?string $year = null): string {
         try {
             $year = $year ?? Carbon::now()->year;
-            
+
             // Ensure year is a string
             if (!is_string($year)) {
                 $year = (string)$year;
@@ -140,7 +140,7 @@ class SerialGenerator {
         if ($lastSerial) {
             // Robust handling: convert to string if needed
             $serialValue = $lastSerial->serial;
-            
+
             // Handle the case where serial might be an array (staging environment issue)
             if (is_array($serialValue)) {
                 // Try to get first element if it's an array
@@ -151,7 +151,7 @@ class SerialGenerator {
                     'converted_value' => $serialValue
                 ]);
             }
-            
+
             // Ensure it's a string
             if (!is_string($serialValue)) {
                 $serialValue = (string)$serialValue;
@@ -161,7 +161,7 @@ class SerialGenerator {
                     'converted_value' => $serialValue
                 ]);
             }
-            
+
             // Validate it looks like a serial
             if (empty($serialValue) || !str_contains($serialValue, 'COA-EGI')) {
                 $this->logger->error('[CoA Serial] Invalid serial format after conversion', [
@@ -184,20 +184,19 @@ class SerialGenerator {
                 $yearType = is_array(gettype($year)) ? 'array' : (string) gettype($year);
                 throw new \TypeError('Year must be string or numeric, ' . $yearType . ' given');
             }
-            
+
             if (!is_int($nextCounter) && !is_numeric($nextCounter)) {
                 $counterType = is_array(gettype($nextCounter)) ? 'array' : (string) gettype($nextCounter);
                 throw new \TypeError('Counter must be numeric, ' . $counterType . ' given');
             }
-            
+
             $newSerial = sprintf(self::SERIAL_FORMAT, (string)$year, (int)$nextCounter);
-            
+
             // Ensure result is a string
             if (!is_string($newSerial)) {
                 $resultType = is_array(gettype($newSerial)) ? 'array' : (string) gettype($newSerial);
                 throw new \TypeError('sprintf returned ' . $resultType . ' instead of string');
             }
-            
         } catch (\Exception $e) {
             $this->logger->error('[CoA Serial] Error in sprintf generation', [
                 'year' => $year,
@@ -247,10 +246,10 @@ class SerialGenerator {
                 'converted_value' => $serial
             ]);
         }
-        
+
         // Convert to string if not already
         $serial = (string)$serial;
-        
+
         // Validate basic format
         if (empty($serial)) {
             $this->logger->warning('[CoA Serial] Empty serial for extraction');
