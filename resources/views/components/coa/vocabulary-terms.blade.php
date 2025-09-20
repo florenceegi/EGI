@@ -28,6 +28,44 @@
         -webkit-backdrop-filter: blur(8px);
         background-color: rgba(249, 250, 251, 0.95);
     }
+
+    /* Enhanced term selection states */
+    .term-item {
+        transition: all 0.2s ease-in-out;
+        position: relative;
+    }
+
+    .term-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .term-item.selected {
+        border-color: #3B82F6;
+        background-color: #EFF6FF;
+        box-shadow: 0 0 0 1px #3B82F6;
+    }
+
+    .term-item.selected .plus-icon {
+        display: none;
+    }
+
+    .term-item.selected .check-icon {
+        display: block !important;
+    }
+
+    .term-item .plus-icon,
+    .term-item .check-icon {
+        transition: all 0.2s ease-in-out;
+    }
+
+    /* Search highlighting improvements */
+    mark {
+        background-color: #FEF3C7;
+        border-radius: 2px;
+        padding: 1px 2px;
+        font-weight: 600;
+    }
 </style>
 
 <div class="vocabulary-terms-container" data-component="vocabulary-terms" data-category="{{ $category }}">
@@ -92,16 +130,12 @@
                                             if ($search && strlen($search) >= 2) {
                                                 $highlightedName = str_ireplace(
                                                     $search,
-                                                    '<mark class="px-1 bg-yellow-200">' . $search . '</mark>',
+                                                    '<mark class="px-1 bg-yellow-200 rounded">' . $search . '</mark>',
                                                     $term->name
                                                 );
                                             }
                                         @endphp
                                         {!! $highlightedName !!}
-                                        {{-- Debug temporaneo --}}
-                                        @if($search && strlen($search) >= 2)
-                                            <small class="text-xs text-red-500 ml-2">[Q: "{{ $search }}"]</small>
-                                        @endif
                                     </h4>
 
                                     @if($term->description)
@@ -111,7 +145,7 @@
                                                 if ($search && strlen($search) >= 2) {
                                                     $highlightedDescription = str_ireplace(
                                                         $search,
-                                                        '<mark class="px-1 bg-yellow-200">' . $search . '</mark>',
+                                                        '<mark class="px-1 bg-yellow-200 rounded">' . $search . '</mark>',
                                                         $term->description
                                                     );
                                                 }
@@ -125,7 +159,11 @@
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                             </svg>
-                                            {{ __('coa_vocabulary.category_' . $term->category) }}
+                                            @if($term->category)
+                                                {{ __('coa_vocabulary.category_' . $term->category) }}
+                                            @else
+                                                {{ __('coa_traits.no_category') }}
+                                            @endif
                                         </span>
 
                                         @if($term->ui_group)
@@ -149,12 +187,16 @@
                                 </div>
 
                                 <div class="flex-shrink-0 ml-2">
-                                    <button class="inline-flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-full hover:text-blue-500 hover:bg-blue-50"
-                                            onclick="event.stopPropagation(); VocabularyModalController.selectTerm('{{ $term->slug }}', '{{ addslashes($term->name) }}')">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-8 h-8 flex items-center justify-center text-gray-400 transition-colors rounded-full hover:text-blue-500 hover:bg-blue-50">
+                                        {{-- Plus icon (default state) --}}
+                                        <svg class="w-4 h-4 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                         </svg>
-                                    </button>
+                                        {{-- Check icon (selected state) - hidden by default --}}
+                                        <svg class="w-4 h-4 check-icon hidden text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
                         </div>

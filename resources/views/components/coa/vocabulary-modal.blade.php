@@ -22,21 +22,55 @@
                     </button>
                 </div>
 
-                {{-- Search Bar --}}
+                {{-- Tabs and Search Bar --}}
                 <div class="mt-4">
-                    <div class="flex items-center justify-end border-b border-gray-200 pb-3">
-                        {{-- Search Box --}}
+                    {{-- Tab Navigation --}}
+                    <div class="border-b border-gray-200">
+                        <nav class="flex space-x-8" aria-label="Tabs">
+                            <button id="tabTechnique" 
+                                    class="vocabulary-tab py-2 px-1 border-b-2 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active"
+                                    onclick="vocabularyModal.switchTab('technique')"
+                                    data-tab="technique">
+                                {{ __('coa_traits.technique') }}
+                                <span id="techniqueCount" class="ml-2 bg-blue-100 text-blue-600 py-0.5 px-2 rounded-full text-xs font-medium">0</span>
+                            </button>
+                            <button id="tabMaterials" 
+                                    class="vocabulary-tab py-2 px-1 border-b-2 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    onclick="vocabularyModal.switchTab('materials')"
+                                    data-tab="materials">
+                                {{ __('coa_traits.materials') }}
+                                <span id="materialsCount" class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium">0</span>
+                            </button>
+                            <button id="tabSupport" 
+                                    class="vocabulary-tab py-2 px-1 border-b-2 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    onclick="vocabularyModal.switchTab('support')"
+                                    data-tab="support">
+                                {{ __('coa_traits.support') }}
+                                <span id="supportCount" class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium">0</span>
+                            </button>
+                        </nav>
+                    </div>
+
+                    {{-- Search Box --}}
+                    <div class="flex items-center justify-end pt-3">
                         <div class="relative">
                             <input id="vocabularySearch"
                                    type="search"
                                    placeholder="{{ __('coa_traits.search_placeholder') }}"
-                                   class="block w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                   class="block w-64 pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
                                    autocomplete="off">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </div>
+                            <button id="clearSearchBtn" 
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center opacity-0 transition-opacity"
+                                    onclick="vocabularyModal.clearSearch()">
+                                <svg class="h-4 w-4 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -47,9 +81,11 @@
                 {{-- Dynamic Content Container --}}
                 <div id="vocabularyContent" class="min-h-96">
                     {{-- Loading State --}}
-                    <div id="vocabularyLoading" class="hidden flex items-center justify-center py-16">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <span class="ml-3 text-gray-600">{{ __('coa_traits.loading') }}</span>
+                    <div id="vocabularyLoading" class="hidden">
+                        <div class="flex items-center justify-center py-16">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span class="ml-3 text-gray-600">{{ __('coa_traits.loading') }}</span>
+                        </div>
                     </div>
 
                     {{-- Content will be loaded here dynamically --}}
@@ -131,25 +167,103 @@
 {{-- CSS Styles --}}
 <style>
     /* Vocabulary Modal Specific Styles */
+    .vocabulary-tab {
+        @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all duration-200;
+        border-bottom-width: 2px;
+    }
+
     .vocabulary-tab.active {
-        border-color: #3B82F6;
-        color: #2563EB;
+        @apply border-blue-500 text-blue-600;
+    }
+
+    .vocabulary-tab:focus {
+        @apply ring-2 ring-blue-500 ring-offset-2 outline-none;
     }
 
     .vocabulary-chip {
-        @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200;
-    }
-
-    .vocabulary-chip .remove-btn {
-        @apply ml-2 h-4 w-4 text-blue-600 hover:text-blue-800 cursor-pointer;
+        @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-all duration-200;
+        @apply bg-blue-100 text-blue-800 border border-blue-200;
     }
 
     .vocabulary-chip.custom {
         @apply bg-amber-100 text-amber-800 border-amber-200;
     }
 
+    .vocabulary-chip.technique {
+        @apply bg-green-100 text-green-800 border-green-200;
+    }
+
+    .vocabulary-chip.materials {
+        @apply bg-purple-100 text-purple-800 border-purple-200;
+    }
+
+    .vocabulary-chip.support {
+        @apply bg-indigo-100 text-indigo-800 border-indigo-200;
+    }
+
+    .vocabulary-chip .remove-btn {
+        @apply ml-2 h-4 w-4 cursor-pointer transition-colors duration-200;
+    }
+
+    .vocabulary-chip .remove-btn:hover {
+        @apply transform scale-110;
+    }
+
     .vocabulary-chip.custom .remove-btn {
         @apply text-amber-600 hover:text-amber-800;
+    }
+
+    .vocabulary-chip.technique .remove-btn {
+        @apply text-green-600 hover:text-green-800;
+    }
+
+    .vocabulary-chip.materials .remove-btn {
+        @apply text-purple-600 hover:text-purple-800;
+    }
+
+    .vocabulary-chip.support .remove-btn {
+        @apply text-indigo-600 hover:text-indigo-800;
+    }
+
+    /* Term selection states */
+    .term-item {
+        @apply transition-all duration-200 cursor-pointer;
+    }
+
+    .term-item:hover {
+        @apply transform translate-y-[-1px] shadow-md;
+    }
+
+    .term-item.selected {
+        @apply border-blue-400 bg-blue-50 shadow-sm;
+    }
+
+    .term-item.selected::before {
+        content: '✓';
+        @apply absolute top-2 right-2 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold;
+        position: absolute;
+    }
+
+    .term-item {
+        position: relative;
+    }
+
+    /* Count badges */
+    .count-badge {
+        @apply transition-all duration-200;
+    }
+
+    .count-badge.active {
+        @apply bg-blue-100 text-blue-600;
+    }
+
+    /* Search enhancements */
+    #vocabularySearch:focus ~ #clearSearchBtn.visible {
+        @apply opacity-100;
+    }
+
+    #clearSearchBtn.visible {
+        @apply opacity-100;
     }
 
     /* Focus trap styles */
@@ -157,9 +271,33 @@
         outline: none;
     }
 
+    /* Animation for chips */
+    @keyframes chipSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .vocabulary-chip {
+        animation: chipSlideIn 0.2s ease-out;
+    }
+
     /* Loading animation */
     @keyframes spin {
         to { transform: rotate(360deg); }
+    }
+
+    /* Smooth transitions for all interactive elements */
+    .vocabulary-tab,
+    .vocabulary-chip,
+    .term-item,
+    button {
+        @apply transition-all duration-200 ease-in-out;
     }
 </style>
 

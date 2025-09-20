@@ -24,6 +24,9 @@ return [
     'custom' => 'personalizzato',
 
     // Categorie
+    'technique' => 'Tecnica',
+    'materials' => 'Materiali',
+    'support' => 'Supporto',
     'category_technique' => 'Tecnica',
     'category_materials' => 'Materiali',
     'category_support' => 'Supporto',
@@ -32,6 +35,8 @@ return [
     'no_technique_selected' => 'Nessuna tecnica selezionata',
     'no_materials_selected' => 'Nessun materiale selezionato',
     'no_support_selected' => 'Nessun supporto selezionato',
+    'no_items_selected_for' => 'Nessun elemento selezionato per',
+    'no_category' => 'Nessuna categoria',
 
     // Modal Vocabolario
     'terms' => 'termine',

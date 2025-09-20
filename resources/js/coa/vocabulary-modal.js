@@ -47,12 +47,21 @@ window.VocabularyModalController = (function () {
             dynamicContent: document.getElementById("vocabularyDynamicContent"),
             loading: document.getElementById("vocabularyLoading"),
             search: document.getElementById("vocabularySearch"),
+            clearSearchBtn: document.getElementById("clearSearchBtn"),
             chips: document.getElementById("vocabularyChips"),
             chipsEmpty: document.getElementById("vocabularyChipsEmpty"),
             selectionCount: document.getElementById("vocabularySelectionCount"),
             customTermBtn: document.getElementById("addCustomTermBtn"),
             customTermInput: document.getElementById("customTermInput"),
             customTermText: document.getElementById("customTermText"),
+            // Tab elements
+            tabTechnique: document.getElementById("tabTechnique"),
+            tabMaterials: document.getElementById("tabMaterials"),
+            tabSupport: document.getElementById("tabSupport"),
+            // Count badges
+            techniqueCount: document.getElementById("techniqueCount"),
+            materialsCount: document.getElementById("materialsCount"),
+            supportCount: document.getElementById("supportCount"),
         };
 
         // Debug: Log which elements were found
@@ -78,11 +87,12 @@ window.VocabularyModalController = (function () {
             );
         }
 
-        // Validate all elements exist
-        for (const [key, element] of Object.entries(elements)) {
-            if (!element) {
+        // Validate critical elements exist
+        const criticalElements = ['modal', 'search', 'chips', 'dynamicContent'];
+        for (const key of criticalElements) {
+            if (!elements[key]) {
                 console.error(
-                    `VocabularyModal: Required element not found: ${key}`
+                    `VocabularyModal: Critical element not found: ${key}`
                 );
             }
         }
@@ -93,8 +103,13 @@ window.VocabularyModalController = (function () {
         if (elements.search) {
             elements.search.addEventListener("input", function (e) {
                 clearTimeout(state.searchTimeout);
+                const query = e.target.value;
+                
+                // Show/hide clear button
+                updateClearSearchButton(query);
+                
                 state.searchTimeout = setTimeout(() => {
-                    handleSearch(e.target.value);
+                    handleSearch(query);
                 }, 250);
             });
 
@@ -103,7 +118,18 @@ window.VocabularyModalController = (function () {
                 if (e.key === "Escape") {
                     e.target.value = "";
                     handleSearch("");
+                    updateClearSearchButton("");
                 }
+            });
+        }
+
+        // Clear search button
+        if (elements.clearSearchBtn) {
+            elements.clearSearchBtn.addEventListener("click", function() {
+                elements.search.value = "";
+                handleSearch("");
+                updateClearSearchButton("");
+                elements.search.focus();
             });
         }
 
@@ -127,6 +153,18 @@ window.VocabularyModalController = (function () {
 
         // Focus trap
         setupFocusTrap();
+    }
+
+    function updateClearSearchButton(query) {
+        if (!elements.clearSearchBtn) return;
+        
+        if (query && query.trim().length > 0) {
+            elements.clearSearchBtn.classList.add("visible");
+            elements.clearSearchBtn.style.opacity = "1";
+        } else {
+            elements.clearSearchBtn.classList.remove("visible");
+            elements.clearSearchBtn.style.opacity = "0";
+        }
     }
 
     function handleKeyboardNavigation(e) {
@@ -248,16 +286,24 @@ window.VocabularyModalController = (function () {
         state.searchQuery = query.trim();
 
         if (state.searchQuery.length >= 2) {
-            // Search across all categories - do not filter by current tab
+            // Search within current tab context
             loadContent("/vocabulary/search", {
                 q: state.searchQuery,
-                // category: state.currentTab, // Rimosso: ricerca globale
+                tab: state.currentTab,
                 locale: document.documentElement.lang || "it",
             });
         } else if (state.searchQuery.length === 0) {
-            // Return to category view
-            loadCategories();
+            // Return to category view for current tab
+            loadContent("/vocabulary/categories", {
+                tab: state.currentTab,
+                locale: document.documentElement.lang || "it",
+            });
         }
+        
+        // Update selected states after search results load
+        setTimeout(() => {
+            updateSelectedStatesInView();
+        }, 300);
     }
 
     function loadCategories() {
@@ -274,7 +320,7 @@ window.VocabularyModalController = (function () {
         if (currentSelections.length === 0) {
             elements.chips.innerHTML = `
                 <div id="vocabularyChipsEmpty" class="text-sm text-gray-500 italic">
-                    Nessun elemento selezionato per ${state.currentTab}
+                    {{ __('coa_traits.no_items_selected_for') }} ${state.currentTab}
                 </div>
             `;
         } else {
@@ -282,7 +328,7 @@ window.VocabularyModalController = (function () {
                 .map(
                     (item) => `
                 <div class="vocabulary-chip ${
-                    item.isCustom ? "custom" : ""
+                    item.isCustom ? "custom" : state.currentTab
                 }" data-slug="${item.slug}">
                     <span>${item.name}</span>
                     <svg class="remove-btn" onclick="vocabularyModal.removeSelection('${
@@ -300,6 +346,7 @@ window.VocabularyModalController = (function () {
         }
 
         updateSelectionCount();
+        updateTabCounts();
     }
 
     function updateSelectionCount() {
@@ -311,6 +358,90 @@ window.VocabularyModalController = (function () {
         );
 
         elements.selectionCount.textContent = totalSelections;
+    }
+
+    function updateTabCounts() {
+        // Update individual tab counts
+        if (elements.techniqueCount) {
+            const count = state.selections.technique.length;
+            elements.techniqueCount.textContent = count;
+            elements.techniqueCount.className = count > 0 
+                ? "ml-2 bg-green-100 text-green-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge"
+                : "ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge";
+        }
+
+        if (elements.materialsCount) {
+            const count = state.selections.materials.length;
+            elements.materialsCount.textContent = count;
+            elements.materialsCount.className = count > 0 
+                ? "ml-2 bg-purple-100 text-purple-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge"
+                : "ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge";
+        }
+
+        if (elements.supportCount) {
+            const count = state.selections.support.length;
+            elements.supportCount.textContent = count;
+            elements.supportCount.className = count > 0 
+                ? "ml-2 bg-indigo-100 text-indigo-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge"
+                : "ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs font-medium count-badge";
+        }
+    }
+
+    function switchTab(tabName) {
+        console.log("VocabularyModal: Switching to tab:", tabName);
+        
+        // Update state
+        state.currentTab = tabName;
+
+        // Update tab visual states
+        const tabs = ['technique', 'materials', 'support'];
+        tabs.forEach(tab => {
+            const tabElement = elements[`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`];
+            if (tabElement) {
+                if (tab === tabName) {
+                    tabElement.classList.add('active');
+                } else {
+                    tabElement.classList.remove('active');
+                }
+            }
+        });
+
+        // Update chips display for current tab
+        updateChipsDisplay();
+
+        // Clear search and load categories for the new tab
+        if (elements.search) {
+            elements.search.value = "";
+            updateClearSearchButton("");
+        }
+        state.searchQuery = "";
+        
+        // Load categories filtered by current tab
+        loadContent("/vocabulary/categories", {
+            tab: tabName,
+            locale: document.documentElement.lang || "it",
+        });
+
+        // Update selected states in current view
+        setTimeout(() => {
+            updateSelectedStatesInView();
+        }, 100);
+    }
+
+    function updateSelectedStatesInView() {
+        const currentSelections = state.selections[state.currentTab] || [];
+        const selectedSlugs = currentSelections.map(item => item.slug);
+
+        // Update visual state of term items
+        const termItems = document.querySelectorAll('.term-item');
+        termItems.forEach(item => {
+            const slug = item.getAttribute('data-term-slug');
+            if (selectedSlugs.includes(slug)) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        });
     }
 
     function backupSelections() {
@@ -380,8 +511,14 @@ window.VocabularyModalController = (function () {
             // Show modal
             elements.modal?.classList.remove("hidden");
 
-            // Load initial content - show categories directly
-            loadCategories();
+            // Initialize tab states
+            switchTab("technique");
+
+            // Load initial content - show categories for technique tab
+            loadContent("/vocabulary/categories", {
+                tab: "technique",
+                locale: document.documentElement.lang || "it",
+            });
 
             // Focus on search input
             setTimeout(() => {
@@ -411,6 +548,10 @@ window.VocabularyModalController = (function () {
             if (elements.search) {
                 elements.search.value = "";
             }
+            updateClearSearchButton("");
+
+            // Reset to technique tab
+            state.currentTab = "technique";
 
             // Dispatch close event
             window.dispatchEvent(new CustomEvent("vocabularyModal:closed"));
@@ -464,6 +605,21 @@ window.VocabularyModalController = (function () {
             }
 
             updateChipsDisplay();
+            
+            // Update visual states immediately
+            setTimeout(() => {
+                updateSelectedStatesInView();
+            }, 50);
+        },
+
+        /**
+         * Switch between tabs (technique, materials, support)
+         * @param {string} tabName - Tab name to switch to
+         */
+        switchTab: function (tabName) {
+            if (['technique', 'materials', 'support'].includes(tabName)) {
+                switchTab(tabName);
+            }
         },
 
         /**
@@ -535,7 +691,13 @@ window.VocabularyModalController = (function () {
                 elements.search.value = "";
             }
             state.searchQuery = "";
-            loadCategories();
+            updateClearSearchButton("");
+            
+            // Load categories for current tab
+            loadContent("/vocabulary/categories", {
+                tab: state.currentTab,
+                locale: document.documentElement.lang || "it",
+            });
         },
 
         /**
