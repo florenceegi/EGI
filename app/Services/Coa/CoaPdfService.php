@@ -716,7 +716,7 @@ class CoaPdfService {
     //--------------------------------------------------------------------------
     // Metadata Extraction Methods (shared with VerifyController)
     //--------------------------------------------------------------------------
-    
+
     /**
      * Extract all artwork metadata in structured format for PDF certificate display
      *
@@ -728,21 +728,21 @@ class CoaPdfService {
         $metadata = [];
         $coaTraits = $egi->coaTraits;
         $hasValidCoaTraits = false;
-        
+
         if ($coaTraits) {
             // Check if has any valid CoA traits
             $hasValidCoaTraits = !empty($coaTraits->technique_slugs) ||
-                               !empty($coaTraits->materials_slugs) ||
-                               !empty($coaTraits->support_slugs) ||
-                               !empty($coaTraits->technique_free_text) ||
-                               !empty($coaTraits->materials_free_text) ||
-                               !empty($coaTraits->support_free_text);
+                !empty($coaTraits->materials_slugs) ||
+                !empty($coaTraits->support_slugs) ||
+                !empty($coaTraits->technique_free_text) ||
+                !empty($coaTraits->materials_free_text) ||
+                !empty($coaTraits->support_free_text);
         }
-        
+
         if ($hasValidCoaTraits) {
             // Use structured CoA traits
             $vocabularyTranslations = __('coa_vocabulary');
-            
+
             // Technique traits
             if (!empty($coaTraits->technique_slugs)) {
                 foreach ($coaTraits->technique_slugs as $slug) {
@@ -753,7 +753,7 @@ class CoaPdfService {
                     ];
                 }
             }
-            
+
             if (!empty($coaTraits->technique_free_text)) {
                 foreach ($coaTraits->technique_free_text as $text) {
                     $traits[] = [
@@ -763,7 +763,7 @@ class CoaPdfService {
                     ];
                 }
             }
-            
+
             // Materials traits
             if (!empty($coaTraits->materials_slugs)) {
                 foreach ($coaTraits->materials_slugs as $slug) {
@@ -774,7 +774,7 @@ class CoaPdfService {
                     ];
                 }
             }
-            
+
             if (!empty($coaTraits->materials_free_text)) {
                 foreach ($coaTraits->materials_free_text as $text) {
                     $traits[] = [
@@ -784,7 +784,7 @@ class CoaPdfService {
                     ];
                 }
             }
-            
+
             // Support traits
             if (!empty($coaTraits->support_slugs)) {
                 foreach ($coaTraits->support_slugs as $slug) {
@@ -795,7 +795,7 @@ class CoaPdfService {
                     ];
                 }
             }
-            
+
             if (!empty($coaTraits->support_free_text)) {
                 foreach ($coaTraits->support_free_text as $text) {
                     $traits[] = [
@@ -805,7 +805,7 @@ class CoaPdfService {
                     ];
                 }
             }
-            
+
             // Add generic EGI traits as additional metadata when using CoA traits
             if ($egi->traits && $egi->traits->count() > 0) {
                 foreach ($egi->traits as $trait) {
@@ -818,7 +818,6 @@ class CoaPdfService {
                     }
                 }
             }
-            
         } else {
             // Fallback to generic EGI traits as primary traits
             if ($egi->traits && $egi->traits->count() > 0) {
@@ -833,10 +832,10 @@ class CoaPdfService {
                 }
             }
         }
-        
+
         // Always add EGI description and technical metadata
         $metadata = $this->extractAdditionalMetadata($egi);
-        
+
         return [
             'data' => $traits,
             'metadata' => $metadata,
@@ -844,7 +843,7 @@ class CoaPdfService {
             'traits_incomplete' => !$hasValidCoaTraits
         ];
     }
-    
+
     /**
      * Extract additional metadata from EGI for PDF display
      *
@@ -853,7 +852,7 @@ class CoaPdfService {
      */
     private function extractAdditionalMetadata($egi): array {
         $metadata = [];
-        
+
         // PLATFORM TRAITS (from egi_traits table) - These are separate from CoA traits
         if ($egi->traits && $egi->traits->count() > 0) {
             foreach ($egi->traits as $trait) {
@@ -867,7 +866,7 @@ class CoaPdfService {
                 }
             }
         }
-        
+
         // Description (often missing in certificates)
         if (!empty($egi->description)) {
             $metadata[] = [
@@ -877,7 +876,7 @@ class CoaPdfService {
                 'category' => 'artwork_info'
             ];
         }
-        
+
         // File technical information
         if (!empty($egi->size)) {
             $metadata[] = [
@@ -887,7 +886,7 @@ class CoaPdfService {
                 'category' => 'technical'
             ];
         }
-        
+
         if (!empty($egi->dimension)) {
             $metadata[] = [
                 'type' => 'image_dimensions',
@@ -896,7 +895,7 @@ class CoaPdfService {
                 'category' => 'technical'
             ];
         }
-        
+
         if (!empty($egi->file_mime)) {
             $metadata[] = [
                 'type' => 'mime_type',
@@ -905,7 +904,7 @@ class CoaPdfService {
                 'category' => 'technical'
             ];
         }
-        
+
         if (!empty($egi->extension)) {
             $metadata[] = [
                 'type' => 'extension',
@@ -914,7 +913,7 @@ class CoaPdfService {
                 'category' => 'technical'
             ];
         }
-        
+
         // Additional JSON metadata
         if (!empty($egi->jsonMetadata) && is_array($egi->jsonMetadata)) {
             foreach ($egi->jsonMetadata as $key => $value) {
@@ -928,7 +927,7 @@ class CoaPdfService {
                 }
             }
         }
-        
+
         // Creation and publishing dates
         if (!empty($egi->creation_date)) {
             $metadata[] = [
@@ -938,7 +937,7 @@ class CoaPdfService {
                 'category' => 'artwork_info'
             ];
         }
-        
+
         if (!empty($egi->created_at)) {
             $metadata[] = [
                 'type' => 'upload_date',
@@ -947,7 +946,7 @@ class CoaPdfService {
                 'category' => 'platform_metadata'
             ];
         }
-        
+
         // Publication status
         if (isset($egi->is_published)) {
             $metadata[] = [
@@ -957,7 +956,7 @@ class CoaPdfService {
                 'category' => 'platform_metadata'
             ];
         }
-        
+
         // Collection information
         if ($egi->collection && !empty($egi->collection->name)) {
             $metadata[] = [
@@ -967,7 +966,7 @@ class CoaPdfService {
                 'category' => 'artwork_info'
             ];
         }
-        
+
         return $metadata;
     }
 }

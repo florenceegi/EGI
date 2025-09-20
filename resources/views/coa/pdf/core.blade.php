@@ -237,8 +237,8 @@
         <div class="traits-warning">
             <div class="title">⚠️ Certificato con Traits Generici</div>
             <div class="message">
-                Questo certificato è stato generato utilizzando i traits generici EGI invece dei traits CoA specifici. 
-                Per una certificazione più professionale e dettagliata, si consiglia di configurare i CoA traits 
+                Questo certificato è stato generato utilizzando i traits generici EGI invece dei traits CoA specifici.
+                Per una certificazione più professionale e dettagliata, si consiglia di configurare i CoA traits
                 (tecnica, materiali, supporto) dal pannello di gestione dell'opera.
             </div>
         </div>
@@ -254,7 +254,7 @@
                     @foreach(['technique', 'materials', 'support'] as $category)
                         @if(isset($traits_snapshot['coa_traits'][$category]))
                             @php $categoryData = $traits_snapshot['coa_traits'][$category]; @endphp
-                            
+
                             {{-- Vocabulary Terms --}}
                             @if(!empty($categoryData['vocabulary_terms']))
                                 @foreach($categoryData['vocabulary_terms'] as $term)
@@ -264,7 +264,7 @@
                                 </div>
                                 @endforeach
                             @endif
-                            
+
                             {{-- Custom Terms --}}
                             @if(!empty($categoryData['custom_terms']))
                                 @foreach($categoryData['custom_terms'] as $term)
@@ -297,7 +297,7 @@
                 @endif
             </div>
         </div>
-        
+
         {{-- Additional Metadata Section --}}
         @if(isset($traits_snapshot['metadata']) && count($traits_snapshot['metadata']) > 0)
         <div class="traits-section" style="margin-top: 20px;">

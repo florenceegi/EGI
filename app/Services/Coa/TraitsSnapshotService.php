@@ -276,11 +276,11 @@ class TraitsSnapshotService {
     protected function extractTraitsData(Egi $egi): array {
         // NEW: Use CoA traits if available and has data, fallback to generic EGI traits
         $coaTraits = $egi->coaTraits;
-        
+
         if ($coaTraits && $this->hasValidCoaTraits($coaTraits)) {
             return $this->extractCoaTraitsData($egi, $coaTraits);
         }
-        
+
         // Fallback to generic EGI traits for backward compatibility
         return $this->extractGenericTraitsData($egi);
     }
@@ -293,13 +293,13 @@ class TraitsSnapshotService {
      */
     protected function hasValidCoaTraits($coaTraits): bool {
         return !empty($coaTraits->technique_slugs) ||
-               !empty($coaTraits->materials_slugs) ||
-               !empty($coaTraits->support_slugs) ||
-               !empty($coaTraits->technique_free_text) ||
-               !empty($coaTraits->materials_free_text) ||
-               !empty($coaTraits->support_free_text);
+            !empty($coaTraits->materials_slugs) ||
+            !empty($coaTraits->support_slugs) ||
+            !empty($coaTraits->technique_free_text) ||
+            !empty($coaTraits->materials_free_text) ||
+            !empty($coaTraits->support_free_text);
     }
-    
+
     /**
      * Extract CoA-specific traits data with vocabulary translations
      *
@@ -311,13 +311,13 @@ class TraitsSnapshotService {
     protected function extractCoaTraitsData(Egi $egi, $coaTraits): array {
         // Load all vocabulary translations for performance
         $vocabularyTranslations = __('coa_vocabulary');
-        
+
         return [
             'source_type' => 'coa_traits',
             'extraction_date' => now()->toIso8601String(),
             'egi_id' => $egi->id,
             'version' => '2.0', // CoA traits version
-            
+
             // Basic EGI data
             'basic_info' => [
                 'title' => $egi->title,
@@ -325,7 +325,7 @@ class TraitsSnapshotService {
                 'author' => $egi->author,
                 'year' => $egi->year,
             ],
-            
+
             // CoA Traits - organized by categories
             'coa_traits' => [
                 'technique' => [
@@ -341,7 +341,7 @@ class TraitsSnapshotService {
                     'custom_terms' => $this->extractCustomTerms($coaTraits->support_free_text)
                 ]
             ],
-            
+
             // Metadata
             'metadata' => [
                 'coa_traits_id' => $coaTraits->id,
@@ -357,7 +357,7 @@ class TraitsSnapshotService {
             ]
         ];
     }
-    
+
     /**
      * Extract category terms with translations
      *
@@ -369,7 +369,7 @@ class TraitsSnapshotService {
         if (empty($slugs)) {
             return [];
         }
-        
+
         return collect($slugs)->map(function ($slug) use ($vocabularyTranslations) {
             return [
                 'slug' => $slug,
@@ -378,7 +378,7 @@ class TraitsSnapshotService {
             ];
         })->toArray();
     }
-    
+
     /**
      * Extract custom terms
      *
@@ -389,7 +389,7 @@ class TraitsSnapshotService {
         if (empty($customTexts)) {
             return [];
         }
-        
+
         return collect($customTexts)->map(function ($text, $index) {
             return [
                 'id' => $index,
@@ -398,7 +398,7 @@ class TraitsSnapshotService {
             ];
         })->toArray();
     }
-    
+
     /**
      * Extract generic EGI traits for backward compatibility
      *
@@ -411,7 +411,7 @@ class TraitsSnapshotService {
             'source_type' => 'generic_egi',
             'extraction_date' => now()->toIso8601String(),
             'version' => '1.0', // Generic traits version
-            
+
             // Basic EGI data
             'id' => $egi->id,
             'title' => $egi->title,
@@ -437,7 +437,7 @@ class TraitsSnapshotService {
             'awards' => $egi->awards,
             'created_at' => $egi->created_at?->toIso8601String(),
             'updated_at' => $egi->updated_at?->toIso8601String(),
-            
+
             // Status indicators
             'has_coa_traits' => false,
             'traits_incomplete' => true // This indicates the certificate should show a warning

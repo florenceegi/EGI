@@ -27,14 +27,14 @@
             @foreach(['technique', 'materials', 'support'] as $category)
                 @if(isset($traits_snapshot['coa_traits'][$category]))
                     @php $categoryData = $traits_snapshot['coa_traits'][$category]; @endphp
-                    
+
                     {{-- Vocabulary Terms --}}
                     @if(!empty($categoryData['vocabulary_terms']))
                         @foreach($categoryData['vocabulary_terms'] as $term)
                         <li>{{ ucfirst($category) }}: {{ $term['translated_name'] }}</li>
                         @endforeach
                     @endif
-                    
+
                     {{-- Custom Terms --}}
                     @if(!empty($categoryData['custom_terms']))
                         @foreach($categoryData['custom_terms'] as $term)
@@ -57,7 +57,7 @@
             @endforeach
         @endif
     </ul>
-    
+
     @if(isset($traits_snapshot['metadata']) && count($traits_snapshot['metadata']) > 0)
     <h3>Additional Metadata:</h3>
     <ul>

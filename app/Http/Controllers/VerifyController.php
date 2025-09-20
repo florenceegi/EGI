@@ -688,7 +688,9 @@ class VerifyController extends Controller {
                     'dimensions' => $this->extractDimensionsFromTraits($coa->egi),
                     'edition' => $this->extractEditionFromTraits($coa->egi),
                     'traits' => $this->extractAllArtworkMetadata($coa->egi),
-                    'internal_id' => $coa->egi->id
+                    'internal_id' => $coa->egi->id,
+                    'image_url' => $coa->egi->main_image_url, // AGGIUNTO: URL immagine principale
+                    'thumbnail_url' => $coa->egi->thumbnail_image_url // AGGIUNTO: URL thumbnail
                 ],
                 'verification' => [
                     'is_valid' => $coa->status === 'valid',
@@ -811,6 +813,8 @@ class VerifyController extends Controller {
                     'edition' => $this->extractEditionFromTraits($coa->egi),
                     'traits' => $this->extractAllArtworkMetadata($coa->egi),
                     'thumbnail' => $coa->egi->media ? asset('storage/' . $coa->egi->media) : null,
+                    'image_url' => $coa->egi->main_image_url, // AGGIUNTO: URL immagine principale
+                    'thumbnail_url' => $coa->egi->thumbnail_image_url, // AGGIUNTO: URL thumbnail
                     'dossier_link' => route('egis.show', $coa->egi->id) . '#gallery'
                 ],
                 'verification' => [
@@ -1012,7 +1016,7 @@ class VerifyController extends Controller {
      */
     private function extractAuthorFromTraits($egi): string {
         $coaTraits = $egi->coaTraits;
-        
+
         if ($coaTraits) {
             // Check for author in CoA traits custom text
             $authorFromCustom = $this->findAuthorInCustomTraits($coaTraits);
@@ -1020,17 +1024,17 @@ class VerifyController extends Controller {
                 return $authorFromCustom;
             }
         }
-        
+
         // Fallback to EGI author field or generic trait extraction
         if (!empty($egi->author)) {
             return $egi->author;
         }
-        
+
         $authorFromTraits = $this->extractTraitValue($egi, ['Autore', 'Author', 'Artist', 'Artista']);
         if ($authorFromTraits) {
             return $authorFromTraits;
         }
-        
+
         return $egi->user->name ?? 'Unknown Author';
     }
 
@@ -1049,12 +1053,12 @@ class VerifyController extends Controller {
                 return $yearFromCoaTraits;
             }
         }
-        
+
         // Fallback to EGI year field or generic traits
         if (!empty($egi->year)) {
             return (string) $egi->year;
         }
-        
+
         return $this->extractTraitValue($egi, ['Anno', 'Year', 'Data', 'Date']);
     }
 
@@ -1066,28 +1070,28 @@ class VerifyController extends Controller {
      */
     private function extractTechniqueFromTraits($egi): ?string {
         $coaTraits = $egi->coaTraits;
-        
+
         if ($coaTraits && !empty($coaTraits->technique_slugs)) {
             $vocabularyTranslations = __('coa_vocabulary');
             $techniques = [];
-            
+
             foreach ($coaTraits->technique_slugs as $slug) {
                 $techniques[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
             }
-            
+
             // Add custom technique if present
             if (!empty($coaTraits->technique_other)) {
                 $techniques[] = $coaTraits->technique_other;
             }
-            
+
             return implode(', ', $techniques);
         }
-        
+
         // Fallback to EGI technique field or generic traits
         if (!empty($egi->technique)) {
             return $egi->technique;
         }
-        
+
         return $this->extractTraitValue($egi, ['Tecnica', 'Technique', 'Medium']);
     }
 
@@ -1099,30 +1103,30 @@ class VerifyController extends Controller {
      */
     private function extractMaterialsFromTraits($egi): ?string {
         $coaTraits = $egi->coaTraits;
-        
+
         if ($coaTraits && !empty($coaTraits->materials_slugs)) {
             $vocabularyTranslations = __('coa_vocabulary');
             $materials = [];
-            
+
             foreach ($coaTraits->materials_slugs as $slug) {
                 $materials[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
             }
-            
+
             // Add custom materials if present
             if (!empty($coaTraits->materials_free_text)) {
                 foreach ($coaTraits->materials_free_text as $customMaterial) {
                     $materials[] = $customMaterial;
                 }
             }
-            
+
             return implode(', ', $materials);
         }
-        
+
         // Fallback to EGI materials field or generic traits
         if (!empty($egi->materials)) {
             return $egi->materials;
         }
-        
+
         return $this->extractTraitValue($egi, ['Materiale', 'Materials', 'Material']);
     }
 
@@ -1134,23 +1138,23 @@ class VerifyController extends Controller {
      */
     private function extractSupportFromTraits($egi): ?string {
         $coaTraits = $egi->coaTraits;
-        
+
         if ($coaTraits && !empty($coaTraits->support_slugs)) {
             $vocabularyTranslations = __('coa_vocabulary');
             $supports = [];
-            
+
             foreach ($coaTraits->support_slugs as $slug) {
                 $supports[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
             }
-            
+
             // Add custom support if present
             if (!empty($coaTraits->support_other)) {
                 $supports[] = $coaTraits->support_other;
             }
-            
+
             return implode(', ', $supports);
         }
-        
+
         // Fallback to generic traits or EGI fields
         return $this->extractTraitValue($egi, ['Supporto', 'Support', 'Material']);
     }
@@ -1170,12 +1174,12 @@ class VerifyController extends Controller {
                 return $dimensionsFromCoaTraits;
             }
         }
-        
+
         // Fallback to EGI dimensions field or generic traits
         if (!empty($egi->dimensions)) {
             return $egi->dimensions;
         }
-        
+
         return $this->extractTraitValue($egi, ['Dimensioni', 'Dimensions', 'Size']);
     }
 
@@ -1194,7 +1198,7 @@ class VerifyController extends Controller {
                 return $editionFromCoaTraits;
             }
         }
-        
+
         return $this->extractTraitValue($egi, ['Edizione', 'Edition', 'Tiratura']);
     }
 
@@ -1209,21 +1213,21 @@ class VerifyController extends Controller {
         $metadata = [];
         $coaTraits = $egi->coaTraits;
         $hasValidCoaTraits = false;
-        
+
         if ($coaTraits) {
             // Check if has any valid CoA traits
             $hasValidCoaTraits = !empty($coaTraits->technique_slugs) ||
-                               !empty($coaTraits->materials_slugs) ||
-                               !empty($coaTraits->support_slugs) ||
-                               !empty($coaTraits->technique_free_text) ||
-                               !empty($coaTraits->materials_free_text) ||
-                               !empty($coaTraits->support_free_text);
+                !empty($coaTraits->materials_slugs) ||
+                !empty($coaTraits->support_slugs) ||
+                !empty($coaTraits->technique_free_text) ||
+                !empty($coaTraits->materials_free_text) ||
+                !empty($coaTraits->support_free_text);
         }
-        
+
         if ($hasValidCoaTraits) {
             // Use structured CoA traits (ONLY for the main certificate sections)
             $vocabularyTranslations = __('coa_vocabulary');
-            
+
             // Technique traits
             if (!empty($coaTraits->technique_slugs)) {
                 foreach ($coaTraits->technique_slugs as $slug) {
@@ -1234,7 +1238,7 @@ class VerifyController extends Controller {
                     ];
                 }
             }
-            
+
             if (!empty($coaTraits->technique_free_text)) {
                 foreach ($coaTraits->technique_free_text as $text) {
                     $traits[] = [
@@ -1244,7 +1248,7 @@ class VerifyController extends Controller {
                     ];
                 }
             }
-            
+
             // Materials traits
             if (!empty($coaTraits->materials_slugs)) {
                 foreach ($coaTraits->materials_slugs as $slug) {
@@ -1255,7 +1259,7 @@ class VerifyController extends Controller {
                     ];
                 }
             }
-            
+
             if (!empty($coaTraits->materials_free_text)) {
                 foreach ($coaTraits->materials_free_text as $text) {
                     $traits[] = [
@@ -1265,7 +1269,7 @@ class VerifyController extends Controller {
                     ];
                 }
             }
-            
+
             // Support traits
             if (!empty($coaTraits->support_slugs)) {
                 foreach ($coaTraits->support_slugs as $slug) {
@@ -1276,7 +1280,7 @@ class VerifyController extends Controller {
                     ];
                 }
             }
-            
+
             if (!empty($coaTraits->support_free_text)) {
                 foreach ($coaTraits->support_free_text as $text) {
                     $traits[] = [
@@ -1286,11 +1290,11 @@ class VerifyController extends Controller {
                     ];
                 }
             }
-            
+
             // IMPORTANT: When CoA traits exist, do NOT put them in 'data' field
             // They are already handled by the structured template sections
             // The 'data' field should remain empty to avoid duplication
-            
+
         } else {
             // Fallback to generic EGI traits as primary traits (when no CoA traits exist)
             if ($egi->traits && $egi->traits->count() > 0) {
@@ -1305,10 +1309,10 @@ class VerifyController extends Controller {
                 }
             }
         }
-        
+
         // Always add EGI description and technical metadata
         $metadata = $this->extractAdditionalMetadata($egi);
-        
+
         return [
             'data' => $hasValidCoaTraits ? [] : $traits, // When CoA traits exist, don't duplicate in 'data'
             'metadata' => $metadata,
@@ -1316,7 +1320,7 @@ class VerifyController extends Controller {
             'traits_incomplete' => !$hasValidCoaTraits
         ];
     }
-    
+
     /**
      * Extract additional metadata from EGI (description, technical info, platform traits)
      *
@@ -1325,7 +1329,7 @@ class VerifyController extends Controller {
      */
     private function extractAdditionalMetadata($egi): array {
         $metadata = [];
-        
+
         // PLATFORM TRAITS (from egi_traits table) - These are separate from CoA traits
         if ($egi->traits && $egi->traits->count() > 0) {
             foreach ($egi->traits as $trait) {
@@ -1339,7 +1343,7 @@ class VerifyController extends Controller {
                 }
             }
         }
-        
+
         // Description (often missing in certificates)
         if (!empty($egi->description)) {
             $metadata[] = [
@@ -1349,7 +1353,7 @@ class VerifyController extends Controller {
                 'category' => 'artwork_info'
             ];
         }
-        
+
         // File technical information
         if (!empty($egi->size)) {
             $metadata[] = [
@@ -1359,7 +1363,7 @@ class VerifyController extends Controller {
                 'category' => 'technical'
             ];
         }
-        
+
         if (!empty($egi->dimension)) {
             $metadata[] = [
                 'type' => 'image_dimensions',
@@ -1368,7 +1372,7 @@ class VerifyController extends Controller {
                 'category' => 'technical'
             ];
         }
-        
+
         if (!empty($egi->file_mime)) {
             $metadata[] = [
                 'type' => 'mime_type',
@@ -1377,7 +1381,7 @@ class VerifyController extends Controller {
                 'category' => 'technical'
             ];
         }
-        
+
         if (!empty($egi->extension)) {
             $metadata[] = [
                 'type' => 'extension',
@@ -1386,7 +1390,7 @@ class VerifyController extends Controller {
                 'category' => 'technical'
             ];
         }
-        
+
         // Additional JSON metadata
         if (!empty($egi->jsonMetadata) && is_array($egi->jsonMetadata)) {
             foreach ($egi->jsonMetadata as $key => $value) {
@@ -1400,7 +1404,7 @@ class VerifyController extends Controller {
                 }
             }
         }
-        
+
         // Creation and publishing dates
         if (!empty($egi->creation_date)) {
             $metadata[] = [
@@ -1410,7 +1414,7 @@ class VerifyController extends Controller {
                 'category' => 'artwork_info'
             ];
         }
-        
+
         if (!empty($egi->created_at)) {
             $metadata[] = [
                 'type' => 'upload_date',
@@ -1419,7 +1423,7 @@ class VerifyController extends Controller {
                 'category' => 'platform_metadata'
             ];
         }
-        
+
         // Publication status
         if (isset($egi->is_published)) {
             $metadata[] = [
@@ -1429,7 +1433,7 @@ class VerifyController extends Controller {
                 'category' => 'platform_metadata'
             ];
         }
-        
+
         // Collection information
         if ($egi->collection && !empty($egi->collection->name)) {
             $metadata[] = [
@@ -1439,7 +1443,7 @@ class VerifyController extends Controller {
                 'category' => 'artwork_info'
             ];
         }
-        
+
         return $metadata;
     }
 
@@ -1456,10 +1460,10 @@ class VerifyController extends Controller {
             $coaTraits->materials_other,
             $coaTraits->support_other
         ];
-        
+
         foreach ($customTexts as $text) {
             if (empty($text)) continue;
-            
+
             // Look for patterns like "Author: Name" or "Autore: Nome"
             $patterns = ['autore:', 'author:', 'artist:', 'artista:'];
             foreach ($patterns as $pattern) {
@@ -1473,7 +1477,7 @@ class VerifyController extends Controller {
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -1486,10 +1490,10 @@ class VerifyController extends Controller {
             $coaTraits->materials_other,
             $coaTraits->support_other
         ];
-        
+
         foreach ($customTexts as $text) {
             if (empty($text)) continue;
-            
+
             // Look for 4-digit years (1900-2099)
             for ($year = 1900; $year <= 2099; $year++) {
                 if (strpos($text, (string)$year) !== false) {
@@ -1497,7 +1501,7 @@ class VerifyController extends Controller {
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -1510,10 +1514,10 @@ class VerifyController extends Controller {
             $coaTraits->materials_other,
             $coaTraits->support_other
         ];
-        
+
         foreach ($customTexts as $text) {
             if (empty($text)) continue;
-            
+
             // Look for dimension patterns like "120x80" or "120 x 80"
             $text = str_replace(['X', '×'], 'x', strtolower($text));
             $words = explode(' ', $text);
@@ -1526,7 +1530,7 @@ class VerifyController extends Controller {
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -1539,10 +1543,10 @@ class VerifyController extends Controller {
             $coaTraits->materials_other,
             $coaTraits->support_other
         ];
-        
+
         foreach ($customTexts as $text) {
             if (empty($text)) continue;
-            
+
             // Look for edition patterns
             $patterns = ['edizione:', 'edition:', 'tiratura:'];
             foreach ($patterns as $pattern) {
@@ -1555,7 +1559,7 @@ class VerifyController extends Controller {
                     }
                 }
             }
-            
+
             // Look for fraction patterns like "1/10"
             if (strpos($text, '/') !== false) {
                 $words = explode(' ', $text);
@@ -1569,7 +1573,7 @@ class VerifyController extends Controller {
                 }
             }
         }
-        
+
         return null;
     }
 }

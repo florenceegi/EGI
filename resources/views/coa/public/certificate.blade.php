@@ -17,12 +17,26 @@
 
         {{-- Title Header --}}
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-amber-900 mb-2">
+            <h1 class="text-3xl font-bold text-amber-900 mb-2">
                 Certificato di Autenticità
             </h1>
-            <p class="text-amber-700 text-lg">
+            <p class="text-amber-700 text-base">
                 Visualizzazione Pubblica di Verifica
             </p>
+            
+            {{-- EGI Image --}}
+            @if(isset($artwork['image_url']) && $artwork['image_url'])
+                <div class="mt-6 flex justify-center">
+                    <div class="relative">
+                        <img src="{{ $artwork['image_url'] }}" 
+                             alt="{{ $artwork['name'] }}" 
+                             class="w-64 h-64 object-cover rounded-lg shadow-lg border-4 border-amber-200">
+                        <div class="absolute -bottom-2 -right-2 bg-amber-600 text-white text-xs px-2 py-1 rounded-full">
+                            ID: {{ $artwork['internal_id'] ?? 'N/A' }}
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
         {{-- Status Banner --}}
@@ -69,7 +83,7 @@
                         <div>
                             <div class="font-semibold text-base">Certificato con Traits Generici</div>
                             <div class="text-sm mt-1">
-                                Questo certificato è stato generato utilizzando i traits generici EGI invece dei traits CoA specifici. 
+                                Questo certificato è stato generato utilizzando i traits generici EGI invece dei traits CoA specifici.
                                 Per una certificazione più professionale e dettagliata, si consiglia di configurare i CoA traits (tecnica, materiali, supporto) dal pannello di gestione dell'opera.
                             </div>
                         </div>
@@ -87,69 +101,88 @@
 
                     {{-- LEFT: Identità Opera --}}
                     <div class="space-y-6">
-                        <h2 class="text-2xl font-bold text-gray-900 border-b pb-2">
+                        <h2 class="text-lg font-bold text-gray-900 border-b pb-2">
                             Informazioni Opera
                         </h2>
 
                         {{-- Titolo e ID --}}
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Titolo</label>
-                            <div class="text-xl font-bold text-gray-900">{{ $artwork['name'] }}</div>
+                            <label class="text-xs font-medium text-gray-600">Titolo</label>
+                            <div class="text-base font-bold text-gray-900">{{ $artwork['name'] }}</div>
                             <div class="text-xs text-gray-500 mt-1">ID interno: #{{ $artwork['internal_id'] ?? 'N/A' }}</div>
                         </div>
 
                         {{-- Anno --}}
                         @if($artwork['year'])
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Anno</label>
-                            <div class="text-lg text-gray-900">{{ $artwork['year'] }}</div>
+                            <label class="text-xs font-medium text-gray-600">Anno</label>
+                            <div class="text-sm font-semibold text-gray-900">{{ $artwork['year'] }}</div>
                         </div>
                         @endif
 
-                        {{-- Tecnica --}}
-                        @if($artwork['technique'])
-                        <div>
-                            <label class="text-sm font-medium text-gray-600">Tecnica</label>
-                            <div class="text-lg text-gray-900">{{ $artwork['technique'] }}</div>
-                        </div>
-                        @endif
-
-                        {{-- Materiali --}}
-                        @if($artwork['materials'])
-                        <div>
-                            <label class="text-sm font-medium text-gray-600">Materiali</label>
-                            <div class="text-lg text-gray-900">{{ $artwork['materials'] }}</div>
-                        </div>
-                        @endif
-
-                        {{-- Supporto --}}
-                        @if($artwork['support'])
-                        <div>
-                            <label class="text-sm font-medium text-gray-600">Supporto</label>
-                            <div class="text-lg text-gray-900">{{ $artwork['support'] }}</div>
+                        {{-- COA Traits Box (Tecnica, Materiali, Supporto) --}}
+                        @if($artwork['technique'] || $artwork['materials'] || $artwork['support'])
+                        <div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-4 border border-gray-200">
+                            <h4 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Caratteristiche Tecniche
+                            </h4>
+                            <div class="grid grid-cols-1 gap-3">
+                                @if($artwork['technique'])
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                                    <div>
+                                        <span class="text-xs font-medium text-blue-700">Tecnica:</span>
+                                        <span class="text-sm text-gray-900 ml-1">{{ $artwork['technique'] }}</span>
+                                    </div>
+                                </div>
+                                @endif
+                                
+                                @if($artwork['materials'])
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
+                                    <div>
+                                        <span class="text-xs font-medium text-green-700">Materiali:</span>
+                                        <span class="text-sm text-gray-900 ml-1">{{ $artwork['materials'] }}</span>
+                                    </div>
+                                </div>
+                                @endif
+                                
+                                @if($artwork['support'])
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-amber-500 rounded-full flex-shrink-0"></div>
+                                    <div>
+                                        <span class="text-xs font-medium text-amber-700">Supporto:</span>
+                                        <span class="text-sm text-gray-900 ml-1">{{ $artwork['support'] }}</span>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
                         </div>
                         @endif
 
                         {{-- Dimensioni --}}
                         @if($artwork['dimensions'])
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Dimensioni</label>
-                            <div class="text-lg text-gray-900">{{ $artwork['dimensions'] }}</div>
+                            <label class="text-xs font-medium text-gray-600">Dimensioni</label>
+                            <div class="text-sm font-semibold text-gray-900">{{ $artwork['dimensions'] }}</div>
                         </div>
                         @endif
 
                         {{-- Edizione --}}
                         @if($artwork['edition'])
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Edizione</label>
-                            <div class="text-lg text-gray-900">{{ $artwork['edition'] }}</div>
+                            <label class="text-xs font-medium text-gray-600">Edizione</label>
+                            <div class="text-sm font-semibold text-gray-900">{{ $artwork['edition'] }}</div>
                         </div>
                         @endif
 
                         {{-- Autore --}}
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Autore</label>
-                            <div class="text-lg text-gray-900 font-semibold">{{ $artwork['author'] }}</div>
+                            <label class="text-xs font-medium text-gray-600">Autore</label>
+                            <div class="text-sm font-bold text-gray-900">{{ $artwork['author'] }}</div>
                         </div>
 
                         {{-- Tutti i Traits / Metadati dell'Opera --}}
@@ -197,10 +230,10 @@
                                 Informazioni Aggiuntive
                             </h3>
                             <div class="space-y-3">
-                                @php 
+                                @php
                                     $groupedMetadata = collect($artwork['traits']['metadata'])->groupBy('category');
                                 @endphp
-                                
+
                                 @foreach($groupedMetadata as $category => $items)
                                     <div>
                                         <h4 class="text-xs font-medium text-blue-700 uppercase tracking-wide mb-2">
@@ -307,34 +340,34 @@
                     </div>
 
                     {{-- RIGHT: Dettagli Certificato --}}
-                    <div class="space-y-6">
-                        <h2 class="text-2xl font-bold text-gray-900 border-b pb-2">
+                    <div class="space-y-5">
+                        <h2 class="text-lg font-bold text-gray-900 border-b pb-2">
                             Dettagli Certificato
                         </h2>
 
                         {{-- Data Emissione --}}
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Data Emissione</label>
-                            <div class="text-lg text-gray-900">{{ $certificate['issued_at']->format('d/m/Y') }}</div>
+                            <label class="text-xs font-medium text-gray-600">Data Emissione</label>
+                            <div class="text-sm font-semibold text-gray-900">{{ $certificate['issued_at']->format('d/m/Y') }}</div>
                         </div>
 
                         {{-- Emesso da --}}
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Emesso da</label>
-                            <div class="text-lg text-gray-900">{{ $certificate['issuer_name'] }}</div>
+                            <label class="text-xs font-medium text-gray-600">Emesso da</label>
+                            <div class="text-sm font-semibold text-gray-900">{{ $certificate['issuer_name'] }}</div>
                         </div>
 
                         {{-- Luogo di emissione --}}
                         @if($certificate['issue_location'])
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Luogo di emissione</label>
-                            <div class="text-lg text-gray-900">{{ $certificate['issue_location'] }}</div>
+                            <label class="text-xs font-medium text-gray-600">Luogo di emissione</label>
+                            <div class="text-sm font-semibold text-gray-900">{{ $certificate['issue_location'] }}</div>
                         </div>
                         @endif
 
                         {{-- Firma --}}
                         <div>
-                            <label class="text-sm font-medium text-gray-600">Firma</label>
+                            <label class="text-xs font-medium text-gray-600">Firma</label>
                             <div class="flex items-center space-x-2">
                                 @if($certificate['qes_signature'])
                                     <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">QES</span>

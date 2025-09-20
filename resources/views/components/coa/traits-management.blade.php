@@ -1,14 +1,14 @@
 {{-- CoA Traits Management Component for EGI Show Page --}}
 @props(['egi'])
 
-<div class="coa-traits-management bg-white rounded-lg shadow-sm border border-gray-200 p-6" data-egi-id="{{ $egi->id }}">
+<div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm coa-traits-management" data-egi-id="{{ $egi->id }}">
     {{-- Header --}}
     <div class="flex items-center justify-between mb-6">
         <div>
             <h3 class="text-lg font-semibold text-gray-900">
                 {{ __('coa_traits.management_title') }}
             </h3>
-            <p class="text-sm text-gray-600 mt-1">
+            <p class="mt-1 text-sm text-gray-600">
                 {{ __('coa_traits.management_description') }}
             </p>
         </div>
@@ -43,7 +43,7 @@
 
             {{-- Edit Button --}}
             <button type="button"
-                    class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     onclick="CoaTraitsManager.openModal({{ $egi->id }})">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -54,11 +54,11 @@
     </div>
 
     {{-- Current Traits Display --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {{-- Technique --}}
         <div class="space-y-3">
             <div class="flex items-center">
-                <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                 </svg>
                 <h4 class="text-sm font-medium text-gray-900">{{ __('coa_traits.category_technique') }}</h4>
@@ -68,7 +68,7 @@
                 @if($coaTraits && !empty($coaTraits->technique_slugs))
                     <div class="space-y-2">
                         @foreach($coaTraits->technique_slugs as $slug)
-                            <span class="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-md">
+                            <span class="inline-block px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-md">
                                 {{ __("coa_vocabulary.{$slug}") ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
                             </span>
                         @endforeach
@@ -76,9 +76,9 @@
                 @endif
 
                 @if($coaTraits && !empty($coaTraits->technique_free_text))
-                    <div class="space-y-2 mt-2">
+                    <div class="mt-2 space-y-2">
                         @foreach($coaTraits->technique_free_text as $customText)
-                            <span class="inline-block px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-md">
+                            <span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-amber-100 text-amber-800">
                                 {{ $customText }} <span class="text-xs">({{ __('coa_traits.custom') }})</span>
                             </span>
                         @endforeach
@@ -86,7 +86,7 @@
                 @endif
 
                 @if(!$coaTraits || (empty($coaTraits->technique_slugs) && empty($coaTraits->technique_free_text)))
-                    <p class="text-sm text-gray-500 italic">{{ __('coa_traits.no_technique_selected') }}</p>
+                    <p class="text-sm italic text-gray-500">{{ __('coa_traits.no_technique_selected') }}</p>
                 @endif
             </div>
         </div>
@@ -94,7 +94,7 @@
         {{-- Materials --}}
         <div class="space-y-3">
             <div class="flex items-center">
-                <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.781 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
                 </svg>
                 <h4 class="text-sm font-medium text-gray-900">{{ __('coa_traits.category_materials') }}</h4>
@@ -104,7 +104,7 @@
                 @if($coaTraits && !empty($coaTraits->materials_slugs))
                     <div class="space-y-2">
                         @foreach($coaTraits->materials_slugs as $slug)
-                            <span class="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-md">
+                            <span class="inline-block px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-md">
                                 {{ __("coa_vocabulary.{$slug}") ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
                             </span>
                         @endforeach
@@ -112,9 +112,9 @@
                 @endif
 
                 @if($coaTraits && !empty($coaTraits->materials_free_text))
-                    <div class="space-y-2 mt-2">
+                    <div class="mt-2 space-y-2">
                         @foreach($coaTraits->materials_free_text as $customText)
-                            <span class="inline-block px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-md">
+                            <span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-amber-100 text-amber-800">
                                 {{ $customText }} <span class="text-xs">({{ __('coa_traits.custom') }})</span>
                             </span>
                         @endforeach
@@ -122,7 +122,7 @@
                 @endif
 
                 @if(!$coaTraits || (empty($coaTraits->materials_slugs) && empty($coaTraits->materials_free_text)))
-                    <p class="text-sm text-gray-500 italic">{{ __('coa_traits.no_materials_selected') }}</p>
+                    <p class="text-sm italic text-gray-500">{{ __('coa_traits.no_materials_selected') }}</p>
                 @endif
             </div>
         </div>
@@ -130,7 +130,7 @@
         {{-- Support --}}
         <div class="space-y-3">
             <div class="flex items-center">
-                <svg class="w-5 h-5 text-amber-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/>
                 </svg>
                 <h4 class="text-sm font-medium text-gray-900">{{ __('coa_traits.category_support') }}</h4>
@@ -140,7 +140,7 @@
                 @if($coaTraits && !empty($coaTraits->support_slugs))
                     <div class="space-y-2">
                         @foreach($coaTraits->support_slugs as $slug)
-                            <span class="inline-block px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-md">
+                            <span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-amber-100 text-amber-800">
                                 {{ __("coa_vocabulary.{$slug}") ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
                             </span>
                         @endforeach
@@ -148,9 +148,9 @@
                 @endif
 
                 @if($coaTraits && !empty($coaTraits->support_free_text))
-                    <div class="space-y-2 mt-2">
+                    <div class="mt-2 space-y-2">
                         @foreach($coaTraits->support_free_text as $customText)
-                            <span class="inline-block px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-md">
+                            <span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-amber-100 text-amber-800">
                                 {{ $customText }} <span class="text-xs">({{ __('coa_traits.custom') }})</span>
                             </span>
                         @endforeach
@@ -158,14 +158,14 @@
                 @endif
 
                 @if(!$coaTraits || (empty($coaTraits->support_slugs) && empty($coaTraits->support_free_text)))
-                    <p class="text-sm text-gray-500 italic">{{ __('coa_traits.no_support_selected') }}</p>
+                    <p class="text-sm italic text-gray-500">{{ __('coa_traits.no_support_selected') }}</p>
                 @endif
             </div>
         </div>
     </div>
 
     {{-- Action Buttons --}}
-    <div class="mt-6 pt-4 border-t border-gray-200 flex items-center justify-between">
+    <div class="flex items-center justify-between pt-4 mt-6 border-t border-gray-200">
         <div class="text-sm text-gray-500">
             @if($coaTraits && $coaTraits->last_updated_at)
                 {{ __('coa_traits.last_updated') }}:
@@ -181,7 +181,7 @@
             {{-- Clear All Button --}}
             @if($hasTraits)
                 <button type="button"
-                        class="inline-flex items-center px-3 py-1 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                         onclick="CoaTraitsManager.clearAll({{ $egi->id }})">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -191,7 +191,7 @@
             @endif
 
             {{-- Save Status (hidden initially) --}}
-            <div id="save-status-{{ $egi->id }}" class="hidden items-center text-sm">
+            <div id="save-status-{{ $egi->id }}" class="items-center hidden text-sm">
                 <div class="flex items-center text-green-600">
                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
@@ -418,7 +418,7 @@ window.coaTraitsTranslations = {
             if (items.length === 0) {
                 const messageKey = `no_${category}_selected`;
                 const message = window.coaTraitsTranslations[messageKey] || `No ${category} selected`;
-                displayElement.innerHTML = `<p class="text-sm text-gray-500 italic">${message}</p>`;
+                displayElement.innerHTML = `<p class="text-sm italic text-gray-500">${message}</p>`;
                 return;
             }
 
@@ -441,7 +441,7 @@ window.coaTraitsTranslations = {
                 html += customItems.length > 0 && regularItems.length > 0 ? '<div class="mt-2">' : '';
                 customItems.forEach(item => {
                     const customLabel = window.coaTraitsTranslations.custom || 'custom';
-                    html += `<span class="inline-block px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-md">${item.name} <span class="text-xs">(${customLabel})</span></span>`;
+                    html += `<span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-amber-100 text-amber-800">${item.name} <span class="text-xs">(${customLabel})</span></span>`;
                 });
                 html += customItems.length > 0 && regularItems.length > 0 ? '</div>' : '';
             }

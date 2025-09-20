@@ -348,7 +348,7 @@
                     @foreach(['technique', 'materials', 'support'] as $category)
                         @if(isset($traits_snapshot['coa_traits'][$category]))
                             @php $categoryData = $traits_snapshot['coa_traits'][$category]; @endphp
-                            
+
                             {{-- Vocabulary Terms --}}
                             @if(!empty($categoryData['vocabulary_terms']))
                                 @foreach($categoryData['vocabulary_terms'] as $term)
@@ -358,7 +358,7 @@
                                 </div>
                                 @endforeach
                             @endif
-                            
+
                             {{-- Custom Terms --}}
                             @if(!empty($categoryData['custom_terms']))
                                 @foreach($categoryData['custom_terms'] as $term)
@@ -390,7 +390,7 @@
                     @endforeach
                 @endif
             </div>
-            
+
             {{-- Additional Metadata for Bundle --}}
             @if(isset($traits_snapshot['metadata']) && count($traits_snapshot['metadata']) > 0)
             <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd;">
