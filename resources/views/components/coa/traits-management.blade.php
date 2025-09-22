@@ -1,10 +1,11 @@
 {{-- CoA Traits Management Component for EGI Show Page --}}
 @props(['egi'])
 
-<div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm coa-traits-management" data-egi-id="{{ $egi->id }}">
+<div class="p-4 sm:p-6 bg-white border border-gray-200 rounded-lg shadow-sm coa-traits-management" data-egi-id="{{ $egi->id }}">
     {{-- Header --}}
-    <div class="flex items-center justify-between mb-6">
-        <div>
+    <div class="mb-6">
+        {{-- Title Section --}}
+        <div class="mb-4">
             <h3 class="text-lg font-semibold text-gray-900">
                 {{ __('coa_traits.management_title') }}
             </h3>
@@ -13,7 +14,8 @@
             </p>
         </div>
 
-        <div class="flex items-center space-x-3">
+        {{-- Status and Actions Section --}}
+        <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
             {{-- Status Badge --}}
             @php
                 $coaTraits = $egi->coaTraits;
@@ -27,7 +29,7 @@
                 );
             @endphp
 
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $hasTraits ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium w-fit {{ $hasTraits ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                 @if($hasTraits)
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
@@ -43,18 +45,18 @@
 
             {{-- Edit Button --}}
             <button type="button"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full sm:w-auto"
                     onclick="CoaTraitsManager.openModal({{ $egi->id }})">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
-                {{ __('coa_traits.edit_traits') }}
+                <span class="truncate">{{ __('coa_traits.edit_traits') }}</span>
             </button>
         </div>
     </div>
 
     {{-- Current Traits Display --}}
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {{-- Technique --}}
         <div class="space-y-3">
             <div class="flex items-center">
@@ -79,10 +81,12 @@
                 @if($coaTraits && !empty($coaTraits->technique_free_text))
                     <div class="mt-2 flex flex-wrap gap-2">
                         @foreach($coaTraits->technique_free_text as $customText)
-                            <span class="inline-flex items-center px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full border-2 border-amber-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-                                <span class="mr-1">✨</span>
-                                {{ $customText }}
-                                <span class="ml-1 text-xs opacity-75">(personalizzato)</span>
+                            <span class="inline-flex flex-col items-center px-3 py-2 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg border-2 border-amber-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <div class="flex items-center">
+                                    <span class="mr-1">✨</span>
+                                    <span class="max-w-[120px] truncate">{{ $customText }}</span>
+                                </div>
+                                <span class="text-[10px] opacity-75 mt-0.5">({{ __('coa_traits.custom_short') }})</span>
                             </span>
                         @endforeach
                     </div>
@@ -118,10 +122,12 @@
                 @if($coaTraits && !empty($coaTraits->materials_free_text))
                     <div class="mt-2 flex flex-wrap gap-2">
                         @foreach($coaTraits->materials_free_text as $customText)
-                            <span class="inline-flex items-center px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full border-2 border-amber-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-                                <span class="mr-1">✨</span>
-                                {{ $customText }}
-                                <span class="ml-1 text-xs opacity-75">(personalizzato)</span>
+                            <span class="inline-flex flex-col items-center px-3 py-2 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg border-2 border-amber-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <div class="flex items-center">
+                                    <span class="mr-1">✨</span>
+                                    <span class="max-w-[120px] truncate">{{ $customText }}</span>
+                                </div>
+                                <span class="text-[10px] opacity-75 mt-0.5">({{ __('coa_traits.custom_short') }})</span>
                             </span>
                         @endforeach
                     </div>
@@ -157,10 +163,12 @@
                 @if($coaTraits && !empty($coaTraits->support_free_text))
                     <div class="mt-2 flex flex-wrap gap-2">
                         @foreach($coaTraits->support_free_text as $customText)
-                            <span class="inline-flex items-center px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full border-2 border-amber-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-                                <span class="mr-1">✨</span>
-                                {{ $customText }}
-                                <span class="ml-1 text-xs opacity-75">(personalizzato)</span>
+                            <span class="inline-flex flex-col items-center px-3 py-2 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg border-2 border-amber-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <div class="flex items-center">
+                                    <span class="mr-1">✨</span>
+                                    <span class="max-w-[120px] truncate">{{ $customText }}</span>
+                                </div>
+                                <span class="text-[10px] opacity-75 mt-0.5">({{ __('coa_traits.custom_short') }})</span>
                             </span>
                         @endforeach
                     </div>
@@ -174,7 +182,7 @@
     </div>
 
     {{-- Action Buttons --}}
-    <div class="flex items-center justify-between pt-4 mt-6 border-t border-gray-200">
+    <div class="flex flex-col space-y-3 pt-4 mt-6 border-t border-gray-200 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
         <div class="text-sm text-gray-500">
             @if($hasTraits)
                 @if($coaTraits && $coaTraits->last_updated_at)
@@ -194,12 +202,12 @@
             {{-- Clear All Button --}}
             @if($hasTraits)
                 <button type="button"
-                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        class="inline-flex items-center justify-center px-3 py-1 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 w-full sm:w-auto"
                         onclick="CoaTraitsManager.clearAll({{ $egi->id }})">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
-                    {{ __('coa_traits.clear_all') }}
+                    <span class="truncate">{{ __('coa_traits.clear_all') }}</span>
                 </button>
             @endif
 

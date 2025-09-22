@@ -57,6 +57,7 @@ return [
     'add_custom_technique' => 'Aggiungi Tecnica',
     'add_custom_materials' => 'Aggiungi Materiale',
     'add_custom_support' => 'Aggiungi Supporto',
+    'custom_short' => 'custom',
     'custom_term_placeholder' => 'Inserisci termine personalizzato (max 60 caratteri)',
     'add' => 'Aggiungi',
     'cancel' => 'Annulla',

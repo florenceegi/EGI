@@ -525,10 +525,12 @@ window.VocabularyModalController = (function () {
     }
 
     function updateCustomButtonText(tabName) {
-        const btnTextElement = document.getElementById('addCustomBtnText');
+        const btnTextElement = document.getElementById("addCustomBtnText");
         if (btnTextElement && window.coaTraitsTranslations) {
             const translationKey = `add_custom_${tabName}`;
-            const translatedText = window.coaTraitsTranslations[translationKey] || window.coaTraitsTranslations.add_custom;
+            const translatedText =
+                window.coaTraitsTranslations[translationKey] ||
+                window.coaTraitsTranslations.add_custom;
             btnTextElement.textContent = translatedText;
         }
     }

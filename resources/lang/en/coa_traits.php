@@ -46,6 +46,7 @@ return [
     'add_custom_technique' => 'Add Technique',
     'add_custom_materials' => 'Add Material',
     'add_custom_support' => 'Add Support',
+    'custom_short' => 'custom',
     'custom_term_placeholder' => 'Enter custom term (max 60 characters)',
     'add' => 'Add',
     'cancel' => 'Cancel',
