@@ -712,7 +712,6 @@ class CoaPdfService {
             'bytes' => $size,
             'kind' => $kind,
             'created_at' => now(),
-            'updated_at' => now(),
             // Note: The migration doesn't have these fields, commenting them out
             // 'filename' => $filename,
             // 'annex_id' => $annexId,
