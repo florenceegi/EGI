@@ -41,12 +41,17 @@ return [
     'no_category' => 'Nessuna categoria',
 
     // Modal Vocabolario
-    'terms' => 'termine',
+    'terms' => 'termini',
+    'term' => 'termine',
+    'groups' => 'gruppi',
+    'group' => 'gruppo',
     'modal_title' => 'Seleziona Traits CoA',
     'search_placeholder' => 'Cerca termini...',
     'loading' => 'Caricamento...',
     'selected_items' => 'Elementi Selezionati',
     'no_items_selected' => 'Nessun elemento selezionato',
+    'no_groups_available' => 'Nessun gruppo disponibile',
+    'no_groups_found_for_category' => 'Nessun gruppo trovato per questa categoria',
     'add_custom' => 'Aggiungi Personalizzato',
     'custom_term_placeholder' => 'Inserisci termine personalizzato (max 60 caratteri)',
     'add' => 'Aggiungi',

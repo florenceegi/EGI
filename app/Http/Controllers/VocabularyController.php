@@ -73,7 +73,7 @@ class VocabularyController extends Controller {
         $this->vocabularyService = $vocabularyService;
 
         // Apply web middleware for authenticated EGI management
-        $this->middleware('auth')->except(['getCategories', 'getByCategory', 'search', 'debugSearch']);
+        $this->middleware('auth')->except(['getCategories', 'getByCategory', 'getGroupsByCategory', 'getTermsByGroup', 'search', 'debugSearch']);
     }
 
     /**
@@ -346,6 +346,177 @@ class VocabularyController extends Controller {
 
             return view('components.coa.vocabulary-error', [
                 'error' => 'Errore nella ricerca del vocabolario'
+            ]);
+        }
+    }
+
+    /**
+     * Get vocabulary groups by category for traits modal
+     *
+     * @param Request $request
+     * @param string $category
+     * @return View
+     * @privacy-safe Returns public vocabulary metadata only
+     */
+    public function getGroupsByCategory(Request $request, string $category) {
+        try {
+            $validator = Validator::make(array_merge($request->all(), ['category' => $category]), [
+                'category' => 'required|string|in:technique,materials,support',
+                'locale' => 'sometimes|string|size:2'
+            ]);
+
+            if ($validator->fails()) {
+                return view('components.coa.vocabulary-error', [
+                    'error' => 'Parametri non validi per la categoria'
+                ]);
+            }
+
+            $this->logger->info('[Vocabulary Web] Groups requested for category', [
+                'category' => $category,
+                'user_id' => Auth::id(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'locale' => app()->getLocale(),
+                'is_ajax' => $request->ajax()
+            ]);
+
+            $locale = $request->get('locale', app()->getLocale());
+            $groups = $this->vocabularyService->getGroupsByCategory($category, $locale);
+
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_groups_accessed',
+                    [
+                        'category' => $category,
+                        'groups_count' => count($groups),
+                        'locale' => $locale,
+                        'access_type' => 'modal_interface'
+                    ],
+                    GdprActivityCategory::DATA_ACCESS
+                );
+            }
+
+            $this->logger->info('[Vocabulary Web] Groups retrieved for category', [
+                'category' => $category,
+                'groups_count' => count($groups),
+                'locale' => $locale,
+                'user_id' => Auth::id()
+            ]);
+
+            return view('components.coa.vocabulary-groups', [
+                'groups' => collect($groups),
+                'category' => $category,
+                'locale' => $locale
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('VOCABULARY_WEB_GROUPS_ERROR', [
+                'category' => $category,
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'ip_address' => $request->ip(),
+                'locale' => $request->get('locale'),
+                'timestamp' => now()->toIso8601String()
+            ], $e);
+
+            return view('components.coa.vocabulary-error', [
+                'error' => 'Errore nel caricamento dei gruppi'
+            ]);
+        }
+    }
+
+    /**
+     * Get vocabulary terms by category and group for traits modal
+     *
+     * @param Request $request
+     * @param string $category
+     * @param string $group
+     * @return View
+     * @privacy-safe Returns public vocabulary data only
+     */
+    public function getTermsByGroup(Request $request, string $category, string $group) {
+        try {
+            $validator = Validator::make(array_merge($request->all(), ['category' => $category, 'group' => $group]), [
+                'category' => 'required|string|in:technique,materials,support',
+                'group' => 'required|string|max:50',
+                'search' => 'sometimes|string|max:100',
+                'locale' => 'sometimes|string|size:2'
+            ]);
+
+            if ($validator->fails()) {
+                return view('components.coa.vocabulary-error', [
+                    'error' => 'Parametri non validi per categoria e gruppo'
+                ]);
+            }
+
+            $this->logger->info('[Vocabulary Web] Terms requested for category and group', [
+                'category' => $category,
+                'group' => $group,
+                'search' => $request->get('search'),
+                'user_id' => Auth::id(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'locale' => app()->getLocale(),
+                'is_ajax' => $request->ajax()
+            ]);
+
+            $locale = $request->get('locale', app()->getLocale());
+            $search = $request->get('search');
+
+            // If search is provided, use search with category filter
+            if ($search && strlen(trim($search)) >= 2) {
+                $terms = $this->vocabularyService->search($search, $category, $locale);
+            } else {
+                // Get terms for specific category and group
+                $terms = $this->vocabularyService->getTermsByCategoryAndGroup($category, $group, $locale);
+            }
+
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_group_terms_accessed',
+                    [
+                        'category' => $category,
+                        'group' => $group,
+                        'terms_count' => $terms->count(),
+                        'search_query' => $search,
+                        'locale' => $locale,
+                        'access_type' => 'modal_interface'
+                    ],
+                    GdprActivityCategory::DATA_ACCESS
+                );
+            }
+
+            $this->logger->info('[Vocabulary Web] Terms retrieved for category and group', [
+                'category' => $category,
+                'group' => $group,
+                'terms_count' => $terms->count(),
+                'search_query' => $search,
+                'locale' => $locale,
+                'user_id' => Auth::id()
+            ]);
+
+            return view('components.coa.vocabulary-terms', [
+                'terms' => $terms,
+                'category' => $category,
+                'group' => $group,
+                'search' => $search,
+                'locale' => $locale
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('VOCABULARY_WEB_GROUP_TERMS_ERROR', [
+                'category' => $category,
+                'group' => $group,
+                'search' => $request->get('search'),
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'ip_address' => $request->ip(),
+                'locale' => $request->get('locale'),
+                'timestamp' => now()->toIso8601String()
+            ], $e);
+
+            return view('components.coa.vocabulary-error', [
+                'error' => 'Errore nel caricamento dei termini del gruppo'
             ]);
         }
     }

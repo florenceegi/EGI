@@ -596,4 +596,172 @@ class VocabularyService {
 
         return $searchQuery->get();
     }
+
+    /**
+     * Get vocabulary groups by category for UI selection
+     *
+     * @param string $category The vocabulary category
+     * @param string|null $locale Override locale for translations
+     * @return array
+     * @privacy-safe Returns public vocabulary metadata only
+     *
+     * @oracode-dimension governance
+     * @value-flow Provides group structure for category navigation
+     * @community-impact Enables organized vocabulary browsing
+     * @transparency-level High - complete group transparency
+     * @narrative-coherence Links groups to CoA traits system
+     */
+    public function getGroupsByCategory(string $category, ?string $locale = null): array {
+        try {
+            $this->logger->info('[Vocabulary Service] Retrieving groups by category', [
+                'category' => $category,
+                'locale' => $locale ?? app()->getLocale(),
+                'user_id' => Auth::id(),
+                'ip_address' => request()->ip()
+            ]);
+
+            // Validate category
+            $validCategories = ['technique', 'materials', 'support'];
+            if (!in_array($category, $validCategories)) {
+                $this->errorManager->handle('VOCABULARY_INVALID_CATEGORY', [
+                    'category' => $category,
+                    'valid_categories' => $validCategories,
+                    'user_id' => Auth::id(),
+                    'timestamp' => now()->toIso8601String()
+                ], new \Exception('Invalid vocabulary category'));
+
+                throw new \Exception('Invalid vocabulary category provided.');
+            }
+
+            // Get groups with term counts
+            $groups = VocabularyTerm::select('ui_group')
+                ->selectRaw('COUNT(*) as terms_count')
+                ->where('category', $category)
+                ->whereNotNull('ui_group')
+                ->where('ui_group', '!=', '')
+                ->where('is_active', true)
+                ->groupBy('ui_group')
+                ->orderBy('ui_group')
+                ->get()
+                ->map(function ($item) use ($locale, $category) {
+                    return [
+                        'group' => $item->ui_group,
+                        'name' => $item->ui_group, // Keep original name for now, could be translated later
+                        'count' => $item->terms_count,
+                        'category' => $category,
+                        'slug' => strtolower(str_replace(' ', '-', $item->ui_group))
+                    ];
+                })
+                ->toArray();
+
+            // Log audit trail (only if user is authenticated)
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_groups_accessed',
+                    [
+                        'category' => $category,
+                        'groups_count' => count($groups),
+                        'locale' => $locale ?? app()->getLocale()
+                    ],
+                    GdprActivityCategory::PLATFORM_USAGE
+                );
+            }
+
+            $this->logger->info('[Vocabulary Service] Groups retrieved successfully', [
+                'category' => $category,
+                'groups_count' => count($groups),
+                'user_id' => Auth::id()
+            ]);
+
+            return $groups;
+        } catch (\Exception $e) {
+            $this->errorManager->handle('VOCABULARY_GROUPS_RETRIEVAL_ERROR', [
+                'category' => $category,
+                'locale' => $locale,
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'ip_address' => request()->ip(),
+                'timestamp' => now()->toIso8601String()
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Get vocabulary terms by category and group
+     *
+     * @param string $category The vocabulary category
+     * @param string $group The UI group name
+     * @param string|null $locale Override locale for translations
+     * @return \Illuminate\Support\Collection
+     * @privacy-safe Returns public vocabulary data only
+     */
+    public function getTermsByCategoryAndGroup(string $category, string $group, ?string $locale = null): \Illuminate\Support\Collection {
+        try {
+            $this->logger->info('[Vocabulary Service] Retrieving terms by category and group', [
+                'category' => $category,
+                'group' => $group,
+                'locale' => $locale ?? app()->getLocale(),
+                'user_id' => Auth::id(),
+                'ip_address' => request()->ip()
+            ]);
+
+            // Validate category
+            $validCategories = ['technique', 'materials', 'support'];
+            if (!in_array($category, $validCategories)) {
+                throw new \Exception('Invalid vocabulary category provided.');
+            }
+
+            // Get terms for specific category and group
+            $terms = VocabularyTerm::where('category', $category)
+                ->where('ui_group', $group)
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('slug')
+                ->get();
+
+            // Transform with translations
+            $transformedTerms = $terms->transform(function ($term) use ($locale) {
+                return $this->transformTermWithTranslation($term, $locale);
+            });
+
+            // Log audit trail (only if user is authenticated)
+            if (Auth::check()) {
+                $this->auditService->logUserAction(
+                    Auth::user(),
+                    'vocabulary_group_terms_accessed',
+                    [
+                        'category' => $category,
+                        'group' => $group,
+                        'terms_count' => $transformedTerms->count(),
+                        'locale' => $locale ?? app()->getLocale()
+                    ],
+                    GdprActivityCategory::PLATFORM_USAGE
+                );
+            }
+
+            $this->logger->info('[Vocabulary Service] Group terms retrieved successfully', [
+                'category' => $category,
+                'group' => $group,
+                'terms_count' => $transformedTerms->count(),
+                'user_id' => Auth::id()
+            ]);
+
+            return $transformedTerms;
+        } catch (\Exception $e) {
+            $this->errorManager->handle('VOCABULARY_GROUP_TERMS_RETRIEVAL_ERROR', [
+                'category' => $category,
+                'group' => $group,
+                'locale' => $locale,
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'ip_address' => request()->ip(),
+                'timestamp' => now()->toIso8601String()
+            ], $e);
+
+            throw $e;
+        }
+    }
 }

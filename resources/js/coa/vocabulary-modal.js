@@ -654,15 +654,37 @@ window.VocabularyModalController = (function () {
         },
 
         /**
-         * Load category terms (called by vocabulary-categories component)
+         * Load category groups (called by vocabulary-categories component)
          * @param {string} category - Category slug
          */
         loadCategory: function (category) {
-            console.log("VocabularyModal: Loading category:", category);
+            console.log("VocabularyModal: Loading category groups:", category);
 
-            loadContent(`/vocabulary/category/${category}`, {
+            loadContent(`/vocabulary/category/${category}/groups`, {
                 locale: document.documentElement.lang || "it",
             });
+        },
+
+        /**
+         * Load group terms (called by vocabulary-groups component)
+         * @param {string} category - Category slug
+         * @param {string} group - Group name
+         */
+        loadGroup: function (category, group) {
+            console.log(
+                "VocabularyModal: Loading group terms:",
+                category,
+                group
+            );
+
+            loadContent(
+                `/vocabulary/category/${category}/group/${encodeURIComponent(
+                    group
+                )}`,
+                {
+                    locale: document.documentElement.lang || "it",
+                }
+            );
         },
 
         /**

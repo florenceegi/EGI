@@ -1099,20 +1099,28 @@ Route::get('/vocabulary-test', function () {
     return response()->json(['message' => 'Test senza middleware', 'time' => now()]);
 })->withoutMiddleware('auth');
 
-// Public vocabulary routes (no auth required) 
+// Public vocabulary routes (no auth required)
 Route::prefix('vocabulary')->name('vocabulary.')->withoutMiddleware('auth')->group(function () {
     // Get categories for modal tabs
     Route::get('/categories', [App\Http\Controllers\VocabularyController::class, 'getCategories'])
         ->name('categories');
 
-    // Get terms by category for modal content
+    // Get groups by category for modal group selection
+    Route::get('/category/{category}/groups', [App\Http\Controllers\VocabularyController::class, 'getGroupsByCategory'])
+        ->name('category.groups');
+
+    // Get terms by category and group for modal content
+    Route::get('/category/{category}/group/{group}', [App\Http\Controllers\VocabularyController::class, 'getTermsByGroup'])
+        ->name('category.group');
+
+    // Get terms by category for modal content (legacy, for backwards compatibility)
     Route::get('/category/{category}', [App\Http\Controllers\VocabularyController::class, 'getByCategory'])
         ->name('category');
 
     // Search terms (AJAX endpoint for modal search)
     Route::get('/search', [App\Http\Controllers\VocabularyController::class, 'search'])
         ->name('search');
-        
+
     // Debug search endpoint
     Route::get('/debug-search', [App\Http\Controllers\VocabularyController::class, 'debugSearch'])
         ->name('debug-search');

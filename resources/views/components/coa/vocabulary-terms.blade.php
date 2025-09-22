@@ -79,13 +79,27 @@
                 {{ __('coa_traits.categories') }}
             </button>
             <span class="text-gray-400">›</span>
-            <h3 class="text-lg font-medium text-gray-900">
-                @if($category)
+
+            @if(isset($group) && $group)
+                {{-- When we have a specific group, show the navigation path --}}
+                <button onclick="VocabularyModalController.loadCategory('{{ $category }}')"
+                        class="inline-flex items-center px-2 py-1 text-sm text-gray-600 transition-colors hover:text-gray-900">
                     {{ __('coa_vocabulary.category_' . $category) }}
-                @else
-                    {{ __('coa_traits.search_results') }}
-                @endif
-            </h3>
+                </button>
+                <span class="text-gray-400">›</span>
+                <h3 class="text-lg font-medium text-gray-900">
+                    {{ $group }}
+                </h3>
+            @else
+                {{-- Fallback for direct category access or search results --}}
+                <h3 class="text-lg font-medium text-gray-900">
+                    @if($category)
+                        {{ __('coa_vocabulary.category_' . $category) }}
+                    @else
+                        {{ __('coa_traits.search_results') }}
+                    @endif
+                </h3>
+            @endif
         </div>
 
         @if($search)
