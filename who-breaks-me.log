@@ -1,2 +1,0 @@
-Tried to create request from: http://localhost
-Exception: Class "Illuminate\Http\Request" not found
