@@ -48,6 +48,7 @@ class CoaFile extends Model {
         'path',
         'sha256',
         'bytes',
+        'created_at',
     ];
 
     /**
