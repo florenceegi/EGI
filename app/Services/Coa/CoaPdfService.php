@@ -17,7 +17,10 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Barryvdh\DomPDF\Facade\Pdf;
-// use SimpleSoftwareIO\QrCode\Facades\QrCode; // TODO: Install when needed
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 use Carbon\Carbon;
 
 /**
@@ -39,7 +42,7 @@ class CoaPdfService {
      */
     const PDF_FORMATS = [
         'core' => [
-            'template' => 'coa.pdf.simple', // Temporary simplified template
+            'template' => 'coa.pdf.professional', // Professional template matching HTML design
             'filename' => 'coa-core-{serial}-{timestamp}.pdf',
             'size' => 'A4',
             'orientation' => 'portrait'
@@ -136,8 +139,9 @@ class CoaPdfService {
             $filename = $this->generateFilename('core', $coa);
             $path = $this->savePdfFile($pdf, $filename);
 
-            // Calculate file hash
-            $fileHash = $this->hashingService->hashFile($path);
+            // Calculate file hash - convert storage path to absolute path
+            $absolutePath = Storage::path($path);
+            $fileHash = $this->hashingService->generateFileHash($absolutePath);
             $fileSize = Storage::size($path);
 
             // Store PDF file record
@@ -163,12 +167,18 @@ class CoaPdfService {
                 ], GdprActivityCategory::GDPR_ACTIONS);
             }
 
+            // Read PDF content for response
+            $pdfContent = Storage::get($path);
+
             return [
+                'success' => true,
                 'path' => $path,
                 'filename' => $filename,
-                'size' => $fileSize,
-                'hash' => $fileHash,
-                'file_id' => $coaFile->id
+                'file_size' => $fileSize,
+                'file_hash' => $fileHash,
+                'file_id' => $coaFile->id,
+                'pdf_content' => $pdfContent,
+                'verification_url' => route('coa.verify.certificate', $coa->serial)
             ];
         } catch (AuthorizationException $e) {
             throw $e; // Re-throw auth exceptions
@@ -177,9 +187,13 @@ class CoaPdfService {
                 'user_id' => $user?->id,
                 'coa_id' => $coa->id,
                 'error' => $e->getMessage(),
-                'options' => $options
+                'options_summary' => is_array($options) ? json_encode($options) : (string)$options
             ]);
-            throw $e;
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
         }
     }
 
@@ -240,8 +254,9 @@ class CoaPdfService {
             $filename = $this->generateFilename('bundle', $coa);
             $path = $this->savePdfFile($pdf, $filename);
 
-            // Calculate file hash
-            $fileHash = $this->hashingService->hashFile($path);
+            // Calculate file hash - convert storage path to absolute path
+            $absolutePath = Storage::path($path);
+            $fileHash = $this->hashingService->generateFileHash($absolutePath);
             $fileSize = Storage::size($path);
 
             // Store PDF file record
@@ -391,16 +406,21 @@ class CoaPdfService {
      */
     private function generateVerificationQr(Coa $coa): string {
         try {
-            $verifyUrl = route('verify.certificate', ['serial' => $coa->serial]);
+            // QR code should point to the EGI page, not the certificate verification
+            $egiUrl = config('app.url') . '/egis/' . $coa->egi_id;
 
-            // TODO: Install SimpleSoftwareIO/laravel-qrcode package
-            // $qrCode = QrCode::format('svg')->size(200)->margin(0)->generate($verifyUrl);
-            // return 'data:image/svg+xml;base64,' . base64_encode($qrCode);
+            // Use bacon/bacon-qr-code v3.x with correct class structure
+            $renderer = new ImageRenderer(
+                new RendererStyle(200),
+                new ImagickImageBackEnd()
+            );
+            $writer = new Writer($renderer);
 
-            // Placeholder for now
-            $placeholder = '<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f0f0" stroke="#ccc" stroke-width="2"/><text x="100" y="90" text-anchor="middle" font-size="14">QR Code</text><text x="100" y="110" text-anchor="middle" font-size="12">Package Needed</text><text x="100" y="130" text-anchor="middle" font-size="10">' . $coa->serial . '</text></svg>';
+            // Generate PNG QR code
+            $qrCodeData = $writer->writeString($egiUrl);
 
-            return 'data:image/svg+xml;base64,' . base64_encode($placeholder);
+            // Return base64 encoded PNG
+            return 'data:image/png;base64,' . base64_encode($qrCodeData);
         } catch (\Exception $e) {
             $this->logger->error('[CoA PDF] QR code generation failed', [
                 'coa_id' => $coa->id,
@@ -408,8 +428,9 @@ class CoaPdfService {
                 'error' => $e->getMessage()
             ]);
 
-            // Return placeholder QR code
-            return 'data:image/svg+xml;base64,' . base64_encode('<svg></svg>');
+            // Return placeholder QR code if QR generation fails
+            $placeholder = '<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f0f0" stroke="#ccc" stroke-width="2"/><text x="100" y="80" text-anchor="middle" font-size="12">QR Code</text><text x="100" y="100" text-anchor="middle" font-size="10">EGI: ' . $coa->egi_id . '</text><text x="100" y="120" text-anchor="middle" font-size="8">' . $egiUrl . '</text></svg>';
+            return 'data:image/svg+xml;base64,' . base64_encode($placeholder);
         }
     }
 
@@ -422,22 +443,8 @@ class CoaPdfService {
      * @return bool
      */
     private function canGeneratePdf(Coa $coa, User $user, string $format): bool {
-        // System/admin users can generate any PDF
-        if ($user->hasRole(['admin', 'system'])) {
-            return true;
-        }
-
-        // Owner or creator can generate core PDFs
-        if ($format === 'core') {
-            return $coa->egi->user_id === $user->id || $coa->egi->creator_id === $user->id;
-        }
-
-        // Only owner/creator can generate Pro features (bundle, addendum)
-        if ($format === 'bundle' || $format === 'addendum') {
-            return $coa->egi->user_id === $user->id || $coa->egi->creator_id === $user->id;
-        }
-
-        return false;
+        // Simply check if user has manage_EGI permission
+        return $user->can('manage_EGI');
     }
 
     /**
@@ -466,7 +473,7 @@ class CoaPdfService {
             'title' => $egi->title,
             'description' => $egi->description,
             'creation_date' => $egi->creation_date,
-            'image_url' => $egi->getFirstMediaUrl('images'),
+            'image_url' => $egi->main_image_url,
             'platform_info' => [
                 'name' => 'FlorenceEGI',
                 'url' => config('app.url'),
@@ -698,18 +705,19 @@ class CoaPdfService {
     ): CoaFile {
         return CoaFile::create([
             'coa_id' => $coa->id,
-            'file_path' => $path,
-            'filename' => $filename,
-            'file_hash' => $hash,
-            'file_size' => $size,
+            'path' => $path,
+            'sha256' => $hash,
+            'bytes' => $size,
             'kind' => $kind,
-            'annex_id' => $annexId,
-            'mime_type' => 'application/pdf',
-            'metadata' => [
-                'generated_at' => Carbon::now()->toISOString(),
-                'generator' => 'CoaPdfService',
-                'version' => '1.0'
-            ]
+            // Note: The migration doesn't have these fields, commenting them out
+            // 'filename' => $filename,
+            // 'annex_id' => $annexId,
+            // 'mime_type' => 'application/pdf',
+            // 'metadata' => [
+            //     'generated_at' => Carbon::now()->toISOString(),
+            //     'generator' => 'CoaPdfService',
+            //     'version' => '1.0'
+            // ]
         ]);
     }
 
@@ -726,83 +734,151 @@ class CoaPdfService {
     private function extractAllArtworkMetadata($egi): array {
         $traits = [];
         $metadata = [];
-        $coaTraits = $egi->coaTraits;
-        $hasValidCoaTraits = false;
 
-        if ($coaTraits) {
-            // Check if has any valid CoA traits
-            $hasValidCoaTraits = !empty($coaTraits->technique_slugs) ||
-                !empty($coaTraits->materials_slugs) ||
-                !empty($coaTraits->support_slugs) ||
-                !empty($coaTraits->technique_free_text) ||
-                !empty($coaTraits->materials_free_text) ||
-                !empty($coaTraits->support_free_text);
+        try {
+            $coaTraits = $egi->coaTraits;
+            $hasValidCoaTraits = false;
+
+            if ($coaTraits) {
+                // Check if has any valid CoA traits
+                $hasValidCoaTraits = !empty($coaTraits->technique_slugs) ||
+                    !empty($coaTraits->materials_slugs) ||
+                    !empty($coaTraits->support_slugs) ||
+                    !empty($coaTraits->technique_free_text) ||
+                    !empty($coaTraits->materials_free_text) ||
+                    !empty($coaTraits->support_free_text);
+            }
+        } catch (\Exception $e) {
+            \Log::error('[CoaPdfService] Error accessing coaTraits: ' . $e->getMessage());
+            throw new \Exception('Error accessing coaTraits: ' . $e->getMessage());
         }
 
         if ($hasValidCoaTraits) {
             // Use structured CoA traits
-            $vocabularyTranslations = __('coa_vocabulary');
+            try {
+                $vocabularyTranslations = __('coa_vocabulary') ?? [];
 
-            // Technique traits
-            if (!empty($coaTraits->technique_slugs)) {
-                foreach ($coaTraits->technique_slugs as $slug) {
-                    $traits[] = [
-                        'trait_type' => 'Tecnica',
-                        'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
-                        'category' => 'technique'
-                    ];
+                // Ensure we have an array
+                if (!is_array($vocabularyTranslations)) {
+                    $vocabularyTranslations = [];
+                }
+
+                // Technique traits
+                if (!empty($coaTraits->technique_slugs) && is_array($coaTraits->technique_slugs)) {
+                    foreach ($coaTraits->technique_slugs as $slug) {
+                        if (is_string($slug) && !empty(trim($slug))) {
+                            $traits[] = [
+                                'trait_type' => 'Tecnica',
+                                'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                                'category' => 'technique'
+                            ];
+                        }
+                    }
+                }
+
+                if (!empty($coaTraits->technique_free_text) && is_array($coaTraits->technique_free_text)) {
+                    foreach ($coaTraits->technique_free_text as $text) {
+                        if (is_string($text) && trim($text) !== '') {
+                            $traits[] = [
+                                'trait_type' => 'Tecnica (Custom)',
+                                'value' => $text,
+                                'category' => 'technique'
+                            ];
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                // If translation fails, add fallback handling
+                if (!empty($coaTraits->technique_free_text) && is_array($coaTraits->technique_free_text)) {
+                    foreach ($coaTraits->technique_free_text as $text) {
+                        if (is_string($text) && trim($text) !== '') {
+                            $traits[] = [
+                                'trait_type' => 'Tecnica',
+                                'value' => $text,
+                                'category' => 'technique'
+                            ];
+                        }
+                    }
                 }
             }
 
-            if (!empty($coaTraits->technique_free_text)) {
-                foreach ($coaTraits->technique_free_text as $text) {
-                    $traits[] = [
-                        'trait_type' => 'Tecnica (Custom)',
-                        'value' => $text,
-                        'category' => 'technique'
-                    ];
+            try {
+                // Materials traits
+                if (!empty($coaTraits->materials_slugs) && is_array($coaTraits->materials_slugs)) {
+                    foreach ($coaTraits->materials_slugs as $slug) {
+                        if (is_string($slug) && !empty(trim($slug))) {
+                            $traits[] = [
+                                'trait_type' => 'Materiale',
+                                'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                                'category' => 'materials'
+                            ];
+                        }
+                    }
+                }
+
+                if (!empty($coaTraits->materials_free_text) && is_array($coaTraits->materials_free_text)) {
+                    foreach ($coaTraits->materials_free_text as $text) {
+                        if (is_string($text) && trim($text) !== '') {
+                            $traits[] = [
+                                'trait_type' => 'Materiale (Custom)',
+                                'value' => $text,
+                                'category' => 'materials'
+                            ];
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                // If translation fails, add fallback handling
+                if (!empty($coaTraits->materials_free_text) && is_array($coaTraits->materials_free_text)) {
+                    foreach ($coaTraits->materials_free_text as $text) {
+                        if (is_string($text) && trim($text) !== '') {
+                            $traits[] = [
+                                'trait_type' => 'Materiale',
+                                'value' => $text,
+                                'category' => 'materials'
+                            ];
+                        }
+                    }
                 }
             }
 
-            // Materials traits
-            if (!empty($coaTraits->materials_slugs)) {
-                foreach ($coaTraits->materials_slugs as $slug) {
-                    $traits[] = [
-                        'trait_type' => 'Materiale',
-                        'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
-                        'category' => 'materials'
-                    ];
+            try {
+                // Support traits
+                if (!empty($coaTraits->support_slugs) && is_array($coaTraits->support_slugs)) {
+                    foreach ($coaTraits->support_slugs as $slug) {
+                        if (is_string($slug) && !empty(trim($slug))) {
+                            $traits[] = [
+                                'trait_type' => 'Supporto',
+                                'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
+                                'category' => 'support'
+                            ];
+                        }
+                    }
                 }
-            }
 
-            if (!empty($coaTraits->materials_free_text)) {
-                foreach ($coaTraits->materials_free_text as $text) {
-                    $traits[] = [
-                        'trait_type' => 'Materiale (Custom)',
-                        'value' => $text,
-                        'category' => 'materials'
-                    ];
+                if (!empty($coaTraits->support_free_text) && is_array($coaTraits->support_free_text)) {
+                    foreach ($coaTraits->support_free_text as $text) {
+                        if (is_string($text) && trim($text) !== '') {
+                            $traits[] = [
+                                'trait_type' => 'Supporto (Custom)',
+                                'value' => $text,
+                                'category' => 'support'
+                            ];
+                        }
+                    }
                 }
-            }
-
-            // Support traits
-            if (!empty($coaTraits->support_slugs)) {
-                foreach ($coaTraits->support_slugs as $slug) {
-                    $traits[] = [
-                        'trait_type' => 'Supporto',
-                        'value' => $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug)),
-                        'category' => 'support'
-                    ];
-                }
-            }
-
-            if (!empty($coaTraits->support_free_text)) {
-                foreach ($coaTraits->support_free_text as $text) {
-                    $traits[] = [
-                        'trait_type' => 'Supporto (Custom)',
-                        'value' => $text,
-                        'category' => 'support'
-                    ];
+            } catch (\Exception $e) {
+                // If translation fails, add fallback handling
+                if (!empty($coaTraits->support_free_text) && is_array($coaTraits->support_free_text)) {
+                    foreach ($coaTraits->support_free_text as $text) {
+                        if (is_string($text) && trim($text) !== '') {
+                            $traits[] = [
+                                'trait_type' => 'Supporto',
+                                'value' => $text,
+                                'category' => 'support'
+                            ];
+                        }
+                    }
                 }
             }
 
@@ -836,12 +912,8 @@ class CoaPdfService {
         // Always add EGI description and technical metadata
         $metadata = $this->extractAdditionalMetadata($egi);
 
-        return [
-            'data' => $traits,
-            'metadata' => $metadata,
-            'source_type' => $hasValidCoaTraits ? 'coa_traits' : 'generic_egi',
-            'traits_incomplete' => !$hasValidCoaTraits
-        ];
+        // For PDF templates, return only the traits array directly
+        return $traits;
     }
 
     /**
@@ -958,11 +1030,11 @@ class CoaPdfService {
         }
 
         // Collection information
-        if ($egi->collection && !empty($egi->collection->name)) {
+        if ($egi->collection && !empty($egi->collection->collection_name)) {
             $metadata[] = [
                 'type' => 'collection',
                 'label' => 'Collezione',
-                'value' => $egi->collection->name,
+                'value' => $egi->collection->collection_name,
                 'category' => 'artwork_info'
             ];
         }
