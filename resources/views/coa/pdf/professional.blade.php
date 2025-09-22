@@ -17,10 +17,7 @@
         }
 
         body {
-            font-fami                    <div class="metadata-row">
-                        <span class="metadata-label">{{ __('coa_traits.pdf_size') }}:</span>
-                        <span class="metadata-value">{{ $egi->size ?? 'N/A' }}</span>
-                    </div>'Times New Roman', serif;
+            font-fami <div class="metadata-row"><span class="metadata-label">{{ __('coa_traits.pdf_size') }}: </span> <span class="metadata-value">{{ $egi->size ?? 'N/A' }}</span> </div>'Times New Roman', serif;
             font-size: 10pt;
             line-height: 1.3;
             color: #1a1a1a;
@@ -335,8 +332,9 @@
         <div class="left-col">
             {{-- QR CODE --}}
             <div class="qr-section" style="text-align: center; margin-bottom: 15pt;">
-                <div style="font-weight: bold; margin-bottom: 8pt; color: #8B4513;">{{ __('coa_traits.pdf_qr_code_title') }}</div>
-                @if(isset($qr_code))
+                <div style="font-weight: bold; margin-bottom: 8pt; color: #8B4513;">
+                    {{ __('coa_traits.pdf_qr_code_title') }}</div>
+                @if (isset($qr_code))
                     <div style="display: inline-block; border: 1px solid #ddd; padding: 5pt;">
                         <img src="{{ $qr_code }}" alt="QR Code" style="width: 100pt; height: 100pt;">
                     </div>
@@ -344,7 +342,8 @@
                         {{ __('coa_traits.pdf_scan_to_verify') }}
                     </div>
                 @else
-                    <div style="border: 1px solid #ccc; padding: 20pt; background: #f0f0f0; width: 100pt; height: 100pt; margin: 0 auto;">
+                    <div
+                        style="border: 1px solid #ccc; padding: 20pt; background: #f0f0f0; width: 100pt; height: 100pt; margin: 0 auto;">
                         <div style="color: #666; font-size: 8pt;">{{ __('coa_traits.pdf_qr_not_available') }}</div>
                     </div>
                 @endif
@@ -368,11 +367,13 @@
                     </div>
                     <div class="metadata-row">
                         <span class="metadata-label">{{ __('coa_traits.pdf_upload_date') }}:</span>
-                        <span class="metadata-value">{{ isset($egi->created_at) ? date('d/m/Y H:i', strtotime($egi->created_at)) : __('coa_traits.not_available') }}</span>
+                        <span
+                            class="metadata-value">{{ isset($egi->created_at) ? date('d/m/Y H:i', strtotime($egi->created_at)) : __('coa_traits.not_available') }}</span>
                     </div>
                     <div class="metadata-row">
                         <span class="metadata-label">{{ __('coa_traits.pdf_publication_status') }}:</span>
-                        <span class="metadata-value">{{ !empty($egi->is_published) ? __('coa_traits.pdf_published') : __('coa_traits.pdf_not_published') }}</span>
+                        <span
+                            class="metadata-value">{{ !empty($egi->is_published) ? __('coa_traits.pdf_published') : __('coa_traits.pdf_not_published') }}</span>
                     </div>
                     <div class="metadata-row">
                         <span class="metadata-label">{{ __('coa_traits.pdf_file_size') }}:</span>
@@ -388,7 +389,8 @@
                     </div>
                     <div class="metadata-row">
                         <span class="metadata-label">{{ __('coa_traits.pdf_file_extension') }}:</span>
-                        <span class="metadata-value">{{ $egi->extension ? strtoupper($egi->extension) : __('coa_traits.not_available') }}</span>
+                        <span
+                            class="metadata-value">{{ $egi->extension ? strtoupper($egi->extension) : __('coa_traits.not_available') }}</span>
                     </div>
                 </div>
             </div>
@@ -415,7 +417,8 @@
                     </tr>
                     <tr>
                         <td class="info-label">{{ __('coa_traits.pdf_collection') }}:</td>
-                        <td class="info-value">{{ $egi->collection->collection_name ?? __('coa_traits.no_collection_assigned') }}</td>
+                        <td class="info-value">
+                            {{ $egi->collection->collection_name ?? __('coa_traits.no_collection_assigned') }}</td>
                     </tr>
                 </table>
             </div>

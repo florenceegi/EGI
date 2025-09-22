@@ -42,7 +42,7 @@ class CoaPdfService {
      */
     const PDF_FORMATS = [
         'core' => [
-            'template' => 'coa.pdf.professional', // Professional template matching HTML design
+            'template' => 'coa.pdf.professional_new', // Professional template matching HTML design
             'filename' => 'coa-core-{serial}-{timestamp}.pdf',
             'size' => 'A4',
             'orientation' => 'portrait'
@@ -458,7 +458,8 @@ class CoaPdfService {
      * @param array $options PDF options
      * @return array Prepared data for PDF template
      */
-    private function prepareCorePdfData(Coa $coa, array $options = []): array {
+    private function prepareCorePdfData(Coa $coa, array $options = []): array
+    {
         $egi = $coa->egi()->with(['traits', 'user', 'coaTraits', 'collection'])->first();
 
         return [
@@ -467,8 +468,9 @@ class CoaPdfService {
             'serial' => $coa->serial,
             'issued_at' => $coa->issued_at,
             'verification_hash' => $coa->verification_hash ?? hash('sha256', $coa->serial),
-            'traits_snapshot' => $this->extractAllArtworkMetadata($egi), // NEW: Use enhanced metadata extraction
-            'creator' => $egi->user, // The user who created the EGI
+            'traits_snapshot' => $this->extractAllArtworkMetadata($egi), // Dati per "Caratteristiche Tecniche"
+            'additional_metadata' => $this->extractAdditionalMetadata($egi), // ✨ NUOVI DATI AGGIUNTIVI
+            'creator' => $egi->user,
             'owner' => $egi->user,   // Current owner (same as creator for now)
             'title' => $egi->title,
             'description' => $egi->description,

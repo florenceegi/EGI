@@ -103,10 +103,16 @@ return [
     'pdf_artwork_info' => 'Informazioni Opera',
     'pdf_certificate_details' => 'Dettagli Certificato',
     'pdf_technical_traits' => 'Caratteristiche Tecniche Complete',
+    'pdf_technical_details' => 'Dettagli Tecnici',
 
     // PDF Certificate - Campi
     'pdf_title' => 'Titolo',
     'pdf_author' => 'Autore',
+    'pdf_year' => 'Anno',
+    'pdf_edition' => 'Edizione',
+    'pdf_location' => 'Ubicazione',
+    'pdf_provenance' => 'Provenienza',
+    'pdf_conservation' => 'Stato Conservazione',
     'pdf_issue_date' => 'Data Emissione',
     'pdf_issued_by' => 'Emesso da',
     'pdf_issue_place' => 'Luogo di emissione',
@@ -148,6 +154,17 @@ return [
     'pdf_authorized_signature' => 'Firma Autorizzata',
     'pdf_date_and_stamp' => 'Data e Timbro',
     'pdf_enterprise_footer' => 'Certificato digitale conforme agli standard internazionali per l\'autenticazione di opere d\'arte',
+
+    // PDF Certificate - Sezioni aggiuntive
+    'pdf_certification' => 'Certificazione',
+    'pdf_issuer_signature' => 'Firma Emittente',
+    'pdf_date_stamp' => 'Timbro Data',
+    'pdf_signatures' => 'Firme Autorizzate',
+    'pdf_expert_signature' => 'Firma Esperto',
+    'pdf_owner_signature' => 'Firma Proprietario',
+    'pdf_validate_certificate' => 'Valida Certificato',
+    'pdf_scan_qr_validation' => 'Scansiona il QR code per validare',
+
     // Sezioni del PDF professionale aggiuntive
     'no_title_available' => 'Titolo non disponibile',
     'no_artist_available' => 'Artista non disponibile',
