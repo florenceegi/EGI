@@ -4,15 +4,10 @@
     <meta charset="utf-8">
     <title>{{ __('coa_traits.pdf_certificate_title') }} - {{ $serial }}</title>
     <style>
-        /* ... (stili CSS esistenti, invariati) ... */
-        @font-face { font-family: 'Playfair Display'; src: url('{{ storage_path('fonts/PlayfairDisplay-Bold.ttf') }}') format('truetype'); font-weight: 700; }
-        @font-face { font-family: 'Source Sans Pro'; src: url('{{ storage_path('fonts/SourceSansPro-Regular.ttf') }}') format('truetype'); font-weight: 400; }
-        @font-face { font-family: 'Source Sans Pro'; src: url('{{ storage_path('fonts/SourceSansPro-SemiBold.ttf') }}') format('truetype'); font-weight: 600; }
-        @font-face { font-family: 'JetBrains Mono'; src: url('{{ storage_path('fonts/JetBrainsMono-Regular.ttf') }}') format('truetype'); }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         @page { size: A4; margin: 1.5cm; }
 
-        body { font-family: 'Source Sans Pro', sans-serif; font-weight: 400; font-size: 10pt; line-height: 1.4; color: #1a1a1a; }
+        body { font-family: 'Times New Roman', serif; font-weight: 400; font-size: 10pt; line-height: 1.4; color: #1a1a1a; }
 
         /* ✨ NUOVO BANNER DI VERIFICA */
         .verified-banner {
@@ -27,24 +22,24 @@
         .verified-banner span { font-size: 9pt; font-weight: 400; opacity: 0.9; display: block; margin-top: 2pt; }
 
         .header { text-align: center; padding-bottom: 10pt; border-bottom: 2px solid #1B365D; margin-bottom: 15pt; }
-        .company-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20pt; color: #1B365D; text-transform: uppercase; letter-spacing: 1px; }
+        .company-name { font-family: 'Times New Roman', serif; font-weight: bold; font-size: 20pt; color: #1B365D; text-transform: uppercase; letter-spacing: 1px; }
         .certificate-title { font-size: 12pt; color: #333; margin-top: 5pt; }
-        .serial { font-family: 'JetBrains Mono', monospace; font-size: 10pt; background: #fdfaf6; border: 1px solid #D4A574; color: #333; padding: 4pt 8pt; display: inline-block; margin-top: 10pt; }
+        .serial { font-family: 'Courier New', monospace; font-size: 10pt; background: #fdfaf6; border: 1px solid #D4A574; color: #333; padding: 4pt 8pt; display: inline-block; margin-top: 10pt; }
 
         .section { margin-bottom: 15pt; page-break-inside: avoid; }
-        .section-title { background: #1B365D; color: #fff; padding: 6pt 10pt; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 11pt; text-transform: uppercase; margin-bottom: 5pt; letter-spacing: 0.5px; }
+        .section-title { background: #1B365D; color: #fff; padding: 6pt 10pt; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 11pt; text-transform: uppercase; margin-bottom: 5pt; letter-spacing: 0.5px; }
 
         .info-table { width: 100%; border-collapse: collapse; border: 1px solid #e0e0e0; }
         .info-table td { padding: 5pt 8pt; border-bottom: 1px solid #e0e0e0; font-size: 9.5pt; }
         .info-table tr:last-child td { border-bottom: none; }
         .info-label { font-weight: 600; width: 35%; background: #f9f9f9; }
         .info-value { word-break: break-all; }
-        .hash-value { font-family: 'JetBrains Mono', monospace; font-size: 9pt; }
+        .hash-value { font-family: 'Courier New', monospace; font-size: 9pt; }
 
         /* ✨ STILI PER LA NUOVA SEZIONE METADATI */
         .metadata-subsection-title {
-            font-family: 'Playfair Display', serif;
-            font-weight: 700;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
             font-size: 10pt;
             color: #1B365D;
             border-bottom: 1px solid #e0e0e0;
@@ -57,7 +52,7 @@
         }
 
         .verification { background: #f0f5ed; border: 2px solid #2D5016; padding: 8pt; text-align: center; margin: 20pt 0; }
-        .verification-title { background: #2D5016; color: #fff; padding: 5pt; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 10pt; margin: -8pt -8pt 8pt -8pt; }
+        .verification-title { background: #2D5016; color: #fff; padding: 5pt; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 10pt; margin: -8pt -8pt 8pt -8pt; }
 
         .signature-section { display: table; width: 100%; margin-top: 25pt; page-break-inside: avoid; }
         .signature-box, .stamp-box { display: table-cell; width: 50%; vertical-align: bottom; text-align: center; }
@@ -77,8 +72,8 @@
             padding: 4pt;
         }
         .technical-table th {
-            font-family: 'Source Sans Pro', sans-serif;
-            font-weight: 600;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
             background-color: #f9f9f9;
         }
         .metadata-subsection-table {
@@ -92,8 +87,8 @@
             background-color: #f7f7f7; /* Colore opaco come richiesto */
             text-align: left;
             padding: 5pt 8pt;
-            font-family: 'Playfair Display', serif;
-            font-weight: 700;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
             font-size: 10pt;
             color: #1B365D;
             text-transform: uppercase;
