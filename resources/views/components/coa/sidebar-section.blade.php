@@ -152,7 +152,7 @@
 <script>
 // CoA Certificate Management Functions
 function issueCoaCertificate(egiId) {
-    if (!confirm('{{ __("egi.coa.issue_certificate_confirm") }}')) {
+    if (!confirm('{{ __("coa_traits.issue_certificate_confirm") }}')) {
         return;
     }
 
