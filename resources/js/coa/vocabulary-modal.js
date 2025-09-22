@@ -426,11 +426,11 @@ window.VocabularyModalController = (function () {
                 .join("");
 
             elements.chips.innerHTML = chipsHtml;
-            
+
             // Rimuovi la classe new-chip dopo l'animazione
             setTimeout(() => {
-                const newChips = elements.chips.querySelectorAll('.new-chip');
-                newChips.forEach(chip => chip.classList.remove('new-chip'));
+                const newChips = elements.chips.querySelectorAll(".new-chip");
+                newChips.forEach((chip) => chip.classList.remove("new-chip"));
             }, 1200);
         }
 
