@@ -22,6 +22,8 @@ return [
     'clear_all' => 'Limpar Tudo',
     'saved' => 'Salvo',
     'custom' => 'personalizado',
+    'issue_certificate_confirm' => 'Tem certeza de que deseja emitir o certificado? Você não poderá modificar os traits após a emissão.',
+    'issue_certificate' => 'Emitir Certificado',
 
     // Categorias
     'category_technique' => 'Técnica',

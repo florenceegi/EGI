@@ -66,9 +66,10 @@
 
             <div id="technique-display" class="min-h-[3rem]">
                 @if($coaTraits && !empty($coaTraits->technique_slugs))
-                    <div class="space-y-2">
+                    <div class="flex flex-wrap gap-2">
                         @foreach($coaTraits->technique_slugs as $slug)
-                            <span class="inline-block px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-md">
+                            <span class="inline-flex items-center px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full border-2 border-emerald-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <span class="mr-1">🎨</span>
                                 {{ __("coa_vocabulary.{$slug}") ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
                             </span>
                         @endforeach
@@ -76,10 +77,12 @@
                 @endif
 
                 @if($coaTraits && !empty($coaTraits->technique_free_text))
-                    <div class="mt-2 space-y-2">
+                    <div class="mt-2 flex flex-wrap gap-2">
                         @foreach($coaTraits->technique_free_text as $customText)
-                            <span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-amber-100 text-amber-800">
-                                {{ $customText }} <span class="text-xs">({{ __('coa_traits.custom') }})</span>
+                            <span class="inline-flex items-center px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full border-2 border-amber-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <span class="mr-1">✨</span>
+                                {{ $customText }}
+                                <span class="ml-1 text-xs opacity-75">(personalizzato)</span>
                             </span>
                         @endforeach
                     </div>
@@ -102,9 +105,10 @@
 
             <div id="materials-display" class="min-h-[3rem]">
                 @if($coaTraits && !empty($coaTraits->materials_slugs))
-                    <div class="space-y-2">
+                    <div class="flex flex-wrap gap-2">
                         @foreach($coaTraits->materials_slugs as $slug)
-                            <span class="inline-block px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-md">
+                            <span class="inline-flex items-center px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-purple-500 to-purple-600 rounded-full border-2 border-purple-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <span class="mr-1">🧱</span>
                                 {{ __("coa_vocabulary.{$slug}") ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
                             </span>
                         @endforeach
@@ -112,10 +116,12 @@
                 @endif
 
                 @if($coaTraits && !empty($coaTraits->materials_free_text))
-                    <div class="mt-2 space-y-2">
+                    <div class="mt-2 flex flex-wrap gap-2">
                         @foreach($coaTraits->materials_free_text as $customText)
-                            <span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-amber-100 text-amber-800">
-                                {{ $customText }} <span class="text-xs">({{ __('coa_traits.custom') }})</span>
+                            <span class="inline-flex items-center px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full border-2 border-amber-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <span class="mr-1">✨</span>
+                                {{ $customText }}
+                                <span class="ml-1 text-xs opacity-75">(personalizzato)</span>
                             </span>
                         @endforeach
                     </div>
@@ -138,9 +144,10 @@
 
             <div id="support-display" class="min-h-[3rem]">
                 @if($coaTraits && !empty($coaTraits->support_slugs))
-                    <div class="space-y-2">
+                    <div class="flex flex-wrap gap-2">
                         @foreach($coaTraits->support_slugs as $slug)
-                            <span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-amber-100 text-amber-800">
+                            <span class="inline-flex items-center px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full border-2 border-indigo-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <span class="mr-1">📋</span>
                                 {{ __("coa_vocabulary.{$slug}") ?: ucfirst(str_replace(['_', '-'], ' ', $slug)) }}
                             </span>
                         @endforeach
@@ -148,10 +155,12 @@
                 @endif
 
                 @if($coaTraits && !empty($coaTraits->support_free_text))
-                    <div class="mt-2 space-y-2">
+                    <div class="mt-2 flex flex-wrap gap-2">
                         @foreach($coaTraits->support_free_text as $customText)
-                            <span class="inline-block px-2 py-1 text-xs font-medium rounded-md bg-amber-100 text-amber-800">
-                                {{ $customText }} <span class="text-xs">({{ __('coa_traits.custom') }})</span>
+                            <span class="inline-flex items-center px-4 py-2 text-xs font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full border-2 border-amber-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <span class="mr-1">✨</span>
+                                {{ $customText }}
+                                <span class="ml-1 text-xs opacity-75">(personalizzato)</span>
                             </span>
                         @endforeach
                     </div>
@@ -167,11 +176,15 @@
     {{-- Action Buttons --}}
     <div class="flex items-center justify-between pt-4 mt-6 border-t border-gray-200">
         <div class="text-sm text-gray-500">
-            @if($coaTraits && $coaTraits->last_updated_at)
-                {{ __('coa_traits.last_updated') }}:
-                <time datetime="{{ $coaTraits->last_updated_at->toISOString() }}">
-                    {{ $coaTraits->last_updated_at->format('d/m/Y H:i') }}
-                </time>
+            @if($hasTraits)
+                @if($coaTraits && $coaTraits->last_updated_at)
+                    {{ __('coa_traits.last_updated') }}:
+                    <time datetime="{{ $coaTraits->last_updated_at->toISOString() }}">
+                        {{ $coaTraits->last_updated_at->format('d/m/Y H:i') }}
+                    </time>
+                @else
+                    Tratti configurati
+                @endif
             @else
                 {{ __('coa_traits.never_configured') }}
             @endif

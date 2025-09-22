@@ -22,6 +22,8 @@ return [
     'clear_all' => 'Tout Effacer',
     'saved' => 'Sauvegardé',
     'custom' => 'personnalisé',
+    'issue_certificate_confirm' => 'Êtes-vous sûr de vouloir émettre le certificat ? Vous ne pourrez plus modifier les traits après l\'émission.',
+    'issue_certificate' => 'Émettre le Certificat',
 
     // Categories
     'category_technique' => 'Technique',

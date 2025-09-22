@@ -22,6 +22,8 @@ return [
     'clear_all' => 'Cancella Tutto',
     'saved' => 'Salvato',
     'custom' => 'personalizzato',
+    'issue_certificate_confirm' => 'Sei sicuro di voler emettere il certificato? Non potrai più modificare i traits dopo l\'emissione.',
+    'issue_certificate' => 'Emetti Certificato',
 
     // Categorie
     'technique' => 'Tecnica',

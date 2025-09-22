@@ -22,6 +22,8 @@ return [
     'clear_all' => 'Alles Löschen',
     'saved' => 'Gespeichert',
     'custom' => 'benutzerdefiniert',
+    'issue_certificate_confirm' => 'Sind Sie sicher, dass Sie das Zertifikat ausstellen möchten? Sie können die Eigenschaften nach der Ausstellung nicht mehr ändern.',
+    'issue_certificate' => 'Zertifikat Ausstellen',
 
     // Categories
     'category_technique' => 'Technik',

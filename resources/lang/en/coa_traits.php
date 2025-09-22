@@ -22,6 +22,8 @@ return [
     'clear_all' => 'Clear All',
     'saved' => 'Saved',
     'custom' => 'custom',
+    'issue_certificate_confirm' => 'Are you sure you want to issue the certificate? You will not be able to modify the traits after issuance.',
+    'issue_certificate' => 'Issue Certificate',
 
     // Categories
     'category_technique' => 'Technique',

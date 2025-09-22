@@ -392,30 +392,46 @@ window.VocabularyModalController = (function () {
 
         if (allSelections.length === 0) {
             elements.chips.innerHTML = `
-                <div id="vocabularyChipsEmpty" class="text-sm text-gray-500 italic">
-                    Nessun elemento selezionato
+                <div id="vocabularyChipsEmpty" class="text-sm italic text-gray-500 flex items-center justify-center w-full py-4">
+                    <div class="text-center">
+                        <svg class="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a2 2 0 012-2z"/>
+                        </svg>
+                        <p class="text-gray-500">Nessun tratto selezionato</p>
+                        <p class="text-xs text-gray-400 mt-1">Scegli dalle categorie sopra</p>
+                    </div>
                 </div>
             `;
         } else {
             const chipsHtml = allSelections
                 .map(
                     (item) => `
-                <div class="vocabulary-chip ${
+                <div class="vocabulary-chip new-chip ${
                     item.isCustom ? "custom" : item.category
                 }" data-slug="${item.slug}" data-category="${item.category}">
-                    <span>${item.name}</span>
-                    <svg class="remove-btn" onclick="vocabularyModal.removeSelection('${
-                        item.slug
-                    }', '${item.category}')"
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                    <span class="chip-text">${item.name}</span>
+                    <button class="remove-btn"
+                            onclick="vocabularyModal.removeSelection('${
+                                item.slug
+                            }', '${item.category}')"
+                            title="Rimuovi ${item.name}"
+                            aria-label="Rimuovi ${item.name}">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
             `
                 )
                 .join("");
 
             elements.chips.innerHTML = chipsHtml;
+            
+            // Rimuovi la classe new-chip dopo l'animazione
+            setTimeout(() => {
+                const newChips = elements.chips.querySelectorAll('.new-chip');
+                newChips.forEach(chip => chip.classList.remove('new-chip'));
+            }, 1200);
         }
 
         updateSelectionCount();
@@ -719,36 +735,77 @@ window.VocabularyModalController = (function () {
                 category
             );
 
-            if (category) {
-                // Rimuovi dalla categoria specifica
-                const categorySelections = state.selections[category];
-                if (categorySelections) {
-                    const index = categorySelections.findIndex(
-                        (item) => item.slug === slug
-                    );
-                    if (index >= 0) {
-                        categorySelections.splice(index, 1);
+            // Trova il chip da rimuovere e applica animazione di uscita
+            const chipToRemove = document.querySelector(
+                `.vocabulary-chip[data-slug="${slug}"]`
+            );
+
+            if (chipToRemove) {
+                // Aggiungi classe per animazione di rimozione
+                chipToRemove.classList.add("removing");
+
+                // Aspetta che l'animazione finisca prima di rimuovere dall'array
+                setTimeout(() => {
+                    if (category) {
+                        // Rimuovi dalla categoria specifica
+                        const categorySelections = state.selections[category];
+                        if (categorySelections) {
+                            const index = categorySelections.findIndex(
+                                (item) => item.slug === slug
+                            );
+                            if (index >= 0) {
+                                categorySelections.splice(index, 1);
+                            }
+                        }
+                    } else {
+                        // Cerca e rimuovi da tutte le categorie
+                        Object.keys(state.selections).forEach((cat) => {
+                            const categorySelections = state.selections[cat];
+                            const index = categorySelections.findIndex(
+                                (item) => item.slug === slug
+                            );
+                            if (index >= 0) {
+                                categorySelections.splice(index, 1);
+                            }
+                        });
                     }
-                }
+
+                    updateChipsDisplay();
+
+                    // Aggiorna stati visivi se siamo nel tab giusto
+                    setTimeout(() => {
+                        updateSelectedStatesInView();
+                    }, 50);
+                }, 300); // Aspetta che l'animazione CSS finisca
             } else {
-                // Cerca e rimuovi da tutte le categorie
-                Object.keys(state.selections).forEach((cat) => {
-                    const categorySelections = state.selections[cat];
-                    const index = categorySelections.findIndex(
-                        (item) => item.slug === slug
-                    );
-                    if (index >= 0) {
-                        categorySelections.splice(index, 1);
+                // Fallback se non trova il chip, rimuovi direttamente
+                if (category) {
+                    const categorySelections = state.selections[category];
+                    if (categorySelections) {
+                        const index = categorySelections.findIndex(
+                            (item) => item.slug === slug
+                        );
+                        if (index >= 0) {
+                            categorySelections.splice(index, 1);
+                        }
                     }
-                });
+                } else {
+                    Object.keys(state.selections).forEach((cat) => {
+                        const categorySelections = state.selections[cat];
+                        const index = categorySelections.findIndex(
+                            (item) => item.slug === slug
+                        );
+                        if (index >= 0) {
+                            categorySelections.splice(index, 1);
+                        }
+                    });
+                }
+
+                updateChipsDisplay();
+                setTimeout(() => {
+                    updateSelectedStatesInView();
+                }, 50);
             }
-
-            updateChipsDisplay();
-
-            // Aggiorna stati visivi se siamo nel tab giusto
-            setTimeout(() => {
-                updateSelectedStatesInView();
-            }, 50);
         },
 
         /**
