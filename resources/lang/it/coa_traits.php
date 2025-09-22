@@ -32,6 +32,7 @@ return [
     'category_technique' => 'Tecnica',
     'category_materials' => 'Materiali',
     'category_support' => 'Supporto',
+    'group_description_support' => 'Supporto o superficie su cui è realizzata l\'opera (es. tela, carta, legno, ecc.)',
 
     // Selezioni per Categoria
     'no_technique_selected' => 'Nessuna tecnica selezionata',

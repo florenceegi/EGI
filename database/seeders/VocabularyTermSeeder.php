@@ -289,29 +289,103 @@ class VocabularyTermSeeder extends Seeder {
             ['slug' => 'material-gem-synthetic', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3310],
         ]);
 
+        // MATERIALS — Gemme (estensioni)
+        $terms = array_merge($terms, [
+            // Corindone (famiglia) + varianti commerciali
+            ['slug' => 'material-gem-ruby',            'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3320],
+            ['slug' => 'material-gem-sapphire',        'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3330], // include blu; colori specifici sotto
+            ['slug' => 'material-gem-sapphire-pink',   'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3340],
+            ['slug' => 'material-gem-sapphire-yellow', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3350],
+            ['slug' => 'material-gem-sapphire-green',  'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3360],
+            ['slug' => 'material-gem-sapphire-padparadscha', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3370],
+
+            // Berillo (famiglia) + varietà
+            ['slug' => 'material-gem-beryl',           'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3380],
+            ['slug' => 'material-gem-aquamarine',      'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3390],
+            ['slug' => 'material-gem-morganite',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3400],
+            ['slug' => 'material-gem-heliodor',        'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3410],
+            ['slug' => 'material-gem-goshenite',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3420],
+
+            // Crisoberillo
+            ['slug' => 'material-gem-chrysoberyl',     'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3430],
+            ['slug' => 'material-gem-alexandrite',     'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3440],
+
+            // Granato (famiglia) + varietà principali
+            ['slug' => 'material-gem-garnet',          'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3450],
+            ['slug' => 'material-gem-garnet-almandine', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3460],
+            ['slug' => 'material-gem-garnet-pyrope',   'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3470],
+            ['slug' => 'material-gem-garnet-spessartine', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3480],
+            ['slug' => 'material-gem-garnet-grossular', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3490],
+            ['slug' => 'material-gem-tsavorite',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3500], // grossular Cr
+            ['slug' => 'material-gem-garnet-andradite', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3510],
+            ['slug' => 'material-gem-demantoid',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3520], // andradite V
+
+            // Tormalina (famiglia) + varianti
+            ['slug' => 'material-gem-tourmaline',      'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3530],
+            ['slug' => 'material-gem-rubellite',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3540],
+            ['slug' => 'material-gem-indicolite',      'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3550],
+            ['slug' => 'material-gem-paraiba',         'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3560], // Cu-bearing
+
+            // Altre "classiche"
+            ['slug' => 'material-gem-topaz',           'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3570],
+            ['slug' => 'material-gem-tanzanite',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3580], // zoisite
+            ['slug' => 'material-gem-zircon',          'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3590], // naturale (non CZ)
+            ['slug' => 'material-gem-peridot',         'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3600], // olivina
+            ['slug' => 'material-gem-jadeite',         'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3610],
+            ['slug' => 'material-gem-nephrite',        'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3620],
+            ['slug' => 'material-gem-spinel',          'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3630],
+            ['slug' => 'material-gem-apatite',         'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3640],
+            ['slug' => 'material-gem-kunzite',         'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3650], // spodumene
+            ['slug' => 'material-gem-hiddenite',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3660], // spodumene verde
+
+            // Feldspati ornamentali
+            ['slug' => 'material-gem-moonstone',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3670],
+            ['slug' => 'material-gem-labradorite',     'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3680],
+            ['slug' => 'material-gem-sunstone',        'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3690],
+
+            // Calcedoni & quarzi varietali (se vuoi granularità)
+            ['slug' => 'material-gem-chalcedony',      'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3700],
+            ['slug' => 'material-gem-agate',           'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3710],
+            ['slug' => 'material-gem-carnelian',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3720],
+            ['slug' => 'material-gem-jasper',          'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3730],
+            ['slug' => 'material-gem-chrysoprase',     'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3740],
+
+            // Ornamentali "da banco"
+            ['slug' => 'material-gem-lapis-lazuli',    'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3750],
+            ['slug' => 'material-gem-malachite',       'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3760],
+            ['slug' => 'material-gem-hematite',        'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3770],
+            ['slug' => 'material-gem-obsidian',        'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3780],
+            ['slug' => 'material-gem-jet',             'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3790],
+
+            // Sintetiche / simulanti (richiestissime)
+            ['slug' => 'material-gem-cubic-zirconia',  'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3800], // CZ
+            ['slug' => 'material-gem-moissanite',      'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3810],
+            ['slug' => 'material-gem-lab-grown-diamond', 'category' => 'materials', 'ui_group' => 'Gemme', 'sort_order' => 3820], // diamante sintetico
+        ]);
+
         // MATERIALS - Altri Materiali
         $terms = array_merge($terms, [
-            ['slug' => 'material-leather', 'category' => 'materials', 'ui_group' => 'Altri', 'sort_order' => 3410],
-            ['slug' => 'material-found-objects', 'category' => 'materials', 'ui_group' => 'Altri', 'sort_order' => 3420],
+            ['slug' => 'material-leather', 'category' => 'materials', 'ui_group' => 'Altri', 'sort_order' => 3910],
+            ['slug' => 'material-found-objects', 'category' => 'materials', 'ui_group' => 'Altri', 'sort_order' => 3920],
         ]);
 
         // MATERIALS - Elettronica
         $terms = array_merge($terms, [
-            ['slug' => 'material-electronics-led', 'category' => 'materials', 'ui_group' => 'Elettronica', 'sort_order' => 3510],
-            ['slug' => 'material-electronics-general', 'category' => 'materials', 'ui_group' => 'Elettronica', 'sort_order' => 3520],
+            ['slug' => 'material-electronics-led', 'category' => 'materials', 'ui_group' => 'Elettronica', 'sort_order' => 4010],
+            ['slug' => 'material-electronics-general', 'category' => 'materials', 'ui_group' => 'Elettronica', 'sort_order' => 4020],
         ]);
 
         // MATERIALS - Componenti Gioielleria
         $terms = array_merge($terms, [
-            ['slug' => 'material-metal-wire', 'category' => 'materials', 'ui_group' => 'Componenti', 'sort_order' => 3610],
-            ['slug' => 'material-metal-sheet', 'category' => 'materials', 'ui_group' => 'Componenti', 'sort_order' => 3620],
-            ['slug' => 'material-solder-jewelry', 'category' => 'materials', 'ui_group' => 'Componenti', 'sort_order' => 3630],
+            ['slug' => 'material-metal-wire', 'category' => 'materials', 'ui_group' => 'Componenti', 'sort_order' => 4110],
+            ['slug' => 'material-metal-sheet', 'category' => 'materials', 'ui_group' => 'Componenti', 'sort_order' => 4120],
+            ['slug' => 'material-solder-jewelry', 'category' => 'materials', 'ui_group' => 'Componenti', 'sort_order' => 4130],
         ]);
 
         // MATERIALS - Smalti e Trattamenti
         $terms = array_merge($terms, [
-            ['slug' => 'material-enamel-vitreous', 'category' => 'materials', 'ui_group' => 'Smalti', 'sort_order' => 3710],
-            ['slug' => 'material-patina-oxidation', 'category' => 'materials', 'ui_group' => 'Smalti', 'sort_order' => 3720],
+            ['slug' => 'material-enamel-vitreous', 'category' => 'materials', 'ui_group' => 'Smalti', 'sort_order' => 4210],
+            ['slug' => 'material-patina-oxidation', 'category' => 'materials', 'ui_group' => 'Smalti', 'sort_order' => 4220],
         ]);
 
         // ======================================
@@ -334,6 +408,17 @@ class VocabularyTermSeeder extends Seeder {
             ['slug' => 'support-panel-plywood', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4140],
             ['slug' => 'support-panel-dibond', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4150],
             ['slug' => 'support-acrylic-sheet', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4160],
+            // Pannelli compositi e materiali specifici
+            ['slug' => 'support-panel-foamcore', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4156],
+            ['slug' => 'support-panel-gatorfoam', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4157],
+            ['slug' => 'support-panel-pvc-forex', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4158],
+            ['slug' => 'support-panel-polycarbonate', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4159],
+            ['slug' => 'support-panel-coroplast', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4161],
+            ['slug' => 'support-panel-honeycomb-aluminum', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4162],
+            // Legni specifici
+            ['slug' => 'support-panel-poplar', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4165],
+            ['slug' => 'support-panel-birch', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4166],
+            ['slug' => 'support-panel-oak', 'category' => 'support', 'ui_group' => 'Pannelli', 'sort_order' => 4167],
         ]);
 
         // SUPPORTS - Carte COMPLETE
@@ -353,6 +438,11 @@ class VocabularyTermSeeder extends Seeder {
             ['slug' => 'support-paper-print-rag', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4310],
             ['slug' => 'support-paper-print-baryta', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4320],
             ['slug' => 'support-paper-print-rc', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4330],
+            // Blocchi per xylografia e tecniche di stampa
+            ['slug' => 'support-block-wood', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4335],
+            ['slug' => 'support-block-linoleum', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4336],
+            ['slug' => 'support-plate-photopolymer', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4337],
+            ['slug' => 'support-mount-acrylic-face', 'category' => 'support', 'ui_group' => 'Stampa', 'sort_order' => 4338],
         ]);
 
         // SUPPORTS - Pietre COMPLETE
@@ -362,6 +452,11 @@ class VocabularyTermSeeder extends Seeder {
             ['slug' => 'support-stone-granite', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4430],
             ['slug' => 'support-stone-travertine', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4440],
             ['slug' => 'support-stone-sandstone', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4450],
+            // Pietre aggiuntive
+            ['slug' => 'support-stone-alabaster', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4460],
+            ['slug' => 'support-stone-slate', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4470],
+            ['slug' => 'support-stone-basalt', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4480],
+            ['slug' => 'support-stone-onyx', 'category' => 'support', 'ui_group' => 'Pietre', 'sort_order' => 4490],
         ]);
 
         // SUPPORTS - Metalli
@@ -372,6 +467,28 @@ class VocabularyTermSeeder extends Seeder {
             ['slug' => 'support-metal-steel', 'category' => 'support', 'ui_group' => 'Metalli', 'sort_order' => 4540],
         ]);
 
+        // SUPPORTS - Gioielleria (metalli preziosi e supporti specialistici)
+        $terms = array_merge($terms, [
+            // Lamine, fili, tubi (precious & special)
+            ['slug' => 'support-metal-gold-sheet', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4910],
+            ['slug' => 'support-metal-gold-wire', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4920],
+            ['slug' => 'support-metal-gold-tube', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4930],
+
+            ['slug' => 'support-metal-silver-sterling-sheet', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4940],
+            ['slug' => 'support-metal-silver-sterling-wire', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4950],
+            ['slug' => 'support-metal-silver-sterling-tube', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4960],
+
+            ['slug' => 'support-metal-platinum-sheet', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4970],
+            ['slug' => 'support-metal-platinum-wire', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4980],
+
+            ['slug' => 'support-metal-titanium-sheet', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4990],
+            ['slug' => 'support-metal-titanium-wire', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 4995],
+
+            // Modelli e grezzi
+            ['slug' => 'support-wax-blank', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 5000],
+            ['slug' => 'support-cast-blank', 'category' => 'support', 'ui_group' => 'Gioielleria', 'sort_order' => 5010],
+        ]);
+
         // SUPPORTS - Altri Materiali
         $terms = array_merge($terms, [
             ['slug' => 'support-glass', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4610],
@@ -379,12 +496,32 @@ class VocabularyTermSeeder extends Seeder {
             ['slug' => 'support-leather-hide', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4630],
             ['slug' => 'support-fabric-silk', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4640],
             ['slug' => 'support-fabric-cotton', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4650],
+            // Tessili e vetri aggiuntivi
+            ['slug' => 'support-fabric-linen', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4655],
+            ['slug' => 'support-fabric-wool', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4656],
+            ['slug' => 'support-glass-tempered', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4660],
+            ['slug' => 'support-glass-laminated', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4665],
+            ['slug' => 'support-leather-veg', 'category' => 'support', 'ui_group' => 'Altri', 'sort_order' => 4635],
         ]);
 
         // SUPPORTS - Muro e Affreschi
         $terms = array_merge($terms, [
             ['slug' => 'support-wall', 'category' => 'support', 'ui_group' => 'Affreschi', 'sort_order' => 4710],
             ['slug' => 'support-plaster', 'category' => 'support', 'ui_group' => 'Affreschi', 'sort_order' => 4720],
+            ['slug' => 'support-canvas-marouflage', 'category' => 'support', 'ui_group' => 'Affreschi', 'sort_order' => 4730],
+        ]);
+
+        // SUPPORTS - Mosaico
+        $terms = array_merge($terms, [
+            ['slug' => 'support-mosaic-mesh', 'category' => 'support', 'ui_group' => 'Mosaico', 'sort_order' => 4750],
+            ['slug' => 'support-mosaic-cement-board', 'category' => 'support', 'ui_group' => 'Mosaico', 'sort_order' => 4760],
+            ['slug' => 'support-mosaic-mortar-bed', 'category' => 'support', 'ui_group' => 'Mosaico', 'sort_order' => 4770],
+        ]);
+
+        // SUPPORTS - Scultura (armature e supporti strutturali)
+        $terms = array_merge($terms, [
+            ['slug' => 'support-armature-steel-wire', 'category' => 'support', 'ui_group' => 'Scultura', 'sort_order' => 4850],
+            ['slug' => 'support-armature-aluminum', 'category' => 'support', 'ui_group' => 'Scultura', 'sort_order' => 4860],
         ]);
 
         // SUPPORTS - Digitale

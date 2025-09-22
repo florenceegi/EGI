@@ -192,7 +192,7 @@
 
                             {{-- Group description or sample terms --}}
                             <p class="text-xs text-gray-600 line-clamp-2 leading-relaxed">
-                                {{ __('coa_traits.group_description_' . $category . '_' . strtolower(str_replace(' ', '_', $group['group'])), [], 'Esplora i termini in questo gruppo') }}
+                                Esplora i termini del gruppo {{ $group['group'] }}
                             </p>
                         </div>
 

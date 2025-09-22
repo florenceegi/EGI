@@ -243,6 +243,98 @@ return [
 
     // Leinwände
     'support-canvas-cotton' => 'Baumwollleinwand',
+
+    // ========================================
+    // NEUE SPEZIALISIERTE BILDTRÄGER
+    // ========================================
+
+    // Spezialisierte Paneele
+    'support-panel-polycarbonate' => 'Polykarbonat-Platte',
+    'support-panel-polycarbonate_description' => 'Bildträger aus transparentem und widerstandsfähigem Kunstmaterial, charakterisiert durch hohe Schlagfestigkeit, UV-Schutz und Verwendung für zeitgenössische Kunstwerke.',
+    'support-panel-coroplast' => 'Wellkunststoff-Platte',
+    'support-panel-coroplast_description' => 'Bildträger aus gewelltem Polypropylen, charakterisiert durch Leichtigkeit, Feuchtigkeitsbeständigkeit und Verwendung für temporäre Werke und Ausstellungen.',
+    'support-panel-honeycomb-aluminum' => 'Aluminium-Wabenplatte',
+    'support-panel-honeycomb-aluminum_description' => 'Verbund-Bildträger mit alveolarer Aluminiumstruktur, charakterisiert durch hohe Steifigkeit, außergewöhnliche Leichtigkeit und Verwendung für architektonische Installationen.',
+    'support-panel-poplar' => 'Pappel-Platte',
+    'support-panel-poplar_description' => 'Bildträger aus laminiertem Pappelholz, charakterisiert durch gleichmäßige Maserung, Dimensionsstabilität und Verwendung für traditionelle Tafelmalerei.',
+    'support-panel-birch' => 'Birken-Platte',
+    'support-panel-birch_description' => 'Bildträger aus Birken-Sperrholz, charakterisiert durch glatte Oberfläche, hohe Festigkeit und Verwendung für technisch präzise Werke.',
+    'support-panel-oak' => 'Eichen-Platte',
+    'support-panel-oak_description' => 'Bildträger aus edlem Eichenholz, charakterisiert durch markante Maserung, außergewöhnliche Haltbarkeit und Verwendung für hochwertige Kunstwerke.',
+
+    // Spezialisierte Druckträger
+    'support-block-linoleum' => 'Linoleum-Block',
+    'support-block-linoleum_description' => 'Druckträger aus synthetischem Material, charakterisiert durch gleichmäßige Oberfläche, leichte Bearbeitbarkeit und Verwendung für moderne und didaktische Drucke.',
+    'support-plate-photopolymer' => 'Photopolymer-Platte',
+    'support-plate-photopolymer_description' => 'Druckträger aus lichtempfindlichem Material, charakterisiert durch Detailpräzision, leichte Ätzung und Verwendung für hochwertige Digitaldrucke.',
+    'support-mount-acrylic-face' => 'Acryl-Frontmontage',
+    'support-mount-acrylic-face_description' => 'Trägersystem mit frontaler Acrylplatte, charakterisiert durch UV-Schutz, Glanz und moderne Präsentation für fotografische Drucke.',
+
+    // Metalle für Schmuck
+    'support-metal-gold-tube' => 'Gold-Röhrchen',
+    'support-metal-gold-tube_description' => 'Metallischer Bildträger aus Gold in röhrenförmiger Form, charakterisiert durch Materialedeltkeit, Oxidationsbeständigkeit und Verwendung für künstlerischen Schmuck und kostbare Ornamente.',
+    'support-metal-silver-tube' => 'Silber-Röhrchen',
+    'support-metal-silver-tube_description' => 'Metallischer Bildträger aus Silber in röhrenförmiger Form, charakterisiert durch Formbarkeit, Glanz und Verwendung für eleganten Schmuck und handwerkliche Anwendungen.',
+    'support-metal-copper-tube' => 'Kupfer-Röhrchen',
+    'support-metal-copper-tube_description' => 'Metallischer Bildträger aus Kupfer in röhrenförmiger Form, charakterisiert durch Duktilität, Wärmeleitfähigkeit und Verwendung für künstlerischen Schmuck und dekorative Anwendungen.',
+    'support-metal-bronze-tube' => 'Bronze-Röhrchen',
+    'support-metal-bronze-tube_description' => 'Metallischer Bildträger aus Bronze in röhrenförmiger Form, charakterisiert durch Festigkeit, natürliche Patina und Verwendung für robusten Schmuck und künstlerische Ornamente.',
+    'support-metal-platinum-tube' => 'Platin-Röhrchen',
+    'support-metal-platinum-tube_description' => 'Metallischer Bildträger aus Platin in röhrenförmiger Form, charakterisiert durch Seltenheit, Unveränderlichkeit und Verwendung für Luxusschmuck und Exzellenz-Anwendungen.',
+
+    // Spezialisierte Textilien
+    'support-fabric-linen' => 'Leinen',
+    'support-fabric-linen_description' => 'Textiler Bildträger aus Leinenfasern, charakterisiert durch Festigkeit, natürliche Textur und Verwendung für traditionelle Malerei und textile Kunstwerke.',
+    'support-fabric-cotton' => 'Baumwolle',
+    'support-fabric-cotton_description' => 'Textiler Bildträger aus Baumwollfasern, charakterisiert durch Absorption, Weichheit und Verwendung für Ölmalerei und Mischtechniken.',
+    'support-fabric-silk' => 'Seide',
+    'support-fabric-silk_description' => 'Textiler Bildträger aus Seidenfasern, charakterisiert durch Feinheit, Glanz und Verwendung für delikate Malerei und kostbare Kunstwerke.',
+    'support-fabric-wool' => 'Wolle',
+    'support-fabric-wool_description' => 'Textiler Bildträger aus Wollfasern, charakterisiert durch Dicke, Wärmedämmung und Verwendung für Wandteppiche und traditionelle Textilwerke.',
+    'support-fabric-hemp' => 'Hanf',
+    'support-fabric-hemp_description' => 'Textiler Bildträger aus Hanffasern, charakterisiert durch Robustheit, ökologische Haltbarkeit und Verwendung für alternative und zeitgenössische Kunstwerke.',
+
+    // Spezialisierte Gläser
+    'support-glass-crystal' => 'Kristall',
+    'support-glass-crystal_description' => 'Bildträger aus hochwertigem Kristallglas, charakterisiert durch außergewöhnliche Transparenz, Glanz und Verwendung für luxuriöse Glaskunstwerke.',
+    'support-glass-borosilicate' => 'Borosilikatglas',
+    'support-glass-borosilicate_description' => 'Bildträger aus technischem Glas mit Temperaturschockresistenz, charakterisiert durch Dimensionsstabilität und Verwendung für spezialisierte künstlerische Anwendungen.',
+    'support-glass-optical' => 'Optisches Glas',
+    'support-glass-optical_description' => 'Bildträger aus Glas mit präzisen optischen Eigenschaften, charakterisiert durch Gleichmäßigkeit und Verwendung für Kunstwerke mit Lichteffekten.',
+    'support-glass-tempered' => 'Gehärtetes Glas',
+    'support-glass-tempered_description' => 'Bildträger aus thermisch behandeltem Glas für erhöhte Festigkeit, charakterisiert durch Sicherheit und Verwendung für öffentliche Kunstinstallationen.',
+
+    // Spezialisierte Steine
+    'support-stone-granite' => 'Granit',
+    'support-stone-granite_description' => 'Bildträger aus grobkörnigem Eruptivgestein, charakterisiert durch außergewöhnliche Härte, Witterungsbeständigkeit und Verwendung für monumentale Skulpturen.',
+    'support-stone-basalt' => 'Basalt',
+    'support-stone-basalt_description' => 'Bildträger aus dichtem Vulkangestein, charakterisiert durch dunkle Farbe, Kompaktheit und Verwendung für zeitgenössische Skulpturen und Kunstinstallationen.',
+    'support-stone-quartzite' => 'Quarzit',
+    'support-stone-quartzite_description' => 'Bildträger aus kieselsäurehaltigem metamorphem Gestein, charakterisiert durch Härte, natürliche Adern und Verwendung für raffinierte Skulpturwerke.',
+
+    // Andere spezialisierte Materialien
+    'support-other-composite' => 'Verbundmaterial',
+    'support-other-composite_description' => 'Bildträger aus kombinierten Materialien, charakterisiert durch maßgeschneiderte Eigenschaften, strukturelle Leichtigkeit und Verwendung für zeitgenössische Kunstwerke.',
+    'support-other-carbon-fiber' => 'Kohlenstofffaser',
+    'support-other-carbon-fiber_description' => 'Bildträger aus Hochleistungs-Verbundmaterial, charakterisiert durch extreme Festigkeit, Leichtigkeit und Verwendung für avantgardistische Kunstwerke.',
+
+    // Mosaikträger
+    'support-mosaic-cement-board' => 'Faserzement-Platte',
+    'support-mosaic-cement-board_description' => 'Mosaikträger aus Zement-Faser-Verbundmaterial, charakterisiert durch Dimensionsstabilität, Feuchtigkeitsbeständigkeit und Verwendung für Außenmosaike.',
+    'support-mosaic-honeycomb' => 'Waben-Platte',
+    'support-mosaic-honeycomb_description' => 'Mosaikträger mit alveolarer Struktur, charakterisiert durch Leichtigkeit, Steifigkeit und Verwendung für großformatige Mosaike.',
+
+    // Skulptur-Armierungen
+    'support-sculpture-armature-steel' => 'Stahl-Armierung',
+    'support-sculpture-armature-steel_description' => 'Tragende Stahlstruktur für Skulpturen, charakterisiert durch hohe mechanische Festigkeit und Verwendung für großformatige Skulpturwerke.',
+    'support-armature-aluminum' => 'Aluminium-Armierung',
+    'support-armature-aluminum_description' => 'Tragende Aluminiumstruktur für Skulpturen, charakterisiert durch Leichtigkeit, Korrosionsbeständigkeit und Verwendung für zeitgenössische Skulpturen.',
+
+    // Freskoträger
+    'support-fresco-lime-plaster' => 'Kalkputz',
+    'support-fresco-lime-plaster_description' => 'Traditioneller Freskoträger aus Kalkmörtel, charakterisiert durch Alkalität, kontrollierte Porosität und Verwendung für historische Wandmalereien.',
+    'support-fresco-sand-plaster' => 'Sandputz',
+    'support-fresco-sand-plaster_description' => 'Freskoträger mit sandigem Zuschlagstoff, charakterisiert durch Textur, Haftung und Verwendung für zeitgenössische Wandmalerei-Techniken.',
     'support-canvas-linen' => 'Leinenleinwand',
     'support-canvas-jute' => 'Juteleinwand',
     'support-canvas-hemp' => 'Hanfleinwand',
@@ -253,6 +345,9 @@ return [
     'support-panel-hardboard' => 'Hartfaserplatte',
     'support-panel-plywood' => 'Sperrholz',
     'support-panel-dibond' => 'Dibond',
+    'support-panel-foamcore' => 'Foam Core Platte',
+    'support-panel-gatorfoam' => 'Gator Foam Platte',
+    'support-panel-pvc-forex' => 'PVC Forex Platte',
     'support-acrylic-sheet' => 'Acrylglasplatte',
 
     // Papiere
@@ -270,12 +365,18 @@ return [
     'support-paper-print-baryta' => 'Barytpapier Druck',
     'support-paper-print-rc' => 'RC-Papier Druck',
 
+    // Druckblöcke
+    'support-block-wood' => 'Holzblock Druck',
+    'support-block-linoleum' => 'Linoleumblock',
+
     // Steine
     'support-stone-marble' => 'Marmor',
     'support-stone-limestone' => 'Kalkstein',
     'support-stone-granite' => 'Granit',
     'support-stone-travertine' => 'Travertin',
     'support-stone-sandstone' => 'Sandstein',
+    'support-stone-alabaster' => 'Alabaster',
+    'support-stone-slate' => 'Schiefer',
 
     // Metalle
     'support-metal-copper' => 'Kupfer',
@@ -283,12 +384,29 @@ return [
     'support-metal-aluminum' => 'Aluminium',
     'support-metal-steel' => 'Stahl',
 
+    // Schmuckmetalle
+    'support-metal-gold-sheet' => 'Goldblech',
+    'support-metal-silver-sheet' => 'Silberblech',
+    'support-metal-platinum-sheet' => 'Platinblech',
+    'support-metal-gold-wire' => 'Golddraht',
+    'support-metal-silver-wire' => 'Silberdraht',
+    'support-metal-platinum-wire' => 'Platindraht',
+
     // Andere
     'support-glass' => 'Glas',
     'support-ceramic' => 'Keramik',
     'support-leather-hide' => 'Rohhaut',
     'support-fabric-silk' => 'Seide',
     'support-fabric-cotton' => 'Baumwolle',
+    'support-textile-wool' => 'Wollstoff',
+    'support-textile-polyester' => 'Polyesterstoff',
+    'support-glass-stained' => 'Farbglas',
+    'support-glass-blown' => 'Geblasenes Glas',
+    'support-mosaic-mesh' => 'Mosaiknetz',
+
+    // Skulptur-Gerüste
+    'support-armature-steel-wire' => 'Stahldraht-Gerüst',
+    'support-armature-aluminum-wire' => 'Aluminiumdraht-Gerüst',
 
     // Fresken
     'support-wall' => 'Wand',

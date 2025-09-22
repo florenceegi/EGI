@@ -410,6 +410,98 @@ return [
     // Telas
     'support-canvas-cotton' => 'Tela de algodão',
     'support-canvas-cotton_description' => 'Suporte têxtil de fibra de algodão preparado com primer, caracterizado por trama uniforme, elasticidade moderada e uso padrão para pintura a óleo e acrílica.',
+
+    // ========================================
+    // NOVOS SUPORTES ESPECIALIZADOS
+    // ========================================
+
+    // Painéis especializados
+    'support-panel-polycarbonate' => 'Painel de policarbonato',
+    'support-panel-polycarbonate_description' => 'Suporte de material sintético transparente e resistente, caracterizado por alta resistência a impactos, proteção UV e uso para obras de arte contemporânea.',
+    'support-panel-coroplast' => 'Painel de papelão corrugado plástico',
+    'support-panel-coroplast_description' => 'Suporte de polipropileno corrugado, caracterizado por leveza, resistência à umidade e uso para obras temporárias e exposições.',
+    'support-panel-honeycomb-aluminum' => 'Painel de favo de mel de alumínio',
+    'support-panel-honeycomb-aluminum_description' => 'Suporte composto com estrutura alveolar de alumínio, caracterizado por alta rigidez, leveza excepcional e uso para instalações arquitetônicas.',
+    'support-panel-poplar' => 'Painel de álamo',
+    'support-panel-poplar_description' => 'Suporte de madeira de álamo laminado, caracterizado por grão uniforme, estabilidade dimensional e uso para pintura sobre tábua tradicional.',
+    'support-panel-birch' => 'Painel de bétula',
+    'support-panel-birch_description' => 'Suporte de madeira de bétula compensado, caracterizado por superfície lisa, alta resistência e uso para obras de precisão técnica.',
+    'support-panel-oak' => 'Painel de carvalho',
+    'support-panel-oak_description' => 'Suporte de madeira de carvalho nobre, caracterizado por veios distintivos, durabilidade excepcional e uso para obras de arte de alto valor.',
+
+    // Suportes de impressão especializados
+    'support-block-linoleum' => 'Bloco de linóleo',
+    'support-block-linoleum_description' => 'Suporte de gravura em material sintético, caracterizado por superfície uniforme, facilidade de corte e uso para estampas modernas e didáticas.',
+    'support-plate-photopolymer' => 'Placa de fotopolímero',
+    'support-plate-photopolymer_description' => 'Suporte de impressão em material fotossensível, caracterizado por precisão em detalhes, facilidade de gravação e uso para impressões digitais de qualidade.',
+    'support-mount-acrylic-face' => 'Montagem acrílica frontal',
+    'support-mount-acrylic-face_description' => 'Sistema de suporte com placa acrílica frontal, caracterizado por proteção UV, brilho e apresentação moderna para impressões fotográficas.',
+
+    // Metais para joalheria
+    'support-metal-gold-tube' => 'Tubo de ouro',
+    'support-metal-gold-tube_description' => 'Suporte metálico de ouro em forma tubular, caracterizado por nobreza do material, resistência à oxidação e uso para joalheria artística e ornamentos preciosos.',
+    'support-metal-silver-tube' => 'Tubo de prata',
+    'support-metal-silver-tube_description' => 'Suporte metálico de prata em forma tubular, caracterizado por maleabilidade, brilho e uso para joalheria elegante e aplicações artesanais.',
+    'support-metal-copper-tube' => 'Tubo de cobre',
+    'support-metal-copper-tube_description' => 'Suporte metálico de cobre em forma tubular, caracterizado por ductilidade, condutividade térmica e uso para joalheria artística e aplicações decorativas.',
+    'support-metal-bronze-tube' => 'Tubo de bronze',
+    'support-metal-bronze-tube_description' => 'Suporte metálico de bronze em forma tubular, caracterizado por resistência, pátina natural e uso para joalheria robusta e ornamentos artísticos.',
+    'support-metal-platinum-tube' => 'Tubo de platina',
+    'support-metal-platinum-tube_description' => 'Suporte metálico de platina em forma tubular, caracterizado por raridade, inalterabilidade e uso para joalheria de luxo e aplicações de excelência.',
+
+    // Tecidos especializados
+    'support-fabric-linen' => 'Linho',
+    'support-fabric-linen_description' => 'Suporte têxtil de fibras de linho, caracterizado por resistência, textura natural e uso para pinturas tradicionais e obras de arte têxtil.',
+    'support-fabric-cotton' => 'Algodão',
+    'support-fabric-cotton_description' => 'Suporte têxtil de fibras de algodão, caracterizado por absorção, maciez e uso para pinturas a óleo e técnicas mistas.',
+    'support-fabric-silk' => 'Seda',
+    'support-fabric-silk_description' => 'Suporte têxtil de fibras de seda, caracterizado por finura, brilho e uso para pinturas delicadas e obras de arte preciosas.',
+    'support-fabric-wool' => 'Lã',
+    'support-fabric-wool_description' => 'Suporte têxtil de fibras de lã, caracterizado por espessura, isolamento térmico e uso para tapeçarias e obras têxteis tradicionais.',
+    'support-fabric-hemp' => 'Cânhamo',
+    'support-fabric-hemp_description' => 'Suporte têxtil de fibras de cânhamo, caracterizado por robustez, durabilidade ecológica e uso para obras de arte alternativas e contemporâneas.',
+
+    // Vidros especializados
+    'support-glass-crystal' => 'Cristal',
+    'support-glass-crystal_description' => 'Suporte de vidro cristalino de alta qualidade, caracterizado por transparência excepcional, brilho e uso para obras de arte vidreira de luxo.',
+    'support-glass-borosilicate' => 'Vidro borossilicato',
+    'support-glass-borosilicate_description' => 'Suporte de vidro técnico resistente a choques térmicos, caracterizado por estabilidade dimensional e uso para aplicações artísticas especializadas.',
+    'support-glass-optical' => 'Vidro óptico',
+    'support-glass-optical_description' => 'Suporte de vidro com propriedades ópticas precisas, caracterizado por uniformidade e uso para obras de arte que incorporam efeitos luminosos.',
+    'support-glass-tempered' => 'Vidro temperado',
+    'support-glass-tempered_description' => 'Suporte de vidro tratado termicamente para maior resistência, caracterizado por segurança e uso para instalações artísticas públicas.',
+
+    // Pedras especializadas
+    'support-stone-granite' => 'Granito',
+    'support-stone-granite_description' => 'Suporte de pedra ígnea de grão grosso, caracterizado por dureza excepcional, resistência a agentes atmosféricos e uso para esculturas monumentais.',
+    'support-stone-basalt' => 'Basalto',
+    'support-stone-basalt_description' => 'Suporte de pedra vulcânica densa, caracterizado por cor escura, compacidade e uso para esculturas contemporâneas e instalações artísticas.',
+    'support-stone-quartzite' => 'Quartzito',
+    'support-stone-quartzite_description' => 'Suporte de rocha metamórfica silicosa, caracterizado por dureza, veios naturais e uso para obras esculturais refinadas.',
+
+    // Outros materiais especializados
+    'support-other-composite' => 'Material compósito',
+    'support-other-composite_description' => 'Suporte constituído por materiais combinados, caracterizado por propriedades sob medida, leveza estrutural e uso para obras de arte contemporânea.',
+    'support-other-carbon-fiber' => 'Fibra de carbono',
+    'support-other-carbon-fiber_description' => 'Suporte de material compósito de alto desempenho, caracterizado por resistência extrema, leveza e uso para obras de arte vanguardistas.',
+
+    // Suportes para mosaico
+    'support-mosaic-cement-board' => 'Painel de fibrocimento',
+    'support-mosaic-cement-board_description' => 'Suporte para mosaico de material compósito cimento-fibra, caracterizado por estabilidade dimensional, resistência à umidade e uso para mosaicos exteriores.',
+    'support-mosaic-honeycomb' => 'Painel de favo de mel',
+    'support-mosaic-honeycomb_description' => 'Suporte para mosaico de estrutura alveolar, caracterizado por leveza, rigidez e uso para mosaicos de grandes dimensões.',
+
+    // Armaduras para escultura
+    'support-sculpture-armature-steel' => 'Armadura de aço',
+    'support-sculpture-armature-steel_description' => 'Estrutura portante de aço para escultura, caracterizada por alta resistência mecânica e uso para obras esculturais de grande porte.',
+    'support-armature-aluminum' => 'Armadura de alumínio',
+    'support-armature-aluminum_description' => 'Estrutura portante de alumínio para escultura, caracterizada por leveza, resistência à corrosão e uso para esculturas contemporâneas.',
+
+    // Suportes para afresco
+    'support-fresco-lime-plaster' => 'Reboco de cal',
+    'support-fresco-lime-plaster_description' => 'Suporte tradicional para afresco de argamassa de cal, caracterizado por alcalinidade, porosidade controlada e uso para pinturas murais históricas.',
+    'support-fresco-sand-plaster' => 'Reboco arenoso',
+    'support-fresco-sand-plaster_description' => 'Suporte para afresco com agregado arenoso, caracterizado por textura, aderência e uso para técnicas de pintura mural contemporânea.',
     'support-canvas-linen' => 'Tela de linho',
     'support-canvas-linen_description' => 'Suporte têxtil premium de fibra de linho, caracterizado por resistência superior, estabilidade dimensional excelente e superfície fina para obras de conservação.',
     'support-canvas-jute' => 'Tela de juta',
@@ -428,6 +520,12 @@ return [
     'support-panel-plywood_description' => 'Suporte multicamadas de folhas de madeira coladas, caracterizado por resistência estrutural, estabilidade dimensional e uso para obras de grande formato.',
     'support-panel-dibond' => 'Dibond',
     'support-panel-dibond_description' => 'Painel compósito de alumínio-polietileno, caracterizado por leveza, planicidade perfeita e resistência a agentes atmosféricos para instalações externas.',
+    'support-panel-foamcore' => 'Painel Foam Core',
+    'support-panel-foamcore_description' => 'Painel sanduíche com alma de poliestireno expandido e revestimento de papel, caracterizado por leveza extrema e uso para modelismo e apresentações.',
+    'support-panel-gatorfoam' => 'Painel Gator Foam',
+    'support-panel-gatorfoam_description' => 'Painel rígido com alma de poliestireno e revestimento de resina, caracterizado por superfície lisa, resistência e uso para impressões e montagem.',
+    'support-panel-pvc-forex' => 'Painel PVC Forex',
+    'support-panel-pvc-forex_description' => 'Painel de PVC expandido, caracterizado por impermeabilidade, leveza e facilidade de usinagem para sinalização e decoração.',
     'support-acrylic-sheet' => 'Placa de acrílico',
     'support-acrylic-sheet_description' => 'Suporte de polimetilmetacrilato transparente ou opaco, caracterizado por trabalhabilidade, resistência a raios UV e possibilidade de efeitos ópticos contemporâneos.',
 
@@ -457,6 +555,12 @@ return [
     'support-paper-print-rc' => 'Papel RC para impressão',
     'support-paper-print-rc_description' => 'Suporte fotográfico com base plastificada, caracterizado por processamento rápido, resistência à umidade e uso para impressões comerciais e provas.',
 
+    // Blocos de impressão
+    'support-block-wood' => 'Bloco de madeira para impressão',
+    'support-block-wood_description' => 'Suporte xilográfico em madeira de fibra ou contra-fibra, caracterizado por dureza variável, direção do veio e uso para impressão artística tradicional.',
+    'support-block-linoleum' => 'Bloco de linóleo',
+    'support-block-linoleum_description' => 'Suporte de gravura em material sintético, caracterizado por superfície uniforme, facilidade de corte e uso para estampas modernas e didáticas.',
+
     // Pedras
     'support-stone-marble' => 'Mármore',
     'support-stone-marble_description' => 'Suporte escultural de rocha metamórfica calcária, caracterizado por dureza média, excelente polimento e tradição escultórica clássica para estátuas.',
@@ -468,6 +572,10 @@ return [
     'support-stone-travertine_description' => 'Suporte escultural de rocha calcária sedimentar, caracterizado por textura porosa, trabalhabilidade média e uso arquitetônico e escultural tradicional.',
     'support-stone-sandstone' => 'Arenito',
     'support-stone-sandstone_description' => 'Suporte escultural sedimentar, caracterizado por granulometria variável, facilidade de corte e uso para escultura decorativa e arquitetônica.',
+    'support-stone-alabaster' => 'Alabastro',
+    'support-stone-alabaster_description' => 'Suporte escultural de rocha sedimentar translúcida, caracterizado por delicadeza, trabalhabilidade fina e uso para esculturas decorativas e ornamentais.',
+    'support-stone-slate' => 'Ardósia',
+    'support-stone-slate_description' => 'Suporte escultural de rocha metamórfica lamelar, caracterizado por clivagem natural, superfície lisa e uso para gravuras e baixo-relevos.',
 
     // Metais
     'support-metal-copper' => 'Cobre',
@@ -478,6 +586,20 @@ return [
     'support-metal-aluminum_description' => 'Suporte metálico leve para escultura moderna, caracterizado por resistência à corrosão, leveza e possibilidade de anodização colorida.',
     'support-metal-steel' => 'Aço',
     'support-metal-steel_description' => 'Suporte metálico estrutural para escultura, caracterizado por alta resistência mecânica, soldabilidade e uso para obras monumentais e industriais.',
+
+    // Metais para joalheria
+    'support-metal-gold-sheet' => 'Folha de ouro',
+    'support-metal-gold-sheet_description' => 'Suporte metálico precioso em folha delgada, caracterizado por maleabilidade extrema, inalterabilidade e uso para joalheria e decorações de prestígio.',
+    'support-metal-silver-sheet' => 'Folha de prata',
+    'support-metal-silver-sheet_description' => 'Suporte metálico precioso em folha delgada, caracterizado por excelente trabalhabilidade, brilho natural e uso para prataria e joalheria artística.',
+    'support-metal-platinum-sheet' => 'Folha de platina',
+    'support-metal-platinum-sheet_description' => 'Suporte metálico nobre em folha delgada, caracterizado por inalterabilidade absoluta, resistência química e uso para joalheria de alta categoria.',
+    'support-metal-gold-wire' => 'Fio de ouro',
+    'support-metal-gold-wire_description' => 'Suporte metálico precioso filamentoso, caracterizado por ductilidade extrema, condutividade elétrica e uso para filigrana e trabalhos de cinzeladura.',
+    'support-metal-silver-wire' => 'Fio de prata',
+    'support-metal-silver-wire_description' => 'Suporte metálico precioso filamentoso, caracterizado por alta flexibilidade, propriedades antimicrobianas e uso para joalheria tradicional.',
+    'support-metal-platinum-wire' => 'Fio de platina',
+    'support-metal-platinum-wire_description' => 'Suporte metálico nobre filamentoso, caracterizado por estabilidade química, resistência térmica e uso para joalheria científica e de precisão.',
 
     // Outros
     'support-glass' => 'Vidro',
@@ -490,6 +612,22 @@ return [
     'support-fabric-silk_description' => 'Suporte têxtil nobre, caracterizado por superfície lisa, brilho natural e uso tradicional para pintura oriental e tapeçarias finas.',
     'support-fabric-cotton' => 'Algodão',
     'support-fabric-cotton_description' => 'Suporte têxtil versátil, caracterizado por absorção controlada, facilidade de preparação e uso para pintura em tecido e banners artísticos.',
+    'support-textile-wool' => 'Têxtil de lã',
+    'support-textile-wool_description' => 'Suporte têxtil de fibra animal, caracterizado por isolamento térmico, absorção natural e uso para tapeçarias tradicionais e obras têxteis.',
+    'support-textile-polyester' => 'Têxtil de poliéster',
+    'support-textile-polyester_description' => 'Suporte têxtil sintético, caracterizado por resistência ao rasgo, estabilidade dimensional e uso para banners externos e instalações temporárias.',
+    'support-glass-stained' => 'Vidro colorido',
+    'support-glass-stained_description' => 'Suporte vítreo pigmentado na massa, caracterizado por cores permanentes, transmissão luminosa seletiva e uso para vitrais artísticos tradicionais.',
+    'support-glass-blown' => 'Vidro soprado',
+    'support-glass-blown_description' => 'Suporte vítreo trabalhado a quente, caracterizado por formas orgânicas, espessuras variáveis e uso para esculturas luminosas e instalações artísticas.',
+    'support-mosaic-mesh' => 'Malha para mosaico',
+    'support-mosaic-mesh_description' => 'Suporte têxtil ou sintético para pastilhas, caracterizado por malha regular, flexibilidade controlada e uso para facilitar assentamento e transporte de mosaicos.',
+
+    // Armaduras para escultura
+    'support-armature-steel-wire' => 'Armadura de arame de aço',
+    'support-armature-steel-wire_description' => 'Estrutura portante metálica para escultura, caracterizada por resistência mecânica, flexibilidade de modelagem e uso para obras em argila e gesso.',
+    'support-armature-aluminum-wire' => 'Armadura de arame de alumínio',
+    'support-armature-aluminum-wire_description' => 'Estrutura portante leve para escultura, caracterizada por resistência à corrosão, maleabilidade e uso para modelagem de pequenas e médias dimensões.',
 
     // Frescos (Afrescos)
     'support-wall' => 'Parede',
