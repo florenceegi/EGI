@@ -122,7 +122,7 @@
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                             </svg>
-                            {{ __('coa_traits.add_custom') }}
+                            <span id="addCustomBtnText">{{ __('coa_traits.add_custom') }}</span>
                         </button>
 
                         {{-- Custom Term Input (initially hidden) --}}
@@ -543,6 +543,14 @@
 {{-- Initialize Modal on Load --}}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Pass translations to JavaScript
+    window.coaTraitsTranslations = {
+        add_custom_technique: '{{ __('coa_traits.add_custom_technique') }}',
+        add_custom_materials: '{{ __('coa_traits.add_custom_materials') }}',
+        add_custom_support: '{{ __('coa_traits.add_custom_support') }}',
+        add_custom: '{{ __('coa_traits.add_custom') }}'
+    };
+
     // Initialize vocabulary modal if not already initialized
     if (typeof window.vocabularyModal === 'undefined') {
         console.log('VocabularyModal: Loading modal controller...');

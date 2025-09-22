@@ -15,6 +15,12 @@ class EgiCoaTrait extends Model {
         'technique_slugs',
         'materials_slugs',
         'support_slugs',
+        'technique_free_text',
+        'materials_free_text',
+        'support_free_text',
+        'last_updated_at',
+        'updated_by_user_id',
+        // Backward compatibility (deprecated)
         'technique_other',
         'materials_other',
         'support_other',
@@ -24,6 +30,10 @@ class EgiCoaTrait extends Model {
         'technique_slugs' => 'array',
         'materials_slugs' => 'array',
         'support_slugs' => 'array',
+        'technique_free_text' => 'array',
+        'materials_free_text' => 'array',
+        'support_free_text' => 'array',
+        'last_updated_at' => 'datetime',
     ];
 
     // ========================================

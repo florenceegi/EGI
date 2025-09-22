@@ -519,6 +519,18 @@ window.VocabularyModalController = (function () {
         setTimeout(() => {
             updateSelectedStatesInView();
         }, 100);
+
+        // Update custom button text based on current tab
+        updateCustomButtonText(tabName);
+    }
+
+    function updateCustomButtonText(tabName) {
+        const btnTextElement = document.getElementById('addCustomBtnText');
+        if (btnTextElement && window.coaTraitsTranslations) {
+            const translationKey = `add_custom_${tabName}`;
+            const translatedText = window.coaTraitsTranslations[translationKey] || window.coaTraitsTranslations.add_custom;
+            btnTextElement.textContent = translatedText;
+        }
     }
 
     function updateSelectedStatesInView() {
