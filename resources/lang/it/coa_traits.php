@@ -96,4 +96,100 @@ return [
         'modal_not_ready' => 'Il sistema di selezione vocabolario non è ancora caricato. Riprova tra qualche secondo.',
         'modal_malfunction' => 'Errore nel sistema di selezione. Ricarica la pagina e riprova.',
     ],
+
+    // PDF Certificate - Titoli e Sezioni
+    'pdf_certificate_title' => 'Certificato di Autenticità',
+    'pdf_public_verification' => 'Visualizzazione Pubblica di Verifica',
+    'pdf_artwork_info' => 'Informazioni Opera',
+    'pdf_certificate_details' => 'Dettagli Certificato',
+    'pdf_technical_traits' => 'Caratteristiche Tecniche Complete',
+
+    // PDF Certificate - Campi
+    'pdf_title' => 'Titolo',
+    'pdf_author' => 'Autore',
+    'pdf_issue_date' => 'Data Emissione',
+    'pdf_issued_by' => 'Emesso da',
+    'pdf_issue_place' => 'Luogo di emissione',
+    'pdf_status' => 'Stato',
+    'pdf_status_valid' => 'Valido',
+    'pdf_hash_title' => 'Hash del certificato (SHA-256)',
+    'pdf_last_update' => 'Ultimo aggiornamento',
+
+    // PDF Certificate - Banner e Footer
+    'pdf_verified_banner' => 'Certificato Verificato e Autentico',
+    'pdf_verified_on' => 'Verificato il',
+    'pdf_powered_by' => 'Powered by FlorenceEGI',
+    'pdf_verification_timestamp' => 'Timestamp di Verifica',
+
+    // PDF Certificate - Luoghi
+    // PDF Certificate - Luoghi
+    'pdf_florence_italy' => 'Firenze, Italia',
+
+    // PDF Certificate - Nuove chiavi professionali
+    'pdf_company_name' => 'FlorenceEGI',
+    'pdf_artwork_image' => 'Immagine Opera',
+    'pdf_image_not_available' => 'Immagine non disponibile',
+    'pdf_qr_verification' => 'Scansiona per verificare online',
+    'pdf_technical_metadata' => 'Metadata Tecnici',
+    'pdf_creation_date' => 'Data Creazione',
+    'pdf_internal_id' => 'ID Interno',
+    'pdf_certificate_type' => 'Tipo Certificato',
+    'pdf_core_certificate' => 'Certificato Base',
+    'pdf_blockchain_status' => 'Stato Blockchain',
+    'pdf_verified_on_chain' => 'Verificato su Blockchain',
+    'pdf_description' => 'Descrizione',
+    'pdf_collection' => 'Collezione',
+    'pdf_no_collection' => 'Nessuna collezione',
+    'pdf_validity' => 'Validità',
+    'pdf_unlimited_validity' => 'Validità Illimitata',
+    'pdf_no_data_available' => 'Nessun dato disponibile',
+    'pdf_no_technical_traits' => 'Caratteristiche tecniche non configurate per questa opera',
+    'pdf_signature_section' => 'Sezione Firme Autorizzate',
+    'pdf_authorized_signature' => 'Firma Autorizzata',
+    'pdf_date_and_stamp' => 'Data e Timbro',
+    'pdf_enterprise_footer' => 'Certificato digitale conforme agli standard internazionali per l\'autenticazione di opere d\'arte',
+    // Sezioni del PDF professionale aggiuntive
+    'no_title_available' => 'Titolo non disponibile',
+    'no_artist_available' => 'Artista non disponibile',
+    'no_date_available' => 'Data non disponibile',
+    'no_description_available' => 'Descrizione non disponibile',
+    'no_collection_assigned' => 'Nessuna collezione assegnata',
+    'no_technique_selected' => 'Nessuna tecnica selezionata',
+    'no_materials_selected' => 'Nessun materiale selezionato',
+    'no_support_selected' => 'Nessun supporto selezionato',
+
+    // QR Code
+    'pdf_qr_code_title' => 'QR Code Verifica',
+    'pdf_scan_to_verify' => 'Scansiona per verificare',
+    'pdf_qr_not_available' => 'QR Code non disponibile',
+
+    // PDF Metadata Labels
+    'pdf_certificate_type' => 'Tipo Certificato',
+    'pdf_blockchain_status' => 'Stato Blockchain',
+    'pdf_internal_id' => 'ID Interno',
+    'pdf_size' => 'Dimensioni',
+    'pdf_weight' => 'Peso',
+    'pdf_image_dimensions' => 'Dimensioni Immagine',
+    'pdf_file_type' => 'Tipo File',
+    'pdf_file_extension' => 'Estensione',
+    'pdf_upload_date' => 'Data Upload',
+    'pdf_publication_status' => 'Stato Pubblicazione',
+    'pdf_file_size' => 'Dimensione File',
+    'pdf_core_certificate' => 'Certificato Core',
+    'pdf_verified_on_chain' => 'Verificato su Blockchain',
+    'pdf_published' => 'Pubblicato',
+    'pdf_not_published' => 'Non Pubblicato',
+
+    // PDF Verification Section
+    'pdf_verified_banner' => 'CERTIFICATO DIGITALE VERIFICATO',
+    'pdf_verified_on' => 'Verificato il',
+    'pdf_verification_timestamp' => 'Timestamp di verifica',
+    'pdf_hash_title' => 'Hash di Sicurezza',
+    'pdf_signature_section' => 'Sezione Firme',
+    'pdf_authorized_signature' => 'Firma Autorizzata',
+    'pdf_date_and_stamp' => 'Data e Timbro',
+    'pdf_last_update' => 'Ultimo aggiornamento',
+
+    // Common Fallbacks
+    'not_available' => 'N/A',
 ];
