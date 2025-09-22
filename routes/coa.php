@@ -33,6 +33,16 @@ Route::group(['prefix' => 'coa/verify', 'as' => 'coa.verify.'], function () {
         ->name('certificate')
         ->where('serial', '[A-Z0-9\-]+');
 
+    // Alias della route sopra per compatibilità QR code e altri servizi
+    Route::get('/verify/{serial}', [VerifyController::class, 'verify'])
+        ->name('verify.certificate')
+        ->where('serial', '[A-Z0-9\-]+');
+
+    // Altro alias per compatibilità con servizi interni
+    Route::get('/check/{serial}', [VerifyController::class, 'verify'])
+        ->name('coa.verify.certificate')
+        ->where('serial', '[A-Z0-9\-]+');
+
     // Visualizza certificato specifico tramite hash di verifica
     Route::get('/view/{hash}', [VerifyController::class, 'viewCertificate'])
         ->name('view')
@@ -41,6 +51,11 @@ Route::group(['prefix' => 'coa/verify', 'as' => 'coa.verify.'], function () {
     // Visualizza certificato specifico tramite numero seriale (HTML)
     Route::get('/certificate/{serial}/view', [VerifyController::class, 'viewCertificateBySerial'])
         ->name('certificate.view')
+        ->where('serial', '[A-Z0-9\-]+');
+
+    // Download PDF del certificato tramite numero seriale
+    Route::get('/certificate/{serial}/pdf', [VerifyController::class, 'downloadCertificatePdf'])
+        ->name('certificate.pdf')
         ->where('serial', '[A-Z0-9\-]+');
 
     // Pagina verifica pubblica con form

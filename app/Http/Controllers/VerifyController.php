@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Coa;
 use App\Services\Coa\VerifyPageService;
 use App\Services\Coa\AnnexService;
+use App\Services\Coa\CoaPdfService;
 use App\Traits\EgiTraitsExtraction;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -54,24 +55,33 @@ class VerifyController extends Controller {
     protected AnnexService $annexService;
 
     /**
+     * CoA PDF service for certificate PDF generation
+     * @var CoaPdfService
+     */
+    protected CoaPdfService $coaPdfService;
+
+    /**
      * Constructor with dependency injection
      *
      * @param UltraLogManager $logger
      * @param ErrorManagerInterface $errorManager
      * @param VerifyPageService $verifyService
      * @param AnnexService $annexService
+     * @param CoaPdfService $coaPdfService
      * @privacy-safe All injected services handle public verification safely
      */
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
         VerifyPageService $verifyService,
-        AnnexService $annexService
+        AnnexService $annexService,
+        CoaPdfService $coaPdfService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->verifyService = $verifyService;
         $this->annexService = $annexService;
+        $this->coaPdfService = $coaPdfService;
 
         // Apply rate limiting to all methods
         $this->middleware('throttle:60,1'); // 60 requests per minute
@@ -1616,5 +1626,113 @@ class VerifyController extends Controller {
         }
 
         return null;
+    }
+
+    /**
+     * Download certificate PDF by serial number
+     *
+     * @param Request $request
+     * @param string $serial
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     * @privacy-safe Public PDF download with rate limiting
+     * @community-impact Enables certificate download for verification
+     * @transparency-level High - public certificate PDF access
+     * @narrative-coherence Links to PDF generation system
+     */
+    public function downloadCertificatePdf(Request $request, string $serial) {
+        try {
+            // Rate limiting for PDF downloads
+            $key = 'pdf_download_' . $request->ip();
+            if (RateLimiter::tooManyAttempts($key, 5)) {
+                $this->logger->warning('[Verify Controller] Rate limit exceeded for PDF download', [
+                    'ip_address' => $request->ip(),
+                    'serial' => $serial
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Too many PDF download attempts. Please try again later.'
+                ], 429);
+            }
+
+            RateLimiter::hit($key, 60); // 1 minute lockout after 5 attempts
+
+            // Find the certificate
+            $coa = Coa::where('serial', $serial)
+                ->with(['egi', 'egi.coaTraits'])
+                ->first();
+
+            if (!$coa) {
+                $this->logger->info('[Verify Controller] PDF download attempted for non-existent certificate', [
+                    'serial' => $serial,
+                    'ip_address' => $request->ip()
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Certificate not found'
+                ], 404);
+            }
+
+            // Check if certificate is publicly accessible
+            if (!$coa->egi || !$coa->egi->is_public) {
+                $this->logger->info('[Verify Controller] PDF download attempted for non-public certificate', [
+                    'serial' => $serial,
+                    'ip_address' => $request->ip()
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Certificate not publicly accessible'
+                ], 403);
+            }
+
+            // Generate PDF using CoaPdfService
+            $pdfResult = $this->coaPdfService->generateCorePdf($coa);
+
+            if (!$pdfResult['success']) {
+                $this->logger->error('[Verify Controller] PDF generation failed', [
+                    'serial' => $serial,
+                    'error' => $pdfResult['message'] ?? 'Unknown error',
+                    'ip_address' => $request->ip()
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to generate PDF certificate'
+                ], 500);
+            }
+
+            $this->logger->info('[Verify Controller] PDF certificate downloaded successfully', [
+                'serial' => $serial,
+                'ip_address' => $request->ip()
+            ]);
+
+            // Return PDF file download response
+            $fileName = 'certificate_' . $serial . '.pdf';
+
+            return response($pdfResult['pdf_content'])
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"')
+                ->header('Content-Length', strlen($pdfResult['pdf_content']));
+        } catch (\Exception $e) {
+            // Temporarily show the actual error for debugging
+            \Log::error('[Verify Controller] PDF generation error: ' . $e->getMessage());
+            \Log::error('[Verify Controller] PDF generation stack: ' . $e->getTraceAsString());
+
+            throw $e; // Re-throw to see the actual error
+
+            $this->errorManager->handle('CERTIFICATE_PDF_DOWNLOAD_ERROR', [
+                'serial' => $serial,
+                'error' => $e->getMessage(),
+                'ip_address' => $request->ip(),
+                'timestamp' => now()->toIso8601String()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to download certificate PDF'
+            ], 500);
+        }
     }
 }

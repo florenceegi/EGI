@@ -679,7 +679,7 @@ function copyHash() {
 
 // Download functions
 function downloadPDF() {
-    window.location.href = '{{ route('coa.bundle', ['coa' => $certificate['id']]) }}';
+    window.location.href = '{{ route('coa.verify.certificate.pdf', $certificate['serial']) }}';
 }
 
 function downloadJSON() {
