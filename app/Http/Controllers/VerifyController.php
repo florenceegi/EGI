@@ -1099,17 +1099,22 @@ class VerifyController extends Controller {
     private function extractTechniqueFromTraits($egi): ?string {
         $coaTraits = $egi->coaTraits;
 
-        if ($coaTraits && !empty($coaTraits->technique_slugs)) {
+        if ($coaTraits && (!empty($coaTraits->technique_slugs) || !empty($coaTraits->technique_free_text))) {
             $vocabularyTranslations = __('coa_vocabulary');
             $techniques = [];
 
-            foreach ($coaTraits->technique_slugs as $slug) {
-                $techniques[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
+            // Add vocabulary terms from slugs
+            if (!empty($coaTraits->technique_slugs)) {
+                foreach ($coaTraits->technique_slugs as $slug) {
+                    $techniques[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
+                }
             }
 
-            // Add custom technique if present
-            if (!empty($coaTraits->technique_other)) {
-                $techniques[] = $coaTraits->technique_other;
+            // Add custom technique free text if present
+            if (!empty($coaTraits->technique_free_text)) {
+                foreach ($coaTraits->technique_free_text as $customTechnique) {
+                    $techniques[] = $customTechnique;
+                }
             }
 
             return implode(', ', $techniques);
@@ -1132,12 +1137,15 @@ class VerifyController extends Controller {
     private function extractMaterialsFromTraits($egi): ?string {
         $coaTraits = $egi->coaTraits;
 
-        if ($coaTraits && !empty($coaTraits->materials_slugs)) {
+        if ($coaTraits && (!empty($coaTraits->materials_slugs) || !empty($coaTraits->materials_free_text))) {
             $vocabularyTranslations = __('coa_vocabulary');
             $materials = [];
 
-            foreach ($coaTraits->materials_slugs as $slug) {
-                $materials[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
+            // Add vocabulary terms from slugs
+            if (!empty($coaTraits->materials_slugs)) {
+                foreach ($coaTraits->materials_slugs as $slug) {
+                    $materials[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
+                }
             }
 
             // Add custom materials if present
@@ -1167,17 +1175,22 @@ class VerifyController extends Controller {
     private function extractSupportFromTraits($egi): ?string {
         $coaTraits = $egi->coaTraits;
 
-        if ($coaTraits && !empty($coaTraits->support_slugs)) {
+        if ($coaTraits && (!empty($coaTraits->support_slugs) || !empty($coaTraits->support_free_text))) {
             $vocabularyTranslations = __('coa_vocabulary');
             $supports = [];
 
-            foreach ($coaTraits->support_slugs as $slug) {
-                $supports[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
+            // Add vocabulary terms from slugs
+            if (!empty($coaTraits->support_slugs)) {
+                foreach ($coaTraits->support_slugs as $slug) {
+                    $supports[] = $vocabularyTranslations[$slug] ?? ucfirst(str_replace(['_', '-'], ' ', $slug));
+                }
             }
 
-            // Add custom support if present
-            if (!empty($coaTraits->support_other)) {
-                $supports[] = $coaTraits->support_other;
+            // Add custom support free text if present
+            if (!empty($coaTraits->support_free_text)) {
+                foreach ($coaTraits->support_free_text as $customSupport) {
+                    $supports[] = $customSupport;
+                }
             }
 
             return implode(', ', $supports);
