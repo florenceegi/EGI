@@ -678,4 +678,51 @@ return [
         'reason_for' => 'Motivo per',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Dossier System - Sistema Dossier
+    |--------------------------------------------------------------------------
+    */
+    'dossier' => [
+        'title' => 'Dossier Immagini',
+        'loading' => 'Caricamento dossier...',
+        'view_complete' => 'Visualizza dossier immagini completo',
+        'close' => 'Chiudi dossier',
+
+        // Artwork Info
+        'artwork_info' => 'Informazioni Opera',
+        'author' => 'Autore',
+        'year' => 'Anno',
+        'internal_id' => 'ID Interno',
+
+        // Dossier Info  
+        'dossier_info' => 'Informazioni Dossier',
+        'images_count' => 'Immagini',
+        'type' => 'Tipo',
+        'utility_gallery' => 'Utility Gallery',
+
+        // Gallery
+        'gallery_title' => 'Galleria Immagini',
+        'image_number' => 'Immagine :number',
+        'image_of_total' => 'Immagine :current di :total',
+
+        // States
+        'no_utility_title' => 'Dossier non disponibile',
+        'no_utility_message' => 'Non sono disponibili immagini aggiuntive per questa opera.',
+        'no_utility_description' => 'Il dossier delle immagini aggiuntive non è stato ancora configurato per questo artwork.',
+
+        'no_images_title' => 'Nessuna immagine disponibile',
+        'no_images_message' => 'Il dossier esiste ma non contiene ancora immagini.',
+        'no_images_description' => 'Le immagini aggiuntive saranno aggiunte in futuro dal creatore dell\'opera.',
+
+        'error_title' => 'Errore',
+        'error_loading' => 'Errore nel caricamento del dossier',
+
+        // Navigation
+        'previous_image' => 'Immagine precedente',
+        'next_image' => 'Immagine successiva',
+        'close_viewer' => 'Chiudi visualizzatore',
+        'of' => 'di',
+    ],
+
 ];

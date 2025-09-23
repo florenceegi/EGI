@@ -90,4 +90,50 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sistema Dossier - Dossier System
+    |--------------------------------------------------------------------------
+    */
+    'dossier' => [
+        'title' => 'Dossiê de Imagens',
+        'loading' => 'Carregando dossiê...',
+        'view_complete' => 'Ver dossiê completo de imagens',
+        'close' => 'Fechar dossiê',
+
+        // Artwork Info
+        'artwork_info' => 'Informações da Obra',
+        'author' => 'Autor',
+        'year' => 'Ano',
+        'internal_id' => 'ID Interno',
+
+        // Dossier Info  
+        'dossier_info' => 'Informações do Dossiê',
+        'images_count' => 'Imagens',
+        'type' => 'Tipo',
+        'utility_gallery' => 'Galeria Utilitária',
+
+        // Gallery
+        'gallery_title' => 'Galeria de Imagens',
+        'image_number' => 'Imagem :number',
+        'image_of_total' => 'Imagem :current de :total',
+
+        // States
+        'no_utility_title' => 'Dossiê não disponível',
+        'no_utility_message' => 'Não há imagens adicionais disponíveis para esta obra.',
+        'no_utility_description' => 'O dossiê de imagens adicionais ainda não foi configurado para esta obra.',
+
+        'no_images_title' => 'Nenhuma imagem disponível',
+        'no_images_message' => 'O dossiê existe mas ainda não contém imagens.',
+        'no_images_description' => 'Imagens adicionais serão adicionadas no futuro pelo criador da obra.',
+
+        'error_title' => 'Erro',
+        'error_loading' => 'Erro ao carregar o dossiê',
+
+        // Navigation
+        'previous_image' => 'Imagem anterior',
+        'next_image' => 'Próxima imagem',
+        'close_viewer' => 'Fechar visualizador',
+    ],
+
 ];

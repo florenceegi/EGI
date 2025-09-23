@@ -646,4 +646,50 @@ return [
         'reason_for' => 'Reason for',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Dossier System - Dossier System
+    |--------------------------------------------------------------------------
+    */
+    'dossier' => [
+        'title' => 'Image Dossier',
+        'loading' => 'Loading dossier...',
+        'view_complete' => 'View complete image dossier',
+        'close' => 'Close dossier',
+
+        // Artwork Info
+        'artwork_info' => 'Artwork Information',
+        'author' => 'Author',
+        'year' => 'Year',
+        'internal_id' => 'Internal ID',
+
+        // Dossier Info  
+        'dossier_info' => 'Dossier Information',
+        'images_count' => 'Images',
+        'type' => 'Type',
+        'utility_gallery' => 'Utility Gallery',
+
+        // Gallery
+        'gallery_title' => 'Image Gallery',
+        'image_number' => 'Image :number',
+        'image_of_total' => 'Image :current of :total',
+
+        // States
+        'no_utility_title' => 'Dossier unavailable',
+        'no_utility_message' => 'No additional images are available for this artwork.',
+        'no_utility_description' => 'The additional images dossier has not yet been configured for this artwork.',
+
+        'no_images_title' => 'No images available',
+        'no_images_message' => 'The dossier exists but does not contain images yet.',
+        'no_images_description' => 'Additional images will be added in the future by the artwork creator.',
+
+        'error_title' => 'Error',
+        'error_loading' => 'Error loading dossier',
+
+        // Navigation
+        'previous_image' => 'Previous image',
+        'next_image' => 'Next image',
+        'close_viewer' => 'Close viewer',
+    ],
+
 ];

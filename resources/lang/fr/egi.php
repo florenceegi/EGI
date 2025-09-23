@@ -90,4 +90,50 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Système Dossier - Dossier System
+    |--------------------------------------------------------------------------
+    */
+    'dossier' => [
+        'title' => 'Dossier d\'Images',
+        'loading' => 'Chargement du dossier...',
+        'view_complete' => 'Voir le dossier d\'images complet',
+        'close' => 'Fermer le dossier',
+
+        // Artwork Info
+        'artwork_info' => 'Informations sur l\'Œuvre',
+        'author' => 'Auteur',
+        'year' => 'Année',
+        'internal_id' => 'ID Interne',
+
+        // Dossier Info  
+        'dossier_info' => 'Informations du Dossier',
+        'images_count' => 'Images',
+        'type' => 'Type',
+        'utility_gallery' => 'Galerie Utilitaire',
+
+        // Gallery
+        'gallery_title' => 'Galerie d\'Images',
+        'image_number' => 'Image :number',
+        'image_of_total' => 'Image :current sur :total',
+
+        // States
+        'no_utility_title' => 'Dossier non disponible',
+        'no_utility_message' => 'Aucune image supplémentaire n\'est disponible pour cette œuvre.',
+        'no_utility_description' => 'Le dossier d\'images supplémentaires n\'a pas encore été configuré pour cette œuvre.',
+
+        'no_images_title' => 'Aucune image disponible',
+        'no_images_message' => 'Le dossier existe mais ne contient pas encore d\'images.',
+        'no_images_description' => 'Des images supplémentaires seront ajoutées à l\'avenir par le créateur de l\'œuvre.',
+
+        'error_title' => 'Erreur',
+        'error_loading' => 'Erreur lors du chargement du dossier',
+
+        // Navigation
+        'previous_image' => 'Image précédente',
+        'next_image' => 'Image suivante',
+        'close_viewer' => 'Fermer le visualiseur',
+    ],
+
 ];

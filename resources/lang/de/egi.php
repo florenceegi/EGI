@@ -90,4 +90,50 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Dossier System - Dossier System
+    |--------------------------------------------------------------------------
+    */
+    'dossier' => [
+        'title' => 'Bilderdossier',
+        'loading' => 'Dossier wird geladen...',
+        'view_complete' => 'Vollständiges Bilderdossier ansehen',
+        'close' => 'Dossier schließen',
+
+        // Artwork Info
+        'artwork_info' => 'Kunstwerk-Informationen',
+        'author' => 'Autor',
+        'year' => 'Jahr',
+        'internal_id' => 'Interne ID',
+
+        // Dossier Info  
+        'dossier_info' => 'Dossier-Informationen',
+        'images_count' => 'Bilder',
+        'type' => 'Typ',
+        'utility_gallery' => 'Hilfsgalerie',
+
+        // Gallery
+        'gallery_title' => 'Bildergalerie',
+        'image_number' => 'Bild :number',
+        'image_of_total' => 'Bild :current von :total',
+
+        // States
+        'no_utility_title' => 'Dossier nicht verfügbar',
+        'no_utility_message' => 'Für dieses Kunstwerk sind keine zusätzlichen Bilder verfügbar.',
+        'no_utility_description' => 'Das Dossier für zusätzliche Bilder wurde für dieses Kunstwerk noch nicht konfiguriert.',
+
+        'no_images_title' => 'Keine Bilder verfügbar',
+        'no_images_message' => 'Das Dossier existiert, enthält aber noch keine Bilder.',
+        'no_images_description' => 'Zusätzliche Bilder werden in Zukunft vom Ersteller des Kunstwerks hinzugefügt.',
+
+        'error_title' => 'Fehler',
+        'error_loading' => 'Fehler beim Laden des Dossiers',
+
+        // Navigation
+        'previous_image' => 'Vorheriges Bild',
+        'next_image' => 'Nächstes Bild',
+        'close_viewer' => 'Betrachter schließen',
+    ],
+
 ];
