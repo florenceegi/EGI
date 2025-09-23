@@ -688,6 +688,10 @@ class VerifyController extends Controller {
                     !empty($coaTraits->support_free_text);
             }
 
+            // Extract issue location from author's personal data
+            $issueLocation = $this->extractIssueLocation($coa->egi->user);
+            $hasValidLocation = !empty($issueLocation);
+
             // Generate certificate view data
             $certificateData = [
                 'certificate' => [
@@ -697,8 +701,20 @@ class VerifyController extends Controller {
                     'issuer_name' => $coa->issuer_name,
                     'notes' => $coa->notes,
                     'verification_hash' => $coa->verification_hash ?? hash('sha256', $coa->serial . $coa->issued_at),
+                    'issue_location' => $issueLocation,
                     'has_coa_traits' => $hasValidCoaTraits,
-                    'effective_status' => ($coa->status === 'valid' && $hasValidCoaTraits) ? 'valid' : 'incomplete'
+                    'has_valid_location' => $hasValidLocation,
+                    'effective_status' => ($coa->status === 'valid' && $hasValidCoaTraits && $hasValidLocation) ? 'valid' : 'incomplete',
+                    'qes_signature' => $coa->qes_signature ?? false, // MVP: per ora false, sarà implementato in futuro
+                    'wallet_signature' => $coa->wallet_signature ?? true,
+                    'wallet_public_key' => $coa->wallet_public_key ?? '0x' . Str::random(40), // MVP: chiave generata random
+                    'has_annexes' => $coa->annexes()->exists(),
+                    'blockchain_info' => $coa->blockchain_asset_id ? [
+                        'network' => 'Ethereum Mainnet',
+                        'asset_id' => $coa->blockchain_asset_id,
+                        'explorer_url' => 'https://etherscan.io/token/' . $coa->blockchain_asset_id
+                    ] : null,
+                    'version' => $coa->version ?? 1
                 ],
                 'artwork' => [
                     'name' => $coa->egi->title ?? $coa->egi->name ?? 'Unknown Artwork',
@@ -712,9 +728,12 @@ class VerifyController extends Controller {
                     'dimensions' => $this->extractDimensionsFromTraits($coa->egi),
                     'edition' => $this->extractEditionFromTraits($coa->egi),
                     'traits' => $this->extractAllArtworkMetadata($coa->egi),
-                    'internal_id' => $coa->egi->id,
+                    'internal_id' => str_pad($coa->egi->id, 7, '0', STR_PAD_LEFT),
+                    'egi_id' => $coa->egi->id, // ID reale per l'API dossier
                     'image_url' => $coa->egi->main_image_url, // AGGIUNTO: URL immagine principale
-                    'thumbnail_url' => $coa->egi->thumbnail_image_url // AGGIUNTO: URL thumbnail
+                    'thumbnail_url' => $coa->egi->thumbnail_image_url, // AGGIUNTO: URL thumbnail
+                    'dossier_link' => '#' // Link placeholder - will use JavaScript modal
+
                 ],
                 'verification' => [
                     'is_valid' => $coa->status === 'valid',
@@ -814,6 +833,10 @@ class VerifyController extends Controller {
                     !empty($coaTraits->support_free_text);
             }
 
+            // Extract issue location from author's personal data
+            $issueLocation = $this->extractIssueLocation($coa->egi->user);
+            $hasValidLocation = !empty($issueLocation);
+
             // Generate certificate view data
             $certificateData = [
                 'certificate' => [
@@ -824,7 +847,10 @@ class VerifyController extends Controller {
                     'issuer_name' => $coa->issuer_name,
                     'notes' => $coa->notes,
                     'verification_hash' => $coa->verification_hash ?? hash('sha256', $coa->serial . $coa->issued_at),
-                    'issue_location' => $coa->issue_location ?? 'Firenze, Italia',
+                    'issue_location' => $issueLocation,
+                    'has_coa_traits' => $hasValidCoaTraits,
+                    'has_valid_location' => $hasValidLocation,
+                    'effective_status' => ($coa->status === 'valid' && $hasValidCoaTraits && $hasValidLocation) ? 'valid' : 'incomplete',
                     'qes_signature' => $coa->qes_signature ?? false,
                     'wallet_signature' => $coa->wallet_signature ?? true,
                     'wallet_public_key' => $coa->wallet_public_key ?? '0x' . Str::random(40),
@@ -841,6 +867,7 @@ class VerifyController extends Controller {
                 'artwork' => [
                     'name' => $coa->egi->title ?? $coa->egi->name ?? 'Unknown Artwork',
                     'internal_id' => str_pad($coa->egi->id, 7, '0', STR_PAD_LEFT),
+                    'egi_id' => $coa->egi->id, // ID reale per l'API dossier
                     'description' => $coa->egi->description ?? '',
                     'author' => $this->extractAuthorFromTraits($coa->egi), // Using trait method
                     'year' => $this->extractYearFromTraits($coa->egi),
