@@ -458,8 +458,7 @@ class CoaPdfService {
      * @param array $options PDF options
      * @return array Prepared data for PDF template
      */
-    private function prepareCorePdfData(Coa $coa, array $options = []): array
-    {
+    private function prepareCorePdfData(Coa $coa, array $options = []): array {
         $egi = $coa->egi()->with(['traits', 'user', 'coaTraits', 'collection'])->first();
 
         return [

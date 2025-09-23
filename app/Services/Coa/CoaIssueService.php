@@ -185,7 +185,7 @@ class CoaIssueService {
                 'issued_by' => $issuedBy,
                 'notes' => $notes
             ]);
-            
+
             // Utilizziamo la convenzione UEM standard - l'ErrorManager gestisce tutto
             $this->errorManager->handle('COA_ISSUE_CERTIFICATE_ERROR', [], $e);
             // UEM ha gestito l'errore, non ri-lanciamo l'eccezione
@@ -238,7 +238,7 @@ class CoaIssueService {
             'CoA issuance',
             ['all'] // All fields are included in initial CoA
         );
-        
+
         // Se la creazione dello snapshot fallisce, usciamo dall'operazione
         if (!$traitsVersion) {
             throw new \Exception('Failed to create traits version snapshot');
@@ -265,13 +265,23 @@ class CoaIssueService {
 
         // 5. Create CoA snapshot
         $snapshot = $this->snapshotService->createCoaSnapshot($coa, $traitsVersion);
-        
+
         // Se la creazione dello snapshot fallisce, usciamo dall'operazione
         if (!$snapshot) {
             throw new \Exception('Failed to create CoA snapshot');
         }
 
-        // 6. Create issuance event
+        // 6. Calculate and update verification hash based on core CoA data
+        $verificationHash = $this->calculateVerificationHash($coa, $snapshot, $issuerInfo);
+        $coa->update(['verification_hash' => $verificationHash]);
+
+        $this->logger->info('[CoA Issue] Verification hash calculated', [
+            'coa_id' => $coa->id,
+            'verification_hash' => $verificationHash,
+            'hash_length' => strlen($verificationHash)
+        ]);
+
+        // 7. Create issuance event
         $this->createCoaEvent($coa, 'coa_issued', [
             'issuer_name' => $issuerInfo['name'],
             'issuer_organization' => $issuerInfo['organization'] ?? null,
@@ -646,6 +656,72 @@ class CoaIssueService {
         ]);
 
         return $event;
+    }
+
+    /**
+     * Calculate verification hash based on core CoA data
+     *
+     * @param Coa $coa Certificate of Authenticity
+     * @param CoaSnapshot $snapshot Immutable snapshot data
+     * @param array $issuerInfo Issuer information
+     * @return string SHA-256 verification hash
+     * @privacy-safe Cryptographic hash generation only
+     *
+     * @oracode-dimension governance
+     * @value-flow Creates cryptographic verification fingerprint
+     * @community-impact Enables certificate integrity verification
+     * @transparency-level High - hash components are auditable
+     * @narrative-coherence Links certificate to its verification identity
+     */
+    protected function calculateVerificationHash(Coa $coa, CoaSnapshot $snapshot, array $issuerInfo): string {
+        try {
+            // Core data components for verification hash
+            $coreData = [
+                'serial' => $coa->serial,
+                'issued_at' => $coa->issued_at->toISOString(),
+                'issuer' => [
+                    'type' => $coa->issuer_type,
+                    'name' => $coa->issuer_name,
+                    'location' => $coa->issuer_location,
+                ],
+                'snapshot_data' => $snapshot->snapshot_json,
+                'metadata' => [
+                    'egi_id' => $coa->egi_id,
+                    'status' => $coa->status,
+                    'creator_info' => $coa->creator_info,
+                ]
+            ];
+
+            // Convert to normalized JSON for consistent hashing
+            $normalizedJson = json_encode($coreData, JSON_SORT_KEYS | JSON_UNESCAPED_UNICODE);
+
+            if ($normalizedJson === false) {
+                throw new \Exception('Failed to encode core data for hashing');
+            }
+
+            // Generate SHA-256 hash
+            $verificationHash = hash('sha256', $normalizedJson);
+
+            $this->logger->info('[CoA Hash] Verification hash calculated', [
+                'coa_id' => $coa->id,
+                'data_components' => array_keys($coreData),
+                'json_length' => strlen($normalizedJson),
+                'hash_prefix' => substr($verificationHash, 0, 16) . '...',
+                'log_category' => 'COA_VERIFICATION_HASH'
+            ]);
+
+            return $verificationHash;
+        } catch (\Exception $e) {
+            $this->logger->error('[CoA Hash] Verification hash calculation failed', [
+                'coa_id' => $coa->id,
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString(),
+                'log_category' => 'COA_VERIFICATION_HASH_ERROR'
+            ]);
+
+            // Re-throw for proper error handling
+            throw new \Exception("Verification hash calculation failed: " . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
