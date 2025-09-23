@@ -994,7 +994,16 @@
 
             // Initialize zoom controls
             initializeZoomControls();
-            updateImageTransform();
+
+            // Wait for image to load, then fit to screen
+            img.onload = function() {
+                fitToScreen();
+            };
+
+            // If image is already loaded (cached), fit immediately
+            if (img.complete && img.naturalHeight !== 0) {
+                fitToScreen();
+            }
 
             modal.classList.remove('hidden');
         }
@@ -1079,9 +1088,11 @@
             }
 
             const containerRect = container.getBoundingClientRect();
-            const scaleX = containerRect.width / img.naturalWidth;
-            const scaleY = containerRect.height / img.naturalHeight;
-            const scale = Math.min(scaleX, scaleY, 1) * 0.9; // 90% of container
+            const scaleX = (containerRect.width * 0.9) / img.naturalWidth;
+            const scaleY = (containerRect.height * 0.9) / img.naturalHeight;
+            
+            // Don't go above 100% (original size) initially
+            const scale = Math.min(scaleX, scaleY, 1);
 
             currentZoom = Math.round(scale * 100);
             panX = 0;

@@ -163,9 +163,9 @@
             </div>
 
             {{-- Image Container with Pan and Zoom --}}
-            <div id="image-container" class="w-full h-full overflow-hidden select-none">
+            <div id="image-container" class="w-full h-full overflow-hidden select-none flex items-center justify-center">
                 <img id="viewer-image" src="" alt=""
-                    class="object-contain w-full h-full transition-transform duration-200 ease-out cursor-move"
+                    class="object-contain max-w-full max-h-full transition-transform duration-200 ease-out cursor-move"
                     style="transform-origin: center center; user-select: none; -webkit-user-drag: none;">
             </div>
 
