@@ -723,6 +723,13 @@ return [
         'next_image' => 'Immagine successiva',
         'close_viewer' => 'Chiudi visualizzatore',
         'of' => 'di',
+
+        // Zoom Controls
+        'zoom_help' => 'Usa rotellina del mouse o touch per zoom • Trascina per muovere',
+        'zoom_in' => 'Ingrandisci',
+        'zoom_out' => 'Riduci',
+        'zoom_reset' => 'Reimposta zoom',
+        'zoom_fit' => 'Adatta allo schermo',
     ],
 
 ];

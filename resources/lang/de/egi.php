@@ -134,6 +134,14 @@ return [
         'previous_image' => 'Vorheriges Bild',
         'next_image' => 'Nächstes Bild',
         'close_viewer' => 'Betrachter schließen',
+        'of' => 'von',
+
+        // Zoom Controls
+        'zoom_help' => 'Verwenden Sie das Mausrad oder Touch zum Zoomen • Ziehen zum Bewegen',
+        'zoom_in' => 'Vergrößern',
+        'zoom_out' => 'Verkleinern',
+        'zoom_reset' => 'Zoom zurücksetzen',
+        'zoom_fit' => 'An Bildschirm anpassen',
     ],
 
 ];

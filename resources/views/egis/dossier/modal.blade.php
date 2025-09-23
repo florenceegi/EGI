@@ -120,42 +120,80 @@
 </template>
 
 {{-- Image Viewer Modal (for full-size view) --}}
-<div id="image-viewer-modal" class="fixed inset-0 hidden z-60 bg-black/95 backdrop-blur-sm" role="dialog"
-    aria-modal="true">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="relative max-h-[90vh] max-w-5xl">
+<div id="image-viewer-modal" class="fixed inset-0 hidden bg-black/95 backdrop-blur-sm" role="dialog"
+    aria-modal="true" style="z-index: 10000;">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="relative w-full h-full">
             {{-- Close Button --}}
             <button onclick="closeImageViewer()"
-                class="absolute z-10 p-2 text-white transition-colors rounded-full right-4 top-4 bg-black/50 hover:bg-black/70">
+                class="absolute z-30 p-2 text-white transition-colors rounded-full right-4 top-4 bg-black/50 hover:bg-black/70">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
 
-            {{-- Image --}}
-            <img id="viewer-image" src="" alt=""
-                class="object-contain max-w-full max-h-full rounded-lg">
+            {{-- Zoom Controls Bar --}}
+            <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/70 rounded-lg px-4 py-2 flex items-center space-x-4 z-30">
+                <button id="zoom-out" class="text-white hover:text-blue-300 p-1 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path>
+                    </svg>
+                </button>
+                
+                <div class="flex items-center space-x-2">
+                    <span class="text-white text-sm">Zoom:</span>
+                    <input type="range" id="zoom-slider" min="25" max="400" value="100" 
+                           class="w-32 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                    <span id="zoom-level" class="text-white text-sm min-w-[3rem]">100%</span>
+                </div>
+                
+                <button id="zoom-in" class="text-white hover:text-blue-300 p-1 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                    </svg>
+                </button>
+                
+                <button id="zoom-reset" class="text-white hover:text-blue-300 p-1 border border-gray-600 rounded px-2 py-1 text-xs transition-colors">
+                    Reset
+                </button>
+                
+                <button id="zoom-fit" class="text-white hover:text-blue-300 p-1 border border-gray-600 rounded px-2 py-1 text-xs transition-colors">
+                    Fit
+                </button>
+            </div>
+
+            {{-- Image Container with Pan and Zoom --}}
+            <div id="image-container" class="w-full h-full overflow-hidden select-none">
+                <img id="viewer-image" src="" alt=""
+                    class="object-contain w-full h-full transition-transform duration-200 ease-out cursor-move"
+                    style="transform-origin: center center; user-select: none; -webkit-user-drag: none;">
+            </div>
 
             {{-- Image Info --}}
-            <div class="absolute p-4 text-white rounded-lg bottom-4 left-4 right-4 bg-black/70">
+            <div class="absolute p-4 text-white rounded-lg bottom-4 left-4 right-4 bg-black/70 z-30">
                 <h3 id="viewer-title" class="font-medium"></h3>
                 <p id="viewer-description" class="mt-1 text-sm text-gray-300"></p>
             </div>
 
             {{-- Navigation (if multiple images) --}}
             <button id="prev-image" onclick="prevImage()"
-                class="absolute hidden p-3 text-white transition-colors transform -translate-y-1/2 rounded-full left-4 top-1/2 bg-black/50 hover:bg-black/70">
+                class="absolute hidden p-3 text-white transition-colors transform -translate-y-1/2 rounded-full left-4 top-1/2 bg-black/50 hover:bg-black/70 z-30">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </button>
 
             <button id="next-image" onclick="nextImage()"
-                class="absolute hidden p-3 text-white transition-colors transform -translate-y-1/2 rounded-full right-4 top-1/2 bg-black/50 hover:bg-black/70">
+                class="absolute hidden p-3 text-white transition-colors transform -translate-y-1/2 rounded-full right-4 top-1/2 bg-black/50 hover:bg-black/70 z-30">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             </button>
+
+            {{-- Zoom Help Text --}}
+            <div class="absolute bottom-4 left-4 bg-black/70 rounded px-3 py-1 text-white text-sm z-30">
+                <span>{{ __('egi.dossier.zoom_help') }}</span>
+            </div>
         </div>
     </div>
 </div>

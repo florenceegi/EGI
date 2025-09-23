@@ -9,6 +9,61 @@
     <title>Certificate of Authenticity - {{ $certificate['serial'] }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        /* Custom styles for zoom slider */
+        #zoom-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        #zoom-slider::-webkit-slider-track {
+            background: #374151;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        #zoom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #3b82f6;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        #zoom-slider::-moz-range-track {
+            background: #374151;
+            height: 8px;
+            border-radius: 4px;
+            border: none;
+        }
+
+        #zoom-slider::-moz-range-thumb {
+            background: #3b82f6;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Smooth transitions for image transform */
+        #viewer-image {
+            transition: transform 0.2s ease-out;
+        }
+
+        /* Better cursor for draggable image */
+        #image-container.dragging {
+            cursor: grabbing !important;
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-to-br from-amber-50 to-yellow-50 font-sans antialiased">
@@ -902,10 +957,21 @@
 
         let currentImages = [];
         let currentImageIndex = 0;
+        let currentZoom = 100;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
 
         function openImageViewer(images, startIndex = 0) {
             currentImages = images;
             currentImageIndex = startIndex;
+            
+            // Reset zoom and pan
+            currentZoom = 100;
+            panX = 0;
+            panY = 0;
 
             const modal = document.getElementById('image-viewer-modal');
             const img = modal.querySelector('#viewer-image');
@@ -926,10 +992,247 @@
             prevBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
             nextBtn.style.display = currentImages.length > 1 ? 'block' : 'none';
 
+            // Initialize zoom controls
+            initializeZoomControls();
+            updateImageTransform();
+
             modal.classList.remove('hidden');
         }
 
+        function initializeZoomControls() {
+            const modal = document.getElementById('image-viewer-modal');
+            const container = modal.querySelector('#image-container');
+            const img = modal.querySelector('#viewer-image');
+            const slider = modal.querySelector('#zoom-slider');
+            const zoomLevel = modal.querySelector('#zoom-level');
+            const zoomInBtn = modal.querySelector('#zoom-in');
+            const zoomOutBtn = modal.querySelector('#zoom-out');
+            const resetBtn = modal.querySelector('#zoom-reset');
+            const fitBtn = modal.querySelector('#zoom-fit');
+
+            // Update slider and level display
+            slider.value = currentZoom;
+            zoomLevel.textContent = currentZoom + '%';
+
+            // Remove existing event listeners
+            slider.removeEventListener('input', handleSliderChange);
+            zoomInBtn.removeEventListener('click', zoomIn);
+            zoomOutBtn.removeEventListener('click', zoomOut);
+            resetBtn.removeEventListener('click', resetZoom);
+            fitBtn.removeEventListener('click', fitToScreen);
+            container.removeEventListener('wheel', handleWheel);
+            container.removeEventListener('mousedown', handleMouseDown);
+
+            // Add event listeners
+            slider.addEventListener('input', handleSliderChange);
+            zoomInBtn.addEventListener('click', zoomIn);
+            zoomOutBtn.addEventListener('click', zoomOut);
+            resetBtn.addEventListener('click', resetZoom);
+            fitBtn.addEventListener('click', fitToScreen);
+            container.addEventListener('wheel', handleWheel, { passive: false });
+            container.addEventListener('mousedown', handleMouseDown);
+
+            // Touch events for mobile
+            container.addEventListener('touchstart', handleTouchStart, { passive: false });
+            container.addEventListener('touchmove', handleTouchMove, { passive: false });
+            container.addEventListener('touchend', handleTouchEnd);
+
+            // Mouse move and up events (global)
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+
+        function handleSliderChange(e) {
+            currentZoom = parseInt(e.target.value);
+            updateZoomLevel();
+            updateImageTransform();
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(400, currentZoom + 25);
+            updateZoomControls();
+            updateImageTransform();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(25, currentZoom - 25);
+            updateZoomControls();
+            updateImageTransform();
+        }
+
+        function resetZoom() {
+            currentZoom = 100;
+            panX = 0;
+            panY = 0;
+            updateZoomControls();
+            updateImageTransform();
+        }
+
+        function fitToScreen() {
+            const container = document.getElementById('image-container');
+            const img = document.getElementById('viewer-image');
+            
+            // Wait for image to load if needed
+            if (img.naturalWidth === 0) {
+                img.onload = fitToScreen;
+                return;
+            }
+
+            const containerRect = container.getBoundingClientRect();
+            const scaleX = containerRect.width / img.naturalWidth;
+            const scaleY = containerRect.height / img.naturalHeight;
+            const scale = Math.min(scaleX, scaleY, 1) * 0.9; // 90% of container
+
+            currentZoom = Math.round(scale * 100);
+            panX = 0;
+            panY = 0;
+            updateZoomControls();
+            updateImageTransform();
+        }
+
+        function updateZoomControls() {
+            const slider = document.getElementById('zoom-slider');
+            const zoomLevel = document.getElementById('zoom-level');
+            
+            if (slider && zoomLevel) {
+                slider.value = currentZoom;
+                zoomLevel.textContent = currentZoom + '%';
+            }
+        }
+
+        function updateZoomLevel() {
+            const zoomLevel = document.getElementById('zoom-level');
+            if (zoomLevel) {
+                zoomLevel.textContent = currentZoom + '%';
+            }
+        }
+
+        function updateImageTransform() {
+            const img = document.getElementById('viewer-image');
+            if (img) {
+                const scale = currentZoom / 100;
+                img.style.transform = `scale(${scale}) translate(${panX}px, ${panY}px)`;
+            }
+        }
+
+        function handleWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -10 : 10;
+            currentZoom = Math.max(25, Math.min(400, currentZoom + delta));
+            updateZoomControls();
+            updateImageTransform();
+        }
+
+        function handleMouseDown(e) {
+            if (currentZoom > 100) {
+                isDragging = true;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                e.preventDefault();
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (isDragging && currentZoom > 100) {
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                
+                panX += deltaX / (currentZoom / 100);
+                panY += deltaY / (currentZoom / 100);
+                
+                updateImageTransform();
+                
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            }
+        }
+
+        function handleMouseUp() {
+            isDragging = false;
+        }
+
+        // Touch handling for mobile
+        let lastTouchDistance = 0;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+
+        function handleTouchStart(e) {
+            if (e.touches.length === 1) {
+                // Single touch - start pan
+                isDragging = true;
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
+            } else if (e.touches.length === 2) {
+                // Two finger touch - start pinch
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                lastTouchDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) +
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+            }
+            e.preventDefault();
+        }
+
+        function handleTouchMove(e) {
+            if (e.touches.length === 1 && isDragging && currentZoom > 100) {
+                // Single touch - pan
+                const deltaX = e.touches[0].clientX - lastTouchX;
+                const deltaY = e.touches[0].clientY - lastTouchY;
+                
+                panX += deltaX / (currentZoom / 100);
+                panY += deltaY / (currentZoom / 100);
+                
+                updateImageTransform();
+                
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
+            } else if (e.touches.length === 2) {
+                // Two finger touch - pinch zoom
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const distance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) +
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                
+                if (lastTouchDistance > 0) {
+                    const scale = distance / lastTouchDistance;
+                    currentZoom = Math.max(25, Math.min(400, currentZoom * scale));
+                    updateZoomControls();
+                    updateImageTransform();
+                }
+                
+                lastTouchDistance = distance;
+            }
+            e.preventDefault();
+        }
+
+        function handleTouchEnd(e) {
+            isDragging = false;
+            lastTouchDistance = 0;
+        }
+
         function closeImageViewer() {
+            // Clean up event listeners
+            const container = document.getElementById('image-container');
+            if (container) {
+                container.removeEventListener('wheel', handleWheel);
+                container.removeEventListener('mousedown', handleMouseDown);
+                container.removeEventListener('touchstart', handleTouchStart);
+                container.removeEventListener('touchmove', handleTouchMove);
+                container.removeEventListener('touchend', handleTouchEnd);
+            }
+            
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            
+            // Reset state
+            currentZoom = 100;
+            panX = 0;
+            panY = 0;
+            isDragging = false;
+            
             document.getElementById('image-viewer-modal').classList.add('hidden');
         }
 

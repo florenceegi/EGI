@@ -690,6 +690,14 @@ return [
         'previous_image' => 'Previous image',
         'next_image' => 'Next image',
         'close_viewer' => 'Close viewer',
+        'of' => 'of',
+
+        // Zoom Controls
+        'zoom_help' => 'Use mouse wheel or touch to zoom • Drag to move',
+        'zoom_in' => 'Zoom in',
+        'zoom_out' => 'Zoom out',
+        'zoom_reset' => 'Reset zoom',
+        'zoom_fit' => 'Fit to screen',
     ],
 
 ];

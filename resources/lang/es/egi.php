@@ -134,6 +134,14 @@ return [
         'previous_image' => 'Imagen anterior',
         'next_image' => 'Imagen siguiente',
         'close_viewer' => 'Cerrar visor',
+        'of' => 'de',
+
+        // Zoom Controls
+        'zoom_help' => 'Usa la rueda del ratón o táctil para zoom • Arrastra para mover',
+        'zoom_in' => 'Acercar',
+        'zoom_out' => 'Alejar',
+        'zoom_reset' => 'Restablecer zoom',
+        'zoom_fit' => 'Ajustar a pantalla',
     ],
 
 ];
