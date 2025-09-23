@@ -144,7 +144,7 @@
                                 {{ __('user_personal_data.upgrade_description') }}
                             </p>
                             <a
-                                href="{{ route('account.upgrade') }}"
+                                href="{{ route('user.domains.upgrade') }}"
                                 class="inline-block mt-2 text-xs text-yellow-800 underline hover:text-yellow-900">
                                 {{ __('user_personal_data.upgrade_account') }}
                             </a>

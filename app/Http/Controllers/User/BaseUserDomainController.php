@@ -25,8 +25,7 @@ use Carbon\Carbon;
  * @version 2.0.0 (FlorenceEGI MVP - OS1 Native)
  * @deadline 2025-06-30
  */
-abstract class BaseUserDomainController extends Controller
-{
+abstract class BaseUserDomainController extends Controller {
     /**
      * Error manager for robust error handling with UEM integration
      * @var ErrorManagerInterface
@@ -96,8 +95,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return bool|RedirectResponse True if access granted, redirect if upgrade needed
      */
-    protected function checkWeakAuthAccess(): bool|RedirectResponse
-    {
+    protected function checkWeakAuthAccess(): bool|RedirectResponse {
         // Guest users always need authentication
         if (!FegiAuth::check()) {
             $this->auditDataAccess('authentication_required', [
@@ -138,8 +136,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return RedirectResponse Redirect to upgrade flow with return context
      */
-    protected function redirectToUpgrade(): RedirectResponse
-    {
+    protected function redirectToUpgrade(): RedirectResponse {
         $this->auditDataAccess('upgrade_flow_initiated', [
             'user_id' => FegiAuth::id(),
             'source_domain' => static::class,
@@ -147,7 +144,7 @@ abstract class BaseUserDomainController extends Controller
         ]);
 
         return redirect()
-            ->route('account.upgrade')
+            ->route('user.domains.upgrade')
             ->with('upgrade_reason', __('user_domains.upgrade_required_for_domain'))
             ->with('return_url', request()->fullUrl())
             ->with('info', __('user_domains.upgrade_access_more_features'));
@@ -165,8 +162,10 @@ abstract class BaseUserDomainController extends Controller
      * @param array<string, mixed> $context Additional context data for audit
      * @return void
      */
-    protected function auditDataAccess(string $action, array $context = []): void
-    {
+    protected function auditDataAccess(string $action, array $context = []): void {
+        // TEMPORARY DEBUG: Disable all audit logging to test
+        // return;
+
         $auditData = [
             'action' => $action,
             'user_id' => FegiAuth::id(),
@@ -184,14 +183,29 @@ abstract class BaseUserDomainController extends Controller
         // Store in database for long-term compliance if needed
         if (config('gdpr.store_audit_database', true)) {
 
+            // Get user ID
+            $userId = FegiAuth::id();
+
+            // Se l'user ID è null, saltiamo il logging del database per evitare errori di foreign key
+            // ma loggiamo l'incidente per debug
+            if ($userId === null) {
+                $this->logger->warning('[GDPR AUDIT] Skipping database audit log - user ID is null', [
+                    'action' => $action,
+                    'controller' => static::class,
+                    'fegi_auth_check' => FegiAuth::check(),
+                    'auth_check' => \Auth::check()
+                ]);
+                return;
+            }
+
             // Prepare data using MODEL FILLABLE fields
             $recordData = [
-                'user_id' => FegiAuth::id(),
+                'user_id' => $userId,
                 'action_type' => $action, // Usa action_type invece di action
                 'category' => 'user_data_access',
                 'description' => "Access to {$action} via " . static::class,
                 'legal_basis' => 'user_request',
-                'data_subject_id' => FegiAuth::id(),
+                'data_subject_id' => $userId,
                 'data_controller' => 'FlorenceEGI Platform',
                 'purpose_of_processing' => 'User data management',
                 'context_data' => $context, // Usa context_data invece di details
@@ -218,8 +232,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return bool|RedirectResponse True if identity verified, redirect if verification needed
      */
-    protected function requireIdentityVerification(): bool|RedirectResponse
-    {
+    protected function requireIdentityVerification(): bool|RedirectResponse {
 
         $this->logger->critical('🔍 DETECTIVE: Inside requireIdentityVerification() - START');
 
@@ -232,8 +245,10 @@ abstract class BaseUserDomainController extends Controller
         $verificationWindow = config('user_domains.identity_verification_window', 30); // minutes
 
         // Check if verification is still valid
-        if ($lastVerification &&
-            Carbon::parse($lastVerification)->addMinutes($verificationWindow)->isFuture()) {
+        if (
+            $lastVerification &&
+            Carbon::parse($lastVerification)->addMinutes($verificationWindow)->isFuture()
+        ) {
             return true;
         }
 
@@ -257,8 +272,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return JsonResponse|RedirectResponse Appropriate response based on request type
      */
-    protected function respondAuthRequired(): JsonResponse|RedirectResponse
-    {
+    protected function respondAuthRequired(): JsonResponse|RedirectResponse {
         if (request()->expectsJson()) {
             return response()->json([
                 'error' => 'AUTHENTICATION_REQUIRED',
@@ -287,8 +301,7 @@ abstract class BaseUserDomainController extends Controller
      * @param string|null $permission Specific permission that was denied
      * @return JsonResponse|RedirectResponse Appropriate response with permission context
      */
-    protected function respondPermissionDenied(?string $permission = null): JsonResponse|RedirectResponse
-    {
+    protected function respondPermissionDenied(?string $permission = null): JsonResponse|RedirectResponse {
         $this->auditDataAccess('permission_denied', [
             'user_id' => FegiAuth::id(),
             'denied_permission' => $permission,
@@ -304,7 +317,7 @@ abstract class BaseUserDomainController extends Controller
             ], 403);
         }
 
-        $redirectRoute = FegiAuth::isWeakAuth() ? 'account.upgrade' : 'dashboard';
+        $redirectRoute = FegiAuth::isWeakAuth() ? 'user.domains.upgrade' : 'dashboard';
         $message = FegiAuth::isWeakAuth()
             ? __('user_domains.upgrade_for_access')
             : __('user_domains.insufficient_permissions');
@@ -402,8 +415,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return string|null Permission required for this domain
      */
-    protected function getRequiredDomainPermission(): ?string
-    {
+    protected function getRequiredDomainPermission(): ?string {
         // Override in child controllers to specify domain permissions
         // Examples:
         // - PersonalDataController: 'edit_own_personal_data'
@@ -421,8 +433,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return bool True if user can access organization data
      */
-    protected function canAccessOrganizationData(): bool
-    {
+    protected function canAccessOrganizationData(): bool {
         if (!FegiAuth::check()) {
             return false;
         }
@@ -441,8 +452,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return string ISO 3166-1 alpha-2 country code (IT,PT,FR,ES,EN,DE)
      */
-    protected function getUserCountry(): string
-    {
+    protected function getUserCountry(): string {
         $user = FegiAuth::user();
 
         // Try user's country from profile
@@ -468,8 +478,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return string|null Detected MVP country code or null
      */
-    private function detectCountryFromRequest(): ?string
-    {
+    private function detectCountryFromRequest(): ?string {
         // Try to detect from Accept-Language header (MVP countries only)
         $acceptLanguage = request()->header('Accept-Language');
         if ($acceptLanguage) {
@@ -503,8 +512,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return string User display name appropriate for current auth context
      */
-    protected function getUserDisplayName(): string
-    {
+    protected function getUserDisplayName(): string {
         $user = FegiAuth::user();
 
         if (!$user) {
@@ -530,8 +538,7 @@ abstract class BaseUserDomainController extends Controller
      *
      * @return array<string, string> Array of MVP country codes and names
      */
-    protected function getMvpCountries(): array
-    {
+    protected function getMvpCountries(): array {
         return $this->mvpCountries;
     }
 
@@ -545,8 +552,7 @@ abstract class BaseUserDomainController extends Controller
      * @param string $countryCode ISO 3166-1 alpha-2 country code
      * @return bool True if country is in MVP list, false otherwise
      */
-    protected function isValidMvpCountry(string $countryCode): bool
-    {
+    protected function isValidMvpCountry(string $countryCode): bool {
         return isset($this->mvpCountries[strtoupper($countryCode)]);
     }
 }

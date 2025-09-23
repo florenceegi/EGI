@@ -23,17 +23,6 @@ use Throwable;
  * @single-source-truth Uses Spatie permissions instead of hardcoded lists
  */
 class FegiAuth {
-    /**
-     * Cache dell'utente risolto per la richiesta corrente.
-     * @var User|null
-     */
-    protected static ?User $resolvedUser = null;
-
-    /**
-     * Flag per indicare se la risoluzione dell'utente è stata tentata per questa richiesta.
-     * @var bool
-     */
-    protected static bool $userResolutionAttempted = false;
 
     /**
      * @Oracode Get currently authenticated user (Strong or Weak)
@@ -45,20 +34,14 @@ class FegiAuth {
      * @unified-auth Returns user from any auth type
      */
     public static function user(): ?User {
-        // Se l'utente è già stato risolto per questa richiesta, restituisci il risultato cachato.
-        if (static::$userResolutionAttempted) {
-            return static::$resolvedUser;
-        }
-
-        // Segna che la risoluzione è stata tentata.
-        static::$userResolutionAttempted = true;
+        // FIXED: No caching to avoid null-cache corruption
+        // Always attempt fresh resolution to ensure reliability
 
         // 1. Prova a ottenere l'utente dall'autenticazione FORTE (guard 'web')
         $user = Auth::guard('web')->user();
 
         if ($user) {
-            static::$resolvedUser = $user;
-            return static::$resolvedUser;
+            return $user;
         }
 
         // 2. Se NON c'è un utente forte, controlla la sessione per i dati dell'autenticazione DEBOLE
@@ -71,14 +54,11 @@ class FegiAuth {
             if ($user) {
                 // Assicurati che l'utente weak abbia il ruolo corretto
                 static::ensureWeakAuthRole($user);
-
-                static::$resolvedUser = $user;
-                return static::$resolvedUser;
+                return $user;
             }
         }
 
-        static::$resolvedUser = null;
-        return static::$resolvedUser;
+        return null;
     }
 
     /**
@@ -431,9 +411,39 @@ class FegiAuth {
             Auth::guard('web')->logout();
         }
 
-        // Resetta lo stato interno dell'helper
-        static::$resolvedUser = null;
-        static::$userResolutionAttempted = false;
+        // Cache removed - no internal state to reset
+    }
+
+    /**
+     * @Oracode DEBUG: Force user resolution refresh and detailed logging
+     * 🎯 Purpose: Reset cache and provide detailed debug information
+     * 📤 Output: Debug information array
+     */
+    public static function debugUserResolution(): array {
+        $debugInfo = [
+            'timestamp' => now()->toISOString(),
+            'strong_auth' => [
+                'guard_check' => Auth::guard('web')->check(),
+                'guard_user' => Auth::guard('web')->user()?->id,
+                'auth_check' => Auth::check(),
+                'auth_user' => Auth::user()?->id
+            ],
+            'weak_auth' => [
+                'session_auth_status' => session('auth_status'),
+                'session_connected_user_id' => session('connected_user_id'),
+                'session_exists' => session()->has('connected_user_id'),
+                'session_id' => session()->getId()
+            ],
+            'resolved_user' => null
+        ];
+
+        // Force fresh user resolution
+        $user = static::user();
+        $debugInfo['resolved_user'] = $user?->id;
+
+        \Log::info('[FEGI_AUTH_DEBUG] Complete debug resolution', $debugInfo);
+
+        return $debugInfo;
     }
 
     /**
@@ -470,7 +480,6 @@ class FegiAuth {
      * @internal
      */
     public static function flushState(): void {
-        static::$resolvedUser = null;
-        static::$userResolutionAttempted = false;
+        // Cache removed - no state to flush
     }
 }

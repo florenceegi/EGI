@@ -9,7 +9,7 @@
     <title>Certificate of Authenticity - {{ $certificate['serial'] }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <style>
         /* Custom styles for zoom slider */
         #zoom-slider {
@@ -34,7 +34,7 @@
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         #zoom-slider::-moz-range-track {
@@ -51,7 +51,7 @@
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         /* Smooth transitions for image transform */
@@ -967,7 +967,7 @@
         function openImageViewer(images, startIndex = 0) {
             currentImages = images;
             currentImageIndex = startIndex;
-            
+
             // Reset zoom and pan
             currentZoom = 100;
             panX = 0;
@@ -1038,12 +1038,18 @@
             zoomOutBtn.addEventListener('click', zoomOut);
             resetBtn.addEventListener('click', resetZoom);
             fitBtn.addEventListener('click', fitToScreen);
-            container.addEventListener('wheel', handleWheel, { passive: false });
+            container.addEventListener('wheel', handleWheel, {
+                passive: false
+            });
             container.addEventListener('mousedown', handleMouseDown);
 
             // Touch events for mobile
-            container.addEventListener('touchstart', handleTouchStart, { passive: false });
-            container.addEventListener('touchmove', handleTouchMove, { passive: false });
+            container.addEventListener('touchstart', handleTouchStart, {
+                passive: false
+            });
+            container.addEventListener('touchmove', handleTouchMove, {
+                passive: false
+            });
             container.addEventListener('touchend', handleTouchEnd);
 
             // Mouse move and up events (global)
@@ -1080,7 +1086,7 @@
         function fitToScreen() {
             const container = document.getElementById('image-container');
             const img = document.getElementById('viewer-image');
-            
+
             // Wait for image to load if needed
             if (img.naturalWidth === 0) {
                 img.onload = fitToScreen;
@@ -1090,7 +1096,7 @@
             const containerRect = container.getBoundingClientRect();
             const scaleX = (containerRect.width * 0.9) / img.naturalWidth;
             const scaleY = (containerRect.height * 0.9) / img.naturalHeight;
-            
+
             // Don't go above 100% (original size) initially
             const scale = Math.min(scaleX, scaleY, 1);
 
@@ -1104,7 +1110,7 @@
         function updateZoomControls() {
             const slider = document.getElementById('zoom-slider');
             const zoomLevel = document.getElementById('zoom-level');
-            
+
             if (slider && zoomLevel) {
                 slider.value = currentZoom;
                 zoomLevel.textContent = currentZoom + '%';
@@ -1147,12 +1153,12 @@
             if (isDragging && currentZoom > 100) {
                 const deltaX = e.clientX - lastMouseX;
                 const deltaY = e.clientY - lastMouseY;
-                
+
                 panX += deltaX / (currentZoom / 100);
                 panY += deltaY / (currentZoom / 100);
-                
+
                 updateImageTransform();
-                
+
                 lastMouseX = e.clientX;
                 lastMouseY = e.clientY;
             }
@@ -1190,12 +1196,12 @@
                 // Single touch - pan
                 const deltaX = e.touches[0].clientX - lastTouchX;
                 const deltaY = e.touches[0].clientY - lastTouchY;
-                
+
                 panX += deltaX / (currentZoom / 100);
                 panY += deltaY / (currentZoom / 100);
-                
+
                 updateImageTransform();
-                
+
                 lastTouchX = e.touches[0].clientX;
                 lastTouchY = e.touches[0].clientY;
             } else if (e.touches.length === 2) {
@@ -1206,14 +1212,14 @@
                     Math.pow(touch2.clientX - touch1.clientX, 2) +
                     Math.pow(touch2.clientY - touch1.clientY, 2)
                 );
-                
+
                 if (lastTouchDistance > 0) {
                     const scale = distance / lastTouchDistance;
                     currentZoom = Math.max(25, Math.min(400, currentZoom * scale));
                     updateZoomControls();
                     updateImageTransform();
                 }
-                
+
                 lastTouchDistance = distance;
             }
             e.preventDefault();
@@ -1234,16 +1240,16 @@
                 container.removeEventListener('touchmove', handleTouchMove);
                 container.removeEventListener('touchend', handleTouchEnd);
             }
-            
+
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
-            
+
             // Reset state
             currentZoom = 100;
             panX = 0;
             panY = 0;
             isDragging = false;
-            
+
             document.getElementById('image-viewer-modal').classList.add('hidden');
         }
 
