@@ -140,7 +140,6 @@ return [
     'pdf_creation_date' => 'Data Creazione',
     'pdf_internal_id' => 'ID Interno',
     'pdf_certificate_type' => 'Tipo Certificato',
-    'pdf_core_certificate' => 'Certificato Base',
     'pdf_blockchain_status' => 'Stato Blockchain',
     'pdf_verified_on_chain' => 'Verificato su Blockchain',
     'pdf_description' => 'Descrizione',
@@ -206,6 +205,17 @@ return [
     'pdf_authorized_signature' => 'Firma Autorizzata',
     'pdf_date_and_stamp' => 'Data e Timbro',
     'pdf_last_update' => 'Ultimo aggiornamento',
+
+    // PDF Professional New - Additional Keys
+    'pdf_certificate_id' => 'ID Certificato',
+    'category_platform_metadata' => 'Metadata Piattaforma',
+    'pdf_verification_title' => 'Verifica Certificato',
+    'pdf_scan_prompt' => 'Scansiona il QR code per verificare l\'autenticità del certificato online',
+    'pdf_additional_info_title' => 'Informazioni Aggiuntive',
+    'pdf_stamp_area' => 'Area Timbro',
+    'pdf_stamp_caption' => 'Timbro Autore',
+    'pdf_author_signature' => 'Firma Autore',
+    'pdf_core_certificate' => 'Certificato Base',
 
     // Common Fallbacks
     'not_available' => 'N/A',

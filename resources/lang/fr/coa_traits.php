@@ -80,4 +80,18 @@ return [
         'modal_not_ready' => 'Le système de sélection du vocabulaire n\'est pas encore chargé. Veuillez réessayer dans quelques secondes.',
         'modal_malfunction' => 'Erreur dans le système de sélection. Veuillez recharger la page et réessayer.',
     ],
+
+    // PDF Professional New - Additional Keys
+    'pdf_certificate_id' => 'ID Certificat',
+    'category_platform_metadata' => 'Métadonnées Plateforme',
+    'pdf_verification_title' => 'Vérification Certificat',
+    'pdf_scan_prompt' => 'Scannez le code QR pour vérifier l\'authenticité du certificat en ligne',
+    'pdf_additional_info_title' => 'Informations Supplémentaires',
+    'pdf_stamp_area' => 'Zone Tampon',
+    'pdf_stamp_caption' => 'Tampon Auteur',
+    'pdf_author_signature' => 'Signature Auteur',
+    'pdf_core_certificate' => 'Certificat de Base',
+
+    // Common Fallbacks
+    'not_available' => 'N/D',
 ];

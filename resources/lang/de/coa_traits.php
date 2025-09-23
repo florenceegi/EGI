@@ -80,4 +80,18 @@ return [
         'modal_not_ready' => 'Das Vokabular-Auswahlsystem ist noch nicht geladen. Bitte versuchen Sie es in einigen Sekunden erneut.',
         'modal_malfunction' => 'Fehler im Auswahlsystem. Bitte laden Sie die Seite neu und versuchen Sie es erneut.',
     ],
+
+    // PDF Professional New - Additional Keys
+    'pdf_certificate_id' => 'Zertifikat-ID',
+    'category_platform_metadata' => 'Plattform-Metadaten',
+    'pdf_verification_title' => 'Zertifikat-Verifizierung',
+    'pdf_scan_prompt' => 'Scannen Sie den QR-Code, um die Authentizität des Zertifikats online zu überprüfen',
+    'pdf_additional_info_title' => 'Zusätzliche Informationen',
+    'pdf_stamp_area' => 'Stempelbereich',
+    'pdf_stamp_caption' => 'Autor-Stempel',
+    'pdf_author_signature' => 'Autor-Unterschrift',
+    'pdf_core_certificate' => 'Basiszertifikat',
+
+    // Common Fallbacks
+    'not_available' => 'N/V',
 ];
