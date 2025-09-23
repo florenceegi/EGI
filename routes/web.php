@@ -319,6 +319,10 @@ Route::group(['prefix' => 'egis'], function () {
     Route::delete('/{egi}', [App\Http\Controllers\EgiController::class, 'destroy'])
         ->name('egis.destroy');
 
+    // Dossier API endpoint
+    Route::get('/{egi}/dossier', [App\Http\Controllers\EgiController::class, 'dossier'])
+        ->name('egis.dossier');
+
     // Trait management routes
     Route::middleware('auth')->group(function () {
         Route::get('/{egi}/traits', [TraitsApiController::class, 'getEgiTraits'])
