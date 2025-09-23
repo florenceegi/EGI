@@ -5,6 +5,7 @@ namespace App\Services\Coa;
 use App\Models\Coa;
 use App\Models\CoaEvent;
 use App\Models\CoaBundle;
+use App\Services\Coa\CoaPdfService;
 use App\Services\Coa\HashingService;
 use App\Services\Coa\AnnexService;
 use Ultra\UltraLogManager\UltraLogManager;
@@ -886,6 +887,104 @@ class BundleService {
             return '30-60 seconds';
         } else {
             return '1-3 minutes';
+        }
+    }
+
+    /**
+     * Check if PDF exists for a CoA certificate
+     *
+     * @param Coa $coa
+     * @return bool
+     * @privacy-safe File existence check only
+     */
+    public function pdfExists(Coa $coa): bool {
+        try {
+            // Prefer DB record + Storage check via CoaFile
+            $file = $coa->getMainPdf();
+            if ($file && isset($file->path)) {
+                return Storage::exists($file->path);
+            }
+
+            // Fallback: legacy local path (older placeholder generation)
+            $pdfPath = $this->getPdfPath($coa);
+            return is_string($pdfPath) && file_exists($pdfPath);
+        } catch (\Exception $e) {
+            $this->logger->warning('PDF existence check failed', [
+                'coa_id' => $coa->id,
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Get PDF file path for a CoA certificate
+     *
+     * @param Coa $coa
+     * @return string
+     * @privacy-safe Path generation only
+     */
+    public function getPdfPath(Coa $coa): string {
+        // If a CoaFile exists, return absolute path via Storage
+        $file = $coa->getMainPdf();
+        if ($file && isset($file->path)) {
+            return Storage::path($file->path);
+        }
+
+        // Fallback to legacy location (placeholder-era)
+        $directory = storage_path('app/coa/pdf');
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+        return $directory . "/coa-{$coa->id}-{$coa->serial}.pdf";
+    }
+
+    /**
+     * Generate PDF file for a CoA certificate
+     *
+     * @param Coa $coa
+     * @return string Path to generated PDF
+     * @privacy-safe PDF generation with audit trail
+     */
+    public function generateCoaPdf(Coa $coa): string {
+        try {
+            // If already exists (via CoaFile), return absolute path
+            $existing = $coa->getMainPdf();
+            if ($existing && isset($existing->path) && Storage::exists($existing->path)) {
+                return Storage::path($existing->path);
+            }
+
+            // Delegate to the real PDF generator service (DomPDF based)
+            /** @var CoaPdfService $pdfService */
+            $pdfService = app(CoaPdfService::class);
+            $result = $pdfService->generateCorePdf($coa, Auth::user(), [
+                'format' => 'A4',
+                'orientation' => 'portrait'
+            ]);
+
+            $absolutePath = isset($result['path']) ? Storage::path($result['path']) : null;
+
+            $this->logger->info('COA PDF generated (CoaPdfService)', [
+                'coa_id' => $coa->id,
+                'coa_serial' => $coa->serial,
+                'storage_path' => $result['path'] ?? null,
+                'absolute_path' => $absolutePath,
+                'file_size' => $result['file_size'] ?? null,
+                'file_hash' => $result['file_hash'] ?? null,
+            ]);
+
+            if (!$absolutePath) {
+                throw new \Exception('PDF generated but path is missing');
+            }
+
+            return $absolutePath;
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_PDF_GENERATION_ERROR', [
+                'coa_id' => $coa->id,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
         }
     }
 }

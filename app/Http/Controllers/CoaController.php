@@ -312,7 +312,8 @@ class CoaController extends Controller {
             $validator = Validator::make($request->all(), [
                 'egi_id' => 'required|integer|exists:egis,id',
                 'issued_by' => 'nullable|string|max:255',
-                'notes' => 'nullable|string|max:1000'
+                'notes' => 'nullable|string|max:1000',
+                'auto_generate_pdf' => 'nullable|boolean'
             ]);
 
             if ($validator->fails()) {
@@ -359,13 +360,37 @@ class CoaController extends Controller {
                 return; // UEM ha già gestito la risposta di errore
             }
 
+            // Auto-generate PDF if requested
+            $pdfGenerated = false;
+            if ($request->boolean('auto_generate_pdf', false)) {
+                try {
+                    $bundleService = app(BundleService::class);
+                    $bundleService->generateCoaPdf($coa);
+                    $pdfGenerated = true;
+
+                    $this->logger->info('[CoA Controller] PDF auto-generated', [
+                        'coa_id' => $coa->id,
+                        'serial' => $coa->serial,
+                        'user_id' => $user->id
+                    ]);
+                } catch (\Exception $e) {
+                    $this->logger->warning('[CoA Controller] PDF auto-generation failed', [
+                        'coa_id' => $coa->id,
+                        'error' => $e->getMessage(),
+                        'user_id' => $user->id
+                    ]);
+                }
+            }
+
             $response = [
                 'success' => true,
                 'message' => 'Certificate issued successfully',
                 'data' => [
                     'certificate' => $coa,
                     'egi' => $egi,
-                    'issued_at' => now()->toIso8601String()
+                    'issued_at' => now()->toIso8601String(),
+                    'pdf_generated' => $pdfGenerated,
+                    'pdf_url' => $pdfGenerated ? route('coa.pdf.download', $coa) : null
                 ]
             ];
 
@@ -393,7 +418,7 @@ class CoaController extends Controller {
                 'user_id' => Auth::id(),
                 'request_data' => $request->all()
             ]);
-            
+
             // Utilizziamo la convenzione UEM standard - l'ErrorManager gestisce tutto
             $this->errorManager->handle('COA_ISSUE_ERROR', [], $e);
             // UEM gestisce automaticamente la risposta, non restituiamo nulla manualmente
@@ -1695,6 +1720,145 @@ class CoaController extends Controller {
                 'success' => false,
                 'message' => 'Failed to check issue requirements'
             ], 500);
+        }
+    }
+
+    /**
+     * Check if PDF exists for a CoA certificate
+     * @param Coa $coa
+     * @return JsonResponse
+     */
+    public function checkPdf(Coa $coa): JsonResponse {
+        try {
+            $bundleService = app(BundleService::class);
+            $pdfExists = $bundleService->pdfExists($coa);
+
+            return response()->json([
+                'success' => true,
+                'pdf_exists' => $pdfExists,
+                'pdf_url' => $pdfExists ? route('coa.pdf.download', $coa) : null,
+                'download_url' => $pdfExists ? route('coa.pdf.download', $coa) : null
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_PDF_CHECK_ERROR', [
+                'coa_id' => $coa->id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to check PDF status'
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate PDF for a CoA certificate
+     * @param Coa $coa
+     * @return JsonResponse
+     */
+    public function generatePdf(Coa $coa): JsonResponse {
+        try {
+            $bundleService = app(BundleService::class);
+            $pdfPath = $bundleService->generateCoaPdf($coa);
+
+            // Log PDF generation
+            $this->logger->info('COA PDF generated', [
+                'coa_id' => $coa->id,
+                'coa_serial' => $coa->serial,
+                'user_id' => Auth::id(),
+                'pdf_path' => $pdfPath
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'PDF generated successfully',
+                'download_url' => route('coa.pdf.download', $coa)
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_PDF_GENERATION_ERROR', [
+                'coa_id' => $coa->id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate PDF'
+            ], 500);
+        }
+    }
+
+    /**
+     * Download PDF for a CoA certificate
+     * @param Coa $coa
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function downloadPdf(Coa $coa) {
+        try {
+            $bundleService = app(BundleService::class);
+
+            // Check if PDF exists, generate if not
+            if (!$bundleService->pdfExists($coa)) {
+                $bundleService->generateCoaPdf($coa);
+            }
+
+            $pdfPath = $bundleService->getPdfPath($coa);
+            $filename = "CoA-{$coa->serial}.pdf";
+
+            // Log PDF download
+            $this->logger->info('COA PDF downloaded', [
+                'coa_id' => $coa->id,
+                'coa_serial' => $coa->serial,
+                'user_id' => Auth::id(),
+                'filename' => $filename
+            ]);
+
+            return response()->download($pdfPath, $filename);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_PDF_DOWNLOAD_ERROR', [
+                'coa_id' => $coa->id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ], $e);
+
+            return redirect()->back()->with('error', 'Failed to download PDF');
+        }
+    }
+
+    /**
+     * View CoA certificate in HTML format
+     * @param Coa $coa
+     * @return \Illuminate\View\View
+     */
+    public function viewCertificate(Coa $coa) {
+        try {
+            // Load relationships needed for certificate view
+            $coa->load([
+                'egi.user',
+                'annexes',
+                'signatures',
+                'events'
+            ]);
+
+            // Log certificate view
+            $this->logger->info('COA certificate viewed (HTML)', [
+                'coa_id' => $coa->id,
+                'coa_serial' => $coa->serial,
+                'user_id' => Auth::id() ?? 'anonymous',
+                'viewer_ip' => request()->ip()
+            ]);
+
+            return view('coa.certificate', compact('coa'));
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_CERTIFICATE_VIEW_ERROR', [
+                'coa_id' => $coa->id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ], $e);
+
+            return redirect()->back()->with('error', 'Failed to load certificate view');
         }
     }
 }

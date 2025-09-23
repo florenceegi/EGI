@@ -48,6 +48,11 @@ Route::group(['prefix' => 'coa/verify', 'as' => 'coa.verify.'], function () {
         ->name('view')
         ->where('hash', '[a-f0-9]{64}');
 
+    // Visualizza certificato tramite numero seriale (HTML view)
+    Route::get('/certificate/{serial}/view', [VerifyController::class, 'viewCertificate'])
+        ->name('certificate.view')
+        ->where('serial', '[A-Z0-9\-]+');
+
     // Visualizza certificato specifico tramite numero seriale (HTML)
     Route::get('/certificate/{serial}/view', [VerifyController::class, 'viewCertificateBySerial'])
         ->name('certificate.view')
@@ -103,7 +108,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Dettagli certificato specifico
         Route::get('/{coa}', [CoaController::class, 'show'])
             ->name('show')
-            ->where('coa', '[0-9]+');
+            ->where('coa', '[A-Za-z0-9-]+');
 
         // Emissione nuovo certificato (richiede permessi)
         Route::post('/issue', [CoaController::class, 'issue'])
@@ -112,20 +117,45 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Ri-emissione certificato esistente
         Route::post('/{coa}/reissue', [CoaController::class, 'reissue'])
             ->name('reissue')
-            ->where('coa', '[0-9]+')
+            ->where('coa', '[A-Za-z0-9-]+')
             ->middleware(['throttle:coa_reissue,5,1', 'role:admin|expert']);
 
         // Revoca certificato
         Route::post('/{coa}/revoke', [CoaController::class, 'revoke'])
             ->name('revoke')
-            ->where('coa', '[0-9]+')
+            ->where('coa', '[A-Za-z0-9-]+')
             ->middleware(['throttle:coa_revoke,5,1', 'role:admin|expert']);
 
         // Creazione bundle con annessi
         Route::post('/{coa}/bundle', [CoaController::class, 'createBundle'])
             ->name('bundle')
-            ->where('coa', '[0-9]+')
+            ->where('coa', '[A-Za-z0-9-]+')
             ->middleware('throttle:coa_bundle,20,1');
+
+        // ====================================================
+        // COA PDF ROUTES
+        // ====================================================
+
+        // Controllo esistenza PDF
+        Route::get('/{coa}/pdf/check', [CoaController::class, 'checkPdf'])
+            ->name('pdf.check')
+            ->where('coa', '[A-Za-z0-9-]+');
+
+        // Generazione PDF
+        Route::post('/{coa}/pdf/generate', [CoaController::class, 'generatePdf'])
+            ->name('pdf.generate')
+            ->where('coa', '[A-Za-z0-9-]+')
+            ->middleware('throttle:coa_pdf,10,1');
+
+        // Download PDF
+        Route::get('/{coa}/pdf/download', [CoaController::class, 'downloadPdf'])
+            ->name('pdf.download')
+            ->where('coa', '[A-Za-z0-9-]+');
+
+        // Visualizzazione HTML certificato
+        Route::get('/{coa}/view', [CoaController::class, 'viewCertificate'])
+            ->name('view')
+            ->where('coa', '[A-Za-z0-9-]+');
 
         // Statistiche avanzate (admin only)
         Route::get('/statistics', [CoaController::class, 'statistics'])
@@ -142,34 +172,34 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Lista annessi del certificato
         Route::get('/', [AnnexController::class, 'index'])
             ->name('index')
-            ->where('coa', '[0-9]+');
+            ->where('coa', '[A-Za-z0-9-]+');
 
         // Dettagli annesso specifico
         Route::get('/{annex}', [AnnexController::class, 'show'])
             ->name('show')
-            ->where(['coa' => '[0-9]+', 'annex' => '[0-9]+']);
+            ->where(['coa' => '[A-Za-z0-9-]+', 'annex' => '[0-9]+']);
 
         // Creazione nuovo annesso
         Route::post('/', [AnnexController::class, 'store'])
             ->name('store')
-            ->where('coa', '[0-9]+')
+            ->where('coa', '[A-Za-z0-9-]+')
             ->middleware(['throttle:annex_create,15,1', 'role:admin|expert']);
 
         // Aggiornamento annesso esistente
         Route::put('/{annex}', [AnnexController::class, 'update'])
             ->name('update')
-            ->where(['coa' => '[0-9]+', 'annex' => '[0-9]+'])
+            ->where(['coa' => '[A-Za-z0-9-]+', 'annex' => '[0-9]+'])
             ->middleware(['throttle:annex_update,20,1', 'role:admin|expert']);
 
         // Cronologia modifiche annesso
         Route::get('/{annex}/history', [AnnexController::class, 'history'])
             ->name('history')
-            ->where(['coa' => '[0-9]+', 'annex' => '[0-9]+']);
+            ->where(['coa' => '[A-Za-z0-9-]+', 'annex' => '[0-9]+']);
 
         // Verifica integrità annesso
         Route::post('/{annex}/verify', [AnnexController::class, 'verifyIntegrity'])
             ->name('verify')
-            ->where(['coa' => '[0-9]+', 'annex' => '[0-9]+'])
+            ->where(['coa' => '[A-Za-z0-9-]+', 'annex' => '[0-9]+'])
             ->middleware('throttle:annex_verify,30,1');
     });
 
