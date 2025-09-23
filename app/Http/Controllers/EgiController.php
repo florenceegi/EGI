@@ -550,4 +550,83 @@ class EgiController extends Controller {
             ]);
         }
     }
+
+    /**
+     * Get dossier data for an EGI including utility gallery images
+     *
+     * @param Egi $egi
+     * @return JsonResponse
+     */
+    public function dossier(Egi $egi): JsonResponse {
+        try {
+            $this->logger->info('Loading dossier for EGI', ['egi_id' => $egi->id]);
+
+            // Load utility with media
+            $utility = $egi->utility()->with('media')->first();
+
+            if (!$utility) {
+                $this->logger->info('No utility found for EGI', ['egi_id' => $egi->id]);
+                return response()->json([
+                    'status' => 'no_utility',
+                    'message' => 'No utility configured for this EGI'
+                ]);
+            }
+
+            // Get utility gallery images
+            $images = $utility->getMedia('utility_gallery');
+            $this->logger->info('Found utility with images', ['utility_id' => $utility->id, 'images_count' => $images->count()]);
+
+            if ($images->isEmpty()) {
+                $this->logger->info('No images found in utility gallery', ['utility_id' => $utility->id]);
+                return response()->json([
+                    'status' => 'no_images',
+                    'message' => 'Utility exists but no images available'
+                ]);
+            }
+
+            // Format image data
+            $imageData = $images->map(function ($media) {
+                return [
+                    'id' => $media->id,
+                    'name' => $media->name,
+                    'file_name' => $media->file_name,
+                    'url' => $media->getUrl(),
+                    'thumb_url' => $media->getUrl('thumb'),
+                    'medium_url' => $media->getUrl('medium'),
+                    'size' => $media->size,
+                    'mime_type' => $media->mime_type,
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'egi' => [
+                        'id' => $egi->id,
+                        'title' => $egi->title,
+                        'internal_id' => str_pad($egi->id, 7, '0', STR_PAD_LEFT),
+                        'author' => $egi->collection->creator->name ?? 'Unknown',
+                        'year' => $egi->created_at->format('Y'),
+                    ],
+                    'utility' => [
+                        'id' => $utility->id,
+                        'title' => $utility->title,
+                        'type' => $utility->type,
+                        'images_count' => $images->count(),
+                    ],
+                    'images' => $imageData
+                ]
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load dossier data', [
+                'egi_id' => $egi->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to load dossier data'
+            ], 500);
+        }
+    }
 }
