@@ -276,4 +276,70 @@ trait EgiTraitsExtraction {
 
         return null;
     }
+
+    /**
+     * Estrae la località di emissione dai dati personali dell'utente
+     *
+     * @param \App\Models\User $user
+     * @return string|null
+     */
+    protected function extractIssueLocation(\App\Models\User $user): ?string {
+        // Carica la relazione con i dati personali se non già caricata
+        if (!$user->relationLoaded('personalData')) {
+            $user->load('personalData');
+        }
+
+        $personalData = $user->personalData;
+
+        if (!$personalData) {
+            return null;
+        }
+
+        // Costruisci la località combinando città, regione e paese
+        $locationParts = [];
+
+        if (!empty($personalData->city)) {
+            $locationParts[] = $personalData->city;
+        }
+
+        if (!empty($personalData->region) && $personalData->region !== $personalData->city) {
+            $locationParts[] = $personalData->region;
+        }
+
+        if (!empty($personalData->country)) {
+            // Se il paese è un codice a 2 lettere, convertilo in nome leggibile
+            $countryName = $this->getCountryName($personalData->country);
+            if ($countryName && !in_array($countryName, $locationParts)) {
+                $locationParts[] = $countryName;
+            }
+        }
+
+        return !empty($locationParts) ? implode(', ', $locationParts) : null;
+    }
+
+    /**
+     * Converte un codice paese ISO in nome leggibile
+     *
+     * @param string $countryCode
+     * @return string|null
+     */
+    private function getCountryName(string $countryCode): ?string {
+        $countries = [
+            'IT' => 'Italia',
+            'US' => 'USA',
+            'GB' => 'Regno Unito',
+            'FR' => 'Francia',
+            'DE' => 'Germania',
+            'ES' => 'Spagna',
+            'CH' => 'Svizzera',
+            'AT' => 'Austria',
+            'NL' => 'Paesi Bassi',
+            'BE' => 'Belgio',
+            'PT' => 'Portogallo',
+            'GR' => 'Grecia',
+            // Aggiungi altri paesi secondo necessità
+        ];
+
+        return $countries[strtoupper($countryCode)] ?? $countryCode;
+    }
 }
