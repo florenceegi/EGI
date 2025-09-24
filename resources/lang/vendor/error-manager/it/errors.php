@@ -407,6 +407,30 @@ return [
         'addendum_history_error' => 'Errore controller cronologia addendum. Addendum ID: :addendum_id, Errore: :error',
         'addendum_archive_error' => 'Errore controller archiviazione addendum. Addendum ID: :addendum_id, Errore: :error',
         'rarity_policies_error' => 'Recupero policy rarità fallito. Errore: :error',
+
+        // COA PDF Generation & QES Sandbox - Messaggi Dev (IT)
+        'coa_pdf_core_generation_error' => 'Generazione PDF principale del CoA fallita. Errore: :error',
+        'coa_pdf_bundle_generation_error' => 'Generazione bundle PDF CoA fallita. Errore: :error',
+        'coa_pdf_url_generation_error' => 'Generazione URL pubblico per PDF CoA fallita. Errore: :error',
+        'coa_pdf_integrity_check_error' => 'Errore durante il controllo di integrità del PDF CoA. Errore: :error',
+        'coa_pdf_integrity_failure' => 'Verifica di integrità del PDF CoA fallita. Gli hash atteso e calcolato non coincidono.',
+        // Legacy controller-level mappings
+        'coa_pdf_generation_error' => 'Generazione PDF CoA fallita. Errore: :error',
+        'coa_pdf_download_error' => 'Download PDF CoA fallito. Errore: :error',
+        'coa_pdf_check_error' => 'Verifica PDF CoA fallita. Errore: :error',
+
+        // QES/TSA Sandbox (mock + orchestrator) - Messaggi Dev (IT)
+        'coa_qes_author_sign_failed' => 'Firma QES Autore fallita (sandbox). Motivo: :reason',
+        'coa_qes_author_sign_exception' => 'Eccezione durante firma QES Autore. Errore: :error',
+        'coa_qes_inspector_sign_failed' => 'Controfirma perito fallita (sandbox). Motivo: :reason',
+        'coa_qes_inspector_sign_exception' => 'Eccezione durante controfirma del perito. Errore: :error',
+        'coa_qes_timestamp_failed' => 'Applicazione timestamp fallita (sandbox). Motivo: :reason',
+        'coa_qes_timestamp_exception' => 'Eccezione durante applicazione timestamp. Errore: :error',
+        'coa_qes_verify_exception' => 'Eccezione durante verifica firme digitali. Errore: :error',
+        'coa_qes_mock_sign_error' => 'MockSignatureProvider::signPdf errore: :error',
+        'coa_qes_mock_cosign_error' => 'MockSignatureProvider::addCountersignature errore: :error',
+        'coa_qes_mock_ts_error' => 'MockSignatureProvider::addTimestamp errore: :error',
+        'coa_qes_mock_verify_error' => 'MockSignatureProvider::verifySignatures errore: :error',
     ],
     'user' => [
         // == Existing Entries ==
@@ -754,6 +778,30 @@ return [
         'addendum_history_error' => 'Impossibile caricare la cronologia dell\'addendum.',
         'addendum_archive_error' => 'Impossibile archiviare l\'addendum. Riprova.',
         'rarity_policies_error' => 'Impossibile caricare le policy di rarità.',
+
+        // COA PDF Generation & QES Sandbox - Messaggi Utente (IT)
+        'coa_pdf_core_generation_error' => 'Impossibile generare il PDF del certificato. Riprova più tardi.',
+        'coa_pdf_bundle_generation_error' => 'Impossibile creare il bundle PDF. Riprova.',
+        'coa_pdf_url_generation_error' => 'Impossibile generare il link al PDF. Riprova.',
+        'coa_pdf_integrity_check_error' => 'Si è verificato un problema durante la verifica del PDF. Riprova.',
+        'coa_pdf_integrity_failure' => 'Il PDF non ha superato il controllo di integrità. Scarica di nuovo il certificato.',
+        // Legacy controller-level mappings
+        'coa_pdf_generation_error' => 'Impossibile generare il PDF. Riprova.',
+        'coa_pdf_download_error' => 'Impossibile scaricare il PDF in questo momento. Riprova più tardi.',
+        'coa_pdf_check_error' => 'Impossibile verificare il PDF. Riprova.',
+
+        // QES/TSA Sandbox (mock + orchestrator) - Messaggi Utente (IT)
+        'coa_qes_author_sign_failed' => 'Firma digitale non applicata. Il certificato resta valido anche senza firma digitale.',
+        'coa_qes_author_sign_exception' => 'Problema nell’applicazione della firma digitale. Il certificato resta valido; riprova più tardi.',
+        'coa_qes_inspector_sign_failed' => 'Controfirma non applicata. Puoi continuare senza di essa.',
+        'coa_qes_inspector_sign_exception' => 'Problema nell’applicazione della controfirma. Puoi continuare senza di essa.',
+        'coa_qes_timestamp_failed' => 'Timestamp non applicato. Il documento resta utilizzabile.',
+        'coa_qes_timestamp_exception' => 'Problema nell’applicazione del timestamp. Riprova più tardi.',
+        'coa_qes_verify_exception' => 'Impossibile verificare le firme digitali in questo momento.',
+        'coa_qes_mock_sign_error' => 'Ambiente di test: errore nella simulazione della firma digitale.',
+        'coa_qes_mock_cosign_error' => 'Ambiente di test: errore nella simulazione della controfirma.',
+        'coa_qes_mock_ts_error' => 'Ambiente di test: errore nella simulazione del timestamp.',
+        'coa_qes_mock_verify_error' => 'Ambiente di test: errore nella simulazione della verifica firme.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

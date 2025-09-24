@@ -22,7 +22,7 @@ return [
         // Marca temporale RFC3161 (TSA)
         'tsa' => [
             'enabled'   => env('COA_TSA_ENABLED', false),
-            'policy_oid'=> env('COA_TSA_POLICY_OID', null),
+            'policy_oid' => env('COA_TSA_POLICY_OID', null),
             // Config per TSA Namirial (placeholder env)
             'namirial' => [
                 'sandbox' => [

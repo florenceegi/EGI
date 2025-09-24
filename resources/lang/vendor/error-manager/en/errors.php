@@ -406,6 +406,30 @@ return [
         'addendum_history_error' => 'Addendum history controller error. Addendum ID: :addendum_id, Error: :error',
         'addendum_archive_error' => 'Addendum archive controller error. Addendum ID: :addendum_id, Error: :error',
         'rarity_policies_error' => 'Rarity policies retrieval failed. Error: :error',
+
+        // COA PDF Generation & QES Sandbox - Dev Messages (EN)
+        'coa_pdf_core_generation_error' => 'Core PDF generation failed for CoA. Error: :error',
+        'coa_pdf_bundle_generation_error' => 'CoA PDF bundle generation failed. Error: :error',
+        'coa_pdf_url_generation_error' => 'Failed to generate public URL for CoA PDF. Error: :error',
+        'coa_pdf_integrity_check_error' => 'Error during CoA PDF integrity check. Error: :error',
+        'coa_pdf_integrity_failure' => 'CoA PDF integrity verification failed. Expected and actual hashes do not match.',
+        // Legacy controller-level mappings
+        'coa_pdf_generation_error' => 'CoA PDF generation failed. Error: :error',
+        'coa_pdf_download_error' => 'CoA PDF download failed. Error: :error',
+        'coa_pdf_check_error' => 'CoA PDF verification failed. Error: :error',
+
+        // QES/TSA Sandbox (mock + orchestrator) - Dev Messages (EN)
+        'coa_qes_author_sign_failed' => 'Author QES signing failed (sandbox). Reason: :reason',
+        'coa_qes_author_sign_exception' => 'Exception during author QES signing. Error: :error',
+        'coa_qes_inspector_sign_failed' => 'Inspector countersignature failed (sandbox). Reason: :reason',
+        'coa_qes_inspector_sign_exception' => 'Exception during inspector countersignature. Error: :error',
+        'coa_qes_timestamp_failed' => 'Timestamp application failed (sandbox). Reason: :reason',
+        'coa_qes_timestamp_exception' => 'Exception during timestamp application. Error: :error',
+        'coa_qes_verify_exception' => 'Exception during digital signature verification. Error: :error',
+        'coa_qes_mock_sign_error' => 'MockSignatureProvider::signPdf error: :error',
+        'coa_qes_mock_cosign_error' => 'MockSignatureProvider::addCountersignature error: :error',
+        'coa_qes_mock_ts_error' => 'MockSignatureProvider::addTimestamp error: :error',
+        'coa_qes_mock_verify_error' => 'MockSignatureProvider::verifySignatures error: :error',
     ],
     'user' => [
         // == Existing Entries ==
@@ -752,6 +776,30 @@ return [
         'addendum_history_error' => 'Unable to load addendum history.',
         'addendum_archive_error' => 'Unable to archive addendum. Please try again.',
         'rarity_policies_error' => 'Unable to load rarity policies.',
+
+        // COA PDF Generation & QES Sandbox - User Messages (EN)
+        'coa_pdf_core_generation_error' => 'Unable to generate the certificate PDF. Please try again later.',
+        'coa_pdf_bundle_generation_error' => 'Unable to create the PDF bundle. Please try again.',
+        'coa_pdf_url_generation_error' => 'Unable to generate the PDF link. Please try again.',
+        'coa_pdf_integrity_check_error' => 'A problem occurred while verifying the PDF. Please try again.',
+        'coa_pdf_integrity_failure' => 'The PDF failed the integrity check. Please download the certificate again.',
+        // Legacy controller-level mappings
+        'coa_pdf_generation_error' => 'Unable to generate the PDF. Please try again.',
+        'coa_pdf_download_error' => 'Unable to download the PDF right now. Please try again later.',
+        'coa_pdf_check_error' => 'Unable to verify the PDF. Please try again.',
+
+        // QES/TSA Sandbox (mock + orchestrator) - User Messages (EN)
+        'coa_qes_author_sign_failed' => 'Digital signature not applied. The certificate remains valid without the digital signature.',
+        'coa_qes_author_sign_exception' => 'There was a problem applying the digital signature. The certificate remains valid; please try again later.',
+        'coa_qes_inspector_sign_failed' => 'Countersignature not applied. You can continue without it.',
+        'coa_qes_inspector_sign_exception' => 'There was a problem applying the countersignature. You can continue without it.',
+        'coa_qes_timestamp_failed' => 'Timestamp not applied. The document remains usable.',
+        'coa_qes_timestamp_exception' => 'There was a problem applying the timestamp. Please try again later.',
+        'coa_qes_verify_exception' => 'Unable to verify digital signatures at the moment.',
+        'coa_qes_mock_sign_error' => 'Test environment: error simulating digital signature.',
+        'coa_qes_mock_cosign_error' => 'Test environment: error simulating countersignature.',
+        'coa_qes_mock_ts_error' => 'Test environment: error simulating timestamp.',
+        'coa_qes_mock_verify_error' => 'Test environment: error simulating signature verification.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

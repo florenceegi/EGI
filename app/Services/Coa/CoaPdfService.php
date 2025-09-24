@@ -181,6 +181,37 @@ class CoaPdfService {
                 'hash' => $fileHash
             ]);
 
+            // Optional: digital signature pipeline (feature-flagged)
+            try {
+                if ((bool) config('coa.signature.enabled', false)) {
+                    $this->logger->info('[CoA PDF] Signature feature enabled, invoking SignatureService');
+                    $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
+                    $signRes = $signatureService->signAuthor($coaFile, [
+                        'reason' => 'CoA Author signature',
+                    ]);
+                    if ($signRes['success'] ?? false) {
+                        // Attach signatures metadata onto CoA
+                        $meta = $coa->metadata ?? [];
+                        if (!is_array($meta)) {
+                            $meta = [];
+                        }
+                        $meta['signatures'] = array_values(array_filter(array_merge($meta['signatures'] ?? [], [
+                            $signRes['signature_info'] ?? []
+                        ])));
+                        $coa->update(['metadata' => $meta]);
+                        $this->logger->info('[CoA PDF] Author signature metadata attached');
+                    } else {
+                        $this->logger->warning('[CoA PDF] Author signature failed (non-blocking)', [
+                            'error' => $signRes['error'] ?? 'unknown'
+                        ]);
+                    }
+                }
+            } catch (\Throwable $e) {
+                $this->logger->warning('[CoA PDF] Signature pipeline error (non-blocking)', [
+                    'error' => $e->getMessage()
+                ]);
+            }
+
             // Log audit trail
             if ($user) {
                 $this->auditService->logUserAction($user, 'coa_pdf_generated', [
