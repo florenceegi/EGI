@@ -170,6 +170,55 @@ class CoaIssueService {
                 'issuer_name' => $coa->issuer_name
             ], GdprActivityCategory::GDPR_ACTIONS);
 
+            // Centralized, robust auto-PDF trigger (post-commit)
+            if (request()->boolean('auto_generate_pdf', false)) {
+                DB::afterCommit(function () use ($coa, $user) {
+                    try {
+                        /** @var \Ultra\UltraLogManager\UltraLogManager $logger */
+                        $logger = app(\Ultra\UltraLogManager\UltraLogManager::class);
+                        /** @var \Ultra\ErrorManager\Interfaces\ErrorManagerInterface $errorManager */
+                        $errorManager = app(\Ultra\ErrorManager\Interfaces\ErrorManagerInterface::class);
+
+                        $logger->info('[CoA Issue] Post-commit Auto-PDF generation start', [
+                            'coa_id' => $coa->id,
+                            'serial' => $coa->serial,
+                            'user_id' => $user->id
+                        ]);
+
+                        /** @var \App\Services\Coa\BundleService $bundleService */
+                        $bundleService = app(\App\Services\Coa\BundleService::class);
+
+                        // Generate only if not already available (avoids duplicates if controller already generated it)
+                        if (method_exists($bundleService, 'pdfExists') && !$bundleService->pdfExists($coa)) {
+                            $bundleService->generateCoaPdf($coa);
+                        }
+
+                        $logger->info('[CoA Issue] Post-commit Auto-PDF generation end', [
+                            'coa_id' => $coa->id,
+                            'serial' => $coa->serial,
+                            'user_id' => $user->id
+                        ]);
+                    } catch (\Throwable $e) {
+                        // Durable UEM handling with context
+                        app(\Ultra\ErrorManager\Interfaces\ErrorManagerInterface::class)
+                            ->handle('COA_AUTO_PDF_GENERATION_ERROR', [
+                                'coa_id' => $coa->id,
+                                'serial' => $coa->serial,
+                                'user_id' => $user->id,
+                                'ip_address' => request()->ip(),
+                                'timestamp' => now()->toIso8601String()
+                            ], $e);
+
+                        app(\Ultra\UltraLogManager\UltraLogManager::class)->warning('[CoA Issue] Post-commit Auto-PDF failed', [
+                            'coa_id' => $coa->id,
+                            'serial' => $coa->serial,
+                            'user_id' => $user->id,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                });
+            }
+
             return $coa;
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             throw $e; // Re-throw auth exceptions
@@ -693,7 +742,8 @@ class CoaIssueService {
             ];
 
             // Convert to normalized JSON for consistent hashing
-            $normalizedJson = json_encode($coreData, JSON_SORT_KEYS | JSON_UNESCAPED_UNICODE);
+            $flags = (\defined('JSON_SORT_KEYS') ? \JSON_SORT_KEYS : 0) | (\defined('JSON_UNESCAPED_UNICODE') ? \JSON_UNESCAPED_UNICODE : 0);
+            $normalizedJson = json_encode($coreData, $flags);
 
             if ($normalizedJson === false) {
                 throw new \Exception('Failed to encode core data for hashing');

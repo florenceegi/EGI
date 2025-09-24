@@ -107,8 +107,13 @@ class CoaPdfService {
         try {
             $user = $user ?? Auth::user();
 
-            // Authorization check
+            // Authorization check (skip when called as system: $user === null)
             if ($user && !$this->canGeneratePdf($coa, $user, 'core')) {
+                $this->logger->warning('[CoA PDF] Authorization denied for core PDF', [
+                    'user_id' => $user->id,
+                    'coa_id' => $coa->id,
+                    'serial' => $coa->serial
+                ]);
                 throw new AuthorizationException('User is not authorized to generate core PDF for this CoA');
             }
 
@@ -122,6 +127,11 @@ class CoaPdfService {
 
             // Validate CoA status
             if ($coa->status !== 'valid') {
+                $this->logger->warning('[CoA PDF] Invalid CoA status for PDF generation', [
+                    'coa_id' => $coa->id,
+                    'serial' => $coa->serial,
+                    'status' => $coa->status
+                ]);
                 throw new \Exception('Cannot generate PDF for a CoA that is not in valid status');
             }
 

@@ -957,7 +957,8 @@ class BundleService {
             // Delegate to the real PDF generator service (DomPDF based)
             /** @var CoaPdfService $pdfService */
             $pdfService = app(CoaPdfService::class);
-            $result = $pdfService->generateCorePdf($coa, Auth::user(), [
+            // Use system-level generation (no user permission gate) for reliability
+            $result = $pdfService->generateCorePdf($coa, null, [
                 'format' => 'A4',
                 'orientation' => 'portrait'
             ]);

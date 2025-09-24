@@ -463,7 +463,8 @@ class TraitsSnapshotService {
         ksort($traitsData);
 
         // Convert to JSON and hash
-        $jsonData = json_encode($traitsData, JSON_SORT_KEYS | JSON_UNESCAPED_UNICODE);
+        $flags = (\defined('JSON_SORT_KEYS') ? \JSON_SORT_KEYS : 0) | (\defined('JSON_UNESCAPED_UNICODE') ? \JSON_UNESCAPED_UNICODE : 0);
+        $jsonData = json_encode($traitsData, $flags);
 
         return hash('sha256', $jsonData);
     }

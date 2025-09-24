@@ -365,6 +365,11 @@ class CoaController extends Controller {
             if ($request->boolean('auto_generate_pdf', false)) {
                 try {
                     $bundleService = app(BundleService::class);
+                    $this->logger->info('[CoA Controller] Auto-PDF generation start', [
+                        'coa_id' => $coa->id,
+                        'serial' => $coa->serial,
+                        'user_id' => $user->id
+                    ]);
                     $bundleService->generateCoaPdf($coa);
                     $pdfGenerated = true;
 
@@ -374,10 +379,21 @@ class CoaController extends Controller {
                         'user_id' => $user->id
                     ]);
                 } catch (\Exception $e) {
+                    // UEM pattern: register structured error with context
+                    $this->errorManager->handle('COA_AUTO_PDF_GENERATION_ERROR', [
+                        'coa_id' => $coa->id,
+                        'serial' => $coa->serial,
+                        'user_id' => $user->id,
+                        'egi_id' => $egi->id,
+                        'ip_address' => $request->ip(),
+                        'timestamp' => now()->toIso8601String()
+                    ], $e);
+                    // ULM warning with concise summary
                     $this->logger->warning('[CoA Controller] PDF auto-generation failed', [
                         'coa_id' => $coa->id,
-                        'error' => $e->getMessage(),
-                        'user_id' => $user->id
+                        'serial' => $coa->serial,
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
                     ]);
                 }
             }
