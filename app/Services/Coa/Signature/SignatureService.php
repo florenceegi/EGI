@@ -56,7 +56,7 @@ class SignatureService {
 
     public function signAuthor(CoaFile $coaFile, array $meta = []): array {
         $hashAlgo = Config::get('coa.signature.hash_algo', 'sha256');
-        $absPath = Storage::path($coaFile->file_path);
+        $absPath = Storage::path($coaFile->path);
 
         try {
             $result = $this->provider->signPdf($absPath, [
@@ -75,17 +75,19 @@ class SignatureService {
             }
 
             $signedAbs = $result['signed_pdf_path'];
-            $newRel = $this->storeAsNewVersion($coaFile, $signedAbs, 'pdf_signed_author');
+            $newRecord = $this->storeAsNewVersion($coaFile, $signedAbs, 'pdf_signed_author');
 
             $signInfo = $result['signature_info'] ?? [];
             $this->logger->info('[SignatureService] Author signed version stored', [
                 'file_id' => $coaFile->id,
-                'new_path' => $newRel,
+                'new_path' => $newRecord->path,
             ]);
 
             return [
                 'success' => true,
-                'file_path' => $newRel,
+                'file_path' => $newRecord->path,
+                'file_id' => $newRecord->id,
+                'file' => $newRecord,
                 'signature_info' => $signInfo,
             ];
         } catch (\Throwable $e) {
@@ -102,8 +104,8 @@ class SignatureService {
     }
 
     public function countersignInspector(CoaFile $coaFile, array $meta = []): array {
-        $hashAlgo = Config::get('coa.signature.hash_algo', 'sha256');
-        $absPath = Storage::path($coaFile->file_path);
+    $hashAlgo = Config::get('coa.signature.hash_algo', 'sha256');
+    $absPath = Storage::path($coaFile->path);
         try {
             $result = $this->provider->addCountersignature($absPath, [
                 'role' => 'inspector',
@@ -120,11 +122,13 @@ class SignatureService {
             }
 
             $signedAbs = $result['signed_pdf_path'];
-            $newRel = $this->storeAsNewVersion($coaFile, $signedAbs, 'pdf_signed_inspector');
+            $newRecord = $this->storeAsNewVersion($coaFile, $signedAbs, 'pdf_signed_inspector');
 
             return [
                 'success' => true,
-                'file_path' => $newRel,
+                'file_path' => $newRecord->path,
+                'file_id' => $newRecord->id,
+                'file' => $newRecord,
                 'signature_info' => $result['signature_info'] ?? [],
             ];
         } catch (\Throwable $e) {
@@ -141,11 +145,11 @@ class SignatureService {
     }
 
     public function timestamp(CoaFile $coaFile, array $meta = []): array {
-        $absPath = Storage::path($coaFile->file_path);
+        $absPath = Storage::path($coaFile->path);
         try {
             $result = $this->provider->addTimestamp($absPath, [
                 'policy_oid' => $meta['policy_oid'] ?? null,
-                'tsa' => Config::get('coa.tsa.provider', null),
+                'tsa' => Config::get('coa.signature.tsa', []),
             ]);
             if (!($result['success'] ?? false)) {
                 $this->errorManager->handle('COA_QES_TIMESTAMP_FAILED', [
@@ -156,11 +160,13 @@ class SignatureService {
             }
 
             $tsAbs = $result['signed_pdf_path'];
-            $newRel = $this->storeAsNewVersion($coaFile, $tsAbs, 'pdf_signed_ts');
+            $newRecord = $this->storeAsNewVersion($coaFile, $tsAbs, 'pdf_signed_ts');
 
             return [
                 'success' => true,
-                'file_path' => $newRel,
+                'file_path' => $newRecord->path,
+                'file_id' => $newRecord->id,
+                'file' => $newRecord,
                 'timestamp_info' => $result['timestamp_info'] ?? [],
             ];
         } catch (\Throwable $e) {
@@ -192,23 +198,25 @@ class SignatureService {
         }
     }
 
-    private function storeAsNewVersion(CoaFile $origin, string $absPath, string $type): string {
+    private function storeAsNewVersion(CoaFile $origin, string $absPath, string $kind): CoaFile {
         $content = file_get_contents($absPath);
         $hash = $this->hashing->generateHash($content);
-        $filename = pathinfo($origin->file_name, PATHINFO_FILENAME) . '-' . substr($hash, 0, 8) . '.pdf';
-        $dir = dirname($origin->file_path);
+        $dir = dirname($origin->path);
+        $base = pathinfo($origin->path, PATHINFO_FILENAME);
+        $filename = $base . '-' . substr($hash, 0, 8) . '.pdf';
         $newRel = $dir . '/' . $filename;
 
         Storage::put($newRel, $content);
 
-        $origin->replicate(['id'])->fill([
-            'file_path' => $newRel,
-            'file_name' => $filename,
-            'file_type' => $type,
-            'file_size' => strlen($content),
-            'file_hash' => $hash,
-        ])->save();
+        $new = CoaFile::create([
+            'coa_id' => $origin->coa_id,
+            'kind' => $kind,
+            'path' => $newRel,
+            'sha256' => $hash,
+            'bytes' => strlen($content),
+            'created_at' => now(),
+        ]);
 
-        return $newRel;
+        return $new;
     }
 }

@@ -200,6 +200,55 @@ class CoaPdfService {
                         ])));
                         $coa->update(['metadata' => $meta]);
                         $this->logger->info('[CoA PDF] Author signature metadata attached');
+
+                        // Optional inspector countersignature
+                        if ((bool) config('coa.signature.inspector.enabled', false)) {
+                            $this->logger->info('[CoA PDF] Inspector countersign enabled, invoking');
+                            // countersign uses the latest file version, if returned
+                            $latestFile = $signRes['file'] ?? $coaFile;
+                            $coSignRes = $signatureService->countersignInspector($latestFile, [
+                                'reason' => 'CoA Inspector countersign',
+                            ]);
+                            if ($coSignRes['success'] ?? false) {
+                                $meta = $coa->metadata ?? [];
+                                if (!is_array($meta)) {
+                                    $meta = [];
+                                }
+                                $meta['signatures'] = array_values(array_filter(array_merge($meta['signatures'] ?? [], [
+                                    $coSignRes['signature_info'] ?? []
+                                ])));
+                                $coa->update(['metadata' => $meta]);
+                                $this->logger->info('[CoA PDF] Inspector countersign metadata attached');
+                                $latestFile = $coSignRes['file'] ?? $latestFile;
+                            } else {
+                                $this->logger->warning('[CoA PDF] Inspector countersign failed (non-blocking)', [
+                                    'error' => $coSignRes['error'] ?? 'unknown'
+                                ]);
+                            }
+
+                            // Optional TSA timestamp
+                            if ((bool) config('coa.signature.tsa.enabled', false)) {
+                                $this->logger->info('[CoA PDF] TSA timestamp enabled, invoking');
+                                $tsRes = $signatureService->timestamp($latestFile, [
+                                    'policy_oid' => config('coa.signature.tsa.policy_oid')
+                                ]);
+                                if ($tsRes['success'] ?? false) {
+                                    $meta = $coa->metadata ?? [];
+                                    if (!is_array($meta)) {
+                                        $meta = [];
+                                    }
+                                    $meta['timestamps'] = array_values(array_filter(array_merge($meta['timestamps'] ?? [], [
+                                        $tsRes['timestamp_info'] ?? []
+                                    ])));
+                                    $coa->update(['metadata' => $meta]);
+                                    $this->logger->info('[CoA PDF] Timestamp metadata attached');
+                                } else {
+                                    $this->logger->warning('[CoA PDF] Timestamp failed (non-blocking)', [
+                                        'error' => $tsRes['error'] ?? 'unknown'
+                                    ]);
+                                }
+                            }
+                        }
                     } else {
                         $this->logger->warning('[CoA PDF] Author signature failed (non-blocking)', [
                             'error' => $signRes['error'] ?? 'unknown'
