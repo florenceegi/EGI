@@ -24,7 +24,7 @@
             color: #1a1a1a;
         }
 
-        /* ✨ NUOVO BANNER DI VERIFICA */
+        /* ✨ BANNER DI VERIFICA (VALIDO/INVALIDO) */
         .verified-banner {
             background-color: #2D5016;
             /* VERDE RINASCITA */
@@ -42,6 +42,16 @@
             opacity: 0.9;
             display: block;
             margin-top: 2pt;
+        }
+
+        .invalid-banner {
+            background-color: #8B0000; /* rosso scuro ben visibile */
+            color: #fff;
+            padding: 8pt 12pt;
+            margin-bottom: 15pt;
+            text-align: center;
+            font-size: 11pt;
+            font-weight: 700;
         }
 
         .header {
@@ -241,10 +251,16 @@
 </head>
 
 <body>
-    <div class="verified-banner">
-        {{ __('coa_traits.pdf_verified_banner') }}
-        <span>{{ __('coa_traits.pdf_verified_on') }} {{ now()->format('d/m/Y H:i') }}</span>
-    </div>
+    @if (!empty($effective_valid))
+        <div class="verified-banner">
+            {{ __('coa_traits.pdf_verified_banner') }}
+            <span>{{ __('coa_traits.pdf_verified_on') }} {{ now()->format('d/m/Y H:i') }}</span>
+        </div>
+    @else
+        <div class="invalid-banner">
+            {{ __('coa_traits.pdf_invalid_banner') }}
+        </div>
+    @endif
 
     <div class="header">
         <div class="company-name">{{ __('coa_traits.pdf_company_name') }}</div>
@@ -315,7 +331,13 @@
             </tr>
             <tr>
                 <td class="info-label">{{ __('coa_traits.pdf_status') }}:</td>
-                <td class="info-value">{{ __('coa_traits.pdf_status_valid') }}</td>
+                <td class="info-value">
+                    @if (!empty($effective_valid))
+                        {{ __('coa_traits.pdf_status_valid') }}
+                    @else
+                        {{ __('coa_traits.pdf_status_invalid') }}
+                    @endif
+                </td>
             </tr>
         </table>
     </div>
@@ -327,7 +349,7 @@
                 {{ __('coa_traits.pdf_scan_prompt') }}</div>
             @if (isset($qr_code))
                 <div style="display: table-cell; width: 80pt; text-align: right;">
-                    <img src="{{ $qr_code }}" alt="QR Code" style="width: 80pt; height: 80pt;" />
+                    <img src="{{ $qr_code }}" alt="{{ __('coa_traits.pdf_qr_code_title') }}" style="width: 80pt; height: 80pt;" />
                 </div>
             @endif
         </div>
@@ -341,7 +363,7 @@
     @endphp
     @if ($grouped_metadata->isNotEmpty())
         <div class="section">
-            <div class="section-title">{{ __('coa_traits.pdf_additional_info_title', [], 'it') }}</div>
+            <div class="section-title">{{ __('coa_traits.pdf_additional_info_title') }}</div>
 
             @foreach ($grouped_metadata as $category => $metadata_items)
                 <table class="metadata-subsection-table">
@@ -399,7 +421,30 @@
 
     <div class="signature-section">
         <div class="signature-box">
-            <div class="signature-line">{{ __('coa_traits.pdf_author_signature') }}</div>
+            <div class="signature-line">
+                {{ __('coa_traits.pdf_author_signature') }} —
+                @if (!empty($author_signed))
+                    {{ __('coa_traits.pdf_signature_present') }}
+                @else
+                    {{ __('coa_traits.pdf_signature_missing') }}
+                @endif
+            </div>
+            <div class="signature-line" style="margin-top:10pt">
+                {{ __('coa_traits.pdf_inspector_countersign') }} —
+                @if (!empty($inspector_countersigned))
+                    {{ __('coa_traits.pdf_signature_present') }}
+                @else
+                    {{ __('coa_traits.pdf_signature_missing') }}
+                @endif
+            </div>
+            <div class="signature-line" style="margin-top:10pt">
+                {{ __('coa_traits.pdf_timestamp') }} —
+                @if (!empty($timestamped))
+                    {{ __('coa_traits.pdf_signature_present') }}
+                @else
+                    {{ __('coa_traits.pdf_signature_missing') }}
+                @endif
+            </div>
         </div>
         <div class="stamp-box">
             <div class="stamp-area">{{ __('coa_traits.pdf_stamp_area') }}</div>

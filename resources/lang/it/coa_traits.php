@@ -118,6 +118,7 @@ return [
     'pdf_issue_place' => 'Luogo di emissione',
     'pdf_status' => 'Stato',
     'pdf_status_valid' => 'Valido',
+    'pdf_status_invalid' => 'Non valido',
     'pdf_hash_title' => 'Hash del certificato (SHA-256)',
     'pdf_last_update' => 'Ultimo aggiornamento',
 
@@ -199,6 +200,7 @@ return [
     // PDF Verification Section
     'pdf_verified_banner' => 'CERTIFICATO DIGITALE VERIFICATO',
     'pdf_verified_on' => 'Verificato il',
+    'pdf_invalid_banner' => 'CERTIFICATO NON VALIDO',
     'pdf_verification_timestamp' => 'Timestamp di verifica',
     'pdf_hash_title' => 'Hash di Sicurezza',
     'pdf_signature_section' => 'Sezione Firme',
@@ -215,6 +217,10 @@ return [
     'pdf_stamp_area' => 'Area Timbro',
     'pdf_stamp_caption' => 'Timbro Autore',
     'pdf_author_signature' => 'Firma Autore',
+    'pdf_inspector_countersign' => 'Controfirma Ispettore',
+    'pdf_timestamp' => 'Timestamp',
+    'pdf_signature_present' => 'Presente',
+    'pdf_signature_missing' => 'Assente',
     'pdf_core_certificate' => 'Certificato Base',
 
     // Common Fallbacks
