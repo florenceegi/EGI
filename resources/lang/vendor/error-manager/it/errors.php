@@ -446,6 +446,13 @@ return [
         'coa_pdf_validity_issuer_location_check_error' => 'Validità: errore verifica issuer_location. Errore: :error',
         'coa_pdf_validity_issue_location_from_user_error' => 'Validità: errore estrazione luogo dai dati personali utente. Errore: :error',
         'coa_pdf_coatraits_access_error' => 'Errore accesso a EGI->coaTraits. Errore: :error',
+
+        // CoA PDF - Early-exit validità (Messaggi Dev)
+        'coa_pdf_validity_status_invalid' => 'Validità: stato del CoA non valido (:status). CoA ID: :coa_id',
+        'coa_pdf_validity_missing_traits' => 'Validità: nessun trait disponibile per EGI :egi_id, CoA :coa_id',
+        'coa_pdf_validity_missing_author' => 'Validità: autore non determinabile per EGI :egi_id, CoA :coa_id',
+        'coa_pdf_validity_missing_creation_date' => 'Validità: data/anno di creazione mancante per EGI :egi_id, CoA :coa_id',
+        'coa_pdf_validity_missing_issue_place' => 'Validità: luogo di emissione non determinabile (issuer_location=:issuer_location) per CoA :coa_id',
     ],
     'user' => [
         // == Existing Entries ==
@@ -832,6 +839,13 @@ return [
         'coa_pdf_validity_issuer_location_check_error' => 'Impossibile verificare il luogo di emissione. Il nostro team è stato informato.',
         'coa_pdf_validity_issue_location_from_user_error' => 'Impossibile ricavare il luogo di emissione. Il nostro team è stato informato.',
         'coa_pdf_coatraits_access_error' => 'Impossibile accedere ai dati tecnici dell’opera. Riprova più tardi.',
+
+        // CoA PDF - Early-exit validità (Messaggi Utente)
+        'coa_pdf_validity_status_invalid' => 'Il certificato non è in stato valido.',
+        'coa_pdf_validity_missing_traits' => 'Mancano alcune informazioni tecniche necessarie al certificato.',
+        'coa_pdf_validity_missing_author' => 'Impossibile determinare l’autore con certezza.',
+        'coa_pdf_validity_missing_creation_date' => 'Impossibile determinare la data di creazione dell’opera.',
+        'coa_pdf_validity_missing_issue_place' => 'Impossibile determinare il luogo di emissione del certificato.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

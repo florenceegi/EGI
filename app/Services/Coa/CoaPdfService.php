@@ -698,11 +698,27 @@ class CoaPdfService {
     private function computeEffectiveValidity(Coa $coa, $egi, array $traitsSnapshot): array {
         // 1) Status deve essere valido
         if ($coa->status !== 'valid') {
+            try {
+                $this->errorManager->handle('COA_PDF_VALIDITY_STATUS_INVALID', [
+                    'coa_id' => $coa->id,
+                    'status' => $coa->status,
+                ]);
+            } catch (\Throwable $e) {
+                // no-op: avoid breaking flow if UEM fails
+            }
             return ['is_valid' => false, 'missing' => ['status']];
         }
 
         // 2) Presenza di almeno un trait (snapshot non vuoto)
         if (empty($traitsSnapshot)) {
+            try {
+                $this->errorManager->handle('COA_PDF_VALIDITY_MISSING_TRAITS', [
+                    'coa_id' => $coa->id,
+                    'egi_id' => $egi->id ?? null,
+                ]);
+            } catch (\Throwable $e) {
+                // no-op
+            }
             return ['is_valid' => false, 'missing' => ['traits']];
         }
 
@@ -732,6 +748,14 @@ class CoaPdfService {
             }
         }
         if (!$authorOk) {
+            try {
+                $this->errorManager->handle('COA_PDF_VALIDITY_MISSING_AUTHOR', [
+                    'coa_id' => $coa->id,
+                    'egi_id' => $egi->id ?? null,
+                ]);
+            } catch (\Throwable $e) {
+                // no-op
+            }
             return ['is_valid' => false, 'missing' => ['author']];
         }
 
@@ -761,6 +785,14 @@ class CoaPdfService {
             }
         }
         if (!$creationOk) {
+            try {
+                $this->errorManager->handle('COA_PDF_VALIDITY_MISSING_CREATION_DATE', [
+                    'coa_id' => $coa->id,
+                    'egi_id' => $egi->id ?? null,
+                ]);
+            } catch (\Throwable $e) {
+                // no-op
+            }
             return ['is_valid' => false, 'missing' => ['creation_date']];
         }
 
@@ -810,6 +842,15 @@ class CoaPdfService {
             }
         }
         if (!$placeOk) {
+            try {
+                $this->errorManager->handle('COA_PDF_VALIDITY_MISSING_ISSUE_PLACE', [
+                    'coa_id' => $coa->id,
+                    'egi_id' => $egi->id ?? null,
+                    'issuer_location' => $coa->issuer_location ?? null,
+                ]);
+            } catch (\Throwable $e) {
+                // no-op
+            }
             return ['is_valid' => false, 'missing' => ['issue_place']];
         }
 

@@ -445,6 +445,13 @@ return [
         'coa_pdf_validity_issuer_location_check_error' => 'Validity: error while checking issuer_location. Error: :error',
         'coa_pdf_validity_issue_location_from_user_error' => 'Validity: error deriving issue location from user personal data. Error: :error',
         'coa_pdf_coatraits_access_error' => 'Error accessing EGI->coaTraits. Error: :error',
+
+        // CoA PDF - Early-exit validity (Developer Messages)
+        'coa_pdf_validity_status_invalid' => 'Validity: CoA status not valid (:status). CoA ID: :coa_id',
+        'coa_pdf_validity_missing_traits' => 'Validity: no traits available for EGI :egi_id, CoA :coa_id',
+        'coa_pdf_validity_missing_author' => 'Validity: author cannot be determined for EGI :egi_id, CoA :coa_id',
+        'coa_pdf_validity_missing_creation_date' => 'Validity: creation date/year missing for EGI :egi_id, CoA :coa_id',
+        'coa_pdf_validity_missing_issue_place' => 'Validity: issue place cannot be determined (issuer_location=:issuer_location) for CoA :coa_id',
     ],
     'user' => [
         // == Existing Entries ==
@@ -830,6 +837,13 @@ return [
         'coa_pdf_validity_issuer_location_check_error' => 'We could not verify the issue place. Our team has been notified.',
         'coa_pdf_validity_issue_location_from_user_error' => 'We could not derive the issue place. Our team has been notified.',
         'coa_pdf_coatraits_access_error' => 'We could not access the artwork technical data. Please try again later.',
+
+        // CoA PDF - Early-exit validity (User Messages)
+        'coa_pdf_validity_status_invalid' => 'The certificate is not in a valid state.',
+        'coa_pdf_validity_missing_traits' => 'Some technical information required for the certificate is missing.',
+        'coa_pdf_validity_missing_author' => 'We could not reliably determine the author.',
+        'coa_pdf_validity_missing_creation_date' => 'We could not determine the artwork’s creation date.',
+        'coa_pdf_validity_missing_issue_place' => 'We could not determine the certificate’s issue place.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

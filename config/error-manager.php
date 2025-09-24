@@ -4911,6 +4911,58 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        // Early-exit validity missing requirements (each must log via UEM)
+        'COA_PDF_VALIDITY_STATUS_INVALID' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_pdf_validity_status_invalid',
+            'user_message_key' => 'error-manager::errors.user.coa_pdf_validity_status_invalid',
+            'http_status_code' => 200,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log-only',
+        ],
+        'COA_PDF_VALIDITY_MISSING_TRAITS' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_pdf_validity_missing_traits',
+            'user_message_key' => 'error-manager::errors.user.coa_pdf_validity_missing_traits',
+            'http_status_code' => 200,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log-only',
+        ],
+        'COA_PDF_VALIDITY_MISSING_AUTHOR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_pdf_validity_missing_author',
+            'user_message_key' => 'error-manager::errors.user.coa_pdf_validity_missing_author',
+            'http_status_code' => 200,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log-only',
+        ],
+        'COA_PDF_VALIDITY_MISSING_CREATION_DATE' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_pdf_validity_missing_creation_date',
+            'user_message_key' => 'error-manager::errors.user.coa_pdf_validity_missing_creation_date',
+            'http_status_code' => 200,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log-only',
+        ],
+        'COA_PDF_VALIDITY_MISSING_ISSUE_PLACE' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_pdf_validity_missing_issue_place',
+            'user_message_key' => 'error-manager::errors.user.coa_pdf_validity_missing_issue_place',
+            'http_status_code' => 200,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log-only',
+        ],
+
         // ====================================================
         // COA QES/TSA Sandbox Errors (mock + orchestrator)
         // ====================================================
