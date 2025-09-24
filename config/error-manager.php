@@ -4920,7 +4920,7 @@ return [
             'http_status_code' => 200,
             'devTeam_email_need' => false,
             'notify_slack' => false,
-            'msg_to' => 'log-only',
+            'msg_to' => 'sweet-alert',
         ],
         'COA_PDF_VALIDITY_MISSING_TRAITS' => [
             'type' => 'error',
@@ -4930,7 +4930,7 @@ return [
             'http_status_code' => 200,
             'devTeam_email_need' => false,
             'notify_slack' => false,
-            'msg_to' => 'log-only',
+            'msg_to' => 'sweet-alert',
         ],
         'COA_PDF_VALIDITY_MISSING_AUTHOR' => [
             'type' => 'error',
@@ -4940,7 +4940,7 @@ return [
             'http_status_code' => 200,
             'devTeam_email_need' => false,
             'notify_slack' => false,
-            'msg_to' => 'log-only',
+            'msg_to' => 'sweet-alert',
         ],
         'COA_PDF_VALIDITY_MISSING_CREATION_DATE' => [
             'type' => 'error',
@@ -4950,7 +4950,7 @@ return [
             'http_status_code' => 200,
             'devTeam_email_need' => false,
             'notify_slack' => false,
-            'msg_to' => 'log-only',
+            'msg_to' => 'sweet-alert',
         ],
         'COA_PDF_VALIDITY_MISSING_ISSUE_PLACE' => [
             'type' => 'error',
@@ -4960,7 +4960,19 @@ return [
             'http_status_code' => 200,
             'devTeam_email_need' => false,
             'notify_slack' => false,
-            'msg_to' => 'log-only',
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // CoA location update failures
+        'COA_UPDATE_LOCATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.coa_update_location_error',
+            'user_message_key' => 'error-manager::errors.user.coa_update_location_error',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
         ],
 
         // ====================================================

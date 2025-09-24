@@ -15,6 +15,15 @@
     $canIssueCoa = $isCreator && !$hasActiveCoa;
     $canManageCoa = $isCreator && $hasActiveCoa;
     $annexesCount = $existingCoa ? $existingCoa->annexes->count() : 0;
+
+    // Suggested location prefill: prefer CoA.location, otherwise derive from user's personal data
+    $pd = optional(optional($egi->user)->personalData);
+    $parts = [];
+    if (!empty($pd->city)) $parts[] = $pd->city;
+    if (!empty($pd->region) && $pd->region !== $pd->city) $parts[] = $pd->region;
+    if (!empty($pd->country)) $parts[] = $pd->country;
+    $userDerivedLocation = implode(', ', array_filter($parts));
+    $suggestedLocation = ($existingCoa && !empty($existingCoa->location)) ? $existingCoa->location : $userDerivedLocation;
 @endphp
 
 {{-- CoA Compact Section --}}
@@ -135,6 +144,16 @@
                         class="w-full rounded bg-purple-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-purple-700">
                         {{ __('egi.coa.reissue') }}
                     </button>
+
+                    {{-- Location Quick Edit --}}
+                    <div class="p-2 mt-2 border rounded border-amber-500/20 bg-amber-900/20">
+                        <label class="block mb-1 text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="coaLocationInput-{{ $existingCoa->id }}" value="{{ $suggestedLocation }}" placeholder="{{ __('egi.coa.location_placeholder') }}" class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
+                            <button onclick="saveCoaLocation({{ $existingCoa->id }})" class="px-2 py-1 text-xs font-medium rounded text-amber-900 bg-amber-400 hover:bg-amber-500">{{ __('egi.coa.save') }}</button>
+                        </div>
+                        <p class="mt-1 text-[10px] text-gray-400">{{ __('egi.coa.location_hint') }}</p>
+                    </div>
                 </div>
             </details>
         @endif
@@ -146,6 +165,15 @@
             </p>
 
             @if ($canIssueCoa)
+                {{-- Pre-issuance Location (required) --}}
+                <div class="p-2 mb-2 border rounded border-amber-500/20 bg-amber-900/20">
+                    <label class="block mb-1 text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="preCoaLocationInput-{{ $egi->id }}" value="{{ $suggestedLocation }}" placeholder="{{ __('egi.coa.location_placeholder') }}" class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
+                    </div>
+                    <p class="mt-1 text-[10px] text-gray-400">{{ __('egi.coa.location_hint') }}</p>
+                </div>
+
                 <button onclick="issueCoaCertificate({{ $egi->id }})"
                     class="w-full px-3 py-2 font-bold text-white transition-colors bg-green-500 rounded hover:bg-green-600">
                     <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,7 +276,8 @@
                 download_pdf_now: @json(__('egi.coa.download_pdf_now')),
                 certificate_issued_successfully: @json(__('egi.coa.certificate_issued_successfully')),
                 confirm: @json(__('coa_traits.confirm')),
-                cancel: @json(__('coa_traits.cancel'))
+                cancel: @json(__('coa_traits.cancel')),
+                location_required: @json(__('egi.coa.location_required'))
             };
 
             async function renderCoaPdfThumb(container, coaId) {
@@ -419,6 +448,26 @@
                     }
                 }, 1500); // Change step every 1.5 seconds
 
+                // Collect pre-issuance location if present (required)
+                const preLocInput = document.getElementById(`preCoaLocationInput-${egiId}`);
+                const payload = {
+                    egi_id: egiId,
+                    auto_generate_pdf: true,
+                    enable_signature: false,
+                    notification_email: true
+                };
+                if (preLocInput) {
+                    const locVal = (preLocInput.value || '').trim();
+                    if (!locVal) {
+                        await Swal.fire({ icon: 'warning', title: I18N.location_required });
+                        // Restore button state before returning
+                        if (typeof progressInterval !== 'undefined') clearInterval(progressInterval);
+                        if (button) { button.innerHTML = originalText; button.disabled = false; }
+                        return;
+                    }
+                    payload.location = locVal;
+                }
+
                 fetch(`{{ route('coa.issue') }}`, {
                         method: 'POST',
                         headers: {
@@ -426,12 +475,7 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
                                 'content')
                         },
-                        body: JSON.stringify({
-                            egi_id: egiId,
-                            auto_generate_pdf: true, // ✅ NEW: Request auto PDF generation
-                            enable_signature: false, // Future: QES integration toggle
-                            notification_email: true // Future: Email notification toggle
-                        })
+                        body: JSON.stringify(payload)
                     })
                     .then(response => response.json())
                     .then(async data => {
@@ -530,6 +574,36 @@
                     });
 
                 return false;
+            }
+
+            // Save CoA Location
+            window.saveCoaLocation = async function(coaId) {
+                try {
+                    await ensureSwalLoaded();
+                    const input = document.getElementById(`coaLocationInput-${coaId}`);
+                    const value = (input?.value || '').trim();
+                    if (!value) {
+                        await Swal.fire({ icon: 'warning', title: @json(__('egi.coa.location_required')) });
+                        return;
+                    }
+                    const res = await fetch(`/coa/${coaId}/location`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({ location: value })
+                    });
+                    const data = await res.json();
+                    if (data && data.success) {
+                        await Swal.fire({ icon: 'success', title: @json(__('egi.coa.location_saved')) });
+                    } else {
+                        await Swal.fire({ icon: 'error', title: @json(__('egi.coa.location_save_failed')), text: data?.message || I18N.unexpected_error });
+                    }
+                } catch (e) {
+                    await ensureSwalLoaded();
+                    await Swal.fire({ icon: 'error', title: @json(__('egi.coa.location_save_failed')) });
+                }
             }
 
             function downloadCoaBundle(coaId) {

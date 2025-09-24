@@ -169,8 +169,11 @@ class VerifyController extends Controller {
                     || !empty($coaTraits->support_free_text);
             }
 
-            // Issue location presence (derived from author's personal data)
-            $issueLocation = $this->extractIssueLocation($coa->egi->user);
+            // Issue location presence: prefer persisted CoA.location, then fallback to user's personal data
+            $issueLocation = $coa->location ?? null;
+            if (empty($issueLocation)) {
+                $issueLocation = $this->extractIssueLocation($coa->egi->user);
+            }
             $hasValidLocation = !empty($issueLocation);
 
             // Generate verification data directly (aligned with effective validity expectations)
@@ -732,8 +735,11 @@ class VerifyController extends Controller {
                     !empty($coaTraits->support_free_text);
             }
 
-            // Extract issue location from author's personal data
-            $issueLocation = $this->extractIssueLocation($coa->egi->user);
+            // Issue location: prefer persisted CoA.location, then fallback to author's personal data
+            $issueLocation = $coa->location ?? null;
+            if (empty($issueLocation)) {
+                $issueLocation = $this->extractIssueLocation($coa->egi->user);
+            }
             $hasValidLocation = !empty($issueLocation);
 
             // Generate certificate view data

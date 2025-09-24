@@ -430,7 +430,7 @@ return [
         'coa_qes_mock_cosign_error' => 'MockSignatureProvider::addCountersignature error: :error',
         'coa_qes_mock_ts_error' => 'MockSignatureProvider::addTimestamp error: :error',
         'coa_qes_mock_verify_error' => 'MockSignatureProvider::verifySignatures error: :error',
-        
+
         // CoA PDF - New UEM codes (Developer Messages)
         'coa_pdf_metadata_persist_error' => 'CoA PDF metadata persistence failed. Error: :error',
         'coa_pdf_signature_pipeline_error' => 'Non-blocking signature/timestamp pipeline raised an error. Error: :error',
@@ -452,6 +452,7 @@ return [
         'coa_pdf_validity_missing_author' => 'Validity: author cannot be determined for EGI :egi_id, CoA :coa_id',
         'coa_pdf_validity_missing_creation_date' => 'Validity: creation date/year missing for EGI :egi_id, CoA :coa_id',
         'coa_pdf_validity_missing_issue_place' => 'Validity: issue place cannot be determined (issuer_location=:issuer_location) for CoA :coa_id',
+        'coa_update_location_error' => 'Error updating CoA location. Details: :error',
     ],
     'user' => [
         // == Existing Entries ==
@@ -844,6 +845,7 @@ return [
         'coa_pdf_validity_missing_author' => 'We could not reliably determine the author.',
         'coa_pdf_validity_missing_creation_date' => 'We could not determine the artwork’s creation date.',
         'coa_pdf_validity_missing_issue_place' => 'We could not determine the certificate’s issue place.',
+        'coa_update_location_error' => 'Unable to update the certificate location. Please try again.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

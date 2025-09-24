@@ -209,6 +209,85 @@ class CoaController extends Controller {
     }
 
     /**
+     * Update CoA location (City, Province, Country string)
+     *
+     * @param Request $request
+     * @param Coa $coa
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|void
+     * @privacy-safe Touches minimal PII-like location string; full GDPR logging
+     */
+    public function updateLocation(Request $request, Coa $coa) {
+        try {
+            $user = Auth::user();
+
+            // Ownership check
+            if ($coa->egi->user_id !== $user->id) {
+                return $this->errorManager->handle('COA_SHOW_ERROR', [
+                    'user_id' => $user->id,
+                    'coa_id' => $coa->id,
+                    'reason' => 'unauthorized_update_location',
+                    'ip_address' => $request->ip(),
+                ]);
+            }
+
+            // Validation
+            $validated = $request->validate([
+                'location' => 'required|string|min:2|max:255'
+            ]);
+
+            // ULM audit start
+            $this->logger->info('[CoA Controller] updateLocation start', [
+                'user_id' => $user->id,
+                'coa_id' => $coa->id,
+                'prev_location' => $coa->location,
+                'new_location' => $validated['location'],
+                'ip' => $request->ip(),
+            ]);
+
+            // Persist
+            $previous = $coa->location;
+            $coa->update(['location' => $validated['location']]);
+
+            // GDPR Audit
+            $this->auditService->logUserAction($user, 'coa_location_updated', [
+                'coa_id' => $coa->id,
+                'serial' => $coa->serial,
+                'previous_location' => $previous,
+                'new_location' => $validated['location'],
+                'ip_address' => $request->ip(),
+                'user_agent' => substr($request->userAgent() ?? '', 0, 255)
+            ], GdprActivityCategory::GDPR_ACTIONS);
+
+            $this->logger->info('[CoA Controller] updateLocation success', [
+                'user_id' => $user->id,
+                'coa_id' => $coa->id,
+            ]);
+
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true, 'message' => __('egi.coa.location_updated'), 'data' => [
+                    'location' => $coa->location,
+                ]]);
+            }
+
+            return redirect()->back()->with('success', __('egi.coa.location_updated'));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->logger->warning('[CoA Controller] updateLocation validation failed', [
+                'user_id' => Auth::id(),
+                'errors' => $e->errors(),
+            ]);
+            throw $e;
+        } catch (\Throwable $e) {
+            return $this->errorManager->handle('COA_UPDATE_LOCATION_ERROR', [
+                'user_id' => Auth::id(),
+                'coa_id' => $coa->id ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'ip_address' => $request->ip(),
+            ], $e);
+        }
+    }
+
+    /**
      * Display the specified CoA certificate
      *
      * @param Request $request
@@ -313,7 +392,8 @@ class CoaController extends Controller {
                 'egi_id' => 'required|integer|exists:egis,id',
                 'issued_by' => 'nullable|string|max:255',
                 'notes' => 'nullable|string|max:1000',
-                'auto_generate_pdf' => 'nullable|boolean'
+                'auto_generate_pdf' => 'nullable|boolean',
+                'location' => 'nullable|string|max:255'
             ]);
 
             if ($validator->fails()) {
@@ -345,14 +425,16 @@ class CoaController extends Controller {
                 'user_id' => $user->id,
                 'egi_id' => $egi->id,
                 'egi_name' => $egi->name,
-                'issued_by' => $request->issued_by
+                'issued_by' => $request->issued_by,
+                'location' => $request->location
             ]);
 
             // Issue certificate using service
             $coa = $this->issueService->issueCertificate(
                 $egi,
                 $request->issued_by ?? $user->name,
-                $request->notes
+                $request->notes,
+                $request->filled('location') ? trim((string)$request->location) : null
             );
 
             // Se il service restituisce null, l'ErrorManager ha già gestito l'errore

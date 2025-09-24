@@ -796,10 +796,18 @@ class CoaPdfService {
             return ['is_valid' => false, 'missing' => ['creation_date']];
         }
 
-        // 5) Luogo di emissione presente (EGI, issuer_location significativa, o dai dati personali)
+        // 5) Luogo di emissione presente
+        // Priority: CoA.location (persisted), then EGI.issue_place, then issuer_location (meaningful), then user's personal data
         $placeOk = false;
         try {
-            $placeOk = !empty($egi->issue_place);
+            $placeOk = !empty($coa->location) && is_string($coa->location) && mb_strlen(trim($coa->location)) >= 3;
+        } catch (\Throwable $e) {
+            $placeOk = false;
+        }
+        try {
+            if (!$placeOk) {
+                $placeOk = !empty($egi->issue_place);
+            }
         } catch (\Throwable $e) {
             $placeOk = false;
             $this->errorManager->handle('COA_PDF_VALIDITY_ISSUE_PLACE_DIRECT_ERROR', [

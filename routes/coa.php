@@ -157,6 +157,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('view')
             ->where('coa', '[A-Za-z0-9-]+');
 
+        // Aggiornamento location del CoA (City, Province, Country)
+        Route::post('/{coa}/location', [CoaController::class, 'updateLocation'])
+            ->name('update_location')
+            ->where('coa', '[A-Za-z0-9-]+');
+
         // Statistiche avanzate (admin only)
         Route::get('/statistics', [CoaController::class, 'statistics'])
             ->name('statistics')

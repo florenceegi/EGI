@@ -99,7 +99,7 @@ class CoaIssueService {
      * @transparency-level High - complete certificate issuance process
      * @narrative-coherence Links artwork to permanent authenticity record
      */
-    public function issueCertificate(Egi $egi, ?string $issuedBy = null, ?string $notes = null): ?Coa {
+    public function issueCertificate(Egi $egi, ?string $issuedBy = null, ?string $notes = null, ?string $location = null): ?Coa {
         try {
             $user = Auth::user();
 
@@ -148,9 +148,30 @@ class CoaIssueService {
                 'notes' => $notes
             ]);
 
+            // Determine issue location: prefer provided location, otherwise derive from user's personal data
+            $candidateLocation = $location ? trim($location) : null;
+            if (empty($candidateLocation)) {
+                try {
+                    $candidateLocation = $egi->user ? $this->extractIssueLocation($egi->user) : null;
+                } catch (\Throwable $t) {
+                    // no-op, handled below if empty
+                }
+            }
+
+            // Enforce location requirement for issuance
+            if (empty($candidateLocation) || !is_string($candidateLocation) || mb_strlen(trim($candidateLocation)) < 3) {
+                // Reuse existing UEM code mapped to SweetAlert for user feedback
+                $this->errorManager->handle('COA_PDF_VALIDITY_MISSING_ISSUE_PLACE', [
+                    'user_id' => $user->id,
+                    'egi_id' => $egi->id,
+                    'reason' => 'issuance_requires_location',
+                ]);
+                return null; // Stop issuance
+            }
+
             // Use database transaction for atomic operation
-            $coa = DB::transaction(function () use ($egi, $issuerName, $notes, $user) {
-                return $this->issueCoaInTransaction($egi, $issuerName, $notes, $user);
+            $coa = DB::transaction(function () use ($egi, $issuerName, $notes, $user, $candidateLocation) {
+                return $this->issueCoaInTransaction($egi, $issuerName, $notes, $user, $candidateLocation);
             });
 
             $this->logger->info('[CoA Issue] Certificate issued successfully', [
@@ -255,7 +276,7 @@ class CoaIssueService {
      * @return Coa
      * @privacy-safe Internal transaction method
      */
-    protected function issueCoaInTransaction(Egi $egi, string $issuerName, ?string $notes, $user): Coa {
+    protected function issueCoaInTransaction(Egi $egi, string $issuerName, ?string $notes, $user, ?string $location = null): Coa {
         // 1. Generate unique serial number
         try {
             $serial = $this->serialGenerator->generateSerial();
@@ -313,6 +334,7 @@ class CoaIssueService {
             'issued_at' => now(),
             'notes' => $notes, // Add notes field
             'creator_info' => $creatorInfo, // Store creator info when Creator ≠ Author
+            'location' => $location,
         ]);
 
         // 5. Create CoA snapshot
@@ -604,7 +626,14 @@ class CoaIssueService {
         ]);
 
         // 3. Issue new CoA
-        $newCoa = $this->issueCoaInTransaction($existingCoa->egi, $issuedBy, $notes, $user);
+        $derivedLocation = null;
+        try {
+            $derivedLocation = $existingCoa->location ?: ($existingCoa->egi && $existingCoa->egi->user ? $this->extractIssueLocation($existingCoa->egi->user) : null);
+        } catch (\Throwable $t) {
+            $derivedLocation = $existingCoa->location;
+        }
+
+        $newCoa = $this->issueCoaInTransaction($existingCoa->egi, $issuedBy, $notes, $user, $derivedLocation);
 
         // 4. Create re-issuance event for new CoA
         $this->createCoaEvent($newCoa, 'coa_reissued', [

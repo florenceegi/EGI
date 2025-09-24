@@ -687,6 +687,16 @@ return [
         'professional_pdf' => 'PDF Professionale',
         'unlock_pro_features' => 'Sblocca Funzioni Pro',
         'reason_for' => 'Motivo per',
+
+        // Location UI (CoA)
+        'issue_place' => 'Luogo di emissione',
+        'location_placeholder' => 'Es. Firenze, Toscana, Italia',
+        'save' => 'Salva',
+        'location_hint' => 'Usa il formato "Città, Regione/Provincia, Paese" (o equivalente).',
+        'location_required' => 'La località è obbligatoria',
+        'location_saved' => 'Località salvata',
+        'location_save_failed' => 'Salvataggio località fallito',
+        'location_updated' => 'Località aggiornata con successo',
     ],
 
     /*
@@ -706,7 +716,7 @@ return [
         'year' => 'Anno',
         'internal_id' => 'ID Interno',
 
-        // Dossier Info  
+        // Dossier Info
         'dossier_info' => 'Informazioni Dossier',
         'images_count' => 'Immagini',
         'type' => 'Tipo',

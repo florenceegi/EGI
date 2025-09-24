@@ -84,6 +84,16 @@ return [
         'copy' => 'Copy',
         'copied' => 'Copied!',
         'reason_for' => 'Reason for',
+
+        // Location UI (CoA)
+        'issue_place' => 'Issue Place',
+        'location_placeholder' => 'e.g., Florence, Tuscany, Italy',
+        'save' => 'Save',
+        'location_hint' => 'Use the format "City, Region/Province, Country" (or equivalent).',
+        'location_required' => 'Location is required',
+        'location_saved' => 'Location saved',
+        'location_save_failed' => 'Failed to save location',
+        'location_updated' => 'Location updated successfully',
     ],
     'not_for_sale' => 'Not for sale',
     'not_for_sale_description' => 'This EGI is not currently available for purchase',
@@ -663,7 +673,7 @@ return [
         'year' => 'Year',
         'internal_id' => 'Internal ID',
 
-        // Dossier Info  
+        // Dossier Info
         'dossier_info' => 'Dossier Information',
         'images_count' => 'Images',
         'type' => 'Type',

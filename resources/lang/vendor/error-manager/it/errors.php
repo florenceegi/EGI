@@ -431,7 +431,7 @@ return [
         'coa_qes_mock_cosign_error' => 'MockSignatureProvider::addCountersignature errore: :error',
         'coa_qes_mock_ts_error' => 'MockSignatureProvider::addTimestamp errore: :error',
         'coa_qes_mock_verify_error' => 'MockSignatureProvider::verifySignatures errore: :error',
-        
+
         // CoA PDF - Nuovi codici UEM (Messaggi Dev)
         'coa_pdf_metadata_persist_error' => 'Persistenza metadati PDF CoA fallita. Errore: :error',
         'coa_pdf_signature_pipeline_error' => 'Pipeline firme/timestamp non bloccante ha generato un errore. Errore: :error',
@@ -453,6 +453,7 @@ return [
         'coa_pdf_validity_missing_author' => 'Validità: autore non determinabile per EGI :egi_id, CoA :coa_id',
         'coa_pdf_validity_missing_creation_date' => 'Validità: data/anno di creazione mancante per EGI :egi_id, CoA :coa_id',
         'coa_pdf_validity_missing_issue_place' => 'Validità: luogo di emissione non determinabile (issuer_location=:issuer_location) per CoA :coa_id',
+        'coa_update_location_error' => 'Errore durante l\'aggiornamento della località del CoA. Dettagli: :error',
     ],
     'user' => [
         // == Existing Entries ==
@@ -846,6 +847,7 @@ return [
         'coa_pdf_validity_missing_author' => 'Impossibile determinare l’autore con certezza.',
         'coa_pdf_validity_missing_creation_date' => 'Impossibile determinare la data di creazione dell’opera.',
         'coa_pdf_validity_missing_issue_place' => 'Impossibile determinare il luogo di emissione del certificato.',
+        'coa_update_location_error' => 'Impossibile aggiornare la località del certificato. Riprova.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

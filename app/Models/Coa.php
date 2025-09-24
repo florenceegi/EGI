@@ -54,6 +54,7 @@ class Coa extends Model {
         'issuer_type',
         'issuer_name',
         'issuer_location',
+        'location',
         'issued_at',
         'revoked_at',
         'revoke_reason',
