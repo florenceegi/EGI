@@ -754,6 +754,31 @@ class VerifyController extends Controller {
                 ]
             ];
 
+            // Attach signature/timestamp status from metadata (if present)
+            try {
+                $meta = is_array($coa->metadata) ? $coa->metadata : [];
+                $signatures = isset($meta['signatures']) && is_array($meta['signatures']) ? $meta['signatures'] : [];
+                $timestamps = isset($meta['timestamps']) && is_array($meta['timestamps']) ? $meta['timestamps'] : [];
+
+                $authorSigned = false;
+                $inspectorSigned = false;
+                foreach ($signatures as $s) {
+                    $role = $s['role'] ?? null;
+                    $status = $s['status'] ?? null;
+                    if ($role === 'author' && $status === 'valid') $authorSigned = true;
+                    if ($role === 'inspector' && $status === 'valid') $inspectorSigned = true;
+                }
+                $hasTimestamp = count($timestamps) > 0;
+
+                $certificateData['certificate']['signature_status'] = [
+                    'author_signed' => $authorSigned,
+                    'inspector_countersigned' => $inspectorSigned,
+                    'timestamped' => $hasTimestamp,
+                ];
+            } catch (\Throwable $e) {
+                // Non-bloccante: ignora errori metadati
+            }
+
             $this->logger->info('[Verify Controller] Certificate view generated', [
                 'coa_id' => $coa->id,
                 'serial' => $coa->serial,
@@ -900,6 +925,31 @@ class VerifyController extends Controller {
                     'verification_url' => route('coa.verify.certificate', $coa->serial)
                 ]
             ];
+
+            // Attach signature/timestamp status from metadata (if present)
+            try {
+                $meta = is_array($coa->metadata) ? $coa->metadata : [];
+                $signatures = isset($meta['signatures']) && is_array($meta['signatures']) ? $meta['signatures'] : [];
+                $timestamps = isset($meta['timestamps']) && is_array($meta['timestamps']) ? $meta['timestamps'] : [];
+
+                $authorSigned = false;
+                $inspectorSigned = false;
+                foreach ($signatures as $s) {
+                    $role = $s['role'] ?? null;
+                    $status = $s['status'] ?? null;
+                    if ($role === 'author' && $status === 'valid') $authorSigned = true;
+                    if ($role === 'inspector' && $status === 'valid') $inspectorSigned = true;
+                }
+                $hasTimestamp = count($timestamps) > 0;
+
+                $certificateData['certificate']['signature_status'] = [
+                    'author_signed' => $authorSigned,
+                    'inspector_countersigned' => $inspectorSigned,
+                    'timestamped' => $hasTimestamp,
+                ];
+            } catch (\Throwable $e) {
+                // Non-bloccante: ignora errori metadati
+            }
 
             // Add creator info from database if available
             if ($coa->creator_info) {

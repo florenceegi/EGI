@@ -481,17 +481,37 @@
                             {{-- Firma --}}
                             <div>
                                 <label class="text-xs font-medium text-gray-600">Firma</label>
-                                <div class="flex items-center space-x-2">
-                                    @if ($certificate['qes_signature'])
+                                <div class="flex flex-wrap items-center gap-2">
+                                    @php
+                                        $sig = $certificate['signature_status'] ?? null;
+                                    @endphp
+                                    @if ($sig && ($sig['author_signed'] ?? false))
+                                        <span
+                                            class="rounded bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">Autore
+                                            firmato</span>
+                                    @endif
+                                    @if ($sig && ($sig['inspector_countersigned'] ?? false))
+                                        <span
+                                            class="rounded bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-800">Controfirma
+                                            perito</span>
+                                    @endif
+                                    @if ($sig && ($sig['timestamped'] ?? false))
+                                        <span
+                                            class="rounded bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800">Timestamp
+                                            TSA</span>
+                                    @endif
+
+                                    {{-- Legacy flags fallback --}}
+                                    @if (!$sig && ($certificate['qes_signature'] ?? false))
                                         <span
                                             class="rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-800">QES</span>
                                     @endif
-                                    @if ($certificate['wallet_signature'])
+                                    @if (!$sig && ($certificate['wallet_signature'] ?? false))
                                         <span
                                             class="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">Firma
                                             wallet</span>
                                         <code
-                                            class="text-xs text-gray-600">{{ Str::limit($certificate['wallet_public_key'], 16) }}...</code>
+                                            class="text-xs text-gray-600">{{ Str::limit($certificate['wallet_public_key'] ?? '', 16) }}...</code>
                                         <a href="#" class="text-xs text-blue-600 hover:underline">verifica
                                             firma</a>
                                     @endif
@@ -938,9 +958,9 @@
 
                 imageElement.innerHTML = `
             <div class="aspect-square">
-                <img 
-                    src="${image.thumb_url}" 
-                    alt="${image.name}" 
+                <img
+                    src="${image.thumb_url}"
+                    alt="${image.name}"
                     class="h-full w-full object-cover transition-transform group-hover:scale-105"
                     loading="lazy"
                 />
