@@ -95,10 +95,13 @@ class VerifyPageService {
                 'certificate' => [
                     'serial' => $coa->serial,
                     'status' => $coa->status,
-                    'issue_date' => $coa->issue_date,
-                    'issued_by' => $coa->issued_by,
+                    'issued_at' => optional($coa->issued_at)->toIso8601String(),
+                    'issued_by' => $coa->issuer_name,
                     'is_valid' => $coa->status === 'valid',
-                    'verification_url' => URL::route('verify.show', ['serial' => $coa->serial])
+                    'verification_hash' => $coa->verification_hash,
+                    'verification_url' => $coa->verification_hash
+                        ? URL::route('coa.verify.view', $coa->verification_hash)
+                        : URL::route('coa.verify.certificate.view', $coa->serial)
                 ],
                 'artwork' => [
                     'name' => $coa->egi->name,
@@ -241,25 +244,33 @@ class VerifyPageService {
 
             switch ($component) {
                 case 'traits':
-                    // Verify traits snapshot hash
-                    if ($coa->traits_snapshot && isset($coa->traits_snapshot['hash'])) {
-                        $results['is_valid'] = hash_equals($coa->traits_snapshot['hash'], $providedHash);
-                        $results['verification_details']['stored_hash'] = $coa->traits_snapshot['hash'];
+                    // Verify hash of traits section from snapshot against provided
+                    $traits = $coa->snapshot?->snapshot_json['traits'] ?? null;
+                    if ($traits) {
+                        $calc = $this->hashingService->generateHash($traits);
+                        $results['is_valid'] = hash_equals($calc, $providedHash);
+                        $results['verification_details']['calculated_hash'] = $calc;
                     }
                     break;
 
                 case 'snapshot':
-                    // Verify full snapshot hash
-                    $snapshotHash = $this->hashingService->generateHash($coa->traits_snapshot);
-                    $results['is_valid'] = hash_equals($snapshotHash, $providedHash);
-                    $results['verification_details']['calculated_hash'] = $snapshotHash;
+                    // Verify full snapshot hash against provided
+                    $snap = $coa->snapshot?->snapshot_json ?? null;
+                    if ($snap) {
+                        $snapshotHash = $this->hashingService->generateHash($snap);
+                        $results['is_valid'] = hash_equals($snapshotHash, $providedHash);
+                        $results['verification_details']['calculated_hash'] = $snapshotHash;
+                    }
                     break;
 
                 case 'certificate':
                 default:
-                    // Verify main certificate hash
-                    $results['is_valid'] = hash_equals($coa->hash, $providedHash);
-                    $results['verification_details']['stored_hash'] = $coa->hash;
+                    // Verify stored verification/integrity hash
+                    $stored = $coa->integrity_hash ?: $coa->verification_hash;
+                    if ($stored) {
+                        $results['is_valid'] = hash_equals($stored, $providedHash);
+                        $results['verification_details']['stored_hash'] = $stored;
+                    }
                     break;
             }
 
@@ -363,7 +374,9 @@ class VerifyPageService {
      */
     public function generateQrCode(Coa $coa): array {
         try {
-            $verificationUrl = URL::route('verify.show', ['serial' => $coa->serial]);
+            $verificationUrl = $coa->verification_hash
+                ? URL::route('coa.verify.view', $coa->verification_hash)
+                : URL::route('coa.verify.certificate.view', $coa->serial);
 
             $qrData = [
                 'url' => $verificationUrl,
@@ -381,6 +394,10 @@ class VerifyPageService {
             // In a real implementation, you would generate actual QR code here
             $qrData['svg_content'] = $this->generateQrSvg($verificationUrl);
 
+            // Persist QR code data if not stored yet
+            if (!$coa->qr_code_data) {
+                $coa->update(['qr_code_data' => $verificationUrl]);
+            }
             return $qrData;
         } catch (\Exception $e) {
             $this->errorManager->handle('VERIFY_QR_GENERATION_ERROR', [
@@ -391,7 +408,9 @@ class VerifyPageService {
 
             return [
                 'error' => 'QR code generation failed',
-                'url' => URL::route('verify.show', ['serial' => $coa->serial])
+                'url' => ($coa->verification_hash
+                    ? URL::route('coa.verify.view', $coa->verification_hash)
+                    : URL::route('coa.verify.certificate.view', $coa->serial))
             ];
         }
     }
@@ -470,15 +489,18 @@ class VerifyPageService {
      */
     protected function verifyIntegrity(Coa $coa): bool {
         try {
-            // Verify main certificate hash
-            $calculatedHash = $this->hashingService->generateHash([
+            $snapshot = $coa->snapshot?->snapshot_json;
+            if (!$snapshot) {
+                return false;
+            }
+            $calculated = $this->hashingService->generateHash([
                 'serial' => $coa->serial,
-                'traits_snapshot' => $coa->traits_snapshot,
-                'issue_date' => $coa->issue_date,
+                'snapshot' => $snapshot,
+                'issued_at' => optional($coa->issued_at)->toIso8601String(),
                 'egi_id' => $coa->egi_id
             ]);
-
-            return hash_equals($coa->hash, $calculatedHash);
+            $stored = $coa->integrity_hash ?: $coa->verification_hash;
+            return $stored ? hash_equals($stored, $calculated) : false;
         } catch (\Exception $e) {
             $this->logger->warning('[Verify Service] Integrity check failed', [
                 'coa_id' => $coa->id,
@@ -527,8 +549,8 @@ class VerifyPageService {
      */
     protected function getPublicEvents(Coa $coa): array {
         $events = CoaEvent::where('coa_id', $coa->id)
-            ->whereIn('event_type', ['certificate_issued', 'certificate_verified', 'annex_added'])
-            ->orderBy('occurred_at', 'desc')
+            ->whereIn('type', ['ISSUED', 'ANNEX_ADDED'])
+            ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
 
@@ -536,9 +558,9 @@ class VerifyPageService {
 
         foreach ($events as $event) {
             $publicEvents[] = [
-                'event_type' => $event->event_type,
-                'occurred_at' => $event->occurred_at,
-                'description' => $this->getPublicEventDescription($event->event_type)
+                'event_type' => $event->type,
+                'occurred_at' => $event->created_at,
+                'description' => $this->getPublicEventDescription($event->type)
             ];
         }
 
@@ -586,7 +608,9 @@ class VerifyPageService {
      * @privacy-safe Generates public share links
      */
     protected function generateShareLinks(Coa $coa): array {
-        $verificationUrl = URL::route('verify.show', ['serial' => $coa->serial]);
+        $verificationUrl = $coa->verification_hash
+            ? URL::route('coa.verify.view', $coa->verification_hash)
+            : URL::route('coa.verify.certificate.view', $coa->serial);
         $title = "Certificate of Authenticity - {$coa->egi->name}";
 
         return [

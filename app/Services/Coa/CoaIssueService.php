@@ -327,6 +327,31 @@ class CoaIssueService {
         $verificationHash = $this->calculateVerificationHash($coa, $snapshot, $issuerInfo);
         $coa->update(['verification_hash' => $verificationHash]);
 
+        // 6b. Calculate integrity_hash (canonical minimal set) and default expires_at if policy applies
+        try {
+            $integrityPayload = [
+                'serial' => $coa->serial,
+                'issued_at' => $coa->issued_at->toISOString(),
+                'snapshot' => $snapshot->snapshot_json,
+            ];
+            $flags = (\defined('JSON_SORT_KEYS') ? \JSON_SORT_KEYS : 0) | (\defined('JSON_UNESCAPED_UNICODE') ? \JSON_UNESCAPED_UNICODE : 0);
+            $integrityJson = json_encode($integrityPayload, $flags);
+            $integrityHash = hash('sha256', $integrityJson ?: '');
+            $updates = ['integrity_hash' => $integrityHash];
+            // Optional: set default expiration policy e.g., 10 years from issue
+            if (empty($coa->expires_at)) {
+                $updates['expires_at'] = now()->addYears(10);
+            }
+            // Persist QR verification URL
+            $updates['qr_code_data'] = route('coa.verify.view', $verificationHash);
+            $coa->update($updates);
+        } catch (\Throwable $t) {
+            $this->logger->warning('[CoA Issue] Integrity hash calculation failed', [
+                'coa_id' => $coa->id,
+                'error' => $t->getMessage()
+            ]);
+        }
+
         $this->logger->info('[CoA Issue] Verification hash calculated', [
             'coa_id' => $coa->id,
             'verification_hash' => $verificationHash,

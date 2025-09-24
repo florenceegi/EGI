@@ -148,7 +148,7 @@ class TraitsSnapshotService {
                 'user_id' => Auth::id(),
                 'change_reason' => $changeReason
             ]);
-            
+
             // Utilizziamo la convenzione UEM standard senza parametri extra problematici
             $this->errorManager->handle('COA_TRAITS_VERSION_CREATE_ERROR', [], $e);
             // UEM ha gestito l'errore, non ri-lanciamo l'eccezione
@@ -215,7 +215,7 @@ class TraitsSnapshotService {
                 'traits_version_id' => $traitsVersion->id,
                 'user_id' => Auth::id()
             ]);
-            
+
             // Utilizziamo la convenzione UEM standard senza parametri extra problematici
             $this->errorManager->handle('COA_SNAPSHOT_CREATE_ERROR', [], $e);
             // UEM ha gestito l'errore, non ri-lanciamo l'eccezione

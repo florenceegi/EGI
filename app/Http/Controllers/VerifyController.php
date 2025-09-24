@@ -146,6 +146,15 @@ class VerifyController extends Controller {
                 ], 404);
             }
 
+            // Integrity check: recompute snapshot hash and compare
+            $integrityProvided = $coa->integrity_hash ?? null;
+            $integrityResult = null;
+            if ($integrityProvided) {
+                $integrityResult = $this->verifyService->verifyHash($coa, $integrityProvided, 'snapshot');
+            }
+
+            $integrityOk = (bool)($integrityResult['is_valid'] ?? false);
+
             // Generate verification data directly
             $verificationData = [
                 'certificate' => [
@@ -153,7 +162,8 @@ class VerifyController extends Controller {
                     'status' => $coa->status,
                     'issued_at' => $coa->issued_at,
                     'issuer_name' => $coa->issuer_name,
-                    'verification_hash' => $coa->verification_hash
+                    'verification_hash' => $coa->verification_hash,
+                    'integrity_hash' => $coa->integrity_hash
                 ],
                 'artwork' => [
                     'title' => $coa->egi->title ?? $coa->egi->name,
@@ -161,14 +171,16 @@ class VerifyController extends Controller {
                 ],
                 'verification' => [
                     'verified_at' => now(),
-                    'is_valid' => $coa->status === 'valid'
+                    'is_valid' => $coa->status === 'valid' && $integrityOk,
+                    'integrity_ok' => $integrityOk,
+                    'reason' => ($coa->status !== 'valid') ? 'status_not_valid' : ($integrityOk ? null : 'integrity_mismatch')
                 ]
             ];
 
             $response = [
                 'success' => true,
                 'message' => 'Certificate verification completed',
-                'verified' => $coa->status === 'valid',
+                'verified' => $verificationData['verification']['is_valid'],
                 'data' => $verificationData
             ];
 

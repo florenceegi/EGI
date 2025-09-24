@@ -157,6 +157,21 @@ class CoaPdfService {
             // Store PDF file record
             $coaFile = $this->storePdfFileRecord($coa, $path, $filename, $fileHash, $fileSize, 'pdf');
 
+            // Persist PDF hash into Coa metadata for public verification
+            try {
+                $meta = $coa->metadata ?? [];
+                if (!is_array($meta)) {
+                    $meta = [];
+                }
+                $meta['pdf_sha256'] = $fileHash;
+                $coa->update(['metadata' => $meta]);
+            } catch (\Throwable $e) {
+                $this->logger->warning('[CoA PDF] Unable to persist pdf_sha256 into metadata', [
+                    'coa_id' => $coa->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
             $this->logger->info('[CoA PDF] Core PDF generated successfully', [
                 'user_id' => $user?->id,
                 'coa_id' => $coa->id,
@@ -188,7 +203,9 @@ class CoaPdfService {
                 'file_hash' => $fileHash,
                 'file_id' => $coaFile->id,
                 'pdf_content' => $pdfContent,
-                'verification_url' => route('coa.verify.certificate', $coa->serial)
+                'verification_url' => ($coa->verification_hash
+                    ? route('coa.verify.view', $coa->verification_hash)
+                    : route('coa.verify.certificate.view', $coa->serial))
             ];
         } catch (AuthorizationException $e) {
             throw $e; // Re-throw auth exceptions
@@ -416,8 +433,10 @@ class CoaPdfService {
      */
     private function generateVerificationQr(Coa $coa): string {
         try {
-            // QR code should point to the EGI page, not the certificate verification
-            $egiUrl = config('app.url') . '/egis/' . $coa->egi_id;
+            // QR code should point to certificate verification URL (hash preferred)
+            $egiUrl = $coa->verification_hash
+                ? route('coa.verify.view', $coa->verification_hash)
+                : route('coa.verify.certificate.view', $coa->serial);
 
             // Use bacon/bacon-qr-code v3.x with correct class structure
             $renderer = new ImageRenderer(
@@ -430,7 +449,15 @@ class CoaPdfService {
             $qrCodeData = $writer->writeString($egiUrl);
 
             // Return base64 encoded PNG
-            return 'data:image/png;base64,' . base64_encode($qrCodeData);
+            $base64 = 'data:image/png;base64,' . base64_encode($qrCodeData);
+            // Persist qr_code_data URL in CoA if missing
+            if (!$coa->qr_code_data) {
+                try {
+                    $coa->update(['qr_code_data' => $egiUrl]);
+                } catch (\Throwable $t) {
+                }
+            }
+            return $base64;
         } catch (\Exception $e) {
             $this->logger->error('[CoA PDF] QR code generation failed', [
                 'coa_id' => $coa->id,
