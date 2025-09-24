@@ -171,7 +171,10 @@ class CoaIssueService {
             ], GdprActivityCategory::GDPR_ACTIONS);
 
             // Centralized, robust auto-PDF trigger (post-commit)
-            if (request()->boolean('auto_generate_pdf', false)) {
+            $auto = request()->has('auto_generate_pdf')
+                ? request()->boolean('auto_generate_pdf')
+                : (bool) config('coa.auto_generate_pdf', true);
+            if ($auto) {
                 DB::afterCommit(function () use ($coa, $user) {
                     try {
                         /** @var \Ultra\UltraLogManager\UltraLogManager $logger */

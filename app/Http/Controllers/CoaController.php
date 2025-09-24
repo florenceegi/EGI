@@ -362,7 +362,10 @@ class CoaController extends Controller {
 
             // Auto-generate PDF if requested
             $pdfGenerated = false;
-            if ($request->boolean('auto_generate_pdf', false)) {
+            $auto = $request->has('auto_generate_pdf')
+                ? $request->boolean('auto_generate_pdf')
+                : (bool) config('coa.auto_generate_pdf', true);
+            if ($auto) {
                 try {
                     $bundleService = app(BundleService::class);
                     $this->logger->info('[CoA Controller] Auto-PDF generation start', [
