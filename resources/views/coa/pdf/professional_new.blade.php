@@ -45,7 +45,8 @@
         }
 
         .invalid-banner {
-            background-color: #8B0000; /* rosso scuro ben visibile */
+            background-color: #8B0000;
+            /* rosso scuro ben visibile */
             color: #fff;
             padding: 8pt 12pt;
             margin-bottom: 15pt;
@@ -349,7 +350,8 @@
                 {{ __('coa_traits.pdf_scan_prompt') }}</div>
             @if (isset($qr_code))
                 <div style="display: table-cell; width: 80pt; text-align: right;">
-                    <img src="{{ $qr_code }}" alt="{{ __('coa_traits.pdf_qr_code_title') }}" style="width: 80pt; height: 80pt;" />
+                    <img src="{{ $qr_code }}" alt="{{ __('coa_traits.pdf_qr_code_title') }}"
+                        style="width: 80pt; height: 80pt;" />
                 </div>
             @endif
         </div>

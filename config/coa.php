@@ -4,11 +4,11 @@ return [
     // Abilita generazione automatica PDF dopo emissione CoA (fallback se la richiesta non specifica diversamente)
     'auto_generate_pdf' => env('COA_AUTO_GENERATE_PDF', true),
 
-    // Firma digitale (QES/PAdES) e TSA — disattivati per default (feature flags)
+    // Firma digitale (QES/PAdES) e TSA — abilitati di default in mock (feature flags)
     'signature' => [
-        'enabled' => env('COA_SIGNATURE_ENABLED', false),
-        // Provider selezionato: 'namirial' | 'infocert' (o null per mock)
-        'provider' => env('COA_SIGNATURE_PROVIDER', null),
+        'enabled' => env('COA_SIGNATURE_ENABLED', true),
+        // Provider selezionato: 'namirial' | 'infocert' | 'mock'
+        'provider' => env('COA_SIGNATURE_PROVIDER', 'mock'),
         // Ambiente di esecuzione firma: 'sandbox' | 'production'
         'environment' => env('COA_SIGNATURE_ENV', 'sandbox'),
         // Algoritmo hash per digest del documento
@@ -16,12 +16,12 @@ return [
 
         // Abilita co‑firma ispettore (perito) — opzionale
         'inspector' => [
-            'enabled' => env('COA_SIGNATURE_INSPECTOR_ENABLED', false),
+            'enabled' => env('COA_SIGNATURE_INSPECTOR_ENABLED', true),
         ],
 
         // Marca temporale RFC3161 (TSA)
         'tsa' => [
-            'enabled'   => env('COA_TSA_ENABLED', false),
+            'enabled'   => env('COA_TSA_ENABLED', true),
             'policy_oid' => env('COA_TSA_POLICY_OID', null),
             // Config per TSA Namirial (placeholder env)
             'namirial' => [

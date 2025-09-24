@@ -125,14 +125,13 @@ class CoaPdfService {
                 'options' => $options
             ]);
 
-            // Validate CoA status
+            // Validate CoA status: do not block generation; banner will show invalid
             if ($coa->status !== 'valid') {
-                $this->logger->warning('[CoA PDF] Invalid CoA status for PDF generation', [
+                $this->logger->warning('[CoA PDF] Generating PDF for non-valid CoA (will show invalid banner)', [
                     'coa_id' => $coa->id,
                     'serial' => $coa->serial,
                     'status' => $coa->status
                 ]);
-                throw new \Exception('Cannot generate PDF for a CoA that is not in valid status');
             }
 
             // Prepare PDF data
@@ -578,26 +577,167 @@ class CoaPdfService {
     private function prepareCorePdfData(Coa $coa, array $options = []): array {
         $egi = $coa->egi()->with(['traits', 'user', 'coaTraits', 'collection'])->first();
 
+        // Build additional metadata base from EGI
+        $additional = $this->extractAdditionalMetadata($egi);
+
+        // Extract signature/timestamp status from CoA metadata
+        $authorSigned = false;
+        $inspectorSigned = false;
+        $hasTimestamp = false;
+        try {
+            $meta = is_array($coa->metadata) ? $coa->metadata : [];
+            $signatures = isset($meta['signatures']) && is_array($meta['signatures']) ? $meta['signatures'] : [];
+            $timestamps = isset($meta['timestamps']) && is_array($meta['timestamps']) ? $meta['timestamps'] : [];
+
+            foreach ($signatures as $s) {
+                $role = $s['role'] ?? null;
+                $status = $s['status'] ?? null;
+                if ($role === 'author' && $status === 'valid') $authorSigned = true;
+                if ($role === 'inspector' && $status === 'valid') $inspectorSigned = true;
+            }
+            $hasTimestamp = count($timestamps) > 0;
+        } catch (\Throwable $e) {
+            // Non-blocking: ignore metadata errors
+        }
+
+        // Append signatures status to additional metadata so they are displayed in the table
+        $additional[] = [
+            'type' => 'signature_status',
+            'label' => __('coa_traits.pdf_author_signature'),
+            'value' => $authorSigned ? __('coa_traits.pdf_signature_present') : __('coa_traits.pdf_signature_missing'),
+            'category' => 'signatures'
+        ];
+        $additional[] = [
+            'type' => 'signature_status',
+            'label' => __('coa_traits.pdf_inspector_countersign'),
+            'value' => $inspectorSigned ? __('coa_traits.pdf_signature_present') : __('coa_traits.pdf_signature_missing'),
+            'category' => 'signatures'
+        ];
+        $additional[] = [
+            'type' => 'signature_status',
+            'label' => __('coa_traits.pdf_timestamp'),
+            'value' => $hasTimestamp ? __('coa_traits.pdf_signature_present') : __('coa_traits.pdf_signature_missing'),
+            'category' => 'signatures'
+        ];
+
+        // Extract full traits snapshot once to drive both display and validity
+        $traitsSnapshot = $this->extractAllArtworkMetadata($egi);
+
+        // Centralized validity computation (extensible)
+        $validity = $this->computeEffectiveValidity($coa, $egi, $traitsSnapshot);
+
         return [
             'coa' => $coa,
             'egi' => $egi,
             'serial' => $coa->serial,
             'issued_at' => $coa->issued_at,
+            // Use centralized validity (status + essentials)
+            'effective_valid' => (bool)($validity['is_valid'] ?? false),
+            'validity_missing' => $validity['missing'] ?? [],
             'verification_hash' => $coa->verification_hash ?? hash('sha256', $coa->serial),
-            'traits_snapshot' => $this->extractAllArtworkMetadata($egi), // Dati per "Caratteristiche Tecniche"
-            'additional_metadata' => $this->extractAdditionalMetadata($egi), // ✨ NUOVI DATI AGGIUNTIVI
+            'traits_snapshot' => $traitsSnapshot, // Dati per "Caratteristiche Tecniche"
+            'additional_metadata' => $additional, // ✨ NUOVI DATI AGGIUNTIVI + firme
             'creator' => $egi->user,
             'owner' => $egi->user,   // Current owner (same as creator for now)
             'title' => $egi->title,
             'description' => $egi->description,
             'creation_date' => $egi->creation_date,
             'image_url' => $egi->main_image_url,
+            // Signature flags exposed to template signature section
+            'author_signed' => $authorSigned,
+            'inspector_countersigned' => $inspectorSigned,
+            'timestamped' => $hasTimestamp,
             'platform_info' => [
                 'name' => 'FlorenceEGI',
                 'url' => config('app.url'),
                 'issued_at' => Carbon::now()
             ],
             'options' => $options
+        ];
+    }
+
+    /**
+     * Compute effective validity for a certificate considering multiple requirements.
+     * Rules: CoA status must be 'valid' AND essentials present: traits, author, creation date, issue place.
+     * Extensible by adding new checks here without touching templates.
+     *
+     * @param Coa $coa
+     * @param mixed $egi
+     * @param array $traitsSnapshot
+     * @return array{is_valid: bool, missing: array}
+     */
+    private function computeEffectiveValidity(Coa $coa, $egi, array $traitsSnapshot): array {
+        $missing = [];
+
+        // CoA status must be valid
+        if ($coa->status !== 'valid') {
+            $missing[] = 'status';
+        }
+
+        // Traits must exist
+        if (empty($traitsSnapshot)) {
+            $missing[] = 'traits';
+        }
+
+        // Author must be present (either user name or extracted from traits)
+        $authorOk = false;
+        try {
+            $authorOk = (bool) ($egi->user?->name);
+        } catch (\Throwable $e) {
+            $authorOk = false;
+        }
+        if (!$authorOk) {
+            try {
+                $authorFromTraits = $this->extractAuthorFromTraits($egi);
+                $authorOk = $authorFromTraits && $authorFromTraits !== 'Autore Sconosciuto';
+            } catch (\Throwable $e) {
+                $authorOk = false;
+            }
+        }
+        if (!$authorOk) {
+            $missing[] = 'author';
+        }
+
+        // Creation date/year must be present (field or traits year)
+        $creationOk = false;
+        try {
+            $creationOk = !empty($egi->creation_date);
+        } catch (\Throwable $e) {
+            $creationOk = false;
+        }
+        if (!$creationOk) {
+            try {
+                $year = $this->extractYearFromTraits($egi);
+                $creationOk = !empty($year);
+            } catch (\Throwable $e) {
+                $creationOk = false;
+            }
+        }
+        if (!$creationOk) {
+            $missing[] = 'creation_date';
+        }
+
+        // Issue place must be present (explicit or derived from user personal data)
+        $placeOk = false;
+        try {
+            $placeOk = !empty($egi->issue_place);
+        } catch (\Throwable $e) {
+            $placeOk = false;
+        }
+        if (!$placeOk) {
+            try {
+                $placeOk = $egi->user ? (bool) $this->extractIssueLocation($egi->user) : false;
+            } catch (\Throwable $e) {
+                $placeOk = false;
+            }
+        }
+        if (!$placeOk) {
+            $missing[] = 'issue_place';
+        }
+
+        return [
+            'is_valid' => empty($missing),
+            'missing' => $missing,
         ];
     }
 
