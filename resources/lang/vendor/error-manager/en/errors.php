@@ -430,6 +430,21 @@ return [
         'coa_qes_mock_cosign_error' => 'MockSignatureProvider::addCountersignature error: :error',
         'coa_qes_mock_ts_error' => 'MockSignatureProvider::addTimestamp error: :error',
         'coa_qes_mock_verify_error' => 'MockSignatureProvider::verifySignatures error: :error',
+        
+        // CoA PDF - New UEM codes (Developer Messages)
+        'coa_pdf_metadata_persist_error' => 'CoA PDF metadata persistence failed. Error: :error',
+        'coa_pdf_signature_pipeline_error' => 'Non-blocking signature/timestamp pipeline raised an error. Error: :error',
+        'coa_pdf_qr_generation_error' => 'Internal PDF QR generation failed. Error: :error',
+        'coa_pdf_qr_metadata_persist_error' => 'PDF QR metadata persistence failed. Error: :error',
+        'coa_pdf_signature_metadata_parse_error' => 'Failed to parse CoA signature/timestamp metadata. Error: :error',
+        'coa_pdf_validity_author_direct_error' => 'Validity: error accessing author (direct field). Error: :error',
+        'coa_pdf_validity_author_traits_error' => 'Validity: error extracting author from traits. Error: :error',
+        'coa_pdf_validity_creation_date_direct_error' => 'Validity: error accessing creation date (direct field). Error: :error',
+        'coa_pdf_validity_year_extract_error' => 'Validity: error extracting year from traits. Error: :error',
+        'coa_pdf_validity_issue_place_direct_error' => 'Validity: error accessing issue place (EGI). Error: :error',
+        'coa_pdf_validity_issuer_location_check_error' => 'Validity: error while checking issuer_location. Error: :error',
+        'coa_pdf_validity_issue_location_from_user_error' => 'Validity: error deriving issue location from user personal data. Error: :error',
+        'coa_pdf_coatraits_access_error' => 'Error accessing EGI->coaTraits. Error: :error',
     ],
     'user' => [
         // == Existing Entries ==
@@ -800,6 +815,21 @@ return [
         'coa_qes_mock_cosign_error' => 'Test environment: error simulating countersignature.',
         'coa_qes_mock_ts_error' => 'Test environment: error simulating timestamp.',
         'coa_qes_mock_verify_error' => 'Test environment: error simulating signature verification.',
+
+        // CoA PDF - New UEM codes (User Messages)
+        'coa_pdf_metadata_persist_error' => 'A technical issue occurred while saving the certificate details. Our team has been notified.',
+        'coa_pdf_signature_pipeline_error' => 'Digital signatures are temporarily unavailable. The certificate remains valid.',
+        'coa_pdf_qr_generation_error' => 'The QR code in the PDF is unavailable. You can verify the certificate via the verification link.',
+        'coa_pdf_qr_metadata_persist_error' => 'There was a problem saving the QR data. The certificate remains usable.',
+        'coa_pdf_signature_metadata_parse_error' => 'Some signature data could not be read. The certificate remains usable.',
+        'coa_pdf_validity_author_direct_error' => 'We could not reliably determine some author data. Our team has been notified.',
+        'coa_pdf_validity_author_traits_error' => 'We could not reliably determine some author data. Our team has been notified.',
+        'coa_pdf_validity_creation_date_direct_error' => 'We could not reliably determine the creation date. Our team has been notified.',
+        'coa_pdf_validity_year_extract_error' => 'We could not reliably determine the creation year. Our team has been notified.',
+        'coa_pdf_validity_issue_place_direct_error' => 'We could not determine the issue place. Our team has been notified.',
+        'coa_pdf_validity_issuer_location_check_error' => 'We could not verify the issue place. Our team has been notified.',
+        'coa_pdf_validity_issue_location_from_user_error' => 'We could not derive the issue place. Our team has been notified.',
+        'coa_pdf_coatraits_access_error' => 'We could not access the artwork technical data. Please try again later.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

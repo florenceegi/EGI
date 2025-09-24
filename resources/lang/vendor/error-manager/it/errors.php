@@ -431,6 +431,21 @@ return [
         'coa_qes_mock_cosign_error' => 'MockSignatureProvider::addCountersignature errore: :error',
         'coa_qes_mock_ts_error' => 'MockSignatureProvider::addTimestamp errore: :error',
         'coa_qes_mock_verify_error' => 'MockSignatureProvider::verifySignatures errore: :error',
+        
+        // CoA PDF - Nuovi codici UEM (Messaggi Dev)
+        'coa_pdf_metadata_persist_error' => 'Persistenza metadati PDF CoA fallita. Errore: :error',
+        'coa_pdf_signature_pipeline_error' => 'Pipeline firme/timestamp non bloccante ha generato un errore. Errore: :error',
+        'coa_pdf_qr_generation_error' => 'Generazione del QR interno al PDF fallita. Errore: :error',
+        'coa_pdf_qr_metadata_persist_error' => 'Persistenza metadati QR del PDF fallita. Errore: :error',
+        'coa_pdf_signature_metadata_parse_error' => 'Parsing metadati firme/timestamp del CoA fallito. Errore: :error',
+        'coa_pdf_validity_author_direct_error' => 'Validità: errore accesso autore (campo diretto). Errore: :error',
+        'coa_pdf_validity_author_traits_error' => 'Validità: errore estrazione autore dai traits. Errore: :error',
+        'coa_pdf_validity_creation_date_direct_error' => 'Validità: errore accesso data di creazione (campo diretto). Errore: :error',
+        'coa_pdf_validity_year_extract_error' => 'Validità: errore estrazione anno dai traits. Errore: :error',
+        'coa_pdf_validity_issue_place_direct_error' => 'Validità: errore accesso luogo di emissione (EGI). Errore: :error',
+        'coa_pdf_validity_issuer_location_check_error' => 'Validità: errore verifica issuer_location. Errore: :error',
+        'coa_pdf_validity_issue_location_from_user_error' => 'Validità: errore estrazione luogo dai dati personali utente. Errore: :error',
+        'coa_pdf_coatraits_access_error' => 'Errore accesso a EGI->coaTraits. Errore: :error',
     ],
     'user' => [
         // == Existing Entries ==
@@ -802,6 +817,21 @@ return [
         'coa_qes_mock_cosign_error' => 'Ambiente di test: errore nella simulazione della controfirma.',
         'coa_qes_mock_ts_error' => 'Ambiente di test: errore nella simulazione del timestamp.',
         'coa_qes_mock_verify_error' => 'Ambiente di test: errore nella simulazione della verifica firme.',
+
+        // CoA PDF - Nuovi codici UEM (Messaggi Utente)
+        'coa_pdf_metadata_persist_error' => 'Si è verificato un problema tecnico durante il salvataggio dei dettagli del certificato. Il nostro team è stato informato.',
+        'coa_pdf_signature_pipeline_error' => 'Le firme digitali non sono disponibili in questo momento. Il certificato resta valido.',
+        'coa_pdf_qr_generation_error' => 'Il codice QR nel PDF non è disponibile. Puoi verificare il certificato tramite il link di verifica.',
+        'coa_pdf_qr_metadata_persist_error' => 'Si è verificato un problema nel salvare i dati del QR. Il certificato resta utilizzabile.',
+        'coa_pdf_signature_metadata_parse_error' => 'Impossibile leggere alcuni dati di firma. Il certificato resta utilizzabile.',
+        'coa_pdf_validity_author_direct_error' => 'Impossibile determinare correttamente alcuni dati dell’autore. Il nostro team è stato informato.',
+        'coa_pdf_validity_author_traits_error' => 'Impossibile determinare correttamente alcuni dati dell’autore. Il nostro team è stato informato.',
+        'coa_pdf_validity_creation_date_direct_error' => 'Impossibile determinare correttamente la data di creazione. Il nostro team è stato informato.',
+        'coa_pdf_validity_year_extract_error' => 'Impossibile determinare correttamente l’anno di creazione. Il nostro team è stato informato.',
+        'coa_pdf_validity_issue_place_direct_error' => 'Impossibile determinare il luogo di emissione. Il nostro team è stato informato.',
+        'coa_pdf_validity_issuer_location_check_error' => 'Impossibile verificare il luogo di emissione. Il nostro team è stato informato.',
+        'coa_pdf_validity_issue_location_from_user_error' => 'Impossibile ricavare il luogo di emissione. Il nostro team è stato informato.',
+        'coa_pdf_coatraits_access_error' => 'Impossibile accedere ai dati tecnici dell’opera. Riprova più tardi.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

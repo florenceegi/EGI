@@ -328,7 +328,8 @@
             </tr>
             <tr>
                 <td class="info-label">{{ __('coa_traits.pdf_issue_place') }}:</td>
-                <td class="info-value">{{ $egi->issue_place ?? __('coa_traits.pdf_florence_italy') }}</td>
+                <td class="info-value">
+                    {{ $egi->issue_place ?? ($coa->issuer_location ?? __('coa_traits.pdf_florence_italy')) }}</td>
             </tr>
             <tr>
                 <td class="info-label">{{ __('coa_traits.pdf_status') }}:</td>

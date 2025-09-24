@@ -128,8 +128,10 @@ class VerifyController extends Controller {
                 'referrer' => $request->header('referer')
             ]);
 
-            // Find certificate
-            $coa = Coa::where('serial', $serial)->first();
+            // Find certificate with required relations for validity checks
+            $coa = Coa::where('serial', $serial)
+                ->with(['egi.coaTraits', 'egi.user'])
+                ->first();
 
             if (!$coa) {
                 $this->logger->info('[Verify Controller] Certificate not found', [
@@ -155,7 +157,31 @@ class VerifyController extends Controller {
 
             $integrityOk = (bool)($integrityResult['is_valid'] ?? false);
 
-            // Generate verification data directly
+            // CoA traits presence (professional traits configured)
+            $hasValidCoaTraits = false;
+            $coaTraits = $coa->egi->coaTraits ?? null;
+            if ($coaTraits) {
+                $hasValidCoaTraits = !empty($coaTraits->technique_slugs)
+                    || !empty($coaTraits->materials_slugs)
+                    || !empty($coaTraits->support_slugs)
+                    || !empty($coaTraits->technique_free_text)
+                    || !empty($coaTraits->materials_free_text)
+                    || !empty($coaTraits->support_free_text);
+            }
+
+            // Issue location presence (derived from author's personal data)
+            $issueLocation = $this->extractIssueLocation($coa->egi->user);
+            $hasValidLocation = !empty($issueLocation);
+
+            // Generate verification data directly (aligned with effective validity expectations)
+            $isValid = ($coa->status === 'valid') && $integrityOk && $hasValidCoaTraits && $hasValidLocation;
+
+            $missing = [];
+            if ($coa->status !== 'valid') $missing[] = 'status';
+            if (!$integrityOk) $missing[] = 'integrity';
+            if (!$hasValidCoaTraits) $missing[] = 'coa_traits';
+            if (!$hasValidLocation) $missing[] = 'issue_place';
+
             $verificationData = [
                 'certificate' => [
                     'serial' => $coa->serial,
@@ -163,7 +189,8 @@ class VerifyController extends Controller {
                     'issued_at' => $coa->issued_at,
                     'issuer_name' => $coa->issuer_name,
                     'verification_hash' => $coa->verification_hash,
-                    'integrity_hash' => $coa->integrity_hash
+                    'integrity_hash' => $coa->integrity_hash,
+                    'issue_location' => $issueLocation,
                 ],
                 'artwork' => [
                     'title' => $coa->egi->title ?? $coa->egi->name,
@@ -171,9 +198,14 @@ class VerifyController extends Controller {
                 ],
                 'verification' => [
                     'verified_at' => now(),
-                    'is_valid' => $coa->status === 'valid' && $integrityOk,
+                    'is_valid' => $isValid,
                     'integrity_ok' => $integrityOk,
-                    'reason' => ($coa->status !== 'valid') ? 'status_not_valid' : ($integrityOk ? null : 'integrity_mismatch')
+                    'requirements' => [
+                        'status_valid' => ($coa->status === 'valid'),
+                        'coa_traits_present' => $hasValidCoaTraits,
+                        'issue_place_present' => $hasValidLocation,
+                    ],
+                    'missing' => $missing,
                 ]
             ];
 

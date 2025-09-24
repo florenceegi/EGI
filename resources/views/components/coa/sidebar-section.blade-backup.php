@@ -187,8 +187,6 @@
         <script>
             // --- Lazy PDF.js loader ---
             let __pdfjsReady = null;
-            // --- Lazy SweetAlert2 loader ---
-            let __swalReady = null;
 
             function ensurePdfJsLoaded() {
                 if (window['pdfjsLib']) return Promise.resolve();
@@ -213,44 +211,6 @@
                 return __pdfjsReady;
             }
 
-            function ensureSwalLoaded() {
-                if (window['Swal']) return Promise.resolve();
-                if (__swalReady) return __swalReady;
-                __swalReady = new Promise((resolve, reject) => {
-                    const s = document.createElement('script');
-                    s.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js';
-                    s.async = true;
-                    s.onload = () => resolve();
-                    s.onerror = reject;
-                    document.head.appendChild(s);
-                });
-                return __swalReady;
-            }
-
-            // Centralized i18n for JS strings
-            const I18N = {
-                generating_pdf: @json(__('egi.coa.generating_pdf')),
-                unexpected_error: @json(__('egi.coa.unexpected_error')),
-                generating: @json(__('egi.coa.generating')),
-                retry: @json(__('egi.coa.retry')),
-                annex_coming_soon: @json(__('egi.coa.annex_coming_soon')),
-                reissue_confirm: @json(__('egi.coa.reissue_certificate_confirm')),
-                reissued_ok: @json(__('egi.coa.certificate_reissued_successfully')),
-                error_reissuing: @json(__('egi.coa.error_reissuing_certificate')),
-                error_issuing: @json(__('egi.coa.error_issuing_certificate')),
-                unknown_error: @json(__('egi.coa.unknown_error')),
-                issue_confirm: @json(__('coa_traits.issue_certificate_confirm')),
-                step_creating_certificate: @json(__('egi.coa.step_creating_certificate')),
-                step_generating_snapshot: @json(__('egi.coa.step_generating_snapshot')),
-                step_generating_pdf: @json(__('egi.coa.step_generating_pdf')),
-                step_finalizing: @json(__('egi.coa.step_finalizing')),
-                pdf_generated_automatically: @json(__('egi.coa.pdf_generated_automatically')),
-                download_pdf_now: @json(__('egi.coa.download_pdf_now')),
-                certificate_issued_successfully: @json(__('egi.coa.certificate_issued_successfully')),
-                confirm: @json(__('coa_traits.confirm')),
-                cancel: @json(__('coa_traits.cancel'))
-            };
-
             async function renderCoaPdfThumb(container, coaId) {
                 try {
                     // 1) Check existing PDF and get URL
@@ -262,7 +222,7 @@
                     const info = await res.json();
                     if (!info || !info.pdf_exists || !info.download_url) {
                         container.innerHTML =
-                            `<div class="p-3 text-xs text-center text-gray-400">${I18N.generating_pdf}</div>`;
+                            `<div class="p-3 text-xs text-center text-gray-400">{{ __('egi.coa.generating_pdf') }}</div>`;
                         return;
                     }
 
@@ -308,7 +268,7 @@
                 } catch (e) {
                     console.warn('CoA PDF thumb error', e);
                     container.innerHTML =
-                        `<div class="p-3 text-xs text-center text-red-300">${I18N.unexpected_error}</div>`;
+                        `<div class="p-3 text-xs text-center text-red-300">{{ __('egi.coa.unexpected_error') }}</div>`;
                 }
             }
 
@@ -375,45 +335,34 @@
             }
 
             // CoA Certificate Management Functions
-            window.issueCoaCertificate = async function(egiId, ev) {
-                await ensureSwalLoaded();
-                const conf = await Swal.fire({
-                    icon: 'question',
-                    title: I18N.issue_confirm,
-                    showCancelButton: true,
-                    confirmButtonText: I18N.confirm,
-                    cancelButtonText: I18N.cancel,
-                });
-                if (!conf.isConfirmed) return;
+            function issueCoaCertificate(egiId) {
+                if (!confirm(@json(__('coa_traits.issue_certificate_confirm')))) {
+                    return;
+                }
 
                 // Show loading state with progress steps
-                const evt = ev || window.event;
-                const button = evt && (evt.currentTarget || evt.target);
-                const originalText = button ? button.innerHTML : '';
+                const button = event.target;
+                const originalText = button.innerHTML;
 
                 // ✅ NEW: Enhanced loading with workflow steps
                 const loadingSteps = [
-                    I18N.step_creating_certificate,
-                    I18N.step_generating_snapshot,
-                    I18N.step_generating_pdf,
-                    I18N.step_finalizing
+                    @json(__('egi.coa.step_creating_certificate')),
+                    @json(__('egi.coa.step_generating_snapshot')),
+                    @json(__('egi.coa.step_generating_pdf')),
+                    @json(__('egi.coa.step_finalizing'))
                 ];
 
                 let currentStep = 0;
-                if (button) {
-                    button.innerHTML =
-                        `<svg class="inline w-4 h-4 mr-1 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>${loadingSteps[0]}`;
-                    button.disabled = true;
-                }
+                button.innerHTML =
+                    `<svg class="inline w-4 h-4 mr-1 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>${loadingSteps[0]}`;
+                button.disabled = true;
 
                 // ✅ NEW: Simulate workflow progress steps
                 const progressInterval = setInterval(() => {
                     currentStep++;
                     if (currentStep < loadingSteps.length) {
-                        if (button) {
-                            button.innerHTML =
-                                `<svg class="inline w-4 h-4 mr-1 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>${loadingSteps[currentStep]}`;
-                        }
+                        button.innerHTML =
+                            `<svg class="inline w-4 h-4 mr-1 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>${loadingSteps[currentStep]}`;
                     } else {
                         clearInterval(progressInterval);
                     }
@@ -423,8 +372,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                'content')
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         },
                         body: JSON.stringify({
                             egi_id: egiId,
@@ -434,14 +382,12 @@
                         })
                     })
                     .then(response => response.json())
-                    .then(async data => {
+                    .then(data => {
                         if (data.success) {
                             const msg = @json(__('egi.coa.certificate_issued_successfully'));
-                            const pdfGenerated = !!(data && data.data && ((data.data.pdf && data.data.pdf
-                                    .generated) || data
+                            const pdfGenerated = !!(data && data.data && ((data.data.pdf && data.data.pdf.generated) || data
                                 .data.pdf_generated === true));
-                            const downloadUrl = data && data.data ? ((data.data.pdf && data.data.pdf
-                                    .download_url) || data
+                            const downloadUrl = data && data.data ? ((data.data.pdf && data.data.pdf.download_url) || data
                                 .data.pdf_url) : null;
 
                             if (pdfGenerated && downloadUrl) {
@@ -463,41 +409,31 @@
                                 window.location.reload();
                             }, 1800);
                         } else {
-                            await ensureSwalLoaded();
-                            Swal.fire({
-                                icon: 'error',
-                                title: I18N.error_issuing,
-                                text: (data.message || I18N.unknown_error)
-                            });
+                            alert(@json(__('egi.coa.error_issuing_certificate')) + (data.message || @json(__('egi.coa.unknown_error'))));
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        ensureSwalLoaded().then(() => Swal.fire({
-                            icon: 'error',
-                            title: I18N.error_issuing
-                        }));
+                        alert(@json(__('egi.coa.error_issuing_certificate')));
                     })
                     .finally(() => {
                         // ✅ NEW: Clear progress interval and restore button
                         if (typeof progressInterval !== 'undefined') {
                             clearInterval(progressInterval);
                         }
-                        if (button) {
-                            button.innerHTML = originalText;
-                            button.disabled = false;
-                        }
+                        button.innerHTML = originalText;
+                        button.disabled = false;
                     });
             }
 
             // ✅ NEW: Enhanced PDF download with auto-generation fallback
-            window.downloadCoaPdf = function(e, coaId, directUrl) {
+            function downloadCoaPdf(e, coaId, directUrl) {
                 e.preventDefault();
                 const el = e.currentTarget;
                 const originalHtml = el.innerHTML;
                 el.innerHTML =
                     '<svg class="inline w-3 h-3 mr-1 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>' +
-                    I18N.generating;
+                    @json(__('egi.coa.generating'));
 
                 fetch(`/coa/${coaId}/pdf/check`, {
                         method: 'GET',
@@ -512,7 +448,7 @@
                             if (url) window.open(url, '_blank');
                         } else {
                             showCoaToast({
-                                message: I18N.generating_pdf + ' ' + I18N.retry,
+                                message: @json(__('egi.coa.generating_pdf')) + ' ' + @json(__('egi.coa.retry')),
                                 type: 'success',
                                 timeout: 4000
                             });
@@ -521,7 +457,7 @@
                     .catch(err => {
                         console.error('PDF check error:', err);
                         showCoaToast({
-                            message: I18N.unexpected_error,
+                            message: @json(__('egi.coa.unexpected_error')),
                             type: 'error'
                         });
                     })
@@ -541,13 +477,9 @@
                 document.body.removeChild(link);
             }
 
-            window.openCoaAnnexModal = function(coaId) {
+            function openCoaAnnexModal(coaId) {
                 if (typeof currentCoaId === 'undefined') {
-                    showCoaToast({
-                        message: I18N.annex_coming_soon,
-                        type: 'success',
-                        timeout: 3000
-                    });
+                    alert(@json(__('egi.coa.annex_coming_soon')));
                     return;
                 }
 
@@ -556,48 +488,30 @@
                 document.body.style.overflow = 'hidden';
             }
 
-            window.reissueCoaCertificate = async function(coaId) {
-                await ensureSwalLoaded();
-                const conf = await Swal.fire({
-                    icon: 'question',
-                    title: I18N.reissue_confirm,
-                    showCancelButton: true,
-                    confirmButtonText: I18N.confirm,
-                    cancelButtonText: I18N.cancel,
-                });
-                if (!conf.isConfirmed) return;
+            function reissueCoaCertificate(coaId) {
+                if (!confirm(@json(__('egi.coa.reissue_certificate_confirm')))) {
+                    return;
+                }
 
                 fetch(`/coa/${coaId}/reissue`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                'content')
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         }
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            showCoaToast({
-                                message: I18N.reissued_ok,
-                                type: 'success',
-                                timeout: 3000
-                            });
-                            setTimeout(() => window.location.reload(), 1200);
+                            alert(@json(__('egi.coa.certificate_reissued_successfully')));
+                            window.location.reload();
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: I18N.error_reissuing,
-                                text: (data.message || I18N.unknown_error)
-                            });
+                            alert(@json(__('egi.coa.error_reissuing_certificate')) + (data.message || @json(__('egi.coa.unknown_error'))));
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: I18N.error_reissuing
-                        });
+                        alert(@json(__('egi.coa.error_reissuing_certificate')));
                     });
             }
         </script>

@@ -45,7 +45,22 @@ trait EgiTraitsExtraction {
      * @return string|null
      */
     protected function extractYearFromTraits(Egi $egi): ?string {
-        $yearTraitTypes = ['Anno', 'Year', 'Data', 'Date', 'Anno di creazione', 'Creation year'];
+        $yearTraitTypes = [
+            'Anno',
+            'Year',
+            'Data',
+            'Date',
+            'Anno di creazione',
+            'Creation year',
+            'Anno creazione',
+            'Anno opera',
+            'Anno dell\'opera',
+            'Anno di realizzazione',
+            'Creation date',
+            'Production year',
+            'Produced',
+            'Realizzato nel'
+        ];
 
         foreach ($yearTraitTypes as $traitType) {
             $trait = $egi->traits()

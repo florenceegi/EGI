@@ -169,6 +169,12 @@ class CoaPdfService {
                     'coa_id' => $coa->id,
                     'error' => $e->getMessage()
                 ]);
+                // Route the error to UEM for centralized handling/visibility
+                $this->errorManager->handle('COA_PDF_METADATA_PERSIST_ERROR', [
+                    'coa_id' => $coa->id,
+                    'serial' => $coa->serial,
+                    'error' => $e->getMessage()
+                ]);
             }
 
             $this->logger->info('[CoA PDF] Core PDF generated successfully', [
@@ -256,6 +262,12 @@ class CoaPdfService {
                 }
             } catch (\Throwable $e) {
                 $this->logger->warning('[CoA PDF] Signature pipeline error (non-blocking)', [
+                    'error' => $e->getMessage()
+                ]);
+                // Ensure errors in the signature pipeline are captured by UEM
+                $this->errorManager->handle('COA_PDF_SIGNATURE_PIPELINE_ERROR', [
+                    'coa_id' => $coa->id,
+                    'serial' => $coa->serial,
                     'error' => $e->getMessage()
                 ]);
             }
@@ -534,11 +546,23 @@ class CoaPdfService {
                 try {
                     $coa->update(['qr_code_data' => $egiUrl]);
                 } catch (\Throwable $t) {
+                    // Report silent failure to UEM
+                    $this->errorManager->handle('COA_PDF_QR_METADATA_PERSIST_ERROR', [
+                        'coa_id' => $coa->id,
+                        'serial' => $coa->serial,
+                        'error' => $t->getMessage()
+                    ]);
                 }
             }
             return $base64;
         } catch (\Exception $e) {
             $this->logger->error('[CoA PDF] QR code generation failed', [
+                'coa_id' => $coa->id,
+                'serial' => $coa->serial,
+                'error' => $e->getMessage()
+            ]);
+            // Notify UEM about QR generation failure
+            $this->errorManager->handle('COA_PDF_QR_GENERATION_ERROR', [
                 'coa_id' => $coa->id,
                 'serial' => $coa->serial,
                 'error' => $e->getMessage()
@@ -597,7 +621,12 @@ class CoaPdfService {
             }
             $hasTimestamp = count($timestamps) > 0;
         } catch (\Throwable $e) {
-            // Non-blocking: ignore metadata errors
+            // Non-blocking: still report to UEM for diagnostics
+            $this->errorManager->handle('COA_PDF_SIGNATURE_METADATA_PARSE_ERROR', [
+                'coa_id' => $coa->id,
+                'serial' => $coa->serial,
+                'error' => $e->getMessage()
+            ]);
         }
 
         // Append signatures status to additional metadata so they are displayed in the table
@@ -667,24 +696,27 @@ class CoaPdfService {
      * @return array{is_valid: bool, missing: array}
      */
     private function computeEffectiveValidity(Coa $coa, $egi, array $traitsSnapshot): array {
-        $missing = [];
-
-        // CoA status must be valid
+        // 1) Status deve essere valido
         if ($coa->status !== 'valid') {
-            $missing[] = 'status';
+            return ['is_valid' => false, 'missing' => ['status']];
         }
 
-        // Traits must exist
+        // 2) Presenza di almeno un trait (snapshot non vuoto)
         if (empty($traitsSnapshot)) {
-            $missing[] = 'traits';
+            return ['is_valid' => false, 'missing' => ['traits']];
         }
 
-        // Author must be present (either user name or extracted from traits)
+        // 3) Autore presente (utente o estratto dai traits)
         $authorOk = false;
         try {
             $authorOk = (bool) ($egi->user?->name);
         } catch (\Throwable $e) {
             $authorOk = false;
+            $this->errorManager->handle('COA_PDF_VALIDITY_AUTHOR_DIRECT_ERROR', [
+                'coa_id' => $coa->id,
+                'egi_id' => $egi->id ?? null,
+                'error' => $e->getMessage()
+            ]);
         }
         if (!$authorOk) {
             try {
@@ -692,18 +724,28 @@ class CoaPdfService {
                 $authorOk = $authorFromTraits && $authorFromTraits !== 'Autore Sconosciuto';
             } catch (\Throwable $e) {
                 $authorOk = false;
+                $this->errorManager->handle('COA_PDF_VALIDITY_AUTHOR_TRAITS_ERROR', [
+                    'coa_id' => $coa->id,
+                    'egi_id' => $egi->id ?? null,
+                    'error' => $e->getMessage()
+                ]);
             }
         }
         if (!$authorOk) {
-            $missing[] = 'author';
+            return ['is_valid' => false, 'missing' => ['author']];
         }
 
-        // Creation date/year must be present (field or traits year)
+        // 4) Data/anno di creazione presente
         $creationOk = false;
         try {
             $creationOk = !empty($egi->creation_date);
         } catch (\Throwable $e) {
             $creationOk = false;
+            $this->errorManager->handle('COA_PDF_VALIDITY_CREATION_DATE_DIRECT_ERROR', [
+                'coa_id' => $coa->id,
+                'egi_id' => $egi->id ?? null,
+                'error' => $e->getMessage()
+            ]);
         }
         if (!$creationOk) {
             try {
@@ -711,34 +753,68 @@ class CoaPdfService {
                 $creationOk = !empty($year);
             } catch (\Throwable $e) {
                 $creationOk = false;
+                $this->errorManager->handle('COA_PDF_VALIDITY_YEAR_EXTRACT_ERROR', [
+                    'coa_id' => $coa->id,
+                    'egi_id' => $egi->id ?? null,
+                    'error' => $e->getMessage()
+                ]);
             }
         }
         if (!$creationOk) {
-            $missing[] = 'creation_date';
+            return ['is_valid' => false, 'missing' => ['creation_date']];
         }
 
-        // Issue place must be present (explicit or derived from user personal data)
+        // 5) Luogo di emissione presente (EGI, issuer_location significativa, o dai dati personali)
         $placeOk = false;
         try {
             $placeOk = !empty($egi->issue_place);
         } catch (\Throwable $e) {
             $placeOk = false;
+            $this->errorManager->handle('COA_PDF_VALIDITY_ISSUE_PLACE_DIRECT_ERROR', [
+                'coa_id' => $coa->id,
+                'egi_id' => $egi->id ?? null,
+                'error' => $e->getMessage()
+            ]);
+        }
+        if (!$placeOk) {
+            try {
+                $issuerLocation = (string) ($coa->issuer_location ?? '');
+                $placeholders = ['digital platform', 'n/a', 'na', 'unknown', ''];
+                $normalized = strtolower(trim($issuerLocation));
+                $hasLetters = strpbrk($issuerLocation, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') !== false;
+                $looksMeaningful = $normalized !== ''
+                    && !in_array($normalized, $placeholders, true)
+                    && strlen($issuerLocation) >= 4
+                    && $hasLetters;
+                $placeOk = $looksMeaningful;
+            } catch (\Throwable $e) {
+                $placeOk = false;
+                $this->errorManager->handle('COA_PDF_VALIDITY_ISSUER_LOCATION_CHECK_ERROR', [
+                    'coa_id' => $coa->id,
+                    'egi_id' => $egi->id ?? null,
+                    'issuer_location' => $coa->issuer_location ?? null,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
         if (!$placeOk) {
             try {
                 $placeOk = $egi->user ? (bool) $this->extractIssueLocation($egi->user) : false;
             } catch (\Throwable $e) {
                 $placeOk = false;
+                $this->errorManager->handle('COA_PDF_VALIDITY_ISSUE_LOCATION_FROM_USER_ERROR', [
+                    'coa_id' => $coa->id,
+                    'egi_id' => $egi->id ?? null,
+                    'error' => $e->getMessage()
+                ]);
             }
         }
         if (!$placeOk) {
-            $missing[] = 'issue_place';
+            return ['is_valid' => false, 'missing' => ['issue_place']];
         }
 
-        return [
-            'is_valid' => empty($missing),
-            'missing' => $missing,
-        ];
+        // Tutto ok
+        return ['is_valid' => true, 'missing' => []];
     }
 
     /**
@@ -1009,6 +1085,11 @@ class CoaPdfService {
             }
         } catch (\Exception $e) {
             \Log::error('[CoaPdfService] Error accessing coaTraits: ' . $e->getMessage());
+            // Route to UEM for centralized diagnostics
+            $this->errorManager->handle('COA_PDF_COATRAITS_ACCESS_ERROR', [
+                'egi_id' => $egi->id ?? null,
+                'error' => $e->getMessage()
+            ]);
             throw new \Exception('Error accessing coaTraits: ' . $e->getMessage());
         }
 
