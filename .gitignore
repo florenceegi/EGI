@@ -33,3 +33,11 @@ commit_statistics.xlsx
 
 # Debug scripts (non versionati)
 /public/carousel-debug.js
+
+# CoA PDFs and metadata streams (non versionare in docs)
+docs/CoA/*.pdf
+docs/CoA/**/*.pdf
+
+# Windows ADS Zone.Identifier streams (non versionare)
+*.Zone.Identifier
+docs/**/.Zone.Identifier
