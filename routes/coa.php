@@ -152,6 +152,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('pdf.download')
             ->where('coa', '[A-Za-z0-9-]+');
 
+        // Co-firma ispettore (feature-flagged)
+        Route::post('/{coa}/sign/inspector', [CoaController::class, 'countersignInspector'])
+            ->name('sign.inspector')
+            ->where('coa', '[A-Za-z0-9-]+')
+            ->middleware(['throttle:coa_sign,5,1', 'role:admin|expert']);
+
         // Visualizzazione HTML certificato
         Route::get('/{coa}/view', [CoaController::class, 'viewCertificate'])
             ->name('view')

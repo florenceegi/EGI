@@ -1929,6 +1929,112 @@ class CoaController extends Controller {
     }
 
     /**
+     * Inspector countersignature (QES mock) on latest CoA PDF
+     *
+     * @param Request $request
+     * @param Coa $coa
+     * @return JsonResponse
+     */
+    public function countersignInspector(Request $request, Coa $coa): JsonResponse {
+        try {
+            $user = Auth::user();
+
+            // Ownership or role check (only owner or expert/admin)
+            if (!($user->hasRole('admin') || $user->hasRole('expert') || $coa->egi->user_id === $user->id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied'
+                ], 403);
+            }
+
+            // Feature flag
+            if (!(bool) config('coa.signature.inspector.enabled', false)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Inspector countersignature is disabled'
+                ], 400);
+            }
+
+            // Validate request
+            $validator = Validator::make($request->all(), [
+                'reason' => 'nullable|string|max:255',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Ensure latest PDF exists
+            $bundleService = app(\App\Services\Coa\BundleService::class);
+            if (!$bundleService->pdfExists($coa)) {
+                $bundleService->generateCoaPdf($coa);
+            }
+
+            // Retrieve latest CoA PDF file record
+            $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+            if (!$latestFile) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No PDF available for countersignature'
+                ], 404);
+            }
+
+            // Execute countersign
+            /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
+            $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
+            $result = $signatureService->countersignInspector($latestFile, [
+                'reason' => $request->get('reason', 'Inspector countersign')
+            ]);
+
+            if (!($result['success'] ?? false)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Countersignature failed',
+                    'error' => $result['error'] ?? null
+                ], 500);
+            }
+
+            // Attach signature metadata onto CoA
+            $meta = $coa->metadata ?? [];
+            if (!is_array($meta)) { $meta = []; }
+            $meta['signatures'] = array_values(array_filter(array_merge($meta['signatures'] ?? [], [
+                $result['signature_info'] ?? []
+            ])));
+            $coa->update(['metadata' => $meta]);
+
+            // Audit
+            $this->auditService->logUserAction($user, 'coa_inspector_countersigned', [
+                'coa_id' => $coa->id,
+                'serial' => $coa->serial,
+                'file_id' => $result['file_id'] ?? null,
+            ], GdprActivityCategory::GDPR_ACTIONS);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Inspector countersignature applied',
+                'data' => [
+                    'file_id' => $result['file_id'] ?? null,
+                    'file_path' => $result['file_path'] ?? null,
+                    'signature_info' => $result['signature_info'] ?? []
+                ]
+            ], 200);
+        } catch (\Throwable $e) {
+            $this->errorManager->handle('COA_INSPECTOR_COUNTERSIGN_ERROR', [
+                'user_id' => Auth::id(),
+                'coa_id' => $coa->id,
+                'error' => $e->getMessage(),
+            ], $e);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to countersign certificate'
+            ], 500);
+        }
+    }
+
+    /**
      * View CoA certificate in HTML format
      * @param Coa $coa
      * @return \Illuminate\View\View
