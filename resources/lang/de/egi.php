@@ -144,4 +144,17 @@ return [
         'zoom_fit' => 'An Bildschirm anpassen',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Echtheitszertifikat (CoA)
+    |--------------------------------------------------------------------------
+    */
+
+    'coa' => [
+        // QES Badge System
+        'badge_author_signed' => 'Autor Signiert (QES)',
+        'badge_inspector_signed' => 'Inspektor Signiert (QES)',
+        'badge_integrity_ok' => 'Integrität Bestätigt',
+    ],
+
 ];

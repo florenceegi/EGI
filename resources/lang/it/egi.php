@@ -688,6 +688,11 @@ return [
         'unlock_pro_features' => 'Sblocca Funzioni Pro',
         'reason_for' => 'Motivo per',
 
+        // Badge Firme QES
+        'badge_author_signed' => 'Firmato Autore (QES)',
+        'badge_inspector_signed' => 'Firmato Ispettore (QES)',
+        'badge_integrity_ok' => 'Integrità Verificata',
+
         // Location UI (CoA)
         'issue_place' => 'Luogo di emissione',
         'location_placeholder' => 'Es. Firenze, Toscana, Italia',

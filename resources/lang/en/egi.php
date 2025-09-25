@@ -85,6 +85,11 @@ return [
         'copied' => 'Copied!',
         'reason_for' => 'Reason for',
 
+        // QES Badge System
+        'badge_author_signed' => 'Author Signed (QES)',
+        'badge_inspector_signed' => 'Inspector Signed (QES)',
+        'badge_integrity_ok' => 'Integrity Verified',
+
         // Location UI (CoA)
         'issue_place' => 'Issue Place',
         'location_placeholder' => 'e.g., Florence, Tuscany, Italy',
