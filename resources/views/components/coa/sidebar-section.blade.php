@@ -17,13 +17,19 @@
     $annexesCount = $existingCoa ? $existingCoa->annexes->count() : 0;
 
     // Suggested location prefill: prefer CoA.location, otherwise derive from user's personal data
-    $pd = optional(optional($egi->user)->personalData);
-    $parts = [];
-    if (!empty($pd->city)) $parts[] = $pd->city;
-    if (!empty($pd->region) && $pd->region !== $pd->city) $parts[] = $pd->region;
-    if (!empty($pd->country)) $parts[] = $pd->country;
-    $userDerivedLocation = implode(', ', array_filter($parts));
-    $suggestedLocation = ($existingCoa && !empty($existingCoa->location)) ? $existingCoa->location : $userDerivedLocation;
+$pd = optional(optional($egi->user)->personalData);
+$parts = [];
+if (!empty($pd->city)) {
+    $parts[] = $pd->city;
+}
+if (!empty($pd->region) && $pd->region !== $pd->city) {
+    $parts[] = $pd->region;
+}
+if (!empty($pd->country)) {
+    $parts[] = $pd->country;
+}
+$userDerivedLocation = implode(', ', array_filter($parts));
+    $suggestedLocation = $existingCoa && !empty($existingCoa->location) ? $existingCoa->location : $userDerivedLocation;
 @endphp
 
 {{-- CoA Compact Section --}}
@@ -56,11 +62,49 @@
         <div class="space-y-2">
             <div class="flex justify-between text-xs">
                 <span class="text-gray-300">{{ __('egi.coa.serial') }}:</span>
-                <span class="font-mono text-white">{{ Str::limit($existingCoa->serial, 12) }}</span>
+                <span class="font-mono text-white">{{ \Illuminate\Support\Str::limit($existingCoa->serial, 12) }}</span>
             </div>
             <div class="flex justify-between text-xs">
                 <span class="text-gray-300">{{ __('egi.coa.issued') }}:</span>
                 <span class="text-white">{{ $existingCoa->issued_at?->format('M Y') }}</span>
+            </div>
+            {{-- Signature & Integrity Badges (no PII) --}}
+            @php
+                $signMeta = (array) data_get($existingCoa, 'metadata.signatures', []);
+                $hasAuthorSig =
+                    collect($signMeta)->firstWhere('role', 'author') &&
+                    ($signMeta[0]['status'] ?? 'valid') !== 'invalid';
+                $hasInspectorSig =
+                    collect($signMeta)->firstWhere('role', 'inspector') && config('coa.signature.inspector.enabled');
+                $tsaEnabled = (bool) config('coa.signature.tsa.enabled');
+                $hasTsa = $tsaEnabled && (bool) data_get($existingCoa, 'metadata.signatures.0.timestamp');
+                $hasIntegrityHash = !empty($existingCoa->verification_hash);
+            @endphp
+            <div class="flex flex-wrap gap-1.5 pt-1">
+                @if ($hasAuthorSig)
+                    <span
+                        class="inline-flex items-center rounded-full bg-emerald-100/90 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">
+                        {{ __('egi.coa.badge_author_signed') }}
+                    </span>
+                @endif
+                @if ($hasInspectorSig)
+                    <span
+                        class="inline-flex items-center rounded-full bg-indigo-100/90 px-2 py-0.5 text-[10px] font-semibold text-indigo-800">
+                        {{ __('egi.coa.badge_inspector_signed') }}
+                    </span>
+                @endif
+                @if ($hasTsa)
+                    <span
+                        class="inline-flex items-center rounded-full bg-amber-100/90 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
+                        {{ __('egi.coa.badge_timestamped') }}
+                    </span>
+                @endif
+                @if ($hasIntegrityHash)
+                    <span
+                        class="inline-flex items-center rounded-full bg-sky-100/90 px-2 py-0.5 text-[10px] font-semibold text-sky-800">
+                        {{ __('egi.coa.badge_integrity_ok') }}
+                    </span>
+                @endif
             </div>
             @if ($annexesCount > 0)
                 <div class="flex justify-between text-xs">
@@ -147,10 +191,14 @@
 
                     {{-- Location Quick Edit --}}
                     <div class="p-2 mt-2 border rounded border-amber-500/20 bg-amber-900/20">
-                        <label class="block mb-1 text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
+                        <label class="mb-1 block text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
                         <div class="flex items-center space-x-2">
-                            <input type="text" id="coaLocationInput-{{ $existingCoa->id }}" value="{{ $suggestedLocation }}" placeholder="{{ __('egi.coa.location_placeholder') }}" class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
-                            <button onclick="saveCoaLocation({{ $existingCoa->id }})" class="px-2 py-1 text-xs font-medium rounded text-amber-900 bg-amber-400 hover:bg-amber-500">{{ __('egi.coa.save') }}</button>
+                            <input type="text" id="coaLocationInput-{{ $existingCoa->id }}"
+                                value="{{ $suggestedLocation }}"
+                                placeholder="{{ __('egi.coa.location_placeholder') }}"
+                                class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
+                            <button onclick="saveCoaLocation({{ $existingCoa->id }})"
+                                class="px-2 py-1 text-xs font-medium rounded bg-amber-400 text-amber-900 hover:bg-amber-500">{{ __('egi.coa.save') }}</button>
                         </div>
                         <p class="mt-1 text-[10px] text-gray-400">{{ __('egi.coa.location_hint') }}</p>
                     </div>
@@ -167,9 +215,11 @@
             @if ($canIssueCoa)
                 {{-- Pre-issuance Location (required) --}}
                 <div class="p-2 mb-2 border rounded border-amber-500/20 bg-amber-900/20">
-                    <label class="block mb-1 text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
+                    <label class="mb-1 block text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
                     <div class="flex items-center space-x-2">
-                        <input type="text" id="preCoaLocationInput-{{ $egi->id }}" value="{{ $suggestedLocation }}" placeholder="{{ __('egi.coa.location_placeholder') }}" class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
+                        <input type="text" id="preCoaLocationInput-{{ $egi->id }}"
+                            value="{{ $suggestedLocation }}" placeholder="{{ __('egi.coa.location_placeholder') }}"
+                            class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
                     </div>
                     <p class="mt-1 text-[10px] text-gray-400">{{ __('egi.coa.location_hint') }}</p>
                 </div>
@@ -354,12 +404,26 @@
                 section.addEventListener('toggle', () => {
                     if (section.open && !rendered) {
                         rendered = true;
+                        try {
+                            showCoaToast({
+                                message: I18N.generating_pdf,
+                                type: 'info',
+                                timeout: 3000
+                            });
+                        } catch (e) {}
                         renderCoaPdfThumb(el, coaId);
                     }
                 });
 
                 // Also render if already open and becomes visible
                 if (section.open) {
+                    try {
+                        showCoaToast({
+                            message: I18N.generating_pdf,
+                            type: 'info',
+                            timeout: 3000
+                        });
+                    } catch (e) {}
                     renderCoaPdfThumb(el, coaId);
                     rendered = true;
                 }
@@ -373,14 +437,37 @@
                     type = 'success',
                     timeout = 5000
                 } = opts || {};
+                const styles = {
+                    success: {
+                        wrap: 'bg-emerald-900/80 border-emerald-700 text-emerald-50',
+                        icon: 'text-emerald-300',
+                        path: 'M5 13l4 4L19 7'
+                    },
+                    error: {
+                        wrap: 'bg-red-900/80 border-red-700 text-red-50',
+                        icon: 'text-red-300',
+                        path: 'M6 18L18 6M6 6l12 12'
+                    },
+                    info: {
+                        wrap: 'bg-sky-900/80 border-sky-700 text-sky-50',
+                        icon: 'text-sky-300',
+                        path: 'M13 16h-1v-4h-1m1-4h.01'
+                    },
+                    warning: {
+                        wrap: 'bg-amber-900/80 border-amber-700 text-amber-50',
+                        icon: 'text-amber-300',
+                        path: 'M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z'
+                    }
+                };
+                const s = styles[type] || styles.success;
                 const base = document.createElement('div');
                 base.className =
-                    `fixed bottom-4 right-4 z-50 max-w-sm w-[360px] shadow-lg rounded-lg border ${type === 'success' ? 'bg-emerald-900/80 border-emerald-700 text-emerald-50' : 'bg-red-900/80 border-red-700 text-red-50'} backdrop-blur`;
+                    `fixed bottom-4 right-4 z-50 max-w-sm w-[360px] shadow-lg rounded-lg border ${s.wrap} backdrop-blur`;
                 base.innerHTML = `
                     <div class="flex items-start p-4 space-x-3">
                         <div class="shrink-0 mt-0.5">
-                            <svg class="h-5 w-5 ${type === 'success' ? 'text-emerald-300' : 'text-red-300'}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'}"/>
+                            <svg class="h-5 w-5 ${s.icon}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${s.path}"/>
                             </svg>
                         </div>
                         <div class="flex-1 text-sm leading-5">${message || ''}</div>
@@ -459,10 +546,16 @@
                 if (preLocInput) {
                     const locVal = (preLocInput.value || '').trim();
                     if (!locVal) {
-                        await Swal.fire({ icon: 'warning', title: I18N.location_required });
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: I18N.location_required
+                        });
                         // Restore button state before returning
                         if (typeof progressInterval !== 'undefined') clearInterval(progressInterval);
-                        if (button) { button.innerHTML = originalText; button.disabled = false; }
+                        if (button) {
+                            button.innerHTML = originalText;
+                            button.disabled = false;
+                        }
                         return;
                     }
                     payload.location = locVal;
@@ -557,8 +650,8 @@
                         } else {
                             showCoaToast({
                                 message: I18N.generating_pdf + ' ' + I18N.retry,
-                                type: 'success',
-                                timeout: 4000
+                                type: 'info',
+                                timeout: 5000
                             });
                         }
                     })
@@ -583,7 +676,10 @@
                     const input = document.getElementById(`coaLocationInput-${coaId}`);
                     const value = (input?.value || '').trim();
                     if (!value) {
-                        await Swal.fire({ icon: 'warning', title: @json(__('egi.coa.location_required')) });
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: @json(__('egi.coa.location_required'))
+                        });
                         return;
                     }
                     const res = await fetch(`/coa/${coaId}/location`, {
@@ -592,17 +688,30 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         },
-                        body: JSON.stringify({ location: value })
+                        body: JSON.stringify({
+                            location: value
+                        })
                     });
                     const data = await res.json();
                     if (data && data.success) {
-                        await Swal.fire({ icon: 'success', title: @json(__('egi.coa.location_saved')) });
+                        showCoaToast({
+                            message: @json(__('egi.coa.location_saved')),
+                            type: 'success',
+                            timeout: 3000
+                        });
                     } else {
-                        await Swal.fire({ icon: 'error', title: @json(__('egi.coa.location_save_failed')), text: data?.message || I18N.unexpected_error });
+                        await Swal.fire({
+                            icon: 'error',
+                            title: @json(__('egi.coa.location_save_failed')),
+                            text: data?.message || I18N.unexpected_error
+                        });
                     }
                 } catch (e) {
                     await ensureSwalLoaded();
-                    await Swal.fire({ icon: 'error', title: @json(__('egi.coa.location_save_failed')) });
+                    await Swal.fire({
+                        icon: 'error',
+                        title: @json(__('egi.coa.location_save_failed'))
+                    });
                 }
             }
 
