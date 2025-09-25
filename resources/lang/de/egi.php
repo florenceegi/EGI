@@ -107,7 +107,7 @@ return [
         'year' => 'Jahr',
         'internal_id' => 'Interne ID',
 
-        // Dossier Info  
+        // Dossier Info
         'dossier_info' => 'Dossier-Informationen',
         'images_count' => 'Bilder',
         'type' => 'Typ',
@@ -155,6 +155,10 @@ return [
         'badge_author_signed' => 'Autor Signiert (QES)',
         'badge_inspector_signed' => 'Inspektor Signiert (QES)',
         'badge_integrity_ok' => 'Integrität Bestätigt',
+        'inspector_countersign' => 'Inspektor Gegenzeichnung (QES)',
+        'confirm_inspector_countersign' => 'Mit der Gegenzeichnung des Inspektors fortfahren?',
+        'inspector_countersign_applied' => 'Gegenzeichnung des Inspektors angewendet',
+        'operation_failed' => 'Vorgang fehlgeschlagen',
     ],
 
 ];

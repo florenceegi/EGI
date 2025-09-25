@@ -99,6 +99,12 @@ return [
         'location_saved' => 'Location saved',
         'location_save_failed' => 'Failed to save location',
         'location_updated' => 'Location updated successfully',
+
+        // Inspector countersign (QES)
+        'inspector_countersign' => 'Inspector Countersign (QES)',
+        'confirm_inspector_countersign' => 'Proceed with inspector countersign?',
+        'inspector_countersign_applied' => 'Inspector countersign applied',
+        'operation_failed' => 'Operation failed',
     ],
     'not_for_sale' => 'Not for sale',
     'not_for_sale_description' => 'This EGI is not currently available for purchase',

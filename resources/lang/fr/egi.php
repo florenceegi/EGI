@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'coa' => [
+        'inspector_countersign' => 'Co-signature Expert (QES)',
+        'confirm_inspector_countersign' => 'Procéder à la co-signature de l’expert ?',
+        'inspector_countersign_applied' => 'Co-signature de l’expert appliquée',
+        'operation_failed' => 'Opération échouée',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -107,7 +113,7 @@ return [
         'year' => 'Année',
         'internal_id' => 'ID Interne',
 
-        // Dossier Info  
+        // Dossier Info
         'dossier_info' => 'Informations du Dossier',
         'images_count' => 'Images',
         'type' => 'Type',

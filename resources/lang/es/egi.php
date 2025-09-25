@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'coa' => [
+        'inspector_countersign' => 'Co-firma Inspector (QES)',
+        'confirm_inspector_countersign' => '¿Proceder con la co-firma del inspector?',
+        'inspector_countersign_applied' => 'Co-firma del inspector aplicada',
+        'operation_failed' => 'Operación fallida',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -107,7 +113,7 @@ return [
         'year' => 'Año',
         'internal_id' => 'ID Interno',
 
-        // Dossier Info  
+        // Dossier Info
         'dossier_info' => 'Información del Dossier',
         'images_count' => 'Imágenes',
         'type' => 'Tipo',

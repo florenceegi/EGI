@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'coa' => [
+        'inspector_countersign' => 'Co-assinatura Perito (QES)',
+        'confirm_inspector_countersign' => 'Prosseguir com a co-assinatura do perito?',
+        'inspector_countersign_applied' => 'Co-assinatura do perito aplicada',
+        'operation_failed' => 'Operação falhou',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -107,7 +113,7 @@ return [
         'year' => 'Ano',
         'internal_id' => 'ID Interno',
 
-        // Dossier Info  
+        // Dossier Info
         'dossier_info' => 'Informações do Dossiê',
         'images_count' => 'Imagens',
         'type' => 'Tipo',

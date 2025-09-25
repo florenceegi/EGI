@@ -702,6 +702,12 @@ return [
         'location_saved' => 'Località salvata',
         'location_save_failed' => 'Salvataggio località fallito',
         'location_updated' => 'Località aggiornata con successo',
+
+        // Co-firma Ispettore (QES)
+        'inspector_countersign' => 'Co-firma Ispettore (QES)',
+        'confirm_inspector_countersign' => 'Procedere con la co-firma ispettore?',
+        'inspector_countersign_applied' => 'Co-firma ispettore applicata',
+        'operation_failed' => 'Operazione non riuscita',
     ],
 
     /*

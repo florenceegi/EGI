@@ -189,6 +189,13 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                         {{ __('egi.coa.reissue') }}
                     </button>
 
+                    @if (config('coa.signature.inspector.enabled'))
+                    <button onclick="countersignInspector({{ $existingCoa->id }})"
+                        class="w-full rounded bg-indigo-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700">
+                        {{ __('egi.coa.inspector_countersign') }}
+                    </button>
+                    @endif
+
                     {{-- Location Quick Edit --}}
                     <div class="p-2 mt-2 border rounded border-amber-500/20 bg-amber-900/20">
                         <label class="mb-1 block text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
@@ -782,6 +789,51 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                             title: I18N.error_reissuing
                         });
                     });
+            }
+
+            // Inspector countersignature (backend feature-flagged and role-protected)
+            window.countersignInspector = async function(coaId) {
+                await ensureSwalLoaded();
+                const conf = await Swal.fire({
+                    icon: 'question',
+                    title: I18N.confirm,
+                    text: @json(__('egi.coa.confirm_inspector_countersign')),
+                    showCancelButton: true,
+                    confirmButtonText: I18N.confirm,
+                    cancelButtonText: I18N.cancel,
+                });
+                if (!conf.isConfirmed) return;
+
+                try {
+                    const res = await fetch(`/coa/${coaId}/sign/inspector`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({})
+                    });
+                    const data = await res.json();
+                    if (data && data.success) {
+                        showCoaToast({
+                            message: (data.message || @json(__('egi.coa.inspector_countersign_applied'))),
+                            type: 'success',
+                            timeout: 3500
+                        });
+                        setTimeout(() => window.location.reload(), 1200);
+                    } else {
+                        await Swal.fire({
+                            icon: 'error',
+                            title: @json(__('egi.coa.operation_failed')),
+                            text: (data && data.message) || I18N.unknown_error
+                        });
+                    }
+                } catch (e) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: I18N.unknown_error
+                    });
+                }
             }
         </script>
     @endpush
