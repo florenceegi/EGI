@@ -128,7 +128,7 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                 </a>
             @endif
             <a href="{{ route('coa.pdf.download', $existingCoa) }}" target="_blank"
-                onclick="return downloadCoaPdf(event, {{ $existingCoa->id }}, '{{ route('coa.pdf.download', $existingCoa) }}')"
+                onclick="return downloadCoaPdf(event, '{{ $existingCoa->id }}', '{{ route('coa.pdf.download', $existingCoa) }}')"
                 class="flex-1 rounded bg-gradient-to-r from-red-600 to-red-700 px-2 py-1.5 text-center text-xs font-medium text-white shadow-sm transition-all duration-200 hover:from-red-700 hover:to-red-800">
                 <svg class="inline w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" />
@@ -180,20 +180,31 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                 </summary>
 
                 <div class="mt-2 space-y-1">
-                    <button onclick="openCoaAnnexModal({{ $existingCoa->id }})"
+                    <button onclick="openCoaAnnexModal('{{ $existingCoa->id }}')"
                         class="w-full rounded bg-blue-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700">
                         {{ __('egi.coa.add_annex') }}
                     </button>
-                    <button onclick="reissueCoaCertificate({{ $existingCoa->id }})"
+                    <button onclick="reissueCoaCertificate('{{ $existingCoa->id }}')"
                         class="w-full rounded bg-purple-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-purple-700">
                         {{ __('egi.coa.reissue') }}
                     </button>
 
+                    @if (config('coa.signature.enabled'))
+                        <button onclick="signAuthor('{{ $existingCoa->id }}')"
+                            class="w-full rounded bg-emerald-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-emerald-700">
+                            {{ __('egi.coa.author_countersign') }}
+                        </button>
+                        <button onclick="regenerateCoaPdf('{{ $existingCoa->id }}')"
+                            class="w-full rounded bg-amber-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-amber-700">
+                            {{ __('egi.coa.regenerate_pdf') }}
+                        </button>
+                    @endif
+
                     @if (config('coa.signature.inspector.enabled'))
-                    <button onclick="countersignInspector({{ $existingCoa->id }})"
-                        class="w-full rounded bg-indigo-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700">
-                        {{ __('egi.coa.inspector_countersign') }}
-                    </button>
+                        <button onclick="countersignInspector('{{ $existingCoa->id }}')"
+                            class="w-full rounded bg-indigo-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700">
+                            {{ __('egi.coa.inspector_countersign') }}
+                        </button>
                     @endif
 
                     {{-- Location Quick Edit --}}
@@ -231,7 +242,17 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     <p class="mt-1 text-[10px] text-gray-400">{{ __('egi.coa.location_hint') }}</p>
                 </div>
 
-                <button onclick="issueCoaCertificate({{ $egi->id }})"
+                @if (config('coa.signature.inspector.enabled'))
+                    <div class="mb-2 text-left">
+                        <label class="inline-flex items-center space-x-2 text-xs text-amber-100">
+                            <input type="checkbox" id="preCoaInspectorFlag-{{ $egi->id }}"
+                                class="bg-gray-800 border-gray-600 rounded">
+                            <span>{{ __('egi.coa.inspector_countersign') }}</span>
+                        </label>
+                    </div>
+                @endif
+
+                <button onclick="issueCoaCertificate('{{ $egi->id }}')"
                     class="w-full px-3 py-2 font-bold text-white transition-colors bg-green-500 rounded hover:bg-green-600">
                     <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -298,6 +319,39 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                 return __pdfjsReady;
             }
 
+            // Regenerate PDF and reapply signatures
+            window.regenerateCoaPdf = function(coaId) {
+                console.log('regenerateCoaPdf', coaId);
+                fetch(`/coa/${coaId}/pdf/regenerate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.success) {
+                            showCoaToast({
+                                message: @json(__('egi.coa.pdf_regenerated')),
+                                type: 'success',
+                                timeout: 3000
+                            });
+                            setTimeout(() => window.location.reload(), 1200);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: @json(__('egi.coa.pdf_regenerate_failed')),
+                                text: (data && data.message) || I18N.unknown_error
+                            });
+                        }
+                    })
+                    .catch(() => Swal.fire({
+                        icon: 'error',
+                        title: @json(__('egi.coa.pdf_regenerate_failed'))
+                    }));
+            }
+
             function ensureSwalLoaded() {
                 if (window['Swal']) return Promise.resolve();
                 if (__swalReady) return __swalReady;
@@ -334,7 +388,11 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                 certificate_issued_successfully: @json(__('egi.coa.certificate_issued_successfully')),
                 confirm: @json(__('coa_traits.confirm')),
                 cancel: @json(__('coa_traits.cancel')),
-                location_required: @json(__('egi.coa.location_required'))
+                location_required: @json(__('egi.coa.location_required')),
+                inspector_countersign: @json(__('egi.coa.inspector_countersign')),
+                confirm_inspector_countersign: @json(__('egi.coa.confirm_inspector_countersign')),
+                inspector_countersign_applied: @json(__('egi.coa.inspector_countersign_applied')),
+                operation_failed: @json(__('egi.coa.operation_failed'))
             };
 
             async function renderCoaPdfThumb(container, coaId) {
@@ -567,6 +625,11 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     }
                     payload.location = locVal;
                 }
+                // Optional inspector countersign request
+                const inspectorFlag = document.getElementById(`preCoaInspectorFlag-${egiId}`);
+                if (inspectorFlag && inspectorFlag.checked) {
+                    payload['request_inspector_countersign'] = true;
+                }
 
                 fetch(`{{ route('coa.issue') }}`, {
                         method: 'POST',
@@ -791,13 +854,62 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     });
             }
 
-            // Inspector countersignature (backend feature-flagged and role-protected)
-            window.countersignInspector = async function(coaId) {
+            // Author signature
+            window.signAuthor = async function(coaId) {
+                console.log('signAuthor', coaId);
                 await ensureSwalLoaded();
                 const conf = await Swal.fire({
                     icon: 'question',
                     title: I18N.confirm,
-                    text: @json(__('egi.coa.confirm_inspector_countersign')),
+                    text: @json(__('egi.coa.confirm_author_countersign')),
+                    showCancelButton: true,
+                    confirmButtonText: I18N.confirm,
+                    cancelButtonText: I18N.cancel,
+                });
+                if (!conf.isConfirmed) return;
+
+                try {
+                    const res = await fetch(`/coa/${coaId}/sign/author`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
+                        },
+                        body: JSON.stringify({})
+                    });
+                    const data = await res.json();
+                    if (data && data.success) {
+                        showCoaToast({
+                            message: @json(__('egi.coa.author_countersign_applied')),
+                            type: 'success',
+                            timeout: 3500
+                        });
+                        setTimeout(() => window.location.reload(), 1200);
+                    } else {
+                        await Swal.fire({
+                            icon: 'error',
+                            title: I18N.operation_failed,
+                            text: (data && data.message) || I18N.unknown_error
+                        });
+                    }
+                } catch (e) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: I18N.unknown_error
+                    });
+                }
+            }
+
+            // Inspector countersignature (backend feature-flagged and role-protected)
+            window.countersignInspector = async function(coaId) {
+                console.log('countersignInspector', coaId);
+                await ensureSwalLoaded();
+                console.log('ensureSwalLoaded', ensureSwalLoaded);
+                const conf = await Swal.fire({
+                    icon: 'question',
+                    title: I18N.confirm,
+                    text: I18N.confirm_inspector_countersign,
                     showCancelButton: true,
                     confirmButtonText: I18N.confirm,
                     cancelButtonText: I18N.cancel,
@@ -809,14 +921,15 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
                         },
                         body: JSON.stringify({})
                     });
                     const data = await res.json();
                     if (data && data.success) {
                         showCoaToast({
-                            message: (data.message || @json(__('egi.coa.inspector_countersign_applied'))),
+                            message: (data.message || I18N.inspector_countersign_applied),
                             type: 'success',
                             timeout: 3500
                         });
@@ -824,7 +937,7 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     } else {
                         await Swal.fire({
                             icon: 'error',
-                            title: @json(__('egi.coa.operation_failed')),
+                            title: I18N.operation_failed,
                             text: (data && data.message) || I18N.unknown_error
                         });
                     }

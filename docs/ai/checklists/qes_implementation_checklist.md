@@ -515,3 +515,56 @@
 **Owner**: FlorenceEGI Development Team  
 **Target**: Q4 2025  
 **Last Update**: 2025-09-24
+
+---
+
+## 🚦 QES MVP – Integrazioni aggiuntive (da implementare)
+
+-   **Provider & Profilo**
+
+    -   [ ] Selezione QTSP UE (es. InfoCert/Namirial) e credenziali sandbox
+    -   [ ] Implementare provider CSC (firma per digest) oltre al mock
+    -   [ ] PAdES-B-LT con TSA del QTSP (marca temporale + info revoca)
+
+-   **Flusso Firma Autore (MVP)**
+
+    -   [ ] UI passo firma: riepilogo seriale, snapshot_sha256, pdf_sha256, luogo/data
+    -   [ ] Endpoint `POST /coa/{coa}/sign/author` → CSC: signDigest → PDF firmato + timestamp
+    -   [ ] Stato CoA: `SIGNED_AUTHOR`, `is_valid=true`
+    -   [ ] Bottone “Rigenera PDF” post‑firma (o rigenerazione automatica) mantenendo lo stesso snapshot
+
+-   **Flusso Firma Ispettore (Opzionale)**
+
+    -   [ ] Enforcement ruolo Spatie “Inspector” su `POST /coa/{coa}/sign/inspector`
+    -   [ ] CSC flow identico all’autore → seconda firma stessa versione PDF → `SIGNED_MULTI`
+
+-   **Persistenza & Audit**
+
+    -   [ ] Salvare `snapshot_sha256` (immutabile) e `pdf_sha256` per ogni versione (v1, v2, …)
+    -   [ ] Per ogni firma: `signer_role`, `signer_display_name`, `provider`, `certificate_serial`, `subject_cn`, `pades_profile`, `timestamp_utc`, `tsa_serial`, `validation_status`, `txid_onchain?`
+    -   [ ] Log consenso (utente, timestamp, IP, user-agent) via `ConsentService`
+
+-   **Verify Page**
+
+    -   [ ] Mostrare Stato (Valido/Revocato), `snapshot_sha256`, `pdf_sha256`
+    -   [ ] Elenco firme con nome, ruolo, provider, data/ora; link “come verificare in Acrobat/Preview”
+    -   [ ] Pulsante “Scarica PDF firmato”
+
+-   **Policy Validità & Re‑Issue**
+
+    -   [ ] `is_valid=true` se esiste firma QES Autore coerente con snapshot corrente
+    -   [ ] Qualsiasi modifica ai dati core ⇒ `REVOKED` serie firmata + `RE‑ISSUE` (nuovo serial/snapshot)
+
+-   **Fallback Upload**
+
+    -   [ ] UI/endpoint “Carica PDF già firmato (QES)” con validazione DSS lato server
+
+-   **UX**
+
+    -   [ ] Step indicator: “in attesa approvazione sul telefono…”
+    -   [ ] Esito: “Firma applicata. PDF v2 pronto.”
+
+-   **Test Accettazione**
+    -   [ ] Acrobat/Preview → firma valida e nome corretto
+    -   [ ] Revoca o modifiche → stato aggiornato e versioni marcate
+    -   [ ] Verify page allineata (hash pagina = hash PDF), ordine firme: Autore → Ispettore

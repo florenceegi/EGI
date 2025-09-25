@@ -708,6 +708,12 @@ return [
         'confirm_inspector_countersign' => 'Procedere con la co-firma ispettore?',
         'inspector_countersign_applied' => 'Co-firma ispettore applicata',
         'operation_failed' => 'Operazione non riuscita',
+        'author_countersign' => 'Firma Autore (QES)',
+        'confirm_author_countersign' => 'Procedere con la firma dell’autore?',
+        'author_countersign_applied' => 'Firma autore applicata',
+        'regenerate_pdf' => 'Rigenera PDF',
+        'pdf_regenerated' => 'PDF rigenerato',
+        'pdf_regenerate_failed' => 'Rigenerazione PDF fallita',
     ],
 
     /*

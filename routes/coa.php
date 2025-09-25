@@ -147,6 +147,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->where('coa', '[A-Za-z0-9-]+')
             ->middleware('throttle:coa_pdf,10,1');
 
+        // Rigenerazione PDF e riapplicazione firme presenti
+        Route::post('/{coa}/pdf/regenerate', [CoaController::class, 'regeneratePdf'])
+            ->name('pdf.regenerate')
+            ->where('coa', '[A-Za-z0-9-]+')
+            ->middleware('throttle:coa_pdf,10,1');
+
         // Download PDF
         Route::get('/{coa}/pdf/download', [CoaController::class, 'downloadPdf'])
             ->name('pdf.download')
@@ -156,7 +162,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{coa}/sign/inspector', [CoaController::class, 'countersignInspector'])
             ->name('sign.inspector')
             ->where('coa', '[A-Za-z0-9-]+')
-            ->middleware(['throttle:coa_sign,5,1', 'role:admin|expert']);
+            ->middleware(['throttle:5,1', 'role:admin|expert']);
+
+        // Firma autore (feature-flagged)
+        Route::post('/{coa}/sign/author', [CoaController::class, 'signAuthor'])
+            ->name('sign.author')
+            ->where('coa', '[A-Za-z0-9-]+')
+            ->middleware(['throttle:5,1']);
 
         // Visualizzazione HTML certificato
         Route::get('/{coa}/view', [CoaController::class, 'viewCertificate'])

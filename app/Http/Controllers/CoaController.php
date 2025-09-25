@@ -34,7 +34,8 @@ use Carbon\Carbon;
  * @date 2025-09-18
  * @purpose Professional certificate management following FlorenceEGI architecture
  */
-class CoaController extends Controller {
+class CoaController extends Controller
+{
     /**
      * Logger instance for audit trail
      * @var UltraLogManager
@@ -123,7 +124,8 @@ class CoaController extends Controller {
      * @transparency-level Medium - certificate listing with metadata
      * @narrative-coherence Links certificates to user's collection
      */
-    public function index(Request $request): JsonResponse {
+    public function index(Request $request): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -216,7 +218,8 @@ class CoaController extends Controller {
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|void
      * @privacy-safe Touches minimal PII-like location string; full GDPR logging
      */
-    public function updateLocation(Request $request, Coa $coa) {
+    public function updateLocation(Request $request, Coa $coa)
+    {
         try {
             $user = Auth::user();
 
@@ -295,7 +298,8 @@ class CoaController extends Controller {
      * @return JsonResponse
      * @privacy-safe Returns certificate only if user owns the associated EGI
      */
-    public function show(Request $request, Coa $coa): JsonResponse {
+    public function show(Request $request, Coa $coa): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -382,7 +386,8 @@ class CoaController extends Controller {
      * @return JsonResponse|void UEM può gestire la risposta automaticamente
      * @privacy-safe Issues certificate only for authenticated user's EGI
      */
-    public function issue(Request $request) {
+    public function issue(Request $request)
+    {
 
         try {
             $user = Auth::user();
@@ -457,6 +462,32 @@ class CoaController extends Controller {
                     ]);
                     $bundleService->generateCoaPdf($coa);
                     $pdfGenerated = true;
+
+                    // Optional: inspector countersign immediately after PDF generation
+                    if ((bool) $request->boolean('request_inspector_countersign') && (bool) config('coa.signature.inspector.enabled', false)) {
+                        try {
+                            $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+                            if ($latestFile) {
+                                /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
+                                $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
+                                $signRes = $signatureService->countersignInspector($latestFile, [
+                                    'reason' => 'Inspector countersign (pre-issue request)'
+                                ]);
+                                if (($signRes['success'] ?? false)) {
+                                    $meta = $coa->metadata ?? [];
+                                    if (!is_array($meta)) {
+                                        $meta = [];
+                                    }
+                                    $meta['signatures'] = array_values(array_filter(array_merge($meta['signatures'] ?? [], [
+                                        $signRes['signature_info'] ?? []
+                                    ])));
+                                    $coa->update(['metadata' => $meta]);
+                                }
+                            }
+                        } catch (\Throwable $t) {
+                            // Non-bloccante: fallisce in silenzio, già loggato dal SignatureService/ErrorManager
+                        }
+                    }
 
                     $this->logger->info('[CoA Controller] PDF auto-generated', [
                         'coa_id' => $coa->id,
@@ -534,7 +565,8 @@ class CoaController extends Controller {
      * @return JsonResponse
      * @privacy-safe Re-issues certificate only for authenticated user's CoA
      */
-    public function reissue(Request $request, Coa $coa): JsonResponse {
+    public function reissue(Request $request, Coa $coa): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -627,7 +659,8 @@ class CoaController extends Controller {
      * @return JsonResponse
      * @privacy-safe Revokes certificate only for authenticated user's CoA
      */
-    public function revoke(Request $request, Coa $coa): JsonResponse {
+    public function revoke(Request $request, Coa $coa): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -719,7 +752,8 @@ class CoaController extends Controller {
      * @return JsonResponse
      * @privacy-safe Creates bundle only for authenticated user's CoA
      */
-    public function createBundle(Request $request, Coa $coa): JsonResponse {
+    public function createBundle(Request $request, Coa $coa): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -809,7 +843,8 @@ class CoaController extends Controller {
      * @return JsonResponse
      * @privacy-safe Returns statistics only for authenticated user's certificates
      */
-    public function statistics(Request $request): JsonResponse {
+    public function statistics(Request $request): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -878,7 +913,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager pattern for EGI certificate validation
      * @narrative-coherence Prevents duplicate certificate issuance
      */
-    public function checkEgiCertificate(Request $request): JsonResponse {
+    public function checkEgiCertificate(Request $request): JsonResponse
+    {
         try {
             $request->validate([
                 'egi_id' => 'required|integer|exists:egis,id'
@@ -959,7 +995,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager for admin operations
      * @narrative-coherence Provides administrative oversight of CoA system
      */
-    public function adminDashboard(Request $request): JsonResponse {
+    public function adminDashboard(Request $request): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -1040,7 +1077,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager for batch operations
      * @narrative-coherence Enables efficient mass certificate management
      */
-    public function batchRevoke(Request $request): JsonResponse {
+    public function batchRevoke(Request $request): JsonResponse
+    {
         try {
             $request->validate([
                 'certificate_ids' => 'required|array|min:1|max:100',
@@ -1129,7 +1167,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager for reporting operations
      * @narrative-coherence Provides detailed analytical insights
      */
-    public function reports(Request $request): JsonResponse {
+    public function reports(Request $request): JsonResponse
+    {
         try {
             $request->validate([
                 'report_type' => 'required|string|in:summary,detailed,activity,trends',
@@ -1266,7 +1305,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager for settings operations
      * @narrative-coherence Manages CoA system configuration
      */
-    public function settings(Request $request): JsonResponse {
+    public function settings(Request $request): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -1332,7 +1372,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager for export operations
      * @narrative-coherence Enables data portability and backup
      */
-    public function exportData(Request $request) {
+    public function exportData(Request $request)
+    {
         try {
             $request->validate([
                 'export_type' => 'required|string|in:certificates,events,statistics',
@@ -1457,7 +1498,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager for search operations
      * @narrative-coherence Enables comprehensive certificate discovery
      */
-    public function search(Request $request): JsonResponse {
+    public function search(Request $request): JsonResponse
+    {
         try {
             $request->validate([
                 'query' => 'nullable|string|max:255',
@@ -1577,7 +1619,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager for validation operations
      * @narrative-coherence Ensures serial number integrity
      */
-    public function validateSerial(Request $request): JsonResponse {
+    public function validateSerial(Request $request): JsonResponse
+    {
         try {
             $request->validate([
                 'serial' => 'required|string|max:50'
@@ -1642,7 +1685,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager for preview operations
      * @narrative-coherence Allows bundle review before finalization
      */
-    public function previewBundle(Request $request, int $coaId): JsonResponse {
+    public function previewBundle(Request $request, int $coaId): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -1732,7 +1776,8 @@ class CoaController extends Controller {
      * @uem-pattern Ultra Error Manager for requirement validation
      * @narrative-coherence Validates all prerequisites for certificate issuance
      */
-    public function checkIssueRequirements(Request $request): JsonResponse {
+    public function checkIssueRequirements(Request $request): JsonResponse
+    {
         try {
             $request->validate([
                 'egi_id' => 'required|integer|exists:egis,id'
@@ -1829,7 +1874,8 @@ class CoaController extends Controller {
      * @param Coa $coa
      * @return JsonResponse
      */
-    public function checkPdf(Coa $coa): JsonResponse {
+    public function checkPdf(Coa $coa): JsonResponse
+    {
         try {
             $bundleService = app(BundleService::class);
             $pdfExists = $bundleService->pdfExists($coa);
@@ -1859,7 +1905,8 @@ class CoaController extends Controller {
      * @param Coa $coa
      * @return JsonResponse
      */
-    public function generatePdf(Coa $coa): JsonResponse {
+    public function generatePdf(Coa $coa): JsonResponse
+    {
         try {
             $bundleService = app(BundleService::class);
             $pdfPath = $bundleService->generateCoaPdf($coa);
@@ -1892,11 +1939,67 @@ class CoaController extends Controller {
     }
 
     /**
+     * Regenerate PDF for a CoA certificate and reapply existing signatures
+     * @param Coa $coa
+     * @return JsonResponse
+     */
+    public function regeneratePdf(Coa $coa): JsonResponse
+    {
+        try {
+            $bundleService = app(BundleService::class);
+
+            // 1) Generate fresh PDF from current snapshot
+            $bundleService->generateCoaPdf($coa);
+
+            // 2) Reapply signatures that exist in metadata (author/inspector)
+            $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+            if ($latestFile && (bool) config('coa.signature.enabled', false)) {
+                /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
+                $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
+                $meta = (array) ($coa->metadata ?? []);
+                $sigs = (array) ($meta['signatures'] ?? []);
+
+                $hasAuthor = collect($sigs)->firstWhere('role', 'author') !== null;
+                $hasInspector = collect($sigs)->firstWhere('role', 'inspector') !== null && (bool) config('coa.signature.inspector.enabled', false);
+
+                if ($hasAuthor) {
+                    $signatureService->signAuthor($latestFile, ['reason' => 'Author signature (regenerate)']);
+                }
+                if ($hasInspector) {
+                    // Need latest again because signAuthor created a new version
+                    $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+                    if ($latestFile) {
+                        $signatureService->countersignInspector($latestFile, ['reason' => 'Inspector countersign (regenerate)']);
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'PDF regenerated successfully',
+                'download_url' => route('coa.pdf.download', $coa)
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_PDF_REGENERATE_ERROR', [
+                'coa_id' => $coa->id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to regenerate PDF'
+            ], 500);
+        }
+    }
+
+    /**
      * Download PDF for a CoA certificate
      * @param Coa $coa
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function downloadPdf(Coa $coa) {
+    public function downloadPdf(Coa $coa)
+    {
         try {
             $bundleService = app(BundleService::class);
 
@@ -1935,7 +2038,8 @@ class CoaController extends Controller {
      * @param Coa $coa
      * @return JsonResponse
      */
-    public function countersignInspector(Request $request, Coa $coa): JsonResponse {
+    public function countersignInspector(Request $request, Coa $coa): JsonResponse
+    {
         try {
             $user = Auth::user();
 
@@ -1999,7 +2103,9 @@ class CoaController extends Controller {
 
             // Attach signature metadata onto CoA
             $meta = $coa->metadata ?? [];
-            if (!is_array($meta)) { $meta = []; }
+            if (!is_array($meta)) {
+                $meta = [];
+            }
             $meta['signatures'] = array_values(array_filter(array_merge($meta['signatures'] ?? [], [
                 $result['signature_info'] ?? []
             ])));
@@ -2035,11 +2141,107 @@ class CoaController extends Controller {
     }
 
     /**
+     * Author signature (QES mock) on latest CoA PDF
+     *
+     * @param Request $request
+     * @param Coa $coa
+     * @return JsonResponse
+     */
+    public function signAuthor(Request $request, Coa $coa): JsonResponse
+    {
+        try {
+            $user = Auth::user();
+
+            // Ownership check: only the owner (creator) can sign as author
+            if ($coa->egi->user_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied'
+                ], 403);
+            }
+
+            // Feature flag
+            if (!(bool) config('coa.signature.enabled', false)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Author signature is disabled'
+                ], 400);
+            }
+
+            // Ensure latest PDF exists
+            $bundleService = app(\App\Services\Coa\BundleService::class);
+            if (!$bundleService->pdfExists($coa)) {
+                $bundleService->generateCoaPdf($coa);
+            }
+
+            $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+            if (!$latestFile) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No PDF available for signature'
+                ], 404);
+            }
+
+            /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
+            $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
+            $result = $signatureService->signAuthor($latestFile, [
+                'reason' => 'Author signature'
+            ]);
+
+            if (!($result['success'] ?? false)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Signature failed',
+                    'error' => $result['error'] ?? null
+                ], 500);
+            }
+
+            // Attach signature metadata
+            $meta = $coa->metadata ?? [];
+            if (!is_array($meta)) {
+                $meta = [];
+            }
+            $meta['signatures'] = array_values(array_filter(array_merge($meta['signatures'] ?? [], [
+                $result['signature_info'] ?? []
+            ])));
+            $coa->update(['metadata' => $meta]);
+
+            // Audit
+            $this->auditService->logUserAction($user, 'coa_author_signed', [
+                'coa_id' => $coa->id,
+                'serial' => $coa->serial,
+                'file_id' => $result['file_id'] ?? null,
+            ], GdprActivityCategory::GDPR_ACTIONS);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Author signature applied',
+                'data' => [
+                    'file_id' => $result['file_id'] ?? null,
+                    'file_path' => $result['file_path'] ?? null,
+                    'signature_info' => $result['signature_info'] ?? []
+                ]
+            ], 200);
+        } catch (\Throwable $e) {
+            $this->errorManager->handle('COA_AUTHOR_SIGN_ERROR', [
+                'user_id' => Auth::id(),
+                'coa_id' => $coa->id,
+                'error' => $e->getMessage(),
+            ], $e);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to sign certificate'
+            ], 500);
+        }
+    }
+
+    /**
      * View CoA certificate in HTML format
      * @param Coa $coa
      * @return \Illuminate\View\View
      */
-    public function viewCertificate(Coa $coa) {
+    public function viewCertificate(Coa $coa)
+    {
         try {
             // Load relationships needed for certificate view
             $coa->load([
