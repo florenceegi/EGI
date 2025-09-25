@@ -29,6 +29,13 @@
     -   [ ] Audit trail completo della fase firma (parziale, da estendere)
     -   [ ] Performance testing
 
+    -   Hook ispettore (Co‑firma)
+        -   [x] Endpoint backend `POST /coa/{coa}/sign/inspector`
+        -   [x] Nuova versione file ad ogni firma (versioning in `SignatureService`)
+        -   [x] Attivazione condizionale `coa.signature.inspector.enabled`
+        -   [ ] Validazione permessi ispettore (ruolo dedicato/refine policy)
+        -   [ ] Chain of custody tracking
+
 -   **Fase 5 - Verifica & UI**
 
     -   [x] API verifica con response JSON strutturata (presente)
