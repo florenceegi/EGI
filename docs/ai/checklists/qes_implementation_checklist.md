@@ -24,6 +24,12 @@
 -   [x] Verifica sistema completata: routes pubbliche, config, database, firme, audit logs verificati
 -   [x] Validazione permessi ispettore implementata: ruolo inspector con sign_coa, creator aggiornato, logica di accesso raffinata
 -   [x] Chain of custody tracking implementato: servizio completo, eventi estesi, API endpoints, integrazione controller
+-   [x] Badge Author Signed corretto: aggiornato role 'author' -> 'creator' nel template sidebar
+-   [x] Ruolo 'expert' inesistente rimosso: aggiornato middleware e controller per usare ruoli esistenti
+-   [x] Bottone Co-firma Ispettore spostato fuori da sezione Manage CoA per visibilità inspector
+-   [x] Controllo auth()->check() aggiunto per evitare errore su utenti guest
+-   [x] Traduzione badge_timestamped aggiunta in tutte le 6 lingue
+-   [x] Cache pulita e configurazione verificata per visibilità bottone inspector
 
 Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/inspector/ts). In produzione (CSC/PAdES) ci si aspetta 1 output per azione firma; la moltiplicazione file non è considerata blocker per ora.
 
@@ -64,12 +70,16 @@ Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/i
 -   **Fase 5 - Verifica & UI**
 
     -   [x] API verifica con response JSON strutturata (presente)
-    -   [ ] Estensioni verifica per stato firme/ts
-    -   [ ] Badges UI (sidebar/pagina verifica)
+    -   [x] Estensioni verifica per stato firme/ts (implementato in VerifyPageService)
+    -   [x] Badges UI (sidebar/pagina verifica) - implementati con logica corretta
 
 -   **Fase 6 - Ruoli & Permessi**
 
-    -   [ ] Flusso co‑firma ispettore (permessi/ui/audit) da implementare
+    -   [x] Flusso co‑firma ispettore (permessi/ui/audit) implementato
+    -   [x] Ruolo inspector creato con permesso sign_coa
+    -   [x] Middleware route aggiornato per includere ruolo inspector
+    -   [x] Bottone Co-firma Ispettore visibile agli inspector
+    -   [x] Controlli permessi e autenticazione implementati
 
 -   **Fase 7 - Testing & Validazione**
 
