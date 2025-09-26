@@ -21,6 +21,8 @@
 -   [x] i18n: tutte le etichette/buttons/messaggi senza hardcoded
 -   [x] Route PDF download resa pubblica: spostata fuori da middleware auth, controller aggiornato con `except(['downloadPdf'])`
 -   [x] Audit trail completo implementato: firme autore/ispettore, rigenerazione PDF e download con metadati completi
+-   [x] Verifica sistema completata: routes pubbliche, config, database, firme, audit logs verificati
+-   [x] Validazione permessi ispettore implementata: ruolo inspector con sign_coa, creator aggiornato, logica di accesso raffinata
 
 Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/inspector/ts). In produzione (CSC/PAdES) ci si aspetta 1 output per azione firma; la moltiplicazione file non è considerata blocker per ora.
 
@@ -55,7 +57,7 @@ Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/i
         -   [x] Endpoint backend `POST /coa/{coa}/sign/inspector`
         -   [x] Nuova versione file ad ogni firma (versioning in `SignatureService`)
         -   [x] Attivazione condizionale `coa.signature.inspector.enabled`
-        -   [ ] Validazione permessi ispettore (ruolo dedicato/refine policy)
+        -   [x] Validazione permessi ispettore (ruolo dedicato/refine policy)
         -   [ ] Chain of custody tracking
 
 -   **Fase 5 - Verifica & UI**

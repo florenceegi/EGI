@@ -277,6 +277,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage_bio_profile',
             'can_request_export',
             'can_request_deletion',
+            // ✅ CoA / QES
+            'sign_coa',
         ],
 
         'admin' => [

@@ -1948,8 +1948,22 @@ class CoaController extends Controller
     public function regeneratePdf(Coa $coa): JsonResponse
     {
         try {
+            $user = Auth::user();
             $bundleService = app(BundleService::class);
-            $userId = Auth::id();
+            $userId = $user->id;
+
+            // Permission check: only owner, admin, expert, or inspector with sign_coa permission can regenerate
+            $hasAccess = $user->hasRole('admin') ||
+                $user->hasRole('expert') ||
+                $coa->egi->user_id === $user->id ||
+                ($user->hasRole('inspector') && $user->can('sign_coa'));
+
+            if (!$hasAccess) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied: insufficient permissions for PDF regeneration'
+                ], 403);
+            }
 
             // 1) Generate fresh PDF from current snapshot
             try {
@@ -2207,6 +2221,22 @@ class CoaController extends Controller
                 'is_authenticated' => Auth::check(),
             ]);
 
+            // Permission check for authenticated users (public access allowed for unauthenticated)
+            if (Auth::check()) {
+                $user = Auth::user();
+                $hasAccess = $user->hasRole('admin') ||
+                    $user->hasRole('expert') ||
+                    $coa->egi->user_id === $user->id ||
+                    ($user->hasRole('inspector') && $user->can('sign_coa'));
+
+                if (!$hasAccess) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Access denied: insufficient permissions for PDF download'
+                    ], 403);
+                }
+            }
+
             // Check if PDF exists, generate if not
             if (!$bundleService->pdfExists($coa)) {
                 $bundleService->generateCoaPdf($coa);
@@ -2291,11 +2321,16 @@ class CoaController extends Controller
         try {
             $user = Auth::user();
 
-            // Ownership or role check (only owner or expert/admin)
-            if (!($user->hasRole('admin') || $user->hasRole('expert') || $coa->egi->user_id === $user->id)) {
+            // Ownership or role check (owner, admin, expert, or inspector with sign_coa permission)
+            $hasAccess = $user->hasRole('admin') ||
+                $user->hasRole('expert') ||
+                $coa->egi->user_id === $user->id ||
+                ($user->hasRole('inspector') && $user->can('sign_coa'));
+
+            if (!$hasAccess) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Access denied'
+                    'message' => 'Access denied: insufficient permissions for inspector countersignature'
                 ], 403);
             }
 
@@ -2320,7 +2355,7 @@ class CoaController extends Controller
             }
 
             // Ensure latest PDF exists
-            $bundleService = app(\App\Services\Coa\BundleService::class);
+            $bundleService = app(BundleService::class);
             if (!$bundleService->pdfExists($coa)) {
                 $bundleService->generateCoaPdf($coa);
             }
@@ -2438,11 +2473,11 @@ class CoaController extends Controller
         try {
             $user = Auth::user();
 
-            // Ownership check: only the owner (creator) can sign as author
-            if ($coa->egi->user_id !== $user->id) {
+            // Ownership check: only the owner (creator) can sign as author, and must have sign_coa permission
+            if ($coa->egi->user_id !== $user->id || !$user->can('sign_coa')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Access denied'
+                    'message' => 'Access denied: only the certificate owner with sign_coa permission can sign as author'
                 ], 403);
             }
 
