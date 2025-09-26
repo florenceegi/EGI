@@ -2149,6 +2149,31 @@ class CoaController extends Controller
                 'pdf_sha256' => $finalFile->sha256 ?? null,
             ]);
 
+            // Audit trail completo per rigenerazione PDF
+            $user = Auth::user();
+            if ($user) {
+                $this->auditService->logUserAction($user, 'coa_pdf_regenerated', [
+                    'coa_id' => $coa->id,
+                    'serial' => $coa->serial,
+                    'file_metadata' => [
+                        'file_id' => $finalFile->id ?? null,
+                        'file_path' => $finalFile->path ?? null,
+                        'file_size' => $finalFile->size ?? null,
+                        'file_hash' => $finalFile->sha256 ?? null,
+                    ],
+                    'signature_metadata' => [
+                        'author_signature_reapplied' => $hasAuthor ?? false,
+                        'inspector_signature_reapplied' => $hasInspector ?? false,
+                        'total_signatures' => count($coa->metadata['signatures'] ?? []),
+                    ],
+                    'request_metadata' => [
+                        'ip_address' => request()->ip(),
+                        'user_agent' => request()->userAgent(),
+                        'timestamp' => now()->toISOString(),
+                    ],
+                ], GdprActivityCategory::GDPR_ACTIONS);
+            }
+
             return response()->json($payload);
         } catch (\Exception $e) {
             $this->errorManager->handle('COA_PDF_REGENERATE_ERROR', [
@@ -2218,6 +2243,25 @@ class CoaController extends Controller
                 'is_authenticated' => Auth::check(),
                 'filename' => $filename
             ]);
+
+            // Audit trail per download PDF (solo se utente autenticato)
+            $user = Auth::user();
+            if ($user) {
+                $this->auditService->logUserAction($user, 'coa_pdf_downloaded', [
+                    'coa_id' => $coa->id,
+                    'serial' => $coa->serial,
+                    'file_metadata' => [
+                        'filename' => $filename,
+                        'file_path' => $pdfPath,
+                        'file_size' => is_file($abs) ? filesize($abs) : null,
+                    ],
+                    'request_metadata' => [
+                        'ip_address' => request()->ip(),
+                        'user_agent' => request()->userAgent(),
+                        'timestamp' => now()->toISOString(),
+                    ],
+                ], GdprActivityCategory::DATA_ACCESS);
+            }
 
             // Force proper content type; let browser handle inline/attachment
             return response()->file($abs, [
@@ -2335,11 +2379,29 @@ class CoaController extends Controller
             ])));
             $coa->update(['metadata' => $meta]);
 
-            // Audit
+            // Audit trail completo per firma ispettore
             $this->auditService->logUserAction($user, 'coa_inspector_countersigned', [
                 'coa_id' => $coa->id,
                 'serial' => $coa->serial,
                 'file_id' => $result['file_id'] ?? null,
+                'signature_metadata' => [
+                    'provider' => $result['signature_info']['provider'] ?? 'unknown',
+                    'role' => $result['signature_info']['role'] ?? 'unknown',
+                    'cert_cn' => $result['signature_info']['cert_cn'] ?? null,
+                    'cert_serial' => $result['signature_info']['cert_serial'] ?? null,
+                    'signature_time' => $result['signature_info']['signature_time'] ?? null,
+                    'status' => $result['signature_info']['status'] ?? 'unknown',
+                ],
+                'file_metadata' => [
+                    'file_path' => $result['file_path'] ?? null,
+                    'file_size' => $result['file']->size ?? null,
+                    'file_hash' => $result['file']->sha256 ?? null,
+                ],
+                'request_metadata' => [
+                    'ip_address' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                    'timestamp' => now()->toISOString(),
+                ],
             ], GdprActivityCategory::GDPR_ACTIONS);
 
             return response()->json([
@@ -2450,11 +2512,29 @@ class CoaController extends Controller
             ])));
             $coa->update(['metadata' => $meta]);
 
-            // Audit
+            // Audit trail completo per firma autore
             $this->auditService->logUserAction($user, 'coa_author_signed', [
                 'coa_id' => $coa->id,
                 'serial' => $coa->serial,
                 'file_id' => $result['file_id'] ?? null,
+                'signature_metadata' => [
+                    'provider' => $result['signature_info']['provider'] ?? 'unknown',
+                    'role' => $result['signature_info']['role'] ?? 'unknown',
+                    'cert_cn' => $result['signature_info']['cert_cn'] ?? null,
+                    'cert_serial' => $result['signature_info']['cert_serial'] ?? null,
+                    'signature_time' => $result['signature_info']['signature_time'] ?? null,
+                    'status' => $result['signature_info']['status'] ?? 'unknown',
+                ],
+                'file_metadata' => [
+                    'file_path' => $result['file_path'] ?? null,
+                    'file_size' => $result['file']->size ?? null,
+                    'file_hash' => $result['file']->sha256 ?? null,
+                ],
+                'request_metadata' => [
+                    'ip_address' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                    'timestamp' => now()->toISOString(),
+                ],
             ], GdprActivityCategory::GDPR_ACTIONS);
 
             $downloadUrl = route('coa.pdf.download', $coa);

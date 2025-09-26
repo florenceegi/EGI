@@ -20,6 +20,7 @@
 -   [x] Log diagnostici dei flag firme (mirror su log standard); nota: codice UEM `COA_PDF_SIGNATURE_FLAGS` non ancora mappato
 -   [x] i18n: tutte le etichette/buttons/messaggi senza hardcoded
 -   [x] Route PDF download resa pubblica: spostata fuori da middleware auth, controller aggiornato con `except(['downloadPdf'])`
+-   [x] Audit trail completo implementato: firme autore/ispettore, rigenerazione PDF e download con metadati completi
 
 Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/inspector/ts). In produzione (CSC/PAdES) ci si aspetta 1 output per azione firma; la moltiplicazione file non è considerata blocker per ora.
 
@@ -47,7 +48,7 @@ Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/i
     -   [x] Hook autore post-PDF in `App/Services/Coa/CoaPdfService::class`
     -   [x] Attivazione condizionata a `config('coa.signature.enabled')`
     -   [x] Fallback a PDF non firmato se la firma fallisce
-    -   [ ] Audit trail completo della fase firma (parziale, da estendere)
+    -   [x] Audit trail completo della fase firma (implementato con metadati completi)
     -   [ ] Performance testing
 
     -   Hook ispettore (Co‑firma)
