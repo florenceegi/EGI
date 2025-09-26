@@ -683,6 +683,7 @@ return [
         // QES Signatures Badges
         'badge_author_signed' => 'Author Signed (QES)',
         'badge_inspector_signed' => 'Inspector Signed (QES)',
+        'badge_timestamped' => 'Timestamped (QES)',
         'badge_integrity_ok' => 'Integrity Verified',
 
         // Location UI (CoA)

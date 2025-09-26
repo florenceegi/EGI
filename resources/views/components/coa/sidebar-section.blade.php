@@ -72,8 +72,8 @@ $userDerivedLocation = implode(', ', array_filter($parts));
             @php
                 $signMeta = (array) data_get($existingCoa, 'metadata.signatures', []);
                 $hasAuthorSig =
-                    collect($signMeta)->firstWhere('role', 'author') &&
-                    ($signMeta[0]['status'] ?? 'valid') !== 'invalid';
+                    collect($signMeta)->firstWhere('role', 'creator') &&
+                    (collect($signMeta)->firstWhere('role', 'creator')['status'] ?? 'valid') !== 'invalid';
                 $hasInspectorSig =
                     collect($signMeta)->firstWhere('role', 'inspector') && config('coa.signature.inspector.enabled');
                 $tsaEnabled = (bool) config('coa.signature.tsa.enabled');

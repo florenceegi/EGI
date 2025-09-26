@@ -160,6 +160,7 @@ return [
         // Badge Firmas QES
         'badge_author_signed' => 'Firmado Autor (QES)',
         'badge_inspector_signed' => 'Firmado Inspector (QES)',
+        'badge_timestamped' => 'Con Marca Temporal (QES)',
         'badge_integrity_ok' => 'Integridad Verificada',
 
         // Inspector countersign (QES)

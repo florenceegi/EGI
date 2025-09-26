@@ -154,6 +154,7 @@ return [
         // QES Badge System
         'badge_author_signed' => 'Autor Signiert (QES)',
         'badge_inspector_signed' => 'Inspektor Signiert (QES)',
+        'badge_timestamped' => 'Zeitstempel (QES)',
         'badge_integrity_ok' => 'Integrität Bestätigt',
         'inspector_countersign' => 'Inspektor Gegenzeichnung (QES)',
         'confirm_inspector_countersign' => 'Mit der Gegenzeichnung des Inspektors fortfahren?',
