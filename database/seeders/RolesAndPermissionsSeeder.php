@@ -196,6 +196,9 @@ class RolesAndPermissionsSeeder extends Seeder
         'display_public_avatar_on_egi', // Permette di mostrare l'avatar (Spatie) sull'EGI
         'display_public_name_on_egi',   // Permette di mostrare nome e cognome sull'EGI
 
+        // ✅ CoA / QES
+        'sign_coa',
+
     ];
 
     private $roles = [
@@ -205,19 +208,55 @@ class RolesAndPermissionsSeeder extends Seeder
 
         'creator' => [
             // ═══ PERMESSI ESISTENTI DEL CREATOR (NON TOCCARE) ═══
-            'create_team', 'update_team', 'delete_team', 'read_collection',
-            'add_team_member', 'remove_team_member', 'modify_team_roles',
-            'create_collection', 'update_collection', 'delete_collection','update_collection_image_header', 'open_collection',
-            'create_EGI', 'update_EGI', 'delete_EGI', 'manage_EGI',
-            'create_wallet', 'update_wallet', 'approve_wallet', 'reject_wallet', 'delete_wallet',
-            'view_user', 'view_profile', 'view_team', 'view_dashboard', 'view_bio', 'view_settings',
-            'view_notifications', 'view_logs',  'view_collection', 'view_EGI', 'view_collection_header',
-            'view_wallet', 'view_statistics',
-            'manage_profile', 'manage_account', 'delete_account',
+            'create_team',
+            'update_team',
+            'delete_team',
+            'read_collection',
+            'add_team_member',
+            'remove_team_member',
+            'modify_team_roles',
+            'create_collection',
+            'update_collection',
+            'delete_collection',
+            'update_collection_image_header',
+            'open_collection',
+            'create_EGI',
+            'update_EGI',
+            'delete_EGI',
+            'manage_EGI',
+            'create_wallet',
+            'update_wallet',
+            'approve_wallet',
+            'reject_wallet',
+            'delete_wallet',
+            'view_user',
+            'view_profile',
+            'view_team',
+            'view_dashboard',
+            'view_bio',
+            'view_settings',
+            'view_notifications',
+            'view_logs',
+            'view_collection',
+            'view_EGI',
+            'view_collection_header',
+            'view_wallet',
+            'view_statistics',
+            'manage_profile',
+            'manage_account',
+            'delete_account',
             'view_documentation',
-            'manage_consents', 'manage_privacy', 'export_personal_data', 'delete_account', 'view_activity_log',
-            'view_breach_reports', 'view_privacy_policy', 'edit_personal_data', 'limit_data_processing',
-            'access_dashboard', 'edit_own_profile_data',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_breach_reports',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
+            'access_dashboard',
+            'edit_own_profile_data',
             'edit_own_personal_data',
             'edit_own_organization_data',  // ✅ Creator può gestire org data
             'manage_own_documents',
@@ -242,16 +281,43 @@ class RolesAndPermissionsSeeder extends Seeder
 
         'admin' => [
             // ═══ PERMESSI ESISTENTI DELL'ADMIN (NON TOCCARE) ═══
-            'create_team', 'remove_team_member', 'modify_team_roles', 'read_collection',
-            'update_collection', 'update_collection_image_header', 'open_collection',
-            'create_EGI', 'update_EGI', 'delete_EGI', 'manage_EGI',
-            'view_user', 'view_profile', 'view_team', 'view_dashboard', 'view_bio', 'view_settings',
-            'view_notifications', 'view_logs',  'view_collection', 'view_EGI', 'view_collection_header',
-            'view_wallet', 'view_statistics',
-            'manage_profile', 'manage_account', 'delete_account',
+            'create_team',
+            'remove_team_member',
+            'modify_team_roles',
+            'read_collection',
+            'update_collection',
+            'update_collection_image_header',
+            'open_collection',
+            'create_EGI',
+            'update_EGI',
+            'delete_EGI',
+            'manage_EGI',
+            'view_user',
+            'view_profile',
+            'view_team',
+            'view_dashboard',
+            'view_bio',
+            'view_settings',
+            'view_notifications',
+            'view_logs',
+            'view_collection',
+            'view_EGI',
+            'view_collection_header',
+            'view_wallet',
+            'view_statistics',
+            'manage_profile',
+            'manage_account',
+            'delete_account',
             'view_documentation',
-            'manage_consents', 'manage_privacy', 'export_personal_data', 'delete_account', 'view_activity_log',
-            'view_breach_reports', 'view_privacy_policy', 'edit_personal_data', 'limit_data_processing',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_breach_reports',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
             'access_dashboard',
             'manage_own_biographies',
             'manage_bio_profile',
@@ -261,18 +327,34 @@ class RolesAndPermissionsSeeder extends Seeder
 
         'editor' => [
             // ═══ PERMESSI ESISTENTI DELL'EDITOR (NON TOCCARE) ═══
-            'update_EGI', 'manage_EGI',
-            'update_collection_image_header', 'open_collection',
-            'view_profile', 'view_team', 'view_dashboard', 'view_collection', 'view_EGI', 'view_collection_header', 'view_documentation', 'view_statistics',
-            'manage_consents', 'manage_privacy',
+            'update_EGI',
+            'manage_EGI',
+            'update_collection_image_header',
+            'open_collection',
+            'view_profile',
+            'view_team',
+            'view_dashboard',
+            'view_collection',
+            'view_EGI',
+            'view_collection_header',
+            'view_documentation',
+            'view_statistics',
+            'manage_consents',
+            'manage_privacy',
             'access_dashboard'
         ],
 
         'guest' => [
             // ═══ PERMESSI ESISTENTI DEL GUEST (NON TOCCARE) ═══
-            'view_collection_header', 'view_dashboard', 'view_documentation', 'view_statistics',
-            'view_EGI','read_collection',
-            'view_privacy_policy', 'edit_personal_data', 'limit_data_processing',
+            'view_collection_header',
+            'view_dashboard',
+            'view_documentation',
+            'view_statistics',
+            'view_EGI',
+            'read_collection',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
             'access_dashboard'
         ],
 
@@ -280,22 +362,46 @@ class RolesAndPermissionsSeeder extends Seeder
 
         'patron' => [
             // ✅ HA create_collection (può creare per supportare creators)
-            'create_collection', 'update_collection', 'open_collection',
+            'create_collection',
+            'update_collection',
+            'open_collection',
 
             // Base permissions
-            'access_dashboard', 'view_dashboard', 'view_collection', 'view_EGI',
-            'view_statistics', 'view_documentation', 'view_collection_header', 'read_collection',
+            'access_dashboard',
+            'view_dashboard',
+            'view_collection',
+            'view_EGI',
+            'view_statistics',
+            'view_documentation',
+            'view_collection_header',
+            'read_collection',
 
             // Patron specific
-            'support_creators', 'view_creator_projects', 'make_donations', 'patronage_management',
+            'support_creators',
+            'view_creator_projects',
+            'make_donations',
+            'patronage_management',
 
             // Marketplace (può comprare per supportare)
-            'view_marketplace', 'browse_marketplace', 'buy_egi', 'make_offers', 'accept_offers', 'rate_transactions',
+            'view_marketplace',
+            'browse_marketplace',
+            'buy_egi',
+            'make_offers',
+            'accept_offers',
+            'rate_transactions',
 
             // Profile & GDPR
-            'manage_profile', 'manage_account', 'view_profile',
-            'manage_consents', 'manage_privacy', 'export_personal_data', 'delete_account',
-            'view_activity_log', 'view_privacy_policy', 'edit_personal_data', 'limit_data_processing',
+            'manage_profile',
+            'manage_account',
+            'view_profile',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
             'edit_own_profile_data',
             'edit_own_personal_data',
             // ❌ Patron NON ha organization data
@@ -322,19 +428,39 @@ class RolesAndPermissionsSeeder extends Seeder
             // ❌ NON HA create_collection (solo colleziona, non crea)
 
             // Base permissions
-            'access_dashboard', 'view_dashboard', 'view_collection', 'view_EGI',
-            'view_statistics', 'view_documentation', 'view_collection_header',
+            'access_dashboard',
+            'view_dashboard',
+            'view_collection',
+            'view_EGI',
+            'view_statistics',
+            'view_documentation',
+            'view_collection_header',
 
             // Collector specific
-            'buy_egi', 'manage_personal_collection', 'trade_egi', 'collection_wishlist',
+            'buy_egi',
+            'manage_personal_collection',
+            'trade_egi',
+            'collection_wishlist',
 
             // Marketplace (focus principale)
-            'view_marketplace', 'browse_marketplace', 'make_offers', 'accept_offers', 'rate_transactions',
+            'view_marketplace',
+            'browse_marketplace',
+            'make_offers',
+            'accept_offers',
+            'rate_transactions',
 
             // Profile & GDPR
-            'manage_profile', 'manage_account', 'view_profile',
-            'manage_consents', 'manage_privacy', 'export_personal_data', 'delete_account',
-            'view_activity_log', 'view_privacy_policy', 'edit_personal_data', 'limit_data_processing',
+            'manage_profile',
+            'manage_account',
+            'view_profile',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
             'edit_own_profile_data',
             'edit_own_personal_data',
             // ❌ Collector NON ha organization data
@@ -359,13 +485,33 @@ class RolesAndPermissionsSeeder extends Seeder
         // ═══ NUOVO RUOLO COMMISSIONER (AGGIUNTO) ═══
         'commissioner' => [
             // Eredita TUTTI i permessi del Collector...
-            'access_dashboard', 'view_dashboard', 'view_collection', 'view_EGI',
-            'view_statistics', 'view_documentation', 'view_collection_header',
-            'buy_egi', 'manage_personal_collection', 'trade_egi', 'collection_wishlist',
-            'view_marketplace', 'browse_marketplace', 'make_offers', 'accept_offers', 'rate_transactions',
-            'manage_profile', 'manage_account', 'view_profile',
-            'manage_consents', 'manage_privacy', 'export_personal_data', 'delete_account',
-            'view_activity_log', 'view_privacy_policy', 'edit_personal_data', 'limit_data_processing',
+            'access_dashboard',
+            'view_dashboard',
+            'view_collection',
+            'view_EGI',
+            'view_statistics',
+            'view_documentation',
+            'view_collection_header',
+            'buy_egi',
+            'manage_personal_collection',
+            'trade_egi',
+            'collection_wishlist',
+            'view_marketplace',
+            'browse_marketplace',
+            'make_offers',
+            'accept_offers',
+            'rate_transactions',
+            'manage_profile',
+            'manage_account',
+            'view_profile',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
             'edit_own_profile_data',
             'edit_own_personal_data',
             'manage_own_documents',
@@ -392,34 +538,70 @@ class RolesAndPermissionsSeeder extends Seeder
 
         'enterprise' => [
             // ✅ HA create_collection (può creare per business)
-            'create_collection', 'update_collection', 'delete_collection', 'open_collection',
+            'create_collection',
+            'update_collection',
+            'delete_collection',
+            'open_collection',
 
             // Team management (come creator)
-            'create_team', 'update_team', 'delete_team',
-            'add_team_member', 'remove_team_member', 'modify_team_roles',
+            'create_team',
+            'update_team',
+            'delete_team',
+            'add_team_member',
+            'remove_team_member',
+            'modify_team_roles',
 
             // EGI management (può creare EGI aziendali)
-            'create_EGI', 'update_EGI', 'delete_EGI', 'manage_EGI',
+            'create_EGI',
+            'update_EGI',
+            'delete_EGI',
+            'manage_EGI',
 
             // Wallet management
-            'create_wallet', 'update_wallet', 'view_wallet',
+            'create_wallet',
+            'update_wallet',
+            'view_wallet',
 
             // Base permissions
-            'access_dashboard', 'view_dashboard', 'view_collection', 'view_EGI',
-            'view_statistics', 'view_documentation', 'view_collection_header',
-            'view_user', 'view_team', 'view_notifications', 'view_logs',
+            'access_dashboard',
+            'view_dashboard',
+            'view_collection',
+            'view_EGI',
+            'view_statistics',
+            'view_documentation',
+            'view_collection_header',
+            'view_user',
+            'view_team',
+            'view_notifications',
+            'view_logs',
 
             // Enterprise specific
-            'manage_corporate_data', 'issue_invoices', 'bulk_operations',
-            'corporate_analytics', 'manage_business_profile',
+            'manage_corporate_data',
+            'issue_invoices',
+            'bulk_operations',
+            'corporate_analytics',
+            'manage_business_profile',
 
             // Marketplace
-            'view_marketplace', 'browse_marketplace', 'buy_egi', 'make_offers', 'accept_offers', 'rate_transactions',
+            'view_marketplace',
+            'browse_marketplace',
+            'buy_egi',
+            'make_offers',
+            'accept_offers',
+            'rate_transactions',
 
             // Profile & GDPR
-            'manage_profile', 'manage_account', 'view_profile',
-            'manage_consents', 'manage_privacy', 'export_personal_data', 'delete_account',
-            'view_activity_log', 'view_privacy_policy', 'edit_personal_data', 'limit_data_processing',
+            'manage_profile',
+            'manage_account',
+            'view_profile',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
             'edit_own_profile_data',
             'edit_own_personal_data',
             'edit_own_organization_data',  // ✅ Enterprise può gestire org data
@@ -447,21 +629,42 @@ class RolesAndPermissionsSeeder extends Seeder
             // ❌ NON HA create_collection (solo trading)
 
             // Base permissions
-            'access_dashboard', 'view_dashboard', 'view_collection', 'view_EGI',
-            'view_statistics', 'view_documentation', 'view_collection_header',
+            'access_dashboard',
+            'view_dashboard',
+            'view_collection',
+            'view_EGI',
+            'view_statistics',
+            'view_documentation',
+            'view_collection_header',
 
             // Trading specific (focus principale)
-            'advanced_trading', 'view_trading_analytics', 'bulk_trade_operations',
-            'access_pro_tools', 'trading_algorithms',
+            'advanced_trading',
+            'view_trading_analytics',
+            'bulk_trade_operations',
+            'access_pro_tools',
+            'trading_algorithms',
 
             // Marketplace (con strumenti avanzati)
-            'view_marketplace', 'browse_marketplace', 'buy_egi', 'trade_egi',
-            'make_offers', 'accept_offers', 'rate_transactions',
+            'view_marketplace',
+            'browse_marketplace',
+            'buy_egi',
+            'trade_egi',
+            'make_offers',
+            'accept_offers',
+            'rate_transactions',
 
             // Profile & GDPR
-            'manage_profile', 'manage_account', 'view_profile',
-            'manage_consents', 'manage_privacy', 'export_personal_data', 'delete_account',
-            'view_activity_log', 'view_privacy_policy', 'edit_personal_data', 'limit_data_processing',
+            'manage_profile',
+            'manage_account',
+            'view_profile',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
             'edit_own_profile_data',
             'edit_own_personal_data',
             // ❌ Trader Pro NON ha organization data
@@ -488,20 +691,35 @@ class RolesAndPermissionsSeeder extends Seeder
             // ❌ NON HA create_collection (solo progetti EPP)
 
             // Base permissions
-            'access_dashboard', 'view_dashboard', 'view_EGI',
-            'view_statistics', 'view_documentation',
+            'access_dashboard',
+            'view_dashboard',
+            'view_EGI',
+            'view_statistics',
+            'view_documentation',
 
             // EPP specific (focus principale)
-            'create_epp_projects', 'manage_epp_projects', 'allocate_epp_points',
-            'certify_sustainability', 'environmental_reporting',
+            'create_epp_projects',
+            'manage_epp_projects',
+            'allocate_epp_points',
+            'certify_sustainability',
+            'environmental_reporting',
 
             // Può vedere collections per certificare sostenibilità
-            'view_collection', 'view_collection_header',
+            'view_collection',
+            'view_collection_header',
 
             // Profile & GDPR
-            'manage_profile', 'manage_account', 'view_profile',
-            'manage_consents', 'manage_privacy', 'export_personal_data', 'delete_account',
-            'view_activity_log', 'view_privacy_policy', 'edit_personal_data', 'limit_data_processing',
+            'manage_profile',
+            'manage_account',
+            'view_profile',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
             'edit_own_profile_data',
             'edit_own_personal_data',
             'edit_own_organization_data',  // ✅ EPP Entity può gestire org data
@@ -603,6 +821,18 @@ class RolesAndPermissionsSeeder extends Seeder
             'legal.translations.view',
             'legal.translations.manage',
         ],
+
+        // ✅ Nuovo ruolo Ispettore per co-firma CoA
+        'inspector' => [
+            'access_dashboard',
+            'view_dashboard',
+            'view_collection',
+            'view_EGI',
+            'view_statistics',
+            'view_documentation',
+            // permesso minimo richiesto per co-firmare CoA
+            'sign_coa',
+        ],
     ];
 
     public function run(): void
@@ -631,16 +861,16 @@ class RolesAndPermissionsSeeder extends Seeder
         $this->command->info('Ruoli e permessi creati/aggiornati con successo.');
         $this->command->info('Nuovi ruoli aggiunti: patron, collector, enterprise, trader_pro, epp_entity, commissioner');
         $this->command->info('create_collection permission assegnato a: creator, patron, enterprise');
-
     }
 
     private function createLegalUser(): void
     {
+        $legalEmail = config('app.legal_default_user_email');
         $legalUser = User::firstOrCreate(
-            ['email' => 'legal@florenceegi.com'],
+            ['email' => $legalEmail],
             [
                 'name' => 'Legal Editor',
-                'email' => 'legal@florenceegi.com',
+                'email' => $legalEmail,
                 'password' => Hash::make('legal2025!FEG'),
                 'email_verified_at' => now(),
                 'created_via' => 'seeder'
@@ -648,6 +878,6 @@ class RolesAndPermissionsSeeder extends Seeder
         );
 
         $legalUser->assignRole('legal');
-        $this->command->info("Legal user created: legal@florenceegi.com");
+        $this->command->info("Legal user created: " . $legalEmail);
     }
 }

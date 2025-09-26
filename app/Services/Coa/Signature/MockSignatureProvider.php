@@ -12,11 +12,13 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-09-24
  * @purpose Provider MOCK sandbox: simula firme PAdES e marca temporale senza valore legale
  */
-class MockSignatureProvider implements SignatureProviderInterface {
+class MockSignatureProvider implements SignatureProviderInterface
+{
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
 
-    public function __construct(UltraLogManager $logger, ErrorManagerInterface $errorManager) {
+    public function __construct(UltraLogManager $logger, ErrorManagerInterface $errorManager)
+    {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
     }
@@ -24,7 +26,8 @@ class MockSignatureProvider implements SignatureProviderInterface {
     /**
      * {@inheritdoc}
      */
-    public function signPdf(string $pdfPath, array $options = []): array {
+    public function signPdf(string $pdfPath, array $options = []): array
+    {
         $role = $options['role'] ?? 'author';
         $algo = $options['hash_algo'] ?? 'sha256';
 
@@ -75,7 +78,8 @@ class MockSignatureProvider implements SignatureProviderInterface {
     /**
      * {@inheritdoc}
      */
-    public function addCountersignature(string $signedPdfPath, array $options = []): array {
+    public function addCountersignature(string $signedPdfPath, array $options = []): array
+    {
         $role = $options['role'] ?? 'inspector';
         $algo = $options['hash_algo'] ?? 'sha256';
 
@@ -126,7 +130,8 @@ class MockSignatureProvider implements SignatureProviderInterface {
     /**
      * {@inheritdoc}
      */
-    public function addTimestamp(string $signedPdfPath, array $options = []): array {
+    public function addTimestamp(string $signedPdfPath, array $options = []): array
+    {
         try {
             if (!is_file($signedPdfPath) || !is_readable($signedPdfPath)) {
                 return [
@@ -171,7 +176,8 @@ class MockSignatureProvider implements SignatureProviderInterface {
     /**
      * {@inheritdoc}
      */
-    public function verifySignatures(string $pdfPath): array {
+    public function verifySignatures(string $pdfPath): array
+    {
         try {
             if (!is_file($pdfPath) || !is_readable($pdfPath)) {
                 return [
@@ -224,14 +230,19 @@ class MockSignatureProvider implements SignatureProviderInterface {
         }
     }
 
-    private function buildVersionedPath(string $src, string $suffix): string {
+    private function buildVersionedPath(string $src, string $suffix): string
+    {
         $dir = dirname($src);
         $name = pathinfo($src, PATHINFO_FILENAME);
         $ext = '.' . pathinfo($src, PATHINFO_EXTENSION);
-        return $dir . DIRECTORY_SEPARATOR . $name . $suffix . $ext;
+        // Limit base filename length to avoid OS path length issues
+        $maxBaseLen = 80; // safe bound for long serial/hash based names
+        $base = mb_substr($name, 0, $maxBaseLen);
+        return $dir . DIRECTORY_SEPARATOR . $base . $suffix . $ext;
     }
 
-    private function safeCopy(string $src, string $dst): void {
+    private function safeCopy(string $src, string $dst): void
+    {
         $dir = dirname($dst);
         if (!is_dir($dir)) {
             if (!mkdir($dir, 0775, true) && !is_dir($dir)) {

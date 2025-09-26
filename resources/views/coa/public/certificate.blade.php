@@ -75,10 +75,10 @@
             {{-- Title Header --}}
             <div class="mb-8 text-center">
                 <h1 class="mb-2 text-3xl font-bold text-amber-900">
-                    Certificato di Autenticità
+                    {{ __('egi.coa.public_verify.certificate_title') }}
                 </h1>
                 <p class="text-base text-amber-700">
-                    Visualizzazione Pubblica di Verifica
+                    {{ __('egi.coa.public_verify.public_verification_display') }}
                 </p>
 
                 {{-- EGI Image --}}
@@ -107,13 +107,15 @@
                                     clip-rule="evenodd" />
                             </svg>
                             <div>
-                                <div class="text-lg font-bold">Certificato Verificato e Autentico</div>
-                                <div class="text-sm opacity-90">Verificato il: {{ now()->format('d/m/Y H:i') }}</div>
+                                <div class="text-lg font-bold">{{ __('egi.coa.public_verify.verified_authentic') }}
+                                </div>
+                                <div class="text-sm opacity-90">{{ __('egi.coa.public_verify.verified_at') }}:
+                                    {{ now()->format('d/m/Y H:i') }}</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold">{{ $certificate['serial'] }}</div>
-                            <div class="text-sm opacity-90">Numero Seriale</div>
+                            <div class="text-sm opacity-90">{{ __('egi.coa.public_verify.serial_number') }}</div>
                         </div>
                     </div>
                 @elseif($certificate['effective_status'] === 'incomplete')
@@ -125,14 +127,15 @@
                                     clip-rule="evenodd" />
                             </svg>
                             <div>
-                                <div class="text-lg font-bold">Certificato Non Pronto</div>
+                                <div class="text-lg font-bold">{{ __('egi.coa.public_verify.certificate_not_ready') }}
+                                </div>
                                 <div class="text-sm opacity-90">Emesso il:
                                     {{ $certificate['issued_at']->format('d/m/Y H:i') }} - Requires CoA Traits</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold">{{ $certificate['serial'] }}</div>
-                            <div class="text-sm opacity-90">Numero Seriale</div>
+                            <div class="text-sm opacity-90">{{ __('egi.coa.public_verify.serial_number') }}</div>
                         </div>
                     </div>
                 @elseif($certificate['status'] === 'revoked')
@@ -144,8 +147,10 @@
                                     clip-rule="evenodd" />
                             </svg>
                             <div>
-                                <div class="text-lg font-bold">Certificato Revocato</div>
-                                <div class="text-sm opacity-90">Questo certificato non è più valido</div>
+                                <div class="text-lg font-bold">{{ __('egi.coa.public_verify.certificate_revoked') }}
+                                </div>
+                                <div class="text-sm opacity-90">{{ __('egi.coa.public_verify.certificate_not_valid') }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -168,7 +173,8 @@
                                         clip-rule="evenodd" />
                                 </svg>
                                 <div>
-                                    <div class="text-base font-semibold">Certificato Non Pronto - Traits Generici</div>
+                                    <div class="text-base font-semibold">
+                                        {{ __('egi.coa.public_verify.certificate_not_ready_generic') }}</div>
                                     <div class="mt-1 text-sm">
                                         Questo certificato è stato generato utilizzando i traits generici EGI invece dei
                                         traits CoA specifici.
@@ -197,7 +203,8 @@
 
                             {{-- Titolo e ID --}}
                             <div>
-                                <label class="text-xs font-medium text-gray-600">Titolo</label>
+                                <label
+                                    class="text-xs font-medium text-gray-600">{{ __('egi.coa.public_verify.artwork_title') }}</label>
                                 <div class="text-base font-bold text-gray-900">{{ $artwork['name'] }}</div>
                                 <div class="mt-1 text-xs text-gray-500">ID interno:
                                     #{{ $artwork['internal_id'] ?? 'N/A' }}</div>
@@ -206,7 +213,8 @@
                             {{-- Anno --}}
                             @if ($artwork['year'])
                                 <div>
-                                    <label class="text-xs font-medium text-gray-600">Anno</label>
+                                    <label
+                                        class="text-xs font-medium text-gray-600">{{ __('egi.coa.public_verify.year') }}</label>
                                     <div class="text-sm font-semibold text-gray-900">{{ $artwork['year'] }}</div>
                                 </div>
                             @endif
@@ -261,7 +269,8 @@
                             {{-- Dimensioni --}}
                             @if ($artwork['dimensions'])
                                 <div>
-                                    <label class="text-xs font-medium text-gray-600">Dimensioni</label>
+                                    <label
+                                        class="text-xs font-medium text-gray-600">{{ __('egi.coa.public_verify.dimensions') }}</label>
                                     <div class="text-sm font-semibold text-gray-900">{{ $artwork['dimensions'] }}</div>
                                 </div>
                             @endif
@@ -269,14 +278,16 @@
                             {{-- Edizione --}}
                             @if ($artwork['edition'])
                                 <div>
-                                    <label class="text-xs font-medium text-gray-600">Edizione</label>
+                                    <label
+                                        class="text-xs font-medium text-gray-600">{{ __('egi.coa.public_verify.edition') }}</label>
                                     <div class="text-sm font-semibold text-gray-900">{{ $artwork['edition'] }}</div>
                                 </div>
                             @endif
 
                             {{-- Autore --}}
                             <div>
-                                <label class="text-xs font-medium text-gray-600">Autore</label>
+                                <label
+                                    class="text-xs font-medium text-gray-600">{{ __('egi.coa.public_verify.author') }}</label>
                                 <div class="text-sm font-bold text-gray-900">{{ $artwork['author'] }}</div>
                             </div>
 
@@ -299,16 +310,16 @@
                                                         @if (isset($trait['category']) && $trait['category'] !== 'generic')
                                                             @if ($trait['category'] === 'technique')
                                                                 <span
-                                                                    class="ml-1 rounded bg-blue-100 px-1 text-xs text-blue-600">Tecnica</span>
+                                                                    class="ml-1 rounded bg-blue-100 px-1 text-xs text-blue-600">{{ __('egi.coa.public_verify.technique') }}</span>
                                                             @elseif($trait['category'] === 'materials')
                                                                 <span
-                                                                    class="ml-1 rounded bg-green-100 px-1 text-xs text-green-600">Materiale</span>
+                                                                    class="ml-1 rounded bg-green-100 px-1 text-xs text-green-600">{{ __('egi.coa.public_verify.material') }}</span>
                                                             @elseif($trait['category'] === 'support')
                                                                 <span
-                                                                    class="ml-1 rounded bg-amber-100 px-1 text-xs text-amber-600">Supporto</span>
+                                                                    class="ml-1 rounded bg-amber-100 px-1 text-xs text-amber-600">{{ __('egi.coa.public_verify.support') }}</span>
                                                             @elseif($trait['category'] === 'platform_metadata')
                                                                 <span
-                                                                    class="ml-1 rounded bg-purple-100 px-1 text-xs text-purple-600">Piattaforma</span>
+                                                                    class="ml-1 rounded bg-purple-100 px-1 text-xs text-purple-600">{{ __('egi.coa.public_verify.platform') }}</span>
                                                             @endif
                                                         @endif
                                                     </span>
@@ -410,7 +421,8 @@
                                             </svg>
                                         </div>
                                         <div class="flex-1">
-                                            <h4 class="text-sm font-semibold text-blue-900">Pubblicato da</h4>
+                                            <h4 class="text-sm font-semibold text-blue-900">
+                                                {{ __('egi.coa.public_verify.published_by') }}</h4>
                                             <p class="text-sm text-blue-800">
                                                 <span class="font-medium">{{ $creator['name'] }}</span>
                                                 <span class="text-blue-600">({{ $creator['role'] }})</span>
@@ -433,7 +445,8 @@
                             {{-- Thumbnail con link --}}
                             @if ($artwork['thumbnail_url'])
                                 <div>
-                                    <label class="text-sm font-medium text-gray-600">Immagine</label>
+                                    <label
+                                        class="text-sm font-medium text-gray-600">{{ __('egi.coa.public_verify.image') }}</label>
                                     <div class="mt-2">
                                         <button onclick="openDossierModal()"
                                             class="block transition-shadow hover:shadow-lg">
@@ -457,14 +470,16 @@
 
                             {{-- Data Emissione --}}
                             <div>
-                                <label class="text-xs font-medium text-gray-600">Data Emissione</label>
+                                <label
+                                    class="text-xs font-medium text-gray-600">{{ __('egi.coa.public_verify.issue_date') }}</label>
                                 <div class="text-sm font-semibold text-gray-900">
                                     {{ $certificate['issued_at']->format('d/m/Y') }}</div>
                             </div>
 
                             {{-- Emesso da --}}
                             <div>
-                                <label class="text-xs font-medium text-gray-600">Emesso da</label>
+                                <label
+                                    class="text-xs font-medium text-gray-600">{{ __('egi.coa.public_verify.issued_by') }}</label>
                                 <div class="text-sm font-semibold text-gray-900">{{ $certificate['issuer_name'] }}
                                 </div>
                             </div>
@@ -472,7 +487,8 @@
                             {{-- Luogo di emissione --}}
                             @if ($certificate['issue_location'])
                                 <div>
-                                    <label class="text-xs font-medium text-gray-600">Luogo di emissione</label>
+                                    <label
+                                        class="text-xs font-medium text-gray-600">{{ __('egi.coa.public_verify.issue_location') }}</label>
                                     <div class="text-sm font-semibold text-gray-900">
                                         {{ $certificate['issue_location'] }}</div>
                                 </div>
@@ -480,52 +496,51 @@
 
                             {{-- Firma --}}
                             <div>
-                                <label class="text-xs font-medium text-gray-600">Firma</label>
+                                <label
+                                    class="text-xs font-medium text-gray-600">{{ __('egi.coa.public_verify.signature') }}</label>
                                 <div class="flex flex-wrap items-center gap-2">
                                     @php
                                         $sig = $certificate['signature_status'] ?? null;
                                     @endphp
                                     @if ($sig && ($sig['author_signed'] ?? false))
                                         <span
-                                            class="rounded bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">Autore
-                                            firmato</span>
+                                            class="rounded bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">{{ __('egi.coa.public_verify.author_signed') }}</span>
                                     @endif
                                     @if ($sig && ($sig['inspector_countersigned'] ?? false))
                                         <span
-                                            class="rounded bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-800">Controfirma
-                                            perito</span>
+                                            class="rounded bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-800">{{ __('egi.coa.public_verify.inspector_countersigned') }}</span>
                                     @endif
                                     @if ($sig && ($sig['timestamped'] ?? false))
                                         <span
-                                            class="rounded bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800">Timestamp
-                                            TSA</span>
+                                            class="rounded bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800">{{ __('egi.coa.public_verify.timestamp_tsa') }}</span>
                                     @endif
 
                                     {{-- Legacy flags fallback --}}
                                     @if (!$sig && ($certificate['qes_signature'] ?? false))
                                         <span
-                                            class="rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-800">QES</span>
+                                            class="rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-800">{{ __('egi.coa.public_verify.qes') }}</span>
                                     @endif
                                     @if (!$sig && ($certificate['wallet_signature'] ?? false))
                                         <span
-                                            class="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">Firma
-                                            wallet</span>
+                                            class="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">{{ __('egi.coa.public_verify.wallet_signature') }}</span>
                                         <code
                                             class="text-xs text-gray-600">{{ Str::limit($certificate['wallet_public_key'] ?? '', 16) }}...</code>
-                                        <a href="#" class="text-xs text-blue-600 hover:underline">verifica
-                                            firma</a>
+                                        <a href="#"
+                                            class="text-xs text-blue-600 hover:underline">{{ __('egi.coa.public_verify.verify_signature') }}</a>
                                     @endif
                                 </div>
                             </div>
 
                             {{-- Hash del certificato (SHA-256) --}}
                             <div>
-                                <label class="text-sm font-medium text-gray-600">Hash del certificato (SHA-256)</label>
+                                <label
+                                    class="text-sm font-medium text-gray-600">{{ __('egi.coa.public_verify.certificate_hash') }}</label>
                                 <div class="mt-1 rounded border bg-gray-50 p-3">
                                     <div class="flex items-center justify-between">
                                         <code
                                             class="break-all font-mono text-xs text-gray-800">{{ $certificate['verification_hash'] }}</code>
-                                        <button onclick="copyHash()" aria-label="Copia hash"
+                                        <button onclick="copyHash()"
+                                            aria-label="{{ __('egi.coa.public_verify.copy_hash') }}"
                                             class="ml-2 flex-shrink-0 text-gray-500 hover:text-gray-700">
                                             <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
@@ -537,31 +552,57 @@
                                 </div>
                             </div>
 
+                            {{-- Hash del PDF (SHA-256) --}}
+                            @if (isset($certificate['pdf_sha256']) && $certificate['pdf_sha256'])
+                                <div>
+                                    <label
+                                        class="text-sm font-medium text-gray-600">{{ __('egi.coa.public_verify.pdf_hash') }}</label>
+                                    <div class="mt-1 rounded border bg-gray-50 p-3">
+                                        <div class="flex items-center justify-between">
+                                            <code
+                                                class="break-all font-mono text-xs text-gray-800">{{ $certificate['pdf_sha256'] }}</code>
+                                            <button onclick="copyPdfHash()"
+                                                aria-label="{{ __('egi.coa.public_verify.copy_pdf_hash') }}"
+                                                class="ml-2 flex-shrink-0 text-gray-500 hover:text-gray-700">
+                                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                                    <path
+                                                        d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
                             {{-- QR Code --}}
                             <div>
-                                <label class="text-sm font-medium text-gray-600">QR Code Verifica</label>
+                                <label
+                                    class="text-sm font-medium text-gray-600">{{ __('egi.coa.public_verify.qr_code_verify') }}</label>
                                 <div class="mt-2">
                                     <div class="flex h-24 w-24 items-center justify-center rounded border bg-gray-200">
-                                        <span class="text-xs text-gray-500">QR Code</span>
+                                        <span
+                                            class="text-xs text-gray-500">{{ __('egi.coa.public_verify.qr_code') }}</span>
                                     </div>
-                                    <div class="mt-1 text-xs text-gray-500">Scansiona per verificare</div>
+                                    <div class="mt-1 text-xs text-gray-500">
+                                        {{ __('egi.coa.public_verify.scan_to_verify') }}</div>
                                 </div>
                             </div>
 
                             {{-- Stato --}}
                             <div>
-                                <label class="text-sm font-medium text-gray-600">Stato</label>
+                                <label
+                                    class="text-sm font-medium text-gray-600">{{ __('egi.coa.public_verify.status') }}</label>
                                 <div class="mt-1">
                                     @if ($certificate['effective_status'] === 'valid')
                                         <span
-                                            class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">Valid</span>
+                                            class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">{{ __('egi.coa.public_verify.valid') }}</span>
                                     @elseif($certificate['effective_status'] === 'incomplete')
                                         <span
-                                            class="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">Non
-                                            Pronto</span>
+                                            class="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">{{ __('egi.coa.public_verify.incomplete') }}</span>
                                     @elseif($certificate['status'] === 'revoked')
                                         <span
-                                            class="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-800">Revoked</span>
+                                            class="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-800">{{ __('egi.coa.public_verify.revoked') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -569,7 +610,8 @@
                             {{-- Note --}}
                             @if ($certificate['notes'])
                                 <div>
-                                    <label class="text-sm font-medium text-gray-600">Note</label>
+                                    <label
+                                        class="text-sm font-medium text-gray-600">{{ __('egi.coa.public_verify.notes') }}</label>
                                     <div class="mt-1 text-sm leading-relaxed text-gray-700">
                                         {{ $certificate['notes'] }}</div>
                                 </div>
@@ -582,7 +624,8 @@
                     {{-- Annexes Section --}}
                     @if ($certificate['has_annexes'])
                         <div class="border-t border-gray-200 p-8">
-                            <h2 class="mb-6 text-2xl font-bold text-gray-900">Annessi Professionali</h2>
+                            <h2 class="mb-6 text-2xl font-bold text-gray-900">
+                                {{ __('egi.coa.public_verify.professional_annexes') }}</h2>
                             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 
                                 {{-- Annex A: Provenienza --}}
@@ -594,7 +637,8 @@
                                             <span
                                                 class="text-xs text-gray-500">v{{ $annexes['provenance']['version'] }}</span>
                                         </div>
-                                        <h3 class="mb-1 font-medium text-gray-900">Provenienza</h3>
+                                        <h3 class="mb-1 font-medium text-gray-900">
+                                            {{ __('egi.coa.public_verify.provenance') }}</h3>
                                         <div class="mb-2 text-xs text-gray-600">
                                             {{ $annexes['provenance']['items_count'] ?? 0 }} documenti</div>
                                         <div class="mb-2 font-mono text-xs text-gray-500">SHA-256:
@@ -613,7 +657,8 @@
                                             <span
                                                 class="text-xs text-gray-500">v{{ $annexes['condition']['version'] }}</span>
                                         </div>
-                                        <h3 class="mb-1 font-medium text-gray-900">Condition Report</h3>
+                                        <h3 class="mb-1 font-medium text-gray-900">
+                                            {{ __('egi.coa.public_verify.condition_report') }}</h3>
                                         <div class="mb-2 text-xs text-gray-600">
                                             {{ $annexes['condition']['items_count'] ?? 0 }} rapporti</div>
                                         <div class="mb-2 font-mono text-xs text-gray-500">SHA-256:
@@ -632,7 +677,8 @@
                                             <span
                                                 class="text-xs text-gray-500">v{{ $annexes['exhibitions']['version'] }}</span>
                                         </div>
-                                        <h3 class="mb-1 font-medium text-gray-900">Mostre/Pubblicazioni</h3>
+                                        <h3 class="mb-1 font-medium text-gray-900">
+                                            {{ __('egi.coa.public_verify.exhibitions_publications') }}</h3>
                                         <div class="mb-2 text-xs text-gray-600">
                                             {{ $annexes['exhibitions']['items_count'] ?? 0 }} eventi</div>
                                         <div class="mb-2 font-mono text-xs text-gray-500">SHA-256:
@@ -653,7 +699,8 @@
                                                 <span
                                                     class="text-xs text-gray-500">v{{ $annexes['photos']['version'] }}</span>
                                             </div>
-                                            <h3 class="mb-1 font-medium text-gray-900">Fotografie Aggiuntive</h3>
+                                            <h3 class="mb-1 font-medium text-gray-900">
+                                                {{ __('egi.coa.public_verify.additional_photos') }}</h3>
                                             <div class="mb-2 text-xs text-gray-600">
                                                 {{ $annexes['photos']['items_count'] ?? 0 }} immagini</div>
                                             <div class="mb-2 font-mono text-xs text-gray-500">SHA-256:
@@ -710,7 +757,8 @@
                     {{-- On-chain Information (if applicable) --}}
                     @if ($certificate['blockchain_info'])
                         <div class="border-t border-gray-200 p-8">
-                            <h2 class="mb-6 text-2xl font-bold text-gray-900">Informazioni On-chain</h2>
+                            <h2 class="mb-6 text-2xl font-bold text-gray-900">
+                                {{ __('egi.coa.public_verify.on_chain_info') }}</h2>
                             <div class="grid gap-6 md:grid-cols-3">
 
                                 <div>
@@ -836,7 +884,15 @@
         function copyHash() {
             const hash = '{{ $certificate['verification_hash'] }}';
             navigator.clipboard.writeText(hash).then(() => {
-                alert('Hash copiato negli appunti!');
+                alert('{{ __('egi.coa.public_verify.hash_copied') }}');
+            });
+        }
+
+        // Copy PDF hash function
+        function copyPdfHash() {
+            const hash = '{{ $certificate['pdf_sha256'] ?? '' }}';
+            navigator.clipboard.writeText(hash).then(() => {
+                alert('{{ __('egi.coa.public_verify.pdf_hash_copied') }}');
             });
         }
 

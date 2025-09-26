@@ -4,214 +4,214 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | EGI (Ecological Goods Invent) - Traduzioni Italiane
+    | EGI (Ecological Goods Invent) - English Translations
     |--------------------------------------------------------------------------
     |
-    | Traduzioni per il sistema CRUD degli EGI in FlorenceEGI
-    | Versione: 1.0.0 - Oracode System 2.0 Compliant
+    | Translations for the EGI CRUD system in FlorenceEGI
+    | Version: 1.0.0 - Oracode System 2.0 Compliant
     |
     */
 
-    // Meta e SEO
-    'meta_description_default' => 'Dettagli per EGI: :title',
-    'image_alt_default' => 'Immagine EGI',
-    'view_full' => 'Visualizza Completa',
-    'artwork_loading' => 'Opera in Caricamento...',
+    // Meta and SEO
+    'meta_description_default' => 'Details for EGI: :title',
+    'image_alt_default' => 'EGI Image',
+    'view_full' => 'Full View',
+    'artwork_loading' => 'Artwork Loading...',
 
-    // Informazioni Base
-    'by_author' => 'di :name',
-    'unknown_creator' => 'Artista Sconosciuto',
+    // Basic Information
+    'by_author' => 'by :name',
+    'unknown_creator' => 'Unknown Artist',
 
-    // Azioni Principali
-    'like_button_title' => 'Aggiungi ai Preferiti',
-    'unlike_button_title' => 'Rimuovi dai Preferiti',
-    'like_button_aria' => 'Aggiungi questo EGI ai tuoi preferiti',
-    'unlike_button_aria' => 'Rimuovi questo EGI dai tuoi preferiti',
-    'share_button_title' => 'Condividi questo EGI',
+    // Main Actions
+    'like_button_title' => 'Add to Favorites',
+    'unlike_button_title' => 'Remove from Favorites',
+    'like_button_aria' => 'Add this EGI to your favorites',
+    'unlike_button_aria' => 'Remove this EGI from your favorites',
+    'share_button_title' => 'Share this EGI',
 
-    'current_price' => 'Prezzo Attuale',
-    'not_currently_listed' => 'Da Attivare',
-    'contact_owner_availability' => 'Contatta il proprietario per disponibilità',
-    'not_for_sale' => 'Non in vendita',
-    'not_for_sale_description' => 'Questo EGI non è attualmente disponibile per l\'acquisto',
-    'liked' => 'Piaciuto',
-    'add_to_favorites' => 'Aggiungi ai Preferiti',
-    'reserve_this_piece' => 'Attivalo',
+    'current_price' => 'Current Price',
+    'not_currently_listed' => 'To Activate',
+    'contact_owner_availability' => 'Contact owner for availability',
+    'not_for_sale' => 'Not for Sale',
+    'not_for_sale_description' => 'This EGI is not currently available for purchase',
+    'liked' => 'Liked',
+    'add_to_favorites' => 'Add to Favorites',
+    'reserve_this_piece' => 'Activate It',
 
     /*
     |--------------------------------------------------------------------------
-    | NFT Card System - Sistema Carte NFT
+    | NFT Card System - NFT Card System
     |--------------------------------------------------------------------------
     */
 
-    // Badge e Stati
+    // Badges and States
     'badge' => [
-        'owned' => 'POSSEDUTO',
-        'media_content' => 'Contenuto Media',
-        'winning_bid' => 'OFFERTA VINCENTE',
-        'outbid' => 'SUPERATO',
-        'not_owned' => 'NON POSSEDUTO',
-        'to_activate' => 'DA ATTIVARE',
-        'activated' => 'ATTIVATO',
+        'owned' => 'OWNED',
+        'media_content' => 'Media Content',
+        'winning_bid' => 'WINNING BID',
+        'outbid' => 'OUTBID',
+        'not_owned' => 'NOT OWNED',
+        'to_activate' => 'TO ACTIVATE',
+        'activated' => 'ACTIVATED',
     ],
 
-    // Titoli
+    // Titles
     'title' => [
-        'untitled' => '✨ EGI Senza Titolo',
+        'untitled' => '✨ Untitled EGI',
     ],
 
-    // Piattaforma
+    // Platform
     'platform' => [
         'powered_by' => 'Powered by :platform',
     ],
 
-    // Artista
+    // Creator
     'creator' => [
-        'created_by' => '👨‍🎨 Creato da:',
+        'created_by' => '👨‍🎨 Created by:',
     ],
 
-    // Prezzi
+    // Prices
     'price' => [
-        'purchased_for' => '💳 Acquistato per',
-        'price' => '💰 Prezzo',
+        'purchased_for' => '💳 Purchased for',
+        'price' => '💰 Price',
         'floor' => '📊 Floor',
-        'highest_bid' => '🏆 Offerta Più Alta',
+        'highest_bid' => '🏆 Highest Bid',
     ],
 
-    // Prenotazioni
+    // Reservations
     'reservation' => [
-        'count' => 'Prenotazioni',
-        'highest_bidder' => 'Miglior Offerente',
-        'by' => 'da',
-        'highest_bid' => 'Offerta Più Alta',
-        'fegi_reservation' => 'Prenotazione FEGI',
-        'strong_bidder' => 'Miglior Offerente',
-        'weak_bidder' => 'Codice FEGI',
-        'activator' => 'Co Creatore',
-        'activated_by' => 'Attivato da',
+        'count' => 'Reservations',
+        'highest_bidder' => 'Top Bidder',
+        'by' => 'by',
+        'highest_bid' => 'Highest Bid',
+        'fegi_reservation' => 'FEGI Reservation',
+        'strong_bidder' => 'Top Bidder',
+        'weak_bidder' => 'FEGI Code',
+        'activator' => 'Co Creator',
+        'activated_by' => 'Activated by',
     ],
 
-    // Nota valuta originale
-    'originally_reserved_in' => 'Originalmente prenotato in :currency per :amount',
-    'originally_reserved_in_short' => 'Pren. :currency :amount',
+    // Original Currency Note
+    'originally_reserved_in' => 'Originally reserved in :currency for :amount',
+    'originally_reserved_in_short' => 'Res. :currency :amount',
 
-    // Stati
+    // Status
     'status' => [
-        'not_for_sale' => '🚫 Non in vendita',
-        'draft' => '⏳ Bozza',
+        'not_for_sale' => '🚫 Not for Sale',
+        'draft' => '⏳ Draft',
     ],
 
-    // Azioni
+    // Actions
     'actions' => [
-        'view' => 'Visualizza',
-        'view_details' => 'Visualizza dettagli EGI',
-        'reserve' => 'Attivalo',
-        'reserved' => 'Prenotato',
-        'outbid' => 'Rilancia per attivare',
-        'view_history' => 'Cronologia',
-        'reserve_egi' => 'Prenota :title',
+        'view' => 'View',
+        'view_details' => 'View EGI Details',
+        'reserve' => 'Activate It',
+        'reserved' => 'Reserved',
+        'outbid' => 'Outbid to Activate',
+        'view_history' => 'History',
+        'reserve_egi' => 'Reserve :title',
     ],
 
-    // Sistema cronologia prenotazioni
+    // Reservation History System
     'history' => [
-        'title' => 'Cronologia Prenotazioni',
-        'no_reservations' => 'Nessuna prenotazione trovata',
-        'total_reservations' => '{1} :count prenotazione|[2,*] :count prenotazioni',
-        'current_highest' => 'Priorità massima attuale',
-        'superseded' => 'Priorità inferiore',
-        'created_at' => 'Creato il',
-        'amount' => 'Importo',
-        'type_strong' => 'Prenotazione forte',
-        'type_weak' => 'Prenotazione debole',
-        'loading' => 'Caricamento cronologia...',
-        'error' => 'Errore nel caricamento della cronologia',
+        'title' => 'Reservation History',
+        'no_reservations' => 'No reservations found',
+        'total_reservations' => '{1} :count reservation|[2,*] :count reservations',
+        'current_highest' => 'Current Highest Priority',
+        'superseded' => 'Lower Priority',
+        'created_at' => 'Created on',
+        'amount' => 'Amount',
+        'type_strong' => 'Strong Reservation',
+        'type_weak' => 'Weak Reservation',
+        'loading' => 'Loading history...',
+        'error' => 'Error loading history',
     ],
 
-    // Sezioni Informative
-    'properties' => 'Proprietà',
-    'supports_epp' => 'Supporta EPP',
-    'asset_type' => 'Tipo Asset',
-    'format' => 'Formato',
-    'about_this_piece' => 'Su Quest\'Opera',
-    'default_description' => 'Questa opera digitale unica rappresenta un momento di espressione creativa, catturando l\'essenza dell\'arte digitale nell\'era blockchain.',
-    'provenance' => 'Provenienza',
-    'view_full_collection' => 'Visualizza Collezione Completa',
+    // Informative Sections
+    'properties' => 'Properties',
+    'supports_epp' => 'Supports EPP',
+    'asset_type' => 'Asset Type',
+    'format' => 'Format',
+    'about_this_piece' => 'About This Piece',
+    'default_description' => 'This unique digital artwork represents a moment of creative expression, capturing the essence of digital art in the blockchain era.',
+    'provenance' => 'Provenance',
+    'view_full_collection' => 'View Full Collection',
 
     /*
     |--------------------------------------------------------------------------
-    | CRUD System - Sistema di Modifica
+    | CRUD System - Edit System
     |--------------------------------------------------------------------------
     */
 
     'crud' => [
 
-        // Header e Navigation
-        'edit_egi' => 'Modifica EGI',
-        'toggle_edit_mode' => 'Attiva/Disattiva Modalità Modifica',
-        'start_editing' => 'Inizia Modifica',
-        'save_changes' => 'Salva Modifiche',
-        'cancel' => 'Annulla',
+        // Header and Navigation
+        'edit_egi' => 'Edit EGI',
+        'toggle_edit_mode' => 'Toggle Edit Mode',
+        'start_editing' => 'Start Editing',
+        'save_changes' => 'Save Changes',
+        'cancel' => 'Cancel',
 
-        // Campo Title
-        'title' => 'Titolo',
-        'title_placeholder' => 'Inserisci il titolo dell\'opera...',
-        'title_hint' => 'Massimo 60 caratteri',
-        'characters_remaining' => 'caratteri rimanenti',
+        // Title Field
+        'title' => 'Title',
+        'title_placeholder' => 'Enter the artwork title...',
+        'title_hint' => 'Maximum 60 characters',
+        'characters_remaining' => 'characters remaining',
 
-        // Campo Description
-        'description' => 'Descrizione',
-        'description_placeholder' => 'Descrivi la tua opera, la sua storia e il suo significato...',
-        'description_hint' => 'Racconta la storia dietro la tua creazione',
+        // Description Field
+        'description' => 'Description',
+        'description_placeholder' => 'Describe your artwork, its story, and its meaning...',
+        'description_hint' => 'Tell the story behind your creation',
 
-        // Campo Price
-        'price' => 'Prezzo',
+        // Price Field
+        'price' => 'Price',
         'price_placeholder' => '0.00',
-        'price_hint' => 'Prezzo in ALGO (lascia vuoto se non in vendita)',
-        'price_locked_message' => 'Prezzo bloccato - EGI già prenotato',
+        'price_hint' => 'Price in ALGO (leave blank if not for sale)',
+        'price_locked_message' => 'Price locked - EGI already reserved',
 
-        // Campo Creation Date
-        'creation_date' => 'Data Creazione',
-        'creation_date_hint' => 'Quando hai creato quest\'opera?',
+        // Creation Date Field
+        'creation_date' => 'Creation Date',
+        'creation_date_hint' => 'When did you create this artwork?',
 
-        // Campo Published
-        'is_published' => 'Pubblicato',
-        'is_published_hint' => 'Rendi l\'opera visibile pubblicamente',
+        // Published Field
+        'is_published' => 'Published',
+        'is_published_hint' => 'Make the artwork publicly visible',
 
-        // View Mode - Stato Attuale
-        'current_title' => 'Titolo Attuale',
-        'no_title' => 'Nessun titolo impostato',
-        'current_price' => 'Prezzo Attuale',
-        'price_not_set' => 'Prezzo non impostato',
-        'current_status' => 'Stato Pubblicazione',
-        'status_published' => 'Pubblicato',
-        'status_draft' => 'Bozza',
+        // View Mode - Current Status
+        'current_title' => 'Current Title',
+        'no_title' => 'No title set',
+        'current_price' => 'Current Price',
+        'price_not_set' => 'Price not set',
+        'current_status' => 'Publication Status',
+        'status_published' => 'Published',
+        'status_draft' => 'Draft',
 
         // Delete System
-        'delete_egi' => 'Elimina EGI',
-        'delete_confirmation_title' => 'Conferma Eliminazione',
-        'delete_confirmation_message' => 'Sei sicuro di voler eliminare quest\'EGI? Questa azione non può essere annullata.',
-        'delete_confirm' => 'Elimina Definitivamente',
+        'delete_egi' => 'Delete EGI',
+        'delete_confirmation_title' => 'Confirm Deletion',
+        'delete_confirmation_message' => 'Are you sure you want to delete this EGI? This action cannot be undone.',
+        'delete_confirm' => 'Delete Permanently',
 
         // Validation Messages
-        'title_required' => 'Il titolo è obbligatorio',
-        'title_max_length' => 'Il titolo non può superare i 60 caratteri',
-        'price_numeric' => 'Il prezzo deve essere un numero valido',
-        'price_min' => 'Il prezzo non può essere negativo',
-        'creation_date_format' => 'Formato data non valido',
+        'title_required' => 'Title is required',
+        'title_max_length' => 'Title cannot exceed 60 characters',
+        'price_numeric' => 'Price must be a valid number',
+        'price_min' => 'Price cannot be negative',
+        'creation_date_format' => 'Invalid date format',
 
         // Success Messages
-        'update_success' => 'EGI aggiornato con successo!',
-        'delete_success' => 'EGI eliminato con successo.',
+        'update_success' => 'EGI updated successfully!',
+        'delete_success' => 'EGI deleted successfully.',
 
         // Error Messages
-        'update_error' => 'Errore durante l\'aggiornamento dell\'EGI.',
-        'delete_error' => 'Errore durante l\'eliminazione dell\'EGI.',
-        'permission_denied' => 'Non hai i permessi necessari per questa azione.',
-        'not_found' => 'EGI non trovato.',
+        'update_error' => 'Error updating the EGI.',
+        'delete_error' => 'Error deleting the EGI.',
+        'permission_denied' => 'You do not have the necessary permissions for this action.',
+        'not_found' => 'EGI not found.',
 
         // General Messages
-        'no_changes_detected' => 'Nessuna modifica rilevata.',
-        'unsaved_changes_warning' => 'Hai modifiche non salvate. Sei sicuro di voler uscire?',
+        'no_changes_detected' => 'No changes detected.',
+        'unsaved_changes_warning' => 'You have unsaved changes. Are you sure you want to leave?',
     ],
 
     /*
@@ -221,12 +221,12 @@ return [
     */
 
     'mobile' => [
-        'edit_egi_short' => 'Modifica',
-        'save_short' => 'Salva',
-        'delete_short' => 'Elimina',
-        'cancel_short' => 'Annulla',
-        'published_short' => 'Pubbl.',
-        'draft_short' => 'Bozza',
+        'edit_egi_short' => 'Edit',
+        'save_short' => 'Save',
+        'delete_short' => 'Delete',
+        'cancel_short' => 'Cancel',
+        'published_short' => 'Pub.',
+        'draft_short' => 'Draft',
     ],
 
     /*
@@ -236,68 +236,68 @@ return [
     */
 
     'carousel' => [
-        'two_columns' => 'Vista Lista',
-        'three_columns' => 'Vista Card',
+        'two_columns' => 'List View',
+        'three_columns' => 'Card View',
         'navigation' => [
-            'previous' => 'Precedente',
-            'next' => 'Successivo',
-            'slide' => 'Vai alla diapositiva :number',
+            'previous' => 'Previous',
+            'next' => 'Next',
+            'slide' => 'Go to slide :number',
         ],
         'empty_state' => [
-            'title' => 'Nessun Contenuto Disponibile',
-            'subtitle' => 'Torna presto per nuovi contenuti!',
-            'no_egis' => 'Nessuna opera EGI disponibile al momento.',
-            'no_creators' => 'Nessun artista disponibile al momento.',
-            'no_collections' => 'Nessuna collezione disponibile al momento.',
-            'no_collectors' => 'Nessun collezionista disponibile al momento.'
+            'title' => 'No Content Available',
+            'subtitle' => 'Come back soon for new content!',
+            'no_egis' => 'No EGI artworks available at the moment.',
+            'no_creators' => 'No artists available at the moment.',
+            'no_collections' => 'No collections available at the moment.',
+            'no_collectors' => 'No collectors available at the moment.'
         ],
 
         // Content Type Buttons
         'content_types' => [
-            'egi_list' => 'Vista Elenco EGI',
-            'egi_card' => 'Vista Scheda EGI',
-            'creators' => 'Artisti in Evidenza',
-            'collections' => 'Collezioni d\'Arte',
-            'collectors' => 'Top Collezionisti'
+            'egi_list' => 'EGI List View',
+            'egi_card' => 'EGI Card View',
+            'creators' => 'Featured Artists',
+            'collections' => 'Art Collections',
+            'collectors' => 'Top Collectors'
         ],
 
         // View Mode Buttons
         'view_modes' => [
-            'carousel' => 'Vista Carousel',
-            'list' => 'Vista Elenco'
+            'carousel' => 'Carousel View',
+            'list' => 'List View'
         ],
 
         // Mode Labels
         'carousel_mode' => 'Carousel',
-        'list_mode' => 'Elenco',
+        'list_mode' => 'List',
 
         // Content Labels
-        'creators' => 'Artisti',
-        'collections' => 'Collezioni',
-        'collectors' => 'Collezionisti',
+        'creators' => 'Artists',
+        'collections' => 'Collections',
+        'collectors' => 'Collectors',
 
         // Dynamic Headers
         'headers' => [
             'egi_list' => 'EGI',
             'egi_card' => 'EGI',
-            'creators' => 'Artisti',
-            'collections' => 'Collezioni',
-            'collectors' => 'Attivatori'
+            'creators' => 'Artists',
+            'collections' => 'Collections',
+            'collectors' => 'Activators'
         ],
 
         // Carousel sections
         'sections' => [
-            'egis' => 'EGI in Evidenza',
-            'creators' => 'Artisti Emergenti',
-            'collections' => 'Collezioni Esclusive',
-            'collectors' => 'Top Collezionisti'
+            'egis' => 'Featured EGIs',
+            'creators' => 'Emerging Artists',
+            'collections' => 'Exclusive Collections',
+            'collectors' => 'Top Collectors'
         ],
-        'view_all' => 'Vedi Tutti',
-        'items' => 'elementi',
+        'view_all' => 'View All',
+        'items' => 'items',
 
         // Title and subtitle for multi-content carousel
-        'title' => 'Attiva un EGI!',
-        'subtitle' => 'Attivare un opera significa unirsi ad essa ed essere riconosciuti per sempre come parte della sua storia.',
+        'title' => 'Activate an EGI!',
+        'subtitle' => 'Activating a work means joining it and being forever recognized as part of its history.',
     ],
 
     /*
@@ -307,30 +307,30 @@ return [
     */
 
     'list' => [
-        'title' => 'Esplora per Categoria',
-        'subtitle' => 'Naviga tra le diverse categorie per trovare quello che cerchi',
+        'title' => 'Explore by Category',
+        'subtitle' => 'Browse through different categories to find what you\'re looking for',
 
         'content_types' => [
-            'egi_list' => 'Lista EGI',
-            'creators' => 'Lista Artisti',
-            'collections' => 'Lista Collezioni',
-            'collectors' => 'Lista Collezionisti'
+            'egi_list' => 'EGI List',
+            'creators' => 'Artists List',
+            'collections' => 'Collections List',
+            'collectors' => 'Collectors List'
         ],
 
         'headers' => [
-            'egi_list' => 'Opere EGI',
-            'creators' => 'Artisti',
-            'collections' => 'Collezioni',
-            'collectors' => 'Collezionisti'
+            'egi_list' => 'EGI Artworks',
+            'creators' => 'Artists',
+            'collections' => 'Collections',
+            'collectors' => 'Collectors'
         ],
 
         'empty_state' => [
-            'title' => 'Nessun Elemento Trovato',
-            'subtitle' => 'Prova a selezionare una categoria diversa',
-            'no_egis' => 'Nessuna opera EGI trovata.',
-            'no_creators' => 'Nessun artista trovato.',
-            'no_collections' => 'Nessuna collezione trovata.',
-            'no_collectors' => 'Nessun collezionista trovato.'
+            'title' => 'No Items Found',
+            'subtitle' => 'Try selecting a different category',
+            'no_egis' => 'No EGI artworks found.',
+            'no_creators' => 'No artists found.',
+            'no_collections' => 'No collections found.',
+            'no_collectors' => 'No collectors found.'
         ],
     ],
 
@@ -341,12 +341,12 @@ return [
     */
 
     'desktop_carousel' => [
-        'title' => 'Opere Digitali in Evidenza',
-        'subtitle' => 'Le migliori creazioni NFT della nostra community',
+        'title' => 'Featured Digital Artworks',
+        'subtitle' => 'The best NFT creations from our community',
         'navigation' => [
-            'previous' => 'Precedente',
-            'next' => 'Successivo',
-            'slide' => 'Vai alla diapositiva :number',
+            'previous' => 'Previous',
+            'next' => 'Next',
+            'slide' => 'Go to slide :number',
         ],
     ],
 
@@ -357,28 +357,28 @@ return [
     */
 
     'mobile_toggle' => [
-        'title' => 'Esplora FlorenceEGI',
-        'subtitle' => 'Scegli come vuoi navigare i contenuti',
-        'carousel_mode' => 'Vista Carousel',
-        'list_mode' => 'Vista Lista',
+        'title' => 'Explore FlorenceEGI',
+        'subtitle' => 'Choose how you want to browse the content',
+        'carousel_mode' => 'Carousel View',
+        'list_mode' => 'List View',
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Hero Coverflow - Sezione Hero con Effetto Coverflow 3D
+    | Hero Coverflow - Hero Section with 3D Coverflow Effect
     |--------------------------------------------------------------------------
     */
 
     'hero_coverflow' => [
-        'title' => 'Attivare un EGI è lasciare il segno.',
-        'subtitle' => 'Il tuo nome rimane per sempre accanto a quello del Creator: senza di te l’opera non esisterebbe.',
-        'carousel_mode' => 'Vista Carousel',
-        'list_mode' => 'Vista Griglia',
-        'carousel_label' => 'Carousel opere in evidenza',
-        'no_egis' => 'Nessuna opera in evidenza disponibile al momento.',
+        'title' => 'Activating an EGI is leaving a mark.',
+        'subtitle' => 'Your name remains forever next to the Creator\'s: without you, the work wouldn\'t exist.',
+        'carousel_mode' => 'Carousel View',
+        'list_mode' => 'Grid View',
+        'carousel_label' => 'Featured artworks carousel',
+        'no_egis' => 'No featured artworks available at the moment.',
         'navigation' => [
-            'previous' => 'Opera precedente',
-            'next' => 'Opera successiva',
+            'previous' => 'Previous Artwork',
+            'next' => 'Next Artwork',
         ],
     ],
 
@@ -389,385 +389,442 @@ return [
     */
 
     'a11y' => [
-        'edit_form' => 'Modulo di modifica EGI',
-        'delete_button' => 'Pulsante elimina EGI',
-        'toggle_edit' => 'Attiva modalità modifica',
-        'save_form' => 'Salva modifiche EGI',
-        'close_modal' => 'Chiudi finestra di conferma',
-        'required_field' => 'Campo obbligatorio',
-        'optional_field' => 'Campo opzionale',
+        'edit_form' => 'EGI Edit Form',
+        'delete_button' => 'Delete EGI Button',
+        'toggle_edit' => 'Toggle Edit Mode',
+        'save_form' => 'Save EGI Changes',
+        'close_modal' => 'Close Confirmation Window',
+        'required_field' => 'Required Field',
+        'optional_field' => 'Optional Field',
     ],
 
     'collection' => [
-        'part_of' => 'Parte di',
+        'part_of' => 'Part of',
     ],
 
-    // Collaboratori della Collection
-    'collection_collaborators' => 'Collaboratori',
-    'owner' => 'Proprietario',
-    // 'creator' => 'Creatore',
-    'no_other_collaborators' => 'Nessun altro collaboratore',
+    // Collection Collaborators
+    'collection_collaborators' => 'Collaborators',
+    'owner' => 'Owner',
+    // 'creator' => 'Creator',
+    'no_other_collaborators' => 'No other collaborators',
 
     /*
     |--------------------------------------------------------------------------
-    | Certificato di Autenticità (CoA)
+    | Certificate of Authenticity (CoA)
     |--------------------------------------------------------------------------
     */
 
     'coa' => [
-        'none' => 'Nessun Certificato di Autenticità',
-        'title' => 'Certificato di Autenticità',
-        'status' => 'Stato',
-        'issued' => 'Emesso il',
-        'verification' => 'ID Verifica',
-        'copy' => 'Copia',
-        'copied' => 'Copiato!',
-        'view' => 'Visualizza',
+        'none' => 'No Certificate of Authenticity',
+        'title' => 'Certificate of Authenticity',
+        'status' => 'Status',
+        'issued' => 'Issued on',
+        'verification' => 'Verification ID',
+        'copy' => 'Copy',
+        'copied' => 'Copied!',
+        'view' => 'View',
         'pdf' => 'PDF',
-        'reissue' => 'Riemetti',
-        'issue' => 'Emetti Certificato',
-        'annexes' => 'Allegati',
-        'add_annex' => 'Aggiungi Allegato',
-        'annex_coming_soon' => 'Gestione allegati disponibile a breve!',
+        'reissue' => 'Reissue',
+        'issue' => 'Issue Certificate',
+        'annexes' => 'Annexes',
+        'add_annex' => 'Add Annex',
+        'annex_coming_soon' => 'Annex management available soon!',
         'pro' => 'Pro',
-        'unlock_pro' => 'Sblocca con CoA Pro',
-        'provenance' => 'Documentazione Provenienza',
-        'pdf_bundle' => 'Bundle PDF Professionale',
-        'issue_description' => 'Emetti un certificato per fornire prova di autenticità e sbloccare le funzionalità Pro',
-        'creator_only' => 'Solo il creatore può emettere certificati',
-        'active' => 'Attivo',
-        'revoked' => 'Revocato',
-        'expired' => 'Scaduto',
-        'manage_coa' => 'Gestisci CoA',
-        'no_certificate' => 'Nessun certificato ancora emesso',
+        'unlock_pro' => 'Unlock with CoA Pro',
+        'provenance' => 'Provenance Documentation',
+        'pdf_bundle' => 'Professional PDF Bundle',
+        'issue_description' => 'Issue a certificate to provide proof of authenticity and unlock Pro features',
+        'creator_only' => 'Only the creator can issue certificates',
+        'active' => 'Active',
+        'revoked' => 'Revoked',
+        'expired' => 'Expired',
+        'manage_coa' => 'Manage CoA',
+        'no_certificate' => 'No certificate issued yet',
 
-        // Messaggi JavaScript
-        'confirm_issue' => 'Emettere un Certificato di Autenticità per questo EGI?',
-        'issued_success' => 'Certificato emesso con successo!',
-        'confirm_reissue' => 'Riemettere questo certificato? Questo creerà una nuova versione.',
-        'reissued_success' => 'Certificato riemesso con successo!',
-        'reissue_certificate_confirm' => 'Sei sicuro di voler riemettere questo certificato?',
-        'certificate_reissued_successfully' => 'Certificato riemesso con successo!',
-        'error_reissuing_certificate' => 'Errore durante la riemissione del certificato',
-        'revocation_reason' => 'Motivo della revoca:',
-        'confirm_revoke' => 'Revocare questo certificato? Questa azione non può essere annullata.',
-        'revoked_success' => 'Certificato revocato con successo!',
-        'error_issuing' => 'Errore durante l\'emissione del certificato',
-        'error_reissuing' => 'Errore durante la riemissione del certificato',
-        'error_revoking' => 'Errore durante la revoca del certificato',
-        'unknown_error' => 'Errore sconosciuto',
-        'verify_any_certificate' => 'Verifica qualsiasi certificato',
+        // JavaScript Messages
+        'confirm_issue' => 'Issue a Certificate of Authenticity for this EGI?',
+        'issued_success' => 'Certificate issued successfully!',
+        'confirm_reissue' => 'Reissue this certificate? This will create a new version.',
+        'reissued_success' => 'Certificate reissued successfully!',
+        'reissue_certificate_confirm' => 'Are you sure you want to reissue this certificate?',
+        'certificate_reissued_successfully' => 'Certificate reissued successfully!',
+        'error_reissuing_certificate' => 'Error reissuing the certificate',
+        'revocation_reason' => 'Revocation Reason:',
+        'confirm_revoke' => 'Revoke this certificate? This action cannot be undone.',
+        'revoked_success' => 'Certificate revoked successfully!',
+        'error_issuing' => 'Error issuing the certificate',
+        'error_reissuing' => 'Error reissuing the certificate',
+        'error_revoking' => 'Error revoking the certificate',
+        'unknown_error' => 'Unknown Error',
+        'verify_any_certificate' => 'Verify Any Certificate',
 
-        // Modal Allegati
-        'manage_annexes_title' => 'Gestisci Allegati CoA Pro',
-        'annexes_description' => 'Aggiungi documentazione professionale per migliorare il tuo certificato',
-        'provenance_tab' => 'Provenienza',
-        'condition_tab' => 'Condizioni',
-        'exhibitions_tab' => 'Mostre',
-        'photos_tab' => 'Foto',
-        'provenance_title' => 'Documentazione Provenienza',
-        'provenance_description' => 'Documenta la storia di proprietà e la catena di autenticità',
-        'condition_title' => 'Rapporto sulle Condizioni',
-        'condition_description' => 'Valutazione professionale delle condizioni fisiche dell\'opera',
-        'exhibitions_title' => 'Storia delle Esposizioni',
-        'exhibitions_description' => 'Registro delle mostre pubbliche e storia espositiva',
-        'photos_title' => 'Fotografia Professionale',
-        'photos_description' => 'Documentazione ad alta risoluzione e fotografia di dettaglio',
-        'save_annex' => 'Salva Allegato',
-        'cancel' => 'Annulla',
-        'upload_files' => 'Carica File',
-        'drag_drop_files' => 'Trascina e rilascia i file qui, o clicca per selezionare',
-        'max_file_size' => 'Dimensione massima file: 10MB per file',
-        'supported_formats' => 'Formati supportati: PDF, JPG, PNG, DOCX',
+        // Annex Modal
+        'manage_annexes_title' => 'Manage CoA Pro Annexes',
+        'annexes_description' => 'Add professional documentation to enhance your certificate',
+        'provenance_tab' => 'Provenance',
+        'condition_tab' => 'Condition',
+        'exhibitions_tab' => 'Exhibitions',
+        'photos_tab' => 'Photos',
+        'provenance_title' => 'Provenance Documentation',
+        'provenance_description' => 'Document the ownership history and chain of authenticity',
+        'condition_title' => 'Condition Report',
+        'condition_description' => 'Professional assessment of the physical condition of the artwork',
+        'exhibitions_title' => 'Exhibition History',
+        'exhibitions_description' => 'Record of public exhibitions and display history',
+        'photos_title' => 'Professional Photography',
+        'photos_description' => 'High-resolution documentation and detail photography',
+        'save_annex' => 'Save Annex',
+        'cancel' => 'Cancel',
+        'upload_files' => 'Upload Files',
+        'drag_drop_files' => 'Drag and drop files here, or click to select',
+        'max_file_size' => 'Maximum file size: 10MB per file',
+        'supported_formats' => 'Supported formats: PDF, JPG, PNG, DOCX',
 
-        // Form Provenienza
-        'ownership_history_description' => 'Documenta la storia di proprietà e la catena di autenticità di quest\'opera',
-        'previous_owners' => 'Proprietari Precedenti',
-        'previous_owners_placeholder' => 'Elenca i proprietari precedenti e le date di possesso...',
-        'acquisition_details' => 'Dettagli Acquisizione',
-        'acquisition_details_placeholder' => 'Come è stata acquisita quest\'opera? Includi date, prezzi, case d\'asta...',
-        'authenticity_sources' => 'Fonti di Autenticità',
-        'authenticity_sources_placeholder' => 'Pareri di esperti, catalogue raisonnés, archivi istituzionali...',
-        'save_provenance_data' => 'Salva Dati Provenienza',
+        // Provenance Form
+        'ownership_history_description' => 'Document the ownership history and chain of authenticity of this artwork',
+        'previous_owners' => 'Previous Owners',
+        'previous_owners_placeholder' => 'List previous owners and possession dates...',
+        'acquisition_details' => 'Acquisition Details',
+        'acquisition_details_placeholder' => 'How was this artwork acquired? Include dates, prices, auction houses...',
+        'authenticity_sources' => 'Authenticity Sources',
+        'authenticity_sources_placeholder' => 'Expert opinions, catalogues raisonnés, institutional archives...',
+        'save_provenance_data' => 'Save Provenance Data',
 
-        // Form Condizioni
-        'condition_assessment_description' => 'Valutazione professionale dello stato fisico dell\'opera e delle necessità conservative',
-        'overall_condition' => 'Condizioni Generali',
-        'condition_excellent' => 'Eccellenti',
-        'condition_very_good' => 'Molto Buone',
-        'condition_good' => 'Buone',
-        'condition_fair' => 'Discrete',
-        'condition_poor' => 'Scarse',
-        'condition_notes' => 'Note sulle Condizioni',
-        'condition_notes_placeholder' => 'Descrizione dettagliata di eventuali danni, restauri o problemi conservativi...',
-        'conservation_history' => 'Storia Conservativa',
-        'conservation_history_placeholder' => 'Restauri precedenti, trattamenti o interventi conservativi...',
-        'save_condition_data' => 'Salva Dati Condizioni',
+        // Condition Form
+        'condition_assessment_description' => 'Professional assessment of the physical state of the artwork and conservation needs',
+        'overall_condition' => 'Overall Condition',
+        'condition_excellent' => 'Excellent',
+        'condition_very_good' => 'Very Good',
+        'condition_good' => 'Good',
+        'condition_fair' => 'Fair',
+        'condition_poor' => 'Poor',
+        'condition_notes' => 'Condition Notes',
+        'condition_notes_placeholder' => 'Detailed description of any damage, restorations, or conservation issues...',
+        'conservation_history' => 'Conservation History',
+        'conservation_history_placeholder' => 'Previous restorations, treatments, or conservation interventions...',
+        'save_condition_data' => 'Save Condition Data',
 
-        // Form Mostre
-        'exhibition_history_description' => 'Registro di musei, gallerie ed esposizioni pubbliche dove quest\'opera è stata esposta',
-        'exhibition_title' => 'Titolo Mostra',
-        'exhibition_title_placeholder' => 'Nome della mostra...',
-        'venue' => 'Sede',
-        'venue_placeholder' => 'Nome del museo, galleria o istituzione...',
-        'exhibition_dates' => 'Date Mostra',
-        'exhibition_notes' => 'Note',
-        'exhibition_notes_placeholder' => 'Numero di catalogo, menzioni speciali, recensioni...',
-        'add_exhibition' => 'Aggiungi Mostra',
-        'save_exhibitions_data' => 'Salva Dati Mostre',
+        // Exhibitions Form
+        'exhibition_history_description' => 'Record of museums, galleries, and public exhibitions where this artwork has been displayed',
+        'exhibition_title' => 'Exhibition Title',
+        'exhibition_title_placeholder' => 'Exhibition name...',
+        'venue' => 'Venue',
+        'venue_placeholder' => 'Name of museum, gallery, or institution...',
+        'exhibition_dates' => 'Exhibition Dates',
+        'exhibition_notes' => 'Notes',
+        'exhibition_notes_placeholder' => 'Catalog number, special mentions, reviews...',
+        'add_exhibition' => 'Add Exhibition',
+        'save_exhibitions_data' => 'Save Exhibitions Data',
 
-        // Form Foto
-        'photo_documentation_description' => 'Immagini di alta qualità per documentazione e scopi archivistici',
-        'photo_type' => 'Tipo Foto',
-        'photo_overall' => 'Vista Generale',
-        'photo_detail' => 'Dettaglio',
-        'photo_raking' => 'Luce Radente',
-        'photo_uv' => 'Fotografia UV',
-        'photo_infrared' => 'Infrarosso',
-        'photo_back' => 'Retro/Verso',
-        'photo_signature' => 'Firma/Marchi',
-        'photo_frame' => 'Cornice/Montaggio',
-        'photo_description' => 'Descrizione',
-        'photo_description_placeholder' => 'Descrivi cosa mostra questa foto...',
-        'save_photos_data' => 'Salva Dati Foto',
+        // Photos Form
+        'photo_documentation_description' => 'High-quality images for documentation and archival purposes',
+        'photo_type' => 'Photo Type',
+        'photo_overall' => 'Overall View',
+        'photo_detail' => 'Detail',
+        'photo_raking' => 'Raking Light',
+        'photo_uv' => 'UV Photography',
+        'photo_infrared' => 'Infrared',
+        'photo_back' => 'Back/Verso',
+        'photo_signature' => 'Signature/Marks',
+        'photo_frame' => 'Frame/Mounting',
+        'photo_description' => 'Description',
+        'photo_description_placeholder' => 'Describe what this photo shows...',
+        'save_photos_data' => 'Save Photos Data',
 
-        // Campi aggiuntivi form condizioni
-        'select_condition' => 'Seleziona condizione...',
-        'detailed_assessment' => 'Valutazione Dettagliata',
-        'detailed_assessment_placeholder' => 'Descrizione dettagliata delle condizioni, inclusi eventuali danni, restauri o caratteristiche particolari...',
-        'conservation_history_placeholder' => 'Trattamenti conservativi precedenti, date e conservatori...',
-        'assessor_information' => 'Informazioni Valutatore',
-        'assessor_placeholder' => 'Nome e credenziali del valutatore delle condizioni...',
-        'save_condition_report' => 'Salva Rapporto Condizioni',
+        // Additional fields for condition form
+        'select_condition' => 'Select condition...',
+        'detailed_assessment' => 'Detailed Assessment',
+        'detailed_assessment_placeholder' => 'Detailed description of the condition, including any damage, restorations, or special features...',
+        'assessor_information' => 'Assessor Information',
+        'assessor_placeholder' => 'Name and credentials of the condition assessor...',
+        'save_condition_report' => 'Save Condition Report',
 
-        // Campi form mostre
-        'major_exhibitions' => 'Mostre Principali',
-        'major_exhibitions_placeholder' => 'Elenca mostre principali, musei, gallerie, date...',
-        'publications_catalogues' => 'Pubblicazioni e Cataloghi',
-        'publications_placeholder' => 'Libri, cataloghi, articoli in cui quest\'opera è stata pubblicata...',
-        'awards_recognition' => 'Premi e Riconoscimenti',
-        'awards_placeholder' => 'Premi, riconoscimenti, critica ricevuta...',
-        'save_exhibition_history' => 'Salva Storia Mostre',
-        'exhibition_history_description' => 'Registro delle mostre dove quest\'opera è stata esposta',
+        // Exhibitions form fields
+        'major_exhibitions' => 'Major Exhibitions',
+        'major_exhibitions_placeholder' => 'List major exhibitions, museums, galleries, dates...',
+        'publications_catalogues' => 'Publications and Catalogues',
+        'publications_placeholder' => 'Books, catalogues, articles where this artwork has been published...',
+        'awards_recognition' => 'Awards and Recognition',
+        'awards_placeholder' => 'Awards, recognitions, criticism received...',
+        'save_exhibition_history' => 'Save Exhibition History',
 
-        // Campi form foto
-        'click_upload_images' => 'Clicca per caricare immagini',
-        'png_jpg_webp' => 'PNG, JPG, WEBP fino a 10MB ciascuna',
-        'photo_descriptions' => 'Descrizioni Foto',
-        'photo_descriptions_placeholder' => 'Descrivi le immagini: condizioni di illuminazione, dettagli catturati, scopo...',
-        'photographer_credits' => 'Crediti Fotografo',
-        'photographer_placeholder' => 'Nome fotografo e data...',
-        'save_photo_documentation' => 'Salva Documentazione Fotografica',
-        'photo_documentation_description' => 'Immagini ad alta risoluzione per documentazione e scopi assicurativi',
+        // Photos form fields
+        'click_upload_images' => 'Click to upload images',
+        'png_jpg_webp' => 'PNG, JPG, WEBP up to 10MB each',
+        'photo_descriptions' => 'Photo Descriptions',
+        'photo_descriptions_placeholder' => 'Describe the images: lighting conditions, details captured, purpose...',
+        'photographer_credits' => 'Photographer Credits',
+        'photographer_placeholder' => 'Photographer name and date...',
+        'save_photo_documentation' => 'Save Photo Documentation',
 
-        // Azioni modal
-        'close' => 'Chiudi',
-        'error_no_certificate' => 'Errore: Nessun certificato selezionato',
-        'saving' => 'Salvataggio...',
-        'annex_saved_success' => 'Dati allegato salvati con successo!',
-        'error_saving_annex' => 'Errore nel salvare i dati dell\'allegato',
+        // Modal Actions
+        'close' => 'Close',
+        'error_no_certificate' => 'Error: No certificate selected',
+        'saving' => 'Saving...',
+        'annex_saved_success' => 'Annex data saved successfully!',
+        'error_saving_annex' => 'Error saving annex data',
 
-        // Traduzioni mancanti per sidebar e componenti CoA
-        'certificate' => 'Certificato CoA',
-        'no_certificate' => 'Nessun Certificato',
-        'certificate_active' => 'Certificato Attivo',
-        'serial_number' => 'Numero Seriale',
-        'issue_date' => 'Data Emissione',
-        'expires' => 'Scade',
-        'no_certificate_issued' => 'Questo EGI non ha un Certificato di Autenticità',
-        'issue_certificate' => 'Emetti Certificato',
-        'certificate_issued_successfully' => 'Certificato emesso con successo!',
-        'pdf_generated_automatically' => 'PDF generato automaticamente!',
-        'download_pdf_now' => 'Vuoi scaricare il PDF ora?',
-        'step_creating_certificate' => 'Creazione certificato...',
-        'step_generating_snapshot' => 'Generazione snapshot...',
-        'step_generating_pdf' => 'Generazione PDF...',
-        'step_finalizing' => 'Finalizzazione...',
-        'generating' => 'Generazione...',
-        'generating_pdf' => 'Generazione PDF...',
-        'error_issuing_certificate' => 'Errore durante l\'emissione del certificato: ',
-        'issuing' => 'Emissione...',
-        'unlock_with_coa_pro' => 'Sblocca con CoA Pro',
-        'provenance_documentation' => 'Documentazione Provenienza',
-        'condition_reports' => 'Report Stato Conservazione',
-        'exhibition_history' => 'Storia Mostre',
-        'professional_pdf' => 'PDF Professionale',
-        'only_creator_can_issue' => 'Solo il creatore può emettere certificati',
+        // Missing translations for sidebar and CoA components
+        'certificate' => 'CoA Certificate',
+        'certificate_active' => 'Active Certificate',
+        'serial_number' => 'Serial Number',
+        'issue_date' => 'Issue Date',
+        'expires' => 'Expires',
+        'no_certificate_issued' => 'This EGI does not have a Certificate of Authenticity',
+        'issue_certificate' => 'Issue Certificate',
+        'certificate_issued_successfully' => 'Certificate issued successfully!',
+        'pdf_generated_automatically' => 'PDF generated automatically!',
+        'download_pdf_now' => 'Do you want to download the PDF now?',
+        'digital_signatures' => 'Digital Signatures',
+        'signature_by' => 'Signed by',
+        'signature_role' => 'Role',
+        'signature_provider' => 'Provider',
+        'signature_date' => 'Signature Date',
+        'unknown_signer' => 'Unknown Signer',
+        'step_creating_certificate' => 'Creating certificate...',
+        'step_generating_snapshot' => 'Generating snapshot...',
+        'step_generating_pdf' => 'Generating PDF...',
+        'step_finalizing' => 'Finalizing...',
+        'generating' => 'Generating...',
+        'generating_pdf' => 'Generating PDF...',
+        'error_issuing_certificate' => 'Error issuing the certificate: ',
+        'issuing' => 'Issuing...',
+        'unlock_with_coa_pro' => 'Unlock with CoA Pro',
+        'provenance_documentation' => 'Provenance Documentation',
+        'condition_reports' => 'Condition Reports',
+        'exhibition_history' => 'Exhibition History',
+        'professional_pdf' => 'Professional PDF',
+        'only_creator_can_issue' => 'Only the creator can issue certificates',
 
-        // Sistema Traits Vocabolario CoA
-        'traits_management_title' => 'Gestione Traits CoA',
-        'traits_management_description' => 'Configura le caratteristiche tecniche dell\'opera per il Certificato di Autenticità',
-        'status_configured' => 'Configurato',
-        'status_not_configured' => 'Non Configurato',
-        'edit_traits' => 'Modifica Traits',
-        'no_technique_selected' => 'Nessuna tecnica selezionata',
-        'no_materials_selected' => 'Nessun materiale selezionato',
-        'no_support_selected' => 'Nessun supporto selezionato',
-        'custom' => 'personalizzato',
-        'last_updated' => 'Ultimo aggiornamento',
-        'never_configured' => 'Mai configurato',
-        'clear_all' => 'Cancella Tutto',
-        'saved' => 'Salvato',
+        // CoA Traits Vocabulary System
+        'traits_management_title' => 'Manage CoA Traits',
+        'traits_management_description' => 'Configure the technical characteristics of the artwork for the Certificate of Authenticity',
+        'status_configured' => 'Configured',
+        'status_not_configured' => 'Not Configured',
+        'edit_traits' => 'Edit Traits',
+        'no_technique_selected' => 'No technique selected',
+        'no_materials_selected' => 'No materials selected',
+        'no_support_selected' => 'No support selected',
+        'custom' => 'custom',
+        'last_updated' => 'Last Updated',
+        'never_configured' => 'Never Configured',
+        'clear_all' => 'Clear All',
+        'saved' => 'Saved',
 
-        // Modal Vocabolario
-        'modal_title' => 'Seleziona Traits CoA',
-        'category_technique' => 'Tecnica',
-        'category_materials' => 'Materiali',
-        'category_support' => 'Supporto',
-        'search_placeholder' => 'Cerca termini...',
-        'loading' => 'Caricamento...',
-        'selected_items' => 'Elementi Selezionati',
-        'no_items_selected' => 'Nessun elemento selezionato',
-        'add_custom' => 'Aggiungi Personalizzato',
-        'custom_term_placeholder' => 'Inserisci termine personalizzato (max 60 caratteri)',
-        'add' => 'Aggiungi',
-        'cancel' => 'Annulla',
-        'items_selected' => 'elementi selezionati',
-        'confirm' => 'Conferma',
+        // Vocabulary Modal
+        'modal_title' => 'Select CoA Traits',
+        'category_technique' => 'Technique',
+        'category_materials' => 'Materials',
+        'category_support' => 'Support',
+        'search_placeholder' => 'Search terms...',
+        'loading' => 'Loading...',
+        'selected_items' => 'Selected Items',
+        'no_items_selected' => 'No items selected',
+        'add_custom' => 'Add Custom',
+        'custom_term_placeholder' => 'Enter custom term (max 60 characters)',
+        'add' => 'Add',
+        'items_selected' => 'items selected',
+        'confirm' => 'Confirm',
 
-        // Componenti Vocabolario
-        'terms_available' => 'termini disponibili',
-        'no_categories_available' => 'Nessuna categoria disponibile',
-        'no_categories_found' => 'Non sono state trovate categorie di vocabolario.',
-        'search_results' => 'Risultati ricerca',
-        'results_for' => 'Per',
-        'terms_found' => 'termini trovati',
-        'results_found' => 'risultati trovati',
-        'no_results_found' => 'Nessun risultato trovato',
-        'no_terms_match_search' => 'Nessun termine corrisponde alla ricerca',
-        'in_category' => 'nella categoria',
-        'clear_search' => 'Cancella ricerca',
-        'no_terms_available' => 'Nessun termine disponibile',
-        'no_terms_found_category' => 'Non sono stati trovati termini per la categoria',
-        'categories' => 'Categorie',
-        'back_to_start' => 'Torna all\'inizio',
-        'retry' => 'Riprova',
-        'error' => 'Errore',
-        'unexpected_error' => 'Si è verificato un errore imprevisto.',
-        'exhibition_history' => 'Storia Esposizioni',
-        'professional_pdf_bundle' => 'Bundle PDF Professionale',
-        'only_creator_can_issue' => 'Solo il creatore può emettere certificati',
-        'public_verification' => 'Verifica Pubblica',
-        'verification_description' => 'Verifica l\'autenticità di un Certificato di Autenticità EGI',
-        'verification_instructions' => 'Inserisci il numero seriale del certificato per verificarne l\'autenticità',
-        'enter_serial' => 'Inserisci numero seriale',
-        'serial_help' => 'Formato: ABC-123-DEF (lettere, numeri e trattini)',
-        'certificate_of_authenticity' => 'Certificato di Autenticità',
-        'public_verification_display' => 'Visualizzazione Pubblica di Verifica',
-        'verified_authentic' => 'Certificato Verificato e Autentico',
-        'verified_at' => 'Verificato il',
-        'artwork_information' => 'Informazioni Opera',
-        'artwork_title' => 'Titolo Opera',
-        'creator' => 'Creatore',
-        'description' => 'Descrizione',
-        'certificate_details' => 'Dettagli Certificato',
-        'cryptographic_verification' => 'Verifica Crittografica',
-        'verify_again' => 'Verifica di Nuovo',
-        'print_certificate' => 'Stampa Certificato',
-        'share_verification' => 'Condividi Verifica',
+        // Vocabulary Components
+        'terms_available' => 'terms available',
+        'no_categories_available' => 'No categories available',
+        'no_categories_found' => 'No vocabulary categories found.',
+        'search_results' => 'Search Results',
+        'results_for' => 'For',
+        'terms_found' => 'terms found',
+        'results_found' => 'results found',
+        'no_results_found' => 'No results found',
+        'no_terms_match_search' => 'No terms match the search',
+        'in_category' => 'in category',
+        'clear_search' => 'Clear Search',
+        'no_terms_available' => 'No terms available',
+        'no_terms_found_category' => 'No terms found for the category',
+        'categories' => 'Categories',
+        'back_to_start' => 'Back to Start',
+        'retry' => 'Retry',
+        'error' => 'Error',
+        'unexpected_error' => 'An unexpected error occurred.',
+        'professional_pdf_bundle' => 'Professional PDF Bundle',
+        'public_verification' => 'Public Verification',
+        'verification_description' => 'Verify the authenticity of an EGI Certificate of Authenticity',
+        'verification_instructions' => 'Enter the certificate serial number to verify its authenticity',
+        'enter_serial' => 'Enter Serial Number',
+        'serial_help' => 'Format: ABC-123-DEF (letters, numbers, and hyphens)',
+        'certificate_of_authenticity' => 'Certificate of Authenticity',
+        'public_verification_display' => 'Public Verification Display',
+        'verified_authentic' => 'Certificate Verified and Authentic',
+        'verified_at' => 'Verified on',
+        'artwork_information' => 'Artwork Information',
+        'artwork_title' => 'Artwork Title',
+        'creator' => 'Creator',
+        'description' => 'Description',
+        'certificate_details' => 'Certificate Details',
+        'cryptographic_verification' => 'Cryptographic Verification',
+        'verify_again' => 'Verify Again',
+        'print_certificate' => 'Print Certificate',
+        'share_verification' => 'Share Verification',
         'powered_by_florenceegi' => 'Powered by FlorenceEGI',
-        'verification_timestamp' => 'Timestamp di Verifica',
-        'link_copied' => 'Link copiato negli appunti',
-        'issuing' => 'Emettendo...',
-        'certificate_issued_successfully' => 'Certificato emesso con successo!',
-        'error_issuing_certificate' => 'Errore nell\'emissione del certificato: ',
-        'reissue_certificate_confirm' => 'Riemettere questo certificato? Verrà creata una nuova versione.',
-        'certificate_reissued_successfully' => 'Certificato riemesso con successo!',
-        'error_reissuing_certificate' => 'Errore nella riemissione del certificato: ',
-        'revoke_certificate_confirm' => 'Revocare questo certificato? Questa azione non può essere annullata.',
-        'reason_for_revocation' => 'Motivo della revoca:',
-        'certificate_revoked_successfully' => 'Certificato revocato con successo!',
-        'error_revoking_certificate' => 'Errore nella revoca del certificato: ',
-        'manage_certificate' => 'Gestisci Certificato',
-        'annex_management_coming_soon' => 'Gestione allegati in arrivo!',
-        'issue_certificate_description' => 'Emetti un certificato per fornire prova di autenticità e sbloccare le funzioni Pro',
-        'serial' => 'Seriale',
-        'pro_features' => 'Funzioni Pro',
-        'provenance_docs' => 'Documentazione Provenienza',
-        'professional_pdf' => 'PDF Professionale',
-        'unlock_pro_features' => 'Sblocca Funzioni Pro',
-        'reason_for' => 'Motivo per',
+        'verification_timestamp' => 'Verification Timestamp',
+        'link_copied' => 'Link copied to clipboard',
+        'revoke_certificate_confirm' => 'Revoke this certificate? This action cannot be undone.',
+        'reason_for_revocation' => 'Revocation Reason:',
+        'certificate_revoked_successfully' => 'Certificate revoked successfully!',
+        'error_revoking_certificate' => 'Error revoking the certificate: ',
+        'manage_certificate' => 'Manage Certificate',
+        'annex_management_coming_soon' => 'Annex management coming soon!',
+        'issue_certificate_description' => 'Issue a certificate to provide proof of authenticity and unlock Pro functions',
+        'serial' => 'Serial',
+        'pro_features' => 'Pro Features',
+        'provenance_docs' => 'Provenance Documentation',
+        'unlock_pro_features' => 'Unlock Pro Features',
+        'reason_for' => 'Reason for',
 
-        // Badge Firme QES
-        'badge_author_signed' => 'Firmato Autore (QES)',
-        'badge_inspector_signed' => 'Firmato Ispettore (QES)',
-        'badge_integrity_ok' => 'Integrità Verificata',
+        // QES Signatures Badges
+        'badge_author_signed' => 'Author Signed (QES)',
+        'badge_inspector_signed' => 'Inspector Signed (QES)',
+        'badge_integrity_ok' => 'Integrity Verified',
 
         // Location UI (CoA)
-        'issue_place' => 'Luogo di emissione',
-        'location_placeholder' => 'Es. Firenze, Toscana, Italia',
-        'save' => 'Salva',
-        'location_hint' => 'Usa il formato "Città, Regione/Provincia, Paese" (o equivalente).',
-        'location_required' => 'La località è obbligatoria',
-        'location_saved' => 'Località salvata',
-        'location_save_failed' => 'Salvataggio località fallito',
-        'location_updated' => 'Località aggiornata con successo',
+        'issue_place' => 'Issue Place',
+        'location_placeholder' => 'E.g., Florence, Tuscany, Italy',
+        'save' => 'Save',
+        'location_hint' => 'Use the format "City, Region/Province, Country" (or equivalent).',
+        'location_required' => 'Location is required',
+        'location_saved' => 'Location saved',
+        'location_save_failed' => 'Location save failed',
+        'location_updated' => 'Location updated successfully',
 
-        // Co-firma Ispettore (QES)
-        'inspector_countersign' => 'Co-firma Ispettore (QES)',
-        'confirm_inspector_countersign' => 'Procedere con la co-firma ispettore?',
-        'inspector_countersign_applied' => 'Co-firma ispettore applicata',
-        'operation_failed' => 'Operazione non riuscita',
-        'author_countersign' => 'Firma Autore (QES)',
-        'confirm_author_countersign' => 'Procedere con la firma dell’autore?',
-        'author_countersign_applied' => 'Firma autore applicata',
-        'regenerate_pdf' => 'Rigenera PDF',
-        'pdf_regenerated' => 'PDF rigenerato',
-        'pdf_regenerate_failed' => 'Rigenerazione PDF fallita',
+        // Inspector Co-sign (QES)
+        'inspector_countersign' => 'Inspector Co-sign (QES)',
+        'confirm_inspector_countersign' => 'Proceed with inspector co-sign?',
+        'inspector_countersign_applied' => 'Inspector co-sign applied',
+        'operation_failed' => 'Operation failed',
+        'author_countersign' => 'Author Signature (QES)',
+        'confirm_author_countersign' => 'Proceed with author signature?',
+        'author_countersign_applied' => 'Author signature applied',
+        'regenerate_pdf' => 'Regenerate PDF',
+        'pdf_regenerated' => 'PDF regenerated',
+        'pdf_regenerate_failed' => 'PDF regeneration failed',
+
+        // Public Verification Page
+        'public_verify' => [
+            'signature' => 'Signature',
+            'author_signed' => 'Author Signed',
+            'inspector_countersigned' => 'Inspector Countersigned',
+            'timestamp_tsa' => 'TSA Timestamp',
+            'qes' => 'QES',
+            'wallet_signature' => 'Wallet Signature',
+            'verify_signature' => 'verify signature',
+            'certificate_hash' => 'Certificate Hash (SHA-256)',
+            'pdf_hash' => 'PDF Hash (SHA-256)',
+            'copy_hash' => 'Copy Hash',
+            'copy_pdf_hash' => 'Copy PDF Hash',
+            'hash_copied' => 'Hash copied to clipboard!',
+            'pdf_hash_copied' => 'PDF Hash copied to clipboard!',
+            'qr_code_verify' => 'QR Code Verification',
+            'qr_code' => 'QR Code',
+            'scan_to_verify' => 'Scan to Verify',
+            'status' => 'Status',
+            'valid' => 'Valid',
+            'incomplete' => 'Incomplete',
+            'revoked' => 'Revoked',
+
+            // Headers and titles
+            'certificate_title' => 'Certificate of Authenticity',
+            'public_verification_display' => 'Public Verification Display',
+            'verified_authentic' => 'Certificate Verified and Authentic',
+            'verified_at' => 'Verified on',
+            'serial_number' => 'Serial Number',
+            'certificate_not_ready' => 'Certificate Not Ready',
+            'certificate_revoked' => 'Certificate Revoked',
+            'certificate_not_valid' => 'This certificate is no longer valid',
+            'requires_coa_traits' => 'Requires CoA Traits',
+            'certificate_not_ready_generic' => 'Certificate Not Ready - Generic Traits',
+
+            // Artwork Information
+            'artwork_title' => 'Title',
+            'year' => 'Year',
+            'dimensions' => 'Dimensions',
+            'edition' => 'Edition',
+            'author' => 'Author',
+            'technique' => 'Technique',
+            'material' => 'Material',
+            'support' => 'Support',
+            'platform' => 'Platform',
+            'published_by' => 'Published by',
+            'image' => 'Image',
+
+            // Certificate Information
+            'issue_date' => 'Issue Date',
+            'issued_by' => 'Issued by',
+            'issue_location' => 'Issue Location',
+            'notes' => 'Notes',
+
+            // Professional Annexes
+            'professional_annexes' => 'Professional Annexes',
+            'provenance' => 'Provenance',
+            'condition_report' => 'Condition Report',
+            'exhibitions_publications' => 'Exhibitions/Publications',
+            'additional_photos' => 'Additional Photos',
+
+            // On-chain Information
+            'on_chain_info' => 'On-chain Information',
+        ],
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Dossier System - Sistema Dossier
+    | Dossier System - Dossier System
     |--------------------------------------------------------------------------
     */
     'dossier' => [
-        'title' => 'Dossier Immagini',
-        'loading' => 'Caricamento dossier...',
-        'view_complete' => 'Visualizza dossier immagini completo',
-        'close' => 'Chiudi dossier',
+        'title' => 'Image Dossier',
+        'loading' => 'Loading dossier...',
+        'view_complete' => 'View complete image dossier',
+        'close' => 'Close Dossier',
 
         // Artwork Info
-        'artwork_info' => 'Informazioni Opera',
-        'author' => 'Autore',
-        'year' => 'Anno',
-        'internal_id' => 'ID Interno',
+        'artwork_info' => 'Artwork Information',
+        'author' => 'Author',
+        'year' => 'Year',
+        'internal_id' => 'Internal ID',
 
         // Dossier Info
-        'dossier_info' => 'Informazioni Dossier',
-        'images_count' => 'Immagini',
-        'type' => 'Tipo',
+        'dossier_info' => 'Dossier Information',
+        'images_count' => 'Images',
+        'type' => 'Type',
         'utility_gallery' => 'Utility Gallery',
 
         // Gallery
-        'gallery_title' => 'Galleria Immagini',
-        'image_number' => 'Immagine :number',
-        'image_of_total' => 'Immagine :current di :total',
+        'gallery_title' => 'Image Gallery',
+        'image_number' => 'Image :number',
+        'image_of_total' => 'Image :current of :total',
 
         // States
-        'no_utility_title' => 'Dossier non disponibile',
-        'no_utility_message' => 'Non sono disponibili immagini aggiuntive per questa opera.',
-        'no_utility_description' => 'Il dossier delle immagini aggiuntive non è stato ancora configurato per questo artwork.',
+        'no_utility_title' => 'Dossier not available',
+        'no_utility_message' => 'No additional images available for this artwork.',
+        'no_utility_description' => 'The additional image dossier has not yet been configured for this artwork.',
 
-        'no_images_title' => 'Nessuna immagine disponibile',
-        'no_images_message' => 'Il dossier esiste ma non contiene ancora immagini.',
-        'no_images_description' => 'Le immagini aggiuntive saranno aggiunte in futuro dal creatore dell\'opera.',
+        'no_images_title' => 'No images available',
+        'no_images_message' => 'The dossier exists but does not yet contain images.',
+        'no_images_description' => 'Additional images will be added in the future by the artwork creator.',
 
-        'error_title' => 'Errore',
-        'error_loading' => 'Errore nel caricamento del dossier',
+        'error_title' => 'Error',
+        'error_loading' => 'Error loading dossier',
 
         // Navigation
-        'previous_image' => 'Immagine precedente',
-        'next_image' => 'Immagine successiva',
-        'close_viewer' => 'Chiudi visualizzatore',
-        'of' => 'di',
+        'previous_image' => 'Previous Image',
+        'next_image' => 'Next Image',
+        'close_viewer' => 'Close Viewer',
+        'of' => 'of',
 
         // Zoom Controls
-        'zoom_help' => 'Usa rotellina del mouse o touch per zoom • Trascina per muovere',
-        'zoom_in' => 'Ingrandisci',
-        'zoom_out' => 'Riduci',
-        'zoom_reset' => 'Reimposta zoom',
-        'zoom_fit' => 'Adatta allo schermo',
+        'zoom_help' => 'Use mouse wheel or touch for zoom • Drag to move',
+        'zoom_in' => 'Zoom In',
+        'zoom_out' => 'Zoom Out',
+        'zoom_reset' => 'Reset Zoom',
+        'zoom_fit' => 'Fit to Screen',
     ],
 
 ];

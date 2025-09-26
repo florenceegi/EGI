@@ -41,3 +41,6 @@ docs/CoA/**/*.pdf
 # Windows ADS Zone.Identifier streams (non versionare)
 *.Zone.Identifier
 docs/**/.Zone.Identifier
+
+# Editor state (non versionare)
+.cursor/

@@ -2,6 +2,27 @@
 
 ## Stato Sincronizzato al Repo (25-09-2025)
 
+### Aggiornamento 26-09-2025
+
+-   [x] UI/JS: fix parametri onclick e uso URL client per download (`/coa/{id}/pdf/download`)
+-   [x] Endpoint POST `coa/{coa}/sign/author` con controlli ruolo `creator` e i18n lato UI
+-   [x] Endpoint POST `coa/{coa}/sign/inspector` con feature-flag `coa.signature.inspector.enabled`
+-   [x] Endpoint POST `coa/{coa}/pdf/regenerate` che ritorna `download_url`, `file_id`, `file_path`, `pdf_sha256`
+-   [x] Controller: try/catch UEM granulari su rigenerazione e firme (author/inspector/TSA)
+-   [x] Rate limiter: sostituzione custom limiter con `throttle` standard (fix MissingRateLimiter)
+-   [x] Template PDF in uso: `resources/views/coa/pdf/professional_new.blade.php` con sezione "Firme digitali"
+-   [x] Flags passati al template: `author_signed`, `inspector_countersigned`, `timestamped`
+-   [x] Seeder: ruolo `inspector` + permesso `sign_coa`; `creator` aggiornato; email legale via `config('app.legal_default_user_email')`
+-   [x] Download inline forzato in `downloadPdf` con path normalization e log
+-   [x] BundleService: opzione `force` per rigenerare sempre; inoltro opzioni a CoaPdfService
+-   [x] CoaPdfService: opzione `skip_signatures` per evitare firme automatiche quando non richieste
+-   [x] Rigenerazione: primo render senza firme, poi riapplica firme da `metadata`; dedup role|cert_serial
+-   [x] Log diagnostici dei flag firme (mirror su log standard); nota: codice UEM `COA_PDF_SIGNATURE_FLAGS` non ancora mappato
+-   [x] i18n: tutte le etichette/buttons/messaggi senza hardcoded
+-   [x] Route PDF download resa pubblica: spostata fuori da middleware auth, controller aggiornato con `except(['downloadPdf'])`
+
+Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/inspector/ts). In produzione (CSC/PAdES) ci si aspetta 1 output per azione firma; la moltiplicazione file non è considerata blocker per ora.
+
 -   **Fase 1 - Setup & Config**
 
     -   [x] Feature flags firma configurati in `config/coa.php`

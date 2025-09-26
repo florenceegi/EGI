@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Storage;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
-class SignatureService {
+class SignatureService
+{
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $audit;
@@ -32,7 +33,8 @@ class SignatureService {
         $this->provider = $this->resolveProvider();
     }
 
-    private function resolveProvider(): SignatureProviderInterface {
+    private function resolveProvider(): SignatureProviderInterface
+    {
         $enabled = (bool) Config::get('coa.signature.enabled', false);
         $providerKey = Config::get('coa.signature.provider', 'mock');
 
@@ -50,17 +52,19 @@ class SignatureService {
         }
     }
 
-    public function provider(): SignatureProviderInterface {
+    public function provider(): SignatureProviderInterface
+    {
         return $this->provider;
     }
 
-    public function signAuthor(CoaFile $coaFile, array $meta = []): array {
+    public function signAuthor(CoaFile $coaFile, array $meta = []): array
+    {
         $hashAlgo = Config::get('coa.signature.hash_algo', 'sha256');
         $absPath = Storage::path($coaFile->path);
 
         try {
             $result = $this->provider->signPdf($absPath, [
-                'role' => 'author',
+                'role' => 'creator',
                 'reason' => $meta['reason'] ?? 'Author signature',
                 'hash_algo' => $hashAlgo,
                 'metadata' => $meta,
@@ -103,9 +107,10 @@ class SignatureService {
         }
     }
 
-    public function countersignInspector(CoaFile $coaFile, array $meta = []): array {
-    $hashAlgo = Config::get('coa.signature.hash_algo', 'sha256');
-    $absPath = Storage::path($coaFile->path);
+    public function countersignInspector(CoaFile $coaFile, array $meta = []): array
+    {
+        $hashAlgo = Config::get('coa.signature.hash_algo', 'sha256');
+        $absPath = Storage::path($coaFile->path);
         try {
             $result = $this->provider->addCountersignature($absPath, [
                 'role' => 'inspector',
@@ -144,7 +149,8 @@ class SignatureService {
         }
     }
 
-    public function timestamp(CoaFile $coaFile, array $meta = []): array {
+    public function timestamp(CoaFile $coaFile, array $meta = []): array
+    {
         $absPath = Storage::path($coaFile->path);
         try {
             $result = $this->provider->addTimestamp($absPath, [
@@ -182,7 +188,8 @@ class SignatureService {
         }
     }
 
-    public function verify(string $absPdfPath): array {
+    public function verify(string $absPdfPath): array
+    {
         try {
             return $this->provider->verifySignatures($absPdfPath);
         } catch (\Throwable $e) {
@@ -198,11 +205,17 @@ class SignatureService {
         }
     }
 
-    private function storeAsNewVersion(CoaFile $origin, string $absPath, string $kind): CoaFile {
+    private function storeAsNewVersion(CoaFile $origin, string $absPath, string $kind): CoaFile
+    {
         $content = file_get_contents($absPath);
         $hash = $this->hashing->generateHash($content);
         $dir = dirname($origin->path);
         $base = pathinfo($origin->path, PATHINFO_FILENAME);
+        // Truncate base filename to avoid exceeding DB/storage limits
+        $maxBaseLen = 80;
+        if (mb_strlen($base) > $maxBaseLen) {
+            $base = mb_substr($base, 0, $maxBaseLen);
+        }
         $filename = $base . '-' . substr($hash, 0, 8) . '.pdf';
         $newRel = $dir . '/' . $filename;
 

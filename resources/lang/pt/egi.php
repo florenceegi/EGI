@@ -161,6 +161,83 @@ return [
         'badge_author_signed' => 'Assinado Autor (QES)',
         'badge_inspector_signed' => 'Assinado Inspetor (QES)',
         'badge_integrity_ok' => 'Integridade Verificada',
+
+        // Contrafirma Inspetor (QES)
+        'inspector_countersign' => 'Contrafirma Inspetor (QES)',
+        'confirm_inspector_countersign' => 'Prosseguir com a contrafirma do inspetor?',
+        'inspector_countersign_applied' => 'Contrafirma do inspetor aplicada',
+        'operation_failed' => 'Operação falhou',
+        'author_countersign' => 'Assinatura Autor (QES)',
+        'confirm_author_countersign' => 'Prosseguir com a assinatura do autor?',
+        'author_countersign_applied' => 'Assinatura do autor aplicada',
+        'regenerate_pdf' => 'Regenerar PDF',
+        'pdf_regenerated' => 'PDF regenerado',
+        'pdf_regenerate_failed' => 'Regeneração PDF falhou',
+
+        // Página pública de verificação
+        'public_verify' => [
+            'signature' => 'Assinatura',
+            'author_signed' => 'Autor assinado',
+            'inspector_countersigned' => 'Contrafirma inspetor',
+            'timestamp_tsa' => 'Timestamp TSA',
+            'qes' => 'QES',
+            'wallet_signature' => 'Assinatura wallet',
+            'verify_signature' => 'verificar assinatura',
+            'certificate_hash' => 'Hash do certificado (SHA-256)',
+            'pdf_hash' => 'Hash do PDF (SHA-256)',
+            'copy_hash' => 'Copiar hash',
+            'copy_pdf_hash' => 'Copiar hash PDF',
+            'hash_copied' => 'Hash copiado para a área de transferência!',
+            'pdf_hash_copied' => 'Hash PDF copiado para a área de transferência!',
+            'qr_code_verify' => 'Verificação Código QR',
+            'qr_code' => 'Código QR',
+            'scan_to_verify' => 'Escanear para verificar',
+            'status' => 'Status',
+            'valid' => 'Válido',
+            'incomplete' => 'Incompleto',
+            'revoked' => 'Revogado',
+
+            // Cabeçalho e títulos
+            'certificate_title' => 'Certificado de Autenticidade',
+            'public_verification_display' => 'Exibição Pública de Verificação',
+            'verified_authentic' => 'Certificado Verificado e Autêntico',
+            'verified_at' => 'Verificado em',
+            'serial_number' => 'Número de Série',
+            'certificate_not_ready' => 'Certificado Não Pronto',
+            'certificate_revoked' => 'Certificado Revogado',
+            'certificate_not_valid' => 'Este certificado não é mais válido',
+            'requires_coa_traits' => 'Requer Traits CoA',
+            'certificate_not_ready_generic' => 'Certificado Não Pronto - Traits Genéricos',
+
+            // Informações da obra
+            'artwork_title' => 'Título',
+            'year' => 'Ano',
+            'dimensions' => 'Dimensões',
+            'edition' => 'Edição',
+            'author' => 'Autor',
+            'technique' => 'Técnica',
+            'material' => 'Material',
+            'support' => 'Suporte',
+            'platform' => 'Plataforma',
+            'published_by' => 'Publicado por',
+            'image' => 'Imagem',
+
+            // Informações do certificado
+            'issue_date' => 'Data de Emissão',
+            'issued_by' => 'Emitido por',
+            'issue_location' => 'Local de emissão',
+            'notes' => 'Notas',
+
+            // Anexos profissionais
+            'professional_annexes' => 'Anexos Profissionais',
+            'provenance' => 'Procedência',
+            'condition_report' => 'Relatório de Condições',
+            'exhibitions_publications' => 'Exposições/Publicações',
+            'additional_photos' => 'Fotos Adicionais',
+
+            // Informações on-chain
+            'on_chain_info' => 'Informações On-chain',
+        ],
     ],
 
 ];

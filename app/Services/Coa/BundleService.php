@@ -28,7 +28,8 @@ use Illuminate\Support\Facades\Storage;
  * @date 2025-09-18
  * @purpose Professional bundle management for complete certificate packages
  */
-class BundleService {
+class BundleService
+{
     /**
      * Logger instance for audit trail
      * @var UltraLogManager
@@ -123,7 +124,8 @@ class BundleService {
      * @transparency-level High - complete bundle creation process
      * @narrative-coherence Links all certificate components into unified package
      */
-    public function createBundle(Coa $coa, string $bundleType, array $formats = ['PDF_PACKAGE'], array $options = []): array {
+    public function createBundle(Coa $coa, string $bundleType, array $formats = ['PDF_PACKAGE'], array $options = []): array
+    {
         try {
             $user = Auth::user();
 
@@ -219,7 +221,8 @@ class BundleService {
      * @return array
      * @privacy-safe Internal transaction method
      */
-    protected function createBundleInTransaction(Coa $coa, string $bundleType, array $formats, array $options, $user): array {
+    protected function createBundleInTransaction(Coa $coa, string $bundleType, array $formats, array $options, $user): array
+    {
         // Generate unique bundle ID
         $bundleId = 'BUNDLE-' . $coa->serial . '-' . now()->format('YmdHis') . '-' . substr(md5(uniqid()), 0, 8);
 
@@ -290,7 +293,8 @@ class BundleService {
      * @return array
      * @privacy-safe Collects only user's own CoA components
      */
-    protected function collectBundleComponents(Coa $coa, string $bundleType, array $options): array {
+    protected function collectBundleComponents(Coa $coa, string $bundleType, array $options): array
+    {
         $components = [
             'data' => [],
             'summary' => []
@@ -402,7 +406,8 @@ class BundleService {
      * @return array
      * @privacy-safe Internal file generation method
      */
-    protected function generateBundleFile(string $bundleId, string $format, array $components, array $metadata, array $options): array {
+    protected function generateBundleFile(string $bundleId, string $format, array $components, array $metadata, array $options): array
+    {
         $fileName = $bundleId . '_' . strtolower($format);
         $filePath = "coa_bundles/{$metadata['coa_id']}/{$bundleId}";
 
@@ -437,7 +442,8 @@ class BundleService {
      * @return array
      * @privacy-safe Generates JSON data export
      */
-    protected function generateJsonBundle(string $fileName, string $filePath, array $components, array $metadata): array {
+    protected function generateJsonBundle(string $fileName, string $filePath, array $components, array $metadata): array
+    {
         $jsonData = [
             'metadata' => $metadata,
             'components' => $components['data'],
@@ -474,7 +480,8 @@ class BundleService {
      * @return array
      * @privacy-safe Generates PDF document export
      */
-    protected function generatePdfBundle(string $fileName, string $filePath, array $components, array $metadata, array $options): array {
+    protected function generatePdfBundle(string $fileName, string $filePath, array $components, array $metadata, array $options): array
+    {
         // This would integrate with a PDF generation library like TCPDF or DOMPDF
         // For now, we'll create a placeholder implementation
 
@@ -504,7 +511,8 @@ class BundleService {
      * @return string
      * @privacy-safe Generates PDF content from CoA data
      */
-    protected function generatePdfContent(array $components, array $metadata, array $options): string {
+    protected function generatePdfContent(array $components, array $metadata, array $options): string
+    {
         // This is a placeholder - in real implementation, you would use a PDF library
         $content = "Certificate of Authenticity - Bundle Package\n";
         $content .= "Generated: " . $metadata['created_at'] . "\n";
@@ -546,7 +554,8 @@ class BundleService {
      * @return array
      * @privacy-safe Generates ZIP archive with all components
      */
-    protected function generateZipBundle(string $fileName, string $filePath, array $components, array $metadata, array $options): array {
+    protected function generateZipBundle(string $fileName, string $filePath, array $components, array $metadata, array $options): array
+    {
         // This would create a ZIP archive containing multiple files
         // For now, we'll create a placeholder
 
@@ -577,7 +586,8 @@ class BundleService {
      * @return array
      * @privacy-safe Generates cryptographically signed bundle
      */
-    protected function generateSignedBundle(string $fileName, string $filePath, array $components, array $metadata, array $options): array {
+    protected function generateSignedBundle(string $fileName, string $filePath, array $components, array $metadata, array $options): array
+    {
         // This would implement digital signature functionality
         $signedContent = "Digitally signed CoA bundle";
         $fullFileName = $fileName . '_signed.json';
@@ -607,7 +617,8 @@ class BundleService {
      * @return array
      * @privacy-safe Generates blockchain-verified bundle
      */
-    protected function generateBlockchainBundle(string $fileName, string $filePath, array $components, array $metadata, array $options): array {
+    protected function generateBlockchainBundle(string $fileName, string $filePath, array $components, array $metadata, array $options): array
+    {
         // This would implement blockchain integration
         $blockchainContent = "Blockchain-verified CoA record";
         $fullFileName = $fileName . '_blockchain.json';
@@ -638,7 +649,8 @@ class BundleService {
      * @return array
      * @privacy-safe Creates bundle record for user's own CoA
      */
-    protected function createBundleRecord(Coa $coa, string $bundleId, string $bundleType, array $metadata, array $components, $user): array {
+    protected function createBundleRecord(Coa $coa, string $bundleId, string $bundleType, array $metadata, array $components, $user): array
+    {
         // Since we don't have a CoaBundle model yet, we'll store in a simple array
         // In real implementation, this would create a database record
 
@@ -663,7 +675,8 @@ class BundleService {
      * @return void
      * @privacy-safe Updates bundle record with file metadata
      */
-    protected function updateBundleWithFiles(array &$bundleRecord, array $files, int $totalSize): void {
+    protected function updateBundleWithFiles(array &$bundleRecord, array $files, int $totalSize): void
+    {
         $bundleRecord['files'] = $files;
         $bundleRecord['total_size'] = $totalSize;
         $bundleRecord['status'] = 'ready';
@@ -679,7 +692,8 @@ class BundleService {
      * @return CoaEvent
      * @privacy-safe Creates audit event for user's own CoA
      */
-    protected function createCoaEvent(Coa $coa, string $eventType, array $eventData = []): CoaEvent {
+    protected function createCoaEvent(Coa $coa, string $eventType, array $eventData = []): CoaEvent
+    {
         $baseData = [
             'timestamp' => now()->toIso8601String(),
             'session_id' => session()->getId(),
@@ -709,7 +723,8 @@ class BundleService {
      * @return string
      * @privacy-safe Generates description from event metadata
      */
-    protected function getEventDescription(string $eventType, array $eventData): string {
+    protected function getEventDescription(string $eventType, array $eventData): string
+    {
         switch ($eventType) {
             case 'bundle_created':
                 return sprintf(
@@ -730,7 +745,8 @@ class BundleService {
      * @return array Available types with descriptions
      * @privacy-safe Returns static configuration data
      */
-    public function getAvailableBundleTypes(): array {
+    public function getAvailableBundleTypes(): array
+    {
         return self::BUNDLE_TYPES;
     }
 
@@ -740,7 +756,8 @@ class BundleService {
      * @return array Available formats with descriptions
      * @privacy-safe Returns static configuration data
      */
-    public function getAvailableBundleFormats(): array {
+    public function getAvailableBundleFormats(): array
+    {
         return self::BUNDLE_FORMATS;
     }
 
@@ -751,7 +768,8 @@ class BundleService {
      * @return array Recommended bundle configuration
      * @privacy-safe Returns configuration recommendations
      */
-    public function getBundleRecommendation(string $useCase): array {
+    public function getBundleRecommendation(string $useCase): array
+    {
         $recommendations = [
             'legal_transfer' => [
                 'bundle_type' => 'LEGAL',
@@ -793,7 +811,8 @@ class BundleService {
      * @return array Size estimation
      * @privacy-safe Estimates size for user's own CoA
      */
-    public function estimateBundleSize(Coa $coa, string $bundleType, array $formats, array $options = []): array {
+    public function estimateBundleSize(Coa $coa, string $bundleType, array $formats, array $options = []): array
+    {
         try {
             $user = Auth::user();
 
@@ -852,7 +871,8 @@ class BundleService {
      * @return int Estimated size in bytes
      * @privacy-safe Size calculation only
      */
-    protected function estimateFormatSize(string $format, array $components): int {
+    protected function estimateFormatSize(string $format, array $components): int
+    {
         $baseSize = $components['summary']['total_size'] ?? 1000;
 
         switch ($format) {
@@ -878,7 +898,8 @@ class BundleService {
      * @return string Estimated time description
      * @privacy-safe Time estimation only
      */
-    protected function estimateGenerationTime(int $totalSize): string {
+    protected function estimateGenerationTime(int $totalSize): string
+    {
         if ($totalSize < 100000) { // < 100KB
             return '5-10 seconds';
         } elseif ($totalSize < 1000000) { // < 1MB
@@ -897,10 +918,10 @@ class BundleService {
      * @return bool
      * @privacy-safe File existence check only
      */
-    public function pdfExists(Coa $coa): bool {
+    public function pdfExists(Coa $coa): bool
+    {
         try {
-            // Prefer DB record + Storage check via CoaFile
-            $file = $coa->getMainPdf();
+            $file = $this->getLatestPdfFile($coa);
             if ($file && isset($file->path)) {
                 return Storage::exists($file->path);
             }
@@ -924,9 +945,9 @@ class BundleService {
      * @return string
      * @privacy-safe Path generation only
      */
-    public function getPdfPath(Coa $coa): string {
-        // If a CoaFile exists, return absolute path via Storage
-        $file = $coa->getMainPdf();
+    public function getPdfPath(Coa $coa): string
+    {
+        $file = $this->getLatestPdfFile($coa);
         if ($file && isset($file->path)) {
             return Storage::path($file->path);
         }
@@ -946,11 +967,11 @@ class BundleService {
      * @return string Path to generated PDF
      * @privacy-safe PDF generation with audit trail
      */
-    public function generateCoaPdf(Coa $coa): string {
+    public function generateCoaPdf(Coa $coa, bool $force = false, array $options = []): string
+    {
         try {
-            // If already exists (via CoaFile), return absolute path
-            $existing = $coa->getMainPdf();
-            if ($existing && isset($existing->path) && Storage::exists($existing->path)) {
+            $existing = $this->getLatestPdfFile($coa);
+            if (!$force && $existing && isset($existing->path) && Storage::exists($existing->path)) {
                 return Storage::path($existing->path);
             }
 
@@ -958,10 +979,10 @@ class BundleService {
             /** @var CoaPdfService $pdfService */
             $pdfService = app(CoaPdfService::class);
             // Use system-level generation (no user permission gate) for reliability
-            $result = $pdfService->generateCorePdf($coa, null, [
+            $result = $pdfService->generateCorePdf($coa, null, array_merge([
                 'format' => 'A4',
                 'orientation' => 'portrait'
-            ]);
+            ], $options));
 
             $absolutePath = isset($result['path']) ? Storage::path($result['path']) : null;
 
@@ -987,5 +1008,13 @@ class BundleService {
 
             throw $e;
         }
+    }
+
+    private function getLatestPdfFile(Coa $coa): ?\App\Models\CoaFile
+    {
+        return $coa->files()
+            ->where('kind', 'like', 'pdf%')
+            ->orderByDesc('id')
+            ->first();
     }
 }

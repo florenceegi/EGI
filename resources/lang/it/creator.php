@@ -4,7 +4,6 @@
 
 return [
     'home' => [
-        'default_bio' => 'Questo è un creator di talento dell\'ecosistema FlorenceEGI.', // Questa era in guest_home.php prima
         'view_profile' => 'Vedi Profilo', // Questa era in guest_home.php prima
         'title_suffix' => 'Mecenate del Nuovo Rinascimento',
         'meta_description' => 'Scopri le opere di :name su FlorenceEGI. Arte che genera impatto ambientale nel mercato virtuoso.',

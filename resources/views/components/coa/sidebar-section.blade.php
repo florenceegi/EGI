@@ -33,19 +33,19 @@ $userDerivedLocation = implode(', ', array_filter($parts));
 @endphp
 
 {{-- CoA Compact Section --}}
-<div class="p-4 space-y-3 border rounded-xl border-amber-500/30 bg-gradient-to-br from-amber-900/20 to-yellow-900/20">
+<div class="space-y-3 rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-900/20 to-yellow-900/20 p-4">
     {{-- Header --}}
     <div class="flex items-center justify-between">
         <h3 class="flex items-center text-sm font-bold text-white">
             @if ($hasActiveCoa)
-                <div class="flex items-center justify-center w-4 h-4 mr-2 rounded-full bg-amber-400">
+                <div class="mr-2 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400">
                     <svg class="h-2.5 w-2.5 text-amber-900" fill="currentColor" viewBox="0 0 8 8">
                         <path
                             d="m2.3 6.73 3.53-4.24c.049-.06.146-.06.195 0L9.6 6.73a.116.116 0 0 1-.096.17H2.4a.116.116 0 0 1-.1-.17Z" />
                     </svg>
                 </div>
             @else
-                <div class="w-4 h-4 mr-2 bg-gray-600 rounded-full"></div>
+                <div class="mr-2 h-4 w-4 rounded-full bg-gray-600"></div>
             @endif
             {{ __('egi.coa.certificate') }}
         </h3>
@@ -130,7 +130,7 @@ $userDerivedLocation = implode(', ', array_filter($parts));
             <a href="{{ route('coa.pdf.download', $existingCoa) }}" target="_blank"
                 onclick="return downloadCoaPdf(event, '{{ $existingCoa->id }}', '{{ route('coa.pdf.download', $existingCoa) }}')"
                 class="flex-1 rounded bg-gradient-to-r from-red-600 to-red-700 px-2 py-1.5 text-center text-xs font-medium text-white shadow-sm transition-all duration-200 hover:from-red-700 hover:to-red-800">
-                <svg class="inline w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="mr-1 inline h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" />
                     <path d="M7 10V8h2v2h2l-3 3-3-3h2z" />
                 </svg>
@@ -139,21 +139,21 @@ $userDerivedLocation = implode(', ', array_filter($parts));
         </div>
 
         {{-- PDF Thumbnail Preview (collapsible + small thumb) --}}
-        <details class="mt-3 group" id="coaPdfThumbSection-{{ $existingCoa->id }}">
+        <details class="group mt-3" id="coaPdfThumbSection-{{ $existingCoa->id }}">
             <summary
-                class="flex items-center justify-between text-xs text-gray-300 cursor-pointer select-none hover:text-white">
+                class="flex cursor-pointer select-none items-center justify-between text-xs text-gray-300 hover:text-white">
                 <span>Anteprima PDF</span>
-                <svg class="w-3 h-3 transition-transform transform group-open:rotate-180" fill="none"
+                <svg class="h-3 w-3 transform transition-transform group-open:rotate-180" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </summary>
-            <div class="flex justify-center mt-2">
+            <div class="mt-2 flex justify-center">
                 <div id="coaPdfPreview-{{ $existingCoa->id }}" data-coa-id="{{ $existingCoa->id }}"
                     data-thumb-width="140"
                     class="relative flex aspect-[3/4] w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded border border-amber-500/20 bg-gray-900">
                     <div class="absolute inset-0 animate-pulse bg-gradient-to-br from-gray-800/50 to-gray-900/50"></div>
-                    <svg class="relative w-6 h-6 text-amber-300" fill="none" viewBox="0 0 24 24"
+                    <svg class="relative h-6 w-6 text-amber-300" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m-4-4h8" />
                     </svg>
@@ -171,9 +171,9 @@ $userDerivedLocation = implode(', ', array_filter($parts));
             {{-- Management Actions --}}
             <details class="group">
                 <summary
-                    class="flex items-center justify-between text-xs text-gray-300 transition-colors cursor-pointer hover:text-white">
+                    class="flex cursor-pointer items-center justify-between text-xs text-gray-300 transition-colors hover:text-white">
                     <span>{{ __('egi.coa.manage_coa') }}</span>
-                    <svg class="w-3 h-3 transition-transform transform group-open:rotate-180" fill="none"
+                    <svg class="h-3 w-3 transform transition-transform group-open:rotate-180" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -208,15 +208,15 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     @endif
 
                     {{-- Location Quick Edit --}}
-                    <div class="p-2 mt-2 border rounded border-amber-500/20 bg-amber-900/20">
+                    <div class="mt-2 rounded border border-amber-500/20 bg-amber-900/20 p-2">
                         <label class="mb-1 block text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
                         <div class="flex items-center space-x-2">
                             <input type="text" id="coaLocationInput-{{ $existingCoa->id }}"
                                 value="{{ $suggestedLocation }}"
                                 placeholder="{{ __('egi.coa.location_placeholder') }}"
-                                class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
+                                class="flex-1 rounded border border-gray-700 bg-gray-800 px-2 py-1 text-xs text-white placeholder-gray-400" />
                             <button onclick="saveCoaLocation({{ $existingCoa->id }})"
-                                class="px-2 py-1 text-xs font-medium rounded bg-amber-400 text-amber-900 hover:bg-amber-500">{{ __('egi.coa.save') }}</button>
+                                class="rounded bg-amber-400 px-2 py-1 text-xs font-medium text-amber-900 hover:bg-amber-500">{{ __('egi.coa.save') }}</button>
                         </div>
                         <p class="mt-1 text-[10px] text-gray-400">{{ __('egi.coa.location_hint') }}</p>
                     </div>
@@ -232,12 +232,12 @@ $userDerivedLocation = implode(', ', array_filter($parts));
 
             @if ($canIssueCoa)
                 {{-- Pre-issuance Location (required) --}}
-                <div class="p-2 mb-2 border rounded border-amber-500/20 bg-amber-900/20">
+                <div class="mb-2 rounded border border-amber-500/20 bg-amber-900/20 p-2">
                     <label class="mb-1 block text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
                     <div class="flex items-center space-x-2">
                         <input type="text" id="preCoaLocationInput-{{ $egi->id }}"
                             value="{{ $suggestedLocation }}" placeholder="{{ __('egi.coa.location_placeholder') }}"
-                            class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
+                            class="flex-1 rounded border border-gray-700 bg-gray-800 px-2 py-1 text-xs text-white placeholder-gray-400" />
                     </div>
                     <p class="mt-1 text-[10px] text-gray-400">{{ __('egi.coa.location_hint') }}</p>
                 </div>
@@ -246,22 +246,22 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     <div class="mb-2 text-left">
                         <label class="inline-flex items-center space-x-2 text-xs text-amber-100">
                             <input type="checkbox" id="preCoaInspectorFlag-{{ $egi->id }}"
-                                class="bg-gray-800 border-gray-600 rounded">
+                                class="rounded border-gray-600 bg-gray-800">
                             <span>{{ __('egi.coa.inspector_countersign') }}</span>
                         </label>
                     </div>
                 @endif
 
                 <button onclick="issueCoaCertificate('{{ $egi->id }}')"
-                    class="w-full px-3 py-2 font-bold text-white transition-colors bg-green-500 rounded hover:bg-green-600">
-                    <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="w-full rounded bg-green-500 px-3 py-2 font-bold text-white transition-colors hover:bg-green-600">
+                    <svg class="mr-1 inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                     {{ __('egi.coa.issue_certificate') }}
                 </button>
 
-                <div class="p-2 border rounded border-blue-500/20 bg-blue-900/30">
+                <div class="rounded border border-blue-500/20 bg-blue-900/30 p-2">
                     <p class="mb-1 text-xs font-medium text-blue-300">{{ __('egi.coa.unlock_pro_features') }}:</p>
                     <ul class="space-y-0.5 text-xs text-gray-300">
                         <li>• {{ __('egi.coa.provenance_docs') }}</li>
@@ -279,9 +279,9 @@ $userDerivedLocation = implode(', ', array_filter($parts));
     @endif
 
     {{-- Public Verification Link --}}
-    <div class="pt-2 border-t border-amber-500/20">
+    <div class="border-t border-amber-500/20 pt-2">
         <a href="{{ route('coa.verify.page') }}" target="_blank"
-            class="block text-xs text-center transition-colors text-amber-400 hover:text-amber-300">
+            class="block text-center text-xs text-amber-400 transition-colors hover:text-amber-300">
             {{ __('egi.coa.verify_any_certificate') }} →
         </a>
     </div>
@@ -332,12 +332,20 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     .then(r => r.json())
                     .then(data => {
                         if (data && data.success) {
+                            const url = (data.download_url || (data.data && data.data.download_url));
                             showCoaToast({
                                 message: @json(__('egi.coa.pdf_regenerated')),
+                                actionText: @json(__('egi.coa.download_pdf_now')),
+                                actionUrl: url || (`/coa/${coaId}/pdf/download`),
                                 type: 'success',
-                                timeout: 3000
+                                timeout: 5000
                             });
-                            setTimeout(() => window.location.reload(), 1200);
+                            if (url) {
+                                try {
+                                    window.open(url, '_blank');
+                                } catch (e) {}
+                            }
+                            setTimeout(() => window.location.reload(), 1800);
                         } else {
                             Swal.fire({
                                 icon: 'error',
@@ -706,16 +714,32 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     '<svg class="inline w-3 h-3 mr-1 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>' +
                     I18N.generating;
 
+                // Se abbiamo già un URL diretto, apri subito e ripristina UI
+                if (directUrl) {
+                    try {
+                        window.open(directUrl, '_blank');
+                    } catch (_) {}
+                    el.innerHTML = originalHtml;
+                    return false;
+                }
+
                 fetch(`/coa/${coaId}/pdf/check`, {
                         method: 'GET',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         }
                     })
-                    .then(r => r.json())
+                    .then(async (r) => {
+                        const ct = r.headers.get('content-type') || '';
+                        if (ct.includes('application/json')) {
+                            return r.json();
+                        }
+                        // Se non è JSON, non tentare il parse: mostra errore generico
+                        throw new Error('Unexpected content-type for /pdf/check: ' + ct);
+                    })
                     .then(data => {
                         if (data && data.pdf_exists) {
-                            const url = directUrl || data.download_url;
+                            const url = data.download_url || `/coa/${coaId}/pdf/download`;
                             if (url) window.open(url, '_blank');
                         } else {
                             showCoaToast({
@@ -880,11 +904,20 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     });
                     const data = await res.json();
                     if (data && data.success) {
+                        const url = (data.data && data.data.download_url) || null;
+                        const hash = (data.data && data.data.pdf_sha256) ? (data.data.pdf_sha256.substring(0, 8)) : '';
                         showCoaToast({
-                            message: @json(__('egi.coa.author_countersign_applied')),
+                            message: @json(__('egi.coa.author_countersign_applied')) + (hash ? ` [${hash}]` : ''),
+                            actionText: @json(__('egi.coa.download_pdf_now')),
+                            actionUrl: url || (`/coa/${coaId}/pdf/download`),
                             type: 'success',
-                            timeout: 3500
+                            timeout: 5000
                         });
+                        if (url) {
+                            try {
+                                window.open(url, '_blank');
+                            } catch (e) {}
+                        }
                         setTimeout(() => window.location.reload(), 1200);
                     } else {
                         await Swal.fire({

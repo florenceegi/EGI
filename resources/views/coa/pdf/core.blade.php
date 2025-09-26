@@ -361,6 +361,39 @@
         </div>
     </div>
 
+    {{-- Digital Signatures Section (renders if metadata.signatures exists) --}}
+    @php
+        $signatures = [];
+        if (is_array($coa->metadata ?? null) && isset($coa->metadata['signatures']) && is_array($coa->metadata['signatures'])) {
+            $signatures = $coa->metadata['signatures'];
+        }
+    @endphp
+    @if(!empty($signatures))
+    <div class="verification-section" style="margin-top: 20px;">
+        <div class="section-title">{{ __('egi.coa.digital_signatures') }}</div>
+        <div style="font-size: 12px; text-align:left; display: inline-block;">
+            @foreach($signatures as $sig)
+                @php
+                    $role = $sig['role'] ?? 'author';
+                    $who = $sig['subject'] ?? ($sig['name'] ?? '');
+                    $provider = $sig['provider'] ?? ($sig['provider_name'] ?? '');
+                    $when = $sig['signed_at'] ?? ($sig['date'] ?? '');
+                @endphp
+                <div style="margin-bottom:6px;">
+                    <strong>{{ __('egi.coa.signature_by') }}:</strong> {{ $who ?: __('egi.coa.unknown_signer') }}<br>
+                    <strong>{{ __('egi.coa.signature_role') }}:</strong> {{ $role }}
+                    @if($provider)
+                        &nbsp;—&nbsp;<strong>{{ __('egi.coa.signature_provider') }}:</strong> {{ $provider }}
+                    @endif
+                    @if($when)
+                        &nbsp;—&nbsp;<strong>{{ __('egi.coa.signature_date') }}:</strong> {{ $when }}
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Signature Area -->
     <div class="signature-area">
         <div class="signature-block">

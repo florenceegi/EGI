@@ -19,6 +19,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 
@@ -107,8 +109,8 @@ class CoaController extends Controller
         $this->annexService = $annexService;
         $this->bundleService = $bundleService;
 
-        // Apply auth middleware
-        $this->middleware('auth');
+        // Apply auth middleware to all methods except downloadPdf
+        $this->middleware('auth')->except(['downloadPdf']);
     }
 
     /**
@@ -460,7 +462,7 @@ class CoaController extends Controller
                         'serial' => $coa->serial,
                         'user_id' => $user->id
                     ]);
-                    $bundleService->generateCoaPdf($coa);
+                    $bundleService->generateCoaPdf($coa, true);
                     $pdfGenerated = true;
 
                     // Optional: inspector countersign immediately after PDF generation
@@ -1947,38 +1949,207 @@ class CoaController extends Controller
     {
         try {
             $bundleService = app(BundleService::class);
+            $userId = Auth::id();
 
             // 1) Generate fresh PDF from current snapshot
-            $bundleService->generateCoaPdf($coa);
-
-            // 2) Reapply signatures that exist in metadata (author/inspector)
-            $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
-            if ($latestFile && (bool) config('coa.signature.enabled', false)) {
-                /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
-                $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
-                $meta = (array) ($coa->metadata ?? []);
-                $sigs = (array) ($meta['signatures'] ?? []);
-
-                $hasAuthor = collect($sigs)->firstWhere('role', 'author') !== null;
-                $hasInspector = collect($sigs)->firstWhere('role', 'inspector') !== null && (bool) config('coa.signature.inspector.enabled', false);
-
-                if ($hasAuthor) {
-                    $signatureService->signAuthor($latestFile, ['reason' => 'Author signature (regenerate)']);
-                }
-                if ($hasInspector) {
-                    // Need latest again because signAuthor created a new version
-                    $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
-                    if ($latestFile) {
-                        $signatureService->countersignInspector($latestFile, ['reason' => 'Inspector countersign (regenerate)']);
-                    }
-                }
+            try {
+                $this->logger->info('[CoA Controller] Regenerate PDF start', [
+                    'coa_id' => $coa->id,
+                    'serial' => $coa->serial,
+                    'user_id' => $userId,
+                ]);
+                // Primo render senza firme per evitare duplicazioni, poi applichiamo solo quelle presenti in metadata
+                $bundleService->generateCoaPdf($coa, true, ['skip_signatures' => true]);
+            } catch (\Throwable $e) {
+                $this->errorManager->handle('COA_PDF_REGENERATE_GENERATE_FAIL', [
+                    'coa_id' => $coa->id,
+                    'serial' => $coa->serial,
+                    'user_id' => $userId,
+                    'error' => $e->getMessage(),
+                ], $e);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to regenerate PDF (generation)'
+                ], 500);
             }
 
-            return response()->json([
+            // 2) Reapply signatures that exist in metadata (author/inspector)
+            try {
+                $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+                if (!$latestFile) {
+                    $this->errorManager->handle('COA_PDF_REGENERATE_NO_FILE', [
+                        'coa_id' => $coa->id,
+                        'serial' => $coa->serial,
+                        'user_id' => $userId,
+                    ]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No regenerated PDF found'
+                    ], 404);
+                }
+
+                if ((bool) config('coa.signature.enabled', false)) {
+                    /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
+                    $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
+                    $meta = (array) ($coa->metadata ?? []);
+                    $sigs = (array) ($meta['signatures'] ?? []);
+
+                    $hasAuthor = collect($sigs)->first(function ($s) {
+                        return ($s['role'] ?? null) === 'creator' || ($s['role'] ?? null) === 'author';
+                    }) !== null;
+                    $hasInspector = collect($sigs)->firstWhere('role', 'inspector') !== null && (bool) config('coa.signature.inspector.enabled', false);
+
+                    if ($hasAuthor) {
+                        try {
+                            $resAuthor = $signatureService->signAuthor($latestFile, ['reason' => 'Author signature (regenerate)']);
+                            if (($resAuthor['success'] ?? false)) {
+                                // ensure metadata carries signature info
+                                $meta = (array) ($coa->metadata ?? []);
+                                $sigInfo = $resAuthor['signature_info'] ?? [];
+                                $meta['signatures'] = array_values(collect(array_merge($meta['signatures'] ?? [], [$sigInfo]))
+                                    ->unique(function ($s) {
+                                        return ($s['role'] ?? '') . '|' . ($s['cert_serial'] ?? '');
+                                    })
+                                    ->toArray());
+                                $coa->update(['metadata' => $meta]);
+                            }
+                        } catch (\Throwable $e) {
+                            $this->errorManager->handle('COA_PDF_REGENERATE_SIGN_AUTHOR_FAIL', [
+                                'coa_id' => $coa->id,
+                                'file_id' => $latestFile->id,
+                                'user_id' => $userId,
+                                'error' => $e->getMessage(),
+                            ], $e);
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Failed to reapply author signature'
+                            ], 500);
+                        }
+                    }
+                    if ($hasInspector) {
+                        try {
+                            // refresh latest signed-by-author file (if created)
+                            $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+                            if ($latestFile) {
+                                try {
+                                    $resInsp = $signatureService->countersignInspector($latestFile, ['reason' => 'Inspector countersign (regenerate)']);
+                                } catch (\Throwable $e) {
+                                    $this->errorManager->handle('COA_REGEN_INSP_CALL_FAIL', [
+                                        'coa_id' => $coa->id,
+                                        'file_id' => $latestFile->id,
+                                        'user_id' => $userId,
+                                        'error' => $e->getMessage(),
+                                    ], $e);
+                                    return response()->json([
+                                        'success' => false,
+                                        'message' => 'Failed to invoke inspector countersign (regenerate)'
+                                    ], 500);
+                                }
+                                if (($resInsp['success'] ?? false)) {
+                                    $meta = (array) ($coa->metadata ?? []);
+                                    $sigInfoI = $resInsp['signature_info'] ?? [];
+                                    $meta['signatures'] = array_values(collect(array_merge($meta['signatures'] ?? [], [$sigInfoI]))
+                                        ->unique(function ($s) {
+                                            return ($s['role'] ?? '') . '|' . ($s['cert_serial'] ?? '');
+                                        })
+                                        ->toArray());
+                                    $coa->update(['metadata' => $meta]);
+                                }
+                            }
+                        } catch (\Throwable $e) {
+                            $this->errorManager->handle('COA_PDF_REGENERATE_SIGN_INSPECTOR_FAIL', [
+                                'coa_id' => $coa->id,
+                                'file_id' => $latestFile->id ?? null,
+                                'user_id' => $userId,
+                                'error' => $e->getMessage(),
+                            ], $e);
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Failed to reapply inspector countersign'
+                            ], 500);
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                $this->errorManager->handle('COA_PDF_REGENERATE_REAPPLY_FAIL', [
+                    'coa_id' => $coa->id,
+                    'serial' => $coa->serial,
+                    'user_id' => $userId,
+                    'error' => $e->getMessage(),
+                ], $e);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to reapply signatures'
+                ], 500);
+            }
+
+            // 3) Final render with metadata.updated and re-sign to preserve PAdES on final content (disabled to avoid duplicate files)
+            $enableFinalPass = false; // set true only if needed
+            if ($enableFinalPass) try {
+                // ensure we have the latest metadata from DB before final render
+                $coa->refresh();
+                $bundleService->generateCoaPdf($coa, true);
+                $finalUnsigned = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+                if ($finalUnsigned && (bool) config('coa.signature.enabled', false)) {
+                    /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
+                    $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
+                    $meta = (array) ($coa->metadata ?? []);
+                    $sigs = (array) ($meta['signatures'] ?? []);
+                    $needAuthor = collect($sigs)->first(function ($s) {
+                        return ($s['role'] ?? null) === 'creator' || ($s['role'] ?? null) === 'author';
+                    }) !== null;
+                    $needInspector = collect($sigs)->firstWhere('role', 'inspector') !== null && (bool) config('coa.signature.inspector.enabled', false);
+                    if ($needAuthor) {
+                        $signatureService->signAuthor($finalUnsigned, ['reason' => 'Author signature (final render)']);
+                    }
+                    if ($needInspector) {
+                        $latest = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+                        if ($latest) {
+                            try {
+                                $signatureService->countersignInspector($latest, ['reason' => 'Inspector countersign (final render)']);
+                            } catch (\Throwable $e) {
+                                $this->errorManager->handle('COA_FINAL_INSP_CALL_FAIL', [
+                                    'coa_id' => $coa->id,
+                                    'file_id' => $latest->id,
+                                    'user_id' => Auth::id(),
+                                    'error' => $e->getMessage(),
+                                ], $e);
+                            }
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                $this->errorManager->handle('COA_PDF_REGENERATE_FINALIZE_FAIL', [
+                    'coa_id' => $coa->id,
+                    'user_id' => Auth::id(),
+                    'error' => $e->getMessage(),
+                ], $e);
+            }
+
+            // Final file info
+            $finalFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
+            $payload = [
                 'success' => true,
                 'message' => 'PDF regenerated successfully',
-                'download_url' => route('coa.pdf.download', $coa)
+                'download_url' => route('coa.pdf.download', $coa),
+                'data' => [
+                    'file_id' => $finalFile->id ?? null,
+                    'file_path' => $finalFile->path ?? null,
+                    'pdf_sha256' => $finalFile->sha256 ?? null,
+                ],
+            ];
+
+            // Info log for traceability
+            $this->logger->info('[CoA Controller] Regenerate PDF done', [
+                'coa_id' => $coa->id,
+                'serial' => $coa->serial,
+                'user_id' => Auth::id(),
+                'file_id' => $finalFile->id ?? null,
+                'file_path' => $finalFile->path ?? null,
+                'pdf_sha256' => $finalFile->sha256 ?? null,
             ]);
+
+            return response()->json($payload);
         } catch (\Exception $e) {
             $this->errorManager->handle('COA_PDF_REGENERATE_ERROR', [
                 'coa_id' => $coa->id,
@@ -2003,12 +2174,40 @@ class CoaController extends Controller
         try {
             $bundleService = app(BundleService::class);
 
+            // Entry log for diagnostics
+            $this->logger->info('COA PDF download hit', [
+                'coa_id' => $coa->id,
+                'coa_serial' => $coa->serial,
+                'user_id' => Auth::id(),
+                'is_authenticated' => Auth::check(),
+            ]);
+
             // Check if PDF exists, generate if not
             if (!$bundleService->pdfExists($coa)) {
                 $bundleService->generateCoaPdf($coa);
             }
 
             $pdfPath = $bundleService->getPdfPath($coa);
+            // Normalize to absolute path if needed
+            $abs = Str::startsWith($pdfPath, ['/', 'C:', 'D:']) ? $pdfPath : Storage::path($pdfPath);
+
+            // Diagnostics on resolved paths
+            $this->logger->debug('COA PDF path resolved', [
+                'coa_id' => $coa->id,
+                'path' => $pdfPath,
+                'abs' => $abs,
+                'exists_storage' => Storage::exists($pdfPath),
+                'is_file' => is_file($abs),
+                'is_readable' => is_readable($abs),
+            ]);
+            if (!is_file($abs) || !is_readable($abs)) {
+                $this->errorManager->handle('COA_PDF_DOWNLOAD_NOT_FOUND', [
+                    'coa_id' => $coa->id,
+                    'path' => $pdfPath,
+                    'abs' => $abs,
+                ]);
+                return abort(404);
+            }
             $filename = "CoA-{$coa->serial}.pdf";
 
             // Log PDF download
@@ -2016,10 +2215,15 @@ class CoaController extends Controller
                 'coa_id' => $coa->id,
                 'coa_serial' => $coa->serial,
                 'user_id' => Auth::id(),
+                'is_authenticated' => Auth::check(),
                 'filename' => $filename
             ]);
 
-            return response()->download($pdfPath, $filename);
+            // Force proper content type; let browser handle inline/attachment
+            return response()->file($abs, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);
         } catch (\Exception $e) {
             $this->errorManager->handle('COA_PDF_DOWNLOAD_ERROR', [
                 'coa_id' => $coa->id,
@@ -2027,7 +2231,7 @@ class CoaController extends Controller
                 'error' => $e->getMessage()
             ], $e);
 
-            return redirect()->back()->with('error', 'Failed to download PDF');
+            return abort(500);
         }
     }
 
@@ -2089,11 +2293,31 @@ class CoaController extends Controller
             // Execute countersign
             /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
             $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
-            $result = $signatureService->countersignInspector($latestFile, [
-                'reason' => $request->get('reason', 'Inspector countersign')
-            ]);
+            try {
+                $result = $signatureService->countersignInspector($latestFile, [
+                    'reason' => $request->get('reason', 'Inspector countersign')
+                ]);
+            } catch (\Throwable $e) {
+                $this->errorManager->handle('COA_INSP_SIGN_CALL_FAIL', [
+                    'coa_id' => $coa->id,
+                    'file_id' => $latestFile->id,
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage(),
+                ], $e);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Inspector signature invocation failed'
+                ], 500);
+            }
 
             if (!($result['success'] ?? false)) {
+                $this->errorManager->handle('COA_INSP_SIGN_PROVIDER_FAIL', [
+                    'coa_id' => $coa->id,
+                    'file_id' => $latestFile->id,
+                    'user_id' => $user->id,
+                    'provider_error' => $result['error'] ?? 'unknown',
+                    'provider_result' => $result,
+                ]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Countersignature failed',
@@ -2169,7 +2393,7 @@ class CoaController extends Controller
             }
 
             // Ensure latest PDF exists
-            $bundleService = app(\App\Services\Coa\BundleService::class);
+            $bundleService = app(BundleService::class);
             if (!$bundleService->pdfExists($coa)) {
                 $bundleService->generateCoaPdf($coa);
             }
@@ -2184,11 +2408,31 @@ class CoaController extends Controller
 
             /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
             $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
-            $result = $signatureService->signAuthor($latestFile, [
-                'reason' => 'Author signature'
-            ]);
+            try {
+                $result = $signatureService->signAuthor($latestFile, [
+                    'reason' => 'Author signature'
+                ]);
+            } catch (\Throwable $e) {
+                $this->errorManager->handle('COA_AUTHOR_SIGN_CALL_FAIL', [
+                    'coa_id' => $coa->id,
+                    'file_id' => $latestFile->id,
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage(),
+                ], $e);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Signature invocation failed'
+                ], 500);
+            }
 
             if (!($result['success'] ?? false)) {
+                $this->errorManager->handle('COA_AUTHOR_SIGN_PROVIDER_FAIL', [
+                    'coa_id' => $coa->id,
+                    'file_id' => $latestFile->id,
+                    'user_id' => $user->id,
+                    'provider_error' => $result['error'] ?? 'unknown',
+                    'provider_result' => $result,
+                ]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Signature failed',
@@ -2213,13 +2457,18 @@ class CoaController extends Controller
                 'file_id' => $result['file_id'] ?? null,
             ], GdprActivityCategory::GDPR_ACTIONS);
 
+            $downloadUrl = route('coa.pdf.download', $coa);
+            $pdfSha = $result['file']->sha256 ?? null;
+
             return response()->json([
                 'success' => true,
                 'message' => 'Author signature applied',
                 'data' => [
                     'file_id' => $result['file_id'] ?? null,
                     'file_path' => $result['file_path'] ?? null,
-                    'signature_info' => $result['signature_info'] ?? []
+                    'signature_info' => $result['signature_info'] ?? [],
+                    'pdf_sha256' => $pdfSha,
+                    'download_url' => $downloadUrl,
                 ]
             ], 200);
         } catch (\Throwable $e) {

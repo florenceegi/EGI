@@ -159,6 +159,77 @@ return [
         'confirm_inspector_countersign' => 'Mit der Gegenzeichnung des Inspektors fortfahren?',
         'inspector_countersign_applied' => 'Gegenzeichnung des Inspektors angewendet',
         'operation_failed' => 'Vorgang fehlgeschlagen',
+        'author_countersign' => 'Autor Signatur (QES)',
+        'confirm_author_countersign' => 'Mit der Signatur des Autors fortfahren?',
+        'author_countersign_applied' => 'Signatur des Autors angewendet',
+        'regenerate_pdf' => 'PDF Regenerieren',
+        'pdf_regenerated' => 'PDF regeneriert',
+        'pdf_regenerate_failed' => 'PDF-Regenerierung fehlgeschlagen',
+
+        // Öffentliche Verifizierungsseite
+        'public_verify' => [
+            'signature' => 'Signatur',
+            'author_signed' => 'Autor signiert',
+            'inspector_countersigned' => 'Inspektor gegenzeichnet',
+            'timestamp_tsa' => 'Timestamp TSA',
+            'qes' => 'QES',
+            'wallet_signature' => 'Wallet-Signatur',
+            'verify_signature' => 'Signatur verifizieren',
+            'certificate_hash' => 'Zertifikat-Hash (SHA-256)',
+            'pdf_hash' => 'PDF-Hash (SHA-256)',
+            'copy_hash' => 'Hash kopieren',
+            'copy_pdf_hash' => 'PDF-Hash kopieren',
+            'hash_copied' => 'Hash in die Zwischenablage kopiert!',
+            'pdf_hash_copied' => 'PDF-Hash in die Zwischenablage kopiert!',
+            'qr_code_verify' => 'QR-Code Verifizierung',
+            'qr_code' => 'QR-Code',
+            'scan_to_verify' => 'Zum Verifizieren scannen',
+            'status' => 'Status',
+            'valid' => 'Gültig',
+            'incomplete' => 'Unvollständig',
+            'revoked' => 'Widerrufen',
+
+            // Header und Titel
+            'certificate_title' => 'Echtheitszertifikat',
+            'public_verification_display' => 'Öffentliche Verifizierungsanzeige',
+            'verified_authentic' => 'Zertifikat Verifiziert und Authentisch',
+            'verified_at' => 'Verifiziert am',
+            'serial_number' => 'Seriennummer',
+            'certificate_not_ready' => 'Zertifikat Nicht Bereit',
+            'certificate_revoked' => 'Zertifikat Widerrufen',
+            'certificate_not_valid' => 'Dieses Zertifikat ist nicht mehr gültig',
+            'requires_coa_traits' => 'Erfordert CoA Traits',
+            'certificate_not_ready_generic' => 'Zertifikat Nicht Bereit - Generische Traits',
+
+            // Kunstwerk-Informationen
+            'artwork_title' => 'Titel',
+            'year' => 'Jahr',
+            'dimensions' => 'Abmessungen',
+            'edition' => 'Auflage',
+            'author' => 'Autor',
+            'technique' => 'Technik',
+            'material' => 'Material',
+            'support' => 'Träger',
+            'platform' => 'Plattform',
+            'published_by' => 'Veröffentlicht von',
+            'image' => 'Bild',
+
+            // Zertifikat-Informationen
+            'issue_date' => 'Ausstellungsdatum',
+            'issued_by' => 'Ausgestellt von',
+            'issue_location' => 'Ausstellungsort',
+            'notes' => 'Notizen',
+
+            // Professionelle Anhänge
+            'professional_annexes' => 'Professionelle Anhänge',
+            'provenance' => 'Provenienz',
+            'condition_report' => 'Zustandsbericht',
+            'exhibitions_publications' => 'Ausstellungen/Publikationen',
+            'additional_photos' => 'Zusätzliche Fotos',
+
+            // On-chain Informationen
+            'on_chain_info' => 'On-chain Informationen',
+        ],
     ],
 
 ];

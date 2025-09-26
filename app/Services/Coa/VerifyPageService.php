@@ -23,7 +23,8 @@ use Illuminate\Support\Facades\URL;
  * @date 2025-09-18
  * @purpose Public verification management for certificate transparency
  */
-class VerifyPageService {
+class VerifyPageService
+{
     /**
      * Logger instance for audit trail
      * @var UltraLogManager
@@ -82,7 +83,8 @@ class VerifyPageService {
      * @transparency-level High - public verification data
      * @narrative-coherence Links certificates to public verification system
      */
-    public function generateVerificationData(Coa $coa): array {
+    public function generateVerificationData(Coa $coa): array
+    {
         try {
             $this->logger->info('[Verify Service] Generating verification data', [
                 'coa_id' => $coa->id,
@@ -103,6 +105,8 @@ class VerifyPageService {
                         ? URL::route('coa.verify.view', $coa->verification_hash)
                         : URL::route('coa.verify.certificate.view', $coa->serial)
                 ],
+                'signature_status' => $this->extractSignatureStatus($coa),
+                'pdf_sha256' => $coa->metadata['pdf_sha256'] ?? null,
                 'artwork' => [
                     'name' => $coa->egi->name,
                     'description' => $coa->egi->description,
@@ -166,7 +170,8 @@ class VerifyPageService {
      * @return array Page data
      * @privacy-safe Returns public page data only
      */
-    public function generateVerificationPage(Coa $coa): array {
+    public function generateVerificationPage(Coa $coa): array
+    {
         try {
             $this->logger->info('[Verify Service] Generating verification page', [
                 'coa_id' => $coa->id,
@@ -225,7 +230,8 @@ class VerifyPageService {
      * @return array Verification results
      * @privacy-safe Hash verification without exposing sensitive data
      */
-    public function verifyHash(Coa $coa, string $providedHash, ?string $component = null): array {
+    public function verifyHash(Coa $coa, string $providedHash, ?string $component = null): array
+    {
         try {
             $this->logger->info('[Verify Service] Verifying hash', [
                 'coa_id' => $coa->id,
@@ -311,7 +317,8 @@ class VerifyPageService {
      * @return array Public annexes data
      * @privacy-safe Returns only public portions of annexes
      */
-    public function getPublicAnnexes(Coa $coa): array {
+    public function getPublicAnnexes(Coa $coa): array
+    {
         try {
             $this->logger->info('[Verify Service] Getting public annexes', [
                 'coa_id' => $coa->id,
@@ -372,7 +379,8 @@ class VerifyPageService {
      * @return array QR code data
      * @privacy-safe Generates public QR code
      */
-    public function generateQrCode(Coa $coa): array {
+    public function generateQrCode(Coa $coa): array
+    {
         try {
             $verificationUrl = $coa->verification_hash
                 ? URL::route('coa.verify.view', $coa->verification_hash)
@@ -422,7 +430,8 @@ class VerifyPageService {
      * @return array Batch verification results
      * @privacy-safe Batch verification with public data only
      */
-    public function batchVerify(array $serials): array {
+    public function batchVerify(array $serials): array
+    {
         try {
             $this->logger->info('[Verify Service] Batch verification started', [
                 'serials_count' => count($serials),
@@ -487,7 +496,8 @@ class VerifyPageService {
      * @return bool True if integrity check passes
      * @privacy-safe Internal integrity verification
      */
-    protected function verifyIntegrity(Coa $coa): bool {
+    protected function verifyIntegrity(Coa $coa): bool
+    {
         try {
             $snapshot = $coa->snapshot?->snapshot_json;
             if (!$snapshot) {
@@ -518,7 +528,8 @@ class VerifyPageService {
      * @return array Annexes summary
      * @privacy-safe Returns public summary only
      */
-    protected function getPublicAnnexesSummary(Coa $coa): array {
+    protected function getPublicAnnexesSummary(Coa $coa): array
+    {
         $annexes = $coa->annexes()->where('status', 'active')->get();
 
         $summary = [
@@ -547,7 +558,8 @@ class VerifyPageService {
      * @return array Public events
      * @privacy-safe Returns limited public event information
      */
-    protected function getPublicEvents(Coa $coa): array {
+    protected function getPublicEvents(Coa $coa): array
+    {
         $events = CoaEvent::where('coa_id', $coa->id)
             ->whereIn('type', ['ISSUED', 'ANNEX_ADDED'])
             ->orderBy('created_at', 'desc')
@@ -574,7 +586,8 @@ class VerifyPageService {
      * @return string Public description
      * @privacy-safe Returns safe public descriptions
      */
-    protected function getPublicEventDescription(string $eventType): string {
+    protected function getPublicEventDescription(string $eventType): string
+    {
         return match ($eventType) {
             'certificate_issued' => 'Certificate issued',
             'certificate_verified' => 'Certificate verified',
@@ -590,7 +603,8 @@ class VerifyPageService {
      * @return array Badge data
      * @privacy-safe Generates public verification badge
      */
-    protected function generateVerificationBadge(Coa $coa): array {
+    protected function generateVerificationBadge(Coa $coa): array
+    {
         return [
             'type' => $coa->status === 'valid' ? 'verified' : 'invalid',
             'status' => $coa->status,
@@ -607,7 +621,8 @@ class VerifyPageService {
      * @return array Share links
      * @privacy-safe Generates public share links
      */
-    protected function generateShareLinks(Coa $coa): array {
+    protected function generateShareLinks(Coa $coa): array
+    {
         $verificationUrl = $coa->verification_hash
             ? URL::route('coa.verify.view', $coa->verification_hash)
             : URL::route('coa.verify.certificate.view', $coa->serial);
@@ -630,7 +645,8 @@ class VerifyPageService {
      * @return string SVG content
      * @privacy-safe Generates placeholder SVG
      */
-    protected function generateQrSvg(string $url): string {
+    protected function generateQrSvg(string $url): string
+    {
         // This is a placeholder - in real implementation, use a QR code library
         return '<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
             <rect width="200" height="200" fill="white"/>
@@ -639,5 +655,58 @@ class VerifyPageService {
             <text x="100" y="100" text-anchor="middle" fill="black" font-family="Arial" font-size="12">QR Code</text>
             <text x="100" y="120" text-anchor="middle" fill="black" font-family="Arial" font-size="8">Verification</text>
         </svg>';
+    }
+
+    /**
+     * Extract signature status from CoA metadata
+     *
+     * @param Coa $coa The certificate
+     * @return array Signature status flags
+     * @privacy-safe Returns only public signature status
+     */
+    protected function extractSignatureStatus(Coa $coa): array
+    {
+        try {
+            $meta = is_array($coa->metadata) ? $coa->metadata : [];
+            $signatures = isset($meta['signatures']) && is_array($meta['signatures']) ? $meta['signatures'] : [];
+            $timestamps = isset($meta['timestamps']) && is_array($meta['timestamps']) ? $meta['timestamps'] : [];
+
+            $authorSigned = false;
+            $inspectorSigned = false;
+            $hasTimestamp = false;
+
+            foreach ($signatures as $s) {
+                $role = $s['role'] ?? null;
+                $status = $s['status'] ?? null;
+                if (in_array($role, ['creator', 'author'], true) && $status === 'valid') {
+                    $authorSigned = true;
+                }
+                if ($role === 'inspector' && $status === 'valid') {
+                    $inspectorSigned = true;
+                }
+            }
+            $hasTimestamp = count($timestamps) > 0;
+
+            return [
+                'author_signed' => $authorSigned,
+                'inspector_countersigned' => $inspectorSigned,
+                'timestamped' => $hasTimestamp,
+                'signatures_count' => count($signatures),
+                'timestamps_count' => count($timestamps)
+            ];
+        } catch (\Exception $e) {
+            $this->logger->warning('[Verify Service] Signature status extraction failed', [
+                'coa_id' => $coa->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'author_signed' => false,
+                'inspector_countersigned' => false,
+                'timestamped' => false,
+                'signatures_count' => 0,
+                'timestamps_count' => 0
+            ];
+        }
     }
 }

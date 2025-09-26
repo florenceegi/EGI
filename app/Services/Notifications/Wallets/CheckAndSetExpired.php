@@ -13,19 +13,19 @@ use App\Services\Notifications\ResponseWalletService;
 use App\Services\StatusService;
 use Illuminate\Support\Facades\Schedule;
 use App\Models\CustomDatabaseNotification;
+use App\Models\NotificationPayloadWallet;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
-Class CheckAndSetExpired
-{
+class CheckAndSetExpired {
     public function __construct(
         private readonly RequestWalletService $requestWalletService,
         private readonly NotificationHandlerFactory $notificationFactory,
         private readonly ResponseWalletService $responseWalletService
-    ) {}
+    ) {
+    }
 
-    public function checkAndSetExpired(): void
-    {
+    public function checkAndSetExpired(): void {
         $expirationHours = config('app.notifications.expiration_hours', 72);
         $old_now = Carbon::now()->subHours($expirationHours);
 
@@ -41,8 +41,9 @@ Class CheckAndSetExpired
         ]);
 
         $expiredNotifications = CustomDatabaseNotification::where('created_at', '<', $old_now)
-                        ->whereIn('outcome', $array_statuses)
-                        ->get();
+            ->whereIn('outcome', $array_statuses)
+            ->where('model_type', NotificationPayloadWallet::class)
+            ->get();
 
         Log::channel('florenceegi')->info('Notifiche scadute', [
             'expired_notifications' => $expiredNotifications->count()
@@ -63,4 +64,3 @@ Class CheckAndSetExpired
         // Log::channel('florenceegi')->info("🔔 Notifiche scadute aggiornate: " . $expiredNotifications->count());
     }
 }
-

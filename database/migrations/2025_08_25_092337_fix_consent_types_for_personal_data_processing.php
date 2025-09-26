@@ -16,21 +16,21 @@ return new class extends Migration {
             [
                 'slug' => 'allow-personal-data-processing',
                 'legal_basis' => 'contract',
-                'data_categories' => [
+                'data_categories' => json_encode([
                     'personal_information',
                     'contact_data',
                     'usage_data'
-                ],
-                'processing_purposes' => [
+                ]),
+                'processing_purposes' => json_encode([
                     'platform_operation',
                     'service_delivery',
                     'account_management',
                     'legal_compliance'
-                ],
-                'recipients' => [
+                ]),
+                'recipients' => json_encode([
                     'internal_staff',
                     'service_providers'
-                ],
+                ]),
                 'international_transfers' => false,
                 'is_required' => true,
                 'is_granular' => false,
@@ -58,7 +58,7 @@ return new class extends Migration {
             if (!empty($record->processing_purposes)) {
                 $purposes = json_decode($record->processing_purposes);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    $updates['processing_purposes'] = ['platform_operation'];
+                    $updates['processing_purposes'] = json_encode(['platform_operation']);
                     $needsUpdate = true;
                 }
             }
@@ -67,7 +67,7 @@ return new class extends Migration {
             if (!empty($record->data_categories)) {
                 $categories = json_decode($record->data_categories);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    $updates['data_categories'] = ['personal_information'];
+                    $updates['data_categories'] = json_encode(['personal_information']);
                     $needsUpdate = true;
                 }
             }
@@ -76,7 +76,7 @@ return new class extends Migration {
             if (!empty($record->recipients)) {
                 $recipients = json_decode($record->recipients);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    $updates['recipients'] = ['internal_staff'];
+                    $updates['recipients'] = json_encode(['internal_staff']);
                     $needsUpdate = true;
                 }
             }

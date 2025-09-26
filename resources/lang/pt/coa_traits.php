@@ -29,6 +29,7 @@ return [
     'category_technique' => 'Técnica',
     'category_materials' => 'Materiais',
     'category_support' => 'Suporte',
+    'category_generic' => 'Genérico',
 
     // Seleções por Categoria
     'no_technique_selected' => 'Nenhuma técnica selecionada',

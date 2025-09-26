@@ -35,7 +35,8 @@ use Carbon\Carbon;
  * ULM: Detailed logging for all PDF generation operations
  * GDPR: Full audit trail compliance for certificate generation
  */
-class CoaPdfService {
+class CoaPdfService
+{
     use EgiTraitsExtraction;
     /**
      * PDF Format configurations
@@ -103,7 +104,8 @@ class CoaPdfService {
      * @return array ['path' => string, 'filename' => string, 'size' => int, 'hash' => string]
      * @throws AuthorizationException
      */
-    public function generateCorePdf(Coa $coa, ?User $user = null, array $options = []): array {
+    public function generateCorePdf(Coa $coa, ?User $user = null, array $options = []): array
+    {
         try {
             $user = $user ?? Auth::user();
 
@@ -188,7 +190,8 @@ class CoaPdfService {
 
             // Optional: digital signature pipeline (feature-flagged)
             try {
-                if ((bool) config('coa.signature.enabled', false)) {
+                $skipSignatures = (bool)($options['skip_signatures'] ?? false);
+                if ((bool) config('coa.signature.enabled', false) && !$skipSignatures) {
                     $this->logger->info('[CoA PDF] Signature feature enabled, invoking SignatureService');
                     $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
                     $signRes = $signatureService->signAuthor($coaFile, [
@@ -324,7 +327,8 @@ class CoaPdfService {
      * @return array ['path' => string, 'filename' => string, 'size' => int, 'hash' => string, 'annexes' => array]
      * @throws AuthorizationException
      */
-    public function generateBundlePdf(Coa $coa, ?User $user = null, array $options = []): array {
+    public function generateBundlePdf(Coa $coa, ?User $user = null, array $options = []): array
+    {
         try {
             $user = $user ?? Auth::user();
 
@@ -434,7 +438,8 @@ class CoaPdfService {
      * @param array $options PDF generation options
      * @return array Result with error for now
      */
-    public function generateAddendumPdf($addendum, ?User $user = null, array $options = []): array {
+    public function generateAddendumPdf($addendum, ?User $user = null, array $options = []): array
+    {
         return [
             'success' => false,
             'error' => 'COA_PDF_ADDENDUM_NOT_IMPLEMENTED',
@@ -450,7 +455,8 @@ class CoaPdfService {
      * @param int $expirationMinutes Expiration time for temporary URLs (default: 60)
      * @return string The download URL
      */
-    public function getPdfDownloadUrl(CoaFile $coaFile, bool $temporary = false, int $expirationMinutes = 60): string {
+    public function getPdfDownloadUrl(CoaFile $coaFile, bool $temporary = false, int $expirationMinutes = 60): string
+    {
         try {
             if ($temporary) {
                 // Generate temporary signed URL
@@ -478,7 +484,8 @@ class CoaPdfService {
      * @param CoaFile $coaFile The CoA file to validate
      * @return bool True if file integrity is valid
      */
-    public function validatePdfIntegrity(CoaFile $coaFile): bool {
+    public function validatePdfIntegrity(CoaFile $coaFile): bool
+    {
         try {
             if (!Storage::exists($coaFile->file_path)) {
                 $this->logger->warning('[CoA PDF] File not found for integrity check', [
@@ -522,7 +529,8 @@ class CoaPdfService {
      * @param Coa $coa The certificate to generate QR code for
      * @return string Base64 encoded QR code image
      */
-    private function generateVerificationQr(Coa $coa): string {
+    private function generateVerificationQr(Coa $coa): string
+    {
         try {
             // QR code should point to certificate verification URL (hash preferred)
             $egiUrl = $coa->verification_hash
@@ -582,7 +590,8 @@ class CoaPdfService {
      * @param string $format The PDF format ('core', 'bundle', 'addendum')
      * @return bool
      */
-    private function canGeneratePdf(Coa $coa, User $user, string $format): bool {
+    private function canGeneratePdf(Coa $coa, User $user, string $format): bool
+    {
         // Simply check if user has manage_EGI permission
         return $user->can('manage_EGI');
     }
@@ -598,7 +607,14 @@ class CoaPdfService {
      * @param array $options PDF options
      * @return array Prepared data for PDF template
      */
-    private function prepareCorePdfData(Coa $coa, array $options = []): array {
+    private function prepareCorePdfData(Coa $coa, array $options = []): array
+    {
+        // Ensure we are working with the freshest metadata and relations
+        try {
+            $coa = $coa->fresh(['egi']);
+        } catch (\Throwable $e) {
+            // non-blocking
+        }
         $egi = $coa->egi()->with(['traits', 'user', 'coaTraits', 'collection'])->first();
 
         // Build additional metadata base from EGI
@@ -616,8 +632,12 @@ class CoaPdfService {
             foreach ($signatures as $s) {
                 $role = $s['role'] ?? null;
                 $status = $s['status'] ?? null;
-                if ($role === 'author' && $status === 'valid') $authorSigned = true;
-                if ($role === 'inspector' && $status === 'valid') $inspectorSigned = true;
+                if (in_array($role, ['creator', 'author'], true) && $status === 'valid') {
+                    $authorSigned = true;
+                }
+                if ($role === 'inspector' && $status === 'valid') {
+                    $inspectorSigned = true;
+                }
             }
             $hasTimestamp = count($timestamps) > 0;
         } catch (\Throwable $e) {
@@ -627,6 +647,35 @@ class CoaPdfService {
                 'serial' => $coa->serial,
                 'error' => $e->getMessage()
             ]);
+        }
+
+        // Diagnostics: log computed signature flags and roles seen in metadata
+        try {
+            $rolesSeen = [];
+            foreach (($signatures ?? []) as $s) {
+                $rolesSeen[] = $s['role'] ?? null;
+            }
+            $this->errorManager->handle('COA_PDF_SIGNATURE_FLAGS', [
+                'coa_id' => $coa->id,
+                'serial' => $coa->serial,
+                'signatures_count' => isset($signatures) && is_array($signatures) ? count($signatures) : 0,
+                'roles_seen' => $rolesSeen,
+                'author_signed' => $authorSigned,
+                'inspector_countersigned' => $inspectorSigned,
+                'timestamped' => $hasTimestamp,
+            ]);
+            // Mirror to standard log channel for visibility
+            $this->logger->info('COA_PDF_SIGNATURE_FLAGS', [
+                'coa_id' => $coa->id,
+                'serial' => $coa->serial,
+                'signatures_count' => isset($signatures) && is_array($signatures) ? count($signatures) : 0,
+                'roles_seen' => $rolesSeen,
+                'author_signed' => $authorSigned,
+                'inspector_countersigned' => $inspectorSigned,
+                'timestamped' => $hasTimestamp,
+            ]);
+        } catch (\Throwable $e) {
+            // no-op
         }
 
         // Append signatures status to additional metadata so they are displayed in the table
@@ -677,7 +726,7 @@ class CoaPdfService {
             'inspector_countersigned' => $inspectorSigned,
             'timestamped' => $hasTimestamp,
             'platform_info' => [
-                'name' => 'FlorenceEGI',
+                'name' => config('app.name'),
                 'url' => config('app.url'),
                 'issued_at' => Carbon::now()
             ],
@@ -695,7 +744,8 @@ class CoaPdfService {
      * @param array $traitsSnapshot
      * @return array{is_valid: bool, missing: array}
      */
-    private function computeEffectiveValidity(Coa $coa, $egi, array $traitsSnapshot): array {
+    private function computeEffectiveValidity(Coa $coa, $egi, array $traitsSnapshot): array
+    {
         // 1) Status deve essere valido
         if ($coa->status !== 'valid') {
             try {
@@ -875,7 +925,8 @@ class CoaPdfService {
      * @param array $options PDF options
      * @return array Prepared data for PDF template
      */
-    private function prepareBundlePdfData(Coa $coa, array $annexes = [], array $addendums = [], array $options = []): array {
+    private function prepareBundlePdfData(Coa $coa, array $annexes = [], array $addendums = [], array $options = []): array
+    {
         $coreData = $this->prepareCorePdfData($coa, $options);
 
         return array_merge($coreData, [
@@ -898,7 +949,8 @@ class CoaPdfService {
      * @param array $options PDF options
      * @return array Empty array for now
      */
-    private function prepareAddendumPdfData($addendum, array $options = []): array {
+    private function prepareAddendumPdfData($addendum, array $options = []): array
+    {
         // TODO: Implement when CoaAddendum model is created
         return [];
     }
@@ -909,7 +961,8 @@ class CoaPdfService {
      * @param Coa $coa The certificate
      * @return array Formatted annexes data
      */
-    private function loadCoaAnnexes(Coa $coa): array {
+    private function loadCoaAnnexes(Coa $coa): array
+    {
         return CoaAnnex::where('coa_id', $coa->id)
             ->orderBy('type')
             ->orderBy('created_at')
@@ -923,7 +976,8 @@ class CoaPdfService {
      * @param Coa $coa The certificate
      * @return array Empty array for now
      */
-    private function loadCoaAddendums(Coa $coa): array {
+    private function loadCoaAddendums(Coa $coa): array
+    {
         // TODO: Implement when CoaAddendum model is created
         return [];
     }
@@ -934,7 +988,8 @@ class CoaPdfService {
      * @param array $annexes Raw annexes data
      * @return array Formatted annexes
      */
-    private function formatAnnexesForPdf(array $annexes): array {
+    private function formatAnnexesForPdf(array $annexes): array
+    {
         $formatted = [];
 
         foreach ($annexes as $annex) {
@@ -956,7 +1011,8 @@ class CoaPdfService {
      * @param array $addendums Raw addendums data
      * @return array Formatted addendums
      */
-    private function formatAddendumsForPdf(array $addendums): array {
+    private function formatAddendumsForPdf(array $addendums): array
+    {
         $formatted = [];
 
         foreach ($addendums as $addendum) {
@@ -978,7 +1034,8 @@ class CoaPdfService {
      * @param string $type Annex type
      * @return string Human-readable label
      */
-    private function getAnnexTypeLabel(string $type): string {
+    private function getAnnexTypeLabel(string $type): string
+    {
         $labels = [
             'A_PROVENANCE' => __('egi.coa.provenance_title'),
             'B_CONDITION' => __('egi.coa.condition_title'),
@@ -997,7 +1054,8 @@ class CoaPdfService {
      * @param array $options PDF options
      * @return \Barryvdh\DomPDF\PDF PDF instance
      */
-    private function createPdfFromTemplate(string $format, array $data, array $options = []): \Barryvdh\DomPDF\PDF {
+    private function createPdfFromTemplate(string $format, array $data, array $options = []): \Barryvdh\DomPDF\PDF
+    {
         $formatConfig = self::PDF_FORMATS[$format];
         $pdfOptions = array_merge(self::PDF_OPTIONS, $options);
 
@@ -1031,7 +1089,8 @@ class CoaPdfService {
      * @param array $params Additional parameters (version, etc.)
      * @return string Generated filename
      */
-    private function generateFilename(string $format, Coa $coa, array $params = []): string {
+    private function generateFilename(string $format, Coa $coa, array $params = []): string
+    {
         $template = self::PDF_FORMATS[$format]['filename'];
 
         $replacements = [
@@ -1050,7 +1109,8 @@ class CoaPdfService {
      * @param string $filename Filename to save as
      * @return string Storage path
      */
-    private function savePdfFile(\Barryvdh\DomPDF\PDF $pdf, string $filename): string {
+    private function savePdfFile(\Barryvdh\DomPDF\PDF $pdf, string $filename): string
+    {
         $path = 'coa/pdf/' . date('Y/m') . '/' . $filename;
 
         // Ensure directory exists
@@ -1115,7 +1175,8 @@ class CoaPdfService {
      * @param \App\Models\Egi $egi
      * @return array
      */
-    private function extractAllArtworkMetadata($egi): array {
+    private function extractAllArtworkMetadata($egi): array
+    {
         $traits = [];
         $metadata = [];
 
@@ -1311,7 +1372,8 @@ class CoaPdfService {
      * @param \App\Models\Egi $egi
      * @return array
      */
-    private function extractAdditionalMetadata($egi): array {
+    private function extractAdditionalMetadata($egi): array
+    {
         $metadata = [];
 
         // PLATFORM TRAITS (from egi_traits table) - These are separate from CoA traits

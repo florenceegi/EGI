@@ -90,6 +90,15 @@ Route::group(['prefix' => 'coa/verify', 'as' => 'coa.verify.'], function () {
 });
 
 // ====================================================
+// PUBLIC COA PDF DOWNLOAD (No Auth Required)
+// ====================================================
+
+// Download PDF del certificato tramite ID (pubblico)
+Route::get('/coa/{coa}/pdf/download', [CoaController::class, 'downloadPdf'])
+    ->name('coa.pdf.download')
+    ->where('coa', '[A-Za-z0-9-]+');
+
+// ====================================================
 // AUTHENTICATED COA ROUTES
 // ====================================================
 
@@ -145,18 +154,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{coa}/pdf/generate', [CoaController::class, 'generatePdf'])
             ->name('pdf.generate')
             ->where('coa', '[A-Za-z0-9-]+')
-            ->middleware('throttle:coa_pdf,10,1');
+            ->middleware('throttle:10,1');
 
         // Rigenerazione PDF e riapplicazione firme presenti
         Route::post('/{coa}/pdf/regenerate', [CoaController::class, 'regeneratePdf'])
             ->name('pdf.regenerate')
             ->where('coa', '[A-Za-z0-9-]+')
-            ->middleware('throttle:coa_pdf,10,1');
+            ->middleware('throttle:10,1');
 
-        // Download PDF
-        Route::get('/{coa}/pdf/download', [CoaController::class, 'downloadPdf'])
-            ->name('pdf.download')
-            ->where('coa', '[A-Za-z0-9-]+');
 
         // Co-firma ispettore (feature-flagged)
         Route::post('/{coa}/sign/inspector', [CoaController::class, 'countersignInspector'])

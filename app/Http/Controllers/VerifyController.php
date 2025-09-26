@@ -28,7 +28,8 @@ use Illuminate\Support\Str;
  * @date 2025-09-18
  * @purpose Public certificate verification following FlorenceEGI architecture
  */
-class VerifyController extends Controller {
+class VerifyController extends Controller
+{
     use EgiTraitsExtraction;
     /**
      * Logger instance for audit trail
@@ -101,7 +102,8 @@ class VerifyController extends Controller {
      * @transparency-level High - public verification process
      * @narrative-coherence Links certificates to public verification system
      */
-    public function verify(Request $request, string $serial): JsonResponse {
+    public function verify(Request $request, string $serial): JsonResponse
+    {
         try {
             // Additional rate limiting for verification
             $key = 'verify_' . $request->ip();
@@ -253,7 +255,8 @@ class VerifyController extends Controller {
      * @return JsonResponse
      * @privacy-safe Returns public verification page data
      */
-    public function verificationPage(Request $request, string $serial = null): JsonResponse {
+    public function verificationPage(Request $request, string $serial = null): JsonResponse
+    {
         try {
             // If no serial provided, return general verification page
             if (!$serial) {
@@ -348,7 +351,8 @@ class VerifyController extends Controller {
      * @return JsonResponse
      * @privacy-safe Public hash verification for integrity checking
      */
-    public function verifyHash(Request $request, string $serial): JsonResponse {
+    public function verifyHash(Request $request, string $serial): JsonResponse
+    {
         try {
             // Validate request
             $validator = Validator::make($request->all(), [
@@ -423,7 +427,8 @@ class VerifyController extends Controller {
      * @return JsonResponse
      * @privacy-safe Returns public portions of annexes for verification
      */
-    public function annexes(Request $request, string $serial): JsonResponse {
+    public function annexes(Request $request, string $serial): JsonResponse
+    {
         try {
             // Rate limiting for annex requests
             $key = 'annexes_' . $request->ip();
@@ -493,7 +498,8 @@ class VerifyController extends Controller {
      * @return JsonResponse
      * @privacy-safe Generates public QR code for verification
      */
-    public function qrCode(Request $request, string $serial): JsonResponse {
+    public function qrCode(Request $request, string $serial): JsonResponse
+    {
         try {
             $this->logger->info('[Verify Controller] QR code requested', [
                 'serial' => $serial,
@@ -544,7 +550,8 @@ class VerifyController extends Controller {
      * @return JsonResponse
      * @privacy-safe Batch verification with enhanced rate limiting
      */
-    public function batchVerify(Request $request): JsonResponse {
+    public function batchVerify(Request $request): JsonResponse
+    {
         try {
             // Enhanced rate limiting for batch operations
             $key = 'batch_verify_' . $request->ip();
@@ -621,7 +628,8 @@ class VerifyController extends Controller {
      * @return JsonResponse
      * @privacy-safe Returns public verification statistics
      */
-    public function statistics(Request $request): JsonResponse {
+    public function statistics(Request $request): JsonResponse
+    {
         try {
             // Cache statistics for 1 hour
             $cacheKey = 'verify_stats_public';
@@ -671,7 +679,8 @@ class VerifyController extends Controller {
      * @transparency-level High - public certificate information
      * @narrative-coherence Links verification hash to certificate display
      */
-    public function viewCertificate(Request $request, string $hash) {
+    public function viewCertificate(Request $request, string $hash)
+    {
         try {
             // Rate limiting for certificate viewing
             $key = 'view_cert_' . $request->ip();
@@ -803,7 +812,7 @@ class VerifyController extends Controller {
                 foreach ($signatures as $s) {
                     $role = $s['role'] ?? null;
                     $status = $s['status'] ?? null;
-                    if ($role === 'author' && $status === 'valid') $authorSigned = true;
+                    if ($role === 'creator' && $status === 'valid') $authorSigned = true;
                     if ($role === 'inspector' && $status === 'valid') $inspectorSigned = true;
                 }
                 $hasTimestamp = count($timestamps) > 0;
@@ -865,7 +874,8 @@ class VerifyController extends Controller {
      * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
      * @privacy-safe Returns public certificate view by serial
      */
-    public function viewCertificateBySerial(Request $request, string $serial) {
+    public function viewCertificateBySerial(Request $request, string $serial)
+    {
         try {
             // Rate limiting for certificate viewing
             $key = 'view_cert_serial_' . $request->ip();
@@ -975,7 +985,7 @@ class VerifyController extends Controller {
                 foreach ($signatures as $s) {
                     $role = $s['role'] ?? null;
                     $status = $s['status'] ?? null;
-                    if ($role === 'author' && $status === 'valid') $authorSigned = true;
+                    if ($role === 'creator' && $status === 'valid') $authorSigned = true;
                     if ($role === 'inspector' && $status === 'valid') $inspectorSigned = true;
                 }
                 $hasTimestamp = count($timestamps) > 0;
@@ -1043,7 +1053,8 @@ class VerifyController extends Controller {
     /**
      * Get creator info only when Creator ≠ Author (for role distinction)
      */
-    private function getCreatorInfo($coa) {
+    private function getCreatorInfo($coa)
+    {
         $author = $this->extractAuthorFromTraits($coa->egi);
         $creator = $coa->egi->user->name ?? null;
 
@@ -1065,7 +1076,8 @@ class VerifyController extends Controller {
     /**
      * Determine relationship between creator and author using traits
      */
-    private function getCreatorRelationship($coa) {
+    private function getCreatorRelationship($coa)
+    {
         // First check for relationship information in traits
         $relationshipFromTraits = $this->extractRelationshipFromTraits($coa->egi);
 
@@ -1106,7 +1118,8 @@ class VerifyController extends Controller {
     /**
      * Get verification method for creator authorization
      */
-    private function getVerificationMethod($coa) {
+    private function getVerificationMethod($coa)
+    {
         // Check for verification method in traits
         $verificationFromTraits = $this->extractTraitValue($coa->egi, [
             'Verifica',
@@ -1132,7 +1145,8 @@ class VerifyController extends Controller {
 
         return 'Non specificato';
     }
-    private function extractTraitValue($egi, array $needles): ?string {
+    private function extractTraitValue($egi, array $needles): ?string
+    {
         foreach ($needles as $needle) {
             $trait = $egi->traits->first(function ($trait) use ($needle) {
                 return stripos($trait->traitType->name ?? '', $needle) !== false ||
@@ -1154,7 +1168,8 @@ class VerifyController extends Controller {
      * @param string $type
      * @return array|null
      */
-    private function getAnnexData($coa, string $type): ?array {
+    private function getAnnexData($coa, string $type): ?array
+    {
         $annex = $coa->annexes()->where('type', $type)->first();
 
         if (!$annex) {
@@ -1179,7 +1194,8 @@ class VerifyController extends Controller {
      * @param \App\Models\Egi $egi
      * @return string
      */
-    private function extractAuthorFromTraits($egi): string {
+    private function extractAuthorFromTraits($egi): string
+    {
         $coaTraits = $egi->coaTraits;
 
         if ($coaTraits) {
@@ -1209,7 +1225,8 @@ class VerifyController extends Controller {
      * @param \App\Models\Egi $egi
      * @return string|null
      */
-    private function extractYearFromTraits($egi): ?string {
+    private function extractYearFromTraits($egi): ?string
+    {
         // Try CoA traits first (check if any custom text contains year)
         $coaTraits = $egi->coaTraits;
         if ($coaTraits) {
@@ -1233,7 +1250,8 @@ class VerifyController extends Controller {
      * @param \App\Models\Egi $egi
      * @return string|null
      */
-    private function extractTechniqueFromTraits($egi): ?string {
+    private function extractTechniqueFromTraits($egi): ?string
+    {
         $coaTraits = $egi->coaTraits;
 
         if ($coaTraits && (!empty($coaTraits->technique_slugs) || !empty($coaTraits->technique_free_text))) {
@@ -1271,7 +1289,8 @@ class VerifyController extends Controller {
      * @param \App\Models\Egi $egi
      * @return string|null
      */
-    private function extractMaterialsFromTraits($egi): ?string {
+    private function extractMaterialsFromTraits($egi): ?string
+    {
         $coaTraits = $egi->coaTraits;
 
         if ($coaTraits && (!empty($coaTraits->materials_slugs) || !empty($coaTraits->materials_free_text))) {
@@ -1309,7 +1328,8 @@ class VerifyController extends Controller {
      * @param \App\Models\Egi $egi
      * @return string|null
      */
-    private function extractSupportFromTraits($egi): ?string {
+    private function extractSupportFromTraits($egi): ?string
+    {
         $coaTraits = $egi->coaTraits;
 
         if ($coaTraits && (!empty($coaTraits->support_slugs) || !empty($coaTraits->support_free_text))) {
@@ -1343,7 +1363,8 @@ class VerifyController extends Controller {
      * @param \App\Models\Egi $egi
      * @return string|null
      */
-    private function extractDimensionsFromTraits($egi): ?string {
+    private function extractDimensionsFromTraits($egi): ?string
+    {
         // Check if dimensions info is in CoA custom text
         $coaTraits = $egi->coaTraits;
         if ($coaTraits) {
@@ -1367,7 +1388,8 @@ class VerifyController extends Controller {
      * @param \App\Models\Egi $egi
      * @return string|null
      */
-    private function extractEditionFromTraits($egi): ?string {
+    private function extractEditionFromTraits($egi): ?string
+    {
         // Check if edition info is in CoA custom text
         $coaTraits = $egi->coaTraits;
         if ($coaTraits) {
@@ -1386,7 +1408,8 @@ class VerifyController extends Controller {
      * @param \App\Models\Egi $egi
      * @return array
      */
-    private function extractAllArtworkMetadata($egi): array {
+    private function extractAllArtworkMetadata($egi): array
+    {
         $traits = [];
         $metadata = [];
         $coaTraits = $egi->coaTraits;
@@ -1505,7 +1528,8 @@ class VerifyController extends Controller {
      * @param \App\Models\Egi $egi
      * @return array
      */
-    private function extractAdditionalMetadata($egi): array {
+    private function extractAdditionalMetadata($egi): array
+    {
         $metadata = [];
 
         // PLATFORM TRAITS (from egi_traits table) - These are separate from CoA traits
@@ -1632,7 +1656,8 @@ class VerifyController extends Controller {
     /**
      * Find author in CoA custom traits text
      */
-    private function findAuthorInCustomTraits($coaTraits): ?string {
+    private function findAuthorInCustomTraits($coaTraits): ?string
+    {
         $customTexts = [
             $coaTraits->technique_other,
             $coaTraits->materials_other,
@@ -1662,7 +1687,8 @@ class VerifyController extends Controller {
     /**
      * Find year in CoA traits
      */
-    private function findYearInCoaTraits($coaTraits): ?string {
+    private function findYearInCoaTraits($coaTraits): ?string
+    {
         $customTexts = [
             $coaTraits->technique_other,
             $coaTraits->materials_other,
@@ -1686,7 +1712,8 @@ class VerifyController extends Controller {
     /**
      * Find dimensions in CoA traits
      */
-    private function findDimensionsInCoaTraits($coaTraits): ?string {
+    private function findDimensionsInCoaTraits($coaTraits): ?string
+    {
         $customTexts = [
             $coaTraits->technique_other,
             $coaTraits->materials_other,
@@ -1715,7 +1742,8 @@ class VerifyController extends Controller {
     /**
      * Find edition in CoA traits
      */
-    private function findEditionInCoaTraits($coaTraits): ?string {
+    private function findEditionInCoaTraits($coaTraits): ?string
+    {
         $customTexts = [
             $coaTraits->technique_other,
             $coaTraits->materials_other,
@@ -1766,7 +1794,8 @@ class VerifyController extends Controller {
      * @transparency-level High - public certificate PDF access
      * @narrative-coherence Links to PDF generation system
      */
-    public function downloadCertificatePdf(Request $request, string $serial) {
+    public function downloadCertificatePdf(Request $request, string $serial)
+    {
         try {
             // Rate limiting for PDF downloads
             $key = 'pdf_download_' . $request->ip();

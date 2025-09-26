@@ -2,6 +2,7 @@
 
 return [
 
+    'app_name' => env('APP_NAME', 'FlorenceEGI'),
     /*
     |--------------------------------------------------------------------------
     | Hosting Services Configuration
@@ -285,6 +286,9 @@ return [
     |
      */
     'errors_email' => env('MAIL_ERRORS'),
+
+    // CoA/Legal defaults
+    'legal_default_user_email' => env('LEGAL_DEFAULT_EMAIL', 'legal@example.com'),
 
     /*
     |--------------------------------------------------------------------------
