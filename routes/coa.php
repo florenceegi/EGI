@@ -98,6 +98,20 @@ Route::get('/coa/{coa}/pdf/download', [CoaController::class, 'downloadPdf'])
     ->name('coa.pdf.download')
     ->where('coa', '[A-Za-z0-9-]+');
 
+// Chain of custody endpoints (pubblici per verifica)
+Route::get('/coa/{coa}/chain-of-custody', [CoaController::class, 'getChainOfCustody'])
+    ->name('coa.chain-of-custody')
+    ->where('coa', '[A-Za-z0-9-]+');
+Route::get('/coa/{coa}/signature-timeline', [CoaController::class, 'getSignatureTimeline'])
+    ->name('coa.signature-timeline')
+    ->where('coa', '[A-Za-z0-9-]+');
+Route::get('/coa/{coa}/pdf-operations', [CoaController::class, 'getPdfOperations'])
+    ->name('coa.pdf-operations')
+    ->where('coa', '[A-Za-z0-9-]+');
+Route::get('/coa/{coa}/validate-chain', [CoaController::class, 'validateChainIntegrity'])
+    ->name('coa.validate-chain')
+    ->where('coa', '[A-Za-z0-9-]+');
+
 // ====================================================
 // AUTHENTICATED COA ROUTES
 // ====================================================

@@ -10,6 +10,7 @@ use App\Services\Coa\CoaIssueService;
 use App\Services\Coa\CoaRevocationService;
 use App\Services\Coa\AnnexService;
 use App\Services\Coa\BundleService;
+use App\Services\Coa\ChainOfCustodyService;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
@@ -2186,6 +2187,24 @@ class CoaController extends Controller
                         'timestamp' => now()->toISOString(),
                     ],
                 ], GdprActivityCategory::GDPR_ACTIONS);
+
+                // Chain of custody tracking
+                $chainOfCustodyService = app(ChainOfCustodyService::class);
+                $chainOfCustodyService->logPdfRegeneration(
+                    $coa,
+                    [
+                        'file_id' => $finalFile->id ?? null,
+                        'file_path' => $finalFile->path ?? null,
+                        'file_size' => $finalFile->size ?? null,
+                        'file_hash' => $finalFile->sha256 ?? null,
+                    ],
+                    [
+                        'author_signature_reapplied' => $hasAuthor ?? false,
+                        'inspector_signature_reapplied' => $hasInspector ?? false,
+                        'total_signatures' => count($coa->metadata['signatures'] ?? []),
+                    ],
+                    $user
+                );
             }
 
             return response()->json($payload);
@@ -2291,6 +2310,20 @@ class CoaController extends Controller
                         'timestamp' => now()->toISOString(),
                     ],
                 ], GdprActivityCategory::DATA_ACCESS);
+
+                // Chain of custody tracking
+                $chainOfCustodyService = app(ChainOfCustodyService::class);
+                $chainOfCustodyService->logPdfDownload(
+                    $coa,
+                    [
+                        'filename' => $filename,
+                        'file_path' => $pdfPath,
+                        'file_size' => is_file($abs) ? filesize($abs) : null,
+                        'ip_address' => request()->ip(),
+                        'user_agent' => request()->userAgent(),
+                    ],
+                    $user
+                );
             }
 
             // Force proper content type; let browser handle inline/attachment
@@ -2439,6 +2472,15 @@ class CoaController extends Controller
                 ],
             ], GdprActivityCategory::GDPR_ACTIONS);
 
+            // Chain of custody tracking
+            $chainOfCustodyService = app(ChainOfCustodyService::class);
+            $chainOfCustodyService->logInspectorSignature(
+                $coa,
+                $result['signature_info'] ?? [],
+                $user,
+                $request->get('reason', 'Inspector countersign')
+            );
+
             return response()->json([
                 'success' => true,
                 'message' => 'Inspector countersignature applied',
@@ -2572,6 +2614,15 @@ class CoaController extends Controller
                 ],
             ], GdprActivityCategory::GDPR_ACTIONS);
 
+            // Chain of custody tracking
+            $chainOfCustodyService = app(ChainOfCustodyService::class);
+            $chainOfCustodyService->logAuthorSignature(
+                $coa,
+                $result['signature_info'] ?? [],
+                $user,
+                'Author signature applied'
+            );
+
             $downloadUrl = route('coa.pdf.download', $coa);
             $pdfSha = $result['file']->sha256 ?? null;
 
@@ -2632,6 +2683,110 @@ class CoaController extends Controller
             ], $e);
 
             return redirect()->back()->with('error', 'Failed to load certificate view');
+        }
+    }
+
+    /**
+     * Get complete chain of custody for a CoA
+     */
+    public function getChainOfCustody(Coa $coa): JsonResponse
+    {
+        try {
+            $chainOfCustodyService = app(ChainOfCustodyService::class);
+            $chain = $chainOfCustodyService->getChainOfCustody($coa);
+
+            return response()->json([
+                'success' => true,
+                'data' => $chain
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_CHAIN_OF_CUSTODY_ERROR', [
+                'coa_id' => $coa->id,
+                'error' => $e->getMessage()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve chain of custody'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get signature timeline for a CoA
+     */
+    public function getSignatureTimeline(Coa $coa): JsonResponse
+    {
+        try {
+            $chainOfCustodyService = app(ChainOfCustodyService::class);
+            $timeline = $chainOfCustodyService->getSignatureTimeline($coa);
+
+            return response()->json([
+                'success' => true,
+                'data' => $timeline
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_SIGNATURE_TIMELINE_ERROR', [
+                'coa_id' => $coa->id,
+                'error' => $e->getMessage()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve signature timeline'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get PDF operations timeline for a CoA
+     */
+    public function getPdfOperations(Coa $coa): JsonResponse
+    {
+        try {
+            $chainOfCustodyService = app(ChainOfCustodyService::class);
+            $operations = $chainOfCustodyService->getPdfOperationsTimeline($coa);
+
+            return response()->json([
+                'success' => true,
+                'data' => $operations
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_PDF_OPERATIONS_ERROR', [
+                'coa_id' => $coa->id,
+                'error' => $e->getMessage()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve PDF operations'
+            ], 500);
+        }
+    }
+
+    /**
+     * Validate chain of custody integrity
+     */
+    public function validateChainIntegrity(Coa $coa): JsonResponse
+    {
+        try {
+            $chainOfCustodyService = app(ChainOfCustodyService::class);
+            $validation = $chainOfCustodyService->validateChainIntegrity($coa);
+
+            return response()->json([
+                'success' => true,
+                'data' => $validation
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('COA_CHAIN_VALIDATION_ERROR', [
+                'coa_id' => $coa->id,
+                'error' => $e->getMessage()
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to validate chain integrity'
+            ], 500);
         }
     }
 }
