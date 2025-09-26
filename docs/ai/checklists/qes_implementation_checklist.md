@@ -586,8 +586,23 @@ Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/i
 
 -   **UX**
 
-    -   [ ] Step indicator: “in attesa approvazione sul telefono…”
-    -   [ ] Esito: “Firma applicata. PDF v2 pronto.”
+    -   [ ] Step indicator: "in attesa approvazione sul telefono…"
+    -   [ ] Esito: "Firma applicata. PDF v2 pronto."
+
+-   **Gestione Firma - Eliminazione**
+
+    -   [ ] Backend: Endpoint `DELETE /coa/{coa}/sign/{role}` per rimuovere firma specifica
+    -   [ ] Backend: Validazione permessi (solo owner/admin possono eliminare firme)
+    -   [ ] Backend: Rimozione metadata firma da `coa.metadata.signatures`
+    -   [ ] Backend: Rigenerazione PDF senza la firma eliminata
+    -   [ ] Backend: Log audit trail per eliminazione firma
+    -   [ ] Backend: Chain of custody event `SIGNATURE_REMOVED`
+    -   [ ] Frontend: Bottone "Rimuovi Firma" con conferma Swal
+    -   [ ] Frontend: Toast feedback per eliminazione riuscita
+    -   [ ] Frontend: Aggiornamento badge firme in tempo reale
+    -   [ ] Frontend: Condizioni visibilità (solo per owner/admin, non per inspector)
+    -   [ ] UX: Conferma con dettagli firma (ruolo, timestamp, certificato)
+    -   [ ] UX: Warning su conseguenze (PDF rigenerato, validità modificata)
 
 -   **Test Accettazione**
     -   [ ] Acrobat/Preview → firma valida e nome corretto

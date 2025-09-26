@@ -172,7 +172,7 @@ $userDerivedLocation = implode(', ', array_filter($parts));
             $hasActiveCoa &&
                 config('coa.signature.inspector.enabled') &&
                 auth()->check() &&
-                auth()->user()->hasRole('inspector') && 
+                auth()->user()->hasRole('inspector') &&
                 auth()->user()->can('sign_coa'))
             <button onclick="countersignInspector('{{ $existingCoa->id }}')"
                 class="w-full rounded bg-indigo-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700">
