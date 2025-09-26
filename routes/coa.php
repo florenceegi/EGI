@@ -141,13 +141,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{coa}/reissue', [CoaController::class, 'reissue'])
             ->name('reissue')
             ->where('coa', '[A-Za-z0-9-]+')
-            ->middleware(['throttle:coa_reissue,5,1', 'role:admin|expert']);
+            ->middleware(['throttle:coa_reissue,5,1', 'role:admin']);
 
         // Revoca certificato
         Route::post('/{coa}/revoke', [CoaController::class, 'revoke'])
             ->name('revoke')
             ->where('coa', '[A-Za-z0-9-]+')
-            ->middleware(['throttle:coa_revoke,5,1', 'role:admin|expert']);
+            ->middleware(['throttle:coa_revoke,5,1', 'role:admin']);
 
         // Creazione bundle con annessi
         Route::post('/{coa}/bundle', [CoaController::class, 'createBundle'])
@@ -181,7 +181,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{coa}/sign/inspector', [CoaController::class, 'countersignInspector'])
             ->name('sign.inspector')
             ->where('coa', '[A-Za-z0-9-]+')
-            ->middleware(['throttle:5,1', 'role:admin|expert']);
+            ->middleware(['throttle:5,1', 'role:admin|creator|inspector']);
 
         // Firma autore (feature-flagged)
         Route::post('/{coa}/sign/author', [CoaController::class, 'signAuthor'])
@@ -225,13 +225,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [AnnexController::class, 'store'])
             ->name('store')
             ->where('coa', '[A-Za-z0-9-]+')
-            ->middleware(['throttle:annex_create,15,1', 'role:admin|expert']);
+            ->middleware(['throttle:annex_create,15,1', 'role:admin']);
 
         // Aggiornamento annesso esistente
         Route::put('/{annex}', [AnnexController::class, 'update'])
             ->name('update')
             ->where(['coa' => '[A-Za-z0-9-]+', 'annex' => '[0-9]+'])
-            ->middleware(['throttle:annex_update,20,1', 'role:admin|expert']);
+            ->middleware(['throttle:annex_update,20,1', 'role:admin']);
 
         // Cronologia modifiche annesso
         Route::get('/{annex}/history', [AnnexController::class, 'history'])
@@ -269,25 +269,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [CoaAddendumController::class, 'store'])
             ->name('store')
             ->where('coa', '[0-9]+')
-            ->middleware(['throttle:addendum_create,5,1', 'role:admin|expert']);
+            ->middleware(['throttle:addendum_create,5,1', 'role:admin']);
 
         // Aggiornamento addendum (solo bozze)
         Route::put('/{addendum}', [CoaAddendumController::class, 'update'])
             ->name('update')
             ->where(['coa' => '[0-9]+', 'addendum' => '[0-9]+'])
-            ->middleware(['throttle:addendum_update,10,1', 'role:admin|expert']);
+            ->middleware(['throttle:addendum_update,10,1', 'role:admin']);
 
         // Creazione revisione addendum
         Route::post('/{addendum}/revise', [CoaAddendumController::class, 'revise'])
             ->name('revise')
             ->where(['coa' => '[0-9]+', 'addendum' => '[0-9]+'])
-            ->middleware(['throttle:addendum_create,5,1', 'role:admin|expert']);
+            ->middleware(['throttle:addendum_create,5,1', 'role:admin']);
 
         // Pubblicazione addendum
         Route::post('/{addendum}/publish', [CoaAddendumController::class, 'publish'])
             ->name('publish')
             ->where(['coa' => '[0-9]+', 'addendum' => '[0-9]+'])
-            ->middleware(['throttle:addendum_create,5,1', 'role:admin|expert']);
+            ->middleware(['throttle:addendum_create,5,1', 'role:admin']);
 
         // Cronologia versioni addendum
         Route::get('/{addendum}/history', [CoaAddendumController::class, 'history'])
@@ -310,7 +310,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Lista globale addendum con filtri avanzati
         Route::get('/', [CoaAddendumController::class, 'index'])
             ->name('index')
-            ->middleware('role:admin|expert');
+            ->middleware('role:admin');
 
         // Policy di rarità attive
         Route::get('/rarity-policies', [CoaAddendumController::class, 'rarityPolicies'])

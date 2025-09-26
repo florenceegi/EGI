@@ -1953,9 +1953,8 @@ class CoaController extends Controller
             $bundleService = app(BundleService::class);
             $userId = $user->id;
 
-            // Permission check: only owner, admin, expert, or inspector with sign_coa permission can regenerate
+            // Permission check: only owner, admin, or inspector with sign_coa permission can regenerate
             $hasAccess = $user->hasRole('admin') ||
-                $user->hasRole('expert') ||
                 $coa->egi->user_id === $user->id ||
                 ($user->hasRole('inspector') && $user->can('sign_coa'));
 
@@ -2244,7 +2243,6 @@ class CoaController extends Controller
             if (Auth::check()) {
                 $user = Auth::user();
                 $hasAccess = $user->hasRole('admin') ||
-                    $user->hasRole('expert') ||
                     $coa->egi->user_id === $user->id ||
                     ($user->hasRole('inspector') && $user->can('sign_coa'));
 
@@ -2354,9 +2352,8 @@ class CoaController extends Controller
         try {
             $user = Auth::user();
 
-            // Ownership or role check (owner, admin, expert, or inspector with sign_coa permission)
+            // Ownership or role check (owner, admin, or inspector with sign_coa permission)
             $hasAccess = $user->hasRole('admin') ||
-                $user->hasRole('expert') ||
                 $coa->egi->user_id === $user->id ||
                 ($user->hasRole('inspector') && $user->can('sign_coa'));
 

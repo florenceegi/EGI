@@ -34,5 +34,4 @@ class Kernel extends HttpKernel
         //     RoleOrPermissionMiddleware::class, // Assicurati che questo sia presente
         // ],
     ];
-
 }
