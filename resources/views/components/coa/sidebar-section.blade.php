@@ -167,6 +167,14 @@ $userDerivedLocation = implode(', ', array_filter($parts));
             </div>
         </details>
 
+        {{-- Inspector Signature Button (visible to inspectors) --}}
+        @if ($hasActiveCoa && config('coa.signature.inspector.enabled') && (auth()->user()->hasRole('inspector') && auth()->user()->can('sign_coa')))
+            <button onclick="countersignInspector('{{ $existingCoa->id }}')"
+                class="w-full rounded bg-indigo-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700">
+                {{ __('egi.coa.inspector_countersign') }}
+            </button>
+        @endif
+
         @if ($canManageCoa)
             {{-- Management Actions --}}
             <details class="group">
@@ -200,12 +208,6 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                         </button>
                     @endif
 
-                    @if (config('coa.signature.inspector.enabled'))
-                        <button onclick="countersignInspector('{{ $existingCoa->id }}')"
-                            class="w-full rounded bg-indigo-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700">
-                            {{ __('egi.coa.inspector_countersign') }}
-                        </button>
-                    @endif
 
                     {{-- Location Quick Edit --}}
                     <div class="mt-2 rounded border border-amber-500/20 bg-amber-900/20 p-2">
