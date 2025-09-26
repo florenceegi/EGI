@@ -15,7 +15,7 @@ return new class extends Migration
             // Update the type enum to include new chain of custody event types
             $table->enum('type', [
                 'ISSUED',
-                'REVOKED', 
+                'REVOKED',
                 'ANNEX_ADDED',
                 'ADDENDUM_ISSUED',
                 'AUTHOR_SIGNED',

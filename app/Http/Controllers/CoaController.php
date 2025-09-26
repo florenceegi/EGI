@@ -463,7 +463,7 @@ class CoaController extends Controller
                         'serial' => $coa->serial,
                         'user_id' => $user->id
                     ]);
-                    $bundleService->generateCoaPdf($coa, true);
+                    $bundleService->generateCoaPdf($coa, true, ['auto_sign' => false]);
                     $pdfGenerated = true;
 
                     // Optional: inspector countersign immediately after PDF generation
@@ -1974,7 +1974,7 @@ class CoaController extends Controller
                     'user_id' => $userId,
                 ]);
                 // Primo render senza firme per evitare duplicazioni, poi applichiamo solo quelle presenti in metadata
-                $bundleService->generateCoaPdf($coa, true, ['skip_signatures' => true]);
+                $bundleService->generateCoaPdf($coa, true, ['skip_signatures' => true, 'auto_sign' => false]);
             } catch (\Throwable $e) {
                 $this->errorManager->handle('COA_PDF_REGENERATE_GENERATE_FAIL', [
                     'coa_id' => $coa->id,
@@ -2103,7 +2103,7 @@ class CoaController extends Controller
             if ($enableFinalPass) try {
                 // ensure we have the latest metadata from DB before final render
                 $coa->refresh();
-                $bundleService->generateCoaPdf($coa, true);
+                $bundleService->generateCoaPdf($coa, true, ['auto_sign' => false]);
                 $finalUnsigned = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();
                 if ($finalUnsigned && (bool) config('coa.signature.enabled', false)) {
                     /** @var \App\Services\Coa\Signature\SignatureService $signatureService */
@@ -2258,7 +2258,7 @@ class CoaController extends Controller
 
             // Check if PDF exists, generate if not
             if (!$bundleService->pdfExists($coa)) {
-                $bundleService->generateCoaPdf($coa);
+                $bundleService->generateCoaPdf($coa, false, ['auto_sign' => false]);
             }
 
             $pdfPath = $bundleService->getPdfPath($coa);
@@ -2390,7 +2390,7 @@ class CoaController extends Controller
             // Ensure latest PDF exists
             $bundleService = app(BundleService::class);
             if (!$bundleService->pdfExists($coa)) {
-                $bundleService->generateCoaPdf($coa);
+                $bundleService->generateCoaPdf($coa, false, ['auto_sign' => false]);
             }
 
             // Retrieve latest CoA PDF file record
@@ -2534,7 +2534,7 @@ class CoaController extends Controller
             // Ensure latest PDF exists
             $bundleService = app(BundleService::class);
             if (!$bundleService->pdfExists($coa)) {
-                $bundleService->generateCoaPdf($coa);
+                $bundleService->generateCoaPdf($coa, false, ['auto_sign' => false]);
             }
 
             $latestFile = $coa->files()->where('kind', 'like', 'pdf%')->orderByDesc('id')->first();

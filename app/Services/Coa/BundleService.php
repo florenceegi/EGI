@@ -979,9 +979,11 @@ class BundleService
             /** @var CoaPdfService $pdfService */
             $pdfService = app(CoaPdfService::class);
             // Use system-level generation (no user permission gate) for reliability
+            // Do NOT auto-sign during PDF generation - signatures should be explicit user actions
             $result = $pdfService->generateCorePdf($coa, null, array_merge([
                 'format' => 'A4',
-                'orientation' => 'portrait'
+                'orientation' => 'portrait',
+                'auto_sign' => false  // Explicitly disable auto-signing
             ], $options));
 
             $absolutePath = isset($result['path']) ? Storage::path($result['path']) : null;

@@ -189,9 +189,12 @@ class CoaPdfService
             ]);
 
             // Optional: digital signature pipeline (feature-flagged)
+            // NOTE: Signatures should NOT be applied automatically during PDF generation
+            // They should only be applied when explicitly requested by the user
             try {
                 $skipSignatures = (bool)($options['skip_signatures'] ?? false);
-                if ((bool) config('coa.signature.enabled', false) && !$skipSignatures) {
+                $autoSign = (bool)($options['auto_sign'] ?? false);
+                if ((bool) config('coa.signature.enabled', false) && !$skipSignatures && $autoSign) {
                     $this->logger->info('[CoA PDF] Signature feature enabled, invoking SignatureService');
                     $signatureService = app(\App\Services\Coa\Signature\SignatureService::class);
                     $signRes = $signatureService->signAuthor($coaFile, [
