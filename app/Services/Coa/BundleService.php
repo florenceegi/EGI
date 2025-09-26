@@ -1012,7 +1012,7 @@ class BundleService
         }
     }
 
-    private function getLatestPdfFile(Coa $coa): ?\App\Models\CoaFile
+    public function getLatestPdfFile(Coa $coa): ?\App\Models\CoaFile
     {
         return $coa->files()
             ->where('kind', 'like', 'pdf%')

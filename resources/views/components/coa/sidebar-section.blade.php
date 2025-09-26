@@ -180,6 +180,29 @@ $userDerivedLocation = implode(', ', array_filter($parts));
             </button>
         @endif
 
+        {{-- Signature Removal Buttons (visible to owner/admin) --}}
+        @if ($hasActiveCoa && auth()->check() && ($isCreator || auth()->user()->hasRole('admin')))
+            @php
+                $signatures = (array) data_get($existingCoa, 'metadata.signatures', []);
+                $hasCreatorSig = collect($signatures)->firstWhere('role', 'creator');
+                $hasInspectorSig = collect($signatures)->firstWhere('role', 'inspector');
+            @endphp
+
+            @if ($hasCreatorSig)
+                <button onclick="removeSignature('{{ $existingCoa->id }}', 'creator')"
+                    class="w-full rounded bg-red-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-red-700">
+                    {{ __('egi.coa.remove_signature') }} (Creator)
+                </button>
+            @endif
+
+            @if ($hasInspectorSig)
+                <button onclick="removeSignature('{{ $existingCoa->id }}', 'inspector')"
+                    class="w-full rounded bg-red-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-red-700">
+                    {{ __('egi.coa.remove_signature') }} (Inspector)
+                </button>
+            @endif
+        @endif
+
         @if ($canManageCoa)
             {{-- Management Actions --}}
             <details class="group">
@@ -407,7 +430,12 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                 inspector_countersign: @json(__('egi.coa.inspector_countersign')),
                 confirm_inspector_countersign: @json(__('egi.coa.confirm_inspector_countersign')),
                 inspector_countersign_applied: @json(__('egi.coa.inspector_countersign_applied')),
-                operation_failed: @json(__('egi.coa.operation_failed'))
+                operation_failed: @json(__('egi.coa.operation_failed')),
+                remove_signature: @json(__('egi.coa.remove_signature')),
+                confirm_remove_signature: @json(__('egi.coa.confirm_remove_signature')),
+                signature_removed: @json(__('egi.coa.signature_removed')),
+                signature_removal_failed: @json(__('egi.coa.signature_removal_failed')),
+                signature_removal_warning: @json(__('egi.coa.signature_removal_warning'))
             };
 
             async function renderCoaPdfThumb(container, coaId) {
@@ -985,6 +1013,73 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                     await Swal.fire({
                         icon: 'error',
                         title: I18N.unknown_error
+                    });
+                }
+            }
+
+            // Remove signature function
+            window.removeSignature = async function(coaId, role) {
+                console.log('removeSignature', coaId, role);
+                await ensureSwalLoaded();
+
+                const roleDisplay = role === 'creator' ? 'Creator' : 'Inspector';
+                const conf = await Swal.fire({
+                    icon: 'warning',
+                    title: I18N.confirm,
+                    html: `
+                        <p>${I18N.confirm_remove_signature.replace('{role}', roleDisplay)}</p>
+                        <p class="text-sm text-gray-600 mt-2">${I18N.signature_removal_warning}</p>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: I18N.confirm,
+                    cancelButtonText: I18N.cancel,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280'
+                });
+
+                if (!conf.isConfirmed) return;
+
+                try {
+                    const res = await fetch(`/coa/${coaId}/sign/${role}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
+                        }
+                    });
+
+                    const data = await res.json();
+
+                    if (data && data.success) {
+                        showCoaToast({
+                            message: I18N.signature_removed.replace('{role}', roleDisplay),
+                            type: 'success',
+                            timeout: 3500
+                        });
+
+                        // Open PDF if download URL is available
+                        if (data.data && data.data.download_url) {
+                            try {
+                                window.open(data.data.download_url, '_blank');
+                            } catch (e) {
+                                console.warn('Could not open PDF:', e);
+                            }
+                        }
+
+                        setTimeout(() => window.location.reload(), 1200);
+                    } else {
+                        await Swal.fire({
+                            icon: 'error',
+                            title: I18N.signature_removal_failed,
+                            text: (data && data.message) || I18N.unknown_error
+                        });
+                    }
+                } catch (e) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: I18N.signature_removal_failed,
+                        text: I18N.unknown_error
                     });
                 }
             }

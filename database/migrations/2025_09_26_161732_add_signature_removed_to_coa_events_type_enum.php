@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('coa_events', function (Blueprint $table) {
-            // Update the type enum to include new chain of custody event types
+            // Add SIGNATURE_REMOVED to the type enum
             $table->enum('type', [
                 'ISSUED',
                 'REVOKED',
@@ -34,12 +34,17 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('coa_events', function (Blueprint $table) {
-            // Revert to original enum values
+            // Remove SIGNATURE_REMOVED from the type enum
             $table->enum('type', [
                 'ISSUED',
                 'REVOKED',
                 'ANNEX_ADDED',
-                'ADDENDUM_ISSUED'
+                'ADDENDUM_ISSUED',
+                'AUTHOR_SIGNED',
+                'INSPECTOR_SIGNED',
+                'PDF_REGENERATED',
+                'PDF_DOWNLOADED',
+                'SIGNATURE_VALIDATED'
             ])->change();
         });
     }

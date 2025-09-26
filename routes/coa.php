@@ -189,6 +189,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->where('coa', '[A-Za-z0-9-]+')
             ->middleware(['throttle:5,1']);
 
+        // Rimozione firma (feature-flagged)
+        Route::delete('/{coa}/sign/{role}', [CoaController::class, 'removeSignature'])
+            ->name('sign.remove')
+            ->where('coa', '[A-Za-z0-9-]+')
+            ->where('role', 'creator|inspector')
+            ->middleware(['throttle:5,1', 'role:admin|creator']);
+
         // Visualizzazione HTML certificato
         Route::get('/{coa}/view', [CoaController::class, 'viewCertificate'])
             ->name('view')

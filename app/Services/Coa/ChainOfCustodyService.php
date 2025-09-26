@@ -303,7 +303,7 @@ class ChainOfCustodyService
         // Check signature sequence
         $authorSigned = $events->where('type', CoaEvent::TYPE_AUTHOR_SIGNED)->count() > 0;
         $inspectorSigned = $events->where('type', CoaEvent::TYPE_INSPECTOR_SIGNED)->count() > 0;
-        
+
         if ($inspectorSigned && !$authorSigned) {
             $warnings[] = 'Inspector signature found without author signature';
         }
@@ -311,7 +311,7 @@ class ChainOfCustodyService
         // Check for orphaned PDF operations
         $pdfRegenerations = $events->where('type', CoaEvent::TYPE_PDF_REGENERATED)->count();
         $pdfDownloads = $events->where('type', CoaEvent::TYPE_PDF_DOWNLOADED)->count();
-        
+
         if ($pdfDownloads > $pdfRegenerations) {
             $warnings[] = 'More PDF downloads than regenerations detected';
         }
@@ -338,5 +338,36 @@ class ChainOfCustodyService
                 CoaEvent::TYPE_PDF_DOWNLOADED,
             ])->count(),
         ];
+    }
+
+    /**
+     * Log signature removal event
+     */
+    public function logSignatureRemoval(
+        Coa $coa,
+        User $actor,
+        string $role,
+        array $signatureInfo,
+        ?string $reason = null
+    ): CoaEvent {
+        $event = CoaEvent::createSignatureRemoved(
+            $coa,
+            $actor,
+            $role,
+            $signatureInfo,
+            $reason
+        );
+
+        Log::info('Chain of Custody: Signature removed', [
+            'coa_id' => $coa->id,
+            'serial' => $coa->serial,
+            'actor_id' => $actor->id,
+            'role' => $role,
+            'event_id' => $event->id,
+            'signature_info' => $signatureInfo,
+            'reason' => $reason
+        ]);
+
+        return $event;
     }
 }

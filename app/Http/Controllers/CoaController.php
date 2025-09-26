@@ -701,8 +701,7 @@ class CoaController extends Controller
             $revocationResult = $this->revocationService->revokeCertificate(
                 $coa,
                 $request->reason,
-                $request->notes,
-                $request->revoked_by ?? $user->name
+                $request->notes
             );
 
             $response = [
@@ -1108,17 +1107,18 @@ class CoaController extends Controller
 
             foreach ($certificateIds as $coaId) {
                 try {
-                    $result = $this->coaService->revokeCertificate($coaId, $reason);
+                    $coa = Coa::findOrFail($coaId);
+                    $result = $this->revocationService->revokeCertificate($coa, $reason);
 
-                    if ($result['success']) {
+                    if ($result) {
                         $results['successful'][] = [
                             'id' => $coaId,
-                            'serial' => $result['data']['serial'] ?? null
+                            'serial' => $coa->serial
                         ];
                     } else {
                         $results['failed'][] = [
                             'id' => $coaId,
-                            'error' => $result['message']
+                            'error' => 'Revocation failed'
                         ];
                     }
                 } catch (\Exception $e) {
@@ -2497,6 +2497,133 @@ class CoaController extends Controller
                 'success' => false,
                 'message' => 'Failed to countersign certificate'
             ], 500);
+        }
+    }
+
+    /**
+     * Remove signature from CoA
+     *
+     * @param Request $request
+     * @param Coa $coa
+     * @param string $role
+     * @return JsonResponse
+     */
+    public function removeSignature(Request $request, Coa $coa, string $role): JsonResponse
+    {
+        try {
+            $user = Auth::user();
+            $bundleService = app(BundleService::class);
+            $chainOfCustodyService = app(ChainOfCustodyService::class);
+            $auditLogService = app(AuditLogService::class);
+
+            // Validate role parameter
+            if (!in_array($role, ['creator', 'inspector'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid role parameter. Must be creator or inspector.'
+                ], 400);
+            }
+
+            // Permission check: only owner or admin can remove signatures
+            $hasAccess = $user->hasRole('admin') || $coa->egi->user_id === $user->id;
+
+            if (!$hasAccess) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied: insufficient permissions for signature removal'
+                ], 403);
+            }
+
+            // Check if signature exists
+            $signatures = $coa->metadata['signatures'] ?? [];
+            $signatureToRemove = collect($signatures)->firstWhere('role', $role);
+
+            if (!$signatureToRemove) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "No {$role} signature found to remove"
+                ], 404);
+            }
+
+            // Remove signature from metadata
+            $updatedSignatures = collect($signatures)->reject(function ($signature) use ($role) {
+                return $signature['role'] === $role;
+            })->values()->toArray();
+
+            $coa->metadata = array_merge($coa->metadata, [
+                'signatures' => $updatedSignatures
+            ]);
+            $coa->save();
+
+            // Regenerate PDF without the removed signature
+            $bundleService->generateCoaPdf($coa, true, ['skip_signatures' => true, 'auto_sign' => false]);
+
+            // Get latest PDF file
+            $latestPdfFile = $bundleService->getLatestPdfFile($coa);
+            if (!$latestPdfFile) {
+                $this->logger->error('CoA signature removal: PDF file not found after regeneration', [
+                    'coa_id' => $coa->id,
+                    'role' => $role,
+                    'user_id' => $user->id,
+                    'log_category' => 'COA_SIGN_REMOVE_NO_FILE'
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to regenerate PDF after signature removal'
+                ], 500);
+            }
+
+            // Log chain of custody event
+            $chainOfCustodyService->logSignatureRemoval($coa, $user, $role, $signatureToRemove);
+
+            // Log audit trail
+            $auditLogService->logUserAction($user, 'coa_signature_removed', [
+                'coa_id' => $coa->id,
+                'coa_serial' => $coa->serial,
+                'removed_role' => $role,
+                'signature_metadata' => $signatureToRemove,
+                'file_metadata' => [
+                    'file_id' => $latestPdfFile->id,
+                    'file_path' => $latestPdfFile->path,
+                    'file_size' => $latestPdfFile->size,
+                    'file_hash' => $latestPdfFile->hash
+                ],
+                'request_metadata' => [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'timestamp' => now()->toISOString()
+                ]
+            ], \App\Enums\Gdpr\GdprActivityCategory::GDPR_ACTIONS);
+
+            $this->logger->info('CoA signature removal completed successfully', [
+                'coa_id' => $coa->id,
+                'role' => $role,
+                'user_id' => $user->id,
+                'file_id' => $latestPdfFile->id,
+                'signature_removed' => $signatureToRemove,
+                'log_category' => 'COA_SIGN_REMOVE_DONE'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => ucfirst($role) . ' signature removed successfully',
+                'data' => [
+                    'coa_id' => $coa->id,
+                    'removed_role' => $role,
+                    'download_url' => route('coa.pdf.download', $coa),
+                    'file_id' => $latestPdfFile->id,
+                    'file_path' => $latestPdfFile->path,
+                    'pdf_sha256' => $latestPdfFile->hash
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return $this->errorManager->handle('COA_SIGN_REMOVE_ERROR', [
+                'coa_id' => $coa->id,
+                'role' => $role,
+                'user_id' => $user->id ?? null,
+                'error_message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], $e);
         }
     }
 

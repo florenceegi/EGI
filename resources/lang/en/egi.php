@@ -704,6 +704,13 @@ return [
         'author_countersign' => 'Author Signature (QES)',
         'confirm_author_countersign' => 'Proceed with author signature?',
         'author_countersign_applied' => 'Author signature applied',
+
+        // Signature Removal
+        'remove_signature' => 'Remove Signature',
+        'confirm_remove_signature' => 'Remove {role} signature?',
+        'signature_removed' => '{role} signature removed successfully',
+        'signature_removal_failed' => 'Signature removal failed',
+        'signature_removal_warning' => 'Warning: The PDF will be regenerated without this signature. This action cannot be undone.',
         'regenerate_pdf' => 'Regenerate PDF',
         'pdf_regenerated' => 'PDF regenerated',
         'pdf_regenerate_failed' => 'PDF regeneration failed',
