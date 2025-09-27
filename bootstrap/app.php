@@ -14,7 +14,7 @@ use Spatie\Permission\Middleware\PermissionMiddleware;
 use Dotenv\Dotenv;
 
 // 🔐 Load .env early to avoid "No application encryption key" errors
-Dotenv::createImmutable(dirname(__DIR__))->load();
+// Dotenv::createImmutable(dirname(__DIR__))->load();
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
