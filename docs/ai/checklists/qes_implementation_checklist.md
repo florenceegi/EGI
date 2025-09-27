@@ -30,6 +30,10 @@
 -   [x] Controllo auth()->check() aggiunto per evitare errore su utenti guest
 -   [x] Traduzione badge_timestamped aggiunta in tutte le 6 lingue
 -   [x] Cache pulita e configurazione verificata per visibilità bottone inspector
+-   [x] **Gestione Firma - Eliminazione**: Implementazione completa backend e frontend
+-   [x] **Correzioni UEM**: Sostituito UEM::log() con pattern corretto ULM/UEM
+-   [x] **Correzioni Controller**: Risolto errore $coaService non definito
+-   [x] **Regole Critiche**: Creato file CRITICAL_RULES.md con divieto git reset
 
 Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/inspector/ts). In produzione (CSC/PAdES) ci si aspetta 1 output per azione firma; la moltiplicazione file non è considerata blocker per ora.
 
@@ -601,18 +605,18 @@ Nota mock: in ambiente mock vengono create più versioni file (unsigned/author/i
 
 -   **Gestione Firma - Eliminazione**
 
-    -   [ ] Backend: Endpoint `DELETE /coa/{coa}/sign/{role}` per rimuovere firma specifica
-    -   [ ] Backend: Validazione permessi (solo owner/admin possono eliminare firme)
-    -   [ ] Backend: Rimozione metadata firma da `coa.metadata.signatures`
-    -   [ ] Backend: Rigenerazione PDF senza la firma eliminata
-    -   [ ] Backend: Log audit trail per eliminazione firma
-    -   [ ] Backend: Chain of custody event `SIGNATURE_REMOVED`
-    -   [ ] Frontend: Bottone "Rimuovi Firma" con conferma Swal
-    -   [ ] Frontend: Toast feedback per eliminazione riuscita
-    -   [ ] Frontend: Aggiornamento badge firme in tempo reale
-    -   [ ] Frontend: Condizioni visibilità (solo per owner/admin, non per inspector)
-    -   [ ] UX: Conferma con dettagli firma (ruolo, timestamp, certificato)
-    -   [ ] UX: Warning su conseguenze (PDF rigenerato, validità modificata)
+    -   [x] Backend: Endpoint `DELETE /coa/{coa}/sign/{role}` per rimuovere firma specifica
+    -   [x] Backend: Validazione permessi (solo owner/admin possono eliminare firme)
+    -   [x] Backend: Rimozione metadata firma da `coa.metadata.signatures`
+    -   [x] Backend: Rigenerazione PDF senza la firma eliminata
+    -   [x] Backend: Log audit trail per eliminazione firma
+    -   [x] Backend: Chain of custody event `SIGNATURE_REMOVED`
+    -   [x] Frontend: Bottone "Rimuovi Firma" con conferma Swal
+    -   [x] Frontend: Toast feedback per eliminazione riuscita
+    -   [x] Frontend: Aggiornamento badge firme in tempo reale
+    -   [x] Frontend: Condizioni visibilità (solo per owner/admin, non per inspector)
+    -   [x] UX: Conferma con dettagli firma (ruolo, timestamp, certificato)
+    -   [x] UX: Warning su conseguenze (PDF rigenerato, validità modificata)
 
 -   **Test Accettazione**
     -   [ ] Acrobat/Preview → firma valida e nome corretto

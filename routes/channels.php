@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::channel('price.{egiId}', function ($user = null, $egiId) {
+Broadcast::channel('price.{egiId}', function ($egiId, $user = null) {
     return true; // public per guest
     // per private: return $user !== null;
 });
