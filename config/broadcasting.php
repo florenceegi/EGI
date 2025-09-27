@@ -15,9 +15,8 @@ return [
     |
     */
 
-    // 'default' => env('BROADCAST_DRIVER', 'null'),
-    'default' => 'log',
-
+    'default' => env('BROADCAST_DRIVER', 'null'),
+    
     /*
     |--------------------------------------------------------------------------
     | Broadcast Connections

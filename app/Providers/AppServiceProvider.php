@@ -55,10 +55,6 @@ class AppServiceProvider extends ServiceProvider {
      */
     public function register(): void {
 
-        // se sto girando in CLI (artisan), forza broadcasting "log"
-        if ($this->app->runningInConsole()) {
-            config(['broadcasting.default' => 'log']);
-        }
 
         $this->app->singleton(IconRepository::class);
         $this->app->singleton(CollectorCarouselService::class);
