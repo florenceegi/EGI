@@ -152,6 +152,8 @@
 
                 <!-- Desktop Navigation -->
                 <nav class="hidden space-x-6 md:flex">
+                    <a href="{{ route('home') }}"
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Home</a>
                     <a href="#visione"
                         class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Visione</a>
                     <a href="#problema"

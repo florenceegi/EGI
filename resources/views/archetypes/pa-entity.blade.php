@@ -92,6 +92,7 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden space-x-4 sm:space-x-6 md:flex">
+                    <a href="{{ route('home') }}" class="text-sm transition hover:text-blue-200 lg:text-base">Home</a>
                     <a href="#servizi" class="text-sm transition hover:text-blue-200 lg:text-base">Servizi</a>
                     <a href="#compliance" class="text-sm transition hover:text-blue-200 lg:text-base">Compliance</a>
                     <a href="#tecnologia" class="text-sm transition hover:text-blue-200 lg:text-base">Tecnologia</a>
