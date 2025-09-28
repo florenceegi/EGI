@@ -218,7 +218,8 @@ class RegisteredUserController extends Controller {
                 'patron',
                 'epp',
                 'company',
-                'trader_pro'
+                'trader_pro',
+                'pa_entity'
             ];
         }
 
@@ -489,6 +490,7 @@ class RegisteredUserController extends Controller {
             'creator' => "{$firstName}'s Arte",
             'enterprise' => "{$firstName} Corporate Gallery",
             'patron' => "Patronato di {$firstName}",
+            'pa_entity' => "Collezione Istituzionale {$firstName}",
         ];
 
         return $typeNames[$userType] ?? "{$firstName}'s Collection";
@@ -508,6 +510,7 @@ class RegisteredUserController extends Controller {
             'collector' => 'collector',
             'trader_pro' => 'trader',
             'epp_entity' => 'creator',
+            'pa_entity' => 'creator', // PA entities can create institutional collections
         ];
 
         return $collectionRoleMapping[$userType] ?? 'viewer';
@@ -543,13 +546,13 @@ class RegisteredUserController extends Controller {
                 'status' => 'active',
             ]);
 
-            // Organization Data (only for enterprise)
-            if ($validated['user_type'] === 'enterprise') {
+            // Organization Data (only for enterprise and PA)
+            if (in_array($validated['user_type'], ['enterprise', 'pa_entity'])) {
                 UserOrganizationData::create([
                     'user_id' => $user->id,
-                    'business_type' => 'enterprise',
+                    'business_type' => $validated['user_type'] === 'pa_entity' ? 'public_administration' : 'enterprise',
                     'is_seller_verified' => false,
-                    'can_issue_invoices' => true,
+                    'can_issue_invoices' => true, // PA può emettere fatture istituzionali
                 ]);
             }
 
@@ -568,7 +571,8 @@ class RegisteredUserController extends Controller {
             $this->logger->info('[Registration] User domains initialized successfully', [
                 ...$logContext,
                 'domains_created' => ['profiles', 'personal_data', 'documents', 'invoice_preferences'],
-                'enterprise_domain' => $validated['user_type'] === 'enterprise' ? 'created' : 'skipped'
+                'organization_domain' => in_array($validated['user_type'], ['enterprise', 'pa_entity']) ? 'created' : 'skipped',
+                'organization_type' => $validated['user_type'] === 'pa_entity' ? 'public_administration' : ($validated['user_type'] === 'enterprise' ? 'enterprise' : 'none')
             ]);
         } catch (\Exception $e) {
             $this->logger->error('[Registration] Failed to initialize user domains', [

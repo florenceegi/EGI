@@ -9,6 +9,41 @@
  */
 
 return [
+    // User Types
+    'user_type_legend' => 'Quel type d\'utilisateur êtes-vous ?',
+
+    // Creator (unchanged)
+    'user_type_creator' => 'Créateur',
+    'user_type_creator_desc' => 'Artistes, créateurs et producteurs de contenu qui veulent monétiser leur créativité',
+
+    // Patron (was: mecenate)
+    'user_type_patron' => 'Mécène',
+    'user_type_patron_desc' => 'Supporters d\'art et de culture qui financent des projets et soutiennent les créateurs',
+
+    // Collector (was: acquirente)
+    'user_type_collector' => 'Collectionneur',
+    'user_type_collector_desc' => 'Passionnés qui achètent et collectionnent des œuvres d\'art et des actifs culturels',
+
+    // Commissioner (new)
+    'user_type_commissioner' => 'Commissaire',
+    'user_type_commissioner_desc' => 'Premiers acheteurs qui activent les œuvres, inscrivant leur nom dans leur histoire pour obtenir visibilité et reconnaissance',
+
+    // Enterprise (was: azienda)
+    'user_type_enterprise' => 'Entreprise',
+    'user_type_enterprise_desc' => 'Organisations et entreprises intéressées par les investissements culturels et durables',
+
+    // Trader Pro (new)
+    'user_type_trader_pro' => 'Trader Professionnel',
+    'user_type_trader_pro_desc' => 'Traders professionnels d\'actifs culturels, NFT et tokens EGI',
+
+    // EPP Entity (unchanged)
+    'user_type_epp_entity' => 'Entité EPP',
+    'user_type_epp_entity_desc' => 'Organisations axées sur l\'impact environnemental, social et de gouvernance',
+
+    // PA Entity (new)
+    'user_type_pa_entity' => 'Administration Publique',
+    'user_type_pa_entity_desc' => 'Entités publiques, institutions gouvernementales et organisations de l\'administration publique',
+
     // Form Fields
     'label_name' => 'Nom complet',
     'name_help' => 'Votre vrai nom pour usage interne et identification',

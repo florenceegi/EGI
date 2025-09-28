@@ -74,7 +74,8 @@ class RegistrationRequest extends FormRequest {
                 'patron',
                 'epp',
                 'company',
-                'trader_pro'
+                'trader_pro',
+                'pa_entity'
             ];
         }
 

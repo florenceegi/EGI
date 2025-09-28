@@ -45,7 +45,8 @@ return [
         'patron',
         'epp',
         'company',
-        'trader_pro'
+        'trader_pro',
+        'pa_entity'
     ],
 
     'role_mapping' => [
@@ -56,6 +57,7 @@ return [
         'enterprise' => 'enterprise',
         'trader_pro' => 'trader_pro',
         'epp_entity' => 'epp_entity',
+        'pa_entity' => 'pa_entity',
     ],
 
 

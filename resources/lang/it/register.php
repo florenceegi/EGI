@@ -67,6 +67,10 @@ return [
     'user_type_epp_entity' => 'Ente EPP',
     'user_type_epp_entity_desc' => 'Organizzazioni focalizzate su impatto ambientale, sociale e di governance',
 
+    // PA Entity (new)
+    'user_type_pa_entity' => 'Pubblica Amministrazione',
+    'user_type_pa_entity_desc' => 'Enti pubblici, istituzioni governative e organizzazioni della pubblica amministrazione',
+
     // Form Fields
     'label_name' => 'Nome completo',
     'name_help' => 'Il tuo nome reale per uso interno e identificazione',

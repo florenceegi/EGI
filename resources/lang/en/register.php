@@ -63,6 +63,10 @@ return [
     'user_type_epp_entity' => 'EPP Entity',
     'user_type_epp_entity_desc' => 'Organizations focused on environmental, social, and governance impact',
 
+    // PA Entity (new)
+    'user_type_pa_entity' => 'Public Administration',
+    'user_type_pa_entity_desc' => 'Public entities, government institutions and public administration organizations',
+
     // Form Fields
     'label_name' => 'Full Name',
     'name_help' => 'Your real name for internal use and identification',
