@@ -195,6 +195,10 @@ Route::get('/archetypes/collector', function () {
     return view('archetypes.collector');
 })->name('archetypes.collector');
 
+Route::get('/archetypes/pa-entity', function () {
+    return view('archetypes.pa-entity');
+})->name('archetypes.pa-entity');
+
 /*
 |--------------------------------------------------------------------------
 | Platform Info Routes - EGI, Attivare, Impatto

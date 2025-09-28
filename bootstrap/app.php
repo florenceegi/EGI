@@ -11,10 +11,11 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\PermissionMiddleware;
-use Dotenv\Dotenv;
+use App\Helpers\EarlyEnvironmentHelper;
 
-// 🔐 Load .env early to avoid "No application encryption key" errors
-// Dotenv::createImmutable(dirname(__DIR__))->load();
+
+// 🔐 Carica le variabili di ambiente critiche prima del bootstrap
+EarlyEnvironmentHelper::loadCriticalEnvironmentVariables(dirname(__DIR__));
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(

@@ -106,6 +106,16 @@ return [
     'actor_trader_pro_message' => 'High-frequency EGI pt trading with ultra-low fees (1.5%) and guaranteed liquidity. Every trade automatically contributes to EPP projects. Earn fast while doing good for the planet.',
     'actor_trader_pro_cta' => 'Start Virtuous Trading',
 
+    // Card Actor: Commissioner
+    'actor_commissioner_title' => 'For Commissioners',
+    'actor_commissioner_message' => 'Commission exclusive digital artworks with blockchain certification and public visibility. Your name and avatar will always be associated with commissioned works, for perpetual prestige.',
+    'actor_commissioner_cta' => 'Commission Exclusive Art',
+
+    // Card Actor: PA (Public Administrations)
+    'actor_pa_title' => 'For Public Administrations',
+    'actor_pa_message' => 'Certified digitization of cultural heritage with eIDAS and GDPR compliance. Batch processing, API integration and complete audit trail for museums, libraries and historical archives.',
+    'actor_pa_cta' => 'Discover Institutional Services',
+
     'featured_creators_title' => 'Featured Creators',
     'no_creators_available' => 'No creators available at the moment.',
     'creator_default_bio' => 'This is a talented creator in the FlorenceEGI ecosystem.',

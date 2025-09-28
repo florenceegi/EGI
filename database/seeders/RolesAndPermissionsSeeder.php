@@ -14,8 +14,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
-class RolesAndPermissionsSeeder extends Seeder
-{
+class RolesAndPermissionsSeeder extends Seeder {
     /**
      * Permessi e ruoli predefiniti - ESTESO con nuovi user types
      */
@@ -198,6 +197,18 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // ✅ CoA / QES
         'sign_coa',
+
+        // ✅ NUOVI PERMESSI PA (Pubbliche Amministrazioni)
+        'access_pa_dashboard',
+        'manage_institutional_collections',
+        'bulk_coa_operations',
+        'institutional_certification',
+        'cultural_heritage_management',
+        'pa_reporting_access',
+        'manage_institutional_profile',
+        'access_compliance_tools',
+        'institutional_audit_access',
+        'manage_cultural_assets',
 
     ];
 
@@ -835,10 +846,104 @@ class RolesAndPermissionsSeeder extends Seeder
             // permesso minimo richiesto per co-firmare CoA
             'sign_coa',
         ],
+
+        // ✅ NUOVO RUOLO PA (Pubbliche Amministrazioni)
+        'pa_entity' => [
+            // Dashboard e accesso base
+            'access_dashboard',
+            'access_pa_dashboard',
+            'view_dashboard',
+            'view_documentation',
+            'view_statistics',
+
+            // Gestione patrimonio culturale
+            'manage_institutional_collections',
+            'cultural_heritage_management',
+            'manage_cultural_assets',
+            'institutional_certification',
+
+            // Operazioni CoA istituzionali
+            'bulk_coa_operations',
+            'sign_coa',
+            'access_compliance_tools',
+
+            // Collections e EGI (per patrimonio culturale)
+            'create_collection',
+            'update_collection',
+            'delete_collection',
+            'open_collection',
+            'view_collection',
+            'view_collection_header',
+            'create_EGI',
+            'update_EGI',
+            'delete_EGI',
+            'manage_EGI',
+            'view_EGI',
+
+            // Team management (per enti multi-utente)
+            'create_team',
+            'update_team',
+            'delete_team',
+            'add_team_member',
+            'remove_team_member',
+            'modify_team_roles',
+            'view_team',
+            'view_user',
+
+            // Reporting e audit istituzionale
+            'pa_reporting_access',
+            'institutional_audit_access',
+            'view_logs',
+            'view_notifications',
+
+            // Wallet management
+            'create_wallet',
+            'update_wallet',
+            'view_wallet',
+
+            // Profile management istituzionale
+            'manage_profile',
+            'manage_account',
+            'view_profile',
+            'manage_institutional_profile',
+            'edit_own_profile_data',
+            'edit_own_personal_data',
+            'edit_own_organization_data',  // ✅ PA gestisce dati organizzazione
+
+            // GDPR e compliance
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'view_activity_log',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
+
+            // Documenti e fatturazione istituzionale
+            'manage_own_documents',
+            'manage_own_invoice_preferences',
+            'upload_identity_documents',
+            'verify_document_status',
+            'download_own_documents',
+            'configure_invoice_preferences',
+            'view_own_invoices',
+            'download_own_invoices',
+
+            // Accesso completo enterprise-level
+            'access_full_dashboard',
+            'view_own_wallet_address',
+            'create_multiple_collections',
+            'priority_reservations',
+            'full_auction_access',
+            'manage_advanced_settings',
+
+            // Standard rights
+            'can_request_export',
+            'can_request_deletion',
+        ],
     ];
 
-    public function run(): void
-    {
+    public function run(): void {
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
@@ -861,12 +966,11 @@ class RolesAndPermissionsSeeder extends Seeder
         $this->createLegalUser();
 
         $this->command->info('Ruoli e permessi creati/aggiornati con successo.');
-        $this->command->info('Nuovi ruoli aggiunti: patron, collector, enterprise, trader_pro, epp_entity, commissioner');
-        $this->command->info('create_collection permission assegnato a: creator, patron, enterprise');
+        $this->command->info('Nuovi ruoli aggiunti: patron, collector, enterprise, trader_pro, epp_entity, commissioner, pa_entity');
+        $this->command->info('create_collection permission assegnato a: creator, patron, enterprise, pa_entity');
     }
 
-    private function createLegalUser(): void
-    {
+    private function createLegalUser(): void {
         $legalEmail = config('app.legal_default_user_email');
         $legalUser = User::firstOrCreate(
             ['email' => $legalEmail],

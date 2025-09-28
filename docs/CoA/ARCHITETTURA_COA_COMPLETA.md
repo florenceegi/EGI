@@ -635,67 +635,20 @@ Route::prefix('coa/addendum')->group([...]);
 
 ## 12. FUNZIONALITÀ MANCANTI
 
-### 12.1 Blockchain Integration ⚠️ PARZIALE
+### 12.1 Roadmap Features - Riferimento QES Checklist
 
--   [ ] **Smart Contract Deploy**: Deploying certificati on-chain
--   [ ] **IPFS Storage**: Metadata decentralizzato
--   [ ] **NFT Minting**: Automatic NFT per certificato
--   [ ] **Cross-chain Support**: Multi-blockchain
--   [x] **Wallet Integration**: Base implemented (placeholder)
+**NOTA**: Per il dettaglio completo delle funzionalità future, consultare:  
+`docs/ai/checklists/qes_implementation_checklist.md`
 
-### 12.2 Advanced Verification ⚠️ PARZIALE
+Le prossime implementazioni includono:
 
--   [ ] **QES Integration**: Qualified Electronic Signature real
--   [ ] **Biometric Verification**: Firma biometrica
--   [ ] **Timestamp Authority**: RFC 3161 timestamps
--   [ ] **Hardware Security Module**: HSM integration
--   [x] **Multi-factor Verification**: Base structure
-
-### 12.3 Analytics e Reporting ❌ MANCANTE
-
--   [ ] **Dashboard Analytics**: Statistiche emissioni/verifiche
--   [ ] **Verification Analytics**: Trend analysis
--   [ ] **Geographic Analytics**: Mappa verifiche
--   [ ] **Report Generation**: Report automatici
--   [ ] **Business Intelligence**: Metrics business
-
-### 12.4 Notifiche e Communication ❌ MANCANTE
-
--   [ ] **Email Notifications**: Emissione/revoca certificati
--   [ ] **SMS Notifications**: Alert critici
--   [ ] **Push Notifications**: Real-time updates
--   [ ] **Webhook System**: API callbacks
--   [ ] **Social Sharing**: Certificati social media
-
-### 12.5 Advanced Admin Features ❌ MANCANTE
-
--   [ ] **Admin Dashboard**: Pannello controllo globale
--   [ ] **Bulk Operations**: Operazioni massa
--   [ ] **Audit Reports**: Report compliance
--   [ ] **System Health**: Monitoring sistema
--   [ ] **Configuration Management**: Settings avanzate
-
-### 12.6 API e Integration ⚠️ PARZIALE
-
--   [ ] **GraphQL API**: Query flexible
--   [ ] **Webhook API**: Event-driven integration
--   [ ] **Third-party Integration**: Gallery/auction houses
--   [ ] **Migration Tools**: Import/export bulk
--   [x] **REST API**: Base implementation
-
-### 12.7 Mobile e PWA ❌ MANCANTE
-
--   [ ] **Mobile App**: App dedicata
--   [ ] **PWA Support**: Progressive Web App
--   [ ] **Offline Verification**: Cache verification
--   [ ] **Mobile Wallet**: Wallet mobile integration
-
-### 12.8 AI e ML Features ❌ MANCANTE
-
--   [ ] **Fraud Detection**: AI anti-frode
--   [ ] **Image Recognition**: Verifica automatica artwork
--   [ ] **Predictive Analytics**: Trend prediction
--   [ ] **Recommendation Engine**: Suggerimenti smart
+-   **Admin Panel & System Management** (Fase 9)
+-   **Analytics & Reporting** (Fase 10)
+-   **Notification System** (Fase 11)
+-   **API & Integration Avanzate** (Fase 12)
+-   **Blockchain Integration** (Roadmap estesa)
+-   **Mobile e PWA** (Roadmap estesa)
+-   **AI/ML Features** (Roadmap estesa)
 
 ---
 
@@ -708,102 +661,21 @@ Route::prefix('coa/addendum')->group([...]);
 -   [x] Testing sistema completo
 -   [x] Documentation completa
 
-### 13.2 FASE 2 - Analytics e Admin (PRIORITÀ ALTA)
+### 13.2 Roadmap Implementazione - Riferimento QES Checklist
 
-**Timeframe**: 2-3 settimane
+**IMPORTANTE**: La roadmap dettagliata e aggiornata si trova in:  
+`docs/ai/checklists/qes_implementation_checklist.md`
 
-**Tasks:**
+**Prossime Priority:**
 
-1. **Dashboard Analytics**
+-   **Fasi 1-8**: QES Core Implementation (in corso)
+-   **Fase 9**: Admin Panel & System Management
+-   **Fase 10**: Analytics & Reporting
+-   **Fase 11**: Notification System
+-   **Fase 12**: API & Integration Avanzate
 
-    - Metrics emissioni/verifiche
-    - Grafici trend temporali
-    - Geographic distribution
-
-2. **Admin Panel**
-
-    - Pannello controllo globale
-    - Bulk operations
-    - System health monitoring
-
-3. **Notification System**
-    - Email notifications
-    - Webhook integration
-    - Event-driven communication
-
-### 13.3 FASE 3 - Blockchain Integration (PRIORITÀ MEDIA)
-
-**Timeframe**: 4-6 settimane
-
-**Tasks:**
-
-1. **Smart Contract Development**
-
-    - Ethereum/Polygon deployment
-    - CoA on-chain registry
-    - Gas optimization
-
-2. **IPFS Integration**
-
-    - Metadata decentralizzato
-    - File storage distributed
-    - Content addressing
-
-3. **NFT Minting**
-    - Automatic NFT per certificato
-    - Marketplace integration
-    - Royalty management
-
-### 13.4 FASE 4 - Advanced Security (PRIORITÀ MEDIA)
-
-**Timeframe**: 3-4 settimane
-
-**Tasks:**
-
-1. **QES Integration Real**
-
-    - Provider QES integration
-    - Legal compliance
-    - Certificate validation
-
-2. **Enhanced Cryptography**
-    - Multi-signature wallet
-    - Hardware security module
-    - Advanced hashing algorithms
-
-### 13.5 FASE 5 - Mobile e PWA (PRIORITÀ BASSA)
-
-**Timeframe**: 6-8 settimane
-
-**Tasks:**
-
-1. **Progressive Web App**
-
-    - Offline capability
-    - Mobile optimization
-    - Push notifications
-
-2. **Mobile App Development**
-    - iOS/Android native
-    - Wallet integration
-    - QR scanner
-
-### 13.6 FASE 6 - AI/ML Features (FUTURO)
-
-**Timeframe**: 8-12 settimane
-
-**Tasks:**
-
-1. **Fraud Detection**
-
-    - ML algorithms
-    - Pattern recognition
-    - Anomaly detection
-
-2. **Image Recognition**
-    - Artwork verification
-    - Duplicate detection
-    - Quality assessment
+**Target Timeline**: Q4 2025 - Q1 2026  
+**Status**: Riferimento unico via QES checklist per evitare duplicazioni
 
 ---
 
