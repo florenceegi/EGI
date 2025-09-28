@@ -89,11 +89,50 @@
                         <p class="text-sm text-blue-200 sm:text-base">Servizi per Pubbliche Amministrazioni</p>
                     </div>
                 </div>
+
+                <!-- Desktop Navigation -->
                 <div class="hidden space-x-4 sm:space-x-6 md:flex">
                     <a href="#servizi" class="text-sm transition hover:text-blue-200 lg:text-base">Servizi</a>
                     <a href="#compliance" class="text-sm transition hover:text-blue-200 lg:text-base">Compliance</a>
                     <a href="#tecnologia" class="text-sm transition hover:text-blue-200 lg:text-base">Tecnologia</a>
                     <a href="#contatti" class="text-sm transition hover:text-blue-200 lg:text-base">Contatti</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button"
+                    class="block rounded-md p-2 transition-colors hover:bg-blue-700 md:hidden">
+                    <span class="material-icons text-2xl">menu</span>
+                </button>
+            </div>
+
+            <!-- Mobile Navigation Menu -->
+            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden">
+                <div class="space-y-3 pt-4">
+                    <a href="{{ route('home') }}"
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
+                        <span class="material-icons mr-3 text-lg">home</span>
+                        Torna alla Home
+                    </a>
+                    <a href="#servizi"
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
+                        <span class="material-icons mr-3 text-lg">business_center</span>
+                        Servizi
+                    </a>
+                    <a href="#compliance"
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
+                        <span class="material-icons mr-3 text-lg">verified_user</span>
+                        Compliance
+                    </a>
+                    <a href="#tecnologia"
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
+                        <span class="material-icons mr-3 text-lg">settings</span>
+                        Tecnologia
+                    </a>
+                    <a href="#contatti"
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
+                        <span class="material-icons mr-3 text-lg">contact_mail</span>
+                        Contatti
+                    </a>
                 </div>
             </div>
         </div>
@@ -236,7 +275,8 @@
                                     class="material-icons mr-3 mt-1 text-florence-gold">integration_instructions</span>
                                 <div>
                                     <h4 class="font-semibold">Integrazione Sistemi</h4>
-                                    <p class="text-gray-600">API per integrazione con sistemi di catalogazione esistenti
+                                    <p class="text-gray-600">API per integrazione con sistemi di catalogazione
+                                        esistenti
                                     </p>
                                 </div>
                             </div>
@@ -536,6 +576,42 @@
             </div>
         </div>
     </footer>
+
+    <!-- Mobile Menu Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = mobileMenuButton.querySelector('.material-icons');
+
+            mobileMenuButton.addEventListener('click', function() {
+                if (mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.remove('hidden');
+                    menuIcon.textContent = 'close';
+                } else {
+                    mobileMenu.classList.add('hidden');
+                    menuIcon.textContent = 'menu';
+                }
+            });
+
+            // Close menu when clicking on a link
+            const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                    menuIcon.textContent = 'menu';
+                });
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
+                    mobileMenu.classList.add('hidden');
+                    menuIcon.textContent = 'menu';
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
