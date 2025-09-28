@@ -759,10 +759,7 @@
         </div>
     </div>
 
-    <footer role="contentinfo">
-        <p>&copy; {{ date('Y') }} FlorenceEGI. Tutti i diritti riservati.</p>
-        <p><a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-of-service">Termini di Servizio</a></p>
-    </footer>
+    @include('components.info-footer')
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

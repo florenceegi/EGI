@@ -163,18 +163,7 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
     </div>
 
     {{-- Footer --}}
-    <footer class="mt-auto border-t gdpr-header border-gray-200/50" role="contentinfo">
-        <div class="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between text-sm gdpr-subtitle">
-                <p>&copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('profile.all_rights_reserved') }}</p>
-                <div class="flex space-x-4">
-                    <a href="{{ route('gdpr.privacy-policy') }}" class="gdpr-link">{{ __('profile.privacy_policy')
-                        }}</a>
-                    <a href="{{ route('gdpr.terms') }}" class="gdpr-link">{{ __('profile.terms_of_service') }}</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    @include('components.info-footer')
 
     {{--
     Application Configuration

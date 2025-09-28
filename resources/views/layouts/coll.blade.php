@@ -74,4 +74,6 @@
 
     </body>
 
+    @include('components.info-footer')
+
 </html>

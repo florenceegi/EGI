@@ -144,6 +144,8 @@
         </div>
     </div>
 
+    @include('components.info-footer')
+
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {

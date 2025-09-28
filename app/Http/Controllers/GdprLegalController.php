@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Gdpr\GdprActivityCategory;
 use App\Http\Requests\Gdpr\SaveLegalContentRequest;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -266,7 +267,7 @@ class GdprLegalController extends Controller
                     'locale' => $locale,
                     'has_accepted_current' => $hasAcceptedCurrent,
                     'version_viewed' => $currentVersion
-                ]);
+                ], GdprActivityCategory::GDPR_ACTIONS);
             }
 
             return view('gdpr.legal.terms', compact(

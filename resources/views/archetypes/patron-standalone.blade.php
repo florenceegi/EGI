@@ -126,7 +126,8 @@
 
                 <!-- Desktop Navigation -->
                 <nav class="hidden space-x-6 md:flex">
-                    <a href="{{ route('home') }}" class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Home</a>
+                    <a href="{{ route('home') }}"
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Home</a>
                     <a href="#ruolo" class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Il
                         Ruolo</a>
                     <a href="#casi" class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Casi

@@ -19,15 +19,7 @@
     </main>
 
     <!-- Footer - Stile Guest Layout -->
-    <footer class="py-6 mt-auto bg-gray-900 border-t border-gray-800 md:py-8" role="contentinfo">
-        <div class="px-4 mx-auto text-center max-w-7xl sm:px-6 lg:px-8 md:flex md:justify-between md:items-center">
-            <p class="mb-4 text-sm text-gray-400 md:mb-0">© {{ date('Y') }} {{ __('Frangette APS') }}. {{ __('All rights reserved') }}</p>
-            <div class="flex flex-col items-center justify-center space-y-2 md:flex-row md:justify-end md:space-y-0 md:space-x-4">
-                <x-environmental-stats format="footer" />
-                <div class="text-xs px-2 py-0.5 rounded-full bg-green-900/50 text-green-400 border border-green-800">{{ __('Algorand Blue Mission') }}</div>
-            </div>
-        </div>
-    </footer>
+   @include('components.info-footer')
 
     {{-- Modal di Upload Ultra-Wide (10/12 del display) --}}
     {{-- <div id="upload-modal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-75 hidden" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1">

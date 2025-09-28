@@ -92,20 +92,7 @@
 </main>
 
 <!-- Footer -->
-<footer class="py-6 mt-auto bg-gray-900 border-t border-gray-800 md:py-8" role="contentinfo"
-    aria-labelledby="footer-heading">
-    <h2 id="footer-heading" class="sr-only">{{ __('guest_layout.footer_sr_heading') }}</h2>
-    <div class="px-4 mx-auto text-center max-w-7xl sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
-        <p class="mb-4 text-sm text-gray-400 md:mb-0">© {{ date('Y') }} {{ __('guest_layout.copyright_holder') }}.
-            {{ __('guest_layout.all_rights_reserved') }}</p>
-        <div
-            class="flex flex-col items-center justify-center space-y-2 md:flex-row md:justify-end md:space-x-4 md:space-y-0">
-            <x-environmental-stats format="footer" />
-            <div class="rounded-full border border-green-800 bg-green-900/50 px-2 py-0.5 text-xs text-green-400">
-                {{ __('guest_layout.algorand_blue_mission') }}</div>
-        </div>
-    </div>
-</footer>
+@include('components.info-footer')
 
 
 <!-- Modals -->
