@@ -22,7 +22,7 @@ return [
         'concrete_role' => 'Il Tuo Ruolo Concreto',
         'becoming_patron' => 'Diventare Mecenate',
         'success_path' => 'Percorso di Successo',
-        'economic_model' => 'Modello Economico',
+        'value_model' => 'Modello di Valore',
         'success_stories' => 'Storie di Successo',
         'tools_support' => 'Strumenti e Supporto',
         'role_facets' => 'Sfaccettature del Ruolo',
@@ -70,8 +70,8 @@ return [
         'network_desc' => 'Sfrutti la <strong>tua rete personale</strong> e quella di FlorenceEGI per promuovere le opere e trovare collezionisti.',
         'relationships_title' => 'Gestione delle Relazioni',
         'relationships_desc' => 'Mantieni <strong>rapporti continuativi</strong> con artisti e collezionisti, costruendo un ecosistema duraturo.',
-        'earning_title' => 'Guadagno Sostenibile',
-        'earning_desc' => 'Generi <strong>entrate immediate e passive</strong> per ogni vendita facilitata, con royalty perpetue sulle rivendite.',
+        'impact_title' => 'Impatto Sostenibile',
+        'impact_desc' => 'Generi <strong>valore tangibile e misurabile</strong> per l\'ecosistema arte-sostenibilità, con riconoscimento duraturo per il tuo contributo.',
     ],
 
     // Sezione diventare mecenate
@@ -113,87 +113,84 @@ return [
         'phase3_title' => 'Fase 3: Attiva (Mesi 2-3)',
         'phase3_desc' => 'Aiuto agli artisti nel caricamento delle prime opere, redazione descrizioni con AI, condivisione nel network personale, sfruttamento marketing gratuito della piattaforma.',
 
-        'phase4_title' => 'Fase 4: Cresci (Dal Mese 4 in poi)',
-        'phase4_desc' => 'Le prime vendite generano commissioni, possibilità di reinvestire (opzionalmente) in strategie di marketing più mirate, espansione del portfolio artisti, costruzione della tua reputazione.',
+        'phase4_title' => 'Fase 4: Impatto (Dal Mese 4 in poi)',
+        'phase4_desc' => 'I primi risultati consolidano la tua reputazione, possibilità di specializzarsi in nicchie specifiche di impatto ambientale, espansione del network artistico, costruzione di un legacy professionale.',
     ],
 
-    // Sezione modello economico
-    'economic_model' => [
-        'title' => 'Il Modello Economico: Come Generare Valore Fin da Subito',
-        'subtitle' => 'Le Tue Entrate come Mecenate',
-        'intro' => 'Quando faciliti una vendita, sia attraverso la TUA rete di contatti che sfruttando quella di FlorenceEGI, il valore viene distribuito secondo lo schema seguente:',
+    // Sezione modello di valore
+    'value_model' => [
+        'title' => 'Il Modello di Valore: Impatto Misurabile nell\'Ecosistema FlorenceEGI',
+        'subtitle' => 'Il Tuo Contributo come Mecenate',
+        'intro' => 'Come Mecenate, faciliti connessioni significative che generano valore condiviso nell\'ecosistema arte-sostenibilità:',
 
-        'primary_market' => [
-            'title' => 'Mercato Primario (Prima Vendita dell\'Opera)',
-            'table' => [
-                'global_volume' => 'Volume Globale',
-                'creator_patron' => 'Creator + Mecenate',
-                'epp' => 'EPP',
-                'platform' => 'Piattaforma',
-                'association' => 'Associazione',
+        'impact_areas' => [
+            'title' => 'Aree di Impatto del Mecenate',
+            'areas' => [
+                'artist_development' => 'Sviluppo Professionale Artisti',
+                'environmental_projects' => 'Progetti Ambientali EPP',
+                'cultural_preservation' => 'Preservazione Culturale Digitale',
+                'community_building' => 'Costruzione Community Sostenibile',
+                'innovation_support' => 'Supporto all\'Innovazione Artistica',
             ],
-            'note' => '* _Tu e l\'artista definirete liberamente la suddivisione di questa percentuale. Tipicamente, la quota del Mecenate si attesta tra il 15% e il 30%._',
         ],
 
-        'secondary_market' => [
-            'title' => 'Mercato Secondario (Rivendite) - Rendita Passiva Perpetua',
-            'table' => [
-                'global_volume' => 'Volume Globale',
-                'creator_patron' => 'Creator + Mecenate',
-                'epp' => 'EPP',
-                'platform' => 'Piattaforma',
-                'association' => 'Associazione',
-                'total' => 'Totale',
+        'recognition_system' => [
+            'title' => 'Sistema di Riconoscimento',
+            'description' => 'Il valore del tuo contributo viene documentato attraverso blockchain verification, creando una tracciabilità permanente del tuo impatto nell\'ecosistema FlorenceEGI.',
+            'elements' => [
+                'impact_metrics' => 'Metriche di Impatto Verificate',
+                'professional_recognition' => 'Riconoscimento Professionale',
+                'network_prestige' => 'Prestigio nel Network Arte-Sostenibilità',
+                'legacy_documentation' => 'Documentazione Legacy Permanente',
             ],
-            'note' => '* _Anche in questo caso, la ripartizione è a discrezione tua e dell\'artista. Le royalty sono automatiche e garantite a vita!_',
         ],
     ],
 
-    // Sezione storie di successo
+    // Sezione casi di studio mecenate
     'success_stories' => [
-        'title' => 'Storie di Successo: Da Appassionato a Imprenditore dell\'Arte Virtuosa',
-        'subtitle' => 'Scopri come diverse persone hanno trasformato la loro passione in una professione gratificante, contribuendo attivamente al nostro Rinascimento Ecologico Digitale.',
+        'title' => 'Il Ruolo del Mecenate: Facilitatore di Connessioni Arte-Sostenibilità',
+        'subtitle' => 'Un ruolo di prestigio per chi desidera contribuire significativamente alla rigenerazione ambientale attraverso l\'arte contemporanea, con impatto misurabile e documentato.',
 
-        'maria' => [
-            'title' => 'Maria, 35 anni, Social Media Manager',
-            'context_label' => 'Contesto',
-            'context' => 'Lavora part-time, ama l\'arte.',
-            'investment_label' => 'Investimento',
-            'investment' => '0€, solo 10 ore a settimana.',
-            'action_label' => 'Azione',
-            'action' => 'Contatta 5 artisti locali, ne convince 3.',
-            'result_y1_label' => 'Risultato Anno 1',
-            'result_y1' => '15.000€ di commissioni.',
-            'result_y2_label' => 'Anno 2',
-            'result_y2' => 'Lascia il part-time, 40.000€ di ricavi.',
+        'cultural_bridge' => [
+            'title' => 'Il Facilitatore Culturale',
+            'context_label' => 'Profilo',
+            'context' => 'Esperto del settore culturale con network consolidato.',
+            'approach_label' => 'Approccio',
+            'approach' => 'Connette artisti emergenti con opportunità di impatto ambientale.',
+            'action_label' => 'Attività',
+            'action' => 'Cura selezioni tematiche su rigenerazione ecologica.',
+            'impact_label' => 'Impatto Documentato',
+            'impact' => 'Progetti ambientali verificati con tracciabilità blockchain.',
+            'recognition_label' => 'Riconoscimento',
+            'recognition' => 'Riferimento nel network arte-sostenibilità.',
         ],
 
-        'giuseppe' => [
-            'title' => 'Giuseppe, 28 anni, Neolaureato in Economia',
-            'context_label' => 'Contesto',
-            'context' => 'Economia, zero esperienza arte.',
-            'investment_label' => 'Investimento',
-            'investment' => '0€ iniziali, poi 500€ in ads.',
-            'action_label' => 'Azione',
-            'action' => 'Si specializza in arte digitale/gaming.',
-            'result_y1_label' => 'Risultato Anno 1',
-            'result_y1' => '8.000€ + network nel gaming.',
-            'today_label' => 'Oggi',
-            'today' => 'Mecenate di riferimento per crypto art.',
+        'environmental_advocate' => [
+            'title' => 'L\'Ambasciatore Ambientale',
+            'context_label' => 'Profilo',
+            'context' => 'Professionista sensibile alle tematiche di sostenibilità.',
+            'approach_label' => 'Approccio',
+            'approach' => 'Amplifica il messaggio attraverso collezioni tematiche.',
+            'action_label' => 'Attività',
+            'action' => 'Promuove artisti impegnati in tematiche ambientali.',
+            'impact_label' => 'Impatto Documentato',
+            'impact' => 'Contributo diretto a progetti di riforestazione verificati.',
+            'legacy_label' => 'Legacy',
+            'legacy' => 'Portfolio d\'arte con impatto ambientale misurabile.',
         ],
 
-        'anna' => [
-            'title' => 'Anna, 45 anni, Insegnante',
-            'context_label' => 'Contesto',
-            'context' => 'Conosce molti artisti amatoriali.',
-            'investment_label' => 'Investimento',
-            'investment' => 'Solo tempo nel weekend.',
-            'action_label' => 'Azione',
-            'action' => 'Organizza mostre virtuali su FlorenceEGI.',
-            'result_label' => 'Risultato',
-            'result' => '12.000€ extra all\'anno.',
-            'impact_label' => 'Impatto',
-            'impact' => '50 alberi piantati grazie alle sue vendite.',
+        'community_builder' => [
+            'title' => 'Il Costruttore di Comunità',
+            'context_label' => 'Profilo',
+            'context' => 'Leader naturale con competenze in community management.',
+            'approach_label' => 'Approccio',
+            'approach' => 'Sviluppa ecosistemi collaborativi arte-sostenibilità.',
+            'action_label' => 'Attività',
+            'action' => 'Facilita connessioni significative nel network FlorenceEGI.',
+            'impact_label' => 'Impatto Documentato',
+            'impact' => 'Community attive con impact reporting trasparente.',
+            'recognition_label' => 'Riconoscimento',
+            'recognition' => 'Ruolo di prestigio nell\'ecosistema FlorenceEGI.',
         ],
     ],
 
@@ -239,39 +236,39 @@ return [
         'title' => 'Le Diverse Sfaccettature del Ruolo di Mecenate',
 
         'local' => [
-            'title' => 'Il Mecenate Locale',
-            'item1' => 'Focus su artisti del territorio.',
-            'item2' => 'Organizza eventi fisici + digitali.',
-            'item3' => 'Diventa punto di riferimento locale.',
-            'earning' => 'Guadagno tipico',
-            'earning_amount' => '20-30K€/anno.',
+            'title' => 'Il Mecenate del Territorio',
+            'item1' => 'Sviluppa ecosistemi culturali locali.',
+            'item2' => 'Facilita connessioni arte-comunità.',
+            'item3' => 'Diventa riferimento per sostenibilità culturale.',
+            'impact' => 'Impatto Distintivo',
+            'impact_desc' => 'Leader riconosciuto nell\'arte sostenibile locale.',
         ],
 
         'digital' => [
-            'title' => 'Il Mecenate Digitale',
-            'item1' => 'Lavora 100% online.',
-            'item2' => 'Si specializza in nicchie (AI art, fotografia, etc).',
-            'item3' => 'Scala velocemente.',
-            'potential' => 'Potenziale',
-            'potential_amount' => '50-100K€/anno.',
+            'title' => 'Il Mecenate dell\'Innovazione',
+            'item1' => 'Esplora frontiere digitali dell\'arte.',
+            'item2' => 'Specializzazione in nicchie emergenti.',
+            'item3' => 'Costruisce network globali qualificati.',
+            'recognition' => 'Riconoscimento',
+            'recognition_desc' => 'Esperto di riferimento in arte digitale sostenibile.',
         ],
 
         'social' => [
-            'title' => 'Il Mecenate Social',
-            'item1' => 'Usa Instagram/TikTok per promuovere.',
-            'item2' => 'Crea contenuti virali sull\'arte.',
-            'item3' => 'Monetizza following.',
-            'mix' => 'Mix',
-            'mix_desc' => 'commissioni + sponsorship.',
+            'title' => 'Il Mecenate Comunicatore',
+            'item1' => 'Amplifica messaggi di sostenibilità attraverso l\'arte.',
+            'item2' => 'Crea narrative di impatto ambientale.',
+            'item3' => 'Influenza positiva per la causa EPP.',
+            'influence' => 'Influenza',
+            'influence_desc' => 'Voce autorevole arte-sostenibilità.',
         ],
 
         'educator' => [
-            'title' => 'Il Mecenate Formatore (Educator)',
-            'item1' => 'Organizza workshop per artisti.',
-            'item2' => 'Crea contenuti educativi.',
-            'item3' => 'Percepito come esperto.',
-            'revenue' => 'Revenue',
-            'revenue_desc' => 'commissioni + formazione.',
+            'title' => 'Il Mecenate Mentore',
+            'item1' => 'Facilita crescita professionale artisti.',
+            'item2' => 'Trasferisce competenze in sostenibilità.',
+            'item3' => 'Costruisce legacy educativa.',
+            'legacy' => 'Legacy',
+            'legacy_desc' => 'Impatto duraturo sull\'ecosistema artistico.',
         ],
     ],
 
@@ -284,8 +281,8 @@ return [
             'a' => 'Assolutamente no. Il 90% degli artisti, così come molti aspiranti Mecenati, non ha questa conoscenza approfondita. Il tuo ruolo è proprio quello di facilitare l\'aspetto umano e relazionale. La complessità tecnologica è interamente gestita da FlorenceEGI.',
         ],
         'initial_investment' => [
-            'q' => '"Non ho soldi da investire in marketing..."',
-            'a' => 'Non è richiesto alcun investimento iniziale. Potrai sfruttare il TUO network, i TUOI canali social e le strategie di marketing gratuito offerte da FlorenceEGI. I guadagni arriveranno una volta che le opere saranno vendute.',
+            'q' => '"Non ho risorse da dedicare al progetto..."',
+            'a' => 'Il ruolo del Mecenate si basa principalmente sul networking e la facilitazione di connessioni. Utilizzerai il tuo network esistente e gli strumenti di comunicazione forniti da FlorenceEGI. L\'impatto si genera attraverso la qualità delle relazioni, non attraverso investimenti monetari.',
         ],
         'find_artists' => [
             'q' => '"Non conosco artisti..."',
@@ -293,11 +290,11 @@ return [
         ],
         'artist_leaves' => [
             'q' => '"E se l\'artista poi non vuole più lavorare con me?"',
-            'a' => 'Gli accordi sono tutelati tramite blockchain. Le royalty che hai già maturato rimangono tue in modo permanente. Avrai inoltre acquisito un\'esperienza preziosa per le future collaborazioni.',
+            'a' => 'Le relazioni professionali sono documentate tramite blockchain per trasparenza. Il valore dell\'esperienza maturata e del network costruito rimane patrimonio professionale permanente per future collaborazioni di valore.',
         ],
         'time_commitment' => [
             'q' => '"Quanto tempo serve davvero?"',
-            'a' => 'La flessibilità è uno dei punti di forza. Alcuni Mecenati dedicano 5 ore settimanali e generano un reddito extra. Altri ne fanno una vera e propria carriera a tempo pieno. Dipende dalle tue ambizioni e dalla tua disponibilità.',
+            'a' => 'La flessibilità è uno dei punti di forza. Alcuni Mecenati dedicano poche ore settimanali mantenendo altri impegni. Altri sviluppano il ruolo come attività principale. Dipende dal livello di impatto che desideri generare nell\'ecosistema arte-sostenibilità.',
         ],
     ],
 
@@ -309,7 +306,7 @@ return [
         'benefit1' => 'Status "Pioneer Mecenate" - Badge permanente',
         'benefit2' => 'Formazione VIP - Accesso a materiali avanzati',
         'benefit3' => 'Lead qualificate - Artisti interessati nella tua zona',
-        'benefit4' => 'Bonus performance - +5% commissioni per 6 mesi',
+        'benefit4' => 'Supporto prioritario - Assistenza dedicata per 6 mesi',
         'benefit5' => 'Protezione territorio - Priorità nella tua area',
         'benefit6' => 'Mentorship diretta - Dal team FlorenceEGI',
         'requirements_title' => 'Requisiti per Accedere al Programma Pioneer:',
@@ -339,10 +336,10 @@ return [
             'item3' => 'Entra nella community.',
         ],
         'step4' => [
-            'title' => 'Lancia',
-            'item1' => 'Identifica i tuoi primi artisti.',
-            'item2' => 'Usa i tool forniti.',
-            'item3' => 'Inizia a guadagnare!',
+            'title' => 'Attiva',
+            'item1' => 'Identifica artisti allineati alla missione.',
+            'item2' => 'Utilizza gli strumenti di facilitazione.',
+            'item3' => 'Genera impatto misurabile!',
         ],
     ],
 
@@ -357,7 +354,7 @@ return [
         'download1' => 'eBook: "Da Zero a Mecenate"',
         'download2' => 'Template: "Proposta Artista"',
         'download3' => 'Video: "Il Tuo Primo Artista"',
-        'download4' => 'Checklist: "30 Giorni al Successo"',
+        'download4' => 'Guida: "Primi 30 Giorni di Impatto"',
     ],
 
     'final_message' => [

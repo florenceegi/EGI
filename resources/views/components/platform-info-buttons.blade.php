@@ -82,7 +82,7 @@
                 </a>
 
                 {{-- Bottone Mecenati ? --}}
-                <a href="{{ route('info.mecenati') }}"
+                <a href="{{ route('archetypes.patron') }}"
                     class="flex items-center flex-shrink-0 px-4 py-2 text-xs font-medium text-white transition-all duration-200 bg-gray-800 border border-gray-700 rounded-lg snap-start hover:scale-105 hover:border-gray-600 hover:bg-gray-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 focus:ring-offset-gray-900">
                     <svg class="w-4 h-4 mr-2 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

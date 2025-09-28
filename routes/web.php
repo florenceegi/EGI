@@ -188,7 +188,7 @@ Route::get('/notifications', function () {
 
 
 Route::get('/archetypes/patron', function () {
-    return view('archetypes.patron');
+    return view('archetypes.patron-standalone');
 })->name('archetypes.patron');
 
 Route::get('/archetypes/collector', function () {
@@ -206,7 +206,7 @@ Route::get('/archetypes/pa-entity', function () {
 */
 Route::prefix('info')->name('info.')->group(function () {
     Route::get('/florence-egi', function () {
-        return view('info.under-construction', ['title' => 'Che cos\'è FlorenceEGI?', 'subtitle' => 'Scopri la piattaforma che unisce arte, sostenibilità e innovazione']);
+        return view('info.florence-egi');
     })->name('florence-egi');
 
     Route::get('/egi', function () {
@@ -230,7 +230,7 @@ Route::prefix('info')->name('info.')->group(function () {
     })->name('attivatori');
 
     Route::get('/mecenati', function () {
-        return view('info.under-construction', ['title' => 'Chi sono i Mecenati?', 'subtitle' => 'Scopri il ruolo dei mecenati e il loro supporto all\'arte sostenibile']);
+        return view('archetypes.patron-standalone');
     })->name('mecenati');
 
     Route::get('/aziende', function () {
@@ -244,6 +244,10 @@ Route::prefix('info')->name('info.')->group(function () {
     Route::get('/epps', function () {
         return view('info.under-construction', ['title' => 'Environmental Protection Project (EPP)', 'subtitle' => 'Scopri come gli EPP possono aiutare nella sostenibilità']);
     })->name('epps');
+
+    Route::get('/epp', function () {
+        return view('info.under-construction', ['title' => 'Environmental Protection Projects', 'subtitle' => 'Scopri i progetti di protezione ambientale supportati dalla piattaforma']);
+    })->name('epp');
 });
 /*
 |--------------------------------------------------------------------------
