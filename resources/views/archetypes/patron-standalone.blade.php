@@ -450,25 +450,7 @@
         </div>
     </section>
 
-    <!-- Footer Essenziale -->
-    <footer class="bg-blu-algoritmo py-8 text-white">
-        <div class="golden-ratio-container px-4 sm:px-6">
-            <div class="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
-                <div class="flex items-center space-x-3">
-                    <i class="fas fa-heart text-oro-fiorentino text-xl"></i>
-                    <div class="text-center md:text-left">
-                        <div class="renaissance-title font-bold">FlorenceEGI</div>
-                        <div class="font-body text-sm text-blue-200">Il Nuovo Rinascimento Ecologico Digitale</div>
-                    </div>
-                </div>
-                <div class="flex space-x-6 font-body text-sm">
-                    <a href="{{ route('home') }}" class="hover:text-oro-fiorentino transition-colors">Home</a>
-                    <a href="/privacy-policy" class="hover:text-oro-fiorentino transition-colors">Privacy</a>
-                    <a href="/terms" class="hover:text-oro-fiorentino transition-colors">Termini</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    @include('components.info-footer')
 
     <!-- Mobile Menu Script -->
     <script>
