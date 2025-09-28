@@ -171,7 +171,10 @@ class RegisteredUserController extends Controller {
                 'ecosystem_created' => $result['ecosystem_created']
             ]);
 
-            return redirect()->route('dashboard')
+            // Use configurable redirect route from config/app.php
+            $redirectRoute = config('app.redirect_to_url_after_register', 'home');
+
+            return redirect()->route($redirectRoute)
                 ->with('success', $successMessage)
                 ->with('user_type', $validated['user_type'])
                 ->with('ecosystem_created', $result['ecosystem_created'])

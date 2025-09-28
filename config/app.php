@@ -420,4 +420,19 @@ return [
 
     'redirect_to_url_after_login' => env('UPLOAD_REDIRECT_TO_URL_AFTER_LOGIN', 'home'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Redirect to page after registration
+    |--------------------------------------------------------------------------
+    |
+    | This value determines which page should be displayed after a successful
+    | user registration through the registration form.
+    |
+    | The value is used by RegisteredUserController to redirect newly
+    | registered users to the appropriate landing page.
+    |
+    */
+
+    'redirect_to_url_after_register' => env('REDIRECT_TO_URL_AFTER_REGISTER', 'home'),
+
 ];
