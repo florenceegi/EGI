@@ -151,7 +151,7 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden space-x-4 md:flex">
+                <nav class="hidden space-x-3 md:flex">
                     <a href="{{ route('home') }}"
                         class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Home</a>
                     <a href="#visione"
@@ -164,6 +164,8 @@
                         class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Soluzione</a>
                     <a href="#tecnologia"
                         class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Tecnologia</a>
+                    <a href="#gdpr"
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">GDPR</a>
                     <a href="#archetipi"
                         class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Archetipi</a>
                     <a href="#valori"
@@ -211,6 +213,11 @@
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
                         <i class="mr-3 text-lg fas fa-cogs text-oro-fiorentino"></i>
                         Tecnologia
+                    </a>
+                    <a href="#gdpr"
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-shield-alt text-oro-fiorentino"></i>
+                        GDPR
                     </a>
                     <a href="#archetipi"
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
@@ -710,6 +717,152 @@
                         <div class="font-body">
                             <h4 class="text-lg font-semibold">Certificato Digitale</h4>
                             <p class="text-green-100">PDF professionale con QR code per verifica pubblica</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GDPR by Design: Privacy e Compliance -->
+    <section id="gdpr" class="py-16 text-white section-dark sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
+            <div class="mb-12 text-center sm:mb-16">
+                <h2 class="mb-4 text-3xl font-bold renaissance-title sm:text-4xl md:text-5xl">
+                    <span class="text-oro-fiorentino">GDPR by Design</span>: Compliance Esemplare
+                </h2>
+                <p class="max-w-4xl mx-auto text-xl font-body text-green-100">
+                    Per noi il rispetto della privacy non si limita alla mera pubblicazione di policy e termini. 
+                    Il GDPR è profondamente integrato in ogni riga di codice della piattaforma, 
+                    rendendo FlorenceEGI un esempio di applicazione scrupolosa delle normative europee.
+                </p>
+            </div>
+
+            <div class="grid gap-8 lg:grid-cols-2">
+                <!-- Architettura Integrata -->
+                <div class="renaissance-card elegant-hover p-8 bg-gradient-to-br from-blu-algoritmo/20 to-green-800/20">
+                    <div class="mb-6 flex items-center">
+                        <div class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                            <i class="fas fa-shield-alt text-oro-fiorentino text-2xl"></i>
+                        </div>
+                        <h3 class="renaissance-title text-xl font-bold">Architettura GDPR Integrata</h3>
+                    </div>
+                    <div class="space-y-4 font-body text-green-100">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-verde-rinascita mr-3 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-white">Sistema di Ruoli e Permessi a Due Livelli</h4>
+                                <p>Autorizzazioni granulari basate su Spatie Laravel Permission per controllo accessi preciso</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-verde-rinascita mr-3 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-white">Sidebar Dinamica Contestuale</h4>
+                                <p>Navigazione che mostra solo funzionalità autorizzate, privacy by design nell'UX</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-verde-rinascita mr-3 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-white">Controller Specializzati</h4>
+                                <p>PersonalDataController e GdprController con responsabilità chiaramente separate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servizi GDPR Specializzati -->
+                <div class="renaissance-card elegant-hover p-8 bg-gradient-to-br from-green-800/20 to-blu-algoritmo/20">
+                    <div class="mb-6 flex items-center">
+                        <div class="bg-verde-rinascita/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                            <i class="fas fa-cogs text-verde-rinascita text-2xl"></i>
+                        </div>
+                        <h3 class="renaissance-title text-xl font-bold">Servizi GDPR Specializzati</h3>
+                    </div>
+                    <div class="space-y-4 font-body text-green-100">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-oro-fiorentino mr-3 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-white">ConsentService</h4>
+                                <p>Gestione consensi granulare con versioning e audit trail completo</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-oro-fiorentino mr-3 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-white">DataExportService</h4>
+                                <p>Esportazione dati conforme al diritto alla portabilità (Art. 20 GDPR)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-oro-fiorentino mr-3 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-white">AuditLogService</h4>
+                                <p>Tracciabilità completa delle operazioni per accountability e trasparenza</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diritti degli Interessati -->
+            <div class="mt-12">
+                <h3 class="mb-8 text-2xl font-bold text-center renaissance-title">
+                    Diritti degli Interessati <span class="text-oro-fiorentino">Implementati</span>
+                </h3>
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="renaissance-card p-6 text-center bg-gradient-to-br from-oro-fiorentino/10 to-oro-fiorentino/5">
+                        <i class="fas fa-eye text-oro-fiorentino text-3xl mb-4"></i>
+                        <h4 class="font-bold mb-2">Diritto di Accesso</h4>
+                        <p class="text-sm text-green-100">Visualizzazione completa dei propri dati</p>
+                    </div>
+                    <div class="renaissance-card p-6 text-center bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5">
+                        <i class="fas fa-download text-verde-rinascita text-3xl mb-4"></i>
+                        <h4 class="font-bold mb-2">Portabilità Dati</h4>
+                        <p class="text-sm text-green-100">Export strutturato in formati standard</p>
+                    </div>
+                    <div class="renaissance-card p-6 text-center bg-gradient-to-br from-rosso-urgenza/10 to-rosso-urgenza/5">
+                        <i class="fas fa-ban text-rosso-urgenza text-3xl mb-4"></i>
+                        <h4 class="font-bold mb-2">Limitazione Trattamento</h4>
+                        <p class="text-sm text-green-100">Controllo granulare sui propri dati</p>
+                    </div>
+                    <div class="renaissance-card p-6 text-center bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5">
+                        <i class="fas fa-trash-alt text-viola-innovazione text-3xl mb-4"></i>
+                        <h4 class="font-bold mb-2">Diritto all'Oblio</h4>
+                        <p class="text-sm text-green-100">Cancellazione sicura e verificabile</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrazione Ultra Ecosystem -->
+            <div class="mt-12">
+                <div class="renaissance-card mx-auto max-w-4xl p-8 bg-gradient-to-r from-blu-algoritmo/20 to-verde-rinascita/20">
+                    <div class="text-center">
+                        <h3 class="mb-6 text-2xl font-bold renaissance-title">
+                            Integrazione <span class="text-oro-fiorentino">Ultra Ecosystem</span>
+                        </h3>
+                        <p class="mb-6 font-body text-lg text-green-100">
+                            L'architettura GDPR si integra perfettamente con l'ecosistema Ultra (UltraLogManager, 
+                            ErrorManagerInterface) per garantire logging standardizzato, gestione errori robusta 
+                            e monitoraggio continuo della compliance.
+                        </p>
+                        <div class="grid gap-4 md:grid-cols-3">
+                            <div class="text-center">
+                                <i class="fas fa-clipboard-list text-oro-fiorentino text-2xl mb-2"></i>
+                                <h4 class="font-bold">Audit Trail</h4>
+                                <p class="text-sm text-green-100">Ogni azione tracciata</p>
+                            </div>
+                            <div class="text-center">
+                                <i class="fas fa-exclamation-triangle text-verde-rinascita text-2xl mb-2"></i>
+                                <h4 class="font-bold">Error Handling</h4>
+                                <p class="text-sm text-green-100">Gestione sicura degli errori</p>
+                            </div>
+                            <div class="text-center">
+                                <i class="fas fa-chart-line text-rosso-urgenza text-2xl mb-2"></i>
+                                <h4 class="font-bold">Monitoring</h4>
+                                <p class="text-sm text-green-100">Monitoraggio compliance 24/7</p>
+                            </div>
                         </div>
                     </div>
                 </div>

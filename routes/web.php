@@ -209,6 +209,10 @@ Route::prefix('info')->name('info.')->group(function () {
         return view('info.florence-egi');
     })->name('florence-egi');
 
+    Route::get('/disclaimer', function () {
+        return view('info.disclaimer');
+    })->name('disclaimer');
+
     Route::get('/egi', function () {
         return view('info.under-construction', ['title' => 'Cosa sono gli EGI?', 'subtitle' => 'Scopri come funzionano gli EGI (Environmental Goods Invent)']);
     })->name('egi');
