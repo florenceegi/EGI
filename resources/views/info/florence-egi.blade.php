@@ -229,12 +229,11 @@
                 </h1>
                 <p class="mx-auto mb-8 max-w-4xl font-body text-xl text-green-100 sm:text-2xl">
                     <strong class="text-oro-fiorentino">FlorenceEGI è il primo marketplace che risolve il trilemma
-                        impossibile dell'ecosistema NFT:</strong><br>
+                        dell'ecosistema NFT:</strong><br>
                     Qualità Artistica + Liquidità Massima + Impatto Ambientale Reale
                 </p>
                 <div class="mx-auto mb-8 max-w-4xl font-body text-lg">
-                    <strong>Matematica del Miliardo:</strong> €1B volume = €200M+ impatto EPP automatico + €650M+
-                    guadagni creator + €150M ricavi piattaforma
+                    <strong>Architettura Sostenibile:</strong> Ogni transazione genera impatto EPP automatico, guadagni equi per i creator e sostenibilità della piattaforma
                 </div>
                 <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                     <a href="#soluzione"
@@ -352,6 +351,93 @@
         </div>
     </section>
 
+    <!-- Cosa sono gli EGI -->
+    <section id="egi" class="bg-gray-50 py-16 sm:py-24">
+        <div class="golden-ratio-container px-4 sm:px-6">
+            <div class="mb-12 text-center sm:mb-16">
+                <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                    Che cosa sono gli <span class="text-oro-fiorentino">EGI</span>?
+                </h2>
+                <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                    <strong>EGI = Ecological, Goods & Inventive</strong><br>
+                    Gli asset digitali che uniscono arte, impatto ambientale e utility pratica
+                </p>
+            </div>
+
+            <!-- Le Tre Componenti dell'Asset Digitale -->
+            <div class="grid gap-8 mb-16 md:grid-cols-3">
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center justify-center">
+                        <div class="bg-verde-rinascita/20 flex h-20 w-20 items-center justify-center rounded-full">
+                            <i class="fas fa-seedling text-verde-rinascita text-3xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="renaissance-title text-center text-xl font-bold mb-4">Environment Protection Programs</h3>
+                    <p class="font-body text-grigio-pietra text-center">
+                        I progetti ambientali concreti che danno sostanza all'impatto ecologico di ogni EGI
+                    </p>
+                </div>
+
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center justify-center">
+                        <div class="bg-oro-fiorentino/20 flex h-20 w-20 items-center justify-center rounded-full">
+                            <i class="fas fa-box text-oro-fiorentino text-3xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="renaissance-title text-center text-xl font-bold mb-4">Goods - Beni o Servizi</h3>
+                    <p class="font-body text-grigio-pietra text-center">
+                        La componente economica e di utilità pratica che rende ogni EGI un asset funzionale
+                    </p>
+                </div>
+
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center justify-center">
+                        <div class="bg-viola-innovazione/20 flex h-20 w-20 items-center justify-center rounded-full">
+                            <i class="fas fa-lightbulb text-viola-innovazione text-3xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="renaissance-title text-center text-xl font-bold mb-4">Inventive - Creatività</h3>
+                    <p class="font-body text-grigio-pietra text-center">
+                        L'elemento artistico e innovativo che rende unico ogni EGI nel panorama digitale
+                    </p>
+                </div>
+            </div>
+
+            <!-- Co-creazione -->
+            <div class="bg-white rounded-2xl p-8 md:p-12">
+                <h3 class="renaissance-title text-2xl font-bold text-grigio-pietra mb-6 text-center">
+                    Il Concetto di <span class="text-oro-fiorentino">Co-creazione</span>
+                </h3>
+                <div class="grid gap-8 md:grid-cols-2 items-center">
+                    <div class="font-body space-y-4">
+                        <p class="text-lg">
+                            <strong>Il Co-Creatore è colui che effettua il mint</strong> - il primo acquisto di un EGI. 
+                            Diventa co-creatore perché un'opera d'arte riposta nel magazzino dell'artista è come se non fosse mai stata creata.
+                        </p>
+                        <p>
+                            Solo quando qualcuno la acquista per esporla in qualche modo, essa prende davvero vita.
+                        </p>
+                        <div class="bg-oro-fiorentino/10 p-4 rounded-lg">
+                            <p class="text-oro-fiorentino font-semibold">
+                                <i class="fas fa-star mr-2"></i>
+                                Il Co-Creatore rimane impresso nell'EGI per sempre, insieme al Creator, anche nel mercato secondario
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-oro-fiorentino/20 inline-flex items-center justify-center rounded-full h-32 w-32 mb-4">
+                            <i class="fas fa-handshake text-oro-fiorentino text-4xl"></i>
+                        </div>
+                        <p class="font-body text-grigio-pietra">
+                            <strong>Visibilità e Riconoscimento</strong><br>
+                            La Co-Creazione risponde al bisogno di visibilità e riconoscimento degli internauti
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- La Soluzione: Architettura Anti-Trilemma -->
     <section id="soluzione" class="section-dark py-16 text-white sm:py-24">
         <div class="golden-ratio-container px-4 sm:px-6">
@@ -420,7 +506,7 @@
                         </div>
                         <div>
                             <i class="fas fa-tachometer-alt mb-2 text-3xl text-verde-rinascita"></i>
-                            <p><strong>6000 TPS</strong><br>Costi €0.0001/transazione</p>
+                            <p><strong>6000 TPS</strong><br>Performance ultra-veloce</p>
                         </div>
                         <div>
                             <i class="fas fa-shield-alt mb-2 text-3xl text-verde-rinascita"></i>
@@ -440,7 +526,7 @@
                     Tecnologia: <span class="text-oro-fiorentino">Progressive Web3</span>
                 </h2>
                 <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
-                    L'infrastruttura per €1B sostenibile con adozione di massa
+                    L'infrastruttura sostenibile per l'adozione di massa del Web3
                 </p>
             </div>
 
@@ -617,10 +703,10 @@
         <div class="golden-ratio-container px-4 sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
                 <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
-                    I Sette <span class="text-oro-fiorentino">Archetipi del Miliardo</span>
+                    Gli <span class="text-oro-fiorentino">Archetipi FlorenceEGI</span>
                 </h2>
                 <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
-                    Ecosistema di attori con super-poteri specifici per raggiungere €1B di volume
+                    Ecosistema di attori specializzati che danno vita alla co-creazione artistica e ambientale
                 </p>
             </div>
 
@@ -724,15 +810,15 @@
             <div class="mb-12 text-center">
                 <div
                     class="renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 mx-auto max-w-4xl bg-gradient-to-br p-8 text-grigio-pietra">
-                    <h3 class="renaissance-title mb-6 text-2xl font-bold">Scenario Anno 1: €100K Volume di Mercato</h3>
+                    <h3 class="renaissance-title mb-6 text-2xl font-bold">Impatto Concreto e Verificabile</h3>
                     <div class="grid gap-6 font-body md:grid-cols-3">
                         <div class="text-center">
-                            <div class="text-oro-fiorentino text-3xl font-bold">€20K</div>
-                            <p class="text-sm">Destinati automaticamente agli EPP</p>
+                            <div class="text-oro-fiorentino text-3xl font-bold">20%</div>
+                            <p class="text-sm">Delle transazioni destinate agli EPP</p>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-verde-rinascita">3-5</div>
-                            <p class="text-sm">Progetti EPP finanziabili</p>
+                            <div class="text-3xl font-bold text-verde-rinascita">Crescita</div>
+                            <p class="text-sm">Progetti EPP attivi e verificati</p>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-blu-algoritmo">100%</div>
@@ -751,15 +837,14 @@
                             class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
                             <i class="fas fa-tree text-2xl text-verde-rinascita"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Riforestazione Locale</h3>
+                        <h3 class="renaissance-title text-xl font-bold">Appropriate Restoration Forestry</h3>
                     </div>
                     <div class="space-y-2 font-body">
-                        <p><strong>€5-8K per progetto</strong></p>
-                        <p>50-100 ettari per progetto</p>
-                        <p>1000-2000 alberi piantati</p>
-                        <p>10-20 tons CO2 assorbite/anno</p>
-                        <p class="text-sm text-verde-rinascita"><i class="fas fa-check mr-1"></i>Partnership con vivai
-                            locali</p>
+                        <p><strong>Riforestazione Attenta e Rispettosa</strong></p>
+                        <p>La deforestazione erode il polmone verde del pianeta</p>
+                        <p>Riforestazione mirata per ecosistemi locali</p>
+                        <p>Riabilitazione equilibrio ecosistemi</p>
+                        <p class="text-sm text-verde-rinascita"><i class="fas fa-exclamation-triangle mr-1"></i>Ogni secondo = un campo di calcio perduto</p>
                     </div>
                 </div>
 
@@ -769,15 +854,14 @@
                         <div class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
                             <i class="fas fa-water text-2xl text-blu-algoritmo"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Pulizia Acque</h3>
+                        <h3 class="renaissance-title text-xl font-bold">Aquatic Plastic Removal</h3>
                     </div>
                     <div class="space-y-2 font-body">
-                        <p><strong>€3-5K per progetto</strong></p>
-                        <p>1-2 ton plastica rimossa</p>
-                        <p>Pulizia fiumi/coste locali</p>
-                        <p>Coinvolgimento volontari</p>
-                        <p class="text-sm text-blu-algoritmo"><i class="fas fa-check mr-1"></i>Collaborazione con
-                            associazioni</p>
+                        <p><strong>Rimozione Plastica dagli Oceani</strong></p>
+                        <p>Isole di plastica = estensione di un continente</p>
+                        <p>Azione cruciale per mari, laghi e fiumi</p>
+                        <p>Affrontiamo la crisi globale con coraggio</p>
+                        <p class="text-sm text-blu-algoritmo"><i class="fas fa-exclamation-triangle mr-1"></i>Emergenza plastica acquatica</p>
                     </div>
                 </div>
 
@@ -785,17 +869,16 @@
                     class="renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br p-8 text-grigio-pietra">
                     <div class="mb-6 flex items-center">
                         <div class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-leaf text-oro-fiorentino text-2xl"></i>
+                            <i class="fas fa-bee text-oro-fiorentino text-2xl"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Biodiversità Urbana</h3>
+                        <h3 class="renaissance-title text-xl font-bold">Bee Population Enhancement</h3>
                     </div>
                     <div class="space-y-2 font-body">
-                        <p><strong>€2-4K per progetto</strong></p>
-                        <p>Orti urbani condivisi</p>
-                        <p>Hotel per insetti</p>
-                        <p>Piante mellifere</p>
-                        <p class="text-oro-fiorentino text-sm"><i class="fas fa-check mr-1"></i>Progetti pilota
-                            documentati</p>
+                        <p><strong>Protezione degli Impollinatori</strong></p>
+                        <p>Potenziamento popolazioni di api</p>
+                        <p>Supporto biodiversità</p>
+                        <p>Preservazione impollinazione</p>
+                        <p class="text-oro-fiorentino text-sm"><i class="fas fa-check mr-1"></i>Un terzo del cibo dipende dalle api</p>
                     </div>
                 </div>
             </div>
@@ -807,12 +890,12 @@
                     <h3 class="renaissance-title mb-6 text-2xl font-bold">Crescita Scalabile</h3>
                     <div class="grid gap-6 font-body md:grid-cols-2">
                         <div>
-                            <h4 class="mb-2 font-bold text-viola-innovazione">Anno 2-3: €500K-1M Volume</h4>
-                            <p>€100K-200K per EPP = 15-25 progetti finanziati</p>
+                            <h4 class="mb-2 font-bold text-viola-innovazione">Fase Iniziale: Crescita della Community</h4>
+                            <p>Sviluppo della rete di artisti, collezionisti e progetti EPP verificati</p>
                         </div>
                         <div>
-                            <h4 class="mb-2 font-bold text-viola-innovazione">Anno 4+: Crescita Organica</h4>
-                            <p>Reinvestimento impatti verificati per espansione</p>
+                            <h4 class="mb-2 font-bold text-viola-innovazione">Crescita Organica: Espansione Impatti</h4>
+                            <p>Moltiplicazione degli impatti ambientali attraverso la community attiva</p>
                         </div>
                     </div>
                     <div class="mt-6">
@@ -821,6 +904,171 @@
                             <i class="fas fa-seedling mr-2"></i>
                             Scopri i Progetti EPP
                         </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- I Nostri Valori -->
+    <section class="bg-gray-50 py-16 sm:py-24">
+        <div class="golden-ratio-container px-4 sm:px-6">
+            <div class="mb-12 text-center sm:mb-16">
+                <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                    I Valori che <span class="text-oro-fiorentino">Guidano le Nostre Azioni</span>
+                </h2>
+                <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                    I nostri valori rappresentano i principi guida e gli ideali fondamentali che informano e orientano tutte le nostre attività
+                </p>
+            </div>
+
+            <div class="grid gap-8 mb-16 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Rigenerazione dell'Ecosistema -->
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <div class="bg-verde-rinascita/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                            <i class="fas fa-seedling text-verde-rinascita text-2xl"></i>
+                        </div>
+                        <h3 class="renaissance-title text-xl font-bold">Rigenerazione dell'Ecosistema</h3>
+                    </div>
+                    <p class="font-body text-grigio-pietra">
+                        La piattaforma si impegna attivamente nella pulizia delle acque del pianeta, nella riforestazione e nel sostegno alla popolazione delle api, contribuendo a un impatto ambientale positivo.
+                    </p>
+                </div>
+
+                <!-- Sostegno agli Artisti -->
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <div class="bg-viola-innovazione/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                            <i class="fas fa-palette text-viola-innovazione text-2xl"></i>
+                        </div>
+                        <h3 class="renaissance-title text-xl font-bold">Sostegno agli Artisti</h3>
+                    </div>
+                    <p class="font-body text-grigio-pietra">
+                        FlorenceEGI offre supporto agli artisti tradizionali per entrare e navigare nel mondo digitale, facilitando la transizione e la valorizzazione del loro lavoro nel metaverso digitale.
+                    </p>
+                </div>
+
+                <!-- Innovazione e Utilità Pragmatica -->
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <div class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                            <i class="fas fa-lightbulb text-oro-fiorentino text-2xl"></i>
+                        </div>
+                        <h3 class="renaissance-title text-xl font-bold">Innovazione e Utilità Pragmatica</h3>
+                    </div>
+                    <p class="font-body text-grigio-pietra">
+                        Gli EGI acquisiscono un valore speculativo e una valenza pratica e funzionale con un impatto sociale e ambientale concreto.
+                    </p>
+                </div>
+
+                <!-- Investimento Concreto e Responsabile -->
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <div class="bg-blu-algoritmo/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                            <i class="fas fa-shield-alt text-blu-algoritmo text-2xl"></i>
+                        </div>
+                        <h3 class="renaissance-title text-xl font-bold">Investimento Concreto e Responsabile</h3>
+                    </div>
+                    <p class="font-body text-grigio-pietra">
+                        Gli EGI rappresentano un impegno verso progetti umanitari e di protezione ambientale, riflettendo un approccio etico e sostenibile negli affari.
+                    </p>
+                </div>
+
+                <!-- Rivoluzione del Concetto di Proprietà -->
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <div class="bg-rosso-urgenza/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                            <i class="fas fa-exchange-alt text-rosso-urgenza text-2xl"></i>
+                        </div>
+                        <h3 class="renaissance-title text-xl font-bold">Rivoluzione del Concetto di Proprietà</h3>
+                    </div>
+                    <p class="font-body text-grigio-pietra">
+                        La piattaforma mira a rivoluzionare il concetto di proprietà privata, incoraggiando un cambiamento sociale positivo attraverso l'innovazione tecnologica.
+                    </p>
+                </div>
+
+                <!-- Equilibrio tra Ambiente, Economia e Società -->
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <div class="bg-arancio-energia/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                            <i class="fas fa-balance-scale text-arancio-energia text-2xl"></i>
+                        </div>
+                        <h3 class="renaissance-title text-xl font-bold">Equilibrio tra Ambiente, Economia e Società</h3>
+                    </div>
+                    <p class="font-body text-grigio-pietra">
+                        Il focus sugli EGI mira a creare un equilibrio tra ambiente, economia e benessere sociale, attraverso un'economia che si armonizzi con l'ambiente e la società.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- L'Equilibrium -->
+    <section class="bg-gradient-to-br from-oro-fiorentino/10 to-verde-rinascita/10 py-16 sm:py-24">
+        <div class="golden-ratio-container px-4 sm:px-6">
+            <div class="mx-auto max-w-6xl">
+                <div class="mb-12 text-center">
+                    <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                        L'<span class="text-oro-fiorentino">Equilibrium</span>
+                    </h2>
+                    <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                        Il cuore pulsante dell'ecosistema FlorenceEGI: dove arte, tecnologia e impatto ambientale si fondono in perfetta armonia
+                    </p>
+                </div>
+
+                <div class="grid gap-8 lg:grid-cols-2">
+                    <!-- Cos'è l'Equilibrium -->
+                    <div class="renaissance-card elegant-hover p-8">
+                        <div class="mb-6 flex items-center">
+                            <div class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                                <i class="fas fa-atom text-oro-fiorentino text-2xl"></i>
+                            </div>
+                            <h3 class="renaissance-title text-xl font-bold">Il Carburante del Cambiamento</h3>
+                        </div>
+                        <p class="font-body text-grigio-pietra mb-4">
+                            L'Equilibrium rappresenta i fondi raccolti attraverso le attività della piattaforma FlorenceEGI, 
+                            destinati automaticamente ai progetti EPP (Environment Protection Programs).
+                        </p>
+                        <p class="font-body text-grigio-pietra">
+                            Ogni transazione sulla piattaforma genera un 20% di Equilibrium che fluisce direttamente 
+                            verso la rigenerazione ambientale, creando un ciclo virtuoso tra arte digitale e sostenibilità.
+                        </p>
+                    </div>
+
+                    <!-- Come Funziona -->
+                    <div class="renaissance-card elegant-hover p-8">
+                        <div class="mb-6 flex items-center">
+                            <div class="bg-verde-rinascita/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                                <i class="fas fa-cogs text-verde-rinascita text-2xl"></i>
+                            </div>
+                            <h3 class="renaissance-title text-xl font-bold">Meccanismo Automatico</h3>
+                        </div>
+                        <p class="font-body text-grigio-pietra mb-4">
+                            Quando un Creator crea una collection, sceglie un EPP specifico. Lo smart contract è programmato 
+                            per inviare automaticamente il 20% di ogni transazione (Mint o Rebind) al wallet dell'EPP selezionato.
+                        </p>
+                        <p class="font-body text-grigio-pietra">
+                            Questo processo è trasparente, immediato e verificabile sulla blockchain, garantendo che ogni 
+                            opera d'arte contribuisca concretamente alla rigenerazione ambientale.
+                        </p>
+                    </div>
+
+                    <!-- Visione Narrativa -->
+                    <div class="renaissance-card elegant-hover p-8 lg:col-span-2">
+                        <div class="mb-6 flex items-center justify-center">
+                            <div class="bg-blu-algoritmo/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
+                                <i class="fas fa-heart text-blu-algoritmo text-2xl"></i>
+                            </div>
+                            <h3 class="renaissance-title text-xl font-bold">Agapi e Aisthitikè: Amore ed Estetica</h3>
+                        </div>
+                        <p class="font-body text-grigio-pietra text-center max-w-4xl mx-auto">
+                            Nell'universo narrativo di Natan, l'Equilibrium è la molecola fondamentale composta da due proteine: 
+                            <strong>agapi</strong> (amore) e <strong>aisthitikè</strong> (estetica). È il carburante che permette 
+                            di trasformare il negativo in positivo, l'inquinato in puro, lo scarso in abbondante. 
+                            L'Equilibrium non è solo una risorsa, ma il simbolo di un impegno collettivo verso un mondo 
+                            più equilibrato, sostenibile e artisticamente ricco.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -836,8 +1084,7 @@
                 </h2>
                 <p class="mb-8 font-body text-xl text-grigio-pietra">
                     <em>"Non promettiamo di cambiare il mondo. Creiamo le condizioni perché il mondo si cambi da solo,
-                        una transazione alla volta, un progetto EPP alla volta, €1 miliardo di impatto virtuoso alla
-                        volta."</em>
+                        una transazione alla volta, un progetto EPP alla volta, un EGI alla volta."</em>
                 </p>
                 <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                     <a href="{{ route('register') }}"
