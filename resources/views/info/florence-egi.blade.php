@@ -139,79 +139,93 @@
 <body class="bg-gray-50 text-grigio-pietra">
 
     <!-- Header con Navigazione -->
-    <header class="bg-blu-algoritmo text-white shadow-lg">
-        <div class="golden-ratio-container px-4 py-4 sm:px-6 sm:py-6">
+    <header class="text-white shadow-lg bg-blu-algoritmo">
+        <div class="px-4 py-4 golden-ratio-container sm:px-6 sm:py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <i class="fas fa-infinity text-oro-fiorentino text-3xl sm:text-4xl"></i>
+                    <i class="text-3xl fas fa-infinity text-oro-fiorentino sm:text-4xl"></i>
                     <div>
-                        <h1 class="renaissance-title text-xl font-bold sm:text-2xl">FlorenceEGI</h1>
-                        <p class="font-body text-sm text-blue-200 sm:text-base">Il Rinascimento Digitale</p>
+                        <h1 class="text-xl font-bold renaissance-title sm:text-2xl">FlorenceEGI</h1>
+                        <p class="text-sm text-blue-200 font-body sm:text-base">Il Rinascimento Digitale</p>
                     </div>
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden space-x-6 md:flex">
+                <nav class="hidden space-x-4 md:flex">
                     <a href="{{ route('home') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Home</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Home</a>
                     <a href="#visione"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Visione</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Visione</a>
                     <a href="#problema"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Problema</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Problema</a>
+                    <a href="#egi"
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">EGI</a>
                     <a href="#soluzione"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Soluzione</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Soluzione</a>
                     <a href="#tecnologia"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Tecnologia</a>
-                    <a href="#coa"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">CoA</a>
-                    <a href="#impatto"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Impatto</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Tecnologia</a>
+                    <a href="#archetipi"
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Archetipi</a>
+                    <a href="#valori"
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Valori</a>
+                    <a href="#equilibrium"
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Equilibrium</a>
                 </nav>
 
                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button"
-                    class="block rounded-md p-2 transition-colors hover:bg-blue-700 md:hidden">
-                    <i class="fas fa-bars text-2xl"></i>
+                    class="block p-2 transition-colors rounded-md hover:bg-blue-700 md:hidden">
+                    <i class="text-2xl fas fa-bars"></i>
                 </button>
             </div>
 
             <!-- Mobile Navigation Menu -->
-            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden">
-                <div class="space-y-3 pt-4">
+            <div id="mobile-menu" class="hidden pb-4 mt-4 border-t border-blue-600 md:hidden">
+                <div class="pt-4 space-y-3">
                     <a href="{{ route('home') }}"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-home text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-home text-oro-fiorentino"></i>
                         Torna alla Home
                     </a>
                     <a href="#visione"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-eye text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-eye text-oro-fiorentino"></i>
                         Visione
                     </a>
                     <a href="#problema"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-exclamation-triangle text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-exclamation-triangle text-oro-fiorentino"></i>
                         Problema
                     </a>
+                    <a href="#egi"
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-gem text-oro-fiorentino"></i>
+                        EGI
+                    </a>
                     <a href="#soluzione"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-lightbulb text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-lightbulb text-oro-fiorentino"></i>
                         Soluzione
                     </a>
                     <a href="#tecnologia"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-cogs text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-cogs text-oro-fiorentino"></i>
                         Tecnologia
                     </a>
-                    <a href="#coa"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-certificate text-oro-fiorentino mr-3 text-lg"></i>
-                        CoA
+                    <a href="#archetipi"
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-users text-oro-fiorentino"></i>
+                        Archetipi
                     </a>
-                    <a href="#impatto"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-leaf text-oro-fiorentino mr-3 text-lg"></i>
-                        Impatto
+                    <a href="#valori"
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-heart text-oro-fiorentino"></i>
+                        Valori
+                    </a>
+                    <a href="#equilibrium"
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-atom text-oro-fiorentino"></i>
+                        Equilibrium
                     </a>
                 </div>
             </div>
@@ -219,31 +233,32 @@
     </header>
 
     <!-- Hero Section -->
-    <section id="visione" class="hero-background text-white">
-        <div class="golden-ratio-container px-4 py-16 sm:px-6 sm:py-24">
-            <div class="mx-auto max-w-5xl text-center">
-                <h1 class="renaissance-title mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
+    <section id="visione" class="text-white hero-background">
+        <div class="px-4 py-16 golden-ratio-container sm:px-6 sm:py-24">
+            <div class="max-w-5xl mx-auto text-center">
+                <h1 class="mb-6 text-4xl font-bold leading-tight renaissance-title sm:text-5xl md:text-6xl">
                     Il <span class="text-oro-fiorentino">Rinascimento Digitale</span><br>
                     che Unisce Arte, Tecnologia<br>
                     e Rigenerazione Planetaria
                 </h1>
-                <p class="mx-auto mb-8 max-w-4xl font-body text-xl text-green-100 sm:text-2xl">
+                <p class="max-w-4xl mx-auto mb-8 text-xl text-green-100 font-body sm:text-2xl">
                     <strong class="text-oro-fiorentino">FlorenceEGI è il primo marketplace che risolve il trilemma
                         dell'ecosistema NFT:</strong><br>
                     Qualità Artistica + Liquidità Massima + Impatto Ambientale Reale
                 </p>
-                <div class="mx-auto mb-8 max-w-4xl font-body text-lg">
-                    <strong>Architettura Sostenibile:</strong> Ogni transazione genera impatto EPP automatico, guadagni equi per i creator e sostenibilità della piattaforma
+                <div class="max-w-4xl mx-auto mb-8 text-lg font-body">
+                    <strong>Architettura Sostenibile:</strong> Ogni transazione genera impatto EPP automatico, guadagni
+                    equi per i creator e sostenibilità della piattaforma
                 </div>
                 <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                     <a href="#soluzione"
-                        class="cta-primary elegant-hover inline-flex items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold text-white">
-                        <i class="fas fa-rocket mr-3"></i>
+                        class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white cta-primary elegant-hover rounded-xl">
+                        <i class="mr-3 fas fa-rocket"></i>
                         Scopri la Soluzione
                     </a>
                     <a href="#tecnologia"
-                        class="border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover inline-flex items-center justify-center rounded-xl border-2 px-8 py-4 text-lg font-semibold transition-all hover:text-blu-algoritmo">
-                        <i class="fas fa-cogs mr-3"></i>
+                        class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold transition-all border-2 border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover rounded-xl hover:text-blu-algoritmo">
+                        <i class="mr-3 fas fa-cogs"></i>
                         Tecnologia Algorand
                     </a>
                 </div>
@@ -252,27 +267,27 @@
     </section>
 
     <!-- Il Problema: Trilemma NFT -->
-    <section id="problema" class="bg-white py-16 sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
+    <section id="problema" class="py-16 bg-white sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                     Il Problema che <span class="text-rosso-urgenza">Risolviamo</span>
                 </h2>
-                <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
                     Il mercato NFT è paralizzato da un trilemma che nessuna piattaforma è riuscita a risolvere
                 </p>
             </div>
 
             <!-- Trilemma Diagram -->
-            <div class="relative mx-auto mb-16 max-w-4xl">
-                <div class="flex h-96 items-center justify-center">
+            <div class="relative max-w-4xl mx-auto mb-16">
+                <div class="flex items-center justify-center h-96">
                     <!-- Triangle visualization -->
                     <div class="relative">
                         <!-- Top point: Qualità Artistica -->
-                        <div class="absolute -top-16 left-1/2 -translate-x-1/2 transform">
+                        <div class="absolute transform -translate-x-1/2 -top-16 left-1/2">
                             <div class="trilemma-point bg-viola-innovazione">
                                 <div>
-                                    <i class="fas fa-palette mb-2 text-2xl"></i><br>
+                                    <i class="mb-2 text-2xl fas fa-palette"></i><br>
                                     QUALITÀ<br>ARTISTICA
                                 </div>
                             </div>
@@ -282,7 +297,7 @@
                         <div class="absolute -left-16 top-32">
                             <div class="trilemma-point bg-blu-algoritmo">
                                 <div>
-                                    <i class="fas fa-chart-line mb-2 text-2xl"></i><br>
+                                    <i class="mb-2 text-2xl fas fa-chart-line"></i><br>
                                     LIQUIDITÀ<br>TRADING
                                 </div>
                             </div>
@@ -292,7 +307,7 @@
                         <div class="absolute -right-16 top-32">
                             <div class="trilemma-point bg-verde-rinascita">
                                 <div>
-                                    <i class="fas fa-leaf mb-2 text-2xl"></i><br>
+                                    <i class="mb-2 text-2xl fas fa-leaf"></i><br>
                                     IMPATTO<br>AMBIENTALE
                                 </div>
                             </div>
@@ -300,9 +315,9 @@
 
                         <!-- Center: Impossibilità -->
                         <div
-                            class="flex h-32 w-32 items-center justify-center rounded-full bg-rosso-urgenza text-center font-bold text-white">
+                            class="flex items-center justify-center w-32 h-32 font-bold text-center text-white rounded-full bg-rosso-urgenza">
                             <div>
-                                <i class="fas fa-times mb-2 text-3xl"></i><br>
+                                <i class="mb-2 text-3xl fas fa-times"></i><br>
                                 TRILEMMA<br>IMPOSSIBILE
                             </div>
                         </div>
@@ -311,37 +326,37 @@
             </div>
 
             <!-- Competitor Analysis -->
-            <div class="mb-16 grid gap-8 md:grid-cols-3">
-                <div class="renaissance-card p-6 text-center">
-                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                        <i class="fas fa-times text-2xl text-rosso-urgenza"></i>
+            <div class="grid gap-8 mb-16 md:grid-cols-3">
+                <div class="p-6 text-center renaissance-card">
+                    <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full">
+                        <i class="text-2xl fas fa-times text-rosso-urgenza"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-xl font-bold text-grigio-pietra">OpenSea</h3>
-                    <p class="font-body text-sm text-grigio-pietra">
+                    <h3 class="mb-2 text-xl font-bold renaissance-title text-grigio-pietra">OpenSea</h3>
+                    <p class="text-sm font-body text-grigio-pietra">
                         ✅ Qualità artistica<br>
                         ❌ Zero liquidità<br>
                         ❌ Zero impatto ambientale
                     </p>
                 </div>
 
-                <div class="renaissance-card p-6 text-center">
-                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                        <i class="fas fa-times text-2xl text-rosso-urgenza"></i>
+                <div class="p-6 text-center renaissance-card">
+                    <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full">
+                        <i class="text-2xl fas fa-times text-rosso-urgenza"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-xl font-bold text-grigio-pietra">Blur</h3>
-                    <p class="font-body text-sm text-grigio-pietra">
+                    <h3 class="mb-2 text-xl font-bold renaissance-title text-grigio-pietra">Blur</h3>
+                    <p class="text-sm font-body text-grigio-pietra">
                         ✅ Liquidità massima<br>
                         ❌ Zero qualità<br>
                         ❌ Zero impatto ambientale
                     </p>
                 </div>
 
-                <div class="renaissance-card p-6 text-center">
-                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                        <i class="fas fa-times text-2xl text-rosso-urgenza"></i>
+                <div class="p-6 text-center renaissance-card">
+                    <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full">
+                        <i class="text-2xl fas fa-times text-rosso-urgenza"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-xl font-bold text-grigio-pietra">Foundation</h3>
-                    <p class="font-body text-sm text-grigio-pietra">
+                    <h3 class="mb-2 text-xl font-bold renaissance-title text-grigio-pietra">Foundation</h3>
+                    <p class="text-sm font-body text-grigio-pietra">
                         ✅ Qualità premium<br>
                         ❌ Liquidità inesistente<br>
                         ❌ Zero impatto ambientale
@@ -352,13 +367,13 @@
     </section>
 
     <!-- Cosa sono gli EGI -->
-    <section id="egi" class="bg-gray-50 py-16 sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
+    <section id="egi" class="py-16 bg-gray-50 sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                     Che cosa sono gli <span class="text-oro-fiorentino">EGI</span>?
                 </h2>
-                <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
                     <strong>EGI = Ecological, Goods & Inventive</strong><br>
                     Gli asset digitali che uniscono arte, impatto ambientale e utility pratica
                 </p>
@@ -366,67 +381,71 @@
 
             <!-- Le Tre Componenti dell'Asset Digitale -->
             <div class="grid gap-8 mb-16 md:grid-cols-3">
-                <div class="renaissance-card elegant-hover p-8">
-                    <div class="mb-6 flex items-center justify-center">
-                        <div class="bg-verde-rinascita/20 flex h-20 w-20 items-center justify-center rounded-full">
-                            <i class="fas fa-seedling text-verde-rinascita text-3xl"></i>
+                <div class="p-8 renaissance-card elegant-hover">
+                    <div class="flex items-center justify-center mb-6">
+                        <div class="flex items-center justify-center w-20 h-20 rounded-full bg-verde-rinascita/20">
+                            <i class="text-3xl fas fa-seedling text-verde-rinascita"></i>
                         </div>
                     </div>
-                    <h3 class="renaissance-title text-center text-xl font-bold mb-4">Environment Protection Programs</h3>
-                    <p class="font-body text-grigio-pietra text-center">
+                    <h3 class="mb-4 text-xl font-bold text-center renaissance-title">Environment Protection Programs
+                    </h3>
+                    <p class="text-center font-body text-grigio-pietra">
                         I progetti ambientali concreti che danno sostanza all'impatto ecologico di ogni EGI
                     </p>
                 </div>
 
-                <div class="renaissance-card elegant-hover p-8">
-                    <div class="mb-6 flex items-center justify-center">
-                        <div class="bg-oro-fiorentino/20 flex h-20 w-20 items-center justify-center rounded-full">
-                            <i class="fas fa-box text-oro-fiorentino text-3xl"></i>
+                <div class="p-8 renaissance-card elegant-hover">
+                    <div class="flex items-center justify-center mb-6">
+                        <div class="flex items-center justify-center w-20 h-20 rounded-full bg-oro-fiorentino/20">
+                            <i class="text-3xl fas fa-box text-oro-fiorentino"></i>
                         </div>
                     </div>
-                    <h3 class="renaissance-title text-center text-xl font-bold mb-4">Goods - Beni o Servizi</h3>
-                    <p class="font-body text-grigio-pietra text-center">
+                    <h3 class="mb-4 text-xl font-bold text-center renaissance-title">Goods - Beni o Servizi</h3>
+                    <p class="text-center font-body text-grigio-pietra">
                         La componente economica e di utilità pratica che rende ogni EGI un asset funzionale
                     </p>
                 </div>
 
-                <div class="renaissance-card elegant-hover p-8">
-                    <div class="mb-6 flex items-center justify-center">
-                        <div class="bg-viola-innovazione/20 flex h-20 w-20 items-center justify-center rounded-full">
-                            <i class="fas fa-lightbulb text-viola-innovazione text-3xl"></i>
+                <div class="p-8 renaissance-card elegant-hover">
+                    <div class="flex items-center justify-center mb-6">
+                        <div class="flex items-center justify-center w-20 h-20 rounded-full bg-viola-innovazione/20">
+                            <i class="text-3xl fas fa-lightbulb text-viola-innovazione"></i>
                         </div>
                     </div>
-                    <h3 class="renaissance-title text-center text-xl font-bold mb-4">Inventive - Creatività</h3>
-                    <p class="font-body text-grigio-pietra text-center">
+                    <h3 class="mb-4 text-xl font-bold text-center renaissance-title">Inventive - Creatività</h3>
+                    <p class="text-center font-body text-grigio-pietra">
                         L'elemento artistico e innovativo che rende unico ogni EGI nel panorama digitale
                     </p>
                 </div>
             </div>
 
             <!-- Co-creazione -->
-            <div class="bg-white rounded-2xl p-8 md:p-12">
-                <h3 class="renaissance-title text-2xl font-bold text-grigio-pietra mb-6 text-center">
+            <div class="p-8 bg-white rounded-2xl md:p-12">
+                <h3 class="mb-6 text-2xl font-bold text-center renaissance-title text-grigio-pietra">
                     Il Concetto di <span class="text-oro-fiorentino">Co-creazione</span>
                 </h3>
-                <div class="grid gap-8 md:grid-cols-2 items-center">
-                    <div class="font-body space-y-4">
+                <div class="grid items-center gap-8 md:grid-cols-2">
+                    <div class="space-y-4 font-body">
                         <p class="text-lg">
-                            <strong>Il Co-Creatore è colui che effettua il mint</strong> - il primo acquisto di un EGI. 
-                            Diventa co-creatore perché un'opera d'arte riposta nel magazzino dell'artista è come se non fosse mai stata creata.
+                            <strong>Il Co-Creatore è colui che effettua il mint</strong> - il primo acquisto di un EGI.
+                            Diventa co-creatore perché un'opera d'arte riposta nel magazzino dell'artista è come se non
+                            fosse mai stata creata.
                         </p>
                         <p>
                             Solo quando qualcuno la acquista per esporla in qualche modo, essa prende davvero vita.
                         </p>
-                        <div class="bg-oro-fiorentino/10 p-4 rounded-lg">
-                            <p class="text-oro-fiorentino font-semibold">
-                                <i class="fas fa-star mr-2"></i>
-                                Il Co-Creatore rimane impresso nell'EGI per sempre, insieme al Creator, anche nel mercato secondario
+                        <div class="p-4 rounded-lg bg-oro-fiorentino/10">
+                            <p class="font-semibold text-oro-fiorentino">
+                                <i class="mr-2 fas fa-star"></i>
+                                Il Co-Creatore rimane impresso nell'EGI per sempre, insieme al Creator, anche nel
+                                mercato secondario
                             </p>
                         </div>
                     </div>
                     <div class="text-center">
-                        <div class="bg-oro-fiorentino/20 inline-flex items-center justify-center rounded-full h-32 w-32 mb-4">
-                            <i class="fas fa-handshake text-oro-fiorentino text-4xl"></i>
+                        <div
+                            class="inline-flex items-center justify-center w-32 h-32 mb-4 rounded-full bg-oro-fiorentino/20">
+                            <i class="text-4xl fas fa-handshake text-oro-fiorentino"></i>
                         </div>
                         <p class="font-body text-grigio-pietra">
                             <strong>Visibilità e Riconoscimento</strong><br>
@@ -439,27 +458,27 @@
     </section>
 
     <!-- La Soluzione: Architettura Anti-Trilemma -->
-    <section id="soluzione" class="section-dark py-16 text-white sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
+    <section id="soluzione" class="py-16 text-white section-dark sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 class="renaissance-title mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
+                <h2 class="mb-4 text-3xl font-bold renaissance-title sm:text-4xl md:text-5xl">
                     La Soluzione: <span class="text-oro-fiorentino">Architettura Anti-Trilemma</span>
                 </h2>
-                <p class="mx-auto max-w-3xl font-body text-xl text-green-100">
+                <p class="max-w-3xl mx-auto text-xl text-green-100 font-body">
                     Il primo marketplace che offre TUTTE E TRE le caratteristiche simultaneamente
                 </p>
             </div>
 
             <!-- EGI Dual Flow -->
-            <div class="mb-16 grid gap-8 lg:grid-cols-2">
+            <div class="grid gap-8 mb-16 lg:grid-cols-2">
                 <div
-                    class="renaissance-card bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5 p-8 text-grigio-pietra">
-                    <div class="mb-6 flex items-center">
+                    class="p-8 renaissance-card bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5 text-grigio-pietra">
+                    <div class="flex items-center mb-6">
                         <div
-                            class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-viola-innovazione/20">
-                            <i class="fas fa-gem text-2xl text-viola-innovazione"></i>
+                            class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-viola-innovazione/20">
+                            <i class="text-2xl fas fa-gem text-viola-innovazione"></i>
                         </div>
-                        <h3 class="renaissance-title text-2xl font-bold">EGI Fisici</h3>
+                        <h3 class="text-2xl font-bold renaissance-title">EGI Fisici</h3>
                     </div>
                     <div class="space-y-4 font-body">
                         <p><strong>Arte autentica</strong> con certificazione CoA blockchain</p>
@@ -471,12 +490,12 @@
                 </div>
 
                 <div
-                    class="renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 p-8 text-grigio-pietra">
-                    <div class="mb-6 flex items-center">
-                        <div class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
-                            <i class="fas fa-bolt text-2xl text-blu-algoritmo"></i>
+                    class="p-8 renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 text-grigio-pietra">
+                    <div class="flex items-center mb-6">
+                        <div class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                            <i class="text-2xl fas fa-bolt text-blu-algoritmo"></i>
                         </div>
-                        <h3 class="renaissance-title text-2xl font-bold">EGI pt</h3>
+                        <h3 class="text-2xl font-bold renaissance-title">EGI pt</h3>
                     </div>
                     <div class="space-y-4 font-body">
                         <p><strong>Trading velocity</strong> ad alta frequenza</p>
@@ -491,25 +510,25 @@
             <!-- Infrastructure -->
             <div class="text-center">
                 <div
-                    class="renaissance-card mx-auto max-w-4xl bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5 p-8 text-grigio-pietra">
-                    <div class="mb-6 flex items-center justify-center">
+                    class="max-w-4xl p-8 mx-auto renaissance-card bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5 text-grigio-pietra">
+                    <div class="flex items-center justify-center mb-6">
                         <div
-                            class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
-                            <i class="fas fa-infinity text-2xl text-verde-rinascita"></i>
+                            class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-verde-rinascita/20">
+                            <i class="text-2xl fas fa-infinity text-verde-rinascita"></i>
                         </div>
-                        <h3 class="renaissance-title text-2xl font-bold">Algorand Infrastructure</h3>
+                        <h3 class="text-2xl font-bold renaissance-title">Algorand Infrastructure</h3>
                     </div>
                     <div class="grid gap-6 font-body md:grid-cols-3">
                         <div>
-                            <i class="fas fa-leaf mb-2 text-3xl text-verde-rinascita"></i>
+                            <i class="mb-2 text-3xl fas fa-leaf text-verde-rinascita"></i>
                             <p><strong>Carbon Negative</strong><br>Blockchain che assorbe CO2</p>
                         </div>
                         <div>
-                            <i class="fas fa-tachometer-alt mb-2 text-3xl text-verde-rinascita"></i>
+                            <i class="mb-2 text-3xl fas fa-tachometer-alt text-verde-rinascita"></i>
                             <p><strong>6000 TPS</strong><br>Performance ultra-veloce</p>
                         </div>
                         <div>
-                            <i class="fas fa-shield-alt mb-2 text-3xl text-verde-rinascita"></i>
+                            <i class="mb-2 text-3xl fas fa-shield-alt text-verde-rinascita"></i>
                             <p><strong>Sicurezza Enterprise</strong><br>Finalità 2.5 secondi</p>
                         </div>
                     </div>
@@ -519,26 +538,26 @@
     </section>
 
     <!-- Tecnologia: Progressive Web3 -->
-    <section id="tecnologia" class="bg-white py-16 sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
+    <section id="tecnologia" class="py-16 bg-white sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                     Tecnologia: <span class="text-oro-fiorentino">Progressive Web3</span>
                 </h2>
-                <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
                     L'infrastruttura sostenibile per l'adozione di massa del Web3
                 </p>
             </div>
 
             <!-- Architecture Layers -->
-            <div class="mx-auto max-w-4xl space-y-8">
+            <div class="max-w-4xl mx-auto space-y-8">
                 <!-- Layer 1 -->
-                <div class="renaissance-card border-l-4 border-verde-rinascita p-6">
-                    <div class="mb-4 flex items-center">
+                <div class="p-6 border-l-4 renaissance-card border-verde-rinascita">
+                    <div class="flex items-center mb-4">
                         <div
-                            class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-verde-rinascita font-bold text-white">
+                            class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white rounded-full bg-verde-rinascita">
                             1</div>
-                        <h3 class="renaissance-title text-xl font-bold text-grigio-pietra">Layer 1 (99% users)</h3>
+                        <h3 class="text-xl font-bold renaissance-title text-grigio-pietra">Layer 1 (99% users)</h3>
                     </div>
                     <p class="font-body text-grigio-pietra">
                         <strong>Email login + carta credito + UX familiare come Amazon</strong><br>
@@ -547,12 +566,12 @@
                 </div>
 
                 <!-- Layer 2 -->
-                <div class="renaissance-card border-oro-fiorentino border-l-4 p-6">
-                    <div class="mb-4 flex items-center">
+                <div class="p-6 border-l-4 renaissance-card border-oro-fiorentino">
+                    <div class="flex items-center mb-4">
                         <div
-                            class="bg-oro-fiorentino mr-4 flex h-12 w-12 items-center justify-center rounded-full font-bold text-white">
+                            class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white rounded-full bg-oro-fiorentino">
                             2</div>
-                        <h3 class="renaissance-title text-xl font-bold text-grigio-pietra">Layer 2 (Bridge)</h3>
+                        <h3 class="text-xl font-bold renaissance-title text-grigio-pietra">Layer 2 (Bridge)</h3>
                     </div>
                     <p class="font-body text-grigio-pietra">
                         <strong>Educazione graduale + wallet custodial + supporto umano</strong><br>
@@ -561,12 +580,12 @@
                 </div>
 
                 <!-- Layer 3 -->
-                <div class="renaissance-card border-l-4 border-viola-innovazione p-6">
-                    <div class="mb-4 flex items-center">
+                <div class="p-6 border-l-4 renaissance-card border-viola-innovazione">
+                    <div class="flex items-center mb-4">
                         <div
-                            class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-viola-innovazione font-bold text-white">
+                            class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white rounded-full bg-viola-innovazione">
                             3</div>
-                        <h3 class="renaissance-title text-xl font-bold text-grigio-pietra">Layer 3 (1% power users)
+                        <h3 class="text-xl font-bold renaissance-title text-grigio-pietra">Layer 3 (1% power users)
                         </h3>
                     </div>
                     <p class="font-body text-grigio-pietra">
@@ -578,25 +597,25 @@
 
             <!-- Smart Contracts Innovation -->
             <div class="mt-16">
-                <h3 class="renaissance-title mb-8 text-center text-2xl font-bold text-grigio-pietra">Smart Contracts
+                <h3 class="mb-8 text-2xl font-bold text-center renaissance-title text-grigio-pietra">Smart Contracts
                     Rivoluzionari</h3>
                 <div class="grid gap-8 md:grid-cols-3">
-                    <div class="renaissance-card p-6 text-center">
-                        <i class="fas fa-chart-line text-oro-fiorentino mb-4 text-3xl"></i>
-                        <h4 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">Fee Dinamiche On-Chain
+                    <div class="p-6 text-center renaissance-card">
+                        <i class="mb-4 text-3xl fas fa-chart-line text-oro-fiorentino"></i>
+                        <h4 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">Fee Dinamiche On-Chain
                         </h4>
-                        <p class="font-body text-sm text-grigio-pietra">Primi al mondo con parametri auto-adattivi</p>
+                        <p class="text-sm font-body text-grigio-pietra">Primi al mondo con parametri auto-adattivi</p>
                     </div>
-                    <div class="renaissance-card p-6 text-center">
-                        <i class="fas fa-share-alt mb-4 text-3xl text-verde-rinascita"></i>
-                        <h4 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">EPP Distribution</h4>
-                        <p class="font-body text-sm text-grigio-pietra">20% split immutabile, trasparente, verificabile
+                    <div class="p-6 text-center renaissance-card">
+                        <i class="mb-4 text-3xl fas fa-share-alt text-verde-rinascita"></i>
+                        <h4 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">EPP Distribution</h4>
+                        <p class="text-sm font-body text-grigio-pietra">20% split immutabile, trasparente, verificabile
                         </p>
                     </div>
-                    <div class="renaissance-card p-6 text-center">
-                        <i class="fas fa-infinity mb-4 text-3xl text-viola-innovazione"></i>
-                        <h4 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">Royalty Engine</h4>
-                        <p class="font-body text-sm text-grigio-pietra">Pagamenti automatici crescenti per sempre</p>
+                    <div class="p-6 text-center renaissance-card">
+                        <i class="mb-4 text-3xl fas fa-infinity text-viola-innovazione"></i>
+                        <h4 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">Royalty Engine</h4>
+                        <p class="text-sm font-body text-grigio-pietra">Pagamenti automatici crescenti per sempre</p>
                     </div>
                 </div>
             </div>
@@ -604,43 +623,43 @@
     </section>
 
     <!-- CoA: Certificate of Authenticity -->
-    <section id="coa" class="section-dark py-16 text-white sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
+    <section id="coa" class="py-16 text-white section-dark sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 class="renaissance-title mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
+                <h2 class="mb-4 text-3xl font-bold renaissance-title sm:text-4xl md:text-5xl">
                     <span class="text-oro-fiorentino">CoA</span>: Certificate of Authenticity
                 </h2>
-                <p class="mx-auto max-w-3xl font-body text-xl text-green-100">
+                <p class="max-w-3xl mx-auto text-xl text-green-100 font-body">
                     Sistema di certificazione digitale professionale per arte e beni culturali
                 </p>
             </div>
 
             <!-- CoA Features -->
-            <div class="mb-16 grid gap-8 lg:grid-cols-2">
+            <div class="grid gap-8 mb-16 lg:grid-cols-2">
                 <div
-                    class="renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br p-8 text-grigio-pietra">
-                    <div class="mb-6 flex items-center">
-                        <div class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-certificate text-oro-fiorentino text-2xl"></i>
+                    class="p-8 renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br text-grigio-pietra">
+                    <div class="flex items-center mb-6">
+                        <div class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                            <i class="text-2xl fas fa-certificate text-oro-fiorentino"></i>
                         </div>
-                        <h3 class="renaissance-title text-2xl font-bold">Certificazione Blockchain</h3>
+                        <h3 class="text-2xl font-bold renaissance-title">Certificazione Blockchain</h3>
                     </div>
                     <div class="space-y-4 font-body">
                         <p><strong>Hash SHA-256</strong> per verifiche immutabili</p>
                         <p><strong>Metadati tecnici</strong> con sistema traits avanzato</p>
                         <p><strong>Chain of custody</strong> tracciabile e verificabile</p>
                         <p><strong>PDF certificati</strong> con firme digitali</p>
-                        <p class="text-oro-fiorentino font-semibold">✅ Standard professionale per autenticazione</p>
+                        <p class="font-semibold text-oro-fiorentino">✅ Standard professionale per autenticazione</p>
                     </div>
                 </div>
 
                 <div
-                    class="renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 p-8 text-grigio-pietra">
-                    <div class="mb-6 flex items-center">
-                        <div class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
-                            <i class="fas fa-building text-2xl text-blu-algoritmo"></i>
+                    class="p-8 renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 text-grigio-pietra">
+                    <div class="flex items-center mb-6">
+                        <div class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                            <i class="text-2xl fas fa-building text-blu-algoritmo"></i>
                         </div>
-                        <h3 class="renaissance-title text-2xl font-bold">Servizi PA & Istituzioni</h3>
+                        <h3 class="text-2xl font-bold renaissance-title">Servizi PA & Istituzioni</h3>
                     </div>
                     <div class="space-y-4 font-body">
                         <p><strong>eIDAS compliance</strong> per Pubbliche Amministrazioni</p>
@@ -653,12 +672,12 @@
             </div>
 
             <!-- CoA Workflow -->
-            <div class="mx-auto max-w-4xl">
-                <h3 class="renaissance-title mb-8 text-center text-2xl font-bold">Workflow CoA</h3>
+            <div class="max-w-4xl mx-auto">
+                <h3 class="mb-8 text-2xl font-bold text-center renaissance-title">Workflow CoA</h3>
                 <div class="space-y-6">
                     <div class="flex items-start space-x-4">
                         <div
-                            class="bg-oro-fiorentino flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
+                            class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-oro-fiorentino">
                             1</div>
                         <div class="font-body">
                             <h4 class="text-lg font-semibold">Caricamento Opera</h4>
@@ -667,7 +686,7 @@
                     </div>
                     <div class="flex items-start space-x-4">
                         <div
-                            class="bg-oro-fiorentino flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
+                            class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-oro-fiorentino">
                             2</div>
                         <div class="font-body">
                             <h4 class="text-lg font-semibold">Traits Classification</h4>
@@ -677,7 +696,7 @@
                     </div>
                     <div class="flex items-start space-x-4">
                         <div
-                            class="bg-oro-fiorentino flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
+                            class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-oro-fiorentino">
                             3</div>
                         <div class="font-body">
                             <h4 class="text-lg font-semibold">Blockchain Certification</h4>
@@ -686,7 +705,7 @@
                     </div>
                     <div class="flex items-start space-x-4">
                         <div
-                            class="bg-oro-fiorentino flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
+                            class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-oro-fiorentino">
                             4</div>
                         <div class="font-body">
                             <h4 class="text-lg font-semibold">Certificato Digitale</h4>
@@ -699,13 +718,13 @@
     </section>
 
     <!-- Gli Archetipi del Miliardo -->
-    <section id="archetipi" class="bg-white py-16 sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
+    <section id="archetipi" class="py-16 bg-white sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                     Gli <span class="text-oro-fiorentino">Archetipi FlorenceEGI</span>
                 </h2>
-                <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
                     Ecosistema di attori specializzati che danno vita alla co-creazione artistica e ambientale
                 </p>
             </div>
@@ -713,95 +732,95 @@
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 <!-- Creator -->
                 <a href="{{ route('info.creator') }}"
-                    class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                    class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                     <div
-                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-viola-innovazione/10">
-                        <i class="fas fa-brush text-2xl text-viola-innovazione"></i>
+                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-viola-innovazione/10">
+                        <i class="text-2xl fas fa-brush text-viola-innovazione"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">Creator</h3>
-                    <p class="font-body text-sm text-grigio-pietra">Artisti che creano EGI con impatto certificato</p>
+                    <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">Creator</h3>
+                    <p class="text-sm font-body text-grigio-pietra">Artisti che creano EGI con impatto certificato</p>
                 </a>
 
                 <!-- Collector -->
                 <a href="{{ route('archetypes.collector') }}"
-                    class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                    class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                     <div
-                        class="bg-oro-fiorentino/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                        <i class="fas fa-gem text-oro-fiorentino text-2xl"></i>
+                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-oro-fiorentino/10">
+                        <i class="text-2xl fas fa-gem text-oro-fiorentino"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">Collector</h3>
-                    <p class="font-body text-sm text-grigio-pietra">Collezionisti con passion e investimento
+                    <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">Collector</h3>
+                    <p class="text-sm font-body text-grigio-pietra">Collezionisti con passion e investimento
                         sostenibile</p>
                 </a>
 
                 <!-- Patron -->
                 <a href="{{ route('archetypes.patron') }}"
-                    class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                    class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                     <div
-                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rosso-urgenza/10">
-                        <i class="fas fa-heart text-2xl text-rosso-urgenza"></i>
+                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-rosso-urgenza/10">
+                        <i class="text-2xl fas fa-heart text-rosso-urgenza"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">Mecenati</h3>
-                    <p class="font-body text-sm text-grigio-pietra">Facilitatori prestigiosi arte-sostenibilità</p>
+                    <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">Mecenati</h3>
+                    <p class="text-sm font-body text-grigio-pietra">Facilitatori prestigiosi arte-sostenibilità</p>
                 </a>
 
                 <!-- EPP -->
                 <a href="{{ route('info.epp') }}"
-                    class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                    class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                     <div
-                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/10">
-                        <i class="fas fa-seedling text-2xl text-verde-rinascita"></i>
+                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-verde-rinascita/10">
+                        <i class="text-2xl fas fa-seedling text-verde-rinascita"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">EPP</h3>
-                    <p class="font-body text-sm text-grigio-pietra">Progetti ambientali verificati per impatto reale
+                    <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">EPP</h3>
+                    <p class="text-sm font-body text-grigio-pietra">Progetti ambientali verificati per impatto reale
                     </p>
                 </a>
 
                 <!-- Aziende -->
                 <a href="{{ route('info.aziende') }}"
-                    class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                    class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                     <div
-                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/10">
-                        <i class="fas fa-building text-2xl text-blu-algoritmo"></i>
+                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-blu-algoritmo/10">
+                        <i class="text-2xl fas fa-building text-blu-algoritmo"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">Aziende</h3>
-                    <p class="font-body text-sm text-grigio-pietra">Corporate ESG e marketing innovativo</p>
+                    <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">Aziende</h3>
+                    <p class="text-sm font-body text-grigio-pietra">Corporate ESG e marketing innovativo</p>
                 </a>
 
                 <!-- PA -->
                 <a href="{{ route('archetypes.pa-entity') }}"
-                    class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                    class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                     <div
-                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-arancio-energia/10">
-                        <i class="fas fa-university text-2xl text-arancio-energia"></i>
+                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-arancio-energia/10">
+                        <i class="text-2xl fas fa-university text-arancio-energia"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">PA</h3>
-                    <p class="font-body text-sm text-grigio-pietra">Pubbliche Amministrazioni e patrimonio culturale
+                    <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">PA</h3>
+                    <p class="text-sm font-body text-grigio-pietra">Pubbliche Amministrazioni e patrimonio culturale
                     </p>
                 </a>
 
                 <!-- Trader Pro -->
                 <a href="{{ route('info.trader-pro') }}"
-                    class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                    class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                     <div
-                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-viola-innovazione/10">
-                        <i class="fas fa-chart-line text-2xl text-viola-innovazione"></i>
+                        class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-viola-innovazione/10">
+                        <i class="text-2xl fas fa-chart-line text-viola-innovazione"></i>
                     </div>
-                    <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">Trader Pro</h3>
-                    <p class="font-body text-sm text-grigio-pietra">Trading ad alta frequenza su EGI pt</p>
+                    <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">Trader Pro</h3>
+                    <p class="text-sm font-body text-grigio-pietra">Trading ad alta frequenza su EGI pt</p>
                 </a>
             </div>
         </div>
     </section>
 
     <!-- Impatto Planetario -->
-    <section id="impatto" class="section-dark py-16 text-white sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
+    <section id="impatto" class="py-16 text-white section-dark sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 class="renaissance-title mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
+                <h2 class="mb-4 text-3xl font-bold renaissance-title sm:text-4xl md:text-5xl">
                     Impatto Ambientale: <span class="text-oro-fiorentino">20% Automatico per EPP</span>
                 </h2>
-                <p class="mx-auto max-w-3xl font-body text-xl text-green-100">
+                <p class="max-w-3xl mx-auto text-xl text-green-100 font-body">
                     Ogni transazione destina automaticamente il 20% a progetti ambientali verificati
                 </p>
             </div>
@@ -809,11 +828,11 @@
             <!-- Scenario Realistico -->
             <div class="mb-12 text-center">
                 <div
-                    class="renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 mx-auto max-w-4xl bg-gradient-to-br p-8 text-grigio-pietra">
-                    <h3 class="renaissance-title mb-6 text-2xl font-bold">Impatto Concreto e Verificabile</h3>
+                    class="max-w-4xl p-8 mx-auto renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br text-grigio-pietra">
+                    <h3 class="mb-6 text-2xl font-bold renaissance-title">Impatto Concreto e Verificabile</h3>
                     <div class="grid gap-6 font-body md:grid-cols-3">
                         <div class="text-center">
-                            <div class="text-oro-fiorentino text-3xl font-bold">20%</div>
+                            <div class="text-3xl font-bold text-oro-fiorentino">20%</div>
                             <p class="text-sm">Delle transazioni destinate agli EPP</p>
                         </div>
                         <div class="text-center">
@@ -829,56 +848,59 @@
             </div>
 
             <!-- EPP Projects Realistici -->
-            <div class="mb-16 grid gap-8 md:grid-cols-3">
+            <div class="grid gap-8 mb-16 md:grid-cols-3">
                 <div
-                    class="renaissance-card bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5 p-8 text-grigio-pietra">
-                    <div class="mb-6 flex items-center">
+                    class="p-8 renaissance-card bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5 text-grigio-pietra">
+                    <div class="flex items-center mb-6">
                         <div
-                            class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
-                            <i class="fas fa-tree text-2xl text-verde-rinascita"></i>
+                            class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-verde-rinascita/20">
+                            <i class="text-2xl fas fa-tree text-verde-rinascita"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Appropriate Restoration Forestry</h3>
+                        <h3 class="text-xl font-bold renaissance-title">Appropriate Restoration Forestry</h3>
                     </div>
                     <div class="space-y-2 font-body">
                         <p><strong>Riforestazione Attenta e Rispettosa</strong></p>
                         <p>La deforestazione erode il polmone verde del pianeta</p>
                         <p>Riforestazione mirata per ecosistemi locali</p>
                         <p>Riabilitazione equilibrio ecosistemi</p>
-                        <p class="text-sm text-verde-rinascita"><i class="fas fa-exclamation-triangle mr-1"></i>Ogni secondo = un campo di calcio perduto</p>
+                        <p class="text-sm text-verde-rinascita"><i class="mr-1 fas fa-exclamation-triangle"></i>Ogni
+                            secondo = un campo di calcio perduto</p>
                     </div>
                 </div>
 
                 <div
-                    class="renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 p-8 text-grigio-pietra">
-                    <div class="mb-6 flex items-center">
-                        <div class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
-                            <i class="fas fa-water text-2xl text-blu-algoritmo"></i>
+                    class="p-8 renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 text-grigio-pietra">
+                    <div class="flex items-center mb-6">
+                        <div class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                            <i class="text-2xl fas fa-water text-blu-algoritmo"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Aquatic Plastic Removal</h3>
+                        <h3 class="text-xl font-bold renaissance-title">Aquatic Plastic Removal</h3>
                     </div>
                     <div class="space-y-2 font-body">
                         <p><strong>Rimozione Plastica dagli Oceani</strong></p>
                         <p>Isole di plastica = estensione di un continente</p>
                         <p>Azione cruciale per mari, laghi e fiumi</p>
                         <p>Affrontiamo la crisi globale con coraggio</p>
-                        <p class="text-sm text-blu-algoritmo"><i class="fas fa-exclamation-triangle mr-1"></i>Emergenza plastica acquatica</p>
+                        <p class="text-sm text-blu-algoritmo"><i
+                                class="mr-1 fas fa-exclamation-triangle"></i>Emergenza plastica acquatica</p>
                     </div>
                 </div>
 
                 <div
-                    class="renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br p-8 text-grigio-pietra">
-                    <div class="mb-6 flex items-center">
-                        <div class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-bee text-oro-fiorentino text-2xl"></i>
+                    class="p-8 renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br text-grigio-pietra">
+                    <div class="flex items-center mb-6">
+                        <div class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                            <i class="text-2xl fas fa-bee text-oro-fiorentino"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Bee Population Enhancement</h3>
+                        <h3 class="text-xl font-bold renaissance-title">Bee Population Enhancement</h3>
                     </div>
                     <div class="space-y-2 font-body">
                         <p><strong>Protezione degli Impollinatori</strong></p>
                         <p>Potenziamento popolazioni di api</p>
                         <p>Supporto biodiversità</p>
                         <p>Preservazione impollinazione</p>
-                        <p class="text-oro-fiorentino text-sm"><i class="fas fa-check mr-1"></i>Un terzo del cibo dipende dalle api</p>
+                        <p class="text-sm text-oro-fiorentino"><i class="mr-1 fas fa-check"></i>Un terzo del cibo
+                            dipende dalle api</p>
                     </div>
                 </div>
             </div>
@@ -886,22 +908,24 @@
             <!-- Crescita Scalabile -->
             <div class="text-center">
                 <div
-                    class="renaissance-card mx-auto max-w-4xl bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5 p-8 text-grigio-pietra">
-                    <h3 class="renaissance-title mb-6 text-2xl font-bold">Crescita Scalabile</h3>
+                    class="max-w-4xl p-8 mx-auto renaissance-card bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5 text-grigio-pietra">
+                    <h3 class="mb-6 text-2xl font-bold renaissance-title">Crescita Scalabile</h3>
                     <div class="grid gap-6 font-body md:grid-cols-2">
                         <div>
-                            <h4 class="mb-2 font-bold text-viola-innovazione">Fase Iniziale: Crescita della Community</h4>
+                            <h4 class="mb-2 font-bold text-viola-innovazione">Fase Iniziale: Crescita della Community
+                            </h4>
                             <p>Sviluppo della rete di artisti, collezionisti e progetti EPP verificati</p>
                         </div>
                         <div>
-                            <h4 class="mb-2 font-bold text-viola-innovazione">Crescita Organica: Espansione Impatti</h4>
+                            <h4 class="mb-2 font-bold text-viola-innovazione">Crescita Organica: Espansione Impatti
+                            </h4>
                             <p>Moltiplicazione degli impatti ambientali attraverso la community attiva</p>
                         </div>
                     </div>
                     <div class="mt-6">
                         <a href="{{ route('info.epp') }}"
-                            class="inline-flex items-center rounded-lg bg-viola-innovazione px-6 py-3 text-white transition-all hover:bg-viola-innovazione/80">
-                            <i class="fas fa-seedling mr-2"></i>
+                            class="inline-flex items-center px-6 py-3 text-white transition-all rounded-lg bg-viola-innovazione hover:bg-viola-innovazione/80">
+                            <i class="mr-2 fas fa-seedling"></i>
                             Scopri i Progetti EPP
                         </a>
                     </div>
@@ -911,93 +935,105 @@
     </section>
 
     <!-- I Nostri Valori -->
-    <section class="bg-gray-50 py-16 sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
+    <section id="valori" class="py-16 bg-gray-50 sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                     I Valori che <span class="text-oro-fiorentino">Guidano le Nostre Azioni</span>
                 </h2>
-                <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
-                    I nostri valori rappresentano i principi guida e gli ideali fondamentali che informano e orientano tutte le nostre attività
+                <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
+                    I nostri valori rappresentano i principi guida e gli ideali fondamentali che informano e orientano
+                    tutte le nostre attività
                 </p>
             </div>
 
             <div class="grid gap-8 mb-16 md:grid-cols-2 lg:grid-cols-3">
                 <!-- Rigenerazione dell'Ecosistema -->
-                <div class="renaissance-card elegant-hover p-8">
-                    <div class="mb-6 flex items-center">
-                        <div class="bg-verde-rinascita/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-seedling text-verde-rinascita text-2xl"></i>
+                <div class="p-8 renaissance-card elegant-hover">
+                    <div class="flex items-center mb-6">
+                        <div
+                            class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-verde-rinascita/20">
+                            <i class="text-2xl fas fa-seedling text-verde-rinascita"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Rigenerazione dell'Ecosistema</h3>
+                        <h3 class="text-xl font-bold renaissance-title">Rigenerazione dell'Ecosistema</h3>
                     </div>
                     <p class="font-body text-grigio-pietra">
-                        La piattaforma si impegna attivamente nella pulizia delle acque del pianeta, nella riforestazione e nel sostegno alla popolazione delle api, contribuendo a un impatto ambientale positivo.
+                        La piattaforma si impegna attivamente nella pulizia delle acque del pianeta, nella
+                        riforestazione e nel sostegno alla popolazione delle api, contribuendo a un impatto ambientale
+                        positivo.
                     </p>
                 </div>
 
                 <!-- Sostegno agli Artisti -->
-                <div class="renaissance-card elegant-hover p-8">
-                    <div class="mb-6 flex items-center">
-                        <div class="bg-viola-innovazione/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-palette text-viola-innovazione text-2xl"></i>
+                <div class="p-8 renaissance-card elegant-hover">
+                    <div class="flex items-center mb-6">
+                        <div
+                            class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-viola-innovazione/20">
+                            <i class="text-2xl fas fa-palette text-viola-innovazione"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Sostegno agli Artisti</h3>
+                        <h3 class="text-xl font-bold renaissance-title">Sostegno agli Artisti</h3>
                     </div>
                     <p class="font-body text-grigio-pietra">
-                        FlorenceEGI offre supporto agli artisti tradizionali per entrare e navigare nel mondo digitale, facilitando la transizione e la valorizzazione del loro lavoro nel metaverso digitale.
+                        FlorenceEGI offre supporto agli artisti tradizionali per entrare e navigare nel mondo digitale,
+                        facilitando la transizione e la valorizzazione del loro lavoro nel metaverso digitale.
                     </p>
                 </div>
 
                 <!-- Innovazione e Utilità Pragmatica -->
-                <div class="renaissance-card elegant-hover p-8">
-                    <div class="mb-6 flex items-center">
-                        <div class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-lightbulb text-oro-fiorentino text-2xl"></i>
+                <div class="p-8 renaissance-card elegant-hover">
+                    <div class="flex items-center mb-6">
+                        <div class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                            <i class="text-2xl fas fa-lightbulb text-oro-fiorentino"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Innovazione e Utilità Pragmatica</h3>
+                        <h3 class="text-xl font-bold renaissance-title">Innovazione e Utilità Pragmatica</h3>
                     </div>
                     <p class="font-body text-grigio-pietra">
-                        Gli EGI acquisiscono un valore speculativo e una valenza pratica e funzionale con un impatto sociale e ambientale concreto.
+                        Gli EGI acquisiscono un valore speculativo e una valenza pratica e funzionale con un impatto
+                        sociale e ambientale concreto.
                     </p>
                 </div>
 
                 <!-- Investimento Concreto e Responsabile -->
-                <div class="renaissance-card elegant-hover p-8">
-                    <div class="mb-6 flex items-center">
-                        <div class="bg-blu-algoritmo/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-shield-alt text-blu-algoritmo text-2xl"></i>
+                <div class="p-8 renaissance-card elegant-hover">
+                    <div class="flex items-center mb-6">
+                        <div class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                            <i class="text-2xl fas fa-shield-alt text-blu-algoritmo"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Investimento Concreto e Responsabile</h3>
+                        <h3 class="text-xl font-bold renaissance-title">Investimento Concreto e Responsabile</h3>
                     </div>
                     <p class="font-body text-grigio-pietra">
-                        Gli EGI rappresentano un impegno verso progetti umanitari e di protezione ambientale, riflettendo un approccio etico e sostenibile negli affari.
+                        Gli EGI rappresentano un impegno verso progetti umanitari e di protezione ambientale,
+                        riflettendo un approccio etico e sostenibile negli affari.
                     </p>
                 </div>
 
                 <!-- Rivoluzione del Concetto di Proprietà -->
-                <div class="renaissance-card elegant-hover p-8">
-                    <div class="mb-6 flex items-center">
-                        <div class="bg-rosso-urgenza/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-exchange-alt text-rosso-urgenza text-2xl"></i>
+                <div class="p-8 renaissance-card elegant-hover">
+                    <div class="flex items-center mb-6">
+                        <div class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-rosso-urgenza/20">
+                            <i class="text-2xl fas fa-exchange-alt text-rosso-urgenza"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Rivoluzione del Concetto di Proprietà</h3>
+                        <h3 class="text-xl font-bold renaissance-title">Rivoluzione del Concetto di Proprietà</h3>
                     </div>
                     <p class="font-body text-grigio-pietra">
-                        La piattaforma mira a rivoluzionare il concetto di proprietà privata, incoraggiando un cambiamento sociale positivo attraverso l'innovazione tecnologica.
+                        La piattaforma mira a rivoluzionare il concetto di proprietà privata, incoraggiando un
+                        cambiamento sociale positivo attraverso l'innovazione tecnologica.
                     </p>
                 </div>
 
                 <!-- Equilibrio tra Ambiente, Economia e Società -->
-                <div class="renaissance-card elegant-hover p-8">
-                    <div class="mb-6 flex items-center">
-                        <div class="bg-arancio-energia/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-balance-scale text-arancio-energia text-2xl"></i>
+                <div class="p-8 renaissance-card elegant-hover">
+                    <div class="flex items-center mb-6">
+                        <div
+                            class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-arancio-energia/20">
+                            <i class="text-2xl fas fa-balance-scale text-arancio-energia"></i>
                         </div>
-                        <h3 class="renaissance-title text-xl font-bold">Equilibrio tra Ambiente, Economia e Società</h3>
+                        <h3 class="text-xl font-bold renaissance-title">Equilibrio tra Ambiente, Economia e Società
+                        </h3>
                     </div>
                     <p class="font-body text-grigio-pietra">
-                        Il focus sugli EGI mira a creare un equilibrio tra ambiente, economia e benessere sociale, attraverso un'economia che si armonizzi con l'ambiente e la società.
+                        Il focus sugli EGI mira a creare un equilibrio tra ambiente, economia e benessere sociale,
+                        attraverso un'economia che si armonizzi con l'ambiente e la società.
                     </p>
                 </div>
             </div>
@@ -1005,68 +1041,79 @@
     </section>
 
     <!-- L'Equilibrium -->
-    <section class="bg-gradient-to-br from-oro-fiorentino/10 to-verde-rinascita/10 py-16 sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
-            <div class="mx-auto max-w-6xl">
+    <section id="equilibrium" class="py-16 from-oro-fiorentino/10 bg-gradient-to-br to-verde-rinascita/10 sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
+            <div class="max-w-6xl mx-auto">
                 <div class="mb-12 text-center">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                         L'<span class="text-oro-fiorentino">Equilibrium</span>
                     </h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
-                        Il cuore pulsante dell'ecosistema FlorenceEGI: dove arte, tecnologia e impatto ambientale si fondono in perfetta armonia
+                    <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
+                        Il cuore pulsante dell'ecosistema FlorenceEGI: dove arte, tecnologia e impatto ambientale si
+                        fondono in perfetta armonia
                     </p>
                 </div>
 
                 <div class="grid gap-8 lg:grid-cols-2">
                     <!-- Cos'è l'Equilibrium -->
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center">
-                            <div class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                                <i class="fas fa-atom text-oro-fiorentino text-2xl"></i>
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                                <i class="text-2xl fas fa-atom text-oro-fiorentino"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">Il Carburante del Cambiamento</h3>
+                            <h3 class="text-xl font-bold renaissance-title">Il Carburante del Cambiamento</h3>
                         </div>
-                        <p class="font-body text-grigio-pietra mb-4">
-                            L'Equilibrium rappresenta i fondi raccolti attraverso le attività della piattaforma FlorenceEGI, 
+                        <p class="mb-4 font-body text-grigio-pietra">
+                            L'Equilibrium rappresenta i fondi raccolti attraverso le attività della piattaforma
+                            FlorenceEGI,
                             destinati automaticamente ai progetti EPP (Environment Protection Programs).
                         </p>
                         <p class="font-body text-grigio-pietra">
-                            Ogni transazione sulla piattaforma genera un 20% di Equilibrium che fluisce direttamente 
-                            verso la rigenerazione ambientale, creando un ciclo virtuoso tra arte digitale e sostenibilità.
+                            Ogni transazione sulla piattaforma genera un 20% di Equilibrium che fluisce direttamente
+                            verso la rigenerazione ambientale, creando un ciclo virtuoso tra arte digitale e
+                            sostenibilità.
                         </p>
                     </div>
 
                     <!-- Come Funziona -->
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center">
-                            <div class="bg-verde-rinascita/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                                <i class="fas fa-cogs text-verde-rinascita text-2xl"></i>
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center mb-6">
+                            <div
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-verde-rinascita/20">
+                                <i class="text-2xl fas fa-cogs text-verde-rinascita"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">Meccanismo Automatico</h3>
+                            <h3 class="text-xl font-bold renaissance-title">Meccanismo Automatico</h3>
                         </div>
-                        <p class="font-body text-grigio-pietra mb-4">
-                            Quando un Creator crea una collection, sceglie un EPP specifico. Lo smart contract è programmato 
-                            per inviare automaticamente il 20% di ogni transazione (Mint o Rebind) al wallet dell'EPP selezionato.
+                        <p class="mb-4 font-body text-grigio-pietra">
+                            Quando un Creator crea una collection, sceglie un EPP specifico. Lo smart contract è
+                            programmato
+                            per inviare automaticamente il 20% di ogni transazione (Mint o Rebind) al wallet dell'EPP
+                            selezionato.
                         </p>
                         <p class="font-body text-grigio-pietra">
-                            Questo processo è trasparente, immediato e verificabile sulla blockchain, garantendo che ogni 
+                            Questo processo è trasparente, immediato e verificabile sulla blockchain, garantendo che
+                            ogni
                             opera d'arte contribuisca concretamente alla rigenerazione ambientale.
                         </p>
                     </div>
 
                     <!-- Visione Narrativa -->
-                    <div class="renaissance-card elegant-hover p-8 lg:col-span-2">
-                        <div class="mb-6 flex items-center justify-center">
-                            <div class="bg-blu-algoritmo/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                                <i class="fas fa-heart text-blu-algoritmo text-2xl"></i>
+                    <div class="p-8 renaissance-card elegant-hover lg:col-span-2">
+                        <div class="flex items-center justify-center mb-6">
+                            <div
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                                <i class="text-2xl fas fa-heart text-blu-algoritmo"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">Agapi e Aisthitikè: Amore ed Estetica</h3>
+                            <h3 class="text-xl font-bold renaissance-title">Agapi e Aisthitikè: Amore ed Estetica</h3>
                         </div>
-                        <p class="font-body text-grigio-pietra text-center max-w-4xl mx-auto">
-                            Nell'universo narrativo di Natan, l'Equilibrium è la molecola fondamentale composta da due proteine: 
-                            <strong>agapi</strong> (amore) e <strong>aisthitikè</strong> (estetica). È il carburante che permette 
-                            di trasformare il negativo in positivo, l'inquinato in puro, lo scarso in abbondante. 
-                            L'Equilibrium non è solo una risorsa, ma il simbolo di un impegno collettivo verso un mondo 
+                        <p class="max-w-4xl mx-auto text-center font-body text-grigio-pietra">
+                            Nell'universo narrativo di Natan, l'Equilibrium è la molecola fondamentale composta da due
+                            proteine:
+                            <strong>agapi</strong> (amore) e <strong>aisthitikè</strong> (estetica). È il carburante che
+                            permette
+                            di trasformare il negativo in positivo, l'inquinato in puro, lo scarso in abbondante.
+                            L'Equilibrium non è solo una risorsa, ma il simbolo di un impegno collettivo verso un mondo
                             più equilibrato, sostenibile e artisticamente ricco.
                         </p>
                     </div>
@@ -1076,25 +1123,25 @@
     </section>
 
     <!-- Call to Action -->
-    <section class="bg-white py-16 sm:py-24">
-        <div class="golden-ratio-container px-4 sm:px-6">
-            <div class="mx-auto max-w-4xl text-center">
-                <h2 class="renaissance-title mb-6 text-3xl font-bold text-grigio-pietra sm:text-4xl">
+    <section class="py-16 bg-white sm:py-24">
+        <div class="px-4 golden-ratio-container sm:px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="mb-6 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl">
                     Unisciti al <span class="text-oro-fiorentino">Rinascimento Digitale</span>
                 </h2>
-                <p class="mb-8 font-body text-xl text-grigio-pietra">
+                <p class="mb-8 text-xl font-body text-grigio-pietra">
                     <em>"Non promettiamo di cambiare il mondo. Creiamo le condizioni perché il mondo si cambi da solo,
                         una transazione alla volta, un progetto EPP alla volta, un EGI alla volta."</em>
                 </p>
                 <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                     <a href="{{ route('register') }}"
-                        class="cta-primary elegant-hover inline-flex items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold text-white">
-                        <i class="fas fa-rocket mr-3"></i>
+                        class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white cta-primary elegant-hover rounded-xl">
+                        <i class="mr-3 fas fa-rocket"></i>
                         Inizia il Tuo Viaggio
                     </a>
                     <a href="{{ route('archetypes.patron') }}"
-                        class="border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover inline-flex items-center justify-center rounded-xl border-2 px-8 py-4 text-lg font-semibold transition-all hover:text-white">
-                        <i class="fas fa-users mr-3"></i>
+                        class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold transition-all border-2 border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover rounded-xl hover:text-white">
+                        <i class="mr-3 fas fa-users"></i>
                         Scopri i Ruoli
                     </a>
                 </div>
