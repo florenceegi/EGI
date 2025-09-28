@@ -144,7 +144,7 @@ class FegiAuth {
         $usertype = static::getFegiUserType();
 
         return __($welcomeKey) . ', ' . $userName .
-            ' (' . __('guest_layout.fegi_user_type.' . $usertype) . ')';
+            ' (' . __('guest_layout.fegi_user_type_short.' . $usertype) . ')';
     }
 
     /**

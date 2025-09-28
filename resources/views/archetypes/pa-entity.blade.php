@@ -39,50 +39,87 @@
             }
         }
     </script>
+
+    <!-- Custom CSS for mobile optimization -->
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        @media (min-width: 640px) {
+            .container {
+                max-width: 640px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1024px;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .container {
+                max-width: 1280px;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50 text-gray-900">
+<body class="overflow-x-hidden bg-gray-50 text-gray-900">
     <!-- Header Istituzionale -->
-    <header class="bg-institutional-blue py-6 text-white shadow-lg">
-        <div class="container mx-auto px-6">
+    <header class="bg-institutional-blue py-4 text-white shadow-lg sm:py-6">
+        <div class="container mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <span class="material-icons text-4xl">account_balance</span>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <span class="material-icons text-3xl sm:text-4xl">account_balance</span>
                     <div>
-                        <h1 class="text-2xl font-bold">FlorenceEGI</h1>
-                        <p class="text-blue-200">Servizi per Pubbliche Amministrazioni</p>
+                        <h1 class="text-xl font-bold sm:text-2xl">FlorenceEGI</h1>
+                        <p class="text-sm text-blue-200 sm:text-base">Servizi per Pubbliche Amministrazioni</p>
                     </div>
                 </div>
-                <div class="hidden space-x-6 md:flex">
-                    <a href="#servizi" class="transition hover:text-blue-200">Servizi</a>
-                    <a href="#compliance" class="transition hover:text-blue-200">Compliance</a>
-                    <a href="#tecnologia" class="transition hover:text-blue-200">Tecnologia</a>
-                    <a href="#contatti" class="transition hover:text-blue-200">Contatti</a>
+                <div class="hidden space-x-4 sm:space-x-6 md:flex">
+                    <a href="#servizi" class="text-sm transition hover:text-blue-200 lg:text-base">Servizi</a>
+                    <a href="#compliance" class="text-sm transition hover:text-blue-200 lg:text-base">Compliance</a>
+                    <a href="#tecnologia" class="text-sm transition hover:text-blue-200 lg:text-base">Tecnologia</a>
+                    <a href="#contatti" class="text-sm transition hover:text-blue-200 lg:text-base">Contatti</a>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Hero Section PA -->
-    <section class="from-institutional-blue bg-gradient-to-r to-blue-700 py-16 text-white">
-        <div class="container mx-auto px-6 text-center">
+    <section class="from-institutional-blue bg-gradient-to-r to-blue-700 py-12 text-white sm:py-16">
+        <div class="container mx-auto px-4 text-center sm:px-6">
             <div class="mx-auto max-w-4xl">
-                <h1 class="mb-6 text-4xl font-bold md:text-6xl">
+                <h1 class="mb-4 text-2xl font-bold leading-tight sm:mb-6 sm:text-4xl md:text-5xl lg:text-6xl">
                     Digitalizzazione Certificata del Patrimonio Culturale
                 </h1>
-                <p class="mb-8 text-xl text-blue-100 md:text-2xl">
+                <p class="mb-6 text-lg text-blue-100 sm:mb-8 sm:text-xl md:text-2xl">
                     Servizi enterprise di certificazione digitale eIDAS-compliant per Enti Pubblici, Musei, Biblioteche
                     e Archivi Storici
                 </p>
-                <div class="flex flex-col justify-center gap-4 md:flex-row">
+                <div
+                    class="mx-auto flex w-full max-w-md flex-col justify-center gap-3 sm:gap-4 md:max-w-none md:flex-row">
                     <button
-                        class="rounded-lg bg-florence-gold px-8 py-4 text-lg font-semibold text-white transition hover:bg-yellow-600">
-                        <span class="material-icons mr-2">description</span>
+                        class="w-full rounded-lg bg-florence-gold px-6 py-3 text-base font-semibold text-white transition hover:bg-yellow-600 sm:px-8 sm:py-4 sm:text-lg md:w-auto">
+                        <span class="material-icons mr-2 text-base sm:text-lg">description</span>
                         Richiedi Documentazione
                     </button>
                     <button
-                        class="hover:text-institutional-blue rounded-lg border-2 border-white bg-transparent px-8 py-4 text-lg font-semibold text-white transition hover:bg-white">
-                        <span class="material-icons mr-2">play_circle</span>
+                        class="hover:text-institutional-blue w-full rounded-lg border-2 border-white bg-transparent px-6 py-3 text-base font-semibold text-white transition hover:bg-white sm:px-8 sm:py-4 sm:text-lg md:w-auto">
+                        <span class="material-icons mr-2 text-base sm:text-lg">play_circle</span>
                         Demo Piattaforma
                     </button>
                 </div>
@@ -91,27 +128,28 @@
     </section>
 
     <!-- Valore per PA -->
-    <section id="servizi" class="bg-white py-16">
-        <div class="container mx-auto px-6">
+    <section id="servizi" class="bg-white py-12 sm:py-16">
+        <div class="container mx-auto px-4 sm:px-6">
             <div class="mx-auto max-w-6xl">
-                <div class="mb-12 text-center">
-                    <h2 class="mb-4 text-3xl font-bold md:text-4xl">
+                <div class="mb-8 text-center sm:mb-12">
+                    <h2 class="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl md:text-4xl">
                         Perché le PA Scelgono FlorenceEGI
                     </h2>
-                    <p class="mx-auto max-w-3xl text-xl text-gray-600">
+                    <p class="mx-auto max-w-3xl px-4 text-lg text-gray-600 sm:px-0 sm:text-xl">
                         La prima piattaforma di certificazione digitale progettata specificamente per le esigenze delle
                         Pubbliche Amministrazioni italiane ed europee
                     </p>
                 </div>
 
-                <div class="mb-12 grid gap-8 md:grid-cols-3">
+                <div class="mb-8 grid gap-6 sm:mb-12 sm:gap-8 md:grid-cols-3">
                     <!-- Compliance Normativa -->
-                    <div class="border-compliance-green rounded-xl border-l-4 bg-gray-50 p-8">
+                    <div class="border-compliance-green rounded-xl border-l-4 bg-gray-50 p-6 sm:p-8">
                         <div class="mb-4 flex items-center">
-                            <span class="material-icons text-compliance-green mr-3 text-3xl">security</span>
-                            <h3 class="text-xl font-bold">Compliance Normativa</h3>
+                            <span
+                                class="material-icons text-compliance-green mr-2 text-2xl sm:mr-3 sm:text-3xl">security</span>
+                            <h3 class="text-lg font-bold sm:text-xl">Compliance Normativa</h3>
                         </div>
-                        <ul class="space-y-2 text-gray-700">
+                        <ul class="space-y-2 text-sm text-gray-700 sm:text-base">
                             <li>✓ Conformità Regolamento eIDAS</li>
                             <li>✓ GDPR-compliant by design</li>
                             <li>✓ ISO 27001 certified infrastructure</li>
@@ -121,12 +159,13 @@
                     </div>
 
                     <!-- Efficienza Operativa -->
-                    <div class="border-florence-blue rounded-xl border-l-4 bg-gray-50 p-8">
+                    <div class="border-florence-blue rounded-xl border-l-4 bg-gray-50 p-6 sm:p-8">
                         <div class="mb-4 flex items-center">
-                            <span class="material-icons text-florence-blue mr-3 text-3xl">speed</span>
-                            <h3 class="text-xl font-bold">Efficienza Operativa</h3>
+                            <span
+                                class="material-icons text-florence-blue mr-2 text-2xl sm:mr-3 sm:text-3xl">speed</span>
+                            <h3 class="text-lg font-bold sm:text-xl">Efficienza Operativa</h3>
                         </div>
-                        <ul class="space-y-2 text-gray-700">
+                        <ul class="space-y-2 text-sm text-gray-700 sm:text-base">
                             <li>✓ Batch processing automatizzato</li>
                             <li>✓ Integrazione API sistemi esistenti</li>
                             <li>✓ Riduzione 70% tempi certificazione</li>
@@ -136,12 +175,13 @@
                     </div>
 
                     <!-- Sostenibilità -->
-                    <div class="border-florence-green rounded-xl border-l-4 bg-gray-50 p-8">
+                    <div class="border-florence-green rounded-xl border-l-4 bg-gray-50 p-6 sm:p-8">
                         <div class="mb-4 flex items-center">
-                            <span class="material-icons text-florence-green mr-3 text-3xl">eco</span>
-                            <h3 class="text-xl font-bold">Sostenibilità Ambientale</h3>
+                            <span
+                                class="material-icons text-florence-green mr-2 text-2xl sm:mr-3 sm:text-3xl">eco</span>
+                            <h3 class="text-lg font-bold sm:text-xl">Sostenibilità Ambientale</h3>
                         </div>
-                        <ul class="space-y-2 text-gray-700">
+                        <ul class="space-y-2 text-sm text-gray-700 sm:text-base">
                             <li>✓ Blockchain carbon-negative Algorand</li>
                             <li>✓ 20% automatico a progetti EPP</li>
                             <li>✓ Certificazione impatto ambientale</li>
@@ -155,21 +195,23 @@
     </section>
 
     <!-- Servizi Specifici PA -->
-    <section class="bg-gray-50 py-16">
-        <div class="container mx-auto px-6">
+    <section class="bg-gray-50 py-12 sm:py-16">
+        <div class="container mx-auto px-4 sm:px-6">
             <div class="mx-auto max-w-6xl">
-                <h2 class="mb-12 text-center text-3xl font-bold md:text-4xl">
+                <h2 class="mb-8 text-center text-2xl font-bold sm:mb-12 sm:text-3xl md:text-4xl">
                     Servizi Enterprise per PA
                 </h2>
 
-                <div class="grid gap-8 md:grid-cols-2">
+                <div class="grid gap-6 sm:gap-8 md:grid-cols-2">
                     <!-- CoA per Patrimonio Culturale -->
-                    <div class="rounded-xl bg-white p-8 shadow-lg">
-                        <div class="mb-6 flex items-center">
-                            <span class="material-icons mr-4 text-4xl text-florence-gold">museum</span>
+                    <div class="rounded-xl bg-white p-6 shadow-lg sm:p-8">
+                        <div class="mb-4 flex items-center sm:mb-6">
+                            <span
+                                class="material-icons mr-3 text-3xl text-florence-gold sm:mr-4 sm:text-4xl">museum</span>
                             <div>
-                                <h3 class="text-2xl font-bold">Certificazione Patrimonio Culturale</h3>
-                                <p class="text-gray-600">Per Musei, Biblioteche, Archivi Storici</p>
+                                <h3 class="text-xl font-bold sm:text-2xl">Certificazione Patrimonio Culturale</h3>
+                                <p class="text-sm text-gray-600 sm:text-base">Per Musei, Biblioteche, Archivi Storici
+                                </p>
                             </div>
                         </div>
                         <div class="space-y-4">
@@ -202,12 +244,13 @@
                     </div>
 
                     <!-- Digitalizzazione Documenti -->
-                    <div class="rounded-xl bg-white p-8 shadow-lg">
-                        <div class="mb-6 flex items-center">
-                            <span class="material-icons text-institutional-blue mr-4 text-4xl">folder_managed</span>
+                    <div class="rounded-xl bg-white p-6 shadow-lg sm:p-8">
+                        <div class="mb-4 flex items-center sm:mb-6">
+                            <span
+                                class="material-icons text-institutional-blue mr-3 text-3xl sm:mr-4 sm:text-4xl">folder_managed</span>
                             <div>
-                                <h3 class="text-2xl font-bold">Digitalizzazione Documentale</h3>
-                                <p class="text-gray-600">Per Enti Pubblici e Amministrazioni</p>
+                                <h3 class="text-xl font-bold sm:text-2xl">Digitalizzazione Documentale</h3>
+                                <p class="text-sm text-gray-600 sm:text-base">Per Enti Pubblici e Amministrazioni</p>
                             </div>
                         </div>
                         <div class="space-y-4">
@@ -358,19 +401,19 @@
     </section>
 
     <!-- Pilot Program -->
-    <section class="bg-florence-gold py-16">
-        <div class="container mx-auto px-6">
+    <section class="bg-florence-gold py-12 sm:py-16">
+        <div class="container mx-auto px-4 sm:px-6">
             <div class="mx-auto max-w-4xl text-center text-white">
-                <h2 class="mb-6 text-3xl font-bold md:text-4xl">
+                <h2 class="mb-4 text-2xl font-bold sm:mb-6 sm:text-3xl md:text-4xl">
                     Programma Pilota per PA
                 </h2>
-                <p class="mb-8 text-xl text-yellow-100">
+                <p class="mb-6 px-4 text-lg text-yellow-100 sm:mb-8 sm:px-0 sm:text-xl">
                     Testa la piattaforma FlorenceEGI per 6 mesi senza costi di implementazione.
                     Valuta l'efficacia sui tuoi processi di certificazione prima dell'adozione definitiva.
                 </p>
-                <div class="rounded-xl bg-white p-8 text-florence-gold">
-                    <h3 class="mb-4 text-2xl font-bold">Incluso nel Pilot Program:</h3>
-                    <div class="grid gap-4 text-left md:grid-cols-2">
+                <div class="rounded-xl bg-white p-6 text-florence-gold sm:p-8">
+                    <h3 class="mb-4 text-xl font-bold sm:text-2xl">Incluso nel Pilot Program:</h3>
+                    <div class="grid gap-3 text-left text-sm sm:gap-4 sm:text-base md:grid-cols-2">
                         <div class="flex items-center">
                             <span class="material-icons mr-3">check_circle</span>
                             <span>Setup e configurazione completa</span>
@@ -397,10 +440,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-8">
+                <div class="mt-6 sm:mt-8">
                     <button
-                        class="bg-institutional-blue rounded-lg px-8 py-4 text-lg font-bold text-white transition hover:bg-blue-800">
-                        <span class="material-icons mr-2">contact_mail</span>
+                        class="bg-institutional-blue w-full rounded-lg px-6 py-3 text-base font-bold text-white transition hover:bg-blue-800 sm:w-auto sm:px-8 sm:py-4 sm:text-lg">
+                        <span class="material-icons mr-2 text-base sm:text-lg">contact_mail</span>
                         Richiedi Pilot Program
                     </button>
                 </div>
@@ -474,17 +517,18 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-black py-8 text-white">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col items-center justify-between md:flex-row">
-                <div class="mb-4 flex items-center space-x-4 md:mb-0">
-                    <span class="material-icons text-2xl">account_balance</span>
-                    <div>
-                        <div class="font-bold">FlorenceEGI</div>
-                        <div class="text-sm text-gray-400">Powered by Algorand • Built with Laravel</div>
+    <footer class="bg-black py-6 text-white sm:py-8">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <span class="material-icons text-xl sm:text-2xl">account_balance</span>
+                    <div class="text-center md:text-left">
+                        <div class="text-base font-bold sm:text-lg">FlorenceEGI</div>
+                        <div class="text-xs text-gray-400 sm:text-sm">Powered by Algorand • Built with Laravel</div>
                     </div>
                 </div>
-                <div class="flex space-x-6 text-sm">
+                <div
+                    class="flex flex-col space-y-2 text-center text-xs sm:flex-row sm:space-x-4 sm:space-y-0 sm:text-sm lg:space-x-6">
                     <a href="/privacy-policy" class="transition hover:text-florence-gold">Privacy Policy</a>
                     <a href="/terms-conditions" class="transition hover:text-florence-gold">Terms & Conditions</a>
                     <a href="/compliance" class="transition hover:text-florence-gold">Compliance</a>

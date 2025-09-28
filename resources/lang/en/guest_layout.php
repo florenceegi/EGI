@@ -23,6 +23,20 @@ return [
         'epp' => 'EPP',
         'company' => 'Company',
         'trader_pro' => 'Professional Trader',
+        'pa_entity' => 'Public Administration',
+        'natan' => 'Natan',
+    ],
+
+    'fegi_user_type_short' => [
+        'committee' => 'Activator',
+        'collector' => 'Collector',
+        'commissioner' => 'Commissioner',
+        'creator' => 'Creator',
+        'patron' => 'Patron',
+        'epp' => 'EPP',
+        'company' => 'Company',
+        'trader_pro' => 'Trader Pro',
+        'pa_entity' => 'PA',
         'natan' => 'Natan',
     ],
 
