@@ -11,36 +11,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecosistema Co-Creazione - FlorenceEGI</title>
-    <meta name="description"
-        content="Scopri l'ecosistema completo FlorenceEGI: Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro per il trading professionale di EGI.">
+    <title>{{ __('info_co_create.meta.title') }}</title>
+    <meta name="description" content="{{ __('info_co_create.meta.description') }}">
 
     <!-- SEO Meta Tags -->
-    <meta name="keywords"
-        content="co-creazione, co-creatori, trader pro, ecosystem, blockchain art, NFT, EGI, trading professionali, opere d'arte digitali, community artistica, collaborazione creativa">
-    <meta name="author" content="FlorenceEGI">
+    <meta name="keywords" content="{{ __('info_co_create.meta.keywords') }}">
+    <meta name="author" content="{{ __('info_co_create.meta.author') }}">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="{{ url()->current() }}">
 
     <!-- Open Graph Protocol (Facebook, LinkedIn) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Ecosistema Co-Creazione - FlorenceEGI">
-    <meta property="og:description"
-        content="Scopri l'ecosistema completo FlorenceEGI: Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro per il trading professionale di EGI.">
+    <meta property="og:title" content="{{ __('info_co_create.meta.og_title') }}">
+    <meta property="og:description" content="{{ __('info_co_create.meta.og_description') }}">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="FlorenceEGI">
     <meta property="og:locale" content="it_IT">
     <meta property="og:image" content="{{ asset('images/co-create-ecosystem-social.jpg') }}">
-    <meta property="og:image:alt"
-        content="Ecosistema Co-Creazione FlorenceEGI - Community artistica e trading professionale">
+    <meta property="og:image:alt" content="{{ __('info_co_create.meta.og_image_alt') }}">
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Ecosistema Co-Creazione - FlorenceEGI">
-    <meta name="twitter:description"
-        content="Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro. L'ecosistema completo per artisti e trader professionali.">
+    <meta name="twitter:title" content="{{ __('info_co_create.meta.twitter_title') }}">
+    <meta name="twitter:description" content="{{ __('info_co_create.meta.twitter_description') }}">
     <meta name="twitter:image" content="{{ asset('images/co-create-ecosystem-social.jpg') }}">
-    <meta name="twitter:image:alt" content="Ecosistema Co-Creazione FlorenceEGI">
+    <meta name="twitter:image:alt" content="{{ __('info_co_create.meta.twitter_image_alt') }}">
 
     <!-- Multilingual Support -->
     <link rel="alternate" hreflang="it" href="{{ url()->current() }}">
@@ -234,7 +229,7 @@
             {
                 "@type": "Organization",
                 "@id": "{{ url('/') }}#organization",
-                "name": "FlorenceEGI",
+                "name": "{{ __('info_co_create.schema.website_name') }}",
                 "url": "{{ url('/') }}",
                 "logo": {
                     "@type": "ImageObject",
@@ -242,7 +237,7 @@
                     "width": 200,
                     "height": 200
                 },
-                "description": "Piattaforma blockchain per co-creazione artistica e trading professionale di EGI",
+                "description": "{{ __('info_co_create.schema.organization_description') }}",
                 "foundingDate": "2024",
                 "sameAs": [
                     "https://www.linkedin.com/company/florence-egi",
@@ -253,7 +248,7 @@
                 "@type": "WebSite",
                 "@id": "{{ url('/') }}#website",
                 "url": "{{ url('/') }}",
-                "name": "FlorenceEGI",
+                "name": "{{ __('info_co_create.schema.website_name') }}",
                 "publisher": {
                     "@id": "{{ url('/') }}#organization"
                 },
@@ -263,8 +258,8 @@
                 "@type": "WebPage",
                 "@id": "{{ url()->current() }}#webpage",
                 "url": "{{ url()->current() }}",
-                "name": "Ecosistema Co-Creazione",
-                "description": "Scopri l'ecosistema completo FlorenceEGI: Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro",
+                "name": "{{ __('info_co_create.schema.webpage_name') }}",
+                "description": "{{ __('info_co_create.schema.webpage_description') }}",
                 "inLanguage": "it-IT",
                 "isPartOf": {
                     "@id": "{{ url('/') }}#website"
@@ -272,63 +267,63 @@
                 "about": [
                     {
                         "@type": "Thing",
-                        "name": "Co-Creazione Artistica"
+                        "name": "{{ __('info_co_create.schema.about_cocreation') }}"
                     },
                     {
                         "@type": "Thing",
-                        "name": "Trading Professionale"
+                        "name": "{{ __('info_co_create.schema.about_trading') }}"
                     },
                     {
                         "@type": "Thing",
-                        "name": "Community Artistica"
+                        "name": "{{ __('info_co_create.schema.about_community') }}"
                     },
                     {
                         "@type": "Thing",
-                        "name": "Blockchain Art"
+                        "name": "{{ __('info_co_create.schema.about_blockchain') }}"
                     }
                 ]
             },
             {
                 "@type": "Service",
-                "name": "Ecosistema Co-Creazione FlorenceEGI",
-                "description": "Piattaforma completa per co-creazione artistica, gestione Co-Creatori e trading professionale EGI",
+                "name": "{{ __('info_co_create.schema.service_name') }}",
+                "description": "{{ __('info_co_create.schema.service_description') }}",
                 "provider": {
                     "@id": "{{ url('/') }}#organization"
                 },
-                "serviceType": "Creative Collaboration Platform",
+                "serviceType": "{{ __('info_co_create.schema.service_type') }}",
                 "hasOfferCatalog": {
                     "@type": "OfferCatalog",
-                    "name": "Servizi Ecosistema",
+                    "name": "{{ __('info_co_create.schema.catalog_name') }}",
                     "itemListElement": [
                         {
                             "@type": "Service",
-                            "name": "Co-Creare",
-                            "description": "Piattaforma per co-creazione di opere d'arte digitali e NFT"
+                            "name": "{{ __('info_co_create.schema.service_cocreate_name') }}",
+                            "description": "{{ __('info_co_create.schema.service_cocreate_description') }}"
                         },
                         {
                             "@type": "Service",
-                            "name": "Co-Creatori",
-                            "description": "Gestione permanente di artisti e creatori nell'ecosistema"
+                            "name": "{{ __('info_co_create.schema.service_cocreator_name') }}",
+                            "description": "{{ __('info_co_create.schema.service_cocreator_description') }}"
                         },
                         {
                             "@type": "Service",
-                            "name": "Trader Pro",
-                            "description": "Strumenti avanzati per trading professionale di EGI"
+                            "name": "{{ __('info_co_create.schema.service_trader_name') }}",
+                            "description": "{{ __('info_co_create.schema.service_trader_description') }}"
                         }
                     ]
                 }
             },
             {
                 "@type": "CreativeWork",
-                "name": "Community Artistica FlorenceEGI",
-                "description": "Ecosistema collaborativo per artisti, creatori e trader professionali",
+                "name": "{{ __('info_co_create.schema.creative_work_name') }}",
+                "description": "{{ __('info_co_create.schema.creative_work_description') }}",
                 "creator": {
                     "@id": "{{ url('/') }}#organization"
                 },
-                "genre": "Digital Art Platform",
+                "genre": "{{ __('info_co_create.schema.creative_work_genre') }}",
                 "audience": {
                     "@type": "Audience",
-                    "name": "Artisti, Creatori e Trader Professionali"
+                    "name": "{{ __('info_co_create.schema.audience_name') }}"
                 }
             }
         ]
@@ -345,25 +340,27 @@
                 <div class="flex items-center space-x-3 sm:space-x-4">
                     <i class="fas fa-infinity text-oro-fiorentino text-3xl sm:text-4xl"></i>
                     <div>
-                        <h1 class="renaissance-title text-xl font-bold sm:text-2xl">FlorenceEGI</h1>
-                        <p class="font-body text-sm text-blue-200 sm:text-base">Il Rinascimento Digitale</p>
+                        <h1 class="renaissance-title text-xl font-bold sm:text-2xl">
+                            {{ __('info_co_create.header.brand_title') }}</h1>
+                        <p class="font-body text-sm text-blue-200 sm:text-base">
+                            {{ __('info_co_create.header.brand_subtitle') }}</p>
                     </div>
                 </div>
 
                 <!-- Desktop Navigation -->
                 <nav class="hidden space-x-3 md:flex" aria-label="Navigazione principale FlorenceEGI">
                     <a href="{{ route('home') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Home</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_co_create.header.nav_home') }}</a>
                     <a href="{{ route('info.florence-egi') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">FlorenceEGI</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_co_create.header.nav_florence_egi') }}</a>
                     <a href="{{ route('info.egi') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">EGI</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_co_create.header.nav_egi') }}</a>
                     <a href="{{ route('info.epp') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">EPP</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_co_create.header.nav_epp') }}</a>
                     <a href="{{ route('archetypes.patron') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Patron</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_co_create.header.nav_patron') }}</a>
                     <a href="{{ route('gdpr.privacy-policy') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Privacy</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_co_create.header.nav_privacy') }}</a>
                 </nav>
 
                 <!-- Mobile Menu Button -->
@@ -379,32 +376,32 @@
                     <a href="{{ route('home') }}"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
                         <i class="fas fa-home text-oro-fiorentino mr-3 text-lg"></i>
-                        Home
+                        {{ __('info_co_create.header.nav_home') }}
                     </a>
                     <a href="{{ route('info.florence-egi') }}"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
                         <i class="fas fa-infinity text-oro-fiorentino mr-3 text-lg"></i>
-                        FlorenceEGI
+                        {{ __('info_co_create.header.nav_florence_egi') }}
                     </a>
                     <a href="{{ route('info.egi') }}"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
                         <i class="fas fa-gem text-oro-fiorentino mr-3 text-lg"></i>
-                        EGI
+                        {{ __('info_co_create.header.nav_egi') }}
                     </a>
                     <a href="{{ route('info.epp') }}"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
                         <i class="fas fa-leaf text-oro-fiorentino mr-3 text-lg"></i>
-                        EPP
+                        {{ __('info_co_create.header.nav_epp') }}
                     </a>
                     <a href="{{ route('archetypes.patron') }}"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
                         <i class="fas fa-crown text-oro-fiorentino mr-3 text-lg"></i>
-                        Patron
+                        {{ __('info_co_create.header.nav_patron') }}
                     </a>
                     <a href="{{ route('gdpr.privacy-policy') }}"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
                         <i class="fas fa-shield-alt text-oro-fiorentino mr-3 text-lg"></i>
-                        Privacy
+                        {{ __('info_co_create.header.nav_privacy') }}
                     </a>
                 </div>
             </div>
@@ -416,23 +413,23 @@
         <div class="golden-ratio-container flex min-h-[50vh] items-center justify-center px-4">
             <div class="mx-auto max-w-4xl text-center text-white">
                 <h1 class="renaissance-title mb-6 text-4xl font-bold sm:text-5xl lg:text-6xl">
-                    L'Ecosistema della Co-Creazione
+                    {{ __('info_co_create.hero.title') }}
                 </h1>
                 <p class="mb-8 font-body text-lg leading-relaxed text-blue-100 sm:text-xl">
-                    Dove ogni partecipante diventa protagonista dell'arte digitale e dell'innovazione sostenibile
+                    {{ __('info_co_create.hero.subtitle') }}
                 </p>
                 <div class="flex flex-wrap justify-center gap-4 font-body text-sm">
                     <div class="flex items-center rounded-full bg-white bg-opacity-20 px-4 py-2">
                         <i class="fas fa-palette text-oro-fiorentino mr-2"></i>
-                        Co-Creare
+                        {{ __('info_co_create.hero.badge_cocreate') }}
                     </div>
                     <div class="flex items-center rounded-full bg-white bg-opacity-20 px-4 py-2">
                         <i class="fas fa-users text-oro-fiorentino mr-2"></i>
-                        Co-Creatori
+                        {{ __('info_co_create.hero.badge_cocreator') }}
                     </div>
                     <div class="flex items-center rounded-full bg-white bg-opacity-20 px-4 py-2">
                         <i class="fas fa-chart-line text-oro-fiorentino mr-2"></i>
-                        Trader Pro
+                        {{ __('info_co_create.hero.badge_trader') }}
                     </div>
                 </div>
             </div>
@@ -455,7 +452,7 @@
                             class="section-nav-link flex-shrink-0 rounded-lg border border-transparent px-4 py-2 text-sm font-medium transition-all duration-200 hover:border-purple-200 hover:bg-purple-50 hover:text-purple-700"
                             data-section="co-creare">
                             <i class="fas fa-palette mr-2 text-purple-600"></i>
-                            Co-Creare
+                            {{ __('info_co_create.navigation.cocreate_nav') }}
                         </a>
 
                         <!-- Co-Creatore -->
@@ -463,7 +460,7 @@
                             class="section-nav-link flex-shrink-0 rounded-lg border border-transparent px-4 py-2 text-sm font-medium transition-all duration-200 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
                             data-section="co-creatore">
                             <i class="fas fa-users mr-2 text-orange-600"></i>
-                            Co-Creatore
+                            {{ __('info_co_create.navigation.cocreator_nav') }}
                         </a>
 
                         <!-- Trader Pro -->
@@ -471,7 +468,7 @@
                             class="section-nav-link flex-shrink-0 rounded-lg border border-transparent px-4 py-2 text-sm font-medium transition-all duration-200 hover:border-red-200 hover:bg-red-50 hover:text-red-700"
                             data-section="trader-pro">
                             <i class="fas fa-chart-line mr-2 text-red-600"></i>
-                            Trader Pro
+                            {{ __('info_co_create.navigation.trader_nav') }}
                         </a>
 
                     </div>
@@ -483,7 +480,8 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <i class="fas fa-list text-oro-fiorentino mr-2 text-lg"></i>
-                        <span class="text-sm font-medium text-grigio-pietra">Sezioni Ecosistema</span>
+                        <span
+                            class="text-sm font-medium text-grigio-pietra">{{ __('info_co_create.navigation.sections_title') }}</span>
                     </div>
                     <button id="mobile-sections-toggle"
                         class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 transition-colors hover:bg-gray-200">
@@ -499,7 +497,7 @@
                         class="section-nav-link-mobile flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-purple-50 hover:text-purple-700"
                         data-section="co-creare">
                         <i class="fas fa-palette mr-3 text-purple-600"></i>
-                        Co-Creare
+                        {{ __('info_co_create.navigation.cocreate_nav') }}
                     </a>
 
                     <!-- Co-Creatore -->
@@ -507,7 +505,7 @@
                         class="section-nav-link-mobile flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-orange-50 hover:text-orange-700"
                         data-section="co-creatore">
                         <i class="fas fa-users mr-3 text-orange-600"></i>
-                        Co-Creatore
+                        {{ __('info_co_create.navigation.cocreator_nav') }}
                     </a>
 
                     <!-- Trader Pro -->
@@ -515,7 +513,7 @@
                         class="section-nav-link-mobile flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-red-50 hover:text-red-700"
                         data-section="trader-pro">
                         <i class="fas fa-chart-line mr-3 text-red-600"></i>
-                        Trader Pro
+                        {{ __('info_co_create.navigation.trader_nav') }}
                     </a>
 
                 </div>
@@ -525,8 +523,7 @@
     </nav>
 
     <!-- Sezione Co-Creare -->
-    <section id="co-creare" class="py-16"
-        aria-label="Piattaforma Co-Creare per creazione collaborativa di opere d'arte">
+    <section id="co-creare" class="py-16" aria-label="{{ __('info_co_create.cocreate.aria_label') }}">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto max-w-6xl">
 
@@ -537,10 +534,10 @@
                         <i class="fas fa-palette text-3xl"></i>
                     </div>
                     <h2 class="renaissance-title mb-4 text-3xl font-bold text-blu-algoritmo sm:text-4xl">
-                        Il Concetto di Co-Creare
+                        {{ __('info_co_create.cocreate.title') }}
                     </h2>
                     <p class="font-body text-lg text-grigio-pietra">
-                        Partecipa attivamente alla nascita pubblica di un'opera d'arte
+                        {{ __('info_co_create.cocreate.subtitle') }}
                     </p>
                 </div>
 
@@ -548,45 +545,38 @@
                 <div class="grid gap-8 lg:grid-cols-2">
                     <div class="renaissance-card elegant-hover p-8">
                         <h3 class="renaissance-title mb-4 text-xl font-semibold text-blu-algoritmo">
-                            L'Atto della Creazione Condivisa
+                            {{ __('info_co_create.cocreate.shared_creation_title') }}
                         </h3>
                         <p class="mb-4 font-body leading-relaxed text-grigio-pietra">
-                            Co-creare in FlorenceEGI significa partecipare al momento più magico dell'arte digitale:
-                            il <strong>primo acquisto</strong>. Non si tratta semplicemente di una transazione
-                            commerciale,
-                            ma dell'<strong>atto fondativo</strong> che trasforma un'opera privata in un bene culturale
-                            pubblico.
+                            {!! __('info_co_create.cocreate.shared_creation_content') !!}
                         </p>
                         <div class="highlight-box">
                             <p class="font-semibold text-blu-algoritmo">
                                 <i class="fas fa-lightbulb text-oro-fiorentino mr-2"></i>
-                                Il primo acquisto è l'atto che rende "viva e pubblica" l'opera d'arte
+                                {{ __('info_co_create.cocreate.shared_creation_highlight') }}
                             </p>
                         </div>
                     </div>
 
                     <div class="renaissance-card elegant-hover p-8">
                         <h3 class="renaissance-title mb-4 text-xl font-semibold text-blu-algoritmo">
-                            Dal Privato al Pubblico
+                            {{ __('info_co_create.cocreate.private_to_public_title') }}
                         </h3>
                         <p class="mb-4 font-body leading-relaxed text-grigio-pietra">
-                            Attraverso il <strong>minting</strong> e il primo acquisto, l'opera abbandona la dimensione
-                            privata dello studio dell'artista per entrare nella sfera pubblica della cultura condivisa.
-                            Il Co-creatore non acquisisce solo un'opera, ma diventa <strong>parte integrante della sua
-                                storia</strong>.
+                            {!! __('info_co_create.cocreate.private_to_public_content') !!}
                         </p>
                         <ul class="space-y-2 font-body text-sm text-grigio-pietra">
                             <li class="flex items-center">
                                 <i class="fas fa-check-circle mr-2 text-verde-rinascita"></i>
-                                Partecipazione attiva al processo creativo
+                                {{ __('info_co_create.cocreate.benefit_active_participation') }}
                             </li>
                             <li class="flex items-center">
                                 <i class="fas fa-check-circle mr-2 text-verde-rinascita"></i>
-                                Contributo alla visibilità dell'artista
+                                {{ __('info_co_create.cocreate.benefit_artist_visibility') }}
                             </li>
                             <li class="flex items-center">
                                 <i class="fas fa-check-circle mr-2 text-verde-rinascita"></i>
-                                Sostegno diretto ai progetti ambientali EPP
+                                {{ __('info_co_create.cocreate.benefit_epp_support') }}
                             </li>
                         </ul>
                     </div>
@@ -594,16 +584,10 @@
 
                 <div class="renaissance-card mt-8 p-8 text-center">
                     <h3 class="renaissance-title mb-4 text-2xl font-bold text-blu-algoritmo">
-                        L'Opportunità Unica
+                        {{ __('info_co_create.cocreate.unique_opportunity_title') }}
                     </h3>
                     <p class="mx-auto max-w-3xl font-body text-lg leading-relaxed text-grigio-pietra">
-                        Anche se l'artista ha materialmente creato l'opera, <strong>il primo acquisto è l'atto che la
-                            rende viva</strong>
-                        nella dimensione digitale e culturale globale. Chi co-crea non solo possiede un'opera d'arte
-                        unica,
-                        ma diventa <strong>custode della sua prima esistenza pubblica</strong>, partecipando così al
-                        miracolo
-                        della trasformazione artistica.
+                        {!! __('info_co_create.cocreate.unique_opportunity_content') !!}
                     </p>
                 </div>
 
@@ -613,7 +597,7 @@
 
     <!-- Sezione Co-Creatore -->
     <section id="co-creatore" class="section-alt py-16"
-        aria-label="Sistema Co-Creatore per gestione permanente di artisti nell'ecosistema">
+        aria-label="{{ __('info_co_create.cocreator.aria_label') }}">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto max-w-6xl">
 
@@ -624,10 +608,10 @@
                         <i class="fas fa-users text-3xl"></i>
                     </div>
                     <h2 class="renaissance-title mb-4 text-3xl font-bold text-blu-algoritmo sm:text-4xl">
-                        La Figura del Co-Creatore
+                        {{ __('info_co_create.cocreator.title') }}
                     </h2>
                     <p class="font-body text-lg text-grigio-pietra">
-                        Un legame permanente con l'opera e visibilità mondiale garantita
+                        {{ __('info_co_create.cocreator.subtitle') }}
                     </p>
                 </div>
 
@@ -638,12 +622,10 @@
                             <i class="fas fa-infinity text-oro-fiorentino text-3xl"></i>
                         </div>
                         <h3 class="renaissance-title mb-3 text-lg font-semibold text-blu-algoritmo">
-                            Legame Permanente
+                            {{ __('info_co_create.cocreator.permanent_bond_title') }}
                         </h3>
                         <p class="font-body text-grigio-pietra">
-                            Il Co-creatore rimane <strong>per sempre unito all'EGI</strong>, insieme al Creator
-                            originale.
-                            Questo legame indissolubile garantisce il riconoscimento perpetuo del suo ruolo fondativo.
+                            {!! __('info_co_create.cocreator.permanent_bond_content') !!}
                         </p>
                     </div>
 
@@ -652,12 +634,10 @@
                             <i class="fas fa-globe text-oro-fiorentino text-3xl"></i>
                         </div>
                         <h3 class="renaissance-title mb-3 text-lg font-semibold text-blu-algoritmo">
-                            Visibilità Mondiale
+                            {{ __('info_co_create.cocreator.global_visibility_title') }}
                         </h3>
                         <p class="font-body text-grigio-pietra">
-                            Attraverso la registrazione e il profilo personalizzato, il Co-creatore ottiene
-                            <strong>massima visibilità in tutto il mondo</strong> e riconoscimento globale del suo
-                            contributo.
+                            {!! __('info_co_create.cocreator.global_visibility_content') !!}
                         </p>
                     </div>
 
@@ -666,51 +646,52 @@
                             <i class="fas fa-user-edit text-oro-fiorentino text-3xl"></i>
                         </div>
                         <h3 class="renaissance-title mb-3 text-lg font-semibold text-blu-algoritmo">
-                            Identità Personalizzata
+                            {{ __('info_co_create.cocreator.personalized_identity_title') }}
                         </h3>
                         <p class="font-body text-grigio-pietra">
-                            Libertà completa nella scelta dell'identità: <strong>nickname, nome d'arte,
-                                nome completo</strong> e immagine personale per massimo riconoscimento.
+                            {!! __('info_co_create.cocreator.personalized_identity_content') !!}
                         </p>
                     </div>
                 </div>
 
                 <div class="renaissance-card mt-8 p-8">
                     <h3 class="renaissance-title mb-6 text-center text-2xl font-bold text-blu-algoritmo">
-                        Il Profilo del Co-Creatore
+                        {{ __('info_co_create.cocreator.profile_title') }}
                     </h3>
                     <div class="grid gap-6 md:grid-cols-2">
                         <div>
-                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">Personalizzazione Completa</h4>
+                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">
+                                {{ __('info_co_create.cocreator.customization_title') }}</h4>
                             <ul class="space-y-2 font-body text-grigio-pietra">
                                 <li class="flex items-center">
                                     <i class="fas fa-tag mr-3 text-verde-rinascita"></i>
-                                    <span><strong>Nickname personalizzato</strong> a scelta libera</span>
+                                    <span>{!! __('info_co_create.cocreator.custom_nickname') !!}</span>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="fas fa-id-card mr-3 text-verde-rinascita"></i>
-                                    <span><strong>Nome e cognome reali</strong> o nome d'arte</span>
+                                    <span>{!! __('info_co_create.cocreator.real_name') !!}</span>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="fas fa-camera mr-3 text-verde-rinascita"></i>
-                                    <span><strong>Immagine profilo</strong> caricabile nell'area personale</span>
+                                    <span>{!! __('info_co_create.cocreator.profile_image') !!}</span>
                                 </li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">Vantaggi Esclusivi</h4>
+                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">
+                                {{ __('info_co_create.cocreator.exclusive_benefits_title') }}</h4>
                             <ul class="space-y-2 font-body text-grigio-pietra">
                                 <li class="flex items-center">
                                     <i class="text-oro-fiorentino fas fa-crown mr-3"></i>
-                                    <span><strong>Riconoscimento perpetuo</strong> legato all'opera</span>
+                                    <span>{!! __('info_co_create.cocreator.perpetual_recognition') !!}</span>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="text-oro-fiorentino fas fa-trophy mr-3"></i>
-                                    <span><strong>Status esclusivo</strong> di primo acquirente</span>
+                                    <span>{!! __('info_co_create.cocreator.exclusive_status') !!}</span>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="text-oro-fiorentino fas fa-network-wired mr-3"></i>
-                                    <span><strong>Visibilità globale</strong> nell'ecosistema FlorenceEGI</span>
+                                    <span>{!! __('info_co_create.cocreator.global_visibility_benefit') !!}</span>
                                 </li>
                             </ul>
                         </div>
@@ -719,8 +700,7 @@
                     <div class="from-oro-fiorentino mt-6 rounded-lg bg-gradient-to-r to-yellow-400 p-6 text-center">
                         <p class="text-lg font-semibold text-white">
                             <i class="fas fa-star mr-2"></i>
-                            Il Co-creatore non è solo un acquirente: è il <strong>co-fondatore dell'esistenza
-                                pubblica</strong> dell'opera d'arte
+                            {!! __('info_co_create.cocreator.cofounder_message') !!}
                         </p>
                     </div>
                 </div>
@@ -730,7 +710,7 @@
     </section>
 
     <!-- Sezione Trader Pro -->
-    <section id="trader-pro" class="py-16" aria-label="Strumenti Trader Pro per trading professionale di EGI">
+    <section id="trader-pro" class="py-16" aria-label="{{ __('info_co_create.trader.aria_label') }}">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto max-w-6xl">
 
@@ -741,39 +721,35 @@
                         <i class="fas fa-chart-line text-3xl"></i>
                     </div>
                     <h2 class="renaissance-title mb-4 text-3xl font-bold text-blu-algoritmo sm:text-4xl">
-                        Trader Pro: Strategia Duplice
+                        {{ __('info_co_create.trader.title') }}
                     </h2>
                     <p class="font-body text-lg text-grigio-pietra">
-                        Strumenti professionali per trader e marketing rivoluzionario per creator
+                        {{ __('info_co_create.trader.subtitle') }}
                     </p>
                 </div>
 
                 <!-- La Strategia Duplice -->
                 <div class="renaissance-card mb-8 p-8">
                     <h3 class="renaissance-title mb-6 text-center text-2xl font-bold text-blu-algoritmo">
-                        La Visione Strategica
+                        {{ __('info_co_create.trader.strategic_vision_title') }}
                     </h3>
                     <div class="grid gap-8 lg:grid-cols-2">
                         <div class="border-l-4 border-verde-rinascita bg-green-50 p-6">
                             <h4 class="mb-3 text-lg font-semibold text-verde-rinascita">
                                 <i class="fas fa-tools mr-2"></i>
-                                Per i Trader Professionali
+                                {{ __('info_co_create.trader.for_traders_title') }}
                             </h4>
                             <p class="font-body text-grigio-pietra">
-                                Forniamo i <strong>massimi strumenti di trading</strong> a chi fa del trading la propria
-                                attività principale.
-                                EGI PT offre opportunità uniche per chi comprende il mercato dell'arte digitale.
+                                {!! __('info_co_create.trader.for_traders_content') !!}
                             </p>
                         </div>
                         <div class="border-l-4 border-arancio-energia bg-orange-50 p-6">
                             <h4 class="mb-3 text-lg font-semibold text-arancio-energia">
                                 <i class="fas fa-rocket mr-2"></i>
-                                Per i Creator
+                                {{ __('info_co_create.trader.for_creators_title') }}
                             </h4>
                             <p class="font-body text-grigio-pietra">
-                                Offriamo uno <strong>strumento di marketing incredibile</strong> che amplifica la
-                                visibilità
-                                e la portata delle opere attraverso gli "emissari digitali" EGI PT.
+                                {!! __('info_co_create.trader.for_creators_content') !!}
                             </p>
                         </div>
                     </div>
@@ -782,7 +758,7 @@
                 <!-- Sistema EGI PT -->
                 <div class="mb-8">
                     <h3 class="renaissance-title mb-6 text-center text-2xl font-bold text-blu-algoritmo">
-                        Il Sistema EGI PT: Gli Emissari Digitali
+                        {{ __('info_co_create.trader.egi_pt_system_title') }}
                     </h3>
 
                     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -790,10 +766,10 @@
                             <div class="mb-4">
                                 <i class="fas fa-clone text-4xl text-viola-innovazione"></i>
                             </div>
-                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">5 EGI PT Massimo</h4>
+                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">
+                                {{ __('info_co_create.trader.max_5_title') }}</h4>
                             <p class="font-body text-sm text-grigio-pietra">
-                                Per ogni EGI con bene fisico, si creano <strong>massimo 5 EGI PT</strong>,
-                                garantendo scarsità e valore.
+                                {!! __('info_co_create.trader.max_5_content') !!}
                             </p>
                         </div>
 
@@ -801,10 +777,10 @@
                             <div class="mb-4">
                                 <i class="fas fa-fingerprint text-4xl text-viola-innovazione"></i>
                             </div>
-                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">Numerazione Unica</h4>
+                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">
+                                {{ __('info_co_create.trader.unique_numbering_title') }}</h4>
                             <p class="font-body text-sm text-grigio-pietra">
-                                Ogni EGI PT è <strong>reso unico da un numero di serie</strong>,
-                                pur rimanendo identico all'originale.
+                                {!! __('info_co_create.trader.unique_numbering_content') !!}
                             </p>
                         </div>
 
@@ -812,10 +788,10 @@
                             <div class="mb-4">
                                 <i class="fas fa-paper-plane text-4xl text-viola-innovazione"></i>
                             </div>
-                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">Emissari Digitali</h4>
+                            <h4 class="mb-3 text-lg font-semibold text-blu-algoritmo">
+                                {{ __('info_co_create.trader.digital_emissaries_title') }}</h4>
                             <p class="font-body text-sm text-grigio-pietra">
-                                Gli EGI PT sono <strong>messaggeri dell'EGI fisico</strong>
-                                nel mondo digitale globale.
+                                {!! __('info_co_create.trader.digital_emissaries_content') !!}
                             </p>
                         </div>
                     </div>
@@ -825,31 +801,36 @@
                 <div class="renaissance-card mb-8 p-8">
                     <h3 class="renaissance-title mb-6 text-xl font-bold text-blu-algoritmo">
                         <i class="text-oro-fiorentino fas fa-chart-line mr-3"></i>
-                        Vantaggi per i Trader Professionali
+                        {{ __('info_co_create.trader.trader_benefits_title') }}
                     </h3>
                     <div class="grid gap-6 md:grid-cols-2">
                         <div>
-                            <h4 class="mb-3 text-lg font-semibold text-verde-rinascita">Rarità Garantita</h4>
+                            <h4 class="mb-3 text-lg font-semibold text-verde-rinascita">
+                                {{ __('info_co_create.trader.guaranteed_rarity_title') }}</h4>
                             <p class="mb-4 font-body text-grigio-pietra">
-                                La limitazione a <strong>massimo 5 esemplari</strong> per ogni opera garantisce
-                                scarsità naturale e potenziale apprezzamento sul mercato.
+                                {!! __('info_co_create.trader.guaranteed_rarity_content') !!}
                             </p>
                             <div class="highlight-box">
                                 <p class="text-sm font-semibold text-blu-algoritmo">
-                                    Scarsità = Valore. Mai più di 5 EGI PT per opera.
+                                    {{ __('info_co_create.trader.guaranteed_rarity_highlight') }}
                                 </p>
                             </div>
                         </div>
                         <div>
-                            <h4 class="mb-3 text-lg font-semibold text-verde-rinascita">Arte Vera e Propria</h4>
+                            <h4 class="mb-3 text-lg font-semibold text-verde-rinascita">
+                                {{ __('info_co_create.trader.real_art_title') }}</h4>
                             <p class="mb-4 font-body text-grigio-pietra">
-                                Possedere un EGI PT significa detenere una <strong>rappresentazione digitale
-                                    di un'opera d'arte reale</strong>, con valore artistico intrinseco.
+                                {!! __('info_co_create.trader.real_art_content') !!}
                             </p>
                             <ul class="space-y-1 text-sm text-grigio-pietra">
-                                <li><i class="fas fa-check mr-2 text-verde-rinascita"></i>Legame con opera fisica</li>
-                                <li><i class="fas fa-check mr-2 text-verde-rinascita"></i>Valore artistico reale</li>
-                                <li><i class="fas fa-check mr-2 text-verde-rinascita"></i>Collezionabilità garantita
+                                <li><i
+                                        class="fas fa-check mr-2 text-verde-rinascita"></i>{{ __('info_co_create.trader.physical_link') }}
+                                </li>
+                                <li><i
+                                        class="fas fa-check mr-2 text-verde-rinascita"></i>{{ __('info_co_create.trader.real_artistic_value') }}
+                                </li>
+                                <li><i
+                                        class="fas fa-check mr-2 text-verde-rinascita"></i>{{ __('info_co_create.trader.guaranteed_collectibility') }}
                                 </li>
                             </ul>
                         </div>
@@ -860,35 +841,35 @@
                 <div class="renaissance-card mb-8 bg-gradient-to-br from-blue-50 to-green-50 p-8">
                     <h3 class="renaissance-title mb-6 text-xl font-bold text-blu-algoritmo">
                         <i class="text-oro-fiorentino fas fa-calculator mr-3"></i>
-                        Struttura Economica Ottimizzata
+                        {{ __('info_co_create.trader.economic_structure_title') }}
                     </h3>
                     <div class="grid gap-6 lg:grid-cols-3">
                         <div class="rounded-lg bg-white p-4 shadow-sm">
-                            <h4 class="mb-2 text-lg font-semibold text-rosso-urgenza">Zero Fee Creator</h4>
+                            <h4 class="mb-2 text-lg font-semibold text-rosso-urgenza">
+                                {{ __('info_co_create.trader.zero_creator_fee_title') }}</h4>
                             <p class="text-sm text-grigio-pietra">
-                                Il Creator <strong>non paga commissioni</strong> sugli EGI PT,
-                                mantenendo il focus sul marketing gratuito.
+                                {!! __('info_co_create.trader.zero_creator_fee_content') !!}
                             </p>
                         </div>
                         <div class="rounded-lg bg-white p-4 shadow-sm">
-                            <h4 class="mb-2 text-lg font-semibold text-rosso-urgenza">Zero Fee Piattaforma</h4>
+                            <h4 class="mb-2 text-lg font-semibold text-rosso-urgenza">
+                                {{ __('info_co_create.trader.zero_platform_fee_title') }}</h4>
                             <p class="text-sm text-grigio-pietra">
-                                FlorenceEGI <strong>non trattiene commissioni</strong> sugli EGI PT,
-                                massimizzando i volumi di trading.
+                                {!! __('info_co_create.trader.zero_platform_fee_content') !!}
                             </p>
                         </div>
                         <div class="rounded-lg bg-white p-4 shadow-sm">
-                            <h4 class="mb-2 text-lg font-semibold text-verde-rinascita">Solo 0,5% EPP</h4>
+                            <h4 class="mb-2 text-lg font-semibold text-verde-rinascita">
+                                {{ __('info_co_create.trader.epp_fee_title') }}</h4>
                             <p class="text-sm text-grigio-pietra">
-                                Unica commissione: <strong>0,5% per progetti ambientali</strong>,
-                                garantendo impatto sostenibile minimo.
+                                {!! __('info_co_create.trader.epp_fee_content') !!}
                             </p>
                         </div>
                     </div>
                     <div class="mt-6 rounded-lg bg-gradient-to-r from-verde-rinascita to-green-600 p-4 text-center">
                         <p class="font-semibold text-white">
                             <i class="fas fa-trophy mr-2"></i>
-                            Massima redditività per i trader + contributo ambientale responsabile
+                            {{ __('info_co_create.trader.profitability_message') }}
                         </p>
                     </div>
                 </div>
@@ -896,30 +877,28 @@
                 <!-- Impatto Ecosistema -->
                 <div class="renaissance-card p-8">
                     <h3 class="renaissance-title mb-6 text-center text-2xl font-bold text-blu-algoritmo">
-                        L'Impatto sull'Intero Ecosistema
+                        {{ __('info_co_create.trader.ecosystem_impact_title') }}
                     </h3>
                     <div class="grid gap-6 md:grid-cols-2">
                         <div>
-                            <h4 class="mb-3 text-lg font-semibold text-arancio-energia">Volumi e Visibilità</h4>
+                            <h4 class="mb-3 text-lg font-semibold text-arancio-energia">
+                                {{ __('info_co_create.trader.volumes_visibility_title') }}</h4>
                             <p class="mb-4 font-body text-grigio-pietra">
-                                Le <strong>transazioni rapide e numerose</strong> degli EGI PT generano volumi
-                                significativi
-                                che aumentano la visibilità dell'intera piattaforma.
+                                {!! __('info_co_create.trader.volumes_visibility_content') !!}
                             </p>
                         </div>
                         <div>
-                            <h4 class="mb-3 text-lg font-semibold text-arancio-energia">Ritorno per Tutti</h4>
+                            <h4 class="mb-3 text-lg font-semibold text-arancio-energia">
+                                {{ __('info_co_create.trader.return_for_all_title') }}</h4>
                             <p class="mb-4 font-body text-grigio-pietra">
-                                L'aumento di visibilità beneficia <strong>tutti i creator e reseller</strong>
-                                del mercato secondario, creando un circolo virtuoso.
+                                {!! __('info_co_create.trader.return_for_all_content') !!}
                             </p>
                         </div>
                     </div>
                     <div class="from-oro-fiorentino mt-6 rounded-lg bg-gradient-to-r to-yellow-400 p-6 text-center">
                         <p class="text-lg font-semibold text-white">
                             <i class="fas fa-infinity mr-2"></i>
-                            Una strategia che eleva l'intero ecosistema FlorenceEGI attraverso la sinergia tra arte e
-                            trading professionale
+                            {{ __('info_co_create.trader.synergy_message') }}
                         </p>
                     </div>
                 </div>
