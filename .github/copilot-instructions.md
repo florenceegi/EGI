@@ -321,6 +321,93 @@ Prima di ogni azione:
 
 ---
 
+# **📊 WORKFLOW PRODUTTIVITÀ & TRACKING**
+
+## **⚡ COMMIT FREQUENTI OBBLIGATORI**
+
+**REMINDER CONTINUO**: Committa ad **ogni modifica significativa** - non aspettare la fine della sessione!
+
+### **Quando Committare:**
+
+-   ✅ Ogni file completato
+-   ✅ Ogni funzionalità implementata
+-   ✅ Ogni bug risolto
+-   ✅ Ogni refactoring completato
+-   ✅ Ogni aggiornamento documentazione
+
+### **Commit Atomici**:
+
+-   UN commit per UN concetto
+-   Messaggio descrittivo con tag obbligatorio
+-   Testare il codice prima del commit
+
+## **📈 MONITORAGGIO PRODUTTIVITÀ GIORNALIERO**
+
+### **Durante la Sessione di Lavoro:**
+
+```bash
+# Controlla produttività giornaliera
+./bash_files/egi-daily-simple.sh
+```
+
+**Esegui dopo ogni sessione di lavoro significativa per:**
+
+-   ✅ Vedere righe scritte oggi
+-   ✅ Conteggio commit giornalieri
+-   ✅ File modificati
+-   ✅ Valutazione produttività (ULTRA ECCELLENZA target)
+
+### **A Fine Giornata di Lavoro:**
+
+**1. Statistiche Commit Range:**
+
+```bash
+# Statistiche dettagliate periodo
+./bash_files/commit-range-stats.sh
+```
+
+**2. Export Excel Completo:**
+
+```bash
+# Export completo per tracking storico
+./bash_files/commit-stats-to-excel.py
+```
+
+## **🎯 METRICHE DI ECCELLENZA**
+
+### **Target Giornalieri:**
+
+-   **ULTRA ECCELLENZA**: 1000+ righe nette
+-   **ECCELLENTE**: 500+ righe nette
+-   **BUONA**: 200+ righe nette
+-   **STANDARD**: <200 righe nette
+
+### **Quality Gates:**
+
+-   ✅ Tutti i commit con tag appropriati
+-   ✅ Zero placeholder o TODO nel codice
+-   ✅ Documentazione OS2.0 completa
+-   ✅ GDPR/ULM/UEM integration sempre
+-   ✅ Test funzionale prima del commit
+
+## **📋 CHECKLIST FINE SESSIONE**
+
+**Prima di chiudere ogni sessione:**
+
+1. **Commit Check**: `git status` → tutto committato?
+2. **Produttività**: `./bash_files/egi-daily-simple.sh`
+3. **Quality Check**: Codice completo e funzionante?
+4. **Documentation**: DocBlock OS2.0 presenti?
+5. **Next Session**: Note per la prossima sessione
+
+**A fine giornata completa:**
+
+1. **Stats Range**: `./bash_files/commit-range-stats.sh`
+2. **Excel Export**: `./bash_files/commit-stats-to-excel.py`
+3. **Backup Check**: Tutto sincronizzato su Git?
+
+---
+
 # **PROMESSA FINALE**
 
 **"Quando mi chiedi di fare qualcosa, io FACCIO quello che serve: GDPR compliant, OOP puro, SEO + ARIA ready, documentato OS2.0, AI-readable, Silent Growth aligned. Ma PRIMA di tutto, applico la REGOLA ZERO: se non so, CHIEDO. Zero deduzioni, zero assunzioni. Ultra Eccellenza non è un obiettivo, è lo standard."**

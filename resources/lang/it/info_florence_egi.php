@@ -1,6 +1,23 @@
 <?php
 
+/**
+ * @package Resources\Lang\It\Info
+ * @author Padmin D. Curtis (AI Partner OS3.0)
+ * @version 1.0.0 (FlorenceEGI - Traduzioni pagina info EGI)
+ * @date 2025-09-29
+ * @purpose Traduzioni italiane per la pagina informativa completa su EGI
+ */
+
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Pagina Info EGI - Traduzioni Italiane
+    |--------------------------------------------------------------------------
+    |
+    | Tutte le stringhe di testo per la pagina informativa completa su Florence EGI
+    | - Versione italiana
+    |
+    */
     // Meta Tags
     'meta_title' => 'FlorenceEGI - Il Rinascimento Digitale che Unisce Arte, Tecnologia e Rigenerazione Planetaria',
     'meta_description' => 'FlorenceEGI è il primo marketplace che risolve il trilemma NFT: Qualità Artistica + Liquidità Massima + Impatto Ambientale Reale. Architettura EGI Dual Flow su blockchain Algorand.',
