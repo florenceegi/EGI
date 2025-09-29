@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,25 +20,38 @@
             background-color: #fdfcfb;
             color: #383838;
         }
+
         .active-nav {
             background-color: #047857;
             color: #ffffff;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
+
         .nav-item {
             transition: all 0.2s ease-in-out;
         }
+
         .content-section {
             display: none;
             animation: fadeIn 0.5s ease-in-out;
         }
+
         .content-section.active {
             display: block;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .chart-container {
             position: relative;
             width: 100%;
@@ -47,6 +61,7 @@
             height: 300px;
             max-height: 400px;
         }
+
         @media (min-width: 768px) {
             .chart-container {
                 height: 350px;
@@ -54,18 +69,21 @@
         }
     </style>
 </head>
+
 <body class="antialiased">
     <div class="min-h-screen">
         <header class="bg-white shadow-sm">
             <div class="px-4 py-6 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold text-emerald-800">White Paper Fiscale Interattivo</h1>
-                <p class="mt-2 text-gray-600 text-md">Esplora la gestione fiscale di FlorenceEGI in modo semplice e intuitivo.</p>
+                <p class="mt-2 text-gray-600 text-md">Esplora la gestione fiscale di FlorenceEGI in modo semplice e
+                    intuitivo.</p>
             </div>
         </header>
 
         <main class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="p-6 mb-8 bg-white shadow-lg rounded-2xl">
-                <h2 class="mb-4 text-xl font-bold text-center text-gray-800">Chi sei? Seleziona il tuo ruolo per visualizzare le tue responsabilità fiscali.</h2>
+                <h2 class="mb-4 text-xl font-bold text-center text-gray-800">Chi sei? Seleziona il tuo ruolo per
+                    visualizzare le tue responsabilità fiscali.</h2>
                 <nav id="role-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4">
                 </nav>
             </div>
@@ -74,12 +92,16 @@
             </div>
         </main>
 
-        <footer class="mt-12 bg-white">
-            <div class="px-4 py-4 mx-auto text-sm text-center text-gray-500 max-w-7xl sm:px-6 lg:px-8">
-                <p>&copy; 2025 FlorenceEGI. Questo è un documento interattivo basato sul White Paper Fiscale (FEGI TAX WP-OS1).</p>
-            </div>
-        </footer>
+        @include('components.info-footer')
+
     </div>
+
+    <style>
+        /* Forza il colore del footer per questa pagina specifica */
+        footer.bg-blu-algoritmo {
+            background-color: #1B365D !important;
+        }
+    </style>
 
     <script>
         const contentData = {
@@ -343,7 +365,7 @@
             }
         };
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const roleNav = document.getElementById('role-nav');
             const contentContainer = document.getElementById('content-container');
             let chartInstance = null;
@@ -351,11 +373,29 @@
             const createNavButton = (id, text) => {
                 const button = document.createElement('button');
                 button.dataset.role = id;
-                button.className = 'nav-item px-4 py-2 sm:px-5 sm:py-2.5 text-sm sm:text-base font-semibold text-gray-700 bg-gray-100 rounded-full hover:bg-emerald-600 hover:text-white hover:shadow-md';
+                button.className =
+                    'nav-item px-4 py-2 sm:px-5 sm:py-2.5 text-sm sm:text-base font-semibold text-gray-700 bg-gray-100 rounded-full hover:bg-emerald-600 hover:text-white hover:shadow-md';
                 button.textContent = text;
                 button.onclick = () => showSection(id);
                 return button;
             };
+
+            const createHomeLink = () => {
+                const link = document.createElement('a');
+                link.href = '{{ route('home') }}';
+                link.className =
+                    'nav-item px-4 py-2 sm:px-5 sm:py-2.5 text-sm sm:text-base font-semibold text-white bg-emerald-600 rounded-full hover:bg-emerald-700 hover:shadow-md inline-flex items-center';
+                link.innerHTML = `
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Home
+                `;
+                return link;
+            };
+
+            // Aggiungi il link Home come primo elemento
+            roleNav.appendChild(createHomeLink());
 
             Object.keys(contentData).forEach(key => {
                 const sectionData = contentData[key];
@@ -387,13 +427,15 @@
             const renderChart = () => {
                 const ctx = document.getElementById('responsibilityChart');
                 if (!ctx) return;
-                if(chartInstance) {
+                if (chartInstance) {
                     chartInstance.destroy();
                 }
                 chartInstance = new Chart(ctx.getContext('2d'), {
                     type: 'doughnut',
                     data: {
-                        labels: ['Responsabilità dell\'Utente (Creator, EPP, Trader)', 'Responsabilità della Piattaforma (FlorenceEGI)'],
+                        labels: ['Responsabilità dell\'Utente (Creator, EPP, Trader)',
+                            'Responsabilità della Piattaforma (FlorenceEGI)'
+                        ],
                         datasets: [{
                             label: 'Ripartizione delle Responsabilità Fiscali',
                             data: [85, 15],
@@ -417,7 +459,7 @@
                                     padding: 20,
                                     boxWidth: 15,
                                     font: {
-                                         size: 12
+                                        size: 12
                                     }
                                 }
                             },
@@ -444,4 +486,5 @@
         });
     </script>
 </body>
+
 </html>
