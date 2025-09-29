@@ -6,7 +6,7 @@
     Caratteristiche: Brand Guidelines, CoA Integration, Vision tecnica completa
 --}}
 <!DOCTYPE html>
-<html lang="it">
+<html lang="{{ app()->getLocale() }}">
 
 <head>
     <meta charset="UTF-8">
@@ -14,6 +14,38 @@
     <title>FlorenceEGI - Il Rinascimento Digitale che Unisce Arte, Tecnologia e Rigenerazione Planetaria</title>
     <meta name="description"
         content="FlorenceEGI è il primo marketplace che risolve il trilemma NFT: Qualità Artistica + Liquidità Massima + Impatto Ambientale Reale. Architettura EGI Dual Flow su blockchain Algorand.">
+    <meta name="keywords" content="FlorenceEGI, NFT sostenibili, marketplace arte digitale, blockchain Algorand, EGI, impatto ambientale, arte certificata, rinascimento digitale, rigenerazione planetaria">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="author" content="FlorenceEGI">
+    <meta name="language" content="{{ app()->getLocale() }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph Protocol -->
+    <meta property="og:title" content="FlorenceEGI - Il Rinascimento Digitale per Arte e Ambiente">
+    <meta property="og:description" content="Il primo marketplace NFT che unisce qualità artistica, liquidità massima e impatto ambientale reale. Risolviamo il trilemma NFT con architettura EGI Dual Flow su Algorand.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="FlorenceEGI">
+    <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <meta property="og:image" content="{{ asset('images/og/florence-egi-social.jpg') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="FlorenceEGI - Marketplace NFT Sostenibile con Impatto Ambientale">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="FlorenceEGI - Il Rinascimento Digitale dell'Arte Sostenibile">
+    <meta name="twitter:description" content="Marketplace NFT rivoluzionario: qualità artistica + liquidità + impatto ambientale reale. Architettura EGI su blockchain Algorand.">
+    <meta name="twitter:site" content="@FlorenceEGI">
+    <meta name="twitter:creator" content="@FlorenceEGI">
+    <meta name="twitter:image" content="{{ asset('images/twitter/florence-egi-twitter.jpg') }}">
+    <meta name="twitter:image:alt" content="FlorenceEGI Platform Preview">
+
+    <!-- Additional SEO Meta Tags -->
+    <meta name="theme-color" content="#D4A574">
+    <meta name="apple-mobile-web-app-title" content="FlorenceEGI">
+    <meta name="application-name" content="FlorenceEGI">
+    <meta name="msapplication-TileColor" content="#D4A574">
 
     <!-- Google Fonts - Brand Guidelines -->
     <link
@@ -134,6 +166,111 @@
             font-size: 0.9rem;
         }
     </style>
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "FlorenceEGI",
+        "url": "{{ url('/') }}",
+        "logo": "{{ asset('images/logo/florence-egi-logo.png') }}",
+        "description": "Il primo marketplace NFT che risolve il trilemma: Qualità Artistica + Liquidità Massima + Impatto Ambientale Reale. Architettura EGI Dual Flow su blockchain Algorand.",
+        "foundingDate": "2025",
+        "founders": [
+            {
+                "@type": "Person",
+                "name": "Padmin D. Curtis",
+                "jobTitle": "AI Partner OS3.0 & FlorenceEGI Visionary"
+            }
+        ],
+        "sameAs": [
+            "https://twitter.com/FlorenceEGI",
+            "https://linkedin.com/company/florence-egi"
+        ],
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IT"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "email": "info@florenceegi.com"
+        },
+        "makesOffer": {
+            "@type": "Offer",
+            "itemOffered": {
+                "@type": "Service",
+                "name": "Marketplace NFT Sostenibile",
+                "description": "Piattaforma per la certificazione, vendita e gestione di EGI (Ecological Goods Invent) con impatto ambientale verificabile"
+            }
+        }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "FlorenceEGI",
+        "url": "{{ url('/') }}",
+        "description": "Marketplace NFT rivoluzionario per arte certificata con impatto ambientale reale",
+        "publisher": {
+            "@type": "Organization",
+            "name": "FlorenceEGI"
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ url('/search') }}?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "FlorenceEGI: Il Rinascimento Digitale che Unisce Arte, Tecnologia e Rigenerazione Planetaria",
+        "description": "Architettura tecnica completa della piattaforma FlorenceEGI: EGI Dual Flow, blockchain Algorand, certificazione CoA e impatto ambientale verificabile",
+        "author": {
+            "@type": "Organization",
+            "name": "FlorenceEGI"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "FlorenceEGI",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ asset('images/logo/florence-egi-logo.png') }}"
+            }
+        },
+        "datePublished": "2025-09-28",
+        "dateModified": "{{ date('c') }}",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "{{ url()->current() }}"
+        },
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "NFT Sostenibili"
+            },
+            {
+                "@type": "Thing", 
+                "name": "Blockchain Algorand"
+            },
+            {
+                "@type": "Thing",
+                "name": "Arte Digitale Certificata"
+            },
+            {
+                "@type": "Thing",
+                "name": "Impatto Ambientale"
+            }
+        ]
+    }
+    </script>
 </head>
 
 <body class="bg-gray-50 pt-20 text-grigio-pietra">
@@ -151,7 +288,7 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden space-x-3 md:flex">
+                <nav class="hidden space-x-3 md:flex" aria-label="Navigazione principale FlorenceEGI">
                     <a href="{{ route('home') }}"
                         class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Home</a>
                     <a href="#visione"
@@ -240,7 +377,7 @@
     </header>
 
     <!-- Hero Section -->
-    <section id="visione" class="hero-background text-white">
+    <section id="visione" class="hero-background text-white" aria-label="La visione di FlorenceEGI per il Rinascimento Digitale">
         <div class="golden-ratio-container px-4 py-16 sm:px-6 sm:py-24">
             <div class="mx-auto max-w-5xl text-center">
                 <h1 class="renaissance-title mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
@@ -259,11 +396,13 @@
                 </div>
                 <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                     <a href="#soluzione"
+                        aria-label="Scopri come FlorenceEGI risolve il problema dei diritti d'immagine nell'arte"
                         class="cta-primary elegant-hover inline-flex items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold text-white">
                         <i class="fas fa-rocket mr-3"></i>
                         Scopri la Soluzione
                     </a>
                     <a href="#tecnologia"
+                        aria-label="Esplora la tecnologia blockchain Algorand utilizzata da FlorenceEGI"
                         class="border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover inline-flex items-center justify-center rounded-xl border-2 px-8 py-4 text-lg font-semibold transition-all hover:text-blu-algoritmo">
                         <i class="fas fa-cogs mr-3"></i>
                         Tecnologia Algorand
@@ -274,7 +413,7 @@
     </section>
 
     <!-- Il Problema: Trilemma NFT -->
-    <section id="problema" class="bg-white py-16 sm:py-24">
+    <section id="problema" class="bg-white py-16 sm:py-24" aria-label="Il problema dei diritti d'immagine nell'arte contemporanea">
         <div class="golden-ratio-container px-4 sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
                 <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
@@ -374,7 +513,7 @@
     </section>
 
     <!-- Cosa sono gli EGI -->
-    <section id="egi" class="bg-gray-50 py-16 sm:py-24">
+    <section id="egi" class="bg-gray-50 py-16 sm:py-24" aria-label="Cosa sono gli Environmental Generated Image (EGI)">
         <div class="golden-ratio-container px-4 sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
                 <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
@@ -465,7 +604,7 @@
     </section>
 
     <!-- La Soluzione: Architettura Anti-Trilemma -->
-    <section id="soluzione" class="section-dark py-16 text-white sm:py-24">
+    <section id="soluzione" class="section-dark py-16 text-white sm:py-24" aria-label="Come FlorenceEGI risolve il problema tramite blockchain">
         <div class="golden-ratio-container px-4 sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
                 <h2 class="renaissance-title mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
@@ -545,7 +684,7 @@
     </section>
 
     <!-- Tecnologia: Progressive Web3 -->
-    <section id="tecnologia" class="bg-white py-16 sm:py-24">
+    <section id="tecnologia" class="bg-white py-16 sm:py-24" aria-label="La tecnologia blockchain Algorand e l'ecosistema FlorenceEGI">
         <div class="golden-ratio-container px-4 sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
                 <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
@@ -1297,11 +1436,13 @@
                 </p>
                 <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                     <a href="{{ route('register') }}"
+                        aria-label="Registrati sulla piattaforma FlorenceEGI e inizia il tuo viaggio nel Rinascimento Digitale"
                         class="cta-primary elegant-hover inline-flex items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold text-white">
                         <i class="fas fa-rocket mr-3"></i>
                         Inizia il Tuo Viaggio
                     </a>
                     <a href="{{ route('archetypes.patron') }}"
+                        aria-label="Scopri i ruoli disponibili: Artista, Mecenate, Sostenitore, Collezionista"
                         class="border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover inline-flex items-center justify-center rounded-xl border-2 px-8 py-4 text-lg font-semibold transition-all hover:text-white">
                         <i class="fas fa-users mr-3"></i>
                         Scopri i Ruoli
