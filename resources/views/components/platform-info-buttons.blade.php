@@ -35,8 +35,8 @@
                     <span class="ml-1 text-gray-300">?</span>
                 </a>
 
-                {{-- Bottone Attivare ? --}}
-                <a href="{{ route('info.attivare') }}"
+                {{-- Bottone Co-Creare ? --}}
+                <a href="{{ route('info.co-create-ecosystem') }}#co-creare"
                     class="flex items-center flex-shrink-0 px-4 py-2 text-xs font-medium text-white transition-all duration-200 bg-gray-800 border border-gray-700 rounded-lg snap-start hover:scale-105 hover:border-gray-600 hover:bg-gray-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900">
                     <svg class="w-4 h-4 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -47,13 +47,13 @@
                 </a>
 
                 {{-- Bottone Impatto ? --}}
-                <a href="{{ route('info.impatto') }}"
+                <a href="{{ route('info.epp') }}"
                     class="flex items-center flex-shrink-0 px-4 py-2 text-xs font-medium text-white transition-all duration-200 bg-gray-800 border border-gray-700 rounded-lg snap-start hover:scale-105 hover:border-gray-600 hover:bg-gray-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900">
                     <svg class="w-4 h-4 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
-                    <span class="text-purple-400">Impatto</span>
+                    <span class="text-purple-400">Impatto (EPP)</span>
                     <span class="ml-1 text-gray-300">?</span>
                 </a>
 
@@ -69,8 +69,8 @@
                     <span class="ml-1 text-gray-300">?</span>
                 </a>
 
-                {{-- Bottone Attivatori ? --}}
-                <a href="{{ route('info.attivatori') }}"
+                {{-- Bottone Co-Creatori ? --}}
+                <a href="{{ route('info.co-create-ecosystem') }}#co-creatore"
                     class="flex items-center flex-shrink-0 px-4 py-2 text-xs font-medium text-white transition-all duration-200 bg-gray-800 border border-gray-700 rounded-lg snap-start hover:scale-105 hover:border-gray-600 hover:bg-gray-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900">
                     <svg class="w-4 h-4 mr-2 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -118,7 +118,7 @@
                 </a>
 
                 {{-- Bottone Trader-pro ? --}}
-                <a href="{{ route('info.trader-pro') }}"
+                <a href="{{ route('info.co-create-ecosystem') }}#trader-pro"
                     class="flex items-center flex-shrink-0 px-4 py-2 text-xs font-medium text-white transition-all duration-200 bg-gray-800 border border-gray-700 rounded-lg snap-start hover:scale-105 hover:border-gray-600 hover:bg-gray-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-900">
                     <svg class="w-4 h-4 mr-2 text-cyan-400" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">

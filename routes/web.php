@@ -213,17 +213,25 @@ Route::prefix('info')->name('info.')->group(function () {
         return view('info.disclaimer');
     })->name('disclaimer');
 
+    Route::get('/epp', function () {
+        return view('info.epp-info');
+    })->name('epp');
+
     Route::get('/egi', function () {
         return view('info.egi-info');
     })->name('egi');
+
+    Route::get('/co-create-ecosystem', function () {
+        return view('info.co-create-ecosystem');
+    })->name('co-create-ecosystem');
 
     Route::get('/attivare', function () {
         return view('info.under-construction', ['title' => 'Come co-creare un EGI?', 'subtitle' => 'Guida step-by-step per co-creare il tuo EGI (Environmental Goods Invent)']);
     })->name('attivare');
 
-    Route::get('/impatto', function () {
-        return view('info.under-construction', ['title' => 'Che Impatto hanno gli EGI?', 'subtitle' => 'Scopri l\'impatto ambientale e sociale degli EGI (Environmental Goods Invent)']);
-    })->name('impatto');
+    // Route::get('/impatto', function () {
+    //     return view('info.under-construction', ['title' => 'Che Impatto hanno gli EGI?', 'subtitle' => 'Scopri l\'impatto ambientale e sociale degli EGI (Environmental Goods Invent)']);
+    // })->name('impatto');
 
     Route::get('/creator', function () {
         return view('info.under-construction', ['title' => 'Chi sono i Creator?', 'subtitle' => 'Scopri il ruolo dei creatori di contenuti nell\'ecosistema FlorenceEGI']);
@@ -248,11 +256,8 @@ Route::prefix('info')->name('info.')->group(function () {
     Route::get('/epps', function () {
         return view('info.under-construction', ['title' => 'Environmental Protection Project (EPP)', 'subtitle' => 'Scopri come gli EPP possono aiutare nella sostenibilità']);
     })->name('epps');
-
-    Route::get('/epp', function () {
-        return view('info.under-construction', ['title' => 'Environmental Protection Projects', 'subtitle' => 'Scopri i progetti di protezione ambientale supportati dalla piattaforma']);
-    })->name('epp');
 });
+
 /*
 |--------------------------------------------------------------------------
 | Collector Routes - Public Profiles & Portfolios
