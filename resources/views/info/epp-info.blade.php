@@ -15,6 +15,37 @@
     <meta name="description"
         content="Programmi di protezione ambientale istituzionali: Appropriate Restoration Forestry, Aquatic Plastic Removal, Bee Population Enhancement. Impatto concreto per la rigenerazione ecosistemica.">
 
+    <!-- SEO Meta Tags -->
+    <meta name="keywords" content="Environment Protection Programs, EPP, protezione ambientale, riforestazione, pulizia oceani, api, biodiversità, sostenibilità, blockchain, impatto ambientale, conservazione ecosistemi">
+    <meta name="author" content="FlorenceEGI">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph Protocol (Facebook, LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Environment Protection Programs | FlorenceEGI">
+    <meta property="og:description" content="Programmi di protezione ambientale istituzionali: Appropriate Restoration Forestry, Aquatic Plastic Removal, Bee Population Enhancement. Impatto concreto per la rigenerazione ecosistemica.">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="FlorenceEGI">
+    <meta property="og:locale" content="it_IT">
+    <meta property="og:image" content="{{ asset('images/epp-programs-social.jpg') }}">
+    <meta property="og:image:alt" content="Environment Protection Programs - Programmi di protezione ambientale FlorenceEGI">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Environment Protection Programs | FlorenceEGI">
+    <meta name="twitter:description" content="Programmi di protezione ambientale istituzionali: ARF, APR, BPE. Impatto concreto per la rigenerazione ecosistemica.">
+    <meta name="twitter:image" content="{{ asset('images/epp-programs-social.jpg') }}">
+    <meta name="twitter:image:alt" content="Environment Protection Programs FlorenceEGI">
+
+    <!-- Multilingual Support -->
+    <link rel="alternate" hreflang="it" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="en" href="{{ str_replace('/it/', '/en/', url()->current()) }}">
+    <link rel="alternate" hreflang="es" href="{{ str_replace('/it/', '/es/', url()->current()) }}">
+    <link rel="alternate" hreflang="pt" href="{{ str_replace('/it/', '/pt/', url()->current()) }}">
+    <link rel="alternate" hreflang="fr" href="{{ str_replace('/it/', '/fr/', url()->current()) }}">
+    <link rel="alternate" hreflang="de" href="{{ str_replace('/it/', '/de/', url()->current()) }}">
+
     <!-- Google Fonts - Professional -->
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
@@ -143,6 +174,106 @@
             background-clip: text;
         }
     </style>
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Organization",
+                "@id": "{{ url('/') }}#organization",
+                "name": "FlorenceEGI",
+                "url": "{{ url('/') }}",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "{{ asset('images/logo-florence-egi.png') }}",
+                    "width": 200,
+                    "height": 200
+                },
+                "description": "Piattaforma blockchain per Environment Protection Programs e rigenerazione ecosistemica",
+                "foundingDate": "2024",
+                "sameAs": [
+                    "https://www.linkedin.com/company/florence-egi",
+                    "https://twitter.com/florence_egi"
+                ]
+            },
+            {
+                "@type": "WebSite",
+                "@id": "{{ url('/') }}#website",
+                "url": "{{ url('/') }}",
+                "name": "FlorenceEGI",
+                "publisher": {
+                    "@id": "{{ url('/') }}#organization"
+                },
+                "inLanguage": "it-IT"
+            },
+            {
+                "@type": "WebPage",
+                "@id": "{{ url()->current() }}#webpage",
+                "url": "{{ url()->current() }}",
+                "name": "Environment Protection Programs",
+                "description": "Programmi di protezione ambientale istituzionali: Appropriate Restoration Forestry, Aquatic Plastic Removal, Bee Population Enhancement",
+                "inLanguage": "it-IT",
+                "isPartOf": {
+                    "@id": "{{ url('/') }}#website"
+                },
+                "about": [
+                    {
+                        "@type": "Thing",
+                        "name": "Protezione Ambientale"
+                    },
+                    {
+                        "@type": "Thing", 
+                        "name": "Riforestazione"
+                    },
+                    {
+                        "@type": "Thing",
+                        "name": "Conservazione Marina"
+                    },
+                    {
+                        "@type": "Thing",
+                        "name": "Biodiversità Api"
+                    }
+                ]
+            },
+            {
+                "@type": "GovernmentService",
+                "name": "Environment Protection Programs",
+                "description": "Programmi istituzionali per la protezione e rigenerazione ambientale",
+                "provider": {
+                    "@id": "{{ url('/') }}#organization"
+                },
+                "serviceType": "Environmental Protection",
+                "areaServed": {
+                    "@type": "Place",
+                    "name": "Italia"
+                },
+                "hasOfferCatalog": {
+                    "@type": "OfferCatalog",
+                    "name": "Programmi EPP",
+                    "itemListElement": [
+                        {
+                            "@type": "Service",
+                            "name": "Appropriate Restoration Forestry (ARF)",
+                            "description": "Programmi di riforestazione appropriata per il ripristino ecosistemico"
+                        },
+                        {
+                            "@type": "Service", 
+                            "name": "Aquatic Plastic Removal (APR)",
+                            "description": "Programmi di rimozione plastica dagli ecosistemi acquatici"
+                        },
+                        {
+                            "@type": "Service",
+                            "name": "Bee Population Enhancement (BPE)", 
+                            "description": "Programmi per il potenziamento delle popolazioni di api"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+    </script>
 </head>
 
 <body class="bg-gray-50 pt-20 text-gray-900">
@@ -165,7 +296,7 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden space-x-4 md:flex">
+                <nav class="hidden space-x-4 md:flex" aria-label="Navigazione principale Environment Protection Programs">
                     <a href="{{ route('home') }}"
                         class="font-institutional text-sm transition hover:text-blue-200 lg:text-base">Home</a>
                     <a href="#programmi"
@@ -262,7 +393,7 @@
     </section>
 
     <!-- Le Nostre Tre Aree di Intervento -->
-    <section id="programmi" class="py-20">
+    <section id="programmi" class="py-20" aria-label="Programmi di protezione ambientale EPP">
         <div class="institutional-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto mb-16 max-w-4xl text-center">
                 <h2 class="text-institutional-navy institutional-title mb-6 text-3xl font-bold sm:text-4xl">
@@ -309,6 +440,7 @@
                             </ul>
                         </div>
                         <a href="#forestry-details"
+                            aria-label="Scopri dettagli del programma Appropriate Restoration Forestry per riforestazione sostenibile"
                             class="bg-forest-green hover:bg-forest-light inline-flex items-center rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-300">
                             Scopri di Più
                             <i class="fas fa-arrow-right ml-2"></i>
@@ -348,6 +480,7 @@
                             </ul>
                         </div>
                         <a href="#plastic-details"
+                            aria-label="Scopri dettagli del programma Aquatic Plastic Removal per pulizia oceani e mari"
                             class="bg-ocean-blue hover:bg-ocean-light inline-flex items-center rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-300">
                             Scopri di Più
                             <i class="fas fa-arrow-right ml-2"></i>
@@ -385,6 +518,7 @@
                             </ul>
                         </div>
                         <a href="#bee-details"
+                            aria-label="Scopri dettagli del programma Bee Population Enhancement per protezione api e biodiversità"
                             class="bg-bee-amber hover:bg-bee-light inline-flex items-center rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-300">
                             Scopri di Più
                             <i class="fas fa-arrow-right ml-2"></i>
@@ -397,7 +531,7 @@
     </section>
 
     <!-- Sezione Impatto Dettagliato -->
-    <section id="impatto" class="bg-gray-100 py-20">
+    <section id="impatto" class="bg-gray-100 py-20" aria-label="Impatto ambientale e risultati concreti dei programmi EPP">
         <div class="institutional-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto mb-16 max-w-4xl text-center">
                 <h2 class="text-institutional-navy institutional-title mb-6 text-3xl font-bold sm:text-4xl">
@@ -593,7 +727,7 @@
     </section>
 
     <!-- Come Partecipare -->
-    <section id="partecipazione" class="py-20">
+    <section id="partecipazione" class="py-20" aria-label="Come partecipare ai programmi di protezione ambientale">
         <div class="institutional-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto max-w-4xl">
                 <div class="institutional-card rounded-xl bg-white p-8 text-center shadow-lg">
@@ -637,11 +771,13 @@
 
                     <div class="space-y-4 sm:flex sm:justify-center sm:space-x-4 sm:space-y-0">
                         <a href="{{ route('home') }}"
+                            aria-label="Inizia ora la tua partecipazione ai programmi EPP acquistando un EGI"
                             class="bg-conservation-teal inline-flex items-center rounded-lg px-8 py-4 text-white transition-all duration-300 hover:bg-opacity-90">
                             <i class="fas fa-rocket mr-2"></i>
                             Inizia Ora con un EGI
                         </a>
                         <a href="{{ route('info.florence-egi') }}"
+                            aria-label="Scopri di più sulla piattaforma FlorenceEGI e il Rinascimento Digitale"
                             class="text-conservation-teal border-conservation-teal hover:bg-conservation-teal inline-flex items-center rounded-lg border-2 px-8 py-4 transition-all duration-300 hover:text-white">
                             <i class="fas fa-info-circle mr-2"></i>
                             Scopri FlorenceEGI
