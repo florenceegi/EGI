@@ -1,19 +1,44 @@
 {{--
-    File: egi-info.blade.php
-    Versione: 1.0 EGI Definition Page
-    Data: 29 Settembre 2025
-    Descrizione: La regina delle pagine - Info completa sugli EGI (Ecological Goods Invent)
-    Caratteristiche: Brand Guidelines, tre componenti principali, stile patron-standalone
+/**
+ * @package Resources\Views\Info
+ * @author Padmin D. Curtis (AI Partner OS3.0)
+ * @version 2.0.0 (FlorenceEGI - EGI Info Page - Localized)
+ * @date 2025-09-29
+ * @purpose Pagina informativa completa sugli EGI - localizzata e SEO ottimizzata
+ * @brand-compliant Segue FlorenceEGI Brand Guidelines
+ * @localization Supporta 6 lingue: IT/EN/ES/PT/FR/DE
+ * @seo SEO completo con Schema.org, Open Graph, meta tags
+ * @accessibility WCAG 2.1 AA compliant con ARIA labels
+ * @silent-growth Ottimizzato per crescita organica internazionale
+ */
 --}}
 <!DOCTYPE html>
-<html lang="it">
+<html lang="{{ app()->getLocale() }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EGI: Asset Digitali Beyond NFT | Certificazione Blockchain, Utilities e Impatto Ambientale</title>
-    <meta name="description"
-        content="EGI (Ecological Goods Invent): oltre gli NFT tradizionali. Asset digitali certificati che rappresentano opere d'arte, utility cards, servizi, contratti e token commerciali con impatto ambientale concreto su blockchain Algorand ARC-72.">
+    <title>{{ __('info_egi.page_title') }}</title>
+    <meta name="description" content="{{ __('info_egi.page_description') }}">
+    <meta name="keywords" content="{{ __('info_egi.meta_keywords') }}">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="author" content="FlorenceEGI">
+    <meta name="language" content="{{ app()->getLocale() }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph Protocol -->
+    <meta property="og:title" content="{{ __('info_egi.page_title') }}">
+    <meta property="og:description" content="{{ __('info_egi.page_description') }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="FlorenceEGI">
+    <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ __('info_egi.page_title') }}">
+    <meta name="twitter:description" content="{{ __('info_egi.page_description') }}">
+    <meta name="twitter:site" content="@FlorenceEGI">
 
     <!-- Google Fonts - Brand Guidelines -->
     <link
@@ -166,60 +191,62 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden space-x-3 md:flex">
+                <nav class="hidden space-x-3 md:flex" aria-label="{{ __('info_egi.aria_navigation') }}">
                     <a href="{{ route('home') }}"
-                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Home</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_egi.nav_home') }}</a>
                     <a href="{{ route('info.florence-egi') }}"
                         class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">FlorenceEGI</a>
                     <a href="#definizione"
-                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Definizione</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_egi.nav_egi_definition') }}</a>
                     <a href="#componenti"
-                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Componenti</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_egi.nav_components') }}</a>
                     <a href="#funzioni"
-                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Funzioni</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_egi.nav_functions') }}</a>
                     <a href="#vantaggi"
-                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Vantaggi</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_egi.nav_advantages') }}</a>
                 </nav>
 
                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button"
-                    class="block p-2 transition-colors rounded-md hover:bg-blue-700 md:hidden">
+                    class="block p-2 transition-colors rounded-md hover:bg-blue-700 md:hidden"
+                    aria-label="{{ __('info_egi.aria_mobile_menu') }}" aria-expanded="false">
                     <i class="text-2xl fas fa-bars"></i>
                 </button>
             </div>
 
             <!-- Mobile Navigation Menu -->
-            <div id="mobile-menu" class="hidden pb-4 mt-4 border-t border-blue-600 md:hidden">
+            <div id="mobile-menu" class="hidden pb-4 mt-4 border-t border-blue-600 md:hidden" role="navigation"
+                aria-label="{{ __('info_egi.aria_mobile_navigation') }}">
                 <div class="pt-4 space-y-3">
                     <a href="{{ route('home') }}"
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-home text-oro-fiorentino"></i>
-                        Torna alla Home
+                        <i class="mr-3 text-lg fas fa-home text-oro-fiorentino" aria-hidden="true"></i>
+                        {{ __('info_egi.mobile_nav_home') }}
                     </a>
                     <a href="{{ route('info.florence-egi') }}"
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-infinity text-oro-fiorentino"></i>
+                        <i class="mr-3 text-lg fas fa-infinity text-oro-fiorentino" aria-hidden="true"></i>
                         FlorenceEGI
                     </a>
                     <a href="#definizione"
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-book text-oro-fiorentino"></i>
-                        Definizione
+                        <i class="mr-3 text-lg fas fa-book text-oro-fiorentino" aria-hidden="true"></i>
+                        {{ __('info_egi.nav_egi_definition') }}
                     </a>
                     <a href="#componenti"
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-puzzle-piece text-oro-fiorentino"></i>
-                        Componenti
+                        <i class="mr-3 text-lg fas fa-puzzle-piece text-oro-fiorentino" aria-hidden="true"></i>
+                        {{ __('info_egi.nav_components') }}
                     </a>
                     <a href="#funzioni"
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-cogs text-oro-fiorentino"></i>
-                        Funzioni
+                        <i class="mr-3 text-lg fas fa-cogs text-oro-fiorentino" aria-hidden="true"></i>
+                        {{ __('info_egi.nav_functions') }}
                     </a>
                     <a href="#vantaggi"
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-star text-oro-fiorentino"></i>
-                        Vantaggi
+                        <i class="mr-3 text-lg fas fa-star text-oro-fiorentino" aria-hidden="true"></i>
+                        {{ __('info_egi.nav_advantages') }}
                     </a>
                 </div>
             </div>
@@ -227,37 +254,42 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero-background">
+    <section class="hero-background" role="banner" aria-labelledby="hero-title">
         <div class="golden-ratio-container flex min-h-[70vh] items-center justify-center px-4">
             <div class="max-w-5xl mx-auto text-center text-white">
                 <div class="mb-8">
-                    <span class="px-4 py-2 text-sm font-semibold rounded-full bg-oro-fiorentino text-blu-algoritmo">
-                        Ecological Goods Invent
+                    <span class="px-4 py-2 text-sm font-semibold rounded-full bg-oro-fiorentino text-blu-algoritmo"
+                        aria-label="{{ __('info_egi.hero_badge_aria') }}">
+                        {{ __('info_egi.hero_badge') }}
                     </span>
                 </div>
-                <h1 class="mb-6 text-4xl font-bold renaissance-title sm:text-5xl lg:text-7xl">
-                    EGI
+                <h1 id="hero-title" class="mb-6 text-4xl font-bold renaissance-title sm:text-5xl lg:text-7xl">
+                    {{ __('info_egi.hero_title') }}
                 </h1>
                 <p class="mb-8 text-xl leading-relaxed text-blue-100 font-body sm:text-2xl">
-                    Beyond NFT: Asset Digitali Certificati Blockchain
+                    {{ __('info_egi.hero_subtitle') }}
                 </p>
                 <p class="mb-10 text-lg leading-relaxed text-blue-200 font-body">
-                    <strong>Opere d'arte, utility cards, servizi, contratti, token commerciali</strong> e molto altro. 
-                    Gli EGI rappresentano qualsiasi tipologia di bene o servizio con <strong>valore reale, 
-                    componenti fisiche e impatto ambientale concreto</strong> certificato su blockchain Algorand.
+                    {!! __('info_egi.hero_description') !!}
                 </p>
 
                 <!-- CTA Buttons -->
-                <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
+                <div class="flex flex-col gap-4 sm:flex-row sm:justify-center" role="group"
+                    aria-label="{{ __('info_egi.cta_group_aria') }}">
                     <a href="#definizione"
-                        class="inline-flex items-center px-8 py-4 text-lg font-semibold text-white transition-all duration-300 rounded-lg cta-primary elegant-hover">
-                        <i class="mr-3 fas fa-book-open"></i>
-                        Scopri gli EGI
+                        class="inline-flex items-center px-8 py-4 text-lg font-semibold text-white transition-all duration-300 rounded-lg cta-primary elegant-hover"
+                        aria-describedby="cta-discover-desc">
+                        <i class="mr-3 fas fa-book-open" aria-hidden="true"></i>
+                        {{ __('info_egi.cta_discover') }}
+                        <span id="cta-discover-desc" class="sr-only">{{ __('info_egi.cta_discover_aria') }}</span>
                     </a>
                     <a href="#componenti"
-                        class="inline-flex items-center px-8 py-4 text-lg font-semibold text-blue-100 transition-all duration-300 border-2 border-white rounded-lg hover:bg-white hover:text-blu-algoritmo">
-                        <i class="mr-3 fas fa-puzzle-piece"></i>
-                        Le Tre Componenti
+                        class="inline-flex items-center px-8 py-4 text-lg font-semibold text-blue-100 transition-all duration-300 border-2 border-white rounded-lg hover:bg-white hover:text-blu-algoritmo"
+                        aria-describedby="cta-components-desc">
+                        <i class="mr-3 fas fa-puzzle-piece" aria-hidden="true"></i>
+                        {{ __('info_egi.cta_components') }}
+                        <span id="cta-components-desc"
+                            class="sr-only">{{ __('info_egi.cta_components_aria') }}</span>
                     </a>
                 </div>
             </div>
@@ -265,302 +297,310 @@
     </section>
 
     <!-- Definizione EGI -->
-    <section id="definizione" class="py-20 bg-white">
+    <section id="definizione" class="py-20 bg-white" aria-labelledby="definition-title">
         <div class="px-4 golden-ratio-container sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto text-center">
-                <h2 class="mb-6 text-3xl font-bold renaissance-title text-blu-algoritmo sm:text-4xl">
-                    Cos'è un EGI?
+                <h2 id="definition-title"
+                    class="mb-6 text-3xl font-bold renaissance-title text-blu-algoritmo sm:text-4xl">
+                    {{ __('info_egi.definition_title') }}
                 </h2>
                 <p class="mb-12 text-xl leading-relaxed font-body text-grigio-pietra">
-                    L'EGI è l'unità fondamentale della piattaforma FlorenceEGI, un <strong>oggetto digitale
-                        certificato</strong>
-                    che rivoluziona il concetto di NFT tradizionale.
+                    {!! __('info_egi.definition_intro') !!}
                 </p>
             </div>
 
-            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-                <div class="p-6 renaissance-card elegant-hover">
-                    <div class="mb-4 text-center">
-                        <i class="text-4xl text-oro-fiorentino fas fa-palette"></i>
-                    </div>
-                    <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        Beyond Digital Art
-                    </h3>
-                    <p class="text-center font-body text-grigio-pietra">
-                        Certificazione blockchain di opere d'arte, utility cards, servizi, contratti e token commerciali con valore reale.
-                    </p>
-                </div>
+            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4" role="group"
+                aria-labelledby="definition-cards-title">
+                <h3 id="definition-cards-title" class="sr-only">{{ __('info_egi.definition_cards_title') }}</h3>
 
-                <div class="p-6 renaissance-card elegant-hover">
+                <article class="p-6 renaissance-card elegant-hover" aria-labelledby="card1-title">
                     <div class="mb-4 text-center">
-                        <i class="text-4xl fas fa-leaf text-verde-rinascita"></i>
+                        <i class="text-4xl text-oro-fiorentino fas fa-palette" aria-hidden="true"></i>
                     </div>
-                    <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        Impatto Ambientale
-                    </h3>
+                    <h4 id="card1-title"
+                        class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
+                        {{ __('info_egi.card_digital_art_title') }}
+                    </h4>
                     <p class="text-center font-body text-grigio-pietra">
-                        Legame strutturale con progetti di protezione ambientale (EPP) per un futuro sostenibile.
+                        {{ __('info_egi.card_digital_art_description') }}
                     </p>
-                </div>
+                </article>
 
-                <div class="p-6 renaissance-card elegant-hover">
+                <article class="p-6 renaissance-card elegant-hover" aria-labelledby="card2-title">
                     <div class="mb-4 text-center">
-                        <i class="text-4xl fas fa-cog text-viola-innovazione"></i>
+                        <i class="text-4xl fas fa-leaf text-verde-rinascita" aria-hidden="true"></i>
                     </div>
-                    <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        Utilities Avanzate
-                    </h3>
+                    <h4 id="card2-title"
+                        class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
+                        {{ __('info_egi.card_environmental_title') }}
+                    </h4>
                     <p class="text-center font-body text-grigio-pietra">
-                        Gestione completa di utilities fisiche e immateriali, temporali e perpetue, con documentazione illimitata.
+                        {{ __('info_egi.card_environmental_description') }}
                     </p>
-                </div>
+                </article>
 
-                <div class="p-6 renaissance-card elegant-hover">
+                <article class="p-6 renaissance-card elegant-hover" aria-labelledby="card3-title">
                     <div class="mb-4 text-center">
-                        <i class="text-4xl fas fa-shield-alt text-blu-algoritmo"></i>
+                        <i class="text-4xl fas fa-cog text-viola-innovazione" aria-hidden="true"></i>
                     </div>
-                    <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        Certificazione
-                    </h3>
+                    <h4 id="card3-title"
+                        class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
+                        {{ __('info_egi.card_utilities_title') }}
+                    </h4>
                     <p class="text-center font-body text-grigio-pietra">
-                        Blockchain Algorand ARC-72 con metadati permanenti e certificazione proprietaria.
+                        {{ __('info_egi.card_utilities_description') }}
                     </p>
-                </div>
+                </article>
+
+                <article class="p-6 renaissance-card elegant-hover" aria-labelledby="card4-title">
+                    <div class="mb-4 text-center">
+                        <i class="text-4xl fas fa-shield-alt text-blu-algoritmo" aria-hidden="true"></i>
+                    </div>
+                    <h4 id="card4-title"
+                        class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
+                        {{ __('info_egi.card_certification_title') }}
+                    </h4>
+                    <p class="text-center font-body text-grigio-pietra">
+                        {{ __('info_egi.card_certification_description') }}
+                    </p>
+                </article>
             </div>
         </div>
     </section>
 
     <!-- Le Tre Componenti -->
-    <section id="componenti" class="py-20 section-dark">
+    <section id="componenti" class="py-20 section-dark" aria-labelledby="components-title">
         <div class="px-4 golden-ratio-container sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto mb-16 text-center">
-                <h2 class="mb-6 text-3xl font-bold text-white renaissance-title sm:text-4xl">
-                    Le Tre Componenti del Nostro Asset Digitale
+                <h2 id="components-title" class="mb-6 text-3xl font-bold text-white renaissance-title sm:text-4xl">
+                    {{ __('info_egi.components_title') }}
                 </h2>
                 <p class="text-xl leading-relaxed text-blue-200 font-body">
-                    Ogni EGI è composto da tre elementi fondamentali che ne definiscono unicità e valore
+                    {{ __('info_egi.components_intro') }}
                 </p>
             </div>
 
             <!-- EPP - Environment Protection Programs -->
-            <div class="mb-20">
+            <article class="mb-20" aria-labelledby="epp-title">
                 <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
                     <div class="text-center lg:text-left">
-                        <div class="egi-component egi-epp">
+                        <div class="egi-component egi-epp" aria-label="{{ __('info_egi.epp_component_aria') }}">
                             <div>
-                                <div class="text-2xl font-bold">EPP</div>
-                                <div class="text-xs">Environment<br>Protection<br>Programs</div>
+                                <div class="text-2xl font-bold">{{ __('info_egi.component_epp_title') }}</div>
+                                <div class="text-xs">{{ __('info_egi.epp_acronym') }}</div>
                             </div>
                         </div>
-                        <h3 class="mb-4 text-2xl font-bold text-oro-fiorentino renaissance-title">
-                            Environment Protection Programs
+                        <h3 id="epp-title" class="mb-4 text-2xl font-bold text-oro-fiorentino renaissance-title">
+                            {{ __('info_egi.component_epp_full') }}
                         </h3>
                         <p class="mb-6 text-lg leading-relaxed text-blue-100 font-body">
-                            Gli Environment Protection Programs sono iniziative centrali nel progetto FlorenceEGI,
-                            rappresentando il cuore dell'impegno dell'associazione verso la sostenibilità ambientale
-                            e la rigenerazione ecologica.
+                            {{ __('info_egi.epp_description') }}
                         </p>
                     </div>
 
                     <div class="p-8 bg-white rounded-lg renaissance-card">
                         <h4 class="mb-4 text-xl font-bold renaissance-title text-blu-algoritmo">
-                            Programmi Attivi
+                            {{ __('info_egi.epp_active_programs') }}
                         </h4>
-                        <div class="space-y-4">
-                            <div class="p-4 border-l-4 border-viola-innovazione bg-purple-50">
-                                <h5 class="font-semibold text-blu-algoritmo">🌊 Aquatic Plastic Removal</h5>
+                        <div class="space-y-4" role="list"
+                            aria-label="{{ __('info_egi.epp_programs_list_aria') }}">
+                            <div class="p-4 border-l-4 border-viola-innovazione bg-purple-50" role="listitem">
+                                <h5 class="font-semibold text-blu-algoritmo">{{ __('info_egi.epp_aquatic_title') }}
+                                </h5>
                                 <p class="text-sm text-grigio-pietra">
-                                    Rimozione della plastica da vari ambienti acquatici, azione cruciale per la salute
-                                    dei nostri mari, laghi e fiumi.
+                                    {{ __('info_egi.epp_aquatic_description') }}
                                 </p>
                             </div>
-                            <div class="p-4 border-l-4 border-verde-rinascita bg-green-50">
-                                <h5 class="font-semibold text-blu-algoritmo">🌳 Appropriate Restoration Forestry</h5>
+                            <div class="p-4 border-l-4 border-verde-rinascita bg-green-50" role="listitem">
+                                <h5 class="font-semibold text-blu-algoritmo">{{ __('info_egi.epp_forestry_title') }}
+                                </h5>
                                 <p class="text-sm text-grigio-pietra">
-                                    Riforestazione attenta e rispettosa degli ecosistemi, terramerici che le piante
-                                    scelte siano quelle più adatte per ristabilire l'equilibrio naturale.
+                                    {{ __('info_egi.epp_forestry_description') }}
                                 </p>
                             </div>
-                            <div class="p-4 border-l-4 border-arancio-energia bg-orange-50">
-                                <h5 class="font-semibold text-blu-algoritmo">🐝 Bee Population Enhancement</h5>
+                            <div class="p-4 border-l-4 border-arancio-energia bg-orange-50" role="listitem">
+                                <h5 class="font-semibold text-blu-algoritmo">{{ __('info_egi.epp_bee_title') }}</h5>
                                 <p class="text-sm text-grigio-pietra">
-                                    Protezione e incremento delle popolazioni di api, supportando così la biodiversità e
-                                    la pollinizzazione.
+                                    {{ __('info_egi.epp_bee_description') }}
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </article>
 
             <!-- GOODS -->
-            <div class="mb-20">
+            <article class="mb-20" aria-labelledby="goods-title">
                 <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
                     <div class="order-2 text-center lg:order-1 lg:text-left">
                         <div class="p-8 bg-white rounded-lg renaissance-card">
                             <h4 class="mb-4 text-xl font-bold renaissance-title text-blu-algoritmo">
-                                Flessibilità e Potenzialità
+                                {{ __('info_egi.goods_flexibility_title') }}
                             </h4>
                             <p class="mb-4 font-body text-grigio-pietra">
-                                Gli EGI (Eco Goods Invent) di FlorenceEGI si distinguono nel panorama digitale per la
-                                loro
-                                straordinaria flessibilità e potenzialità creative e commerciali del marketing e del
-                                branding.
+                                {{ __('info_egi.goods_flexibility_intro') }}
                             </p>
                             <p class="mb-4 font-body text-grigio-pietra">
-                                Ogni EGI non è soltanto una raffinata opera d'arte digitale, ma è anche progettato per
-                                supportare un'ampia gamma di utilità. Questa caratteristica unica apre le porte a
-                                innumerevoli possibilità creative e commerciali.
+                                {{ __('info_egi.goods_flexibility_description') }}
                             </p>
                             <p class="font-body text-grigio-pietra">
-                                Le aziende possono sfruttare la forza espressiva e l'attrattiva delle opere d'arte per
-                                creare campagne di marketing più coinvolgenti e memorabili.
+                                {{ __('info_egi.goods_marketing_potential') }}
                             </p>
                         </div>
                     </div>
 
                     <div class="order-1 text-center lg:order-2 lg:text-right">
-                        <div class="egi-component egi-goods">
+                        <div class="egi-component egi-goods" aria-label="{{ __('info_egi.goods_component_aria') }}">
                             <div>
-                                <div class="text-2xl font-bold">GOODS</div>
-                                <div class="text-xs">Beni o<br>Servizi</div>
+                                <div class="text-2xl font-bold">{{ __('info_egi.component_goods_title') }}</div>
+                                <div class="text-xs">{{ __('info_egi.goods_acronym') }}</div>
                             </div>
                         </div>
-                        <h3 class="mb-4 text-2xl font-bold text-oro-fiorentino renaissance-title">
-                            Goods, ovvero Beni o Servizi
+                        <h3 id="goods-title" class="mb-4 text-2xl font-bold text-oro-fiorentino renaissance-title">
+                            {{ __('info_egi.component_goods_full') }}
                         </h3>
                         <p class="text-lg leading-relaxed text-blue-100 font-body">
-                            Una rivoluzionaria interfaccia tra arte, utility e marketing, offrendo nuove opportunità
-                            per artisti e aziende di collaborare e innovare nel mondo digitale.
+                            {{ __('info_egi.goods_description') }}
                         </p>
                     </div>
                 </div>
-            </div>
+            </article>
 
             <!-- CREATIVITÀ E INVENTIVA -->
-            <div>
+            <article aria-labelledby="creativity-title">
                 <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
                     <div class="text-center lg:text-left">
-                        <div class="egi-component egi-creativita">
+                        <div class="egi-component egi-creativita"
+                            aria-label="{{ __('info_egi.creativity_component_aria') }}">
                             <div>
-                                <div class="text-xl font-bold">CREATIVITÀ</div>
-                                <div class="text-xs">E INVENTIVA</div>
+                                <div class="text-xl font-bold">{{ __('info_egi.component_creativita_title') }}</div>
+                                <div class="text-xs">{{ __('info_egi.creativity_acronym') }}</div>
                             </div>
                         </div>
-                        <h3 class="mb-4 text-2xl font-bold text-oro-fiorentino renaissance-title">
-                            Creatività e Inventiva
+                        <h3 id="creativity-title"
+                            class="mb-4 text-2xl font-bold text-oro-fiorentino renaissance-title">
+                            {{ __('info_egi.component_creativita_full') }}
                         </h3>
                         <p class="text-lg leading-relaxed text-blue-100 font-body">
-                            Gli EGI incarnano l'essenza dell'arte autentica e originale, rappresentando una
-                            rivoluzionaria
-                            categoria di asset digitali che celebrano l'unicità e l'autenticità creativa.
+                            {{ __('info_egi.creativity_description') }}
                         </p>
                     </div>
 
                     <div class="p-8 bg-white rounded-lg renaissance-card">
                         <h4 class="mb-4 text-xl font-bold renaissance-title text-blu-algoritmo">
-                            Beyond Digital Art: La Rivoluzione degli Asset Digitali
+                            {{ __('info_egi.creativity_beyond_art_title') }}
                         </h4>
                         <p class="mb-4 font-body text-grigio-pietra">
-                            Gli <strong>EGI (Ecological Goods Invent)</strong> di FlorenceEGI non sono semplici NFT o opere d'arte digitali. 
-                            Sono <strong>oggetti digitali certificati blockchain</strong> che possono rappresentare qualsiasi tipologia 
-                            di bene, servizio o utility con valore reale e impatto ambientale concreto.
+                            {!! __('info_egi.creativity_beyond_art_intro') !!}
                         </p>
-                        <div class="p-4 mb-4 border-l-4 bg-blue-50 border-oro-fiorentino">
-                            <h5 class="mb-2 font-semibold text-blu-algoritmo">Cosa può essere un EGI:</h5>
-                            <ul class="space-y-1 text-sm text-grigio-pietra">
-                                <li>• <strong>Opera d'arte certificata</strong> (digitale o fisica)</li>
-                                <li>• <strong>Documento firmato</strong> tra più soggetti (CoA, contratti)</li>
-                                <li>• <strong>Utility card</strong> per servizi esclusivi</li>
-                                <li>• <strong>Token commerciale</strong> per aziende</li>
-                                <li>• <strong>Oggetto da collezione</strong> limitato e permanente</li>
-                                <li>• <strong>Elemento narrativo</strong> di universi creativi</li>
+                        <div class="p-4 mb-4 border-l-4 border-oro-fiorentino bg-blue-50" role="complementary"
+                            aria-labelledby="egi-types-title">
+                            <h5 id="egi-types-title" class="mb-2 font-semibold text-blu-algoritmo">
+                                {{ __('info_egi.egi_types_title') }}</h5>
+                            <ul class="space-y-1 text-sm text-grigio-pietra" role="list">
+                                <li role="listitem">{!! __('info_egi.egi_type_artwork') !!}</li>
+                                <li role="listitem">{!! __('info_egi.egi_type_document') !!}</li>
+                                <li role="listitem">{!! __('info_egi.egi_type_utility') !!}</li>
+                                <li role="listitem">{!! __('info_egi.egi_type_token') !!}</li>
+                                <li role="listitem">{!! __('info_egi.egi_type_collectible') !!}</li>
+                                <li role="listitem">{!! __('info_egi.egi_type_narrative') !!}</li>
                             </ul>
                         </div>
                         <p class="mb-4 font-body text-grigio-pietra">
-                            Il termine <strong>"Goods"</strong> non è casuale: la piattaforma FlorenceEGI permette la <strong>gestione 
-                            completa di componenti fisiche</strong> oltre a quelle digitali, andando ben oltre i tradizionali 
-                            NFT collezionabili per abbracciare utilities concrete, servizi reali e asset tangibili.
+                            {!! __('info_egi.creativity_goods_explanation') !!}
                         </p>
                     </div>
                 </div>
-            </div>
+        </div>
         </div>
     </section>
 
     <!-- Struttura Tecnica -->
-    <section id="funzioni" class="py-20 bg-gray-100">
+    <section id="funzioni" class="py-20 bg-gray-100" aria-labelledby="functions-title">
         <div class="px-4 golden-ratio-container sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto mb-16 text-center">
-                <h2 class="mb-6 text-3xl font-bold renaissance-title text-blu-algoritmo sm:text-4xl">
-                    Struttura e Funzioni Avanzate
+                <h2 id="functions-title"
+                    class="mb-6 text-3xl font-bold renaissance-title text-blu-algoritmo sm:text-4xl">
+                    {{ __('info_egi.functions_title') }}
                 </h2>
                 <p class="text-xl leading-relaxed font-body text-grigio-pietra">
-                    Ogni EGI è un ecosistema completo di funzionalità innovative
+                    {{ __('info_egi.functions_intro') }}
                 </p>
             </div>
 
             <div class="grid gap-8 lg:grid-cols-2">
                 <!-- Struttura -->
-                <div class="p-8 bg-white rounded-lg renaissance-card elegant-hover">
-                    <h3 class="mb-6 text-2xl font-bold renaissance-title text-blu-algoritmo">
-                        <i class="mr-3 text-oro-fiorentino fas fa-layer-group"></i>
-                        Struttura di un EGI
+                <article class="p-8 bg-white rounded-lg renaissance-card elegant-hover"
+                    aria-labelledby="structure-title">
+                    <h3 id="structure-title" class="mb-6 text-2xl font-bold renaissance-title text-blu-algoritmo">
+                        <i class="mr-3 text-oro-fiorentino fas fa-layer-group" aria-hidden="true"></i>
+                        {{ __('info_egi.structure_title') }}
                     </h3>
-                    <div class="space-y-4">
-                        <div class="schema-block">
-                            <strong>Invent:</strong> Opera dell'ingegno umano (non AI)
+                    <div class="space-y-4" role="list"
+                        aria-label="{{ __('info_egi.structure_components_aria') }}">
+                        <div class="schema-block" role="listitem">
+                            <strong>{{ __('info_egi.structure_invent') }}:</strong>
+                            {{ __('info_egi.structure_invent_desc') }}
                         </div>
-                        <div class="schema-block">
-                            <strong>Good:</strong> Bene o servizio concreto con valore percepibile
+                        <div class="schema-block" role="listitem">
+                            <strong>{{ __('info_egi.structure_good') }}:</strong>
+                            {{ __('info_egi.structure_good_desc') }}
                         </div>
-                        <div class="schema-block">
-                            <strong>EPP:</strong> Environment Protection Program (min 20% valore vendita)
+                        <div class="schema-block" role="listitem">
+                            <strong>{{ __('info_egi.structure_epp') }}:</strong>
+                            {{ __('info_egi.structure_epp_desc') }}
                         </div>
-                        <div class="schema-block">
-                            <strong>Metadata:</strong> Dati strutturati autore, collezione, diritti, versioni
+                        <div class="schema-block" role="listitem">
+                            <strong>{{ __('info_egi.structure_metadata') }}:</strong>
+                            {{ __('info_egi.structure_metadata_desc') }}
                         </div>
-                        <div class="schema-block">
-                            <strong>CoA:</strong> Certificate of Authenticity firmato digitalmente
+                        <div class="schema-block" role="listitem">
+                            <strong>{{ __('info_egi.structure_coa') }}:</strong>
+                            {{ __('info_egi.structure_coa_desc') }}
                         </div>
-                        <div class="schema-block">
-                            <strong>Smart Contract:</strong> ARC-72 su Algorand con funzioni personalizzate
+                        <div class="schema-block" role="listitem">
+                            <strong>{{ __('info_egi.structure_smart_contract') }}:</strong>
+                            {{ __('info_egi.structure_smart_contract_desc') }}
                         </div>
                     </div>
-                </div>
+                </article>
 
                 <!-- Funzioni -->
-                <div class="p-8 bg-white rounded-lg renaissance-card elegant-hover">
-                    <h3 class="mb-6 text-2xl font-bold renaissance-title text-blu-algoritmo">
-                        <i class="mr-3 text-oro-fiorentino fas fa-cogs"></i>
-                        Funzioni Avanzate
+                <article class="p-8 bg-white rounded-lg renaissance-card elegant-hover"
+                    aria-labelledby="functions-advanced-title">
+                    <h3 id="functions-advanced-title"
+                        class="mb-6 text-2xl font-bold renaissance-title text-blu-algoritmo">
+                        <i class="mr-3 text-oro-fiorentino fas fa-cogs" aria-hidden="true"></i>
+                        {{ __('info_egi.functions_advanced_title') }}
                     </h3>
-                    <div class="space-y-6">
-                        <div>
-                            <h4 class="mb-2 font-semibold text-verde-rinascita">🔄 Rebind</h4>
-                            <p class="text-sm text-grigio-pietra">Rivendita automatica con sistema royalties integrato
-                            </p>
+                    <div class="space-y-6" role="list" aria-label="{{ __('info_egi.functions_list_aria') }}">
+                        <div role="listitem">
+                            <h4 class="mb-2 font-semibold text-verde-rinascita">
+                                {{ __('info_egi.function_rebind_title') }}</h4>
+                            <p class="text-sm text-grigio-pietra">{{ __('info_egi.function_rebind_desc') }}</p>
                         </div>
-                        <div>
-                            <h4 class="mb-2 font-semibold text-verde-rinascita">🏢 Tokenizzazione Aziendale</h4>
-                            <p class="text-sm text-grigio-pietra">L'EGI può rappresentare asset commerciali aziendali
-                            </p>
+                        <div role="listitem">
+                            <h4 class="mb-2 font-semibold text-verde-rinascita">
+                                {{ __('info_egi.function_tokenization_title') }}</h4>
+                            <p class="text-sm text-grigio-pietra">{{ __('info_egi.function_tokenization_desc') }}</p>
                         </div>
-                        <div>
-                            <h4 class="mb-2 font-semibold text-verde-rinascita">👥 Gestione Multi-ruolo</h4>
-                            <p class="text-sm text-grigio-pietra">Permessi granulari tramite sistema Spatie</p>
+                        <div role="listitem">
+                            <h4 class="mb-2 font-semibold text-verde-rinascita">
+                                {{ __('info_egi.function_multirole_title') }}</h4>
+                            <p class="text-sm text-grigio-pietra">{{ __('info_egi.function_multirole_desc') }}</p>
                         </div>
-                        <div>
-                            <h4 class="mb-2 font-semibold text-verde-rinascita">🖥️ Interfaccia Doppia</h4>
-                            <p class="text-sm text-grigio-pietra">Gestibile da pagina interna o CoA Dashboard</p>
+                        <div role="listitem">
+                            <h4 class="mb-2 font-semibold text-verde-rinascita">
+                                {{ __('info_egi.function_interface_title') }}</h4>
+                            <p class="text-sm text-grigio-pietra">{{ __('info_egi.function_interface_desc') }}</p>
                         </div>
-                        <div>
-                            <h4 class="mb-2 font-semibold text-verde-rinascita">✍️ Firma Elettronica</h4>
-                            <p class="text-sm text-grigio-pietra">Possibile su ogni EGI con flusso Infocert integrato
-                            </p>
+                        <div role="listitem">
+                            <h4 class="mb-2 font-semibold text-verde-rinascita">
+                                {{ __('info_egi.function_signature_title') }}</h4>
+                            <p class="text-sm text-grigio-pietra">{{ __('info_egi.function_signature_desc') }}</p>
                         </div>
                     </div>
-                </div>
+                </article>
             </div>
         </div>
     </section>
@@ -570,10 +610,10 @@
         <div class="px-4 golden-ratio-container sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto mb-16 text-center">
                 <h2 class="mb-6 text-3xl font-bold renaissance-title text-blu-algoritmo sm:text-4xl">
-                    Traits e Utilities: Versatilità Senza Limiti
+                    {{ __('info_egi.traits_utilities_title') }}
                 </h2>
                 <p class="text-xl leading-relaxed font-body text-grigio-pietra">
-                    Due sistemi di metadati avanzati e gestione completa di utilities fisiche e digitali
+                    {{ __('info_egi.traits_utilities_subtitle') }}
                 </p>
             </div>
 
@@ -584,21 +624,19 @@
                         <i class="text-4xl fas fa-tags text-oro-fiorentino"></i>
                     </div>
                     <h3 class="mb-4 text-xl font-bold text-center renaissance-title text-blu-algoritmo">
-                        Sistema Traits Duplice
+                        {{ __('info_egi.traits_dual_system_title') }}
                     </h3>
                     <div class="space-y-4">
-                        <div class="p-4 border-l-4 bg-purple-50 border-purple-400">
-                            <h4 class="mb-2 font-semibold text-purple-700">Traits EGI</h4>
+                        <div class="p-4 border-l-4 border-purple-400 bg-purple-50">
+                            <h4 class="mb-2 font-semibold text-purple-700">{{ __('info_egi.traits_egi_title') }}</h4>
                             <p class="text-sm text-grigio-pietra">
-                                Metadati classici collegati direttamente all'EGI per contraddistinguere caratteristiche, 
-                                rarità, tipologie e ogni aspetto dell'asset digitale.
+                                {{ __('info_egi.traits_egi_desc') }}
                             </p>
                         </div>
-                        <div class="p-4 border-l-4 bg-orange-50 border-orange-400">
-                            <h4 class="mb-2 font-semibold text-orange-700">Traits CoA</h4>
+                        <div class="p-4 border-l-4 border-orange-400 bg-orange-50">
+                            <h4 class="mb-2 font-semibold text-orange-700">{{ __('info_egi.traits_coa_title') }}</h4>
                             <p class="text-sm text-grigio-pietra">
-                                Metadati tecnici specifici collegati al Certificate of Authenticity per descrivere 
-                                tecniche artistiche, materiali utilizzati, supporti fisici e processi creativi.
+                                {{ __('info_egi.traits_coa_desc') }}
                             </p>
                         </div>
                     </div>
@@ -610,25 +648,25 @@
                         <i class="text-4xl fas fa-tools text-oro-fiorentino"></i>
                     </div>
                     <h3 class="mb-4 text-xl font-bold text-center renaissance-title text-blu-algoritmo">
-                        Utilities Avanzate
+                        {{ __('info_egi.utilities_advanced_title') }}
                     </h3>
                     <div class="space-y-4">
                         <div>
-                            <h4 class="mb-2 font-semibold text-verde-rinascita">🎯 Fisiche e Immateriali</h4>
+                            <h4 class="mb-2 font-semibold text-verde-rinascita">{{ __('info_egi.utilities_physical_title') }}</h4>
                             <p class="text-sm text-grigio-pietra">
-                                Gestione completa di utilities fisiche (oggetti, prodotti) e immateriali (servizi, accessi, contenuti).
+                                {{ __('info_egi.utilities_physical_desc') }}
                             </p>
                         </div>
                         <div>
-                            <h4 class="mb-2 font-semibold text-verde-rinascita">⏰ Temporali e Perpetue</h4>
+                            <h4 class="mb-2 font-semibold text-verde-rinascita">{{ __('info_egi.utilities_temporal_title') }}</h4>
                             <p class="text-sm text-grigio-pietra">
-                                Utilities con scadenza programmata o vantaggi permanenti nel tempo.
+                                {{ __('info_egi.utilities_temporal_desc') }}
                             </p>
                         </div>
                         <div>
-                            <h4 class="mb-2 font-semibold text-verde-rinascita">📸 Documentazione Illimitata</h4>
+                            <h4 class="mb-2 font-semibold text-verde-rinascita">{{ __('info_egi.utilities_documentation_title') }}</h4>
                             <p class="text-sm text-grigio-pietra">
-                                Caricamento di infinite immagini per completare la descrizione e documentazione dell'utility.
+                                {{ __('info_egi.utilities_documentation_desc') }}
                             </p>
                         </div>
                     </div>
@@ -640,20 +678,20 @@
                         <i class="text-4xl fas fa-rocket text-oro-fiorentino"></i>
                     </div>
                     <h3 class="mb-4 text-xl font-bold text-center renaissance-title text-blu-algoritmo">
-                        Oltre gli NFT Tradizionali
+                        {{ __('info_egi.beyond_nft_title') }}
                     </h3>
                     <div class="space-y-4 text-sm text-grigio-pietra">
                         <p>
-                            <strong>Certificazione Blockchain:</strong> Standard ARC-72 su Algorand per massima sicurezza e interoperabilità.
+                            {!! __('info_egi.beyond_nft_blockchain') !!}
                         </p>
                         <p>
-                            <strong>Valore Reale:</strong> Ogni EGI è collegato a beni, servizi o utilities concrete con valore percepibile.
+                            {!! __('info_egi.beyond_nft_value') !!}
                         </p>
                         <p>
-                            <strong>Impatto Ambientale:</strong> Contributo automatico minimo 20% a progetti di protezione ambientale.
+                            {!! __('info_egi.beyond_nft_impact') !!}
                         </p>
                         <p>
-                            <strong>Gestione Professionale:</strong> Strumenti enterprise per PA, aziende e professionisti creativi.
+                            {!! __('info_egi.beyond_nft_management') !!}
                         </p>
                     </div>
                 </div>
@@ -661,20 +699,20 @@
 
             <!-- Call to Action -->
             <div class="max-w-3xl mx-auto mt-12 text-center">
-                <div class="p-8 border-2 rounded-lg bg-gradient-to-r from-oro-fiorentino to-yellow-400 border-oro-fiorentino">
+                <div
+                    class="p-8 border-2 rounded-lg from-oro-fiorentino border-oro-fiorentino bg-gradient-to-r to-yellow-400">
                     <h3 class="mb-4 text-2xl font-bold text-white renaissance-title">
-                        "Fanne un EGI" - La Filosofia del Valore
+                        {{ __('info_egi.cta_philosophy_title') }}
                     </h3>
                     <p class="mb-6 text-lg text-white font-body">
-                        Rendere qualsiasi oggetto, servizio, accordo o creazione <strong>riconoscibile, tracciabile e significativo</strong>. 
-                        EGI è lo standard della cura per l'arte, l'ambiente e il futuro digitale sostenibile.
+                        {!! __('info_egi.cta_philosophy_desc') !!}
                     </p>
                     <div class="flex flex-wrap justify-center gap-4 text-sm">
-                        <span class="px-4 py-2 bg-white bg-opacity-20 rounded-full">🎨 Arte Certificata</span>
-                        <span class="px-4 py-2 bg-white bg-opacity-20 rounded-full">📄 Documenti Firmati</span>
-                        <span class="px-4 py-2 bg-white bg-opacity-20 rounded-full">🎫 Utility Cards</span>
-                        <span class="px-4 py-2 bg-white bg-opacity-20 rounded-full">🏢 Token Aziendali</span>
-                        <span class="px-4 py-2 bg-white bg-opacity-20 rounded-full">🌍 Impatto Ambientale</span>
+                        <span class="px-4 py-2 bg-white rounded-full bg-opacity-20">{{ __('info_egi.cta_tag_art') }}</span>
+                        <span class="px-4 py-2 bg-white rounded-full bg-opacity-20">{{ __('info_egi.cta_tag_documents') }}</span>
+                        <span class="px-4 py-2 bg-white rounded-full bg-opacity-20">{{ __('info_egi.cta_tag_utilities') }}</span>
+                        <span class="px-4 py-2 bg-white rounded-full bg-opacity-20">{{ __('info_egi.cta_tag_tokens') }}</span>
+                        <span class="px-4 py-2 bg-white rounded-full bg-opacity-20">{{ __('info_egi.cta_tag_impact') }}</span>
                     </div>
                 </div>
             </div>
@@ -687,33 +725,33 @@
             <div class="max-w-4xl mx-auto text-center">
                 <div class="relative">
                     <!-- Quote Icon -->
-                    <div class="absolute top-0 left-0 text-6xl opacity-20 text-oro-fiorentino">
+                    <div class="absolute top-0 left-0 text-6xl text-oro-fiorentino opacity-20">
                         <i class="fas fa-quote-left"></i>
                     </div>
-                    
+
                     <!-- Citation Content -->
                     <div class="relative z-10 px-8 py-12">
-                        <blockquote class="mb-8 text-2xl font-medium leading-relaxed text-white renaissance-title sm:text-3xl lg:text-4xl">
-                            "Come il web ha annullato le distanze di tempo e spazio, 
-                            <span class="text-oro-fiorentino">gli EGI rivoluzionano il concetto di proprietà privata</span>."
+                        <blockquote
+                            class="mb-8 text-2xl font-medium leading-relaxed text-white renaissance-title sm:text-3xl lg:text-4xl">
+                            {!! __('info_egi.curtis_quote') !!}
                         </blockquote>
-                        
+
                         <!-- Attribution -->
                         <footer class="text-xl text-blue-200 font-body">
-                            <span class="text-oro-fiorentino">—</span> 
-                            <cite class="font-semibold not-italic text-oro-fiorentino">Padmin D. Curtis</cite>
+                            <span class="text-oro-fiorentino">—</span>
+                            <cite class="not-italic font-semibold text-oro-fiorentino">{{ __('info_egi.curtis_attribution') }}</cite>
                             <div class="mt-2 text-sm text-blue-300">
-                                AI Partner OS3.0, FlorenceEGI Visionary
+                                {{ __('info_egi.curtis_role') }}
                             </div>
                         </footer>
                     </div>
-                    
+
                     <!-- Decorative Element -->
-                    <div class="absolute bottom-0 right-0 text-6xl opacity-20 text-oro-fiorentino">
+                    <div class="absolute bottom-0 right-0 text-6xl text-oro-fiorentino opacity-20">
                         <i class="fas fa-quote-right"></i>
                     </div>
                 </div>
-                
+
                 <!-- Subtle separator -->
                 <div class="flex items-center justify-center mt-8">
                     <div class="w-20 h-px bg-oro-fiorentino"></div>
@@ -731,10 +769,10 @@
         <div class="px-4 golden-ratio-container sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto mb-16 text-center">
                 <h2 class="mb-6 text-3xl font-bold renaissance-title text-blu-algoritmo sm:text-4xl">
-                    Perché gli EGI Cambiano le Regole
+                    {{ __('info_egi.advantages_title') }}
                 </h2>
                 <p class="text-xl leading-relaxed font-body text-grigio-pietra">
-                    Una rivoluzione nel mondo degli asset digitali
+                    {{ __('info_egi.advantages_subtitle') }}
                 </p>
             </div>
 
@@ -744,10 +782,10 @@
                         <i class="text-4xl fas fa-seedling text-verde-rinascita"></i>
                     </div>
                     <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        NFT con Utilità Reale
+                        {{ __('info_egi.advantage_nft_utility_title') }}
                     </h3>
                     <p class="text-center font-body text-grigio-pietra">
-                        Ogni EGI ha un impatto ambientale concreto e utilità pratica, non solo valore speculativo.
+                        {{ __('info_egi.advantage_nft_utility_desc') }}
                     </p>
                 </div>
 
@@ -756,10 +794,10 @@
                         <i class="text-4xl text-oro-fiorentino fas fa-certificate"></i>
                     </div>
                     <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        Certificazione Accessibile
+                        {{ __('info_egi.advantage_certification_title') }}
                     </h3>
                     <p class="text-center font-body text-grigio-pietra">
-                        Piattaforma di certificazione digitale accessibile per PA, aziende e creativi.
+                        {{ __('info_egi.advantage_certification_desc') }}
                     </p>
                 </div>
 
@@ -768,10 +806,10 @@
                         <i class="text-4xl fas fa-tools text-viola-innovazione"></i>
                     </div>
                     <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        Strumento Operativo
+                        {{ __('info_egi.advantage_operational_title') }}
                     </h3>
                     <p class="text-center font-body text-grigio-pietra">
-                        Utilizzabile concretamente da enti pubblici, aziende e professionisti creativi.
+                        {{ __('info_egi.advantage_operational_desc') }}
                     </p>
                 </div>
 
@@ -780,10 +818,10 @@
                         <i class="text-4xl fas fa-book-open text-arancio-energia"></i>
                     </div>
                     <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        Valuta Narrativa
+                        {{ __('info_egi.advantage_narrative_title') }}
                     </h3>
                     <p class="text-center font-body text-grigio-pietra">
-                        Oggetto semantico che racconta storie e crea connessioni significative.
+                        {{ __('info_egi.advantage_narrative_desc') }}
                     </p>
                 </div>
 
@@ -792,10 +830,10 @@
                         <i class="text-4xl fas fa-shield-alt text-rosso-urgenza"></i>
                     </div>
                     <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        Standard della Cura
+                        {{ __('info_egi.advantage_standard_title') }}
                     </h3>
                     <p class="text-center font-body text-grigio-pietra">
-                        Per l'arte, per l'ambiente, per il futuro: EGI rappresenta l'eccellenza sostenibile.
+                        {{ __('info_egi.advantage_standard_desc') }}
                     </p>
                 </div>
 
@@ -804,10 +842,10 @@
                         <i class="text-4xl fas fa-infinity text-blu-algoritmo"></i>
                     </div>
                     <h3 class="mb-3 text-lg font-bold text-center renaissance-title text-blu-algoritmo">
-                        Riconoscibile e Tracciabile
+                        {{ __('info_egi.advantage_traceable_title') }}
                     </h3>
                     <p class="text-center font-body text-grigio-pietra">
-                        "Fanne un EGI" significa renderlo riconoscibile, tracciabile e significativo.
+                        {{ __('info_egi.advantage_traceable_desc') }}
                     </p>
                 </div>
             </div>
@@ -819,27 +857,25 @@
         <div class="px-4 golden-ratio-container sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto text-center">
                 <h2 class="mb-6 text-3xl font-bold text-oro-fiorentino renaissance-title sm:text-4xl">
-                    La Visione: "Fanne un EGI"
+                    {{ __('info_egi.final_cta_title') }}
                 </h2>
                 <p class="mb-8 text-xl leading-relaxed text-blue-100 font-body">
-                    Significa rendere qualcosa <strong>riconoscibile, tracciabile e significativo</strong>.<br>
-                    Un oggetto, un accordo, un'opera, un'intenzione: tutto può diventare un EGI.
+                    {!! __('info_egi.final_cta_subtitle') !!}
                 </p>
                 <p class="mb-12 text-2xl font-bold text-white renaissance-title">
-                    EGI è lo <span class="text-oro-fiorentino">standard della cura</span>: per l'arte, per l'ambiente,
-                    per il futuro.
+                    {!! __('info_egi.final_cta_standard') !!}
                 </p>
 
                 <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                     <a href="{{ route('home') }}"
                         class="inline-flex items-center px-8 py-4 text-lg font-semibold transition-all duration-300 rounded-lg cta-primary elegant-hover text-blu-algoritmo">
                         <i class="mr-3 fas fa-rocket"></i>
-                        Inizia con FlorenceEGI
+                        {{ __('info_egi.final_cta_start') }}
                     </a>
                     <a href="{{ route('info.florence-egi') }}"
                         class="inline-flex items-center px-8 py-4 text-lg font-semibold transition-all duration-300 border-2 rounded-lg border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino hover:text-blu-algoritmo">
                         <i class="mr-3 fas fa-info-circle"></i>
-                        Scopri FlorenceEGI
+                        {{ __('info_egi.final_cta_discover') }}
                     </a>
                 </div>
             </div>
