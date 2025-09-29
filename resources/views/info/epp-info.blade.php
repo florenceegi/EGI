@@ -145,10 +145,10 @@
     </style>
 </head>
 
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-gray-50 pt-20 text-gray-900">
 
-    <!-- Header Istituzionale -->
-    <header class="bg-institutional-navy text-white shadow-lg">
+    <!-- Header Istituzionale - Fixed -->
+    <header class="bg-institutional-navy fixed left-0 right-0 top-0 z-50 text-white shadow-lg">
         <div class="institutional-container px-4 py-4 sm:px-6 sm:py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 sm:space-x-4">

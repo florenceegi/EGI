@@ -136,10 +136,10 @@
     </style>
 </head>
 
-<body class="bg-gray-50 text-grigio-pietra">
+<body class="bg-gray-50 pt-20 text-grigio-pietra">
 
-    <!-- Header con Navigazione -->
-    <header class="bg-blu-algoritmo text-white shadow-lg">
+    <!-- Header con Navigazione - Fixed -->
+    <header class="fixed left-0 right-0 top-0 z-50 bg-blu-algoritmo text-white shadow-lg">
         <div class="golden-ratio-container px-4 py-4 sm:px-6 sm:py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 sm:space-x-4">
