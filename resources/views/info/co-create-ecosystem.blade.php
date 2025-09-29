@@ -15,6 +15,37 @@
     <meta name="description"
         content="Scopri l'ecosistema completo FlorenceEGI: Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro per il trading professionale di EGI.">
 
+    <!-- SEO Meta Tags -->
+    <meta name="keywords" content="co-creazione, co-creatori, trader pro, ecosystem, blockchain art, NFT, EGI, trading professionali, opere d'arte digitali, community artistica, collaborazione creativa">
+    <meta name="author" content="FlorenceEGI">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph Protocol (Facebook, LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Ecosistema Co-Creazione - FlorenceEGI">
+    <meta property="og:description" content="Scopri l'ecosistema completo FlorenceEGI: Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro per il trading professionale di EGI.">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="FlorenceEGI">
+    <meta property="og:locale" content="it_IT">
+    <meta property="og:image" content="{{ asset('images/co-create-ecosystem-social.jpg') }}">
+    <meta property="og:image:alt" content="Ecosistema Co-Creazione FlorenceEGI - Community artistica e trading professionale">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ecosistema Co-Creazione - FlorenceEGI">
+    <meta name="twitter:description" content="Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro. L'ecosistema completo per artisti e trader professionali.">
+    <meta name="twitter:image" content="{{ asset('images/co-create-ecosystem-social.jpg') }}">
+    <meta name="twitter:image:alt" content="Ecosistema Co-Creazione FlorenceEGI">
+
+    <!-- Multilingual Support -->
+    <link rel="alternate" hreflang="it" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="en" href="{{ str_replace('/it/', '/en/', url()->current()) }}">
+    <link rel="alternate" hreflang="es" href="{{ str_replace('/it/', '/es/', url()->current()) }}">
+    <link rel="alternate" hreflang="pt" href="{{ str_replace('/it/', '/pt/', url()->current()) }}">
+    <link rel="alternate" hreflang="fr" href="{{ str_replace('/it/', '/fr/', url()->current()) }}">
+    <link rel="alternate" hreflang="de" href="{{ str_replace('/it/', '/de/', url()->current()) }}">
+
     <!-- Google Fonts - Brand Guidelines -->
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap"
@@ -190,6 +221,115 @@
             }
         }
     </style>
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Organization",
+                "@id": "{{ url('/') }}#organization",
+                "name": "FlorenceEGI",
+                "url": "{{ url('/') }}",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "{{ asset('images/logo-florence-egi.png') }}",
+                    "width": 200,
+                    "height": 200
+                },
+                "description": "Piattaforma blockchain per co-creazione artistica e trading professionale di EGI",
+                "foundingDate": "2024",
+                "sameAs": [
+                    "https://www.linkedin.com/company/florence-egi",
+                    "https://twitter.com/florence_egi"
+                ]
+            },
+            {
+                "@type": "WebSite",
+                "@id": "{{ url('/') }}#website",
+                "url": "{{ url('/') }}",
+                "name": "FlorenceEGI",
+                "publisher": {
+                    "@id": "{{ url('/') }}#organization"
+                },
+                "inLanguage": "it-IT"
+            },
+            {
+                "@type": "WebPage",
+                "@id": "{{ url()->current() }}#webpage",
+                "url": "{{ url()->current() }}",
+                "name": "Ecosistema Co-Creazione",
+                "description": "Scopri l'ecosistema completo FlorenceEGI: Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro",
+                "inLanguage": "it-IT",
+                "isPartOf": {
+                    "@id": "{{ url('/') }}#website"
+                },
+                "about": [
+                    {
+                        "@type": "Thing",
+                        "name": "Co-Creazione Artistica"
+                    },
+                    {
+                        "@type": "Thing", 
+                        "name": "Trading Professionale"
+                    },
+                    {
+                        "@type": "Thing",
+                        "name": "Community Artistica"
+                    },
+                    {
+                        "@type": "Thing",
+                        "name": "Blockchain Art"
+                    }
+                ]
+            },
+            {
+                "@type": "Service",
+                "name": "Ecosistema Co-Creazione FlorenceEGI",
+                "description": "Piattaforma completa per co-creazione artistica, gestione Co-Creatori e trading professionale EGI",
+                "provider": {
+                    "@id": "{{ url('/') }}#organization"
+                },
+                "serviceType": "Creative Collaboration Platform",
+                "hasOfferCatalog": {
+                    "@type": "OfferCatalog",
+                    "name": "Servizi Ecosistema",
+                    "itemListElement": [
+                        {
+                            "@type": "Service",
+                            "name": "Co-Creare",
+                            "description": "Piattaforma per co-creazione di opere d'arte digitali e NFT"
+                        },
+                        {
+                            "@type": "Service", 
+                            "name": "Co-Creatori",
+                            "description": "Gestione permanente di artisti e creatori nell'ecosistema"
+                        },
+                        {
+                            "@type": "Service",
+                            "name": "Trader Pro", 
+                            "description": "Strumenti avanzati per trading professionale di EGI"
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "CreativeWork",
+                "name": "Community Artistica FlorenceEGI",
+                "description": "Ecosistema collaborativo per artisti, creatori e trader professionali",
+                "creator": {
+                    "@id": "{{ url('/') }}#organization"
+                },
+                "genre": "Digital Art Platform",
+                "audience": {
+                    "@type": "Audience",
+                    "name": "Artisti, Creatori e Trader Professionali"
+                }
+            }
+        ]
+    }
+    </script>
 </head>
 
 <body class="bg-gray-50 pt-20 text-grigio-pietra">
@@ -207,7 +347,7 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden space-x-3 md:flex">
+                <nav class="hidden space-x-3 md:flex" aria-label="Navigazione principale FlorenceEGI">
                     <a href="{{ route('home') }}"
                         class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Home</a>
                     <a href="{{ route('info.florence-egi') }}"
@@ -296,7 +436,7 @@
     </section>
 
     <!-- Navbar Interna delle Sezioni - Sticky & Responsive -->
-    <nav class="sticky top-20 z-40 border-b border-gray-200 bg-white shadow-sm">
+    <nav class="sticky top-20 z-40 border-b border-gray-200 bg-white shadow-sm" aria-label="Navigazione sezioni Ecosistema Co-Creazione">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
 
             <!-- Desktop: Scroll orizzontale -->
@@ -379,7 +519,7 @@
     </nav>
 
     <!-- Sezione Co-Creare -->
-    <section id="co-creare" class="py-16">
+    <section id="co-creare" class="py-16" aria-label="Piattaforma Co-Creare per creazione collaborativa di opere d'arte">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto max-w-6xl">
 
@@ -465,7 +605,7 @@
     </section>
 
     <!-- Sezione Co-Creatore -->
-    <section id="co-creatore" class="section-alt py-16">
+    <section id="co-creatore" class="section-alt py-16" aria-label="Sistema Co-Creatore per gestione permanente di artisti nell'ecosistema">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto max-w-6xl">
 
@@ -582,7 +722,7 @@
     </section>
 
     <!-- Sezione Trader Pro -->
-    <section id="trader-pro" class="py-16">
+    <section id="trader-pro" class="py-16" aria-label="Strumenti Trader Pro per trading professionale di EGI">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto max-w-6xl">
 
