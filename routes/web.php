@@ -225,6 +225,10 @@ Route::prefix('info')->name('info.')->group(function () {
         return view('info.co-create-ecosystem');
     })->name('co-create-ecosystem');
 
+    Route::get('/white-paper-finanziario', function () {
+        return view('info.white-paper-finanziario');
+    })->name('white-paper-finanziario');
+
     Route::get('/attivare', function () {
         return view('info.under-construction', ['title' => 'Come co-creare un EGI?', 'subtitle' => 'Guida step-by-step per co-creare il tuo EGI (Environmental Goods Invent)']);
     })->name('attivare');
