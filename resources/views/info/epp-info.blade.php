@@ -11,36 +11,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Environment Protection Programs | FlorenceEGI</title>
-    <meta name="description"
-        content="Programmi di protezione ambientale istituzionali: Appropriate Restoration Forestry, Aquatic Plastic Removal, Bee Population Enhancement. Impatto concreto per la rigenerazione ecosistemica.">
+    <title>{{ __('info_epp.meta.title') }}</title>
+    <meta name="description" content="{{ __('info_epp.meta.description') }}">
 
     <!-- SEO Meta Tags -->
-    <meta name="keywords"
-        content="Environment Protection Programs, EPP, protezione ambientale, riforestazione, pulizia oceani, api, biodiversità, sostenibilità, blockchain, impatto ambientale, conservazione ecosistemi">
+    <meta name="keywords" content="{{ __('info_epp.meta.keywords') }}">
     <meta name="author" content="FlorenceEGI">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="{{ url()->current() }}">
 
     <!-- Open Graph Protocol (Facebook, LinkedIn) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Environment Protection Programs | FlorenceEGI">
-    <meta property="og:description"
-        content="Programmi di protezione ambientale istituzionali: Appropriate Restoration Forestry, Aquatic Plastic Removal, Bee Population Enhancement. Impatto concreto per la rigenerazione ecosistemica.">
+    <meta property="og:title" content="{{ __('info_epp.meta.og_title') }}">
+    <meta property="og:description" content="{{ __('info_epp.meta.og_description') }}">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="FlorenceEGI">
     <meta property="og:locale" content="it_IT">
     <meta property="og:image" content="{{ asset('images/epp-programs-social.jpg') }}">
-    <meta property="og:image:alt"
-        content="Environment Protection Programs - Programmi di protezione ambientale FlorenceEGI">
+    <meta property="og:image:alt" content="{{ __('info_epp.meta.og_image_alt') }}">
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Environment Protection Programs | FlorenceEGI">
-    <meta name="twitter:description"
-        content="Programmi di protezione ambientale istituzionali: ARF, APR, BPE. Impatto concreto per la rigenerazione ecosistemica.">
+    <meta name="twitter:title" content="{{ __('info_epp.meta.twitter_title') }}">
+    <meta name="twitter:description" content="{{ __('info_epp.meta.twitter_description') }}">
     <meta name="twitter:image" content="{{ asset('images/epp-programs-social.jpg') }}">
-    <meta name="twitter:image:alt" content="Environment Protection Programs FlorenceEGI">
+    <meta name="twitter:image:alt" content="{{ __('info_epp.meta.twitter_image_alt') }}">
 
     <!-- Multilingual Support -->
     <link rel="alternate" hreflang="it" href="{{ url()->current() }}">
@@ -195,7 +190,7 @@
                     "width": 200,
                     "height": 200
                 },
-                "description": "Piattaforma blockchain per Environment Protection Programs e rigenerazione ecosistemica",
+                "description": "{{ __('info_epp.schema.organization_description') }}",
                 "foundingDate": "2024",
                 "sameAs": [
                     "https://www.linkedin.com/company/florence-egi",
@@ -216,8 +211,8 @@
                 "@type": "WebPage",
                 "@id": "{{ url()->current() }}#webpage",
                 "url": "{{ url()->current() }}",
-                "name": "Environment Protection Programs",
-                "description": "Programmi di protezione ambientale istituzionali: Appropriate Restoration Forestry, Aquatic Plastic Removal, Bee Population Enhancement",
+                "name": "{{ __('info_epp.schema.webpage_name') }}",
+                "description": "{{ __('info_epp.schema.webpage_description') }}",
                 "inLanguage": "it-IT",
                 "isPartOf": {
                     "@id": "{{ url('/') }}#website"
@@ -225,52 +220,52 @@
                 "about": [
                     {
                         "@type": "Thing",
-                        "name": "Protezione Ambientale"
+                        "name": "{{ __('info_epp.schema.about_environmental_protection') }}"
                     },
                     {
                         "@type": "Thing",
-                        "name": "Riforestazione"
+                        "name": "{{ __('info_epp.schema.about_reforestation') }}"
                     },
                     {
                         "@type": "Thing",
-                        "name": "Conservazione Marina"
+                        "name": "{{ __('info_epp.schema.about_marine_conservation') }}"
                     },
                     {
                         "@type": "Thing",
-                        "name": "Biodiversità Api"
+                        "name": "{{ __('info_epp.schema.about_bee_biodiversity') }}"
                     }
                 ]
             },
             {
                 "@type": "GovernmentService",
-                "name": "Environment Protection Programs",
-                "description": "Programmi istituzionali per la protezione e rigenerazione ambientale",
+                "name": "{{ __('info_epp.schema.service_name') }}",
+                "description": "{{ __('info_epp.schema.service_description') }}",
                 "provider": {
                     "@id": "{{ url('/') }}#organization"
                 },
                 "serviceType": "Environmental Protection",
                 "areaServed": {
                     "@type": "Place",
-                    "name": "Italia"
+                    "name": "{{ __('info_epp.schema.service_area') }}"
                 },
                 "hasOfferCatalog": {
                     "@type": "OfferCatalog",
-                    "name": "Programmi EPP",
+                    "name": "{{ __('info_epp.schema.catalog_name') }}",
                     "itemListElement": [
                         {
                             "@type": "Service",
-                            "name": "Appropriate Restoration Forestry (ARF)",
-                            "description": "Programmi di riforestazione appropriata per il ripristino ecosistemico"
+                            "name": "{{ __('info_epp.schema.arf_service_name') }}",
+                            "description": "{{ __('info_epp.schema.arf_service_description') }}"
                         },
                         {
                             "@type": "Service",
-                            "name": "Aquatic Plastic Removal (APR)",
-                            "description": "Programmi di rimozione plastica dagli ecosistemi acquatici"
+                            "name": "{{ __('info_epp.schema.apr_service_name') }}",
+                            "description": "{{ __('info_epp.schema.apr_service_description') }}"
                         },
                         {
                             "@type": "Service",
-                            "name": "Bee Population Enhancement (BPE)",
-                            "description": "Programmi per il potenziamento delle popolazioni di api"
+                            "name": "{{ __('info_epp.schema.bpe_service_name') }}",
+                            "description": "{{ __('info_epp.schema.bpe_service_description') }}"
                         }
                     ]
                 }
@@ -280,74 +275,74 @@
     </script>
 </head>
 
-<body class="bg-gray-50 pt-20 text-gray-900">
+<body class="pt-20 text-gray-900 bg-gray-50">
 
     <!-- Header Istituzionale - Fixed -->
-    <header class="bg-institutional-navy fixed left-0 right-0 top-0 z-50 text-white shadow-lg">
-        <div class="institutional-container px-4 py-4 sm:px-6 sm:py-6">
+    <header class="fixed top-0 left-0 right-0 z-50 text-white shadow-lg bg-institutional-navy">
+        <div class="px-4 py-4 institutional-container sm:px-6 sm:py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 sm:space-x-4">
                     <div
-                        class="bg-conservation-teal flex h-12 w-12 items-center justify-center rounded-full text-white sm:h-16 sm:w-16">
-                        <i class="fas fa-leaf text-2xl sm:text-3xl"></i>
+                        class="flex items-center justify-center w-12 h-12 text-white rounded-full bg-conservation-teal sm:h-16 sm:w-16">
+                        <i class="text-2xl fas fa-leaf sm:text-3xl"></i>
                     </div>
                     <div>
-                        <h1 class="institutional-title text-xl font-bold sm:text-2xl">Environment Protection Programs
+                        <h1 class="text-xl font-bold institutional-title sm:text-2xl">{{ __('info_epp.header.title') }}
                         </h1>
-                        <p class="font-institutional text-sm text-blue-200 sm:text-base">FlorenceEGI Impatto Ambientale
+                        <p class="text-sm text-blue-200 font-institutional sm:text-base">
+                            {{ __('info_epp.header.subtitle') }}
                         </p>
                     </div>
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden space-x-4 md:flex"
-                    aria-label="Navigazione principale Environment Protection Programs">
+                <nav class="hidden space-x-4 md:flex" aria-label="{{ __('info_epp.header.nav_aria_label') }}">
                     <a href="{{ route('home') }}"
-                        class="font-institutional text-sm transition hover:text-blue-200 lg:text-base">Home</a>
+                        class="text-sm transition font-institutional hover:text-blue-200 lg:text-base">{{ __('info_epp.header.nav_home') }}</a>
                     <a href="#programmi"
-                        class="font-institutional text-sm transition hover:text-blue-200 lg:text-base">Programmi</a>
+                        class="text-sm transition font-institutional hover:text-blue-200 lg:text-base">{{ __('info_epp.header.nav_programs') }}</a>
                     <a href="#impatto"
-                        class="font-institutional text-sm transition hover:text-blue-200 lg:text-base">Impatto</a>
+                        class="text-sm transition font-institutional hover:text-blue-200 lg:text-base">{{ __('info_epp.header.nav_impact') }}</a>
                     <a href="#iniziative"
-                        class="font-institutional text-sm transition hover:text-blue-200 lg:text-base">Iniziative</a>
+                        class="text-sm transition font-institutional hover:text-blue-200 lg:text-base">{{ __('info_epp.header.nav_initiatives') }}</a>
                     <a href="#partecipazione"
-                        class="font-institutional text-sm transition hover:text-blue-200 lg:text-base">Partecipazione</a>
+                        class="text-sm transition font-institutional hover:text-blue-200 lg:text-base">{{ __('info_epp.header.nav_participation') }}</a>
                 </nav>
 
                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button"
-                    class="block rounded-md p-2 transition-colors hover:bg-blue-700 md:hidden">
-                    <i class="fas fa-bars text-2xl"></i>
+                    class="block p-2 transition-colors rounded-md hover:bg-blue-700 md:hidden">
+                    <i class="text-2xl fas fa-bars"></i>
                 </button>
             </div>
 
             <!-- Mobile Navigation Menu -->
-            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden">
-                <div class="space-y-3 pt-4">
+            <div id="mobile-menu" class="hidden pb-4 mt-4 border-t border-blue-600 md:hidden">
+                <div class="pt-4 space-y-3">
                     <a href="{{ route('home') }}"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-home text-conservation-teal mr-3 text-lg"></i>
-                        Torna alla Home
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-home text-conservation-teal"></i>
+                        {{ __('info_epp.header.mobile_home') }}
                     </a>
                     <a href="#programmi"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-tree text-conservation-teal mr-3 text-lg"></i>
-                        Programmi
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-tree text-conservation-teal"></i>
+                        {{ __('info_epp.header.mobile_programs_label') }}
                     </a>
                     <a href="#impatto"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-chart-line text-conservation-teal mr-3 text-lg"></i>
-                        Impatto
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-chart-line text-conservation-teal"></i>
+                        {{ __('info_epp.header.mobile_impact_label') }}
                     </a>
                     <a href="#iniziative"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-lightbulb text-conservation-teal mr-3 text-lg"></i>
-                        Iniziative
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-lightbulb text-conservation-teal"></i>
+                        {{ __('info_epp.header.mobile_initiatives_label') }}
                     </a>
                     <a href="#partecipazione"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
-                        <i class="fas fa-handshake text-conservation-teal mr-3 text-lg"></i>
-                        Partecipazione
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <i class="mr-3 text-lg fas fa-handshake text-conservation-teal"></i>
+                        {{ __('info_epp.header.mobile_participation_label') }}
                     </a>
                 </div>
             </div>
@@ -357,40 +352,41 @@
     <!-- Hero Section -->
     <section class="hero-environmental">
         <div class="institutional-container flex min-h-[70vh] items-center justify-center px-4">
-            <div class="mx-auto max-w-5xl text-center text-white">
+            <div class="max-w-5xl mx-auto text-center text-white">
                 <div class="mb-8">
                     <div
-                        class="mb-6 inline-flex items-center rounded-full border border-white border-opacity-30 bg-white bg-opacity-10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm">
-                        <i class="fas fa-globe-americas mr-2"></i>
-                        Programmi di Protezione Ambientale Istituzionali
+                        class="inline-flex items-center px-6 py-3 mb-6 text-sm font-medium text-white bg-white border border-white rounded-full border-opacity-30 bg-opacity-10 backdrop-blur-sm">
+                        <i class="mr-2 fas fa-globe-americas"></i>
+                        {{ __('info_epp.hero.badge_text') }}
                     </div>
                 </div>
-                <h1 class="institutional-title mb-8 text-4xl font-bold sm:text-5xl lg:text-6xl">
-                    Il Nostro Impegno per<br>
+                <h1 class="mb-8 text-4xl font-bold institutional-title sm:text-5xl lg:text-6xl">
+                    {{ __('info_epp.hero.title_line1') }}<br>
                     <span
-                        class="bg-gradient-to-r from-green-300 via-blue-300 to-yellow-300 bg-clip-text text-transparent">
-                        il Ripristino dell'Ecosistema
+                        class="text-transparent bg-gradient-to-r from-green-300 via-blue-300 to-yellow-300 bg-clip-text">
+                        {{ __('info_epp.hero.title_line2') }}
                     </span>
                 </h1>
-                <p class="font-institutional mb-10 text-lg leading-relaxed text-blue-100 sm:text-xl lg:text-2xl">
-                    Tre iniziative concrete per la rigenerazione ambientale: riforestazione appropriata,
-                    rimozione plastica acquatica e potenziamento popolazioni di api.
-                    <strong>Impatto misurabile, risultati verificabili.</strong>
+                <p class="mb-10 text-lg leading-relaxed text-blue-100 font-institutional sm:text-xl lg:text-2xl">
+                    {!! __('info_epp.hero.description') !!}
                 </p>
 
                 <!-- Impact Statistics -->
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                    <div class="stat-card rounded-lg p-6">
-                        <div class="impact-metric">3</div>
-                        <p class="text-sm font-medium uppercase tracking-wide text-gray-600">Aree di Intervento</p>
+                    <div class="p-6 rounded-lg stat-card">
+                        <div class="impact-metric">{{ __('info_epp.hero.stats.areas.number') }}</div>
+                        <p class="text-sm font-medium tracking-wide text-gray-600 uppercase">
+                            {{ __('info_epp.hero.stats.areas.label') }}</p>
                     </div>
-                    <div class="stat-card rounded-lg p-6">
-                        <div class="impact-metric">∞</div>
-                        <p class="text-sm font-medium uppercase tracking-wide text-gray-600">Impatto Ecosistemico</p>
+                    <div class="p-6 rounded-lg stat-card">
+                        <div class="impact-metric">{{ __('info_epp.hero.stats.impact.number') }}</div>
+                        <p class="text-sm font-medium tracking-wide text-gray-600 uppercase">
+                            {{ __('info_epp.hero.stats.impact.label') }}</p>
                     </div>
-                    <div class="stat-card rounded-lg p-6">
-                        <div class="impact-metric">20%</div>
-                        <p class="text-sm font-medium uppercase tracking-wide text-gray-600">Contributo EGI Minimo</p>
+                    <div class="p-6 rounded-lg stat-card">
+                        <div class="impact-metric">{{ __('info_epp.hero.stats.contribution.number') }}</div>
+                        <p class="text-sm font-medium tracking-wide text-gray-600 uppercase">
+                            {{ __('info_epp.hero.stats.contribution.label') }}</p>
                     </div>
                 </div>
             </div>
@@ -398,15 +394,14 @@
     </section>
 
     <!-- Le Nostre Tre Aree di Intervento -->
-    <section id="programmi" class="py-20" aria-label="Programmi di protezione ambientale EPP">
-        <div class="institutional-container px-4 sm:px-6 lg:px-8">
-            <div class="mx-auto mb-16 max-w-4xl text-center">
-                <h2 class="text-institutional-navy institutional-title mb-6 text-3xl font-bold sm:text-4xl">
-                    Le Nostre Tre Aree di Intervento
+    <section id="programmi" class="py-20" aria-label="{{ __('info_epp.programs.aria_label') }}">
+        <div class="px-4 institutional-container sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto mb-16 text-center">
+                <h2 class="mb-6 text-3xl font-bold text-institutional-navy institutional-title sm:text-4xl">
+                    {{ __('info_epp.programs.section_title') }}
                 </h2>
-                <p class="text-ecosystem-gray font-institutional text-lg leading-relaxed">
-                    Ogni Environment Protection Program rappresenta un pilastro strategico per la conservazione
-                    e il ripristino degli equilibri naturali del nostro pianeta.
+                <p class="text-lg leading-relaxed text-ecosystem-gray font-institutional">
+                    {{ __('info_epp.programs.section_description') }}
                 </p>
             </div>
 
@@ -415,42 +410,34 @@
                 <!-- Appropriate Restoration Forestry -->
                 <div class="institutional-card forest-section">
                     <div class="p-8">
-                        <div class="mb-6 flex items-center">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="bg-forest-green flex h-16 w-16 items-center justify-center rounded-full text-white">
-                                <i class="fas fa-tree text-2xl"></i>
+                                class="flex items-center justify-center w-16 h-16 text-white rounded-full bg-forest-green">
+                                <i class="text-2xl fas fa-tree"></i>
                             </div>
                             <div class="ml-4">
-                                <h3 class="text-forest-green institutional-title text-xl font-bold">
-                                    Appropriate Restoration Forestry
+                                <h3 class="text-xl font-bold text-forest-green institutional-title">
+                                    {{ __('info_epp.programs.arf.title') }}
                                 </h3>
-                                <p class="text-sm text-gray-600">Riforestazione Responsabile</p>
+                                <p class="text-sm text-gray-600">{{ __('info_epp.programs.arf.subtitle') }}</p>
                             </div>
                         </div>
-                        <p class="font-institutional mb-6 leading-relaxed text-gray-700">
-                            La deforestazione sta erodendo il polmone verde del nostro pianeta ad un ritmo allarmante.
-                            Ogni secondo che passa, perdiamo aree di foresta vitale, equivalenti alla dimensione di un
-                            campo di calcio.
+                        <p class="mb-6 leading-relaxed text-gray-700 font-institutional">
+                            {{ __('info_epp.programs.arf.description') }}
                         </p>
-                        <div class="border-forest-green mb-6 rounded-lg border border-opacity-20 bg-white p-4">
-                            <h4 class="text-forest-green mb-2 font-semibold">Obiettivi del Programma:</h4>
+                        <div class="p-4 mb-6 bg-white border rounded-lg border-forest-green border-opacity-20">
+                            <h4 class="mb-2 font-semibold text-forest-green">
+                                {{ __('info_epp.programs.arf.objectives_title') }}</h4>
                             <ul class="space-y-1 text-sm text-gray-600">
-                                <li><i class="text-forest-green fas fa-check mr-2"></i>Rigenerare foreste degradate
-                                </li>
-                                <li><i class="text-forest-green fas fa-check mr-2"></i>Promuovere pratiche di
-                                    silvicoltura sostenibili</li>
-                                <li><i class="text-forest-green fas fa-check mr-2"></i>Ripristinare ecosistemi
-                                    forestali
-                                </li>
-                                <li><i class="text-forest-green fas fa-check mr-2"></i>Conservare biodiversità nativa
-                                </li>
+                                @foreach (__('info_epp.programs.arf.objectives') as $objective)
+                                    <li><i class="mr-2 text-forest-green fas fa-check"></i>{{ $objective }}</li>
+                                @endforeach
                             </ul>
                         </div>
-                        <a href="#forestry-details"
-                            aria-label="Scopri dettagli del programma Appropriate Restoration Forestry per riforestazione sostenibile"
-                            class="bg-forest-green hover:bg-forest-light inline-flex items-center rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-300">
-                            Scopri di Più
-                            <i class="fas fa-arrow-right ml-2"></i>
+                        <a href="#forestry-details" aria-label="{{ __('info_epp.programs.arf.cta_aria_label') }}"
+                            class="inline-flex items-center px-6 py-3 text-sm font-medium text-white transition-all duration-300 rounded-lg bg-forest-green hover:bg-forest-light">
+                            {{ __('info_epp.programs.arf.cta_text') }}
+                            <i class="ml-2 fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -458,39 +445,34 @@
                 <!-- Aquatic Plastic Removal -->
                 <div class="institutional-card ocean-section">
                     <div class="p-8">
-                        <div class="mb-6 flex items-center">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="bg-ocean-blue flex h-16 w-16 items-center justify-center rounded-full text-white">
-                                <i class="fas fa-water text-2xl"></i>
+                                class="flex items-center justify-center w-16 h-16 text-white rounded-full bg-ocean-blue">
+                                <i class="text-2xl fas fa-water"></i>
                             </div>
                             <div class="ml-4">
-                                <h3 class="text-ocean-blue institutional-title text-xl font-bold">
-                                    Aquatic Plastic Removal
+                                <h3 class="text-xl font-bold text-ocean-blue institutional-title">
+                                    {{ __('info_epp.programs.apr.title') }}
                                 </h3>
-                                <p class="text-sm text-gray-600">Rimozione Plastica Marina</p>
+                                <p class="text-sm text-gray-600">{{ __('info_epp.programs.apr.subtitle') }}</p>
                             </div>
                         </div>
-                        <p class="font-institutional mb-6 leading-relaxed text-gray-700">
-                            Se unisse tutte le isole di plastica che oggi galleggiano nei nostri oceani,
-                            la loro estensione sfiderebbe quella di un continente. È tempo di affrontare con coraggio
-                            questa crisi globale!
+                        <p class="mb-6 leading-relaxed text-gray-700 font-institutional">
+                            {{ __('info_epp.programs.apr.description') }}
                         </p>
-                        <div class="border-ocean-blue mb-6 rounded-lg border border-opacity-20 bg-white p-4">
-                            <h4 class="text-ocean-blue mb-2 font-semibold">Strategia di Intervento:</h4>
+                        <div class="p-4 mb-6 bg-white border rounded-lg border-ocean-blue border-opacity-20">
+                            <h4 class="mb-2 font-semibold text-ocean-blue">
+                                {{ __('info_epp.programs.apr.strategy_title') }}</h4>
                             <ul class="space-y-1 text-sm text-gray-600">
-                                <li><i class="text-ocean-blue fas fa-check mr-2"></i>Tecnologie innovative di raccolta
-                                </li>
-                                <li><i class="text-ocean-blue fas fa-check mr-2"></i>Metodi efficaci di riciclo</li>
-                                <li><i class="text-ocean-blue fas fa-check mr-2"></i>Riduzione materiale inquinante
-                                </li>
-                                <li><i class="text-ocean-blue fas fa-check mr-2"></i>Protezione ecosistemi marini</li>
+                                @foreach (__('info_epp.programs.apr.strategy') as $strategy)
+                                    <li><i class="mr-2 text-ocean-blue fas fa-check"></i>{{ $strategy }}</li>
+                                @endforeach
                             </ul>
                         </div>
-                        <a href="#plastic-details"
-                            aria-label="Scopri dettagli del programma Aquatic Plastic Removal per pulizia oceani e mari"
-                            class="bg-ocean-blue hover:bg-ocean-light inline-flex items-center rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-300">
-                            Scopri di Più
-                            <i class="fas fa-arrow-right ml-2"></i>
+                        <a href="#plastic-details" aria-label="{{ __('info_epp.programs.apr.cta_aria_label') }}"
+                            class="inline-flex items-center px-6 py-3 text-sm font-medium text-white transition-all duration-300 rounded-lg bg-ocean-blue hover:bg-ocean-light">
+                            {{ __('info_epp.programs.apr.cta_text') }}
+                            <i class="ml-2 fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -498,37 +480,34 @@
                 <!-- Bee Population Enhancement -->
                 <div class="institutional-card bee-section">
                     <div class="p-8">
-                        <div class="mb-6 flex items-center">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="bg-bee-amber flex h-16 w-16 items-center justify-center rounded-full text-white">
-                                <i class="fas fa-spa text-2xl"></i>
+                                class="flex items-center justify-center w-16 h-16 text-white rounded-full bg-bee-amber">
+                                <i class="text-2xl fas fa-spa"></i>
                             </div>
                             <div class="ml-4">
-                                <h3 class="text-bee-amber institutional-title text-xl font-bold">
-                                    Bee Population Enhancement
+                                <h3 class="text-xl font-bold text-bee-amber institutional-title">
+                                    {{ __('info_epp.programs.bpe.title') }}
                                 </h3>
-                                <p class="text-sm text-gray-600">Potenziamento Popolazioni Api</p>
+                                <p class="text-sm text-gray-600">{{ __('info_epp.programs.bpe.subtitle') }}</p>
                             </div>
                         </div>
-                        <p class="font-institutional mb-6 leading-relaxed text-gray-700">
-                            Le api, architetti silenziosi della biodiversità del nostro pianeta, sono in un allarmante
-                            declino.
-                            Un terzo del nostro cibo dipende dalla loro esistenza!
+                        <p class="mb-6 leading-relaxed text-gray-700 font-institutional">
+                            {{ __('info_epp.programs.bpe.description') }}
                         </p>
-                        <div class="border-bee-amber mb-6 rounded-lg border border-opacity-20 bg-white p-4">
-                            <h4 class="text-bee-amber mb-2 font-semibold">Iniziative Concrete:</h4>
+                        <div class="p-4 mb-6 bg-white border rounded-lg border-bee-amber border-opacity-20">
+                            <h4 class="mb-2 font-semibold text-bee-amber">
+                                {{ __('info_epp.programs.bpe.initiatives_title') }}</h4>
                             <ul class="space-y-1 text-sm text-gray-600">
-                                <li><i class="text-bee-amber fas fa-check mr-2"></i>Conservazione habitat naturali</li>
-                                <li><i class="text-bee-amber fas fa-check mr-2"></i>Pratiche agricole sostenibili</li>
-                                <li><i class="text-bee-amber fas fa-check mr-2"></i>Riduzione pesticidi nocivi</li>
-                                <li><i class="text-bee-amber fas fa-check mr-2"></i>Promozione biodiversità locale</li>
+                                @foreach (__('info_epp.programs.bpe.initiatives') as $initiative)
+                                    <li><i class="mr-2 text-bee-amber fas fa-check"></i>{{ $initiative }}</li>
+                                @endforeach
                             </ul>
                         </div>
-                        <a href="#bee-details"
-                            aria-label="Scopri dettagli del programma Bee Population Enhancement per protezione api e biodiversità"
-                            class="bg-bee-amber hover:bg-bee-light inline-flex items-center rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-300">
-                            Scopri di Più
-                            <i class="fas fa-arrow-right ml-2"></i>
+                        <a href="#bee-details" aria-label="{{ __('info_epp.programs.bpe.cta_aria_label') }}"
+                            class="inline-flex items-center px-6 py-3 text-sm font-medium text-white transition-all duration-300 rounded-lg bg-bee-amber hover:bg-bee-light">
+                            {{ __('info_epp.programs.bpe.cta_text') }}
+                            <i class="ml-2 fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -538,70 +517,52 @@
     </section>
 
     <!-- Sezione Impatto Dettagliato -->
-    <section id="impatto" class="bg-gray-100 py-20"
-        aria-label="Impatto ambientale e risultati concreti dei programmi EPP">
-        <div class="institutional-container px-4 sm:px-6 lg:px-8">
-            <div class="mx-auto mb-16 max-w-4xl text-center">
-                <h2 class="text-institutional-navy institutional-title mb-6 text-3xl font-bold sm:text-4xl">
-                    Impatto Misurabile e Verificabile
+    <section id="impatto" class="py-20 bg-gray-100" aria-label="{{ __('info_epp.impact.aria_label') }}">
+        <div class="px-4 institutional-container sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto mb-16 text-center">
+                <h2 class="mb-6 text-3xl font-bold text-institutional-navy institutional-title sm:text-4xl">
+                    {{ __('info_epp.impact.section_title') }}
                 </h2>
-                <p class="text-ecosystem-gray font-institutional text-lg leading-relaxed">
-                    Ogni contributo degli EGI genera risultati concreti e documentati per la rigenerazione ambientale
-                    globale.
+                <p class="text-lg leading-relaxed text-ecosystem-gray font-institutional">
+                    {{ __('info_epp.impact.section_description') }}
                 </p>
             </div>
 
             <!-- Forestry Details -->
             <div id="forestry-details" class="mb-16">
-                <div class="institutional-card rounded-xl bg-white p-8 shadow-lg">
+                <div class="p-8 bg-white shadow-lg institutional-card rounded-xl">
                     <div class="grid gap-8 lg:grid-cols-2">
                         <div>
-                            <div class="mb-6 flex items-center">
-                                <div class="bg-forest-green mr-4 h-12 w-3 rounded"></div>
-                                <h3 class="text-forest-green institutional-title text-2xl font-bold">
-                                    Appropriate Restoration Forestry
+                            <div class="flex items-center mb-6">
+                                <div class="w-3 h-12 mr-4 rounded bg-forest-green"></div>
+                                <h3 class="text-2xl font-bold text-forest-green institutional-title">
+                                    {{ __('info_epp.impact.forestry_details.title') }}
                                 </h3>
                             </div>
-                            <div class="font-institutional space-y-4 text-gray-700">
+                            <div class="space-y-4 text-gray-700 font-institutional">
                                 <p>
-                                    <strong>La deforestazione e il degrado degli ecosistemi forestali</strong>
-                                    rappresentano una delle maggiori sfide
-                                    ambientali del nostro tempo. La perdita di foreste non solo minaccia la
-                                    biodiversità, ma contribuisce anche
-                                    al cambiamento climatico e alla diminuzione delle risorse naturali.
+                                    {!! __('info_epp.impact.forestry_details.paragraph1') !!}
                                 </p>
                                 <p>
-                                    In questo contesto, il programma <strong>"Appropriate Restoration Forestry"</strong>
-                                    assume un'importanza critica.
-                                    L'obiettivo del programma è duplice: rigenerare le foreste degradate e promuovere
-                                    pratiche di silvicoltura sostenibili.
+                                    {!! __('info_epp.impact.forestry_details.paragraph2') !!}
                                 </p>
                                 <p>
-                                    Attraverso il sostegno finanziario a progetti di riforestazione e di gestione
-                                    forestale responsabile,
-                                    ci impegniamo a ripristinare e conservare gli ecosistemi forestali.
+                                    {{ __('info_epp.impact.forestry_details.paragraph3') }}
                                 </p>
                             </div>
                         </div>
                         <div>
-                            <div class="bg-forest-green rounded bg-opacity-5 p-6">
-                                <p class="font-institutional text-gray-700">
-                                    <strong>Questo approccio non solo aiuta a recuperare aree precedentemente
-                                        deforestate</strong>, ma assicura
-                                    anche che le nuove piantumazioni vengano gestite in modo da preservare la
-                                    biodiversità e
-                                    migliorare la resilienza degli ecosistemi.
+                            <div class="p-6 rounded bg-forest-green bg-opacity-5">
+                                <p class="text-gray-700 font-institutional">
+                                    {!! __('info_epp.impact.forestry_details.highlight1') !!}
                                 </p>
                                 <br>
-                                <p class="font-institutional text-gray-700">
-                                    <strong>Appropriate Restoration Forestry</strong> non si limita solo alla
-                                    piantumazione di alberi;
-                                    sosteniamo anche a ricerca e l'adozione di tecniche di silvicoltura che rispettino
-                                    l'equilibrio naturale e
+                                <p class="text-gray-700 font-institutional">
+                                    {!! __('info_epp.impact.forestry_details.highlight2') !!}
                                     che favoriscano la salute a lungo termine delle foreste.
                                 </p>
                                 <br>
-                                <p class="font-institutional text-gray-700">
+                                <p class="text-gray-700 font-institutional">
                                     Con questo programma, ci impegniamo a creare un futuro in cui le foreste possano
                                     essere fonte di vita, diversità e sostenibilità per le generazioni a venire.
                                 </p>
@@ -613,59 +574,39 @@
 
             <!-- Plastic Removal Details -->
             <div id="plastic-details" class="mb-16">
-                <div class="institutional-card rounded-xl bg-white p-8 shadow-lg">
+                <div class="p-8 bg-white shadow-lg institutional-card rounded-xl">
                     <div class="grid gap-8 lg:grid-cols-2">
                         <div>
-                            <div class="mb-6 flex items-center">
-                                <div class="bg-ocean-blue mr-4 h-12 w-3 rounded"></div>
-                                <h3 class="text-ocean-blue institutional-title text-2xl font-bold">
-                                    Aquatic Plastic Removal
+                            <div class="flex items-center mb-6">
+                                <div class="w-3 h-12 mr-4 rounded bg-ocean-blue"></div>
+                                <h3 class="text-2xl font-bold text-ocean-blue institutional-title">
+                                    {{ __('info_epp.impact.plastic_details.title') }}
                                 </h3>
                             </div>
-                            <div class="font-institutional space-y-4 text-gray-700">
+                            <div class="space-y-4 text-gray-700 font-institutional">
                                 <p>
-                                    <strong>L'urgenza di affrontare l'inquinamento da plastica nei nostri
-                                        oceani</strong> è evidenziata dai dati allarmanti:
-                                    ogni anno, 8 milioni di tonnellate di plastica vengono riversate nelle acque marine,
-                                    con gravi
-                                    conseguenze per l'ambiente e la biodiversità.
+                                    {!! __('info_epp.impact.plastic_details.paragraph1') !!}
                                 </p>
                                 <p>
-                                    Di fronte a questa crisi ambientale, <strong>Aquatic Plastic Removal</strong> si
-                                    impegna non solo a sensibilizzare, ma
-                                    anche a fornire un sostegno economico concreto alle iniziative dedicate alla pulizia
-                                    e al riciclaggio dei
-                                    rifiuti plastici nei mari.
+                                    {!! __('info_epp.impact.plastic_details.paragraph2') !!}
                                 </p>
                                 <p>
-                                    Il nostro impegno finanziario si traduce in supporto alle organizzazioni e ai
-                                    progetti che lavorano
-                                    attivamente per ridurre l'inquinamento marino.
+                                    {{ __('info_epp.impact.plastic_details.paragraph3') }}
                                 </p>
                             </div>
                         </div>
                         <div>
-                            <div class="bg-ocean-blue rounded bg-opacity-5 p-6">
-                                <p class="font-institutional text-gray-700">
-                                    <strong>Attraverso il finanziamento di tecnologie innovative</strong> e metodi
-                                    efficaci di raccolta e riciclo
-                                    della plastica, contribuiamo direttamente alla diminuzione del materiale inquinante
-                                    negli oceani.
+                            <div class="p-6 rounded bg-ocean-blue bg-opacity-5">
+                                <p class="text-gray-700 font-institutional">
+                                    {!! __('info_epp.impact.plastic_details.highlight1') !!}
                                 </p>
                                 <br>
-                                <p class="font-institutional text-gray-700">
-                                    <strong>La nostra visione è quella di un futuro</strong> in cui gli oceani siano
-                                    liberi dalla minaccia plastica, e ogni
-                                    contributo finanziario che forniamo è un passo verso la realizzazione di questo
-                                    obiettivo.
+                                <p class="text-gray-700 font-institutional">
+                                    {!! __('info_epp.impact.plastic_details.highlight2') !!}
                                 </p>
                                 <br>
-                                <p class="font-institutional text-gray-700">
-                                    Con <strong>Aquatic Plastic Removal</strong>, ci impegniamo a trasformare le risorse
-                                    economiche in azioni
-                                    concrete per un impatto ambientale positivo e duraturo, proteggendo i nostri mari
-                                    per le
-                                    generazioni presenti e future.
+                                <p class="text-gray-700 font-institutional">
+                                    {!! __('info_epp.impact.plastic_details.highlight3') !!}
                                 </p>
                             </div>
                         </div>
@@ -675,55 +616,36 @@
 
             <!-- Bee Enhancement Details -->
             <div id="bee-details">
-                <div class="institutional-card rounded-xl bg-white p-8 shadow-lg">
+                <div class="p-8 bg-white shadow-lg institutional-card rounded-xl">
                     <div class="grid gap-8 lg:grid-cols-2">
                         <div>
-                            <div class="mb-6 flex items-center">
-                                <div class="bg-bee-amber mr-4 h-12 w-3 rounded"></div>
-                                <h3 class="text-bee-amber institutional-title text-2xl font-bold">
-                                    Bee Population Enhancement
+                            <div class="flex items-center mb-6">
+                                <div class="w-3 h-12 mr-4 rounded bg-bee-amber"></div>
+                                <h3 class="text-2xl font-bold text-bee-amber institutional-title">
+                                    {{ __('info_epp.impact.bee_details.title') }}
                                 </h3>
                             </div>
-                            <div class="font-institutional space-y-4 text-gray-700">
+                            <div class="space-y-4 text-gray-700 font-institutional">
                                 <p>
-                                    <strong>La diminuzione della popolazione di api in tutto il mondo</strong> è
-                                    un'allarmante realtà che minaccia la
-                                    biodiversità e la stabilità degli ecosistemi. Circa un terzo delle colture
-                                    alimentari dipende
-                                    dall'impollinazione, principalmente da api, rendendo la loro presenza cruciale per
-                                    la sicurezza alimentare globale.
+                                    {!! __('info_epp.impact.bee_details.paragraph1') !!}
                                 </p>
                                 <p>
-                                    Di fronte a questo scenario preoccupante, <strong>il programma Bee Population
-                                        Enhancement</strong> gioca
-                                    un ruolo vitale. Attraverso il programma Bee Population Enhancement, miriamo a
-                                    invertire il declino delle
-                                    api, sostenendo attivamente soluzioni innovative e pratiche sostenibili.
+                                    {!! __('info_epp.impact.bee_details.paragraph2') !!}
                                 </p>
                             </div>
                         </div>
                         <div>
-                            <div class="bg-bee-amber rounded bg-opacity-5 p-6">
-                                <p class="font-institutional text-gray-700">
-                                    <strong>Il nostro obiettivo è quello di creare un ambiente</strong> in cui le api
-                                    possano prosperare, contribuendo
-                                    così alla salute degli ecosistemi e alla sicurezza alimentare.
+                            <div class="p-6 rounded bg-bee-amber bg-opacity-5">
+                                <p class="text-gray-700 font-institutional">
+                                    {!! __('info_epp.impact.bee_details.highlight1') !!}
                                 </p>
                                 <br>
-                                <p class="font-institutional text-gray-700">
-                                    <strong>Riconosciamo che proteggere le api significa proteggere il nostro
-                                        futuro</strong>, e ci impegniamo a
-                                    fare la nostra parte per assicurare la loro sopravvivenza e prosperità.
+                                <p class="text-gray-700 font-institutional">
+                                    {!! __('info_epp.impact.bee_details.highlight2') !!}
                                 </p>
                                 <br>
-                                <p class="font-institutional text-gray-700">
-                                    Il nostro impegno si concentra sul sostegno economico a progetti e ricerche mirate
-                                    al
-                                    miglioramento della salute e della popolazione delle api. <strong>Finanziamo
-                                        iniziative che vanno dalla
-                                        conservazione degli habitat naturali delle api</strong>, al sostegno di pratiche
-                                    agricole sostenibili che
-                                    promuovono la biodiversità e riducono l'uso di pesticidi nocivi.
+                                <p class="text-gray-700 font-institutional">
+                                    {!! __('info_epp.impact.bee_details.highlight3') !!}
                                 </p>
                             </div>
                         </div>
@@ -735,60 +657,62 @@
     </section>
 
     <!-- Come Partecipare -->
-    <section id="partecipazione" class="py-20" aria-label="Come partecipare ai programmi di protezione ambientale">
-        <div class="institutional-container px-4 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-4xl">
-                <div class="institutional-card rounded-xl bg-white p-8 text-center shadow-lg">
+    <section id="partecipazione" class="py-20" aria-label="{{ __('info_epp.participation.aria_label') }}">
+        <div class="px-4 institutional-container sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="p-8 text-center bg-white shadow-lg institutional-card rounded-xl">
                     <div class="mb-8">
                         <div
-                            class="bg-conservation-teal mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full text-white">
-                            <i class="fas fa-handshake text-3xl"></i>
+                            class="flex items-center justify-center w-20 h-20 mx-auto mb-6 text-white rounded-full bg-conservation-teal">
+                            <i class="text-3xl fas fa-handshake"></i>
                         </div>
-                        <h2 class="text-institutional-navy institutional-title mb-4 text-3xl font-bold">
-                            Come Contribuire agli EPP
+                        <h2 class="mb-4 text-3xl font-bold text-institutional-navy institutional-title">
+                            {{ __('info_epp.participation.section_title') }}
                         </h2>
-                        <p class="text-ecosystem-gray font-institutional text-lg">
-                            Ogni EGI creato sulla piattaforma FlorenceEGI destina automaticamente
-                            <strong>il 20% del valore di vendita</strong> ai programmi EPP selezionati.
+                        <p class="text-lg text-ecosystem-gray font-institutional">
+                            {!! __('info_epp.participation.section_description') !!}
                         </p>
                     </div>
 
-                    <div class="mb-8 grid gap-6 md:grid-cols-3">
-                        <div class="rounded-lg border border-gray-200 p-6">
-                            <i class="text-forest-green fas fa-plus-circle mb-4 text-3xl"></i>
-                            <h3 class="text-institutional-navy mb-2 font-semibold">Crea un EGI</h3>
-                            <p class="font-institutional text-sm text-gray-600">
-                                Ogni EGI contribuisce automaticamente alla rigenerazione ambientale
+                    <div class="grid gap-6 mb-8 md:grid-cols-3">
+                        <div class="p-6 border border-gray-200 rounded-lg">
+                            <i class="mb-4 text-3xl text-forest-green fas fa-plus-circle"></i>
+                            <h3 class="mb-2 font-semibold text-institutional-navy">
+                                {{ __('info_epp.participation.steps.create.title') }}</h3>
+                            <p class="text-sm text-gray-600 font-institutional">
+                                {{ __('info_epp.participation.steps.create.description') }}
                             </p>
                         </div>
-                        <div class="rounded-lg border border-gray-200 p-6">
-                            <i class="text-ocean-blue fas fa-heart mb-4 text-3xl"></i>
-                            <h3 class="text-institutional-navy mb-2 font-semibold">Scegli il Programma</h3>
-                            <p class="font-institutional text-sm text-gray-600">
-                                Seleziona quale EPP sostenere con il tuo contributo
+                        <div class="p-6 border border-gray-200 rounded-lg">
+                            <i class="mb-4 text-3xl text-ocean-blue fas fa-heart"></i>
+                            <h3 class="mb-2 font-semibold text-institutional-navy">
+                                {{ __('info_epp.participation.steps.choose.title') }}</h3>
+                            <p class="text-sm text-gray-600 font-institutional">
+                                {{ __('info_epp.participation.steps.choose.description') }}
                             </p>
                         </div>
-                        <div class="rounded-lg border border-gray-200 p-6">
-                            <i class="text-bee-amber fas fa-chart-line mb-4 text-3xl"></i>
-                            <h3 class="text-institutional-navy mb-2 font-semibold">Monitora l'Impatto</h3>
-                            <p class="font-institutional text-sm text-gray-600">
-                                Ricevi aggiornamenti sui risultati concreti ottenuti
+                        <div class="p-6 border border-gray-200 rounded-lg">
+                            <i class="mb-4 text-3xl text-bee-amber fas fa-chart-line"></i>
+                            <h3 class="mb-2 font-semibold text-institutional-navy">
+                                {{ __('info_epp.participation.steps.monitor.title') }}</h3>
+                            <p class="text-sm text-gray-600 font-institutional">
+                                {{ __('info_epp.participation.steps.monitor.description') }}
                             </p>
                         </div>
                     </div>
 
                     <div class="space-y-4 sm:flex sm:justify-center sm:space-x-4 sm:space-y-0">
                         <a href="{{ route('home') }}"
-                            aria-label="Inizia ora la tua partecipazione ai programmi EPP acquistando un EGI"
-                            class="bg-conservation-teal inline-flex items-center rounded-lg px-8 py-4 text-white transition-all duration-300 hover:bg-opacity-90">
-                            <i class="fas fa-rocket mr-2"></i>
-                            Inizia Ora con un EGI
+                            aria-label="{{ __('info_epp.participation.cta.start_now_aria_label') }}"
+                            class="inline-flex items-center px-8 py-4 text-white transition-all duration-300 rounded-lg bg-conservation-teal hover:bg-opacity-90">
+                            <i class="mr-2 fas fa-rocket"></i>
+                            {{ __('info_epp.participation.cta.start_now') }}
                         </a>
                         <a href="{{ route('info.florence-egi') }}"
-                            aria-label="Scopri di più sulla piattaforma FlorenceEGI e il Rinascimento Digitale"
-                            class="text-conservation-teal border-conservation-teal hover:bg-conservation-teal inline-flex items-center rounded-lg border-2 px-8 py-4 transition-all duration-300 hover:text-white">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            Scopri FlorenceEGI
+                            aria-label="{{ __('info_epp.participation.cta.discover_platform_aria_label') }}"
+                            class="inline-flex items-center px-8 py-4 transition-all duration-300 border-2 rounded-lg text-conservation-teal border-conservation-teal hover:bg-conservation-teal hover:text-white">
+                            <i class="mr-2 fas fa-info-circle"></i>
+                            {{ __('info_epp.participation.cta.discover_platform') }}
                         </a>
                     </div>
                 </div>
