@@ -214,7 +214,7 @@ Route::prefix('info')->name('info.')->group(function () {
     })->name('disclaimer');
 
     Route::get('/egi', function () {
-        return view('info.under-construction', ['title' => 'Cosa sono gli EGI?', 'subtitle' => 'Scopri come funzionano gli EGI (Environmental Goods Invent)']);
+        return view('info.egi-info');
     })->name('egi');
 
     Route::get('/attivare', function () {
