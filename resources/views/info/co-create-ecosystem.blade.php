@@ -16,7 +16,8 @@
         content="Scopri l'ecosistema completo FlorenceEGI: Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro per il trading professionale di EGI.">
 
     <!-- SEO Meta Tags -->
-    <meta name="keywords" content="co-creazione, co-creatori, trader pro, ecosystem, blockchain art, NFT, EGI, trading professionali, opere d'arte digitali, community artistica, collaborazione creativa">
+    <meta name="keywords"
+        content="co-creazione, co-creatori, trader pro, ecosystem, blockchain art, NFT, EGI, trading professionali, opere d'arte digitali, community artistica, collaborazione creativa">
     <meta name="author" content="FlorenceEGI">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -24,17 +25,20 @@
     <!-- Open Graph Protocol (Facebook, LinkedIn) -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Ecosistema Co-Creazione - FlorenceEGI">
-    <meta property="og:description" content="Scopri l'ecosistema completo FlorenceEGI: Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro per il trading professionale di EGI.">
+    <meta property="og:description"
+        content="Scopri l'ecosistema completo FlorenceEGI: Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro per il trading professionale di EGI.">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="FlorenceEGI">
     <meta property="og:locale" content="it_IT">
     <meta property="og:image" content="{{ asset('images/co-create-ecosystem-social.jpg') }}">
-    <meta property="og:image:alt" content="Ecosistema Co-Creazione FlorenceEGI - Community artistica e trading professionale">
-    
+    <meta property="og:image:alt"
+        content="Ecosistema Co-Creazione FlorenceEGI - Community artistica e trading professionale">
+
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Ecosistema Co-Creazione - FlorenceEGI">
-    <meta name="twitter:description" content="Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro. L'ecosistema completo per artisti e trader professionali.">
+    <meta name="twitter:description"
+        content="Co-Creare opere d'arte, Co-Creatori permanenti e strumenti Trader Pro. L'ecosistema completo per artisti e trader professionali.">
     <meta name="twitter:image" content="{{ asset('images/co-create-ecosystem-social.jpg') }}">
     <meta name="twitter:image:alt" content="Ecosistema Co-Creazione FlorenceEGI">
 
@@ -271,7 +275,7 @@
                         "name": "Co-Creazione Artistica"
                     },
                     {
-                        "@type": "Thing", 
+                        "@type": "Thing",
                         "name": "Trading Professionale"
                     },
                     {
@@ -302,13 +306,13 @@
                             "description": "Piattaforma per co-creazione di opere d'arte digitali e NFT"
                         },
                         {
-                            "@type": "Service", 
+                            "@type": "Service",
                             "name": "Co-Creatori",
                             "description": "Gestione permanente di artisti e creatori nell'ecosistema"
                         },
                         {
                             "@type": "Service",
-                            "name": "Trader Pro", 
+                            "name": "Trader Pro",
                             "description": "Strumenti avanzati per trading professionale di EGI"
                         }
                     ]
@@ -436,13 +440,15 @@
     </section>
 
     <!-- Navbar Interna delle Sezioni - Sticky & Responsive -->
-    <nav class="sticky top-20 z-40 border-b border-gray-200 bg-white shadow-sm" aria-label="Navigazione sezioni Ecosistema Co-Creazione">
+    <nav class="sticky top-20 z-40 border-b border-gray-200 bg-white shadow-sm"
+        aria-label="Navigazione sezioni Ecosistema Co-Creazione">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
 
             <!-- Desktop: Scroll orizzontale -->
             <div class="hidden py-4 md:block">
                 <div class="flex justify-center">
-                    <div class="scrollbar-hide flex max-w-full space-x-2 overflow-x-auto px-4" id="desktop-section-nav">
+                    <div class="scrollbar-hide flex max-w-full space-x-2 overflow-x-auto px-4"
+                        id="desktop-section-nav">
 
                         <!-- Co-Creare -->
                         <a href="#co-creare"
@@ -519,7 +525,8 @@
     </nav>
 
     <!-- Sezione Co-Creare -->
-    <section id="co-creare" class="py-16" aria-label="Piattaforma Co-Creare per creazione collaborativa di opere d'arte">
+    <section id="co-creare" class="py-16"
+        aria-label="Piattaforma Co-Creare per creazione collaborativa di opere d'arte">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto max-w-6xl">
 
@@ -605,7 +612,8 @@
     </section>
 
     <!-- Sezione Co-Creatore -->
-    <section id="co-creatore" class="section-alt py-16" aria-label="Sistema Co-Creatore per gestione permanente di artisti nell'ecosistema">
+    <section id="co-creatore" class="section-alt py-16"
+        aria-label="Sistema Co-Creatore per gestione permanente di artisti nell'ecosistema">
         <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto max-w-6xl">
 

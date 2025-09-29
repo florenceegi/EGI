@@ -16,7 +16,8 @@
         content="Programmi di protezione ambientale istituzionali: Appropriate Restoration Forestry, Aquatic Plastic Removal, Bee Population Enhancement. Impatto concreto per la rigenerazione ecosistemica.">
 
     <!-- SEO Meta Tags -->
-    <meta name="keywords" content="Environment Protection Programs, EPP, protezione ambientale, riforestazione, pulizia oceani, api, biodiversità, sostenibilità, blockchain, impatto ambientale, conservazione ecosistemi">
+    <meta name="keywords"
+        content="Environment Protection Programs, EPP, protezione ambientale, riforestazione, pulizia oceani, api, biodiversità, sostenibilità, blockchain, impatto ambientale, conservazione ecosistemi">
     <meta name="author" content="FlorenceEGI">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -24,17 +25,20 @@
     <!-- Open Graph Protocol (Facebook, LinkedIn) -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Environment Protection Programs | FlorenceEGI">
-    <meta property="og:description" content="Programmi di protezione ambientale istituzionali: Appropriate Restoration Forestry, Aquatic Plastic Removal, Bee Population Enhancement. Impatto concreto per la rigenerazione ecosistemica.">
+    <meta property="og:description"
+        content="Programmi di protezione ambientale istituzionali: Appropriate Restoration Forestry, Aquatic Plastic Removal, Bee Population Enhancement. Impatto concreto per la rigenerazione ecosistemica.">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="FlorenceEGI">
     <meta property="og:locale" content="it_IT">
     <meta property="og:image" content="{{ asset('images/epp-programs-social.jpg') }}">
-    <meta property="og:image:alt" content="Environment Protection Programs - Programmi di protezione ambientale FlorenceEGI">
-    
+    <meta property="og:image:alt"
+        content="Environment Protection Programs - Programmi di protezione ambientale FlorenceEGI">
+
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Environment Protection Programs | FlorenceEGI">
-    <meta name="twitter:description" content="Programmi di protezione ambientale istituzionali: ARF, APR, BPE. Impatto concreto per la rigenerazione ecosistemica.">
+    <meta name="twitter:description"
+        content="Programmi di protezione ambientale istituzionali: ARF, APR, BPE. Impatto concreto per la rigenerazione ecosistemica.">
     <meta name="twitter:image" content="{{ asset('images/epp-programs-social.jpg') }}">
     <meta name="twitter:image:alt" content="Environment Protection Programs FlorenceEGI">
 
@@ -224,7 +228,7 @@
                         "name": "Protezione Ambientale"
                     },
                     {
-                        "@type": "Thing", 
+                        "@type": "Thing",
                         "name": "Riforestazione"
                     },
                     {
@@ -259,13 +263,13 @@
                             "description": "Programmi di riforestazione appropriata per il ripristino ecosistemico"
                         },
                         {
-                            "@type": "Service", 
+                            "@type": "Service",
                             "name": "Aquatic Plastic Removal (APR)",
                             "description": "Programmi di rimozione plastica dagli ecosistemi acquatici"
                         },
                         {
                             "@type": "Service",
-                            "name": "Bee Population Enhancement (BPE)", 
+                            "name": "Bee Population Enhancement (BPE)",
                             "description": "Programmi per il potenziamento delle popolazioni di api"
                         }
                     ]
@@ -296,7 +300,8 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden space-x-4 md:flex" aria-label="Navigazione principale Environment Protection Programs">
+                <nav class="hidden space-x-4 md:flex"
+                    aria-label="Navigazione principale Environment Protection Programs">
                     <a href="{{ route('home') }}"
                         class="font-institutional text-sm transition hover:text-blue-200 lg:text-base">Home</a>
                     <a href="#programmi"
@@ -430,10 +435,12 @@
                         <div class="border-forest-green mb-6 rounded-lg border border-opacity-20 bg-white p-4">
                             <h4 class="text-forest-green mb-2 font-semibold">Obiettivi del Programma:</h4>
                             <ul class="space-y-1 text-sm text-gray-600">
-                                <li><i class="text-forest-green fas fa-check mr-2"></i>Rigenerare foreste degradate</li>
+                                <li><i class="text-forest-green fas fa-check mr-2"></i>Rigenerare foreste degradate
+                                </li>
                                 <li><i class="text-forest-green fas fa-check mr-2"></i>Promuovere pratiche di
                                     silvicoltura sostenibili</li>
-                                <li><i class="text-forest-green fas fa-check mr-2"></i>Ripristinare ecosistemi forestali
+                                <li><i class="text-forest-green fas fa-check mr-2"></i>Ripristinare ecosistemi
+                                    forestali
                                 </li>
                                 <li><i class="text-forest-green fas fa-check mr-2"></i>Conservare biodiversità nativa
                                 </li>
@@ -531,7 +538,8 @@
     </section>
 
     <!-- Sezione Impatto Dettagliato -->
-    <section id="impatto" class="bg-gray-100 py-20" aria-label="Impatto ambientale e risultati concreti dei programmi EPP">
+    <section id="impatto" class="bg-gray-100 py-20"
+        aria-label="Impatto ambientale e risultati concreti dei programmi EPP">
         <div class="institutional-container px-4 sm:px-6 lg:px-8">
             <div class="mx-auto mb-16 max-w-4xl text-center">
                 <h2 class="text-institutional-navy institutional-title mb-6 text-3xl font-bold sm:text-4xl">

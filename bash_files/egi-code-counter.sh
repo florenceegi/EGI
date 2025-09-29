@@ -1,0 +1,147 @@
+#!/bin/bash
+
+# 📊 FlorenceEGI Code Counter - Resoconto Completo
+# Author: Padmin D. Curtis (AI Partner OS3.0)
+# Version: 1.0.0 (FlorenceEGI - Complete Code Analysis)
+# Date: 2025-09-29
+# Purpose: Conteggio preciso di tutto il codice sviluppato
+
+# Colori per output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Header
+echo -e "${BOLD}${BLUE}"
+echo "═══════════════════════════════════════════════════════════════════"
+echo "📊 FLORENCE EGI - RESOCONTO CODICE COMPLETO"
+echo "═══════════════════════════════════════════════════════════════════"
+echo -e "${NC}"
+
+# Verifica che cloc sia installato
+if ! command -v cloc &> /dev/null; then
+    echo -e "${RED}❌ CLOC non trovato. Installalo con: sudo apt install cloc${NC}"
+    exit 1
+fi
+
+# Directory di lavoro
+WORK_DIR=$(pwd)
+echo -e "${CYAN}📂 Directory di lavoro: ${WORK_DIR}${NC}"
+echo ""
+
+# Linguaggi da contare
+LANGUAGES="CSS,PHP,JavaScript,TypeScript,Blade,HTML,JSON,Bourne Shell"
+
+# 1. CODICE COMPLETO EGI (come conteggio originale)
+echo -e "${BOLD}${GREEN}🏢 CODICE COMPLETO FLORENCE EGI${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+cloc . \
+    --exclude-dir=vendor,node_modules,storage,bootstrap,.history,.git,.venv \
+    --include-lang="$LANGUAGES" \
+    --exclude-ext=log \
+    --quiet
+
+EGI_COMPLETE=$(cloc . \
+    --exclude-dir=vendor,node_modules,storage,bootstrap,.history,.git,.venv \
+    --include-lang="$LANGUAGES" \
+    --exclude-ext=log \
+    --csv --quiet | tail -n 1 | cut -d',' -f5)
+
+echo ""
+
+# 2. DETTAGLIO TRADUZIONI (incluse nel conteggio sopra)
+echo -e "${BOLD}${YELLOW}🌍 DETTAGLIO SISTEMA TRADUZIONI${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+cloc resources/lang --include-lang="PHP" --quiet
+
+TRANSLATIONS=$(cloc resources/lang --include-lang="PHP" --csv --quiet | tail -n 1 | cut -d',' -f5)
+
+echo ""
+
+# 3. LIBRERIE ULTRA SVILUPPATE
+echo -e "${BOLD}${PURPLE}📦 LIBRERIE ULTRA SVILUPPATE${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+if [ -d "vendor/ultra" ]; then
+    cloc vendor/ultra \
+        --exclude-dir=node_modules,vendor \
+        --include-lang="$LANGUAGES" \
+        --quiet
+
+    ULTRA_LIBS=$(cloc vendor/ultra \
+        --exclude-dir=node_modules,vendor \
+        --include-lang="$LANGUAGES" \
+        --csv --quiet | tail -n 1 | cut -d',' -f5)
+else
+    echo -e "${RED}❌ Directory vendor/ultra non trovata${NC}"
+    ULTRA_LIBS=0
+fi
+
+echo ""
+
+# 4. PACKAGES LOCALI
+echo -e "${BOLD}${CYAN}📁 PACKAGES LOCALI${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+if [ -d "packages" ]; then
+    cloc packages/ --include-lang="$LANGUAGES" --quiet
+
+    PACKAGES=$(cloc packages/ --include-lang="$LANGUAGES" --csv --quiet | tail -n 1 | cut -d',' -f5)
+else
+    echo -e "${RED}❌ Directory packages non trovata${NC}"
+    PACKAGES=0
+fi
+
+# CALCOLI TOTALI (come conteggio originale 334K)
+TOTAL_EGI=$EGI_COMPLETE
+TOTAL_ULTRA=$((ULTRA_LIBS + PACKAGES))
+GRAND_TOTAL=$((TOTAL_EGI + TOTAL_ULTRA))
+
+echo ""
+echo -e "${BOLD}${BLUE}"
+echo "═══════════════════════════════════════════════════════════════════"
+echo "📈 RESOCONTO FINALE"
+echo "═══════════════════════════════════════════════════════════════════"
+echo -e "${NC}"
+
+echo -e "${GREEN}🏢 CODICE FLORENCE EGI:"
+echo -e "   • ${BOLD}Totale completo: $(printf "%'d" $TOTAL_EGI) righe${NC}"
+echo -e "   • Include traduzioni (6 lingue): ${BOLD}$(printf "%'d" $TRANSLATIONS)${NC} righe"
+echo -e "   ${CYAN}ℹ️  Conteggio completo come analisi originale 334K${NC}"
+echo ""
+
+echo -e "${PURPLE}📦 LIBRERIE ULTRA:"
+echo -e "   • Librerie vendor/ultra: ${BOLD}$(printf "%'d" $ULTRA_LIBS)${NC} righe"
+echo -e "   • Packages locali: ${BOLD}$(printf "%'d" $PACKAGES)${NC} righe"
+echo -e "   • ${BOLD}Totale Ultra: $(printf "%'d" $TOTAL_ULTRA) righe${NC}"
+echo ""
+
+echo -e "${BOLD}${YELLOW}🎯 GRAND TOTAL: $(printf "%'d" $GRAND_TOTAL) RIGHE DI CODICE SVILUPPATO!${NC}"
+
+# Percentuali
+EGI_PERCENT=$((TOTAL_EGI * 100 / GRAND_TOTAL))
+ULTRA_PERCENT=$((TOTAL_ULTRA * 100 / GRAND_TOTAL))
+
+echo ""
+echo -e "${CYAN}📊 BREAKDOWN PERCENTUALE:"
+echo -e "   • Florence EGI: ${EGI_PERCENT}%"
+echo -e "   • Librerie Ultra: ${ULTRA_PERCENT}%${NC}"
+
+echo ""
+echo -e "${BOLD}${GREEN}"
+echo "🚀 ULTRA ECCELLENZA ACHIEVEMENT UNLOCKED!"
+echo "Enterprise-grade platform con ecosistema completo di librerie"
+echo -e "${NC}"
+
+# Footer
+echo ""
+echo -e "${BOLD}${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BOLD}Generated by: Padmin D. Curtis OS3.0 | $(date '+%Y-%m-%d %H:%M:%S')${NC}"
+echo -e "${BOLD}${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
