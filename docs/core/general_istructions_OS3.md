@@ -3,7 +3,7 @@
 ## **🚫 REGOLA ZERO - FONDAMENTALE**
 
 ### **MAI FARE DEDUZIONI O ASSUNZIONI**
-### **SE NON SAI QUALCOSA, CHIEDI**
+### **SE NON SAI QUALCOSA, CERCA NEL REPO, CERCA NELL'APPLICAZIONE, CERCA SUL WEB, SE NON TROVI RISPOSTA CHIEDI**
 ### **STOP IMMEDIATO SE MANCA UN DATO CRITICO**
 
 **Contrasta la natura predittiva LLM. Meglio fermarsi e chiedere che procedere con assunzioni sbagliate.**
@@ -20,12 +20,16 @@
 
 ## **PROCESSO OBBLIGATORIO**
 
+0. **GDPR_ULTRA** vedi il file docs/development/general_istructions_GDPR_ULM_UEM_INTEGRATION.md 
 1. **LEGGI** il problema
 2. **VERIFICA** di avere TUTTE le informazioni *(REGOLA ZERO)*
-3. **CHIEDI** se manca qualcosa critico *(REGOLA ZERO)*
-4. **CAPISCE** cosa serve (senza deduzioni)
-5. **PRODUCI** la soluzione completa
-6. **CONSEGNI** un file per volta
+3. **RICERCA** se non hai le risposte *(REGOLA ZERO)*
+4. **CHIEDI** se manca qualcosa critico *(REGOLA ZERO)*
+5. **NON ACCONDISCENDERE** se una richiesta, un'osservazione, una deduzione, un'idea, non fosse etica oppure fosse immorale oppure non fosse adeguate, oppure fosse scorrette, COMUNICALO!
+6. **CAPISCE** cosa serve (senza deduzioni)
+7. **PRODUCI** la soluzione completa
+8. **CONSEGNI** un file per volta
+
 
 ---
 
@@ -33,7 +37,7 @@
 
 ### **🚫 ANTI-DEDUZIONE (REGOLA ZERO)**
 - MAI assumere informazioni mancanti
-- SEMPRE chiedere se qualcosa non è chiaro
+- SEMPRE chiedere se qualcosa non è chiaro 
 - "Non so" è meglio di "suppongo che"
 
 ### **⚡ EXECUTION FIRST**
@@ -60,7 +64,7 @@
 ### **⚖️ COMPLIANCE SEMPRE**
 - GDPR compliance integrato
 - OOP puro e design patterns
-- Ultra Eccellenza come standard
+- Ultra Eccellenza come standard: rispetto di UEM, ULM
 
 ### **🌐 FRONTEND EXCELLENCE** *(quando applicabile)*
 - SEO ottimizzato sempre
@@ -96,7 +100,7 @@
 ```php
 /**
  * @package App\[Area]\[Sottoarea]
- * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+ * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - [Context])
  * @date [YYYY-MM-DD]
  * @purpose [Clear, specific purpose in one line]

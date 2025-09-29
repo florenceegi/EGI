@@ -123,57 +123,57 @@
 <body class="bg-gray-50 text-grigio-pietra">
 
     <!-- Header con Navigazione -->
-    <header class="text-white shadow-lg bg-blu-algoritmo">
-        <div class="px-4 py-4 golden-ratio-container sm:px-6 sm:py-6">
+    <header class="bg-blu-algoritmo text-white shadow-lg">
+        <div class="golden-ratio-container px-4 py-4 sm:px-6 sm:py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <i class="text-3xl fas fa-infinity text-oro-fiorentino sm:text-4xl"></i>
+                    <i class="fas fa-infinity text-oro-fiorentino text-3xl sm:text-4xl"></i>
                     <div>
-                        <h1 class="text-xl font-bold renaissance-title sm:text-2xl">FlorenceEGI</h1>
-                        <p class="text-sm text-blue-200 font-body sm:text-base">Il Rinascimento Digitale</p>
+                        <h1 class="renaissance-title text-xl font-bold sm:text-2xl">FlorenceEGI</h1>
+                        <p class="font-body text-sm text-blue-200 sm:text-base">Il Rinascimento Digitale</p>
                     </div>
                 </div>
 
                 <!-- Desktop Navigation -->
                 <nav class="hidden space-x-3 md:flex">
                     <a href="{{ route('home') }}"
-                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Home</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Home</a>
                     <a href="{{ route('info.florence-egi') }}"
-                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">FlorenceEGI</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">FlorenceEGI</a>
                     <a href="{{ route('archetypes.patron') }}"
-                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Patron</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Patron</a>
                     <a href="{{ route('gdpr.privacy-policy') }}"
-                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">Privacy</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Privacy</a>
                 </nav>
 
                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button"
-                    class="block p-2 transition-colors rounded-md hover:bg-blue-700 md:hidden">
-                    <i class="text-2xl fas fa-bars"></i>
+                    class="block rounded-md p-2 transition-colors hover:bg-blue-700 md:hidden">
+                    <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
 
             <!-- Mobile Navigation Menu -->
-            <div id="mobile-menu" class="hidden pb-4 mt-4 border-t border-blue-600 md:hidden">
-                <div class="pt-4 space-y-3">
+            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden">
+                <div class="space-y-3 pt-4">
                     <a href="{{ route('home') }}"
-                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-home text-oro-fiorentino"></i>
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
+                        <i class="fas fa-home text-oro-fiorentino mr-3 text-lg"></i>
                         Torna alla Home
                     </a>
                     <a href="{{ route('info.florence-egi') }}"
-                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-infinity text-oro-fiorentino"></i>
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
+                        <i class="fas fa-infinity text-oro-fiorentino mr-3 text-lg"></i>
                         FlorenceEGI
                     </a>
                     <a href="{{ route('archetypes.patron') }}"
-                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-crown text-oro-fiorentino"></i>
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
+                        <i class="fas fa-crown text-oro-fiorentino mr-3 text-lg"></i>
                         Patron
                     </a>
                     <a href="{{ route('gdpr.privacy-policy') }}"
-                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
-                        <i class="mr-3 text-lg fas fa-shield-alt text-oro-fiorentino"></i>
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
+                        <i class="fas fa-shield-alt text-oro-fiorentino mr-3 text-lg"></i>
                         Privacy
                     </a>
                 </div>
@@ -183,23 +183,23 @@
 
     <!-- Hero Section -->
     <section class="hero-background">
-        <div class="flex items-center justify-center min-h-[50vh] px-4 golden-ratio-container">
-            <div class="max-w-4xl mx-auto text-center text-white">
+        <div class="golden-ratio-container flex min-h-[50vh] items-center justify-center px-4">
+            <div class="mx-auto max-w-4xl text-center text-white">
                 <div class="mb-6">
                     <span class="dev-badge">
                         <i class="fas fa-code"></i>
                         Ambiente di Sviluppo
                     </span>
                 </div>
-                <h1 class="mb-6 text-4xl font-bold renaissance-title sm:text-5xl lg:text-6xl">
+                <h1 class="renaissance-title mb-6 text-4xl font-bold sm:text-5xl lg:text-6xl">
                     Disclaimer
                 </h1>
-                <p class="mb-6 text-lg leading-relaxed text-blue-100 font-body sm:text-xl">
+                <p class="mb-6 font-body text-lg leading-relaxed text-blue-100 sm:text-xl">
                     Informazioni importanti sul portale FlorenceEGI in fase di sviluppo
                 </p>
-                <div class="text-sm text-blue-200 font-body">
-                    <i class="mr-2 fas fa-globe"></i>
-                    Staging URL: <code class="px-2 py-1 bg-blue-900 rounded">https://app.13.48.57.194.sslip.io</code>
+                <div class="font-body text-sm text-blue-200">
+                    <i class="fas fa-globe mr-2"></i>
+                    Staging URL: <code class="rounded bg-blue-900 px-2 py-1">https://app.13.48.57.194.sslip.io</code>
                 </div>
             </div>
         </div>
@@ -207,31 +207,34 @@
 
     <!-- Contenuto Principale -->
     <section class="py-16">
-        <div class="px-4 golden-ratio-container sm:px-6 lg:px-8">
-            
+        <div class="golden-ratio-container px-4 sm:px-6 lg:px-8">
+
             <!-- Stato Sviluppo -->
-            <div class="max-w-4xl mx-auto mb-16">
-                <div class="p-8 renaissance-card elegant-hover">
-                    <div class="flex items-center mb-6">
-                        <i class="mr-4 text-3xl fas fa-exclamation-triangle text-arancio-energia"></i>
-                        <h2 class="text-2xl font-bold text-blu-algoritmo renaissance-title sm:text-3xl">
+            <div class="mx-auto mb-16 max-w-4xl">
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-4 text-3xl text-arancio-energia"></i>
+                        <h2 class="renaissance-title text-2xl font-bold text-blu-algoritmo sm:text-3xl">
                             Portale in Sviluppo
                         </h2>
                     </div>
-                    
-                    <div class="space-y-6 text-lg leading-relaxed font-body">
+
+                    <div class="space-y-6 font-body text-lg leading-relaxed">
                         <p>
-                            <strong>FlorenceEGI</strong> è attualmente in fase di sviluppo attivo. Il portale che stai visitando 
-                            rappresenta il nostro ambiente di staging, accessibile all'indirizzo 
-                            <code class="px-2 py-1 text-sm bg-gray-100 rounded text-blu-algoritmo">https://app.13.48.57.194.sslip.io</code>.
+                            <strong>FlorenceEGI</strong> è attualmente in fase di sviluppo attivo. Il portale che stai
+                            visitando
+                            rappresenta il nostro ambiente di staging, accessibile all'indirizzo
+                            <code
+                                class="rounded bg-gray-100 px-2 py-1 text-sm text-blu-algoritmo">https://app.13.48.57.194.sslip.io</code>.
                         </p>
-                        
+
                         <p>
-                            Questo significa che molte funzionalità sono ancora in corso di implementazione, testing e ottimizzazione. 
+                            Questo significa che molte funzionalità sono ancora in corso di implementazione, testing e
+                            ottimizzazione.
                             Potresti riscontrare:
                         </p>
-                        
-                        <ul class="pl-6 space-y-2 list-disc">
+
+                        <ul class="list-disc space-y-2 pl-6">
                             <li>Sezioni incomplete o in fase di costruzione</li>
                             <li>Funzionalità temporaneamente non disponibili</li>
                             <li>Design e contenuti soggetti a modifiche</li>
@@ -243,28 +246,28 @@
             </div>
 
             <!-- Invito all'Esplorazione -->
-            <div class="max-w-4xl mx-auto mb-16">
-                <div class="p-8 renaissance-card elegant-hover">
-                    <div class="flex items-center mb-6">
-                        <i class="mr-4 text-3xl fas fa-compass text-verde-rinascita"></i>
-                        <h2 class="text-2xl font-bold text-blu-algoritmo renaissance-title sm:text-3xl">
+            <div class="mx-auto mb-16 max-w-4xl">
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <i class="fas fa-compass mr-4 text-3xl text-verde-rinascita"></i>
+                        <h2 class="renaissance-title text-2xl font-bold text-blu-algoritmo sm:text-3xl">
                             Ti Invitiamo a Esplorare
                         </h2>
                     </div>
-                    
-                    <div class="space-y-6 text-lg leading-relaxed font-body">
+
+                    <div class="space-y-6 font-body text-lg leading-relaxed">
                         <p>
-                            Nonostante lo stato di sviluppo, ti incoraggiamo caldamente a esplorare il portale 
-                            e a scoprire la <strong>visione innovativa di FlorenceEGI</strong>: il primo marketplace 
-                            che risolve il trilemma degli NFT unendo qualità artistica, liquidità massima e 
+                            Nonostante lo stato di sviluppo, ti incoraggiamo caldamente a esplorare il portale
+                            e a scoprire la <strong>visione innovativa di FlorenceEGI</strong>: il primo marketplace
+                            che risolve il trilemma degli NFT unendo qualità artistica, liquidità massima e
                             impatto ambientale reale.
                         </p>
-                        
+
                         <p>
                             Potrai già vedere implementati:
                         </p>
-                        
-                        <ul class="pl-6 space-y-2 list-disc">
+
+                        <ul class="list-disc space-y-2 pl-6">
                             <li><strong>Architettura EGI Dual Flow</strong> su blockchain Algorand</li>
                             <li><strong>Sistema GDPR by Design</strong> con compliance integrata</li>
                             <li><strong>Pattern UltraLogManager</strong> per gestione avanzata errori</li>
@@ -276,36 +279,36 @@
             </div>
 
             <!-- Feedback e Contatti -->
-            <div class="max-w-4xl mx-auto mb-16">
-                <div class="p-8 renaissance-card elegant-hover">
-                    <div class="flex items-center mb-6">
-                        <i class="mr-4 text-3xl fas fa-comments text-oro-fiorentino"></i>
-                        <h2 class="text-2xl font-bold text-blu-algoritmo renaissance-title sm:text-3xl">
+            <div class="mx-auto mb-16 max-w-4xl">
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <i class="fas fa-comments text-oro-fiorentino mr-4 text-3xl"></i>
+                        <h2 class="renaissance-title text-2xl font-bold text-blu-algoritmo sm:text-3xl">
                             Le Tue Impressioni Sono Preziose
                         </h2>
                     </div>
-                    
-                    <div class="space-y-6 text-lg leading-relaxed font-body">
+
+                    <div class="space-y-6 font-body text-lg leading-relaxed">
                         <p>
-                            Il tuo feedback è fondamentale per il continuo miglioramento di FlorenceEGI. 
-                            Se hai osservazioni, suggerimenti, domande o hai riscontrato problemi durante 
+                            Il tuo feedback è fondamentale per il continuo miglioramento di FlorenceEGI.
+                            Se hai osservazioni, suggerimenti, domande o hai riscontrato problemi durante
                             la navigazione, non esitare a condividerli con noi.
                         </p>
-                        
-                        <div class="p-6 border-l-4 bg-blue-50 border-oro-fiorentino">
+
+                        <div class="border-oro-fiorentino border-l-4 bg-blue-50 p-6">
                             <p class="mb-4 font-semibold text-blu-algoritmo">
-                                <i class="mr-2 fas fa-envelope"></i>
+                                <i class="fas fa-envelope mr-2"></i>
                                 Contattaci per feedback e impressioni:
                             </p>
-                            <a href="mailto:info@florenceegi.com" 
-                               class="inline-flex items-center px-6 py-3 text-white transition-all duration-300 rounded-lg cta-primary elegant-hover">
-                                <i class="mr-2 fas fa-paper-plane"></i>
+                            <a href="mailto:info@florenceegi.com"
+                                class="cta-primary elegant-hover inline-flex items-center rounded-lg px-6 py-3 text-white transition-all duration-300">
+                                <i class="fas fa-paper-plane mr-2"></i>
                                 info@florenceegi.com
                             </a>
                         </div>
-                        
+
                         <p class="text-base text-grigio-pietra">
-                            Ogni contributo ci aiuta a costruire un ecosistema digitale migliore, 
+                            Ogni contributo ci aiuta a costruire un ecosistema digitale migliore,
                             più inclusivo e sostenibile per tutti.
                         </p>
                     </div>
@@ -313,42 +316,42 @@
             </div>
 
             <!-- Roadmap Trasparenza -->
-            <div class="max-w-4xl mx-auto">
-                <div class="p-8 renaissance-card elegant-hover">
-                    <div class="flex items-center mb-6">
-                        <i class="mr-4 text-3xl fas fa-road text-viola-innovazione"></i>
-                        <h2 class="text-2xl font-bold text-blu-algoritmo renaissance-title sm:text-3xl">
+            <div class="mx-auto max-w-4xl">
+                <div class="renaissance-card elegant-hover p-8">
+                    <div class="mb-6 flex items-center">
+                        <i class="fas fa-road mr-4 text-3xl text-viola-innovazione"></i>
+                        <h2 class="renaissance-title text-2xl font-bold text-blu-algoritmo sm:text-3xl">
                             Trasparenza e Roadmap
                         </h2>
                     </div>
-                    
-                    <div class="space-y-6 text-lg leading-relaxed font-body">
+
+                    <div class="space-y-6 font-body text-lg leading-relaxed">
                         <p>
-                            FlorenceEGI è costruito secondo i principi di <strong>trasparenza totale</strong> 
-                            e <strong>innovazione responsabile</strong>. Il nostro approccio di sviluppo 
-                            prevede il rilascio graduale di funzionalità, permettendo alla community 
+                            FlorenceEGI è costruito secondo i principi di <strong>trasparenza totale</strong>
+                            e <strong>innovazione responsabile</strong>. Il nostro approccio di sviluppo
+                            prevede il rilascio graduale di funzionalità, permettendo alla community
                             di seguire e contribuire al progresso.
                         </p>
-                        
+
                         <div class="grid gap-6 md:grid-cols-2">
-                            <div class="p-4 border rounded-lg border-oro-fiorentino bg-orange-50">
+                            <div class="border-oro-fiorentino rounded-lg border bg-orange-50 p-4">
                                 <h3 class="mb-2 font-semibold text-blu-algoritmo">
-                                    <i class="mr-2 fas fa-clock text-oro-fiorentino"></i>
+                                    <i class="fas fa-clock text-oro-fiorentino mr-2"></i>
                                     Fase Attuale
                                 </h3>
                                 <p class="text-base">
-                                    Sviluppo architettura core, implementazione GDPR, 
+                                    Sviluppo architettura core, implementazione GDPR,
                                     testing interfacce utente e integrazione blockchain Algorand.
                                 </p>
                             </div>
-                            
-                            <div class="p-4 border rounded-lg border-verde-rinascita bg-green-50">
+
+                            <div class="rounded-lg border border-verde-rinascita bg-green-50 p-4">
                                 <h3 class="mb-2 font-semibold text-blu-algoritmo">
-                                    <i class="mr-2 fas fa-rocket text-verde-rinascita"></i>
+                                    <i class="fas fa-rocket mr-2 text-verde-rinascita"></i>
                                     Prossimi Rilasci
                                 </h3>
                                 <p class="text-base">
-                                    Marketplace operativo, sistema tokenomica EGI, 
+                                    Marketplace operativo, sistema tokenomica EGI,
                                     certificazione artisti e dashboard patron completa.
                                 </p>
                             </div>
