@@ -11,13 +11,11 @@ use Illuminate\Support\Facades\Schema;
  * @date 2024-01-07
  * @purpose Create separate sessions table for HTTPS to avoid HTTP/HTTPS session conflicts
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('sessions_https', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
@@ -31,8 +29,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('sessions_https');
     }
 };

@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * @Oracode Controller: Profile Image Management
@@ -20,12 +21,16 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @date 2025-01-07
  */
 class ProfileImageController extends \App\Http\Controllers\Controller {
+    
+    protected UltraLogManager $logger;
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct(UltraLogManager $logger) {
+        $this->logger = $logger;
         // Authorization handled by route middleware
     }
 
@@ -68,7 +73,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
 
             // Upload each image
             foreach ($files as $file) {
-                Log::info('Attempting addMedia', [
+                $this->logger->info('Profile image: Attempting addMedia', [
                     'user_id' => $user->id,
                     'file_name' => $file->getClientOriginalName(),
                     'file_size' => $file->getSize(),
@@ -79,7 +84,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     $media = $user->addMedia($file)
                         ->toMediaCollection('profile_images');
 
-                    Log::info('Media created successfully', [
+                    $this->logger->info('Profile image: Media created successfully', [
                         'media_id' => $media->id,
                         'media_file_name' => $media->file_name,
                         'media_collection' => $media->collection_name,
@@ -89,7 +94,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
 
                     $uploadedMedia[] = $media;
                 } catch (\Exception $e) {
-                    Log::error('addMedia failed', [
+                    $this->logger->error('Profile image: addMedia failed', [
                         'user_id' => $user->id,
                         'error' => $e->getMessage(),
                         'trace' => $e->getTraceAsString(),
@@ -104,7 +109,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 $user->setCurrentProfileImage($uploadedMedia[0]);
             }
 
-            Log::info('Profile images uploaded', [
+            $this->logger->info('Profile images: Upload completed', [
                 'user_id' => $user->id,
                 'media_count' => count($uploadedMedia),
                 'media_ids' => collect($uploadedMedia)->pluck('id')->toArray(),
@@ -142,10 +147,11 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 ->withErrors($e->errors())
                 ->with('error', __('profile.validation_failed'));
         } catch (\Exception $e) {
-            Log::error('Profile image upload failed', [
+            $this->logger->error('Profile image: Upload failed', [
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'protocol' => request()->secure() ? 'HTTPS' : 'HTTP'
             ]);
 
             // Return JSON response for AJAX requests
