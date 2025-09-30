@@ -538,7 +538,7 @@ class RegisteredUserController extends Controller {
 
             // 🔧 FIX: Salva il consenso anche nella tabella user_consents per il ConsentService
             $defaultConsentVersionId = $this->getActiveConsentVersionId();
-            
+
             \App\Models\UserConsent::create([
                 'user_id' => $user->id,
                 'consent_version_id' => $defaultConsentVersionId,
@@ -753,7 +753,7 @@ class RegisteredUserController extends Controller {
             $activeVersion = \App\Models\ConsentVersion::where('is_active', true)
                 ->orderBy('effective_date', 'desc')
                 ->first();
-            
+
             if ($activeVersion) {
                 return $activeVersion->id;
             }
@@ -782,7 +782,7 @@ class RegisteredUserController extends Controller {
                 'error' => $e->getMessage(),
                 'fallback_attempted' => true
             ]);
-            
+
             throw new \Exception('Consent system not properly initialized - contact administrator');
         }
     }
