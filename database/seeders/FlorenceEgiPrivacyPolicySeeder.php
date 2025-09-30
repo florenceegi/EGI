@@ -167,7 +167,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
             'legal_review_status' => PrivacyPolicy::LEGAL_REVIEW_STATUS['APPROVED'],
             'legal_reviewer' => $legal?->id,
             'review_notes' => 'Policy specifica per tracciamento impatto ambientale',
-            'change_description' => 'Trasparenza EPP per €200M+ funding automatico',
+            'change_description' => 'Trasparenza EPP per funding automatico',
             'requires_consent' => false, // Public transparency data
         ];
     }
@@ -207,7 +207,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     {
         return [
             'version' => '1.0.0',
-            'title' => 'FlorenceEGI Creator Policy - 7 Archetipi del Miliardo',
+            'title' => 'FlorenceEGI Creator Policy - 7 Archetipi Utente',
             'content' => $this->getCreatorPolicyContent(),
             'summary' => json_encode([
                 'it' => 'Policy specifica per Creator, Trader Pro, VIP, Mecenati e altri archetipi',
@@ -222,8 +222,8 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
             'approval_date' => $legal ? now() : null,
             'legal_review_status' => PrivacyPolicy::LEGAL_REVIEW_STATUS['APPROVED'],
             'legal_reviewer' => $legal?->id,
-            'review_notes' => 'Pathway specifici per €400M Creator target',
-            'change_description' => 'Diritti e doveri per i 7 archetipi del ecosystem €1B',
+            'review_notes' => 'Pathway specifici per Creator del marketplace',
+            'change_description' => 'Diritti e doveri per i 7 archetipi del ecosystem',
             'requires_consent' => true,
         ];
     }
@@ -235,7 +235,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     {
         return [
             'version' => '1.0.0',
-            'title' => 'Business Granulare Policy - €100M Corporate Revolution',
+            'title' => 'Business Granulare Policy - Corporate Integration',
             'content' => $this->getBusinessGranularPolicyContent(),
             'summary' => json_encode([
                 'it' => 'Tokenizzazione linee prodotto e EGI Asset per aziende',
@@ -519,7 +519,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
 
 ## 1. Introduzione e Principi OS2
 
-Benvenuto nel **Rinascimento Digitale** di FlorenceEGI! Siamo un marketplace NFT rivoluzionario che unisce arte, tecnologia e rigenerazione planetaria. Questa policy descrive come trattiamo i tuoi dati nel nostro journey verso **€1 miliardo di volume sostenibile**.
+Benvenuto nel **Rinascimento Digitale** di FlorenceEGI! Siamo un marketplace NFT rivoluzionario che unisce arte, tecnologia e rigenerazione planetaria. Questa policy descrive come trattiamo i tuoi dati nella nostra piattaforma sostenibile.
 
 ### I Nostri Principi Fondamentali (OS2):
 - **🎯 Esplicitamente Intenzionale**: Ogni trattamento ha scopo dichiarato
@@ -535,29 +535,29 @@ Benvenuto nel **Rinascimento Digitale** di FlorenceEGI! Siamo un marketplace NFT
 - DPO: dpo@florenceegi.com
 - Partnership: Algorand Foundation (blockchain carbon-negative)
 
-## 3. Dati che Trattiamo per i 7 Archetipi
+## 3. Dati che Trattiamo per le Diverse Tipologie di Utenti
 
-### 🎨 CREATOR (€400M pathway):
+### 🎨 CREATOR:
 - Dati identità artista e portfolio
 - Metadati opere EGI e royalty settings
 - Performance metrics e engagement
 - Connessione EPP prescelti
 
-### 💎 ACQUIRENTI & COLLECTOR (€300M pathway):
+### 💎 ACQUIRENTI & COLLECTOR:
 - Wallet address e transaction history
 - Preferenze collecting e investment profile
 - Impact tracking acquisti EPP
 
-### ⚡ TRADER PRO (€500M pathway):
+### ⚡ TRADER PRO:
 - Trading patterns e performance metrics
 - API usage e bot configurations
 - Liquidità contributions
 
-### 🏛️ MECENATI & VIP (€50M pathway):
+### 🏛️ MECENATI & VIP:
 - Investment profile e partnership data
 - Exclusive access e custom collections
 
-### 🏢 AZIENDE (€100M Business Granulare):
+### 🏢 AZIENDE:
 - Corporate data per tokenizzazione prodotti
 - ESG compliance metrics
 - B2B partnership agreements
@@ -570,7 +570,7 @@ Benvenuto nel **Rinascimento Digitale** di FlorenceEGI! Siamo un marketplace NFT
 - Distribuzione automatica royalty e EPP (20%)
 - Smart contract execution su Algorand
 
-### Impatto Ambientale (€200M+ automatico):
+### Impatto Ambientale:
 - Tracking contributi EPP real-time
 - Dashboard trasparenza impact pubblico
 - Certificazione progetti ambientali
@@ -715,7 +715,7 @@ Gestione granulare via Cookie Banner OS2-compliant.
 
 ## 1. Introduzione Cookie Policy OS2
 
-FlorenceEGI utilizza cookie e tecnologie simili per offrire un'esperienza marketplace ottimale, tracciare l'impatto EPP e personalizzare il journey nel nostro ecosystem €1B.
+FlorenceEGI utilizza cookie e tecnologie simili per offrire un'esperienza marketplace ottimale, tracciare l'impatto EPP e personalizzare l'esperienza utente nel nostro ecosystem.
 
 ## 2. Tipologie Cookie Utilizzate
 
@@ -960,7 +960,7 @@ FlorenceEGI tratta dati personali per operare il primo marketplace NFT che risol
 
 ### 🔄 SECONDARY MARKET
 **Royalty distribution**:
-- Automatic Creator royalty (fee crescenti verso €1B)
+- Automatic Creator royalty (percentuale configurabile)
 - Collection Owner percentage
 - EPP donation automated
 - Performance tracking long-term
@@ -997,9 +997,8 @@ FlorenceEGI tratta dati personali per operare il primo marketplace NFT che risol
 - Unauthorized reproduction prohibited
 - DMCA compliance procedure
 
-### Royalty Evolution €1B:
-- **Start**: 4.5% royalty base
-- **Growth**: Scaling fino 5.2% al target €1B
+### Royalty Management:
+- **Base**: Percentuale royalty configurabile
 - **Distribution**: Smart contract automated
 - **Transparency**: Real-time dashboard tracking
 
@@ -1151,11 +1150,11 @@ FlorenceEGI tratta dati personali per operare il primo marketplace NFT che risol
 
 ## 1. Introduzione EPP Data Transparency
 
-FlorenceEGI destina automaticamente **20% di ogni transazione** verso EPP (Environment Protection Programs), generando **€200M+ di impatto ambientale** nel journey €1B. Questa policy governa il trattamento dati per **massima trasparenza pubblica**.
+FlorenceEGI destina automaticamente **20% di ogni transazione** verso EPP (Environment Protection Programs), generando un significativo impatto ambientale. Questa policy governa il trattamento dati per **massima trasparenza pubblica**.
 
 ## 2. I Tre Pilastri EPP
 
-### 🌳 ARF - Appropriate Restoration Forestry (€80M allocation)
+### 🌳 ARF - Appropriate Restoration Forestry
 **Obiettivi misurabili**:
 - 500K+ ettari riforestazione globale
 - 10M+ alberi piantati e monitorati
@@ -1170,7 +1169,7 @@ FlorenceEGI destina automaticamente **20% di ogni transazione** verso EPP (Envir
 - Local community impact data
 - Carbon offset calculations certified
 
-### 🌊 APR - Aquatic Plastic Removal (€80M allocation)
+### 🌊 APR - Aquatic Plastic Removal
 **Obiettivi misurabili**:
 - 100K+ tonnellate plastica rimossa da oceani
 - 50+ marine habitats restored
@@ -1185,7 +1184,7 @@ FlorenceEGI destina automaticamente **20% di ogni transazione** verso EPP (Envir
 - Recycling process documentation
 - Impact on marine wildlife
 
-### 🐝 BPE - Bee Population Enhancement (€40M allocation)
+### 🐝 BPE - Bee Population Enhancement
 **Obiettivi misurabili**:
 - 1M+ arnie protette e monitorate
 - 100K+ hectares habitat pollinator restored
@@ -1200,7 +1199,7 @@ FlorenceEGI destina automaticamente **20% di ogni transazione** verso EPP (Envir
 - Pesticide impact studies
 - Biodiversity enhancement measurements
 
-## 3. Funding Transparency €200M+
+## 3. Funding Transparency
 
 ### Automatic Allocation System:
 **Smart contract automation**:
@@ -1211,9 +1210,9 @@ FlorenceEGI destina automaticamente **20% di ogni transazione** verso EPP (Envir
 - Quarterly allocation reports
 
 ### Fund Distribution:
-- **ARF**: 40% total funding (€80M target)
-- **APR**: 40% total funding (€80M target)
-- **BPE**: 20% total funding (€40M target)
+- **ARF**: 40% total funding (riforestazione)
+- **APR**: 40% total funding (pulizia oceani)
+- **BPE**: 20% total funding (protezione api)
 - **Administrative**: 0% (zero overhead commitment)
 
 ### Public Accountability:
@@ -1413,7 +1412,7 @@ FlorenceEGI destina automaticamente **20% di ogni transazione** verso EPP (Envir
 
 **Ultima revisione**: " . now()->format('d/m/Y') . "
 **Versione**: 1.0.0
-**Impact target**: €200M+ in 36 mesi
+**Impact target**: Massimizzazione impatto ambientale
 
 *Trasparenza totale per rigenerazione planetaria! 🌍📊*
         ";
@@ -1441,7 +1440,7 @@ FlorenceEGI opera su **Algorand blockchain**, la rete **carbon-negative** che re
 
 ### Technical Specifications:
 - **Performance**: 6000 TPS, finality 2.5 secondi
-- **Cost**: €0.0001 per transaction (vs €300+ Ethereum)
+- **Cost**: Costi ridottissimi per transaction (vs Ethereum)
 - **Environmental**: Carbon negative blockchain
 - **Security**: Pure Proof-of-Stake consensus
 - **Smart contracts**: AVM (Algorand Virtual Machine)
@@ -1693,15 +1692,15 @@ FlorenceEGI opera su **Algorand blockchain**, la rete **carbon-negative** che re
     private function getCreatorPolicyContent(): string
     {
         return "
-# FlorenceEGI Creator Policy - 7 Archetipi del Miliardo
+# FlorenceEGI Creator Policy - 7 Archetipi Utente
 
 ## 1. Introduzione Creator Ecosystem
 
-FlorenceEGI riconosce **7 archetipi strategici** nel journey verso **€1 miliardo di volume**. Ogni archetipo ha diritti specifici, pathway di crescita e trattamento dati personalizzato per massimizzare il successo collettivo.
+FlorenceEGI riconosce **7 archetipi strategici** di utenti. Ogni archetipo ha diritti specifici, pathway di crescita e trattamento dati personalizzato per massimizzare il successo collettivo.
 
 ## 2. I 7 Archetipi e Data Processing
 
-### 🎨 CREATOR (€400M target pathway)
+### 🎨 CREATOR
 **Da Michelangelo digitale al creator community**
 
 **Dati personali trattati**:
@@ -1714,7 +1713,7 @@ FlorenceEGI riconosce **7 archetipi strategici** nel journey verso **€1 miliar
 - Collaboration history con altri creator
 
 **Diritti specifici Creator**:
-- **Royalty evolutive**: 4.5% → 5.2% scaling verso €1B
+- **Royalty evolutive**: Percentuali royalty configurabili
 - **EPP selection**: Scelta progetto ambientale per donation
 - **Collection ownership**: Mantenimento controllo IP
 - **Revenue sharing**: Transparenza complete earnings
@@ -1722,13 +1721,13 @@ FlorenceEGI riconosce **7 archetipi strategici** nel journey verso **€1 miliar
 - **Global promotion**: Marketing support incluso
 - **Community building**: Tools engagement audience
 
-**Pathway quantificato**:
-- **Tier 1 - Mega Creator** (10 artisti): €5M ciascuno
-- **Tier 2 - Professional Creator** (100 artisti): €500K ciascuno
-- **Tier 3 - Rising Creator** (1K artisti): €100K ciascuno
-- **Tier 4 - Community Creator** (10K artisti): €20K ciascuno
+**Struttura Creator**:
+- **Tier 1 - Mega Creator**: Artisti di alta visibilità
+- **Tier 2 - Professional Creator**: Artisti professionisti  
+- **Tier 3 - Rising Creator**: Artisti emergenti
+- **Tier 4 - Community Creator**: Artisti della community
 
-### 💎 ACQUIRENTI & COLLECTOR (€300M target)
+### 💎 ACQUIRENTI & COLLECTOR
 **Custodi della bellezza rigenerativa**
 
 **Dati processing**:
@@ -1741,9 +1740,9 @@ FlorenceEGI riconosce **7 archetipi strategici** nel journey verso **€1 miliar
 - Preference learning algorithmic
 
 **Segmentazione Acquirenti**:
-- **Premium Art Collectors**: €150M (high-value, low-frequency)
-- **Corporate ESG Buyers**: €100M (compliance-driven)
-- **Retail Impact Investors**: €50M (accessible entry points)
+- **Premium Art Collectors**: High-value, low-frequency transactions
+- **Corporate ESG Buyers**: Compliance-driven purchases
+- **Retail Impact Investors**: Accessible entry points
 
 **Diritti Collector**:
 - **Triple value unlock**: Estetico + utilitario + impatto EPP
@@ -1753,7 +1752,7 @@ FlorenceEGI riconosce **7 archetipi strategici** nel journey verso **€1 miliar
 - **EPP certificates**: Impact ownership documentation
 - **Community status**: Collector badges e recognition
 
-### ⚡ TRADER PRO (€500M velocity target)
+### ⚡ TRADER PRO
 **Gladiatori della liquidità virtuosa**
 
 **High-frequency data**:
@@ -1801,7 +1800,7 @@ FlorenceEGI riconosce **7 archetipi strategici** nel journey verso **€1 miliar
 - **Network amplification**: Collaboration other Mecenati
 - **Impact scaling**: Proportional leverage investments
 
-### 🌿 EPP (€200M+ recipients)
+### 🌿 EPP (Environment Protection Programs)
 **Guardiani che ricevono funding automatico**
 
 **Environmental data**:
@@ -1814,9 +1813,9 @@ FlorenceEGI riconosce **7 archetipi strategici** nel journey verso **€1 miliar
 - Media documentation progress
 
 **EPP portfolio allocation**:
-- **ARF (Forestry)**: €80M - 500K+ ettari, 10M+ alberi
-- **APR (Ocean cleanup)**: €80M - 100K+ tons plastic
-- **BPE (Bee protection)**: €40M - 1M+ arnie, 100K+ hectares
+- **ARF (Forestry)**: Riforestazione - 500K+ ettari, 10M+ alberi
+- **APR (Ocean cleanup)**: Pulizia oceani - 100K+ tons plastic
+- **BPE (Bee protection)**: Protezione api - 1M+ arnie, 100K+ hectares
 
 **Benefits EPP**:
 - **Funding prevedibile**: 20% automatic ogni transaction
@@ -1838,8 +1837,8 @@ FlorenceEGI riconosce **7 archetipi strategici** nel journey verso **€1 miliar
 - Partnership contract management
 
 **Business granulare pathway**:
-- **Fortune 500** (10 companies): €5M ciascuno corporate collections
-- **Scale-up Companies** (50 companies): €500K product tokenization
+- **Fortune 500**: Corporate collections premium
+- **Scale-up Companies**: Product tokenization services
 - **SME & Local Business** (500 companies): €50K community engagement
 
 **Corporate benefits**:
@@ -1862,7 +1861,7 @@ FlorenceEGI riconosce **7 archetipi strategici** nel journey verso **€1 miliar
 - Cultural influence measurement
 
 **VIP ecosystem benefits**:
-- **Creator VIP** (50 artists): €500K average per artist
+- **Creator VIP**: Artisti premium della piattaforma
 - **Collector VIP** (200 collectors): €125K average investment
 - **Premium experience**: 85% revenue share vs 70% standard
 - **Personal curation**: Dedicated advisory services
@@ -1951,7 +1950,7 @@ Ogni archetipo ha **consent preferences specifiche**:
 
 **Ultima revisione**: " . now()->format('d/m/Y') . "
 **Versione**: 1.0.0
-**Target collettivo**: €1 miliardo in 36 mesi
+**Target collettivo**: Massimizzazione impatto collettivo
 
 *Insieme verso il Rinascimento Digitale! 🎨💎⚡🏛️🌿🏢💎*
         ";
@@ -1960,7 +1959,7 @@ Ogni archetipo ha **consent preferences specifiche**:
     private function getBusinessGranularPolicyContent(): string
     {
         return "
-# Business Granulare Policy - €100M Corporate Revolution
+# Business Granulare Policy - Corporate Integration
 
 ## 1. Introduzione Business Granulare
 
@@ -2245,7 +2244,7 @@ FlorenceEGI rivoluziona il **business granulare** permettendo alle aziende di to
 
 **Ultima revisione**: " . now()->format('d/m/Y') . "
 **Versione**: 1.0.0
-**Target corporate**: €100M in 36 mesi
+**Target corporate**: Integrazione completa business
 
 *Tokenizzazione granulare per il business del futuro! 🏢⚡*
         ";
