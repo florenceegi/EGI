@@ -537,9 +537,11 @@ class RegisteredUserController extends Controller {
             ]);
 
             // 🔧 FIX: Salva il consenso anche nella tabella user_consents per il ConsentService
+            $defaultConsentVersionId = $this->getActiveConsentVersionId();
+            
             \App\Models\UserConsent::create([
                 'user_id' => $user->id,
-                'consent_version_id' => 1, // Versione di consenso attiva
+                'consent_version_id' => $defaultConsentVersionId,
                 'consent_type' => 'allow-personal-data-processing',
                 'granted' => true,
                 'legal_basis' => 'consent', // ✅ CORRETTO: consent per dati personali
@@ -738,5 +740,50 @@ class RegisteredUserController extends Controller {
 
         // Default fallback
         return 'PERMISSION_BASED_REGISTRATION_FAILED';
+    }
+
+    /**
+     * Get active consent version ID (NON-HARDCODED!)
+     * Fallback chain: DB lookup -> config -> exception
+     */
+    private function getActiveConsentVersionId(): int
+    {
+        try {
+            // Primary: Get from database (active version)
+            $activeVersion = \App\Models\ConsentVersion::where('is_active', true)
+                ->orderBy('effective_date', 'desc')
+                ->first();
+            
+            if ($activeVersion) {
+                return $activeVersion->id;
+            }
+
+            // Fallback: Config value
+            $configVersionId = config('gdpr.default_consent_version_id');
+            if ($configVersionId) {
+                return $configVersionId;
+            }
+
+            // Last resort: Try to find any consent version
+            $anyVersion = \App\Models\ConsentVersion::orderBy('id', 'asc')->first();
+            if ($anyVersion) {
+                \Illuminate\Support\Facades\Log::warning('[RegisteredUserController] Using fallback consent version', [
+                    'fallback_version_id' => $anyVersion->id,
+                    'reason' => 'No active consent version found'
+                ]);
+                return $anyVersion->id;
+            }
+
+            // Complete failure - this should never happen with proper seeding
+            throw new \Exception('No consent versions found in database - seeding incomplete');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('[RegisteredUserController] Failed to get consent version ID', [
+                'error' => $e->getMessage(),
+                'fallback_attempted' => true
+            ]);
+            
+            throw new \Exception('Consent system not properly initialized - contact administrator');
+        }
     }
 }

@@ -102,7 +102,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
         return [
             'title' => $titles[$language],
             'document_type' => 'privacy_policy',
-            'version' => '1.0',
+            'version' => '1.0.0',
             'content' => $this->getMainPrivacyContent($language),
             'summary' => json_encode([$language => $summaries[$language]]),
             'language' => $language,

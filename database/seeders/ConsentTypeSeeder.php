@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\ConsentType;
+use App\Models\ConsentVersion;
 use Illuminate\Support\Facades\DB;
 
 class ConsentTypeSeeder extends Seeder {
@@ -226,6 +227,33 @@ class ConsentTypeSeeder extends Seeder {
                     ['slug' => $item['slug']], // Cerca per slug
                     $item  // E crea/aggiorna con gli altri dati
                 );
+            }
+
+            // Create initial consent version (FIX for consent_version_id FK)
+            $consentVersion = \App\Models\ConsentVersion::updateOrCreate(
+                ['version' => '1.0'],
+                [
+                    'version' => '1.0',
+                    'consent_types' => json_encode([
+                        'allow-personal-data-processing',
+                        'allow-marketing-communications',
+                        'allow-analytics-cookies',
+                        'allow-personalization',
+                        'allow-newsletter'
+                    ]),
+                    'changes' => json_encode(['initial_version' => 'Initial consent framework setup']),
+                    'configuration' => json_encode(['default_version' => true]),
+                    'effective_date' => now(),
+                    'is_active' => true,
+                    'created_by' => null, // System created
+                    'notes' => 'Initial consent version created by seeder for FK compatibility'
+                ]
+            );
+
+            // Update config cache with actual consent_version_id
+            if ($consentVersion) {
+                \Illuminate\Support\Facades\Config::set('gdpr.default_consent_version_id', $consentVersion->id);
+                // Note: In production, this should trigger config:cache refresh
             }
         });
     }

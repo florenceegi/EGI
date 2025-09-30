@@ -14,6 +14,19 @@ return [
     'current_policy_version' => '1.0.0',
     'policy_update_url' => '/gdpr/policy-update',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Consent Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for default consent values used during user registration
+    | and consent management. These should NEVER be hardcoded in controllers!
+    |
+    */
+    'default_consent_version' => '1.0',
+    'default_consent_version_id' => 1, // Updated dynamically by seeder
+    'fallback_consent_version_id' => null, // Used if default fails
+
     'activity_categories' => [
         'authentication' => [
             'name' => 'Authentication',
