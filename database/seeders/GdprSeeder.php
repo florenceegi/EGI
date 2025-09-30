@@ -34,6 +34,16 @@ class GdprSeeder extends Seeder {
 
         // 1. Create Privacy Policy
         $this->command->info('Creating privacy policy...');
+        
+        // Get legal user ID or default to first user
+        $legalUser = User::where('email', config('app.legal_default_user_email', 'legal@example.com'))->first()
+                    ?? User::first();
+        
+        if (!$legalUser) {
+            $this->command->error('No users found in database. Privacy policy creation skipped.');
+            return;
+        }
+        
         $privacyPolicy = PrivacyPolicy::create([
             'version' => '1.0',
             'content' => json_encode([
@@ -65,7 +75,7 @@ class GdprSeeder extends Seeder {
             ]),
             'effective_date' => now()->subMonths(6),
             'change_summary' => 'Initial privacy policy version',
-            'created_by' => 'legal@florenceegi.com',
+            'created_by' => $legalUser->id,
         ]);
 
         // 3. Create Data Retention Policies
