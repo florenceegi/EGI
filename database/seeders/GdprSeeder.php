@@ -21,12 +21,19 @@ use App\Enums\DataExportStatus;
 use App\Enums\Gdpr\ConsentStatus;
 use App\Models\UserActivity;
 use Carbon\Carbon;
+use Faker\Factory as Faker;
 
 class GdprSeeder extends Seeder {
+    /**
+     * Faker instance
+     */
+    protected $faker;
+
     /**
      * Run the database seeds.
      */
     public function run(): void {
+        $this->faker = Faker::create();
         $this->command->info('Starting GDPR data seeding...');
 
         // NOTE: ConsentType creation removed to avoid conflict with ConsentTypeSeeder
@@ -141,8 +148,8 @@ class GdprSeeder extends Seeder {
                         'consent_type' => $consentType->type ?? 'functional', // Campo string richiesto
                         'granted' => true, // Boolean invece di status
                         'legal_basis' => 'consent', // Campo obbligatorio
-                        'ip_address' => fake()->ipv4(),
-                        'user_agent' => fake()->userAgent(),
+                        'ip_address' => $this->faker->ipv4(),
+                        'user_agent' => $this->faker->userAgent(),
                     ]);
 
                     // Create consent history
@@ -182,8 +189,8 @@ class GdprSeeder extends Seeder {
                 PrivacyPolicyAcceptance::create([
                     'user_id' => $user->id,
                     'privacy_policy_id' => $privacyPolicy->id,
-                    'ip_address' => fake()->ipv4(),
-                    'user_agent' => fake()->userAgent(),
+                    'ip_address' => $this->faker->ipv4(),
+                    'user_agent' => $this->faker->userAgent(),
                 ]);
             }
 
