@@ -76,13 +76,22 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
 
             // If this is the first image(s), set the first one as current
             if ($user->getAllProfileImages()->count() === count($uploadedMedia)) {
-                $user->setCurrentProfileImage($uploadedMedia[0]);
+                // Usa DB::table per un update più robusto invece di model update
+                \DB::table('users')
+                    ->where('id', $user->id)
+                    ->update(['profile_photo_path' => $uploadedMedia[0]->file_name]);
+                
+                // Refresh user model per sincronizzare lo stato
+                $user->refresh();
             }
 
             Log::info('Profile images uploaded', [
                 'user_id' => $user->id,
                 'media_count' => count($uploadedMedia),
-                'media_ids' => collect($uploadedMedia)->pluck('id')->toArray()
+                'media_ids' => collect($uploadedMedia)->pluck('id')->toArray(),
+                'is_first_images' => $user->getAllProfileImages()->count() === count($uploadedMedia),
+                'current_profile_photo_path' => $user->fresh()->profile_photo_path,
+                'protocol' => request()->secure() ? 'HTTPS' : 'HTTP'
             ]);
 
             // Return JSON response for AJAX requests

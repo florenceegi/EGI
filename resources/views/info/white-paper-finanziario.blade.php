@@ -73,16 +73,16 @@
 <body class="antialiased">
     <div class="min-h-screen">
         <header class="bg-white shadow-sm">
-            <div class="px-4 py-6 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 py-6 text-center sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold text-emerald-800">White Paper Fiscale Interattivo</h1>
-                <p class="mt-2 text-gray-600 text-md">Esplora la gestione fiscale di FlorenceEGI in modo semplice e
+                <p class="text-md mt-2 text-gray-600">Esplora la gestione fiscale di FlorenceEGI in modo semplice e
                     intuitivo.</p>
             </div>
         </header>
 
-        <main class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="p-6 mb-8 bg-white shadow-lg rounded-2xl">
-                <h2 class="mb-4 text-xl font-bold text-center text-gray-800">Chi sei? Seleziona il tuo ruolo per
+        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <div class="mb-8 rounded-2xl bg-white p-6 shadow-lg">
+                <h2 class="mb-4 text-center text-xl font-bold text-gray-800">Chi sei? Seleziona il tuo ruolo per
                     visualizzare le tue responsabilità fiscali.</h2>
                 <nav id="role-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4">
                 </nav>
