@@ -436,6 +436,14 @@ class EGICommitStatsExporter:
                 # Calcola tempo produttivo totale
                 day['coding_minutes_est'] = day['commits'] * 22
                 day['total_productive_minutes'] = day['testing_minutes'] + day['coding_minutes_est']
+                
+                # Calcola Indice di Produttività giornaliero
+                day_productivity_index = self.calculate_productivity_index(
+                    commits=day['commits'],
+                    lines_added=day['lines_added'],
+                    total_productive_minutes=day['total_productive_minutes']
+                )
+                day['indice_produttivita'] = day_productivity_index
 
                 all_daily_data.append(day)
 
@@ -521,10 +529,17 @@ class EGICommitStatsExporter:
             # Formattazione
             self.format_excel_sheets(writer)
 
+        # Calcola l'indice di produttività medio per il display
+        if weekly_data:
+            avg_productivity_index = round(sum(week['Indice Produttività'] for week in weekly_data) / len(weekly_data), 1)
+        else:
+            avg_productivity_index = 0
+
         print(f"✅ File Excel creato: {self.output_file}")
         print(f"📁 Percorso completo: {self.output_file.absolute()}")
         print(f"📊 Testing time totale: {round(total_testing_minutes/60, 1)}h")
         print(f"💻 Coding time stimato: {round(total_coding_minutes/60, 1)}h")
+        print(f"⚡ Indice Produttività Medio: {avg_productivity_index}")
 
         return str(self.output_file.absolute())
 
