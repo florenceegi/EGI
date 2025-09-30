@@ -27,11 +27,11 @@ class DatabaseSeeder extends Seeder {
         RolesAndPermissionsSeeder::class,     // 1. ruoli e permessi
         SystemUsersSeeder::class,             // 2. utenti di sistema (usa ruoli)
         ConsentTypeSeeder::class,             // 3. tipi consenso GDPR (completi)
-        GdprSeeder::class,                    // 4. GDPR data policies + test data (no ConsentType conflicts)
-        IconSeeder::class,                    // 5. icone sistema
-        FlorenceEgiPrivacyPolicySeeder::class, // 6. privacy policy specifica EGI
-        VocabularyTermSeeder::class,          // 7. termini artistici (549 righe vocabolario)
-        TraitDefaultsSeeder::class,           // 8. categorie e tipi trait NFT (858 righe)
+        // GdprSeeder::class,                 // REMOVED - duplicato e inferiore al FlorenceEgiPrivacyPolicySeeder
+        IconSeeder::class,                    // 4. icone sistema
+        FlorenceEgiPrivacyPolicySeeder::class, // 5. privacy policy specifica EGI (COMPLETA)
+        VocabularyTermSeeder::class,          // 6. termini artistici (549 righe vocabolario)
+        TraitDefaultsSeeder::class,           // 7. categorie e tipi trait NFT (858 righe)
         // FakeUserSeeder::class,             // OPZIONALE - solo per development
     ];
 
