@@ -24,14 +24,14 @@ class DatabaseSeeder extends Seeder {
      * Seeder execution order (CRITICAL - rispettare ordine dipendenze)
      */
     private array $seederSequence = [
-        RolesAndPermissionsSeeder::class,     // 1. ruoli e permessi
-        SystemUsersSeeder::class,             // 2. utenti di sistema (usa ruoli)
-        ConsentTypeSeeder::class,             // 3. tipi consenso GDPR (completi)
-        // GdprSeeder::class,                 // REMOVED - duplicato e inferiore al FlorenceEgiPrivacyPolicySeeder
-        IconSeeder::class,                    // 4. icone sistema
-        FlorenceEgiPrivacyPolicySeeder::class, // 5. privacy policy specifica EGI (COMPLETA)
-        VocabularyTermSeeder::class,          // 6. termini artistici (549 righe vocabolario)
-        TraitDefaultsSeeder::class,           // 7. categorie e tipi trait NFT (858 righe)
+        RolesAndPermissionsSeeder::class,       // 1. ruoli e permessi
+        SystemUsersSeeder::class,               // 2. utenti di sistema (usa ruoli)
+        ConsentTypeSeeder::class,               // 3. tipi consenso GDPR (completi)
+        // GdprSeeder::class,                   // REMOVED - duplicato e inferiore al FlorenceEgiPrivacyPolicySeeder
+        IconSeeder::class,                      // 4. icone sistema
+        FlorenceEgiPrivacyPolicySeederV2::class, // 5. privacy policy V2 (GDPR-simplified 300 lines vs 2252)
+        VocabularyTermSeeder::class,            // 6. termini artistici (549 righe vocabolario)
+        TraitDefaultsSeeder::class,             // 7. categorie e tipi trait NFT (858 righe)
         // FakeUserSeeder::class,             // OPZIONALE - solo per development
     ];
 

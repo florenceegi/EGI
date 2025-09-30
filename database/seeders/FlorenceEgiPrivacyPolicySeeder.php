@@ -1723,7 +1723,7 @@ FlorenceEGI riconosce **7 archetipi strategici** di utenti. Ogni archetipo ha di
 
 **Struttura Creator**:
 - **Tier 1 - Mega Creator**: Artisti di alta visibilità
-- **Tier 2 - Professional Creator**: Artisti professionisti  
+- **Tier 2 - Professional Creator**: Artisti professionisti
 - **Tier 3 - Rising Creator**: Artisti emergenti
 - **Tier 4 - Community Creator**: Artisti della community
 
