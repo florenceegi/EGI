@@ -22,60 +22,17 @@ use App\Enums\Gdpr\ConsentStatus;
 use App\Models\UserActivity;
 use Carbon\Carbon;
 
-class GdprSeeder extends Seeder
-{
+class GdprSeeder extends Seeder {
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
+    public function run(): void {
         $this->command->info('Starting GDPR data seeding...');
 
-        // 1. Create Consent Types
-        $this->command->info('Creating consent types...');
-        $consentTypes = [
-            [
-                'slug' => 'essential_cookies',
-                'name' => 'Essential Cookies',
-                'description' => 'Required for the website to function properly',
-                'is_required' => true,
-                'category' => 'cookies',
-            ],
-            [
-                'slug' => 'analytics_cookies',
-                'name' => 'Analytics Cookies',
-                'description' => 'Help us understand how visitors interact with our website',
-                'is_required' => false,
-                'category' => 'cookies',
-            ],
-            [
-                'slug' => 'marketing_cookies',
-                'name' => 'Marketing Cookies',
-                'description' => 'Used to track visitors across websites for marketing',
-                'is_required' => false,
-                'category' => 'cookies',
-            ],
-            [
-                'slug' => 'email_marketing',
-                'name' => 'Email Marketing',
-                'description' => 'Receive promotional emails and newsletters',
-                'is_required' => false,
-                'category' => 'communication',
-            ],
-            [
-                'slug' => 'data_profiling',
-                'name' => 'Data Profiling',
-                'description' => 'Allow us to analyze your data for personalized services',
-                'is_required' => false,
-                'category' => 'processing',
-            ],
-        ];
+        // NOTE: ConsentType creation removed to avoid conflict with ConsentTypeSeeder
+        // ConsentTypeSeeder handles all consent type definitions with complete schema
 
-        foreach ($consentTypes as $type) {
-            ConsentType::create($type);
-        }
-
-        // 2. Create Privacy Policy
+        // 1. Create Privacy Policy
         $this->command->info('Creating privacy policy...');
         $privacyPolicy = PrivacyPolicy::create([
             'version' => '1.0',

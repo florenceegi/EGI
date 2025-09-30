@@ -19,18 +19,20 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class DatabaseSeeder extends Seeder
-{
+class DatabaseSeeder extends Seeder {
     /**
      * Seeder execution order (CRITICAL - rispettare ordine dipendenze)
      */
     private array $seederSequence = [
-        RolesAndPermissionsSeeder::class,    // PRIMO - crea ruoli e permessi
-        SystemUsersSeeder::class,            // SECONDO - crea utenti di sistema (usa ruoli)
-        ConsentTypeSeeder::class,            // TERZO - tipi consenso GDPR
-        IconSeeder::class,                   // QUARTO - icone sistema
-        FlorenceEgiPrivacyPolicySeeder::class, // QUINTO - privacy policy
-        // FakeUserSeeder::class,            // OPZIONALE - solo per development
+        RolesAndPermissionsSeeder::class,     // 1. ruoli e permessi
+        SystemUsersSeeder::class,             // 2. utenti di sistema (usa ruoli)
+        ConsentTypeSeeder::class,             // 3. tipi consenso GDPR (completi)
+        GdprSeeder::class,                    // 4. GDPR data policies + test data (no ConsentType conflicts)
+        IconSeeder::class,                    // 5. icone sistema
+        FlorenceEgiPrivacyPolicySeeder::class, // 6. privacy policy specifica EGI
+        VocabularyTermSeeder::class,          // 7. termini artistici (549 righe vocabolario)
+        TraitDefaultsSeeder::class,           // 8. categorie e tipi trait NFT (858 righe)
+        // FakeUserSeeder::class,             // OPZIONALE - solo per development
     ];
 
     /**
@@ -39,8 +41,7 @@ class DatabaseSeeder extends Seeder
      * @return void
      * @throws \Exception Se qualsiasi seeder fallisce
      */
-    public function run(): void
-    {
+    public function run(): void {
         $this->command->info('🔒 Starting ATOMIC seeding transaction...');
         $this->command->info('⚠️  If ANY seeder fails, ALL changes will be rolled back!');
 
@@ -62,7 +63,6 @@ class DatabaseSeeder extends Seeder
                         // Execute seeder inside transaction
                         $this->call($seederClass);
                         $this->command->info("✅ Step {$step}/{$total}: Completed successfully");
-
                     } catch (\Exception $e) {
                         $this->command->error("💥 Step {$step}/{$total}: FAILED - {$e->getMessage()}");
 
@@ -86,7 +86,6 @@ class DatabaseSeeder extends Seeder
                 }
 
                 $this->command->info('🎯 All seeders completed successfully within transaction');
-
             }, 3); // 3 retry attempts per transaction deadlocks
 
             // Calculate execution time
@@ -107,7 +106,6 @@ class DatabaseSeeder extends Seeder
                 'execution_time_seconds' => $executionTime,
                 'transaction_committed' => true,
             ]);
-
         } catch (\Exception $e) {
             // Calculate execution time anche per errori
             $endTime = microtime(true);
@@ -140,8 +138,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Display seeding summary info
      */
-    private function displaySeedingSummary(): void
-    {
+    private function displaySeedingSummary(): void {
         $this->command->info('');
         $this->command->info('📋 SEEDING SUMMARY:');
         $this->command->info('═══════════════════');
