@@ -1208,18 +1208,21 @@ class User extends Authenticatable implements HasMedia {
             ->width(200)
             ->height(200)
             ->sharpen(10)
-            ->optimize();
+            ->optimize()
+            ->nonQueued();
 
         $this->addMediaConversion('avatar')
             ->width(300)
             ->height(300)
             ->sharpen(10)
-            ->optimize();
+            ->optimize()
+            ->nonQueued();
 
         $this->addMediaConversion('web')
             ->width(800)
             ->height(600)
-            ->optimize();
+            ->optimize()
+            ->nonQueued();
 
         // Banner conversions for creator home background
         $this->addMediaConversion('banner')
