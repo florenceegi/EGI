@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder {
         ConsentTypeSeeder::class,               // 3. tipi consenso GDPR (completi)
         // GdprSeeder::class,                   // REMOVED - duplicato e inferiore al FlorenceEgiPrivacyPolicySeeder
         IconSeeder::class,                      // 4. icone sistema
-        FlorenceEgiPrivacyPolicySeederV2::class, // 5. privacy policy V2 (GDPR-simplified 300 lines vs 2252)
+        FlorenceEgiPrivacyPolicySeeder::class, // 5. privacy policy GDPR-compliant e localizzata (it/en)
         VocabularyTermSeeder::class,            // 6. termini artistici (549 righe vocabolario)
         TraitDefaultsSeeder::class,             // 7. categorie e tipi trait NFT (858 righe)
         // FakeUserSeeder::class,             // OPZIONALE - solo per development
