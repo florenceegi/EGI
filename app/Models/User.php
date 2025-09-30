@@ -1169,26 +1169,32 @@ class User extends Authenticatable implements HasMedia {
      * 🖼️ Collections: profile_images for multiple profile photos, current_profile for active one, banner_images for background
      */
     public function registerMediaCollections(): void {
+        // Get allowed image MIME types from config
+        $allAllowedTypes = config('AllowedFileType.collection.allowed_mime_types', []);
+        $allowedImageTypes = array_filter($allAllowedTypes, function($mimeType) {
+            return strpos($mimeType, 'image/') === 0;
+        });
+
         $userProfile = $this->addMediaCollection('profile_images')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+            ->acceptsMimeTypes($allowedImageTypes);
 
         $userProfile->singleFile = false;
         $userProfile->collectionSizeLimit = null;
 
         $this->addMediaCollection('current_profile')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->acceptsMimeTypes($allowedImageTypes)
             ->singleFile(true);
 
         // Banner images gallery for creator home page background
         $bannerProfile = $this->addMediaCollection('banner_images')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
+            ->acceptsMimeTypes($allowedImageTypes);
 
         $bannerProfile->singleFile = false;
         $bannerProfile->collectionSizeLimit = null;
 
         // Current active banner (single file)
         $this->addMediaCollection('current_banner')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif'])
+            ->acceptsMimeTypes($allowedImageTypes)
             ->singleFile(true);
     }
 

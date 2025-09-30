@@ -21,7 +21,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @date 2025-01-07
  */
 class ProfileImageController extends \App\Http\Controllers\Controller {
-    
+
     protected UltraLogManager $logger;
 
     /**
@@ -62,12 +62,26 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     throw new \Exception('Invalid file uploaded');
                 }
 
-                if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'])) {
-                    throw new \Exception('Invalid file type. Only JPG, PNG, WebP allowed.');
+                // Get allowed MIME types for images from config
+                $allAllowedTypes = config('AllowedFileType.collection.allowed_mime_types', []);
+                // Filter only image types for profile images
+                $allowedImageTypes = array_filter($allAllowedTypes, function ($mimeType) {
+                    return strpos($mimeType, 'image/') === 0;
+                });
+
+                // Get max file size from config
+                $maxFileSize = config(
+                    'AllowedFileType.collection.size_limits.image',
+                    config('AllowedFileType.collection.upload_max_filesize', 10 * 1024 * 1024)
+                );
+
+                if (!in_array($file->getMimeType(), $allowedImageTypes)) {
+                    throw new \Exception('Invalid file type. Only JPG, PNG, WebP allowed for profile images.');
                 }
 
-                if ($file->getSize() > 10 * 1024 * 1024) { // 10MB
-                    throw new \Exception('File too large. Maximum 10MB allowed.');
+                if ($file->getSize() > $maxFileSize) {
+                    $maxSizeMB = round($maxFileSize / (1024 * 1024), 1);
+                    throw new \Exception("File too large. Maximum {$maxSizeMB}MB allowed.");
                 }
             }
 
@@ -294,15 +308,25 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     throw new \Exception('Invalid file upload');
                 }
 
-                // Size validation (max 10MB)
-                if ($file->getSize() > 10 * 1024 * 1024) {
-                    throw new \Exception('File too large. Maximum size is 10MB.');
+                // Get max file size from config
+                $maxFileSize = config(
+                    'AllowedFileType.collection.size_limits.image',
+                    config('AllowedFileType.collection.upload_max_filesize', 10 * 1024 * 1024)
+                );
+
+                if ($file->getSize() > $maxFileSize) {
+                    $maxSizeMB = round($maxFileSize / (1024 * 1024), 1);
+                    throw new \Exception("File too large. Maximum {$maxSizeMB}MB allowed.");
                 }
 
-                // MIME type validation
-                $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
-                if (!in_array($file->getMimeType(), $allowedMimes)) {
-                    throw new \Exception('Invalid file type. Only JPEG, PNG, WebP, and AVIF are allowed.');
+                // MIME type validation from config
+                $allAllowedTypes = config('AllowedFileType.collection.allowed_mime_types', []);
+                $allowedImageTypes = array_filter($allAllowedTypes, function ($mimeType) {
+                    return strpos($mimeType, 'image/') === 0;
+                });
+
+                if (!in_array($file->getMimeType(), $allowedImageTypes)) {
+                    throw new \Exception('Invalid file type. Please check allowed image formats in configuration.');
                 }
 
                 // Add to banner_images collection (allows multiple)
