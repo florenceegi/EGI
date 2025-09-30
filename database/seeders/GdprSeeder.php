@@ -129,7 +129,7 @@ class GdprSeeder extends Seeder {
             // User Consents
             ConsentType::all()->each(function ($consentType) use ($user) {
                 // Skip if already exists
-                if ($user->consents()->where('consent_type_id', $consentType->id)->exists()) {
+                if ($user->consents()->where('consent_version_id', $consentType->id)->exists()) {
                     return;
                 }
 
@@ -137,11 +137,12 @@ class GdprSeeder extends Seeder {
                 if ($consentType->is_required || rand(1, 100) <= 80) {
                     $consent = UserConsent::create([
                         'user_id' => $user->id,
-                        'consent_type_id' => $consentType->id,
-                        'status' => ConsentStatus::ACTIVE->value,
+                        'consent_version_id' => $consentType->id, // Usa consent_version_id invece di consent_type_id
+                        'consent_type' => $consentType->type ?? 'functional', // Campo string richiesto
+                        'granted' => true, // Boolean invece di status
+                        'legal_basis' => 'consent', // Campo obbligatorio
                         'ip_address' => fake()->ipv4(),
                         'user_agent' => fake()->userAgent(),
-                        'granted_at' => now()->subDays(rand(30, 365)),
                     ]);
 
                     // Create consent history
