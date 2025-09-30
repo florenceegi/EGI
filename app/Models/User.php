@@ -1211,12 +1211,14 @@ class User extends Authenticatable implements HasMedia {
             ->optimize();
 
         $this->addMediaConversion('avatar')
-            ->fit(300, 300)
+            ->width(300)
+            ->height(300)
             ->sharpen(10)
             ->optimize();
 
         $this->addMediaConversion('web')
-            ->fit(800, 600)
+            ->width(800)
+            ->height(600)
             ->optimize();
 
         // Banner conversions for creator home background
@@ -1245,20 +1247,13 @@ class User extends Authenticatable implements HasMedia {
 
     /**
      * @Oracode Method: Get Current Profile Image
-     * 🎯 Purpose: Get the currently active profile image using profile_photo_path
+     * 🎯 Purpose: Get the currently active profile image using standard Spatie method
      * 📤 Returns: Media model or null
+     * 🔧 FIX: Usa metodo standard come Biography invece di query custom
      */
     public function getCurrentProfileImage(): ?Media {
-        if (!$this->profile_photo_path) {
-            return null;
-        }
-
-        // Find media by file_name (which is stored in profile_photo_path)
-        return Media::where('model_type', User::class)
-            ->where('model_id', $this->id)
-            ->where('collection_name', 'profile_images')
-            ->where('file_name', $this->profile_photo_path)
-            ->first();
+        // Usa il metodo standard di Spatie come le biografie che funzionano
+        return $this->getMedia('profile_images')->last();
     }
 
     /**
