@@ -177,10 +177,10 @@ run_migration_status() {
 }
 
 run_seeding() {
-    echo -e "\n${CYAN}🌱 RUNNING: db:seed (Forge)${NC}"
+    echo -e "\n${CYAN}🌱 RUNNING: db:seed (Forge-compatible)${NC}"
 
-    if php artisan db:seed --force; then
-        echo -e "${GREEN}✅ Seeding completed successfully${NC}"
+    if php artisan db:seed --class=DatabaseSeederForge --force; then
+        echo -e "${GREEN}✅ Seeding completed successfully (Forge mode)${NC}"
     else
         echo -e "${RED}❌ Seeding failed!${NC}" >&2
         exit 1
