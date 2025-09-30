@@ -1,0 +1,35 @@
+<?php
+
+return [
+    /*
+    |--------------------------------------------------------------------------
+    | Error Messages 2 - English
+    |--------------------------------------------------------------------------
+    | New error translations to avoid overly large files
+    */
+
+    'dev' => [
+        // ProfileImage Controller Errors
+        'profile_image_upload_validation_error' => 'Validation error during profile image upload for user :user_id.',
+        'profile_image_upload_error' => 'Error during profile image upload for user :user_id.',
+        'profile_set_current_image_error' => 'Error setting image as current for user :user_id.',
+        'profile_image_delete_error' => 'Error deleting profile image for user :user_id.',
+        'profile_banner_upload_error' => 'Error during banner upload for user :user_id.',
+        'profile_set_current_banner_error' => 'Error setting current banner for user :user_id.',
+        'profile_banner_delete_error' => 'Error deleting banner for user :user_id.',
+    ],
+
+    'user' => [
+        // ProfileImage Controller User Messages
+        'profile_image_upload_validation_error' => 'Image data is invalid. Please check format and dimensions.',
+        'profile_image_upload_error' => 'Unable to upload profile image. Please try again later.',
+        'profile_set_current_image_error' => 'Unable to set image as current. Please try again.',
+        'profile_image_delete_error' => 'Unable to delete profile image. Please try again later.',
+        'profile_banner_upload_error' => 'Unable to upload banner image. Please try again later.',
+        'profile_set_current_banner_error' => 'Unable to set current banner. Please try again.',
+        'profile_banner_delete_error' => 'Unable to delete banner. Please try again later.',
+    ],
+
+    // Generic message (used by UserInterfaceHandler if no specific message found)
+    'generic_error' => 'An error occurred. Please try again later or contact support.',
+];

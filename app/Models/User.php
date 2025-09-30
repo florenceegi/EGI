@@ -1171,7 +1171,7 @@ class User extends Authenticatable implements HasMedia {
     public function registerMediaCollections(): void {
         // Get allowed image MIME types from config
         $allAllowedTypes = config('AllowedFileType.collection.allowed_mime_types', []);
-        $allowedImageTypes = array_filter($allAllowedTypes, function($mimeType) {
+        $allowedImageTypes = array_filter($allAllowedTypes, function ($mimeType) {
             return strpos($mimeType, 'image/') === 0;
         });
 

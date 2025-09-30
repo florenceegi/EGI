@@ -110,6 +110,7 @@ return [
         'description' => 'Controlla come vengono utilizzati i tuoi dati all\'interno della nostra piattaforma. Puoi aggiornare le tue preferenze in qualsiasi momento.',
         'update_success' => 'Le tue preferenze di consenso sono state aggiornate.',
         'update_error' => 'Si è verificato un errore durante l\'aggiornamento delle tue preferenze di consenso. Riprova.',
+        'consent_required_profile_images' => 'È necessario il consenso per il trattamento dei dati personali per caricare immagini del profilo.',
         'save_all' => 'Salva Tutte le Preferenze',
         'last_updated' => 'Ultimo aggiornamento:',
         'never_updated' => 'Mai aggiornato',

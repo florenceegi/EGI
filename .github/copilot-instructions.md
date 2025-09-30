@@ -1,4 +1,39 @@
-# Copilot Instructions — FlorenceEGI (repo-wide)
+# Copilot Inst**Contrasta la natura predittiva LLM. Meglio fermarsi e chiedere che procedere con assunzioni sbagliate.**
+
+---
+
+# **🔒 PROTOCOLLO ANTI-INVENZIONE METODI - OBBLIGATORIO**
+
+## **PRIMA DI USARE QUALSIASI METODO DI UNA CLASSE:**
+
+### **STEP 1: VERIFICA OBBLIGATORIA**
+
+```bash
+semantic_search "NomeClasse methods"
+grep_search "methodName" -includePattern="NomeClasse.php"
+read_file path/to/NomeClasse.php
+```
+
+### **STEP 2: ESEMPI REALI VERIFICATI**
+
+-   **ConsentService:** `hasConsent(User $user, string $consentType): bool`
+-   **ErrorManager:** `handle('ERROR_CODE', $context_array, $exception)`
+-   **AuditService:** `logActivity($user, $category, $description, $data)`
+
+### **STEP 3: DIVIETI ASSOLUTI**
+
+-   ❌ **MAI inventare:** `hasConsentFor()`, `handleException()`, `logError()`
+-   ❌ **MAI assumere:** "probabilmente il metodo è..."
+-   ❌ **MAI dedurre:** "dovrebbe avere un metodo che..."
+
+### **STEP 4: SE NON TROVI IL METODO**
+
+```
+🛑 STOP - CHIEDI ALL'UTENTE:
+"Non trovo il metodo X nella classe Y. Quale metodo dovrei usare?"
+```
+
+---tions — FlorenceEGI (repo-wide)
 
 **ATTENZIONE**: Tutti i contenuti operativi sono consolidati in questo file per massima efficacia. I file modulari esistono per editing specifico, ma QUESTO file è la fonte operativa completa.
 
@@ -158,7 +193,7 @@ public function __construct(
 }
 ```
 
-## **Method Pattern per Modifica Dati Personali**
+## **Method Pattern REALE per Modifica Dati Personali (da GdprController)**
 
 ```php
 public function updatePersonalData(Request $request): RedirectResponse
@@ -176,7 +211,7 @@ public function updatePersonalData(Request $request): RedirectResponse
         ]);
 
         // 2. GDPR: Check consent for data processing
-        if (!$this->consentService->hasConsentFor($user, GdprActivityCategory::PROFILE_UPDATE)) {
+        if (!$this->consentService->hasConsent($user, 'allow-personal-data-processing')) {
             $this->logger->warning('Data update attempted without consent', [
                 'user_id' => $user->id
             ]);
@@ -206,17 +241,76 @@ public function updatePersonalData(Request $request): RedirectResponse
         return redirect()->back()->with('success', 'Profile updated successfully');
 
     } catch (\Exception $e) {
-        // 6. UEM: Error handling
-        $this->errorManager->handleException($e, [
-            'context' => 'personal_data_update',
+        // 6. UEM: Error handling (PATTERN REALE da GdprController)
+        $this->errorManager->handle('PERSONAL_DATA_UPDATE_ERROR', [
             'user_id' => Auth::id(),
+            'ip_address' => $request->ip(),
             'input_data' => $request->except(['password', 'password_confirmation'])
-        ]);
+        ], $e);
 
         return redirect()->back()->withErrors(['error' => 'Update failed. Please try again.']);
     }
 }
 ```
+
+## **🚨 REGOLE CRITICHE UEM (Ultra Error Manager)**
+
+### **PATTERN OBBLIGATORIO per Error Handling:**
+
+```php
+$this->errorManager->handle('ERROR_CODE', $context_array, $exception);
+```
+
+### **STRUTTURA CORRETTA config/error-manager.php:**
+
+```php
+'YOUR_ERROR_CODE' => [
+    'type' => 'error',           // warning|error|critical
+    'blocking' => 'not',         // not|semi-blocking|blocking
+    'dev_message_key' => 'error-manager::errors_2.dev.your_error_code',
+    'user_message_key' => 'error-manager::errors_2.user.your_error_code',
+    'http_status_code' => 500,
+    'devTeam_email_need' => false,
+    'notify_slack' => false,
+    'msg_to' => 'toast',         // toast|sweet-alert|div
+],
+```
+
+### **STRUTTURA CORRETTA Translation Files:**\
+
+```php
+// resources/lang/vendor/error-manager/it/errors_2.php
+'dev' => [
+    'your_error_code' => 'Messaggio tecnico per sviluppatori con :placeholder.',
+],
+'user' => [
+    'your_error_code' => 'Messaggio user-friendly per utenti.',
+],
+```
+
+### **🚨 METODI REALI VERIFICATI - USARE SOLO QUESTI:**
+
+#### **ConsentService (REALE):**
+
+```php
+$this->consentService->hasConsent(User $user, string $consentType): bool
+$this->consentService->getUserConsentStatus(User $user): array
+$this->consentService->updateUserConsents(User $user, array $consents): array
+```
+
+#### **AuditLogService (REALE):**
+
+```php
+$this->auditService->logActivity($user, $category, $description, $data)
+```
+
+#### **ErrorManager (REALE):**
+
+```php
+$this->errorManager->handle('ERROR_CODE', $context_array, $exception)
+```
+
+**NON INVENTARE MAI** metodi come `hasConsentFor()`, `handleException()`, `logError()` - USARE SOLO I METODI REALI SOPRA!
 
 ---
 
