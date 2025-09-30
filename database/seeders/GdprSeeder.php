@@ -129,7 +129,7 @@ class GdprSeeder extends Seeder {
             // User Consents
             ConsentType::all()->each(function ($consentType) use ($user) {
                 // Skip if already exists
-                if ($user->userConsents()->where('consent_type_id', $consentType->id)->exists()) {
+                if ($user->consents()->where('consent_type_id', $consentType->id)->exists()) {
                     return;
                 }
 
