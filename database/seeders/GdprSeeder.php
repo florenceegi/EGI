@@ -90,18 +90,28 @@ class GdprSeeder extends Seeder {
         // 3. Create Data Retention Policies
         $this->command->info('Creating data retention policies...');
         DataRetentionPolicy::create([
+            'name' => 'User Account Data Retention',
+            'slug' => 'user-account-retention',
             'data_category' => 'user_accounts',
-            'retention_period_days' => 2555, // 7 years
+            'retention_trigger' => 'inactivity_based',
+            'retention_days' => 2555, // 7 years
+            'retention_period' => '7 years after last activity',
             'description' => 'User account data retained for 7 years after last activity',
-            'legal_basis' => 'Legitimate interest and legal obligations',
+            'legal_basis' => 'legitimate_interest',
+            'legal_justification' => 'Legitimate interest and legal obligations for account security',
             'is_active' => true,
         ]);
 
         DataRetentionPolicy::create([
+            'name' => 'Financial Transaction Logs Retention',
+            'slug' => 'transaction-logs-retention',
             'data_category' => 'transaction_logs',
-            'retention_period_days' => 3650, // 10 years
+            'retention_trigger' => 'time_based',
+            'retention_days' => 3650, // 10 years
+            'retention_period' => '10 years from transaction date',
             'description' => 'Financial transaction logs for tax purposes',
-            'legal_basis' => 'Legal obligation - tax requirements',
+            'legal_basis' => 'legal_obligation',
+            'legal_justification' => 'Legal obligation - tax requirements',
             'is_active' => true,
         ]);
 
