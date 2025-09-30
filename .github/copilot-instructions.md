@@ -1,4 +1,18 @@
-# Copilot Inst**Contrasta la natura predittiva LLM. Meglio fermarsi e chiedere che procedere con assunzioni sbagliate.**
+# Copilot Instructions – FlorenceEGI (repo-wide)
+
+**ATTENZIONE**: Tutti i contenuti operativi sono consolidati in questo file per massima efficacia. I file modulari esistono per editing specifico, ma QUESTO file è la fonte operativa completa.
+
+---
+
+# **🚫 REGOLA ZERO - FONDAMENTALE**
+
+## **MAI FARE DEDUZIONI O ASSUNZIONI**
+
+## **SE NON SAI QUALCOSA, CERCA NEL REPO, CERCA NELL'APPLICAZIONE, CERCA SUL WEB, SE NON TROVI RISPOSTA CHIEDI**
+
+## **STOP IMMEDIATO SE MANCA UN DATO CRITICO**
+
+**Contrasta la natura predittiva LLM. Meglio fermarsi e chiedere che procedere con assunzioni sbagliate.**
 
 ---
 
@@ -33,21 +47,183 @@ read_file path/to/NomeClasse.php
 "Non trovo il metodo X nella classe Y. Quale metodo dovrei usare?"
 ```
 
----tions — FlorenceEGI (repo-wide)
+---
 
-**ATTENZIONE**: Tutti i contenuti operativi sono consolidati in questo file per massima efficacia. I file modulari esistono per editing specifico, ma QUESTO file è la fonte operativa completa.
+# **🚨 ENFORCEMENT PROTOCOL - CHECKPOINT OBBLIGATORI**
+
+## **PRIMA DI RISPONDERE A QUALSIASI RICHIESTA DI CODICE**
+
+### **CHECKPOINT 1: INFORMAZIONI COMPLETE?**
+```
+[ ] Ho TUTTE le informazioni necessarie?
+[ ] Se NO → STOP e chiedi PRIMA di procedere
+[ ] Se SÌ → Procedi a Checkpoint 2
+```
+
+### **CHECKPOINT 2: METODI/CLASSI DA USARE?**
+```
+[ ] Devo usare metodi di classi esistenti?
+    [ ] Se SÌ → Verifico con semantic_search/grep/read_file
+    [ ] Se NO → Procedi a Checkpoint 3
+[ ] Ho VERIFICATO che i metodi esistono?
+    [ ] Se NO → STOP e verifica
+    [ ] Se SÌ → Procedi a Checkpoint 3
+```
+
+### **CHECKPOINT 3: PATTERN ESISTENTI?**
+```
+[ ] C'è codice simile già funzionante nel repo?
+    [ ] Se SÌ → Cerco e replico pattern
+    [ ] Se NO → Procedi con pattern standard
+[ ] Ho trovato il pattern da seguire?
+    [ ] Se NO → Chiedo esempio all'utente
+    [ ] Se SÌ → Procedi all'implementazione
+```
+
+### **CHECKPOINT 4: RESPONSE FORMAT OBBLIGATORIO**
+
+Prima di mostrare codice, scrivi SEMPRE:
+
+```
+✅ CHECKPOINT COMPLETATI:
+- [ ] Informazioni complete: SÌ/NO
+- [ ] Metodi verificati: [lista metodi] o N/A
+- [ ] Pattern trovato: [file:linea] o N/A
+- [ ] Assunzioni fatte: NESSUNA o [lista con WARN]
+
+🚨 SE HAI FATTO ASSUNZIONI: Elencale PRIMA del codice con ⚠️
+```
+
+## **TEMPLATE RISPOSTA OBBLIGATORIO**
+
+**Per OGNI modifica di codice, usa QUESTO formato:**
+
+```markdown
+## 🔍 PRE-FLIGHT CHECK
+
+**Informazioni ricevute:**
+- Cosa modificare: [...]
+- Contesto fornito: [...]
+- Pattern da seguire: [file esistente o "non specificato"]
+
+**Verifiche effettuate:**
+- ✅ Metodi verificati: ConsentService::hasConsent() exists
+- ✅ Pattern trovato: app/Http/Controllers/GdprController.php:120
+- ⚠️ ASSUNZIONE: Campo X esiste nella tabella Y (DA VERIFICARE)
+
+**Se ho fatto assunzioni:**
+🛑 ATTENZIONE: Sto assumendo che [...]. Confermi?
 
 ---
 
-# **🚫 REGOLA ZERO - FONDAMENTALE**
+## 💻 CODICE
 
-## **MAI FARE DEDUZIONI O ASSUNZIONI**
+[codice qui]
 
-## **SE NON SAI QUALCOSA, CERCA NEL REPO, CERCA NELL'APPLICAZIONE, CERCA SUL WEB, SE NON TROVI RISPOSTA CHIEDI**
+---
 
-## **STOP IMMEDIATO SE MANCA UN DATO CRITICO**
+## 📋 POST-IMPLEMENTATION CHECK
 
-**Contrasta la natura predittiva LLM. Meglio fermarsi e chiedere che procedere con assunzioni sbagliate.**
+**Prima di usare questo codice:**
+- [ ] Verifica assunzioni marcate con ⚠️
+- [ ] Test su feature branch
+- [ ] Grep metodi usati: `grep -r "newMethod" app/`
+```
+
+## **ESEMPIO PRATICO DI RISPOSTA**
+
+### **Richiesta:** "Refactora ProfileImageController con GDPR"
+
+### **❌ RISPOSTA VECCHIA (da evitare):**
+```php
+// Copilot scrive direttamente codice
+$this->auditService->logActivity(...);
+```
+
+### **✅ RISPOSTA NUOVA (obbligatoria):**
+```markdown
+## 🔍 PRE-FLIGHT CHECK
+
+**Informazioni ricevute:**
+- Refactorare ProfileImageController
+- Aggiungere GDPR compliance
+
+**Verifiche effettuate:**
+- ⚠️ NON TROVO: Metodi di AuditLogService
+- ⚠️ NON TROVO: Pattern controller GDPR-compliant
+
+🛑 STOP: Prima di procedere, ho bisogno di:
+1. File AuditLogService.php per verificare metodi disponibili
+2. Un controller esistente con pattern GDPR da seguire (es. GdprController)
+
+Puoi fornirmeli?
+```
+
+---
+
+# **📚 ESEMPI DI WORKFLOW CORRETTO**
+
+## **ESEMPIO 1: Uso ConsentService**
+
+### **❌ SBAGLIATO:**
+```php
+if ($this->consentService->hasConsentFor('profile-update')) // INVENTATO!
+```
+
+### **✅ CORRETTO:**
+
+1. Verifica metodo: `semantic_search "ConsentService methods"`
+2. Trova: `hasConsent(User $user, string $consentType): bool`
+3. Usa: `if ($this->consentService->hasConsent($user, 'allow-personal-data-processing'))`
+
+## **ESEMPIO 2: Pattern Controller**
+
+### **❌ SBAGLIATO:**
+Scrivo controller da zero inventando pattern.
+
+### **✅ CORRETTO:**
+
+1. Chiedo: "Quale controller simile esiste già?"
+2. Ricevo: "GdprController.php ha pattern completo"
+3. Leggo: `read_file app/Http/Controllers/GdprController.php`
+4. Replico: Stessa struttura, stesso error handling, stessi metodi
+
+## **ESEMPIO 3: Database Schema**
+
+### **❌ SBAGLIATO:**
+```php
+'consent_version_id' => 1 // Assumo che esista!
+```
+
+### **✅ CORRETTO:**
+
+1. 🛑 STOP: Non so se ID 1 esiste
+2. Chiedo: "Quale consent_version_id devo usare?"
+3. Ricevo: "Usa config('gdpr.default_consent_version')"
+4. Implemento: Senza hardcode
+
+---
+
+# **⚠️ VIOLATION TRACKING**
+
+**Se violi REGOLA ZERO (inventi metodi/assunzioni):**
+
+### **PRIMA VIOLAZIONE:**
+```
+🚨 SELF-CHECK FALLITO
+Ho violato REGOLA ZERO inventando [metodo/assunzione].
+CORREZIONE: [cosa avrei dovuto fare invece]
+IMPARO: [pattern corretto da seguire]
+```
+
+### **DOPO 3 VIOLAZIONI:**
+```
+🛑 RESET NECESSARIO
+Ho violato REGOLA ZERO 3 volte. Rileggendo instructions complete.
+Chiedo all'utente conferma prima di procedere con qualsiasi codice.
+```
+
+Questo mi forza a **auto-correggermi** e **documentare errori**.
 
 ---
 
@@ -67,8 +243,8 @@ read_file path/to/NomeClasse.php
 2. **VERIFICA** di avere TUTTE le informazioni _(REGOLA ZERO)_
 3. **RICERCA** se non hai le risposte _(REGOLA ZERO)_
 4. **CHIEDI** se manca qualcosa critico _(REGOLA ZERO)_
-5. **NON ACCONDISCENDERE** se una richiesta, un'osservazione, una deduzione, un'idea, non fosse etica oppure fosse immorale oppure non fosse adeguate, oppure fosse scorrette, COMUNICALO!
-6. **CAPISCE** cosa serve (senza deduzioni)
+5. **NON ACCONDISCENDERE** se una richiesta, un'osservazione, una deduzione, un'idea, non fosse etica oppure fosse immorale oppure non fosse adeguata, oppure fosse scorretta, COMUNICALO!
+6. **CAPISCI** cosa serve (senza deduzioni)
 7. **PRODUCI** la soluzione completa (sempre con GDPR/ULM/UEM integration)
 8. **CONSEGNI** un file per volta
 
@@ -276,7 +452,7 @@ $this->errorManager->handle('ERROR_CODE', $context_array, $exception);
 ],
 ```
 
-### **STRUTTURA CORRETTA Translation Files:**\
+### **STRUTTURA CORRETTA Translation Files:**
 
 ```php
 // resources/lang/vendor/error-manager/it/errors_2.php
@@ -464,7 +640,7 @@ Prima di ogni azione:
 
 ```bash
 # Export completo per tracking storico
-./bash_files/commit-stats-to-excel.py
+python3 scripts/egi_productivity_v3.py
 ```
 
 ## **🎯 METRICHE DI ECCELLENZA**
@@ -497,8 +673,44 @@ Prima di ogni azione:
 **A fine giornata completa:**
 
 1. **Stats Range**: `./bash_files/commit-range-stats.sh`
-2. **Excel Export**: `./bash_files/commit-stats-to-excel.py`
+2. **Excel Export**: `python3 scripts/commit-stats-to-excel.py`
 3. **Backup Check**: Tutto sincronizzato su Git?
+
+---
+
+# **🎯 QUICK REFERENCE - DA CONSULTARE PRIMA DI OGNI RISPOSTA**
+
+## **DOMANDE OBBLIGATORIE PRIMA DI SCRIVERE CODICE:**
+
+1. ❓ **Ho tutte le info?** → NO = CHIEDI
+2. ❓ **Uso metodi esistenti?** → SÌ = VERIFICA PRIMA
+3. ❓ **Esiste pattern simile?** → CERCA E REPLICA
+4. ❓ **Sto facendo assunzioni?** → MARCA CON ⚠️ E CHIEDI CONFERMA
+5. ❓ **Ho usato template risposta?** → SÌ = PROCEDI
+
+## **SE LA RISPOSTA A UNA È "NO" → 🛑 STOP**
+
+## **VERIFICA VELOCE METODI:**
+
+```bash
+# In Copilot workspace
+@workspace /search hasConsent in:AuditLogService
+@workspace /explain metodo in ConsentService.php
+```
+
+## **FRASI MAGICHE DA USARE:**
+
+- "Non trovo il metodo X. Quale dovrei usare?"
+- "Esiste un controller simile da cui copiare il pattern?"
+- "Sto assumendo che [...]. Confermi prima che proceda?"
+- "Ho trovato 2 modi diversi. Quale seguo? [opzione A] o [opzione B]"
+
+## **FRASI DA NON USARE MAI:**
+
+- ❌ "Probabilmente il metodo è..."
+- ❌ "Dovrebbe avere un metodo che..."
+- ❌ "Suppongo che la tabella abbia..."
+- ❌ "Il pattern standard sarebbe..." (senza verificare repo)
 
 ---
 
