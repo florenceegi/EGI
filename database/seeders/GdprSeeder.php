@@ -46,6 +46,7 @@ class GdprSeeder extends Seeder {
         
         $privacyPolicy = PrivacyPolicy::create([
             'version' => '1.0',
+            'title' => 'FlorenceEGI Privacy Policy',
             'content' => json_encode([
                 'sections' => [
                     [
