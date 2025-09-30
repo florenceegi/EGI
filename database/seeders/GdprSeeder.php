@@ -34,19 +34,27 @@ class GdprSeeder extends Seeder {
 
         // 1. Create Privacy Policy
         $this->command->info('Creating privacy policy...');
-        
+
         // Get legal user ID or default to first user
         $legalUser = User::where('email', config('app.legal_default_user_email', 'legal@example.com'))->first()
-                    ?? User::first();
-        
+            ?? User::first();
+
         if (!$legalUser) {
             $this->command->error('No users found in database. Privacy policy creation skipped.');
             return;
         }
-        
+
         $privacyPolicy = PrivacyPolicy::create([
             'version' => '1.0',
             'title' => 'FlorenceEGI Privacy Policy',
+            'summary' => json_encode([
+                'key_points' => [
+                    'Data collection for FlorenceEGI NFT marketplace',
+                    'User rights under GDPR compliance',
+                    'Personal data protection and processing'
+                ],
+                'scope' => 'General privacy policy for FlorenceEGI platform'
+            ]),
             'content' => json_encode([
                 'sections' => [
                     [
