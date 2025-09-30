@@ -179,7 +179,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     'is_first_images' => $user->getAllProfileImages()->count() === count($uploadedMedia),
                     'current_profile_photo_path' => $user->fresh()->profile_photo_path
                 ],
-                GdprActivityCategory::PROFILE_UPDATE
+                GdprActivityCategory::PERSONAL_DATA_UPDATE
             );
 
             // 9. ULM: Log successful completion
@@ -381,7 +381,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     'previous_profile_photo_path' => $previousProfilePhotoPath,
                     'current_profile_photo_path' => $user->fresh()->profile_photo_path
                 ],
-                GdprActivityCategory::PROFILE_UPDATE
+                GdprActivityCategory::PERSONAL_DATA_UPDATE
             );
 
             // 8. ULM: Log success
@@ -577,7 +577,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                     'uploaded_count' => count($uploadedMedia),
                     'media_ids' => collect($uploadedMedia)->pluck('id')->toArray()
                 ],
-                GdprActivityCategory::PROFILE_UPDATE
+                GdprActivityCategory::PERSONAL_DATA_UPDATE
             );
 
             if ($request->expectsJson()) {
@@ -640,7 +640,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
                 $user,
                 'Current banner updated',
                 ['media_id' => $mediaId, 'file_name' => $banner->file_name],
-                GdprActivityCategory::PROFILE_UPDATE
+                GdprActivityCategory::PERSONAL_DATA_UPDATE
             );
 
             $this->logger->info('Current banner updated successfully', [

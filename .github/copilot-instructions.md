@@ -224,7 +224,7 @@ public function updatePersonalData(Request $request): RedirectResponse
         // 4. GDPR: Log audit trail
         $this->auditService->logActivity(
             $user,
-            GdprActivityCategory::PROFILE_UPDATE,
+            GdprActivityCategory::PERSONAL_DATA_UPDATE,
             'User profile data updated',
             [
                 'updated_fields' => array_keys($validated),
