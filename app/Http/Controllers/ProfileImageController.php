@@ -39,7 +39,7 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
         try {
             $user = Auth::user();
             $uploadedMedia = [];
-            
+
 
             // Simple validation - just check if files exist
             if (!$request->hasFile('profile_image')) {
@@ -68,21 +68,40 @@ class ProfileImageController extends \App\Http\Controllers\Controller {
 
             // Upload each image
             foreach ($files as $file) {
-                $media = $user->addMedia($file)
-                    ->toMediaCollection('profile_images');
+                Log::info('Attempting addMedia', [
+                    'user_id' => $user->id,
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_size' => $file->getSize(),
+                    'protocol' => request()->secure() ? 'HTTPS' : 'HTTP'
+                ]);
 
-                $uploadedMedia[] = $media;
+                try {
+                    $media = $user->addMedia($file)
+                        ->toMediaCollection('profile_images');
+
+                    Log::info('Media created successfully', [
+                        'media_id' => $media->id,
+                        'media_file_name' => $media->file_name,
+                        'media_collection' => $media->collection_name,
+                        'user_id' => $user->id,
+                        'protocol' => request()->secure() ? 'HTTPS' : 'HTTP'
+                    ]);
+
+                    $uploadedMedia[] = $media;
+                } catch (\Exception $e) {
+                    Log::error('addMedia failed', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'protocol' => request()->secure() ? 'HTTPS' : 'HTTP'
+                    ]);
+                    throw $e;
+                }
             }
 
             // If this is the first image(s), set the first one as current
             if ($user->getAllProfileImages()->count() === count($uploadedMedia)) {
-                // Usa DB::table per un update più robusto invece di model update
-                \DB::table('users')
-                    ->where('id', $user->id)
-                    ->update(['profile_photo_path' => $uploadedMedia[0]->file_name]);
-                
-                // Refresh user model per sincronizzare lo stato
-                $user->refresh();
+                $user->setCurrentProfileImage($uploadedMedia[0]);
             }
 
             Log::info('Profile images uploaded', [
