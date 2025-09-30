@@ -436,7 +436,7 @@ class EGICommitStatsExporter:
                 # Calcola tempo produttivo totale
                 day['coding_minutes_est'] = day['commits'] * 22
                 day['total_productive_minutes'] = day['testing_minutes'] + day['coding_minutes_est']
-                
+
                 # Calcola Indice di Produttività giornaliero
                 day_productivity_index = self.calculate_productivity_index(
                     commits=day['commits'],

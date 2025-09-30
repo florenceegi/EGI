@@ -11,15 +11,14 @@ use Illuminate\Support\Facades\Log;
  * @version 1.0.0 (Forge Compatible)
  * @date 2025-09-30
  * @purpose Non-atomic seeding for Laravel Forge environments
- * 
+ *
  * 🎯 DIFFERENZE vs DatabaseSeeder:
  * - NO transazioni atomiche (compatibile con script Forge)
  * - Ogni seeder eseguito indipendentemente
  * - Errori bloccano esecuzione ma non rollback
  * - Ottimizzato per ambienti di produzione Forge
  */
-class DatabaseSeederForge extends Seeder
-{
+class DatabaseSeederForge extends Seeder {
     /**
      * Seeder execution order (stesso ordine del DatabaseSeeder)
      */
@@ -39,8 +38,7 @@ class DatabaseSeederForge extends Seeder
      *
      * @return void
      */
-    public function run(): void
-    {
+    public function run(): void {
         $this->command->info('🔄 Starting NON-ATOMIC seeding for Forge...');
         $this->command->info('⚠️  Each seeder runs independently (no rollback on failure)');
 
@@ -62,7 +60,7 @@ class DatabaseSeederForge extends Seeder
                 $this->command->info("✅ Step {$step}/{$total}: Completed successfully");
             } catch (\Exception $e) {
                 $this->command->error("💥 Step {$step}/{$total}: FAILED - {$e->getMessage()}");
-                
+
                 // Log detailed error
                 Log::error('[DatabaseSeederForge] Seeder failed (no rollback)', [
                     'seeder_class' => $seederClass,
@@ -74,7 +72,7 @@ class DatabaseSeederForge extends Seeder
                 ]);
 
                 $failedSeeders[] = $seederClass;
-                
+
                 // STOP execution on first failure (Forge-friendly)
                 $this->command->error('🛑 Stopping execution due to seeder failure');
                 break;
