@@ -17,6 +17,9 @@ return [
         'profile_banner_upload_error' => 'Errore durante il caricamento del banner per utente :user_id.',
         'profile_set_current_banner_error' => 'Errore durante l\'impostazione del banner principale per utente :user_id.',
         'profile_banner_delete_error' => 'Errore durante l\'eliminazione del banner per utente :user_id.',
+        
+        // COA Signature Errors
+        'coa_author_sign_error' => 'Errore durante la firma dell\'autore per COA :coa_id. Database query fallita: :error',
     ],
 
     'user' => [
@@ -28,6 +31,9 @@ return [
         'profile_banner_upload_error' => 'Impossibile caricare l\'immagine banner. Riprova più tardi.',
         'profile_set_current_banner_error' => 'Impossibile impostare il banner principale. Riprova.',
         'profile_banner_delete_error' => 'Impossibile eliminare il banner. Riprova più tardi.',
+        
+        // COA Signature User Messages
+        'coa_author_sign_error' => 'Errore durante la firma del certificato. Riprova più tardi o contatta l\'assistenza.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

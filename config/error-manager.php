@@ -4026,6 +4026,17 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        'COA_AUTHOR_SIGN_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.coa_author_sign_error',
+            'user_message_key' => 'error-manager::errors_2.user.coa_author_sign_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
         // TraitsSnapshotService Errors
         'COA_TRAITS_VERSION_CREATE_ERROR' => [
             'type' => 'critical',
