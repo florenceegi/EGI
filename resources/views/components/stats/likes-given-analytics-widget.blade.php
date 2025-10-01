@@ -8,8 +8,8 @@
     $targetUserId = $userId ?? ($creatorId ?? auth()->id());
     $statisticsService = app(\App\Services\StatisticsService::class);
 
-    // Ottieni statistiche dei like ricevuti dall'utente con periodo temporale (formato widget)
-    $givenLikesStats = $statisticsService->getLikesReceivedStatsForWidget($targetUserId, $period);
+    // Ottieni statistiche dei like DATI dall'utente con periodo temporale
+    $givenLikesStats = $statisticsService->getLikesGivenByUserStatsByPeriod($targetUserId, $period);
 @endphp
 
 <div class="p-6 bg-white rounded-xl bg-opacity-10 backdrop-blur-md">
@@ -70,19 +70,19 @@
                             $percentage = $totalEgis > 0 ? (($totalEgis - $index) / $totalEgis) * 100 : 0;
 
                             // Switcher per la route corretta basata sul usertype del proprietario dell'EGI
-$ownerId = $egi['owner_id'];
-$ownerUser = \App\Models\User::find($ownerId);
-$ownerRoute = '#'; // Fallback
+                            $ownerId = $egi['owner_id'];
+                            $ownerUser = \App\Models\User::find($ownerId);
+                            $ownerRoute = '#'; // Fallback
 
-if ($ownerUser) {
-    $ownerRoute = match ($ownerUser->usertype ?? 'creator') {
-        'creator' => route('creator.home', $ownerId),
-        'collector' => route('collector.home', $ownerId),
-        'commissioner' => route(
-            'profile.show',
-        ), // Commissioner non ha pagina pubblica specifica
-        default => route('creator.home', $ownerId), // Fallback a creator
-                                };
+                            if ($ownerUser) {
+                                $ownerRoute = match ($ownerUser->usertype ?? 'creator') {
+                                    'creator' => route('creator.home', $ownerId),
+                                    'collector' => route('collector.home', $ownerId),
+                                    'commissioner' => route(
+                                        'profile.show',
+                                    ), // Commissioner non ha pagina pubblica specifica
+                                    default => route('creator.home', $ownerId), // Fallback a creator
+                                                            };
                             }
                         @endphp
                         <div class="p-2 transition-colors bg-black rounded-lg bg-opacity-20 hover:bg-opacity-30">
@@ -198,19 +198,19 @@ if ($ownerUserObject) {
                                 <div class="flex-shrink-0">
                                     @if ($owner['user']->profile_photo_url)
                                         <img src="{{ $owner['user']->profile_photo_url }}"
-                                            alt="{{ $owner['nick_name'] }}" class="object-cover w-8 h-8 rounded-full">
+                                            alt="{{ $owner['nickname'] }}" class="object-cover w-8 h-8 rounded-full">
                                     @else
                                         <div
                                             class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
                                             <span
-                                                class="text-xs font-bold text-white">{{ strtoupper(substr($owner['nick_name'], 0, 1)) }}</span>
+                                                class="text-xs font-bold text-white">{{ strtoupper(substr($owner['nickname'], 0, 1)) }}</span>
                                         </div>
                                     @endif
                                 </div>
 
                                 {{-- Owner Name --}}
                                 <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-medium text-white truncate">{{ $owner['nick_name'] }}
+                                    <div class="text-sm font-medium text-white truncate">{{ $owner['nickname'] }}
                                     </div>
                                 </div>
 
