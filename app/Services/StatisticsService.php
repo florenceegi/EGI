@@ -260,7 +260,6 @@ class StatisticsService {
             $egisInCollection = Egi::where('collection_id', $collection->id)
                 ->withCount('likes') // Aggiunge 'likes_count' ad ogni EGI
                 ->orderByDesc('likes_count')
-                ->limit(5) // Prendi i top 5 per collezione per ottimizzare, poi faremo un ranking globale
                 ->get(['id', 'title']);
 
             foreach ($egisInCollection as $egi) {
@@ -657,7 +656,6 @@ class StatisticsService {
                         return $egi['likes_count'] > 0; // Filtra EGI con 0 like
                     })
                     ->sortByDesc('likes_count')
-                    ->take(10)
                     ->values()
                     ->toArray();
 
@@ -726,7 +724,6 @@ class StatisticsService {
                 })
                     ->filter() // Rimuovi valori null
                     ->sortByDesc('likes_given')
-                    ->take(20)
                     ->values()
                     ->toArray();
 
@@ -814,7 +811,6 @@ class StatisticsService {
                 })
                     ->filter() // Remove nulls
                     ->sortByDesc('likes_count')
-                    ->take(20)
                     ->values()
                     ->toArray();
 
@@ -875,7 +871,6 @@ class StatisticsService {
                     })
                     ->filter() // Remove nulls
                     ->sortByDesc('likes_given')
-                    ->take(20)
                     ->values()
                     ->toArray();
 
@@ -1037,7 +1032,6 @@ class StatisticsService {
                         return $egi['likes_count'] > 0;
                     })
                     ->sortByDesc('likes_count')
-                    ->take(10)
                     ->values()
                     ->toArray();
 
@@ -1125,7 +1119,6 @@ class StatisticsService {
                     })
                     ->filter()
                     ->sortByDesc('likes_count')
-                    ->take(10)
                     ->values()
                     ->toArray();
 
@@ -1145,7 +1138,6 @@ class StatisticsService {
                     })
                     ->filter()
                     ->sortByDesc('likes_count')
-                    ->take(20)
                     ->values()
                     ->toArray();
 
@@ -1246,7 +1238,6 @@ class StatisticsService {
                 })
                     ->filter() // Remove nulls
                     ->sortByDesc('likes_count')
-                    ->take(20)
                     ->values()
                     ->toArray();
 
@@ -1583,7 +1574,7 @@ class StatisticsService {
                             ];
                         })->toArray()
                     ];
-                })->sortByDesc('total_spent')->values()->take(10);
+                })->sortByDesc('total_spent')->values();
 
                 // Calculate summary statistics
                 $totalCollectors = $aggregatedHolders->count();
