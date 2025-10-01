@@ -706,6 +706,7 @@ return [
         'regenerate_pdf' => 'Rigenera PDF',
         'pdf_regenerated' => 'PDF rigenerato',
         'pdf_regenerate_failed' => 'Rigenerazione del PDF fallita',
+        'regenerating_pdf' => 'rigenerando PDF con firma',
 
         // Pagina di Verifica Pubblica
         'public_verify' => [

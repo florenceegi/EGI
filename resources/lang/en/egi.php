@@ -713,6 +713,7 @@ return [
         'signature_removal_warning' => 'Warning: The PDF will be regenerated without this signature. This action cannot be undone.',
         'regenerate_pdf' => 'Regenerate PDF',
         'pdf_regenerated' => 'PDF regenerated',
+        'regenerating_pdf' => 'regenerating PDF with signature',
         'pdf_regenerate_failed' => 'PDF regeneration failed',
 
         // Public Verification Page
