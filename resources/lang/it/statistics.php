@@ -133,4 +133,25 @@ return [
     'users' => 'utenti',
     'liked_egis' => 'EGI Apprezzati',
     'liked_owners' => 'Creatori degli EGI Apprezzati',
+
+    // Likes Given Widget - testi hardcoded
+    'egis_you_liked' => 'EGI che hai messo "Mi piace"',
+    'users_you_liked' => 'Utenti ai quali hai messo "Mi piace"',
+    'no_egis_liked_yet' => 'Nessun EGI con "Mi piace" ancora',
+    'no_users_liked_yet' => 'Nessun utente con like ancora',
+    'likes_received_from_you' => 'like ricevuti da te',
+
+    // Role Earnings Widget - testi hardcoded
+    'no_role_earnings' => 'Nessuna Entrata da Ruoli',
+    'no_role_earnings_message' => 'Non hai ancora ricevuto entrate da collezioni dove hai un ruolo collaborativo.',
+    'role_earnings_stats' => 'Statistiche Entrate per Ruolo',
+    'total_earnings' => 'Entrate Totali',
+    'role_earnings' => 'Entrate da Ruoli',
+    'distributions' => 'Distribuzioni',
+    'collections' => 'Collezioni',
+    'of_total' => 'del totale',
+    'active_roles' => 'Ruoli Attivi',
+    'collection_breakdown' => 'Dettaglio per Collezione',
+    'distributions_count' => 'distribuzioni',
+    'average' => 'Media',
 ];

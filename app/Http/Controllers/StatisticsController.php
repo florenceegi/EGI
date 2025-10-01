@@ -73,9 +73,6 @@ class StatisticsController extends Controller {
             $period = 'day';
         }
 
-        // DEBUG: Log period for troubleshooting
-        \Log::info('Statistics page loaded with period: ' . $period);
-
         $this->logger->info('Statistics page view request', [
             'user_id' => $user?->id,
             'period' => $period,

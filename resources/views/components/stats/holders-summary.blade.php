@@ -2,31 +2,31 @@
 @props(['creatorId', 'period' => 'month'])
 
 @php
-use App\Services\StatisticsService;
+    use App\Services\StatisticsService;
 
-// Utilizza il servizio per ottenere i dati dei holders con periodo temporale
-$statisticsService = app(StatisticsService::class);
-$holdersData = $statisticsService->getCreatorHoldersStats($creatorId, $period);
+    // Utilizza il servizio per ottenere i dati dei holders con periodo temporale
+    $statisticsService = app(StatisticsService::class);
+    $holdersData = $statisticsService->getCreatorHoldersStats($creatorId, $period);
 
-$holders = $holdersData['holders'] ?? [];
-$aggregatedHolders = collect($holdersData['aggregated'] ?? []);
-$summary = $holdersData['summary'] ?? [
-    'total_collectors' => 0,
-    'total_items_held' => 0,
-    'total_revenue' => 0,
-    'avg_per_collector' => 0
-];
+    $holders = $holdersData['holders'] ?? [];
+    $aggregatedHolders = collect($holdersData['aggregated'] ?? []);
+    $summary = $holdersData['summary'] ?? [
+        'total_collectors' => 0,
+        'total_items_held' => 0,
+        'total_revenue' => 0,
+        'avg_per_collector' => 0,
+    ];
 
-// Usa i dati dal summary invece di calcoli locali
-$totalHolders = $summary['total_collectors'];
-$totalItems = $summary['total_items_held'];
-$totalVolume = $summary['total_revenue'];
-$uniqueCollections = count($holders); // Numero di collezioni diverse
+    // Usa i dati dal summary invece di calcoli locali
+    $totalHolders = $summary['total_collectors'];
+    $totalItems = $summary['total_items_held'];
+    $totalVolume = $summary['total_revenue'];
+    $uniqueCollections = count($holders); // Numero di collezioni diverse
 @endphp
 
-<div class="p-6 bg-white bg-opacity-10 backdrop-blur-md rounded-xl">
+<div class="rounded-xl bg-white bg-opacity-10 p-6 backdrop-blur-md">
     {{-- Header --}}
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-4 flex items-center justify-between">
         <h3 class="flex items-center space-x-2 text-xl font-semibold text-white">
             <span class="material-symbols-outlined">group</span>
             <span>{{ __('creator.portfolio.holders.title') }}</span>
@@ -37,37 +37,36 @@ $uniqueCollections = count($holders); // Numero di collezioni diverse
     </div>
 
     {{-- Summary Stats --}}
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="mb-6 grid grid-cols-3 gap-4">
         <div class="text-center">
-            <div class="text-lg font-bold text-oro-fiorentino">{{ $totalHolders }}</div>
+            <div class="text-oro-fiorentino text-lg font-bold">{{ $totalHolders }}</div>
             <div class="text-xs text-gray-400">{{ __('creator.portfolio.holders.total_holders') }}</div>
         </div>
         <div class="text-center">
-            <div class="text-lg font-bold text-oro-fiorentino">{{ $totalItems }}</div>
+            <div class="text-oro-fiorentino text-lg font-bold">{{ $totalItems }}</div>
             <div class="text-xs text-gray-400">{{ __('creator.portfolio.holders.total_items') }}</div>
         </div>
         <div class="text-center">
-            <div class="text-lg font-bold text-oro-fiorentino">€{{ number_format($totalVolume, 0) }}</div>
+            <div class="text-oro-fiorentino text-lg font-bold">€{{ number_format($totalVolume, 0) }}</div>
             <div class="text-xs text-gray-400">{{ __('creator.portfolio.holders.total_volume') }}</div>
         </div>
     </div>
 
     {{-- Top Holders List --}}
-    @if($aggregatedHolders->isNotEmpty())
+    @if ($aggregatedHolders->isNotEmpty())
         <div class="space-y-3">
-            @foreach($aggregatedHolders->take(10) as $index => $holder)
+            @foreach ($aggregatedHolders->take(10) as $index => $holder)
                 @php
                     $user = App\Models\User::find($holder['user_id'] ?? null);
                 @endphp
 
-                <div class="flex items-center p-3 transition-colors bg-white rounded-lg bg-opacity-5 hover:bg-opacity-10">
+                <div
+                    class="flex items-center rounded-lg bg-white bg-opacity-5 p-3 transition-colors hover:bg-opacity-10">
                     {{-- Ranking Badge --}}
-                    <div class="flex-shrink-0 mr-3">
-                        @if($index < 3)
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
-                                {{ $index === 0 ? 'bg-yellow-500 text-yellow-900' : '' }}
-                                {{ $index === 1 ? 'bg-gray-300 text-gray-800' : '' }}
-                                {{ $index === 2 ? 'bg-amber-600 text-amber-100' : '' }}">
+                    <div class="mr-3 flex-shrink-0">
+                        @if ($index < 3)
+                            <div
+                                class="{{ $index === 0 ? 'bg-yellow-500 text-yellow-900' : '' }} {{ $index === 1 ? 'bg-gray-300 text-gray-800' : '' }} {{ $index === 2 ? 'bg-amber-600 text-amber-100' : '' }} flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">
                                 {{ $index + 1 }}
                             </div>
                         @else
@@ -76,49 +75,54 @@ $uniqueCollections = count($holders); // Numero di collezioni diverse
                     </div>
 
                     {{-- User Info --}}
-                    <div class="flex items-center flex-1 min-w-0 space-x-3">
-                        @if($user)
+                    <div class="flex min-w-0 flex-1 items-center space-x-3">
+                        @if ($user)
                             {{-- Avatar --}}
-                            @if($user->profile_photo_url ?? false)
+                            @if ($user->profile_photo_url ?? false)
                                 <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}"
-                                     class="object-cover w-8 h-8 rounded-full">
+                                    class="h-8 w-8 rounded-full object-cover">
                             @else
-                                <div class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-gradient-to-br from-blue-500 to-purple-500">
+                                <div
+                                    class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-sm font-bold text-white">
                                     {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                                 </div>
                             @endif
 
                             {{-- Name and details --}}
-                            <div class="flex-1 min-w-0">
+                            <div class="min-w-0 flex-1">
                                 @php
                                     // Switcher per la route corretta basata sul usertype dell'holder
-                                    $holderRoute = match($user->usertype ?? 'creator') {
-                                        'creator' => route('creator.home', $user->id),
-                                        'collector' => route('collector.home', $user->id),
-                                        'commissioner' => route('profile.show'), // Commissioner non ha pagina pubblica specifica
-                                        default => route('creator.home', $user->id) // Fallback a creator
+$holderRoute = match ($user->usertype ?? 'creator') {
+    'creator' => route('creator.home', $user->id),
+    'collector' => route('collector.home', $user->id),
+    'commissioner' => route(
+        'profile.show',
+    ), // Commissioner non ha pagina pubblica specifica
+    default => route('creator.home', $user->id), // Fallback a creator
                                     };
                                 @endphp
-                                
+
                                 <a href="{{ $holderRoute }}"
-                                   class="block font-medium text-white truncate transition-colors duration-200 hover:text-blue-300">
+                                    class="block truncate font-medium text-white transition-colors duration-200 hover:text-blue-300">
                                     {{ $user->name }}
                                 </a>
 
                                 {{-- Collections summary --}}
                                 <div class="text-xs text-gray-400">
-                                    {{ $holder['collections_count'] ?? 0 }} {{ ($holder['collections_count'] ?? 0) == 1 ? __('creator.portfolio.holders.collection') : __('creator.portfolio.holders.collections') }}
-                                    @if(($user->usertype ?? '') === 'verified')
-                                        <span class="ml-1 text-xs text-blue-400 material-symbols-outlined">verified</span>
+                                    {{ $holder['collections_count'] ?? 0 }}
+                                    {{ ($holder['collections_count'] ?? 0) == 1 ? __('creator.portfolio.holders.collection') : __('creator.portfolio.holders.collections') }}
+                                    @if (($user->usertype ?? '') === 'verified')
+                                        <span
+                                            class="material-symbols-outlined ml-1 text-xs text-blue-400">verified</span>
                                     @endif
                                 </div>
                             </div>
                         @else
                             {{-- Fallback per utenti non trovati --}}
-                            <div class="flex items-center justify-center w-8 h-8 bg-gray-600 rounded-full">
-                                <span class="text-sm text-gray-300 material-symbols-outlined">person</span>
+                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-600">
+                                <span class="material-symbols-outlined text-sm text-gray-300">person</span>
                             </div>
-                            <div class="flex-1 min-w-0">
+                            <div class="min-w-0 flex-1">
                                 <span class="text-gray-400">{{ __('creator.portfolio.holders.unknown_user') }}</span>
                             </div>
                         @endif
@@ -151,9 +155,9 @@ $uniqueCollections = count($holders); // Numero di collezioni diverse
                             <div class="flex items-center justify-between">
                                 <span class="text-xs text-gray-400">{{ $percentage }}%</span>
                             </div>
-                            <div class="w-full h-2 bg-gray-700 rounded-full">
-                                <div class="bg-gradient-to-r {{ $gradientColors }} h-2 rounded-full transition-all duration-500 shadow-sm"
-                                     style="width: {{ min($percentage, 100) }}%"></div>
+                            <div class="h-2 w-full rounded-full bg-gray-700">
+                                <div class="{{ $gradientColors }} h-2 rounded-full bg-gradient-to-r shadow-sm transition-all duration-500"
+                                    style="width: {{ min($percentage, 100) }}%"></div>
                             </div>
                         </div>
                     </div>
@@ -162,10 +166,9 @@ $uniqueCollections = count($holders); // Numero di collezioni diverse
         </div>
 
         {{-- View All Link --}}
-        @if($totalHolders > 10)
+        @if ($totalHolders > 10)
             <div class="mt-4 text-center">
-                <button class="text-sm text-blue-400 transition-colors hover:text-blue-300"
-                        onclick="showAllHolders()">
+                <button class="text-sm text-blue-400 transition-colors hover:text-blue-300" onclick="showAllHolders()">
                     {{ __('creator.portfolio.holders.view_all') }} ({{ $totalHolders }})
                 </button>
             </div>
@@ -173,8 +176,8 @@ $uniqueCollections = count($holders); // Numero di collezioni diverse
     @else
         {{-- Empty State --}}
         <div class="py-8 text-center">
-            <div class="flex items-center justify-center w-12 h-12 mx-auto mb-3 bg-gray-700 rounded-full">
-                <span class="text-xl text-gray-400 material-symbols-outlined">group</span>
+            <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-700">
+                <span class="material-symbols-outlined text-xl text-gray-400">group</span>
             </div>
             <h4 class="mb-1 text-sm font-medium text-white">{{ __('creator.portfolio.holders.no_holders_yet') }}</h4>
             <p class="text-xs text-gray-400">{{ __('creator.portfolio.holders.no_holders_message') }}</p>
@@ -183,8 +186,8 @@ $uniqueCollections = count($holders); // Numero di collezioni diverse
 </div>
 
 <script>
-function showAllHolders() {
-    // Implementa la logica per mostrare tutti gli holder (modal o nuova pagina)
-    console.log('Show all holders modal/page');
-}
+    function showAllHolders() {
+        // Implementa la logica per mostrare tutti gli holder (modal o nuova pagina)
+        console.log('Show all holders modal/page');
+    }
 </script>
