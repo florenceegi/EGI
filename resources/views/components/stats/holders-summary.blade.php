@@ -90,14 +90,20 @@ $uniqueCollections = count($holders); // Numero di collezioni diverse
 
                             {{-- Name and details --}}
                             <div class="flex-1 min-w-0">
-                                @if($user->hasRole('creator'))
-                                    <a href="{{ route('creator.home', $user->id) }}"
-                                       class="block font-medium text-white truncate transition-colors duration-200 hover:text-blue-300">
-                                        {{ $user->name }}
-                                    </a>
-                                @else
-                                    <span class="block font-medium text-white truncate">{{ $user->name }}</span>
-                                @endif
+                                @php
+                                    // Switcher per la route corretta basata sul usertype dell'holder
+                                    $holderRoute = match($user->usertype ?? 'creator') {
+                                        'creator' => route('creator.home', $user->id),
+                                        'collector' => route('collector.home', $user->id),
+                                        'commissioner' => route('profile.show'), // Commissioner non ha pagina pubblica specifica
+                                        default => route('creator.home', $user->id) // Fallback a creator
+                                    };
+                                @endphp
+                                
+                                <a href="{{ $holderRoute }}"
+                                   class="block font-medium text-white truncate transition-colors duration-200 hover:text-blue-300">
+                                    {{ $user->name }}
+                                </a>
 
                                 {{-- Collections summary --}}
                                 <div class="text-xs text-gray-400">
@@ -145,7 +151,7 @@ $uniqueCollections = count($holders); // Numero di collezioni diverse
                             <div class="flex items-center justify-between">
                                 <span class="text-xs text-gray-400">{{ $percentage }}%</span>
                             </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
+                            <div class="w-full h-2 bg-gray-700 rounded-full">
                                 <div class="bg-gradient-to-r {{ $gradientColors }} h-2 rounded-full transition-all duration-500 shadow-sm"
                                      style="width: {{ min($percentage, 100) }}%"></div>
                             </div>
