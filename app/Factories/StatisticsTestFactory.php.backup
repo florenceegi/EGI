@@ -1,0 +1,739 @@
+<?php
+
+namespace App\Factories;
+
+use App\Models\User;
+use App\Models\Collection;
+use App\Models\Egi;
+use App\Models\Reservation;
+use App\Models\Like;
+use App\Models\PaymentDistribution;
+use App\Models\Wallet;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+/**
+ * @package App\Factories
+ * @author Padmin D. Curtis (AI Partner OS3.0)
+ * @version 1.0.0 (FlorenceEGI - Statistics Testing)
+ * @date 2025-10-01
+ * @purpose Factory deterministico per testare statistiche con dati noti e risultati pre-calcolati
+ */
+class StatisticsTestFactory
+{
+    /**
+     * Target user per i test - User ID 3 (Natan)
+     */
+    private const TARGET_USER_ID = 3;
+    
+    /**
+         /**
+     * � Genera date deterministiche partendo da OGGI e andando indietro 24 mesi
+     * Per presentazioni realistiche con dati attuali
+     */
+    private function getRandomDateInYears(): Carbon
+    {
+        static $counter = 0;
+        $counter++;
+        
+        $today = Carbon::now(); // Oggi: 2025-10-01
+        $monthsBack = self::CONFIG['months_back']; // 24 mesi
+        
+        // Distribuzione deterministica negli ultimi 24 mesi
+        // Con focus maggiore sui mesi più recenti (80% negli ultimi 12 mesi)
+        if (($counter % 10) < 8) {
+            // 80% dei dati negli ultimi 12 mesi (più recenti)
+            $monthsOffset = $counter % 12;
+        } else {
+            // 20% dei dati nei 12 mesi precedenti (12-24 mesi fa)
+            $monthsOffset = 12 + ($counter % 12);
+        }
+        
+        // Crea data andando indietro dal oggi
+        $baseDate = $today->copy()->subMonths($monthsOffset);
+        
+        // Aggiunge variazione deterministica nel mese
+        $dayOffset = ($counter % 28);
+        $hourOffset = ($counter % 24);
+        
+        return $baseDate->addDays($dayOffset)->addHours($hourOffset);
+    }e Factory - Deterministico per risultati ripetibili
+     */
+    private const CONFIG = [
+        'likes_per_collection' => 3,
+        'likes_per_egi' => 2,
+        'reservations_percentage' => 0.8, // 80% degli EGI avrà reservations
+        'strong_reservation_percentage' => 0.8, // 80% delle reservations sarà strong 
+        'months_back' => 24, // 24 mesi indietro da oggi (per presentazioni realistiche)
+        'base_amounts' => [66.5, 133, 199.5, 266, 332.5, 399, 465.5, 532, 598.5, 665], // Importi base deterministici
+        'epp_percentage' => 0.25, // 25% chance per EPP payments
+    ];
+
+    /**
+     * Dati base User 3 (esistenti) - Include TUTTE le collaborazioni
+     */
+    private $user3Data = [
+        'collections' => [], // Sarà popolato dinamicamente da tutte le collections con wallets
+        'egis' => [], // Sarà popolato dinamicamente
+    ];
+
+    /**
+     * Expected results pre-calcolati per validazione
+     */
+    private $expectedResults = [];
+
+    /**
+     * 🎯 Metodo principale: cancella e ricrea dati deterministici
+     * 
+     * @return array Expected results per validazione
+     */
+    public function seedDeterministicData(): array
+    {
+        DB::transaction(function () {
+            $this->loadUser3Data(); // Prima carica i dati
+            $this->clearExistingData(); // Poi cancella usando i dati caricati
+            $this->createAdditionalUsers();
+            $this->createDeterministicData();
+            $this->calculateExpectedResults();
+        });
+
+        return $this->expectedResults;
+    }
+
+    /**
+     * 🧹 Cancella dati esistenti per User 3 mantenendo Collections/EGIs
+     */
+    private function clearExistingData(): void
+    {
+        echo "🧹 Clearing existing data for User ID " . self::TARGET_USER_ID . "...\n";
+
+        // Get EGI IDs dalle collections di User 3
+        $egiIds = Egi::whereIn('collection_id', $this->user3Data['collections'])->pluck('id');
+        
+        // Cancella likes su EGIs e Collections di User 3
+        Like::where('likeable_type', 'App\Models\Collection')
+            ->whereIn('likeable_id', $this->user3Data['collections'])
+            ->delete();
+            
+        Like::where('likeable_type', 'App\Models\Egi')
+            ->whereIn('likeable_id', $egiIds)
+            ->delete();
+
+        // Cancella payment distributions collegate alle reservations degli EGI di User 3
+        $reservationIds = Reservation::whereIn('egi_id', $egiIds)->pluck('id');
+        PaymentDistribution::whereIn('reservation_id', $reservationIds)->delete();
+
+        // Cancella reservations degli EGI di User 3
+        Reservation::whereIn('egi_id', $egiIds)->delete();
+
+        echo "✅ Cleared likes, reservations, and payment distributions for User 3\n";
+    }
+
+    /**
+     * 📊 Carica dati esistenti User 3 - Include TUTTE le collaborazioni (scenario reale)
+     */
+    private function loadUser3Data(): void
+    {
+        // Collections di cui User 3 è creator
+        $creatorCollectionIds = Collection::where('creator_id', self::TARGET_USER_ID)->pluck('id');
+        
+        // Collections dove User 3 ha wallets (collaborazioni) - SCENARIO REALE
+        $walletCollectionIds = DB::table('wallets')
+            ->where('user_id', self::TARGET_USER_ID)
+            ->pluck('collection_id');
+        
+        // Merge e deduplica tutte le collections (CORRETTO per scenario reale)
+        $allCollectionIds = $creatorCollectionIds->merge($walletCollectionIds)->unique()->sort()->values()->toArray();
+        
+        $this->user3Data['collections'] = $allCollectionIds;
+        $this->user3Data['creatorCollections'] = $creatorCollectionIds->toArray();
+        $this->user3Data['walletCollections'] = $walletCollectionIds->toArray();
+        
+        // Carica EGI IDs di TUTTE le collections dove può ricevere payments
+        $this->user3Data['egis'] = Egi::whereIn('collection_id', $allCollectionIds)
+            ->pluck('id')
+            ->toArray();
+
+        echo "📊 Loaded User 3 data: " . count($this->user3Data['egis']) . " EGIs in " . count($allCollectionIds) . " collections (creator: " . count($creatorCollectionIds) . ", wallets: " . count($walletCollectionIds) . ") - REAL SCENARIO\n";
+    }
+
+    /**
+     * 👥 Crea utenti aggiuntivi per likes/reservations
+     */
+    private function createAdditionalUsers(): void
+    {
+        echo "👥 Creating additional users for testing...\n";
+
+        for ($i = 1; $i <= self::CONFIG['additional_users_count']; $i++) {
+            User::firstOrCreate([
+                'email' => "test_user_{$i}@statisticstest.com"
+            ], [
+                'name' => "Test User {$i}",
+                'nickname' => "testuser{$i}",
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+            ]);
+        }
+
+        echo "✅ Additional users ready\n";
+    }
+
+    /**
+     * 🏗️ Crea dati deterministici distribuiti nel tempo
+     */
+    private function createDeterministicData(): void
+    {
+        echo "🏗️ Creating deterministic data...\n";
+
+        $this->createDeterministicLikes();
+        $this->createDeterministicReservations();
+        $this->createDeterministicPaymentDistributions();
+
+        echo "✅ Deterministic data creation completed\n";
+    }
+
+    /**
+     * ❤️ Crea likes deterministici
+     */
+    private function createDeterministicLikes(): void
+    {
+        $testUsers = User::where('email', 'like', 'test_user_%@statisticstest.com')->pluck('id');
+        $likesCreated = 0;
+
+        // Distribuzione: 30% likes su collections, 70% su EGIs
+        $collectionLikes = (int) (self::CONFIG['likes_count'] * 0.3);
+        $egiLikes = self::CONFIG['likes_count'] - $collectionLikes;
+
+        // Likes su collections - distribuiti nel tempo
+        for ($i = 0; $i < $collectionLikes; $i++) {
+            $collectionId = $this->user3Data['collections'][$i % 2]; // Alterna tra le 2 collections
+            $userId = $testUsers[$i % $testUsers->count()];
+            $createdAt = $this->getRandomDateInYears();
+
+            Like::create([
+                'user_id' => $userId,
+                'likeable_type' => 'App\Models\Collection',
+                'likeable_id' => $collectionId,
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
+            ]);
+            $likesCreated++;
+        }
+
+        // Likes su EGIs - distribuiti nel tempo
+        for ($i = 0; $i < $egiLikes; $i++) {
+            $egiId = $this->user3Data['egis'][$i % count($this->user3Data['egis'])];
+            $userId = $testUsers[$i % $testUsers->count()];
+            $createdAt = $this->getRandomDateInYears();
+
+            Like::create([
+                'user_id' => $userId,
+                'likeable_type' => 'App\Models\Egi',
+                'likeable_id' => $egiId,
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
+            ]);
+            $likesCreated++;
+        }
+
+        echo "❤️ Created {$likesCreated} likes ({$collectionLikes} collection, {$egiLikes} EGI)\n";
+    }
+
+    /**
+     * 📋 Crea reservations deterministiche - 1 per EGI (mix strong/weak)
+     */
+    private function createDeterministicReservations(): void
+    {
+        $testUsers = User::where('email', 'like', 'test_user_%@statisticstest.com')->pluck('id');
+        $reservationsCreated = 0;
+
+        // Distribuzione: 80% strong, 20% weak ACROSS ALL EGIs disponibili
+        $totalEgis = count($this->user3Data['egis']);
+        $strongCount = (int) ($totalEgis * 0.8);
+        $weakCount = $totalEgis - $strongCount;
+
+        $baseAmounts = [100, 150, 200, 250, 300, 350, 400, 500, 750, 1000]; // Amounts deterministici
+
+        // Crea una reservation per ogni EGI disponibile (ALL EGIs)
+        $egis = $this->user3Data['egis'];
+        
+        for ($i = 0; $i < count($egis); $i++) {
+            $egiId = $egis[$i];
+            $userId = $testUsers[$i % $testUsers->count()];
+            $createdAt = $this->getRandomDateInYears();
+            
+            // Determine type: first 80% are strong, last 20% are weak
+            $type = ($i < $strongCount) ? 'strong' : 'weak';
+            $offerAmount = $baseAmounts[$i % count($baseAmounts)];
+            if ($type === 'weak') {
+                $offerAmount *= 0.7; // Weak = 70% del valore
+            }
+
+            Reservation::create([
+                'egi_id' => $egiId,
+                'user_id' => $userId,
+                'type' => $type,
+                'status' => 'active',
+                'is_current' => true,
+                'is_highest' => true, // Ogni EGI ha 1 sola reservation = highest
+                'sub_status' => 'highest',
+                'rank_position' => 1,
+                'offer_amount_fiat' => $offerAmount,
+                'amount_eur' => $offerAmount * 0.95, // 5% di commissione
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
+            ]);
+            $reservationsCreated++;
+        }
+
+        // Count actual distribution
+        $actualStrong = Reservation::whereIn('egi_id', $egis)->where('type', 'strong')->count();
+        $actualWeak = Reservation::whereIn('egi_id', $egis)->where('type', 'weak')->count();
+
+        echo "📋 Created {$reservationsCreated} reservations for {$totalEgis} EGIs ({$actualStrong} strong, {$actualWeak} weak)\n";
+    }
+
+    /**
+     * 💰 Crea payment distributions deterministiche
+     * USES SAME ROW_NUMBER() LOGIC AS StatisticsService
+     */
+    private function createDeterministicPaymentDistributions(): void
+    {
+                // Get the same reservations that StatisticsService would use (ROW_NUMBER = 1)
+        // First get the reservation IDs using the ROW_NUMBER logic
+        $userCollectionIds = $this->user3Data['collections']; // Already an array of IDs
+        $collectionIdsStr = implode(',', $userCollectionIds);
+        
+        $sql = "
+            WITH RankedReservations AS (
+                SELECT
+                    r.id,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY r.egi_id
+                        ORDER BY
+                            CASE WHEN r.type = 'strong' THEN 1 ELSE 2 END ASC,
+                            r.offer_amount_fiat DESC,
+                            r.id DESC
+                    ) as rn
+                FROM reservations r
+                INNER JOIN egis e ON e.id = r.egi_id
+                INNER JOIN collections c ON c.id = e.collection_id
+                WHERE c.id IN ({$collectionIdsStr})
+                  AND r.status = 'active'
+                  AND r.is_current = 1
+            )
+            SELECT id
+            FROM RankedReservations
+            WHERE rn = 1
+        ";
+
+        $validReservationIds = collect(DB::select($sql))->pluck('id');
+        
+        // Now get full Reservation models for these IDs
+        $reservations = Reservation::whereIn('id', $validReservationIds)->get();
+        $paymentsCreated = 0;
+
+        // Crea payments per TUTTE le reservations filtrate (non solo subset)
+        $reservationsToProcess = $reservations;
+
+        foreach ($reservationsToProcess as $reservation) {
+            // Creator payment (User 3)
+            PaymentDistribution::create([
+                'user_id' => self::TARGET_USER_ID,
+                'reservation_id' => $reservation->id,
+                'collection_id' => Egi::find($reservation->egi_id)->collection_id,
+                'user_type' => 'creator',
+                'percentage' => 70.00, // 70% al creator
+                'amount_eur' => $reservation->amount_eur * 0.7, // 70% al creator
+                'exchange_rate' => 1.0000000000, // EUR/EUR
+                'distribution_status' => 'confirmed',
+                'created_at' => $reservation->created_at,
+                'updated_at' => $reservation->created_at,
+            ]);
+            $paymentsCreated++;
+
+            // EPP payment (25% dei cases - deterministico)
+            if (($paymentsCreated % 4) === 0) {
+                PaymentDistribution::create([
+                    'user_id' => self::TARGET_USER_ID, // Stesso user per semplicità
+                    'reservation_id' => $reservation->id,
+                    'collection_id' => Egi::find($reservation->egi_id)->collection_id,
+                    'user_type' => 'epp',
+                    'percentage' => 20.00, // 20% EPP
+                    'amount_eur' => $reservation->amount_eur * 0.2, // 20% EPP
+                    'exchange_rate' => 1.0000000000, // EUR/EUR
+                    'is_epp' => true,
+                    'distribution_status' => 'confirmed',
+                    'created_at' => $reservation->created_at,
+                    'updated_at' => $reservation->created_at,
+                ]);
+                $paymentsCreated++;
+            }
+        }
+
+        echo "💰 Created {$paymentsCreated} payment distributions\n";
+    }
+
+    /**
+     * 🧮 Calcola expected results per tutte le metriche
+     */
+    private function calculateExpectedResults(): void
+    {
+        echo "🧮 Calculating expected results...\n";
+
+        $this->expectedResults = [
+            'likes_statistics' => $this->calculateExpectedLikesStats(),
+            'reservations_statistics' => $this->calculateExpectedReservationsStats(),
+            'amounts_statistics' => $this->calculateExpectedAmountsStats(),
+            'epp_potential_statistics' => $this->calculateExpectedEppStats(),
+            'portfolio_statistics' => $this->calculateExpectedPortfolioStats(),
+            'creator_earnings' => $this->calculateExpectedCreatorEarnings(),
+            'user_total_earnings' => $this->calculateExpectedUserTotalEarnings(),
+            'metadata' => [
+                'calculated_at' => now()->toISOString(),
+                'target_user_id' => self::TARGET_USER_ID,
+                'collections' => $this->user3Data['collections'],
+                'egis_count' => count($this->user3Data['egis']),
+            ]
+        ];
+
+        echo "✅ Expected results calculated for " . count($this->expectedResults) . " metric categories\n";
+    }
+
+    /**
+     * Calcola expected results per likes statistics
+     */
+    private function calculateExpectedLikesStats(): array
+    {
+        $collectionLikes = Like::where('likeable_type', 'App\Models\Collection')
+            ->whereIn('likeable_id', $this->user3Data['collections'])
+            ->count();
+
+        $egiLikes = Like::where('likeable_type', 'App\Models\Egi')
+            ->whereIn('likeable_id', $this->user3Data['egis'])
+            ->count();
+
+        // By collection breakdown
+        $byCollection = [];
+        foreach ($this->user3Data['collections'] as $collectionId) {
+            $collection = Collection::find($collectionId);
+            $directLikes = Like::where('likeable_type', 'App\Models\Collection')
+                ->where('likeable_id', $collectionId)
+                ->count();
+
+            $collectionEgis = Egi::where('collection_id', $collectionId)->pluck('id');
+            $egiLikesInCollection = Like::where('likeable_type', 'App\Models\Egi')
+                ->whereIn('likeable_id', $collectionEgis)
+                ->count();
+
+            $byCollection[] = [
+                'collection_id' => $collectionId,
+                'collection_name' => $collection->collection_name,
+                'collection_likes' => $directLikes,
+                'egi_likes' => $egiLikesInCollection,
+                'total_likes' => $directLikes + $egiLikesInCollection,
+            ];
+        }
+
+        // Top EGIs (simplified - prendi top 3)
+        $topEgis = Egi::whereIn('id', $this->user3Data['egis'])
+            ->withCount('likes')
+            ->orderByDesc('likes_count')
+            ->take(3)
+            ->get(['id', 'title'])
+            ->map(function ($egi) {
+                $collection = Collection::find($egi->collection_id);
+                return [
+                    'id' => $egi->id,
+                    'title' => $egi->title,
+                    'collection_name' => $collection ? $collection->collection_name : 'Unknown',
+                    'likes_count' => $egi->likes_count,
+                ];
+            })
+            ->toArray();
+
+        return [
+            'total' => $collectionLikes + $egiLikes,
+            'collections_total' => $collectionLikes,
+            'egis_total' => $egiLikes,
+            'by_collection' => $byCollection,
+            'top_egis' => $topEgis,
+        ];
+    }
+
+    /**
+     * Calcola expected results per reservations statistics
+     */
+    private function calculateExpectedReservationsStats(): array
+    {
+        $reservations = Reservation::whereIn('egi_id', $this->user3Data['egis'])
+            ->where('status', 'active')
+            ->where('is_current', true)
+            ->get();
+
+        $strongCount = $reservations->where('type', 'strong')->count();
+        $weakCount = $reservations->where('type', 'weak')->count();
+
+        // By collection breakdown
+        $byCollection = [];
+        foreach ($this->user3Data['collections'] as $collectionId) {
+            $collection = Collection::find($collectionId);
+            $collectionEgis = Egi::where('collection_id', $collectionId)->pluck('id');
+            $collectionReservations = $reservations->whereIn('egi_id', $collectionEgis);
+
+            $byCollection[] = [
+                'collection_id' => $collectionId,
+                'collection_name' => $collection->collection_name,
+                'total_reservations' => $collectionReservations->count(),
+                'strong_reservations' => $collectionReservations->where('type', 'strong')->count(),
+                'weak_reservations' => $collectionReservations->where('type', 'weak')->count(),
+            ];
+        }
+
+        return [
+            'total' => $reservations->count(),
+            'strong' => $strongCount,
+            'weak' => $weakCount,
+            'by_collection' => $byCollection,
+        ];
+    }
+
+    /**
+     * Calcola expected results per amounts statistics
+     * USES SAME ROW_NUMBER() LOGIC AS StatisticsService
+     */
+    private function calculateExpectedAmountsStats(): array
+    {
+        // Use the same ROW_NUMBER() query as StatisticsService (include ALL wallet collections)
+        $collectionIds = implode(',', $this->user3Data['collections']);
+        $sql = "
+            WITH RankedReservations AS (
+                SELECT
+                    r.*,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY r.egi_id
+                        ORDER BY
+                            CASE WHEN r.type = 'strong' THEN 1 ELSE 2 END ASC,
+                            r.offer_amount_fiat DESC,
+                            r.id DESC
+                    ) as rn
+                FROM reservations r
+                INNER JOIN egis e ON e.id = r.egi_id
+                INNER JOIN collections c ON c.id = e.collection_id
+                WHERE c.id IN ({$collectionIds})
+                  AND r.status = 'active'
+                  AND r.is_current = 1
+            )
+            SELECT *
+            FROM RankedReservations
+            WHERE rn = 1
+        ";
+
+        $reservations = collect(DB::select($sql));
+        
+        $totalEur = $reservations->sum('offer_amount_fiat');
+        $strongAmount = $reservations->where('type', 'strong')->sum('offer_amount_fiat');
+        $weakAmount = $reservations->where('type', 'weak')->sum('offer_amount_fiat');
+
+        // By collection breakdown
+        $byCollection = [];
+        foreach ($this->user3Data['collections'] as $collectionId) {
+            $collection = Collection::find($collectionId);
+            $collectionEgis = Egi::where('collection_id', $collectionId)->pluck('id');
+            $collectionReservations = $reservations->whereIn('egi_id', $collectionEgis);
+
+            $byCollection[] = [
+                'collection_id' => $collectionId,
+                'collection_name' => $collection->collection_name,
+                'total_amount_eur' => (float) $collectionReservations->sum('offer_amount_fiat'),
+            ];
+        }
+
+        return [
+            'total_eur' => (float) $totalEur,
+            'by_collection' => $byCollection,
+            'by_type' => [
+                'strong' => (float) $strongAmount,
+                'weak' => (float) $weakAmount,
+            ],
+        ];
+    }
+
+    /**
+     * Calcola expected results per EPP potential statistics
+     * USES SAME ROW_NUMBER() LOGIC AS StatisticsService
+     */
+    private function calculateExpectedEppStats(): array
+    {
+        // Use the same ROW_NUMBER() query as StatisticsService (include ALL wallet collections)
+        $collectionIds = implode(',', $this->user3Data['collections']);
+        $sql = "
+            WITH RankedReservations AS (
+                SELECT
+                    r.*,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY r.egi_id
+                        ORDER BY
+                            CASE WHEN r.type = 'strong' THEN 1 ELSE 2 END ASC,
+                            r.offer_amount_fiat DESC,
+                            r.id DESC
+                    ) as rn
+                FROM reservations r
+                INNER JOIN egis e ON e.id = r.egi_id
+                INNER JOIN collections c ON c.id = e.collection_id
+                WHERE c.id IN ({$collectionIds})
+                  AND r.status = 'active'
+                  AND r.is_current = 1
+            )
+            SELECT *
+            FROM RankedReservations
+            WHERE rn = 1
+        ";
+
+        $reservations = collect(DB::select($sql));
+
+        $totalEppQuota = 0;
+        $byCollection = [];
+
+        foreach ($this->user3Data['collections'] as $collectionId) {
+            $collection = Collection::find($collectionId);
+            $wallet = Wallet::where('collection_id', $collectionId)
+                ->where('platform_role', 'EPP')
+                ->first();
+            
+            $eppPercentage = $wallet ? $wallet->royalty_mint : 20.0; // Default 20%
+            
+            $collectionEgis = Egi::where('collection_id', $collectionId)->pluck('id');
+            $collectionAmount = $reservations->whereIn('egi_id', $collectionEgis)->sum('offer_amount_fiat');
+            $collectionEppQuota = ($collectionAmount * $eppPercentage) / 100.0;
+            
+            $totalEppQuota += $collectionEppQuota;
+
+            $byCollection[] = [
+                'collection_id' => $collectionId,
+                'collection_name' => $collection->collection_name,
+                'epp_percentage' => (float) $eppPercentage,
+                'total_amount' => (float) $collectionAmount,
+                'epp_quota' => (float) $collectionEppQuota,
+            ];
+        }
+
+        return [
+            'total_quota_eur' => (float) $totalEppQuota,
+            'by_collection' => $byCollection,
+        ];
+    }
+
+    /**
+     * Calcola expected results per portfolio statistics
+     */
+    private function calculateExpectedPortfolioStats(): array
+    {
+        $egis = Egi::whereIn('collection_id', $this->user3Data['collections'])->get();
+        $reservations = Reservation::whereIn('egi_id', $this->user3Data['egis'])
+            ->where('status', 'active')
+            ->where('is_current', true)
+            ->get();
+
+        $reservedEgis = $reservations->pluck('egi_id')->unique()->count();
+        $availableEgis = $egis->count() - $reservedEgis;
+        $highestOffer = $reservations->max('offer_amount_fiat') ?? 0;
+        $totalValueEur = $reservations->sum('amount_eur');
+
+        return [
+            'total_egis' => $egis->count(),
+            'total_collections' => count($this->user3Data['collections']),
+            'reserved_egis' => $reservedEgis,
+            'available_egis' => $availableEgis,
+            'highest_offer' => (float) $highestOffer,
+            'total_value_eur' => (float) $totalValueEur,
+        ];
+    }
+
+    /**
+     * Calcola expected results per creator earnings
+     * USES SAME FILTERING AS StatisticsService (is_highest = true)
+     */
+    private function calculateExpectedCreatorEarnings(): array
+    {
+        // Use same filtering as StatisticsService
+        $payments = PaymentDistribution::join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+            ->where('payment_distributions.user_id', self::TARGET_USER_ID)
+            ->where('payment_distributions.user_type', 'creator')
+            ->where('reservations.is_highest', true)
+            ->select('payment_distributions.*')
+            ->get();
+
+        return [
+            'total_earnings' => (float) $payments->sum('amount_eur'),
+            'total_distributions' => $payments->count(),
+            'avg_earnings_per_distribution' => $payments->count() > 0 ? (float) ($payments->sum('amount_eur') / $payments->count()) : 0,
+            'min_earnings' => (float) ($payments->min('amount_eur') ?? 0),
+            'max_earnings' => (float) ($payments->max('amount_eur') ?? 0),
+            'total_sales' => $payments->count(), // Same as total_distributions for creator
+            'collections_with_sales' => $payments->pluck('collection_id')->unique()->count(),
+        ];
+    }
+
+    /**
+     * Calcola expected results per user total earnings  
+     * USES SAME FILTERING AS StatisticsService (is_highest = true for non-creator)
+     */
+    private function calculateExpectedUserTotalEarnings(): array
+    {
+        // Use same filtering as StatisticsService
+        $payments = PaymentDistribution::join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
+            ->where('payment_distributions.user_id', self::TARGET_USER_ID)
+            ->where('reservations.is_highest', true)
+            ->select('payment_distributions.*')
+            ->get();
+
+        return [
+            'total_earnings' => (float) $payments->sum('amount_eur'),
+            'total_distributions' => $payments->count(),
+            'avg_earning_per_distribution' => $payments->count() > 0 ? (float) ($payments->sum('amount_eur') / $payments->count()) : 0,
+            'collections_involved' => $payments->pluck('collection_id')->unique()->count(),
+            'reservations_involved' => $payments->pluck('reservation_id')->unique()->count(),
+        ];
+    }
+
+    /**
+     * 📅 Genera data random in uno degli anni configurati
+     */
+    private function getRandomDateInYears(): Carbon
+    {
+        static $counter = 0;
+        $counter++;
+        
+        // Distribuzione deterministica tra anni
+        $yearIndex = $counter % count(self::CONFIG['years_span']);
+        $year = self::CONFIG['years_span'][$yearIndex];
+        
+        // Data deterministica basata sul counter
+        $month = (($counter % 12) + 1);
+        $day = (($counter % 28) + 1);
+        
+        return Carbon::createFromDate($year, $month, $day)->addHours($counter % 24);
+    }
+
+    /**
+     * 📋 Get expected results (per debugging/testing)
+     */
+    public function getExpectedResults(): array
+    {
+        return $this->expectedResults;
+    }
+
+    /**
+     * 🧼 Clean up method per testing
+     */
+    public function cleanup(): void
+    {
+        $this->clearExistingData();
+        
+        // Rimuovi anche test users creati
+        User::where('email', 'like', 'test_user_%@statisticstest.com')->delete();
+        
+        echo "🧼 Cleanup completed\n";
+    }
+}

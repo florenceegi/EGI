@@ -59,8 +59,13 @@ class StatisticsService {
         $this->logger = $logger;
 
         // Pre-carica e metti in cache gli ID delle collection dell'utente
-        // Questo evita query multiple per gli ID delle collection.
-        $this->userCollectionIds = $this->user->ownedCollections()->pluck('id')->all();
+        // Include: 1) Collections owned (creator), 2) Collections with wallets (collaboratore)
+        $ownedCollectionIds = $this->user->ownedCollections()->pluck('id');
+        $walletCollectionIds = DB::table('wallets')
+            ->where('user_id', $this->user->id)
+            ->pluck('collection_id');
+
+        $this->userCollectionIds = $ownedCollectionIds->merge($walletCollectionIds)->unique()->values()->all();
 
         $this->logger->info('StatisticsService initialized', [
             'user_id' => $this->user->id,
@@ -312,11 +317,10 @@ class StatisticsService {
                 FROM reservations r
                 INNER JOIN egis e ON e.id = r.egi_id
                 INNER JOIN collections c ON c.id = e.collection_id
-                WHERE c.creator_id = ?
-                  AND r.status = 'active'
+                WHERE r.status = 'active'
                   AND r.is_current = 1";
 
-        $bindings = [$this->user->id];
+        $bindings = [];
 
         if (!empty($this->userCollectionIds)) {
             $placeholders = implode(',', array_fill(0, count($this->userCollectionIds), '?'));
@@ -912,7 +916,7 @@ class StatisticsService {
                     ->join('reservations', 'payment_distributions.reservation_id', '=', 'reservations.id')
                     ->join('egis', 'reservations.egi_id', '=', 'egis.id')
                     ->join('collections', 'egis.collection_id', '=', 'collections.id')
-                    ->where('collections.creator_id', $creatorId)
+                    ->where('payment_distributions.user_id', $creatorId)
                     ->where('payment_distributions.user_type', 'creator')
                     ->where('reservations.is_highest', true);
 

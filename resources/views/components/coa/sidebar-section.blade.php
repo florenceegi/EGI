@@ -945,7 +945,7 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                             type: 'success',
                             timeout: 3000
                         });
-                        
+
                         // ✅ REFACTOR: Instead of opening old PDF, regenerate with signature
                         setTimeout(() => {
                             regenerateCoaPdf(coaId);
@@ -997,7 +997,7 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                             type: 'success',
                             timeout: 3000
                         });
-                        
+
                         // ✅ REFACTOR: Regenerate PDF with inspector signature instead of reload
                         setTimeout(() => {
                             regenerateCoaPdf(coaId);

@@ -239,19 +239,25 @@ class StatisticsTestFactory {
                 // LOGICA REALE: Solo l'ULTIMA reservation (più recente cronologicamente) è current/highest
                 $isLastReservation = ($resIndex === ($reservationsPerEgi - 1));
                 
-                // Crea la reservation (TUTTE iniziano come is_current=false tranne l'ultima)
-                $newReservation = Reservation::create([
+                // DISABILITA TEMPORANEAMENTE TIMESTAMPS per impostare created_at personalizzato
+                Reservation::unguard();
+                $reservationId = DB::table('reservations')->insertGetId([
                     'user_id' => $userId,
                     'egi_id' => $egiId,
                     'type' => $type,
                     'offer_amount_fiat' => $baseAmount,
                     'amount_eur' => $baseAmount, // Per semplicità
+                    'input_amount' => $baseAmount, // Campo required!
                     'status' => 'active',
                     'is_current' => $isLastReservation, // Solo l'ultima cronologicamente è current
                     'is_highest' => $isLastReservation, // Solo l'ultima cronologicamente è highest
                     'created_at' => $createdAt,
                     'updated_at' => $createdAt,
                 ]);
+                
+                // Recupera il modello creato per l'array
+                $newReservation = Reservation::find($reservationId);
+                Reservation::reguard();
                 
                 $createdReservations[] = $newReservation;
                 $reservationsCreated++;
@@ -264,17 +270,29 @@ class StatisticsTestFactory {
                 $latestReservation = end($createdReservations); // L'ultima (più recente)
                 $latestCreatedAt = $latestReservation->created_at;
                 
-                // Marca TUTTE le precedenti come superseded
+                // Marca TUTTE le precedenti come superseded (SKIP L'ULTIMA!)
                 foreach ($createdReservations as $reservation) {
                     if ($reservation->id !== $latestReservation->id) {
-                        $reservation->update([
-                            'is_current' => false,
-                            'is_highest' => false,
-                            'superseded_by_id' => $latestReservation->id,
-                            'superseded_at' => $latestCreatedAt,
-                        ]);
+                        // Usa DB::table per mantenere timestamps personalizzati
+                        DB::table('reservations')
+                            ->where('id', $reservation->id)
+                            ->update([
+                                'is_current' => false,
+                                'is_highest' => false,
+                                'superseded_by_id' => $latestReservation->id,
+                                'superseded_at' => $latestCreatedAt,
+                                'updated_at' => $latestCreatedAt, // Mantieni timestamp personalizzato
+                            ]);
                     }
                 }
+                
+                // ASSICURATI che l'ultima rimanga is_current = true
+                DB::table('reservations')
+                    ->where('id', $latestReservation->id)
+                    ->update([
+                        'is_current' => true,
+                        'is_highest' => true,
+                    ]);
             }
         }
         

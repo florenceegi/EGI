@@ -28,7 +28,7 @@ return new class extends Migration {
             $table->enum('kind', [
                 // Tipi originali
                 'pdf',
-                'scan_signed', 
+                'scan_signed',
                 'image_front',
                 'image_back',
                 'signature_detail',
@@ -57,7 +57,7 @@ return new class extends Migration {
             $table->enum('kind', [
                 'pdf',
                 'scan_signed',
-                'image_front', 
+                'image_front',
                 'image_back',
                 'signature_detail',
                 'core_pdf',

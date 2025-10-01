@@ -10,10 +10,17 @@ namespace App\Enums;
 enum PlatformRole: string
 {
 
-    case EPP = 'EPP';
-    case NATAN = 'Natan';
-    case CREATOR = 'Creator';
-    case STAFF_MEMBER = 'staff_member';
+    case EPP = 'epp';
+    case NATAN = 'natan ';
+    case CREATOR = 'creator';
+    case COLLECTOR = 'collector';
+    case COMMISSIONER = 'commissioner';
+    case COMPANY = 'company';
+    case TRADER_PRO = 'trader_pro';
+    case VIP = 'vip';
+    case WEAK = 'weak';
+    case PA_ENTITY = 'pa_entity';
+    case INSPECTOR = 'inspector';
 
     /**
      * Converte un valore stringa del database in un'istanza dell'enum.
@@ -26,11 +33,17 @@ enum PlatformRole: string
     {
         // Usa il costrutto match per mappare i valori stringa ai casi dell'enum.
         return match($value) {
-            'EPP' => self::EPP,
-            'Natan' => self::NATAN,
-            'Creator' => self::CREATOR,
-            'staff_member' => self::STAFF_MEMBER,
-
+            'epp' => self::EPP,
+            'natan' => self::NATAN,
+            'creator' => self::CREATOR,
+            'collector' => self::COLLECTOR,
+            'commissioner' => self::COMMISSIONER,
+            'company' => self::COMPANY,
+            'trader_pro' => self::TRADER_PRO,
+            'vip' => self::VIP,
+            'weak' => self::WEAK,
+            'pa_entity' => self::PA_ENTITY,
+            'inspector' => self::INSPECTOR,
 
             default => throw new \ValueError("Platform role '$value' non valido") // Lancia un'eccezione per valori non riconosciuti.
         };
