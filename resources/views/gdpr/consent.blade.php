@@ -199,7 +199,7 @@
 </style>
 @endpush
 
-<x-app-layout :page-title="__('gdpr.consent.your_consents')" :page-subtitle="__('gdpr.consent.subtitle')">
+<x-platform-layout :page-title="__('gdpr.consent.your_consents')" :page-subtitle="__('gdpr.consent.subtitle')">
 
     <div class="consent-summary">
         <div class="summary-card">
@@ -355,7 +355,7 @@
             </a>
         </div>
     </div>
-</x-app-layout>
+</x-platform-layout>
 
 @push('scripts')
 <script>

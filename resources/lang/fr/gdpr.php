@@ -691,6 +691,16 @@ return [
         ],
     ],
 
+    // Version Information
+    'current_version' => 'Version Actuelle',
+    'version' => 'Version : 1.0',
+    'effective_date' => 'Date d\'Entrée en Vigueur : 30 Septembre 2025',
+    'last_updated' => 'Dernière Mise à Jour : 30 Septembre 2025, 17:41',
+
+    // Actions
+    'download_pdf' => 'Télécharger PDF',
+    'print' => 'Imprimer',
+
     'modal' => [
         'clarification' => [
             'title' => 'Clarification Nécessaire',

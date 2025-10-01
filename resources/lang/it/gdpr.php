@@ -825,4 +825,14 @@ return [
     'all_rights_reserved' => 'Tutti i diritti riservati.',
     'navigation_label' => 'Navigazione GDPR',
     'main_content_label' => 'Contenuto principale GDPR',
+
+    // Version Information
+    'current_version' => 'Versione Corrente',
+    'version' => 'Versione: 1.0',
+    'effective_date' => 'Data di Entrata in Vigore: 30 Set 2025',
+    'last_updated' => 'Ultimo Aggiornamento: 30 Set 2025, 17:41',
+
+    // Actions
+    'download_pdf' => 'Scarica PDF',
+    'print' => 'Stampa',
 ];

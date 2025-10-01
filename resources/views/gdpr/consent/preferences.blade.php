@@ -1,5 +1,5 @@
 {{-- resources/views/gdpr/consent/preferences.blade.php --}}
-<x-gdpr-layout
+<x-platform-layout
     :page-title="__('gdpr.consent.preferences_title')"
     :page-subtitle="__('gdpr.consent.preferences_subtitle')"
     :breadcrumb-items="[
@@ -331,4 +331,4 @@
     </script>
     @endpush
 
-</x-gdpr-layout>
+</x-platform-layout>

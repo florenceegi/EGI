@@ -690,4 +690,14 @@ return [
         'consent_save_error' => 'Error saving cookie preferences.',
         'validation_error' => 'Invalid consent data. Please check your choices.',
     ],
+
+    // Version Information
+    'current_version' => 'Current Version',
+    'version' => 'Version: 1.0',
+    'effective_date' => 'Effective Date: 30 Sep 2025',
+    'last_updated' => 'Last Updated: 30 Sep 2025, 17:41',
+
+    // Actions
+    'download_pdf' => 'Download PDF',
+    'print' => 'Print',
 ];
