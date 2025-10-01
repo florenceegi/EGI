@@ -77,7 +77,7 @@
 
                                 {{-- EGI Image --}}
                                 <div class="flex-shrink-0">
-                                    <a href="/egi/{{ $egi['id'] }}">
+                                    <a href="/egis/{{ $egi['id'] }}">
                                         @if($egi['avatar_image_url'])
                                             <img src="{{ $egi['avatar_image_url'] }}" alt="{{ $egi['title'] }}" class="object-cover w-8 h-8 rounded">
                                         @elseif($egi['thumbnail_image_url'])
@@ -96,7 +96,7 @@
 
                                 {{-- EGI Info --}}
                                 <div class="flex-1 min-w-0">
-                                    <a href="/egi/{{ $egi['id'] }}" class="block">
+                                    <a href="/egis/{{ $egi['id'] }}" class="block">
                                         <div class="text-sm font-medium text-white truncate">{{ $egi['title'] ?? 'Untitled EGI' }}</div>
                                         <div class="text-xs text-gray-400">
                                             di <a href="{{ $ownerRoute }}" class="text-blue-400 hover:text-blue-300">{{ $egi['owner_nick_name'] ?? $egi['owner_name'] }}</a>

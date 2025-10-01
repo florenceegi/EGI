@@ -69,7 +69,7 @@
                                 ? ($egi['likes_count'] / $receivedLikesStats['total_received']) * 100
                                 : 0;
                         @endphp
-                        <a href="/egi/{{ $egi['id'] }}" class="flex items-center p-2 space-x-3 transition-colors bg-black rounded-lg bg-opacity-20 hover:bg-opacity-30">
+                        <a href="/egis/{{ $egi['id'] }}" class="flex items-center p-2 space-x-3 transition-colors bg-black rounded-lg bg-opacity-20 hover:bg-opacity-30">
                             {{-- Rank --}}
                             <div class="flex items-center justify-center flex-shrink-0 w-6 h-6 text-xs font-bold text-white rounded-full bg-gradient-to-r from-pink-500 to-rose-500">
                                 {{ $index + 1 }}

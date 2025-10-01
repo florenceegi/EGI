@@ -220,10 +220,10 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                         class="w-full rounded bg-blue-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700">
                         {{ __('egi.coa.add_annex') }}
                     </button>
-                    <button onclick="reissueCoaCertificate('{{ $existingCoa->id }}')"
+                    {{-- <button onclick="reissueCoaCertificate('{{ $existingCoa->id }}')"
                         class="w-full rounded bg-purple-600 px-2 py-1.5 text-xs font-medium text-white transition-colors hover:bg-purple-700">
                         {{ __('egi.coa.reissue') }}
-                    </button>
+                    </button> --}}
 
                     @if (config('coa.signature.enabled'))
                         <button onclick="signAuthor('{{ $existingCoa->id }}')"
