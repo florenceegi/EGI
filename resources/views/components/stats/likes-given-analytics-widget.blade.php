@@ -65,8 +65,20 @@
                             // Ogni EGI rappresenta un like dato dall'utente, quindi la progressione è basata sull'ordine
                             $totalEgis = count($givenLikesStats['liked_egis']);
                             $percentage = $totalEgis > 0 ? (($totalEgis - $index) / $totalEgis) * 100 : 0;
-                            // Il middleware CreatorNicknameRedirect gestisce automaticamente la conversione ID -> nick_name
-                            $ownerRoute = route('creator.home', $egi['owner_id']);
+                            
+                            // Switcher per la route corretta basata sul usertype del proprietario dell'EGI
+                            $ownerId = $egi['owner_id'];
+                            $ownerUser = \App\Models\User::find($ownerId);
+                            $ownerRoute = '#'; // Fallback
+                            
+                            if ($ownerUser) {
+                                $ownerRoute = match($ownerUser->usertype ?? 'creator') {
+                                    'creator' => route('creator.home', $ownerId),
+                                    'collector' => route('collector.home', $ownerId),
+                                    'commissioner' => route('profile.show'), // Commissioner non ha pagina pubblica specifica
+                                    default => route('creator.home', $ownerId) // Fallback a creator
+                                };
+                            }
                         @endphp
                         <div class="p-2 transition-colors bg-black rounded-lg bg-opacity-20 hover:bg-opacity-30">
                             <div class="flex items-center space-x-3">
@@ -140,8 +152,20 @@
                         @php
                             $maxLikes = $givenLikesStats['owners'][0]['likes_count'] ?? 1;
                             $percentage = ($owner['likes_count'] / $maxLikes) * 100;
-                            // Il middleware CreatorNicknameRedirect gestisce automaticamente la conversione ID -> nick_name
-                            $ownerRoute = route('creator.home', $owner['user_id']);
+                            
+                            // Switcher per la route corretta basata sul usertype dell'owner
+                            $ownerUserId = $owner['user_id'];
+                            $ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
+                            $ownerRoute = '#'; // Fallback
+                            
+                            if ($ownerUserObject) {
+                                $ownerRoute = match($ownerUserObject->usertype ?? 'creator') {
+                                    'creator' => route('creator.home', $ownerUserId),
+                                    'collector' => route('collector.home', $ownerUserId),
+                                    'commissioner' => route('profile.show'), // Commissioner non ha pagina pubblica specifica
+                                    default => route('creator.home', $ownerUserId) // Fallback a creator
+                                };
+                            }
                         @endphp
                         <a href="{{ $ownerRoute }}" class="block p-2 transition-colors bg-black rounded-lg bg-opacity-20 hover:bg-opacity-30">
                             <div class="flex items-center space-x-3">
@@ -247,10 +271,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="space-y-2">
                     @foreach($givenLikesStats['liked_egis'] as $index => $egi)
                         @php
-                            // Use nick_name route if available, otherwise fallback to ID
-                            $ownerRoute = $egi['owner_nick_name']
-                                ? route('creator.home.nickname', $egi['owner_nick_name'])
-                                : route('creator.home', $egi['owner_id']);
+                            // Switcher per la route corretta basata sul usertype del proprietario dell'EGI
+                            $ownerId = $egi['owner_id'];
+                            $ownerUser = \App\Models\User::find($ownerId);
+                            $ownerRoute = '#'; // Fallback
+                            
+                            if ($ownerUser) {
+                                $ownerRoute = match($ownerUser->usertype ?? 'creator') {
+                                    'creator' => $egi['owner_nick_name'] 
+                                        ? route('creator.home.nickname', $egi['owner_nick_name'])
+                                        : route('creator.home', $ownerId),
+                                    'collector' => route('collector.home', $ownerId),
+                                    'commissioner' => route('profile.show'), // Commissioner non ha pagina pubblica specifica
+                                    default => route('creator.home', $ownerId) // Fallback a creator
+                                };
+                            }
                         @endphp
                         <div class="flex items-center p-3 space-x-3 transition-all duration-200 bg-black rounded-lg bg-opacity-20 hover:bg-opacity-30">
                             {{-- Rank --}}
@@ -309,10 +344,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         @php
                             $maxLikes = $givenLikesStats['owners'][0]['likes_count'] ?? 1;
                             $percentage = ($owner['likes_count'] / $maxLikes) * 100;
-                            // Use nick_name route if available, otherwise fallback to ID
-                            $ownerRoute = $owner['nick_name']
-                                ? route('creator.home.nickname', $owner['nick_name'])
-                                : route('creator.home', $owner['user_id']);
+                            
+                            // Switcher per la route corretta basata sul usertype dell'owner
+                            $ownerUserId = $owner['user_id'];
+                            $ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
+                            $ownerRoute = '#'; // Fallback
+                            
+                            if ($ownerUserObject) {
+                                $ownerRoute = match($ownerUserObject->usertype ?? 'creator') {
+                                    'creator' => $owner['nick_name']
+                                        ? route('creator.home.nickname', $owner['nick_name'])
+                                        : route('creator.home', $ownerUserId),
+                                    'collector' => route('collector.home', $ownerUserId),
+                                    'commissioner' => route('profile.show'), // Commissioner non ha pagina pubblica specifica
+                                    default => route('creator.home', $ownerUserId) // Fallback a creator
+                                };
+                            }
                         @endphp
                         <div class="flex items-center p-3 space-x-3 transition-all duration-200 bg-black rounded-lg bg-opacity-20 hover:bg-opacity-30">
                             {{-- Rank --}}
