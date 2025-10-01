@@ -24,6 +24,12 @@ enum UserTypeEnum: string {
     case VIP = 'vip';
     case NATAN = 'natan';
 
+        // Aggiunti da UserRoleForInvite.php
+    case PATRON = 'patron';
+    case ADMIN = 'admin';
+    case EDITOR = 'editor';
+    case GUEST = 'guest';
+
     /**
      * Get the display name for the user type
      * @return string
@@ -39,6 +45,10 @@ enum UserTypeEnum: string {
             self::TRADER_PRO => __('payment_distribution.user_types.trader_pro'),
             self::VIP => __('payment_distribution.user_types.vip'),
             self::NATAN => __('payment_distribution.user_types.natan'),
+            self::PATRON => __('payment_distribution.user_types.patron'),
+            self::ADMIN => __('payment_distribution.user_types.admin'),
+            self::EDITOR => __('payment_distribution.user_types.editor'),
+            self::GUEST => __('payment_distribution.user_types.guest'),
         };
     }
 
@@ -57,6 +67,10 @@ enum UserTypeEnum: string {
             self::TRADER_PRO => __('payment_distribution.user_types_desc.trader_pro'),
             self::VIP => __('payment_distribution.user_types_desc.vip'),
             self::NATAN => __('payment_distribution.user_types_desc.natan'),
+            self::PATRON => __('payment_distribution.user_types_desc.patron'),
+            self::ADMIN => __('payment_distribution.user_types_desc.admin'),
+            self::EDITOR => __('payment_distribution.user_types_desc.editor'),
+            self::GUEST => __('payment_distribution.user_types_desc.guest'),
         };
     }
 
@@ -109,7 +123,7 @@ enum UserTypeEnum: string {
      * @return array<UserTypeEnum>
      */
     public static function getIndividualTypes(): array {
-        return [self::WEAK, self::CREATOR, self::COLLECTOR, self::COMMISSIONER, self::VIP];
+        return [self::WEAK, self::CREATOR, self::COLLECTOR, self::COMMISSIONER, self::VIP, self::PATRON, self::ADMIN, self::EDITOR, self::GUEST];
     }
 
     /**

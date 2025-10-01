@@ -47,7 +47,8 @@ return new class extends Migration {
                 'company',
                 'epp',
                 'trader-pro',
-                'vip'
+                'vip',
+                'natan'
             ])->comment('Tipologia utente beneficiario');
 
             $table->decimal('percentage', 5, 2)
