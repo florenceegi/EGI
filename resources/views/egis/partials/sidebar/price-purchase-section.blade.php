@@ -1,5 +1,5 @@
 {{-- resources/views/egis/partials/sidebar/price-purchase-section.blade.php --}}
-{{-- 
+{{--
     Sezione prezzo e acquisto
     ORIGINE: righe 139-271 di show.blade.php (Price & Purchase Section)
     VARIABILI: $egi, $isForSale, $displayPrice, $priceLabel, $displayUser, $highestPriorityReservation, $isCreator, $canBeReserved
@@ -22,18 +22,18 @@
         {{-- Miglior offerente (STRONG vs WEAK) --}}
         @if($displayUser || $highestPriorityReservation)
         @php
-        $isWeakReservation = $highestPriorityReservation &&
-        $highestPriorityReservation->type === 'weak';
-        $bgColor = $isWeakReservation ? 'bg-amber-500/10' : 'bg-emerald-500/10';
-        $borderColor = $isWeakReservation ? 'border-amber-500/20' : 'border-emerald-500/20';
-        $iconBg = $isWeakReservation ? 'bg-amber-500' : 'bg-emerald-500';
-        $textColor = $isWeakReservation ? 'text-amber-300' : 'text-emerald-300';
+            $isWeakReservation = $highestPriorityReservation &&
+            $highestPriorityReservation->type === 'weak';
+            $bgColor = $isWeakReservation ? 'bg-amber-500/10' : 'bg-emerald-500/10';
+            $borderColor = $isWeakReservation ? 'border-amber-500/20' : 'border-emerald-500/20';
+            $iconBg = $isWeakReservation ? 'bg-amber-500' : 'bg-emerald-500';
+            $textColor = $isWeakReservation ? 'text-amber-300' : 'text-emerald-300';
 
-        // Prepare activator display for both icon and text
-        $activatorDisplayTop = null;
-        if ($displayUser && !$isWeakReservation) {
-        $activatorDisplayTop = formatActivatorDisplay($displayUser);
-        }
+            // Prepare activator display for both icon and text
+            $activatorDisplayTop = null;
+            if ($displayUser && !$isWeakReservation) {
+                $activatorDisplayTop = formatActivatorDisplay($displayUser);
+            }
         @endphp
 
         <div
@@ -41,25 +41,25 @@
             <div
                 class="flex items-center justify-center flex-shrink-0 w-5 h-5 {{ $iconBg }} rounded-full">
                 @if ($isWeakReservation)
-                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
-                        clip-rule="evenodd" />
-                </svg>
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
+                            clip-rule="evenodd" />
+                    </svg>
                 @else
-                {{-- Check if commissioner has avatar --}}
-                @if ($activatorDisplayTop && $activatorDisplayTop['is_commissioner'] &&
-                $activatorDisplayTop['avatar'])
-                <img src="{{ $activatorDisplayTop['avatar'] }}"
-                    alt="{{ $activatorDisplayTop['name'] }}"
-                    class="object-cover w-5 h-5 rounded-full">
-                @else
-                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                        clip-rule="evenodd" />
-                </svg>
-                @endif
+                    {{-- Check if commissioner has avatar --}}
+                    @if ($activatorDisplayTop && $activatorDisplayTop['is_commissioner'] &&
+                        $activatorDisplayTop['avatar'])
+                        <img src="{{ $activatorDisplayTop['avatar'] }}"
+                            alt="{{ $activatorDisplayTop['name'] }}"
+                            class="object-cover w-5 h-5 rounded-full">
+                    @else
+                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    @endif
                 @endif
             </div>
             <span class="text-sm {{ $textColor }}">
@@ -91,23 +91,26 @@
 
     {{-- Main Action Buttons --}}
     <div class="space-y-3">
-        {{-- Like Button - Full Version --}}
+        {{-- Like Button - Full Version OR Likes Received Widget for Creator --}}
         @if(!$isCreator)
-        <button
-            class="w-full inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-pink-600/80 to-purple-600/80 hover:from-pink-600 hover:to-purple-600 backdrop-blur-sm text-white font-medium rounded-lg transition-all duration-200 border border-pink-500/30 hover:border-pink-400/50 like-button {{ $egi->is_liked ?? false ? 'is-liked ring-2 ring-pink-400/50' : '' }}"
-            data-resource-type="egi" data-resource-id="{{ $egi->id }}">
-            <svg class="-ml-1 mr-3 h-5 w-5 icon-heart {{ $egi->is_liked ?? false ? 'text-pink-300' : 'text-white' }}"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                    d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656Z"
-                    clip-rule="evenodd" />
-            </svg>
-            <span class="like-text">{{ $egi->is_liked ?? false ? __('egi.liked') :
-                __('egi.add_to_favorites') }}</span>
-            <span
-                class="ml-2 bg-white/20 px-2 py-0.5 rounded-full text-xs like-count-display">{{
-                $egi->likes_count ?? 0 }}</span>
-        </button>
+            <button
+                class="w-full inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-pink-600/80 to-purple-600/80 hover:from-pink-600 hover:to-purple-600 backdrop-blur-sm text-white font-medium rounded-lg transition-all duration-200 border border-pink-500/30 hover:border-pink-400/50 like-button {{ $egi->is_liked ?? false ? 'is-liked ring-2 ring-pink-400/50' : '' }}"
+                data-resource-type="egi" data-resource-id="{{ $egi->id }}">
+                <svg class="-ml-1 mr-3 h-5 w-5 icon-heart {{ $egi->is_liked ?? false ? 'text-pink-300' : 'text-white' }}"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656Z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span class="like-text">{{ $egi->is_liked ?? false ? __('egi.liked') :
+                    __('egi.add_to_favorites') }}</span>
+                <span
+                    class="ml-2 bg-white/20 px-2 py-0.5 rounded-full text-xs like-count-display">{{
+                    $egi->likes_count ?? 0 }}</span>
+            </button>
+        @else
+            {{-- EGI Likes Received Widget - Only for the creator --}}
+            <x-stats.egi-likes-received-widget :egi-id="$egi->id" />
         @endif
 
         {{-- Reserve Button --}}

@@ -131,6 +131,7 @@ return [
     'no_liking_users' => 'Nessun like ricevuto ancora',
     'no_liked_owners' => 'Nessun utente ha messo like ancora',
     'liked_by' => 'Like da',
+    'by' => 'di',
     'users' => 'utenti',
     'liked_egis' => 'EGI Apprezzati',
     'liked_owners' => 'Creatori degli EGI Apprezzati',
@@ -141,6 +142,11 @@ return [
     'no_egis_liked_yet' => 'Nessun EGI con "Mi piace" ancora',
     'no_users_liked_yet' => 'Nessun utente con like ancora',
     'likes_received_from_you' => 'like ricevuti da te',
+
+    // EGI Likes Widget - for individual EGI pages
+    'likes_received_for_this_egi' => 'Like Ricevuti per questo EGI',
+    'no_likes_received_yet' => 'Nessun Like ricevuto ancora per questo EGI.',
+    'total_likes' => 'Like Totali',
 
     // Role Earnings Widget - testi hardcoded
     'no_role_earnings' => 'Nessuna Entrata da Ruoli',

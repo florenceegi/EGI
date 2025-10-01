@@ -1651,4 +1651,58 @@ class StatisticsService {
                 return [null, null];
         }
     }
+
+    /**
+     * Get users who liked a specific EGI
+     *
+     * @param int $egiId
+     * @return array
+     */
+    public function getEgiLikesReceived(int $egiId): array {
+        try {
+            $cacheKey = "egi_likes_received_{$egiId}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($egiId) {
+                // Get all likes for this specific EGI
+                $egiLikes = Like::where('likeable_type', 'App\Models\Egi')
+                    ->where('likeable_id', $egiId)
+                    ->with(['user'])
+                    ->get();
+
+                // Get users who liked this EGI
+                $usersWhoLiked = $egiLikes->map(function ($like) {
+                    $user = $like->user;
+                    if (!$user) return null;
+
+                    return [
+                        'user_id' => $user->id,
+                        'nickname' => $user->nickname ?? $user->name ?? 'Unknown User',
+                        'nick_name' => $user->nick_name,
+                        'user' => $user, // Real User model with appends
+                        'liked_at' => $like->created_at,
+                    ];
+                })
+                    ->filter()
+                    ->sortByDesc('liked_at')
+                    ->values()
+                    ->toArray();
+
+                return [
+                    'total_likes' => $egiLikes->count(),
+                    'users_who_liked' => $usersWhoLiked,
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get EGI likes received', [
+                'egi_id' => $egiId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_likes' => 0,
+                'users_who_liked' => [],
+            ];
+        }
+    }
 }

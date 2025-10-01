@@ -124,7 +124,7 @@
                                         <div class="text-sm font-medium text-white truncate">
                                             {{ $egi['title'] ?? 'Untitled EGI' }}</div>
                                         <div class="text-xs text-gray-400">
-                                            di <a href="{{ $ownerRoute }}"
+                                            {{ __('statistics.by') }} <a href="{{ $ownerRoute }}"
                                                 class="text-blue-400 hover:text-blue-300">{{ $egi['owner_nick_name'] ?? $egi['owner_name'] }}</a>
                                         </div>
                                     </a>
@@ -170,18 +170,18 @@
                             $percentage = ($owner['likes_count'] / $maxLikes) * 100;
 
                             // Switcher per la route corretta basata sul usertype dell'owner
-$ownerUserId = $owner['user_id'];
-$ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
-$ownerRoute = '#'; // Fallback
+                            $ownerUserId = $owner['user_id'];
+                            $ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
+                            $ownerRoute = '#'; // Fallback
 
-if ($ownerUserObject) {
-    $ownerRoute = match ($ownerUserObject->usertype ?? 'creator') {
-        'creator' => route('creator.home', $ownerUserId),
-        'collector' => route('collector.home', $ownerUserId),
-        'commissioner' => route(
-            'profile.show',
-        ), // Commissioner non ha pagina pubblica specifica
-        default => route('creator.home', $ownerUserId), // Fallback a creator
+                            if ($ownerUserObject) {
+                                $ownerRoute = match ($ownerUserObject->usertype ?? 'creator') {
+                                    'creator' => route('creator.home', $ownerUserId),
+                                    'collector' => route('collector.home', $ownerUserId),
+                                    'commissioner' => route(
+                                        'profile.show',
+                                    ), // Commissioner non ha pagina pubblica specifica
+                                    default => route('creator.home', $ownerUserId), // Fallback a creator
                                 };
                             }
                         @endphp
@@ -297,20 +297,20 @@ if ($ownerUserObject) {
                 @foreach ($givenLikesStats['liked_egis'] as $index => $egi)
                     @php
                         // Switcher per la route corretta basata sul usertype del proprietario dell'EGI
-$ownerId = $egi['owner_id'];
-$ownerUser = \App\Models\User::find($ownerId);
-$ownerRoute = '#'; // Fallback
+                        $ownerId = $egi['owner_id'];
+                        $ownerUser = \App\Models\User::find($ownerId);
+                        $ownerRoute = '#'; // Fallback
 
-if ($ownerUser) {
-    $ownerRoute = match ($ownerUser->usertype ?? 'creator') {
-        'creator' => $egi['owner_nick_name']
-            ? route('creator.home.nickname', $egi['owner_nick_name'])
-            : route('creator.home', $ownerId),
-        'collector' => route('collector.home', $ownerId),
-        'commissioner' => route(
-            'profile.show',
-        ), // Commissioner non ha pagina pubblica specifica
-        default => route('creator.home', $ownerId), // Fallback a creator
+                        if ($ownerUser) {
+                            $ownerRoute = match ($ownerUser->usertype ?? 'creator') {
+                                'creator' => $egi['owner_nick_name']
+                                    ? route('creator.home.nickname', $egi['owner_nick_name'])
+                                    : route('creator.home', $ownerId),
+                                'collector' => route('collector.home', $ownerId),
+                                'commissioner' => route(
+                                    'profile.show',
+                                ), // Commissioner non ha pagina pubblica specifica
+                                default => route('creator.home', $ownerId), // Fallback a creator
                             };
                         }
                     @endphp
@@ -384,20 +384,20 @@ if ($ownerUser) {
                         $percentage = ($owner['likes_count'] / $maxLikes) * 100;
 
                         // Switcher per la route corretta basata sul usertype dell'owner
-$ownerUserId = $owner['user_id'];
-$ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
-$ownerRoute = '#'; // Fallback
+                        $ownerUserId = $owner['user_id'];
+                        $ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
+                        $ownerRoute = '#'; // Fallback
 
-if ($ownerUserObject) {
-    $ownerRoute = match ($ownerUserObject->usertype ?? 'creator') {
-        'creator' => $owner['nick_name']
-            ? route('creator.home.nickname', $owner['nick_name'])
-            : route('creator.home', $ownerUserId),
-        'collector' => route('collector.home', $ownerUserId),
-        'commissioner' => route(
-            'profile.show',
-        ), // Commissioner non ha pagina pubblica specifica
-        default => route('creator.home', $ownerUserId), // Fallback a creator
+                        if ($ownerUserObject) {
+                            $ownerRoute = match ($ownerUserObject->usertype ?? 'creator') {
+                                'creator' => $owner['nick_name']
+                                    ? route('creator.home.nickname', $owner['nick_name'])
+                                    : route('creator.home', $ownerUserId),
+                                'collector' => route('collector.home', $ownerUserId),
+                                'commissioner' => route(
+                                    'profile.show',
+                                ), // Commissioner non ha pagina pubblica specifica
+                                default => route('creator.home', $ownerUserId), // Fallback a creator
                             };
                         }
                     @endphp
