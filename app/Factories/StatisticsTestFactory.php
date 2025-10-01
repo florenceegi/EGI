@@ -270,25 +270,25 @@ class StatisticsTestFactory {
                 // STRATEGIA: Privilegia periodi correnti (oggi > settimana > mese > passato)
                 $today = Carbon::now();
                 $currentReservation = null;
-                
+
                 // 1. PRIORITY: EGI con indici bassi -> reservations di oggi (primi 8 EGI)
                 if ($egiIndex < 8) {
                     // Cerca reservation di oggi o più recente possibile
-                    $todayReservations = array_filter($createdReservations, function($res) use ($today) {
+                    $todayReservations = array_filter($createdReservations, function ($res) use ($today) {
                         return $res->created_at->isSameDay($today);
                     });
                     $currentReservation = !empty($todayReservations) ? array_values($todayReservations)[0] : end($createdReservations);
                 }
                 // 2. PRIORITY: EGI 8-15 -> reservations di questa settimana
                 elseif ($egiIndex < 16) {
-                    $weekReservations = array_filter($createdReservations, function($res) use ($today) {
+                    $weekReservations = array_filter($createdReservations, function ($res) use ($today) {
                         return $res->created_at->isCurrentWeek();
                     });
                     $currentReservation = !empty($weekReservations) ? array_values($weekReservations)[0] : end($createdReservations);
                 }
                 // 3. PRIORITY: EGI 16-25 -> reservations di questo mese
                 elseif ($egiIndex < 26) {
-                    $monthReservations = array_filter($createdReservations, function($res) use ($today) {
+                    $monthReservations = array_filter($createdReservations, function ($res) use ($today) {
                         return $res->created_at->isCurrentMonth();
                     });
                     $currentReservation = !empty($monthReservations) ? array_values($monthReservations)[0] : end($createdReservations);
@@ -298,7 +298,7 @@ class StatisticsTestFactory {
                     $currentIndex = $egiIndex % count($createdReservations);
                     $currentReservation = $createdReservations[$currentIndex];
                 }
-                
+
                 $currentCreatedAt = $currentReservation->created_at;
 
                 // Marca TUTTE le altre come superseded
