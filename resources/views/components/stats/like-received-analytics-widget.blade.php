@@ -8,18 +8,15 @@
     $targetUserId = $userId ?? ($creatorId ?? auth()->id());
     $statisticsService = app(\App\Services\StatisticsService::class);
 
-    // Ottieni statistiche dei like ricevuti (EGI dell'utente) con periodo temporale
-$receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetUserId, $period);
-
-// Ottieni statistiche di chi ha dato like agli EGI dell'utente
-    $whoLikedStats = \App\Services\StatisticsService::getWhoLikedUserEgisStats($targetUserId);
+    // Ottieni statistiche dei like ricevuti con formato widget (include sia EGI che utenti)
+    $receivedLikesStats = $statisticsService->getLikesReceivedStatsForWidget($targetUserId, $period);
 @endphp
 
-<div class="rounded-xl bg-white bg-opacity-10 p-6 backdrop-blur-md">
+<div class="p-6 bg-white rounded-xl bg-opacity-10 backdrop-blur-md">
     {{-- Header --}}
-    <div class="mb-6 flex items-center justify-between">
+    <div class="flex items-center justify-between mb-6">
         <h3 class="flex items-center text-xl font-semibold text-white">
-            <svg class="mr-2 h-6 w-6 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-6 h-6 mr-2 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd"
                     d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
                     clip-rule="evenodd" />
@@ -29,7 +26,7 @@ $receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetU
 
         {{-- Total Received Likes --}}
         <div class="text-right">
-            <div class="text-3xl font-bold text-pink-400">{{ number_format($receivedLikesStats['total_received']) }}
+            <div class="text-3xl font-bold text-pink-400">{{ number_format($receivedLikesStats['total_given']) }}
             </div>
             <div class="text-sm text-gray-300">{{ __('statistics.total_likes_received') }}</div>
         </div>
@@ -37,11 +34,11 @@ $receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetU
 
     {{-- Content Tabs --}}
     <div class="mb-4">
-        <div class="flex space-x-1 rounded-lg bg-black bg-opacity-20 p-1">
+        <div class="flex p-1 space-x-1 bg-black rounded-lg bg-opacity-20">
             <button
-                class="likes-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-md bg-pink-600 px-3 py-2 text-sm font-medium text-white transition-colors duration-200"
+                class="flex items-center justify-center flex-1 px-3 py-2 space-x-2 text-sm font-medium text-white transition-colors duration-200 bg-pink-600 rounded-md likes-tab-btn"
                 data-tab="received">
-                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                         d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
                         clip-rule="evenodd" />
@@ -49,9 +46,9 @@ $receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetU
                 <span>EGI</span>
             </button>
             <button
-                class="likes-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-md px-3 py-2 text-sm font-medium text-gray-300 transition-colors duration-200 hover:text-white"
+                class="flex items-center justify-center flex-1 px-3 py-2 space-x-2 text-sm font-medium text-gray-300 transition-colors duration-200 rounded-md likes-tab-btn hover:text-white"
                 data-tab="given">
-                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
                         clip-rule="evenodd" />
                 </svg>
@@ -65,20 +62,20 @@ $receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetU
         <div class="mb-4">
             <h4 class="mb-3 text-lg font-medium text-white">{{ __('statistics.top_liked_egis') }}</h4>
 
-            @if (count($receivedLikesStats['top_egis']) > 0)
+            @if (count($receivedLikesStats['liked_egis']) > 0)
                 <div class="space-y-2">
-                    @foreach ($receivedLikesStats['top_egis'] as $index => $egi)
+                    @foreach ($receivedLikesStats['liked_egis'] as $index => $egi)
                         @php
                             $percentage =
-                                $receivedLikesStats['total_received'] > 0
-                                    ? ($egi['likes_count'] / $receivedLikesStats['total_received']) * 100
+                                $receivedLikesStats['total_given'] > 0
+                                    ? ($egi['likes_count'] / $receivedLikesStats['total_given']) * 100
                                     : 0;
                         @endphp
                         <a href="/egis/{{ $egi['id'] }}"
-                            class="flex items-center space-x-3 rounded-lg bg-black bg-opacity-20 p-2 transition-colors hover:bg-opacity-30">
+                            class="flex items-center p-2 space-x-3 transition-colors bg-black rounded-lg bg-opacity-20 hover:bg-opacity-30">
                             {{-- Rank --}}
                             <div
-                                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-xs font-bold text-white">
+                                class="flex items-center justify-center flex-shrink-0 w-6 h-6 text-xs font-bold text-white rounded-full bg-gradient-to-r from-pink-500 to-rose-500">
                                 {{ $index + 1 }}
                             </div>
 
@@ -86,16 +83,16 @@ $receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetU
                             <div class="flex-shrink-0">
                                 @if ($egi['avatar_image_url'])
                                     <img src="{{ $egi['avatar_image_url'] }}" alt="{{ $egi['title'] }}"
-                                        class="h-8 w-8 rounded object-cover">
+                                        class="object-cover w-8 h-8 rounded">
                                 @elseif($egi['thumbnail_image_url'])
                                     <img src="{{ $egi['thumbnail_image_url'] }}" alt="{{ $egi['title'] }}"
-                                        class="h-8 w-8 rounded object-cover">
+                                        class="object-cover w-8 h-8 rounded">
                                 @elseif($egi['main_image_url'])
                                     <img src="{{ $egi['main_image_url'] }}" alt="{{ $egi['title'] }}"
-                                        class="h-8 w-8 rounded object-cover">
+                                        class="object-cover w-8 h-8 rounded">
                                 @else
-                                    <div class="flex h-8 w-8 items-center justify-center rounded bg-gray-600">
-                                        <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <div class="flex items-center justify-center w-8 h-8 bg-gray-600 rounded">
+                                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
                                                 d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
                                                 clip-rule="evenodd" />
@@ -105,8 +102,8 @@ $receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetU
                             </div>
 
                             {{-- Title --}}
-                            <div class="min-w-0 flex-1">
-                                <div class="truncate text-sm font-medium text-white">
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-medium text-white truncate">
                                     {{ $egi['title'] ?? 'Untitled EGI' }}</div>
                             </div>
 
@@ -116,8 +113,8 @@ $receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetU
                             </div>
 
                             {{-- Progress Bar --}}
-                            <div class="w-20 flex-shrink-0">
-                                <div class="h-2 w-full rounded-full bg-gray-700">
+                            <div class="flex-shrink-0 w-20">
+                                <div class="w-full h-2 bg-gray-700 rounded-full">
                                     <div class="h-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500"
                                         style="width: {{ $percentage }}%"></div>
                                 </div>
@@ -134,44 +131,44 @@ $receivedLikesStats = $statisticsService->getLikesReceivedStatsByPeriod($targetU
     </div>
 
     {{-- Given Likes Tab Content --}}
-    <div id="likes-given-tab" class="likes-tab-content hidden">
+    <div id="likes-given-tab" class="hidden likes-tab-content">
         <div class="mb-4">
-            <div class="mb-3 flex items-center justify-between">
+            <div class="flex items-center justify-between mb-3">
                 <h4 class="text-lg font-medium text-white">{{ __('statistics.top_liking_users') }}</h4>
                 <div class="text-sm text-gray-300">
                     {{ __('statistics.total_given') }}: <span
-                        class="font-bold text-pink-400">{{ number_format($whoLikedStats['total_given']) }}</span>
+                        class="font-bold text-pink-400">{{ number_format($receivedLikesStats['total_given']) }}</span>
                 </div>
             </div>
 
-            @if (count($whoLikedStats['top_users']) > 0)
+            @if (count($receivedLikesStats['owners']) > 0)
                 <div class="space-y-2">
-                    @foreach ($whoLikedStats['top_users'] as $index => $user)
+                    @foreach ($receivedLikesStats['owners'] as $index => $user)
                         @php
-                            $maxLikes = $whoLikedStats['top_users'][0]['likes_given'] ?? 1;
-                            $percentage = ($user['likes_given'] / $maxLikes) * 100;
+                            $maxLikes = $receivedLikesStats['owners'][0]['likes_count'] ?? 1;
+                            $percentage = ($user['likes_count'] / $maxLikes) * 100;
 
                             // Switcher per la route corretta basata sul usertype dell'utente che ha dato like
-$userId = $user['user_id'];
-$userObject = $user['user'] ?? null; // Oggetto User già caricato dal service
-$userRoute = '#'; // Fallback
+                            $userId = $user['user_id'];
+                            $userObject = $user['user'] ?? null; // Oggetto User già caricato dal service
+                            $userRoute = '#'; // Fallback
 
-if ($userObject) {
-    $userRoute = match ($userObject->usertype ?? 'creator') {
-        'creator' => route('creator.home', $userId),
-        'collector' => route('collector.home', $userId),
-        'commissioner' => route(
-            'profile.show',
-        ), // Commissioner non ha pagina pubblica specifica
-        default => route('creator.home', $userId), // Fallback a creator
-                                };
+                            if ($userObject) {
+                                $userRoute = match ($userObject->usertype ?? 'creator') {
+                                    'creator' => route('creator.home', $userId),
+                                    'collector' => route('collector.home', $userId),
+                                    'commissioner' => route(
+                                        'profile.show',
+                                    ), // Commissioner non ha pagina pubblica specifica
+                                    default => route('creator.home', $userId), // Fallback a creator
+                                                            };
                             }
                         @endphp
                         <a href="{{ $userRoute }}"
-                            class="flex items-center space-x-3 rounded-lg bg-black bg-opacity-20 p-2 transition-colors hover:bg-opacity-30">
+                            class="flex items-center p-2 space-x-3 transition-colors bg-black rounded-lg bg-opacity-20 hover:bg-opacity-30">
                             {{-- Rank --}}
                             <div
-                                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-xs font-bold text-white">
+                                class="flex items-center justify-center flex-shrink-0 w-6 h-6 text-xs font-bold text-white rounded-full bg-gradient-to-r from-blue-500 to-purple-500">
                                 {{ $index + 1 }}
                             </div>
 
@@ -179,10 +176,10 @@ if ($userObject) {
                             <div class="flex-shrink-0">
                                 @if ($user['user']->profile_photo_url)
                                     <img src="{{ $user['user']->profile_photo_url }}" alt="{{ $user['nickname'] }}"
-                                        class="h-8 w-8 rounded-full object-cover">
+                                        class="object-cover w-8 h-8 rounded-full">
                                 @else
                                     <div
-                                        class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-500">
+                                        class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-rose-500">
                                         <span
                                             class="text-xs font-bold text-white">{{ strtoupper(substr($user['nickname'], 0, 1)) }}</span>
                                     </div>
@@ -190,18 +187,18 @@ if ($userObject) {
                             </div>
 
                             {{-- User Name --}}
-                            <div class="min-w-0 flex-1">
-                                <div class="truncate text-sm font-medium text-white">{{ $user['nickname'] }}</div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-medium text-white truncate">{{ $user['nickname'] }}</div>
                             </div>
 
                             {{-- Likes Count --}}
                             <div class="flex-shrink-0 text-sm font-bold text-pink-400">
-                                {{ $user['likes_given'] }}
+                                {{ $user['likes_count'] }}
                             </div>
 
                             {{-- Progress Bar --}}
-                            <div class="w-20 flex-shrink-0">
-                                <div class="h-2 w-full rounded-full bg-gray-700">
+                            <div class="flex-shrink-0 w-20">
+                                <div class="w-full h-2 bg-gray-700 rounded-full">
                                     <div class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
                                         style="width: {{ $percentage }}%"></div>
                                 </div>

@@ -990,7 +990,7 @@ class StatisticsService {
                             $query->whereBetween('created_at', [$startDate, $endDate]);
                         }
                     })
-                    ->with(['likes.user', 'collection']);
+                    ->with(['likes.user', 'collection.creator']);
 
                 // Add temporal filtering to the likes relationship
                 if ($period !== 'all') {
@@ -1026,6 +1026,9 @@ class StatisticsService {
                         'thumbnail_image_url' => $egi->getThumbnailImageUrlAttribute(),
                         'avatar_image_url' => $egi->getAvatarImageUrlAttribute(),
                         'collection_name' => $egi->collection->name ?? 'Unknown Collection',
+                        'owner_id' => $egi->collection->creator_id ?? null,
+                        'owner_name' => $egi->collection->creator->name ?? $egi->collection->creator->nickname ?? 'Unknown User',
+                        'owner_nick_name' => $egi->collection->creator->nick_name ?? null,
                         'likes_count' => $likesCount,
                         'liked_by_users' => $likedByUsers,
                     ];
@@ -1054,6 +1057,116 @@ class StatisticsService {
             return [
                 'total_received' => 0,
                 'top_egis' => [],
+            ];
+        }
+    }
+
+    /**
+     * Get comprehensive likes received statistics for widget display
+     * Shows WHO gave likes TO the user's EGIs (not who the user gave likes to)
+     *
+     * @param int $userId
+     * @param string $period
+     * @return array
+     */
+    public function getLikesReceivedStatsForWidget(int $userId, string $period = 'month'): array {
+        try {
+            $cacheKey = "likes_received_widget_stats_{$userId}_{$period}";
+
+            return Cache::remember($cacheKey, self::CACHE_TTL_MINUTES * 60, function () use ($userId, $period) {
+                [$startDate, $endDate] = $this->getDateRangeForPeriod($period);
+
+                // Get all likes received ON this user's EGIs (not given BY this user)
+                // Using whereIn with subquery to avoid the whereHas issue
+                $userCollectionIds = \DB::table('collections')
+                    ->where('creator_id', $userId)
+                    ->pluck('id');
+
+                $userEgiIds = \DB::table('egis')
+                    ->whereIn('collection_id', $userCollectionIds)
+                    ->pluck('id');
+
+                $likesToUserEgisQuery = Like::where('likeable_type', 'App\Models\Egi')
+                    ->whereIn('likeable_id', $userEgiIds)
+                    ->with(['user', 'likeable.collection.creator']);
+
+                // Apply temporal filtering
+                if ($period !== 'all') {
+                    $likesToUserEgisQuery->whereBetween('created_at', [$startDate, $endDate]);
+                }
+
+                $likesToUserEgis = $likesToUserEgisQuery->get();
+
+                // Get EGIs that received likes
+                $likedEgis = $likesToUserEgis->groupBy('likeable_id')
+                    ->map(function ($likes, $egiId) {
+                        $egi = $likes->first()->likeable;
+                        if (!$egi) return null;
+
+                        return [
+                            'id' => $egi->id,
+                            'title' => $egi->title,
+                            'main_image_url' => $egi->getMainImageUrlAttribute(),
+                            'thumbnail_image_url' => $egi->getThumbnailImageUrlAttribute(),
+                            'avatar_image_url' => $egi->getAvatarImageUrlAttribute(),
+                            'collection_name' => $egi->collection->collection_name ?? 'Unknown Collection',
+                            'owner_id' => $egi->collection->creator_id ?? null,
+                            'owner_name' => $egi->collection->creator->name ?? $egi->collection->creator->nickname ?? 'Unknown User',
+                            'owner_nick_name' => $egi->collection->creator->nick_name ?? null,
+                            'likes_count' => $likes->count(),
+                            'liked_by_users' => $likes->map(function ($like) {
+                                return [
+                                    'user_id' => $like->user_id,
+                                    'nickname' => $like->user->nickname ?? $like->user->name ?? 'Unknown User',
+                                    'avatar' => $like->user->avatar ?? null,
+                                ];
+                            })->toArray(),
+                        ];
+                    })
+                    ->filter()
+                    ->sortByDesc('likes_count')
+                    ->take(10)
+                    ->values()
+                    ->toArray();
+
+                // Get users who gave likes (for User tab) - THESE are the people who liked the owner's EGIs
+                $usersWhoLiked = $likesToUserEgis->groupBy('user_id')
+                    ->map(function ($likes) {
+                        $user = $likes->first()->user;
+                        if (!$user) return null;
+
+                        return [
+                            'user_id' => $user->id,
+                            'nickname' => $user->nickname ?? $user->name ?? 'Unknown User',
+                            'nick_name' => $user->nick_name,
+                            'user' => $user, // Use the actual User model instance with all methods and appends
+                            'likes_count' => $likes->count(),
+                        ];
+                    })
+                    ->filter()
+                    ->sortByDesc('likes_count')
+                    ->take(20)
+                    ->values()
+                    ->toArray();
+
+                return [
+                    'total_given' => $likesToUserEgis->count(), // Total likes received
+                    'liked_egis' => $likedEgis, // EGIs that received likes
+                    'owners' => $usersWhoLiked, // Users who gave likes (kept as 'owners' for component compatibility)
+                ];
+            });
+        } catch (Throwable $e) {
+            app(UltraLogManager::class)->log('error', 'Failed to get likes received widget stats', [
+                'user_id' => $userId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'total_given' => 0,
+                'liked_egis' => [],
+                'owners' => [],
             ];
         }
     }

@@ -8,8 +8,8 @@
     $targetUserId = $userId ?? ($creatorId ?? auth()->id());
     $statisticsService = app(\App\Services\StatisticsService::class);
 
-    // Ottieni statistiche dei like lasciati dall'utente con periodo temporale
-    $givenLikesStats = $statisticsService->getLikesGivenByUserStatsByPeriod($targetUserId, $period);
+    // Ottieni statistiche dei like ricevuti dall'utente con periodo temporale (formato widget)
+    $givenLikesStats = $statisticsService->getLikesReceivedStatsForWidget($targetUserId, $period);
 @endphp
 
 <div class="p-6 bg-white rounded-xl bg-opacity-10 backdrop-blur-md">
@@ -70,18 +70,18 @@
                             $percentage = $totalEgis > 0 ? (($totalEgis - $index) / $totalEgis) * 100 : 0;
 
                             // Switcher per la route corretta basata sul usertype del proprietario dell'EGI
-                            $ownerId = $egi['owner_id'];
-                            $ownerUser = \App\Models\User::find($ownerId);
-                            $ownerRoute = '#'; // Fallback
+$ownerId = $egi['owner_id'];
+$ownerUser = \App\Models\User::find($ownerId);
+$ownerRoute = '#'; // Fallback
 
-                            if ($ownerUser) {
-                                $ownerRoute = match ($ownerUser->usertype ?? 'creator') {
-                                    'creator' => route('creator.home', $ownerId),
-                                    'collector' => route('collector.home', $ownerId),
-                                    'commissioner' => route(
-                                        'profile.show',
-                                    ), // Commissioner non ha pagina pubblica specifica
-                                    default => route('creator.home', $ownerId), // Fallback a creator
+if ($ownerUser) {
+    $ownerRoute = match ($ownerUser->usertype ?? 'creator') {
+        'creator' => route('creator.home', $ownerId),
+        'collector' => route('collector.home', $ownerId),
+        'commissioner' => route(
+            'profile.show',
+        ), // Commissioner non ha pagina pubblica specifica
+        default => route('creator.home', $ownerId), // Fallback a creator
                                 };
                             }
                         @endphp
@@ -170,18 +170,18 @@
                             $percentage = ($owner['likes_count'] / $maxLikes) * 100;
 
                             // Switcher per la route corretta basata sul usertype dell'owner
-                            $ownerUserId = $owner['user_id'];
-                            $ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
-                            $ownerRoute = '#'; // Fallback
+$ownerUserId = $owner['user_id'];
+$ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
+$ownerRoute = '#'; // Fallback
 
-                            if ($ownerUserObject) {
-                                $ownerRoute = match ($ownerUserObject->usertype ?? 'creator') {
-                                    'creator' => route('creator.home', $ownerUserId),
-                                    'collector' => route('collector.home', $ownerUserId),
-                                    'commissioner' => route(
-                                        'profile.show',
-                                    ), // Commissioner non ha pagina pubblica specifica
-                                    default => route('creator.home', $ownerUserId), // Fallback a creator
+if ($ownerUserObject) {
+    $ownerRoute = match ($ownerUserObject->usertype ?? 'creator') {
+        'creator' => route('creator.home', $ownerUserId),
+        'collector' => route('collector.home', $ownerUserId),
+        'commissioner' => route(
+            'profile.show',
+        ), // Commissioner non ha pagina pubblica specifica
+        default => route('creator.home', $ownerUserId), // Fallback a creator
                                 };
                             }
                         @endphp
@@ -297,20 +297,20 @@
                 @foreach ($givenLikesStats['liked_egis'] as $index => $egi)
                     @php
                         // Switcher per la route corretta basata sul usertype del proprietario dell'EGI
-                        $ownerId = $egi['owner_id'];
-                        $ownerUser = \App\Models\User::find($ownerId);
-                        $ownerRoute = '#'; // Fallback
+$ownerId = $egi['owner_id'];
+$ownerUser = \App\Models\User::find($ownerId);
+$ownerRoute = '#'; // Fallback
 
-                        if ($ownerUser) {
-                            $ownerRoute = match ($ownerUser->usertype ?? 'creator') {
-                                'creator' => $egi['owner_nick_name']
-                                    ? route('creator.home.nickname', $egi['owner_nick_name'])
-                                    : route('creator.home', $ownerId),
-                                'collector' => route('collector.home', $ownerId),
-                                'commissioner' => route(
-                                    'profile.show',
-                                ), // Commissioner non ha pagina pubblica specifica
-                                default => route('creator.home', $ownerId), // Fallback a creator
+if ($ownerUser) {
+    $ownerRoute = match ($ownerUser->usertype ?? 'creator') {
+        'creator' => $egi['owner_nick_name']
+            ? route('creator.home.nickname', $egi['owner_nick_name'])
+            : route('creator.home', $ownerId),
+        'collector' => route('collector.home', $ownerId),
+        'commissioner' => route(
+            'profile.show',
+        ), // Commissioner non ha pagina pubblica specifica
+        default => route('creator.home', $ownerId), // Fallback a creator
                             };
                         }
                     @endphp
@@ -384,20 +384,20 @@
                         $percentage = ($owner['likes_count'] / $maxLikes) * 100;
 
                         // Switcher per la route corretta basata sul usertype dell'owner
-                        $ownerUserId = $owner['user_id'];
-                        $ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
-                        $ownerRoute = '#'; // Fallback
+$ownerUserId = $owner['user_id'];
+$ownerUserObject = $owner['user'] ?? null; // Oggetto User già caricato dal service
+$ownerRoute = '#'; // Fallback
 
-                        if ($ownerUserObject) {
-                            $ownerRoute = match ($ownerUserObject->usertype ?? 'creator') {
-                                'creator' => $owner['nick_name']
-                                    ? route('creator.home.nickname', $owner['nick_name'])
-                                    : route('creator.home', $ownerUserId),
-                                'collector' => route('collector.home', $ownerUserId),
-                                'commissioner' => route(
-                                    'profile.show',
-                                ), // Commissioner non ha pagina pubblica specifica
-                                default => route('creator.home', $ownerUserId), // Fallback a creator
+if ($ownerUserObject) {
+    $ownerRoute = match ($ownerUserObject->usertype ?? 'creator') {
+        'creator' => $owner['nick_name']
+            ? route('creator.home.nickname', $owner['nick_name'])
+            : route('creator.home', $ownerUserId),
+        'collector' => route('collector.home', $ownerUserId),
+        'commissioner' => route(
+            'profile.show',
+        ), // Commissioner non ha pagina pubblica specifica
+        default => route('creator.home', $ownerUserId), // Fallback a creator
                             };
                         }
                     @endphp
@@ -427,7 +427,8 @@
                         <div class="flex-1 min-w-0">
                             <a href="{{ $ownerRoute }}" class="block transition-colors hover:text-green-300">
                                 <div class="text-sm font-medium text-white truncate">{{ $owner['nickname'] }}</div>
-                                <div class="text-xs text-gray-400">{{ $owner['likes_count'] }} {{ __('statistics.likes_received_from_you') }}
+                                <div class="text-xs text-gray-400">{{ $owner['likes_count'] }}
+                                    {{ __('statistics.likes_received_from_you') }}
                                 </div>
                             </a>
                         </div>

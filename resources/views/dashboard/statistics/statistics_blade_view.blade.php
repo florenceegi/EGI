@@ -129,7 +129,7 @@
 
                 {{-- Row 4: Likes Analytics --}}
                 <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
-                    <x-stats.likes-analytics-widget :userId="auth()->id()" :period="$period ?? 'month'" />
+                    <x-stats.like-received-analytics-widget :userId="auth()->id()" :period="$period ?? 'month'" />
                     <x-stats.likes-given-analytics-widget :userId="auth()->id()" :period="$period ?? 'month'" />
                 </div>
             </div>
