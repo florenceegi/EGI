@@ -209,7 +209,7 @@ class StatisticsTestFactory {
 
         // Crea multiple reservations per ogni EGI SIMULANDO LOGICA REALE DI SUPERSEDING
         foreach ($this->user3Data['egis'] as $egiIndex => $egiId) {
-            
+
             // STEP 1: Genera TUTTE le date per questo EGI e le ordina cronologicamente
             $reservationDates = [];
             for ($resIndex = 0; $resIndex < $reservationsPerEgi; $resIndex++) {
@@ -217,28 +217,28 @@ class StatisticsTestFactory {
             }
             // Ordina le date: la più vecchia PRIMA, la più recente ULTIMA
             sort($reservationDates);
-            
+
             $createdReservations = [];
-            
+
             // STEP 2: Crea reservations in ordine cronologico (dalla più vecchia alla più nuova)
             for ($resIndex = 0; $resIndex < $reservationsPerEgi; $resIndex++) {
                 $globalIndex = ($egiIndex * $reservationsPerEgi) + $resIndex;
-                
+
                 $userId = ($globalIndex % 2 === 0) ? 8 : 9; // Alterna tra User ID 8 e 9
-                
+
                 // 80% strong, 20% weak (deterministico)
                 $isStrong = ($globalIndex % 5) !== 4; // 4 su 5 = 80% strong
                 $type = $isStrong ? 'strong' : 'weak';
-                
+
                 // Importi deterministici con varietà
                 $amountIndex = $globalIndex % count(self::CONFIG['base_amounts']);
                 $baseAmount = self::CONFIG['base_amounts'][$amountIndex];
-                
+
                 $createdAt = $reservationDates[$resIndex]; // Usa data ordinata cronologicamente
-                
+
                 // LOGICA REALE: Solo l'ULTIMA reservation (più recente cronologicamente) è current/highest
                 $isLastReservation = ($resIndex === ($reservationsPerEgi - 1));
-                
+
                 // DISABILITA TEMPORANEAMENTE TIMESTAMPS per impostare created_at personalizzato
                 Reservation::unguard();
                 $reservationId = DB::table('reservations')->insertGetId([
@@ -254,48 +254,79 @@ class StatisticsTestFactory {
                     'created_at' => $createdAt,
                     'updated_at' => $createdAt,
                 ]);
-                
+
                 // Recupera il modello creato per l'array
                 $newReservation = Reservation::find($reservationId);
                 Reservation::reguard();
-                
+
                 $createdReservations[] = $newReservation;
                 $reservationsCreated++;
                 if ($isStrong) $strongCount++;
                 else $weakCount++;
             }
-            
-            // STEP 3: SUPERSEDING LOGIC - La reservation più recente supersede tutte le precedenti
+
+            // STEP 3: SUPERSEDING LOGIC - DISTRIBUZIONE INTELLIGENTE PER PERIODI CORRENTI
             if (count($createdReservations) > 1) {
-                $latestReservation = end($createdReservations); // L'ultima (più recente)
-                $latestCreatedAt = $latestReservation->created_at;
+                // STRATEGIA: Privilegia periodi correnti (oggi > settimana > mese > passato)
+                $today = Carbon::now();
+                $currentReservation = null;
                 
-                // Marca TUTTE le precedenti come superseded (SKIP L'ULTIMA!)
+                // 1. PRIORITY: EGI con indici bassi -> reservations di oggi (primi 8 EGI)
+                if ($egiIndex < 8) {
+                    // Cerca reservation di oggi o più recente possibile
+                    $todayReservations = array_filter($createdReservations, function($res) use ($today) {
+                        return $res->created_at->isSameDay($today);
+                    });
+                    $currentReservation = !empty($todayReservations) ? array_values($todayReservations)[0] : end($createdReservations);
+                }
+                // 2. PRIORITY: EGI 8-15 -> reservations di questa settimana
+                elseif ($egiIndex < 16) {
+                    $weekReservations = array_filter($createdReservations, function($res) use ($today) {
+                        return $res->created_at->isCurrentWeek();
+                    });
+                    $currentReservation = !empty($weekReservations) ? array_values($weekReservations)[0] : end($createdReservations);
+                }
+                // 3. PRIORITY: EGI 16-25 -> reservations di questo mese
+                elseif ($egiIndex < 26) {
+                    $monthReservations = array_filter($createdReservations, function($res) use ($today) {
+                        return $res->created_at->isCurrentMonth();
+                    });
+                    $currentReservation = !empty($monthReservations) ? array_values($monthReservations)[0] : end($createdReservations);
+                }
+                // 4. RESTO: Distribuzione storica (come prima)
+                else {
+                    $currentIndex = $egiIndex % count($createdReservations);
+                    $currentReservation = $createdReservations[$currentIndex];
+                }
+                
+                $currentCreatedAt = $currentReservation->created_at;
+
+                // Marca TUTTE le altre come superseded
                 foreach ($createdReservations as $reservation) {
-                    if ($reservation->id !== $latestReservation->id) {
+                    if ($reservation->id !== $currentReservation->id) {
                         // Usa DB::table per mantenere timestamps personalizzati
                         DB::table('reservations')
                             ->where('id', $reservation->id)
                             ->update([
                                 'is_current' => false,
                                 'is_highest' => false,
-                                'superseded_by_id' => $latestReservation->id,
-                                'superseded_at' => $latestCreatedAt,
-                                'updated_at' => $latestCreatedAt, // Mantieni timestamp personalizzato
+                                'superseded_by_id' => $currentReservation->id,
+                                'superseded_at' => $currentCreatedAt,
+                                'updated_at' => $currentCreatedAt, // Mantieni timestamp personalizzato
                             ]);
                     }
                 }
-                
-                // ASSICURATI che l'ultima rimanga is_current = true
+
+                // ASSICURATI che la reservation selezionata sia is_current = true
                 DB::table('reservations')
-                    ->where('id', $latestReservation->id)
+                    ->where('id', $currentReservation->id)
                     ->update([
                         'is_current' => true,
                         'is_highest' => true,
                     ]);
             }
         }
-        
+
         echo "📋 Created {$reservationsCreated} reservations for " . count($this->user3Data['egis']) . " EGIs ({$strongCount} strong, {$weakCount} weak)\n";
     }
 
@@ -355,7 +386,8 @@ class StatisticsTestFactory {
                     default => UserTypeEnum::COLLECTOR->value, // Default sicuro
                 };
 
-                PaymentDistribution::create([
+                // USA DB::table per impostare timestamps personalizzati (stesso fix delle reservations)
+                DB::table('payment_distributions')->insert([
                     'user_id' => $wallet->user_id,
                     'reservation_id' => $reservation->id,
                     'collection_id' => $collectionId,
