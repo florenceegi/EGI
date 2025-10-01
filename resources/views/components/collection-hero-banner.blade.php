@@ -112,8 +112,8 @@ return [
     <div class="absolute inset-0 hidden transition-opacity duration-700 ease-in-out bg-center bg-cover hero-banner-background md:block"
         id="heroBannerBackground_{{ $instanceId }}"
         style="background-image: url('{{ $hasCollections && $firstCollection ? (method_exists($firstCollection, 'getFirstMediaUrl') ? ((!empty($firstCollection->getFirstMediaUrl('head', 'banner'))) ? $firstCollection->getFirstMediaUrl('head', 'banner') : ($firstCollection->image_banner ? asset($firstCollection->image_banner) : $defaultBannerUrl)) : ($firstCollection->image_banner ? asset($firstCollection->image_banner) : $defaultBannerUrl)) : $defaultBannerUrl }}')">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"></div>
-        <div class="absolute inset-0 opacity-75 bg-gradient-to-r from-black/50 via-transparent to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/5"></div>
+        <div class="absolute inset-0 opacity-60 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
     </div>
 
     {{-- Mobile: Carousel con immagini scrollabili --}}
@@ -154,8 +154,9 @@ return [
                         :fallback-only="false" />
                 @endif
 
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"></div>
-                <div class="absolute inset-0 opacity-75 bg-gradient-to-r from-black/50 via-transparent to-transparent">
+                {{-- Mobile: Gradienti responsive - più leggeri su mobile per migliore visibilità --}}
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent md:from-black/60 md:via-black/15"></div>
+                <div class="absolute inset-0 opacity-30 bg-gradient-to-r from-black/25 via-transparent to-transparent md:opacity-40 md:from-black/30">
                 </div>
             </div>
             @endforeach
@@ -169,8 +170,9 @@ return [
                     fetchpriority="high"
                     type="banner"
                     :fallback-only="true" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"></div>
-                <div class="absolute inset-0 opacity-75 bg-gradient-to-r from-black/50 via-transparent to-transparent"></div>
+                {{-- Mobile: Gradienti responsive - più leggeri su mobile per migliore visibilità (default case) --}}
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent md:from-black/60 md:via-black/15"></div>
+                <div class="absolute inset-0 opacity-30 bg-gradient-to-r from-black/25 via-transparent to-transparent md:opacity-40 md:from-black/30"></div>
             </div>
             @endif
         </div>
