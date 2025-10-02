@@ -345,6 +345,52 @@
     </x-slot:styles>
 
     <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {{-- Heritage Count --}}
+        <x-pa.pa-stat-card
+            title="Patrimonio Totale"
+            :value="$stats['total_heritage'] ?? 0"
+            icon="museum"
+            trend="neutral"
+            subtitle="Beni culturali catalogati"
+            variant="default"
+        />
+
+        {{-- CoA Issued --}}
+        <x-pa.pa-stat-card
+            title="CoA Emessi"
+            :value="$stats['coa_issued'] ?? 0"
+            icon="verified"
+            trend="up"
+            trendValue="+12%"
+            subtitle="Certificati di autenticità"
+            variant="success"
+        />
+
+        {{-- Pending CoA --}}
+        <x-pa.pa-stat-card
+            title="CoA Pendenti"
+            :value="$stats['coa_pending'] ?? 0"
+            icon="pending"
+            trend="neutral"
+            subtitle="In attesa di approvazione"
+            variant="warning"
+        />
+
+        {{-- Inspections --}}
+        <x-pa.pa-stat-card
+            title="Ispezioni Anno"
+            :value="$stats['inspections_year'] ?? 0"
+            icon="fact_check"
+            trend="up"
+            trendValue="+5%"
+            subtitle="Verifiche effettuate"
+            variant="secondary"
+        />
+    </div>
+
+    {{-- OLD KPI GRID REMOVED - REPLACED WITH COMPONENTS ABOVE --}}
+    @if(false)
     <div class="kpi-grid">
         <div class="kpi-card">
             <div class="kpi-header">
@@ -387,16 +433,47 @@
             <div class="kpi-desc">Documenti in attesa di certificazione</div>
         </div>
     </div>
+    @endif
+    {{-- END OLD KPI GRID --}}
 
     <!-- Recent Documents -->
-    <div class="section-header">
-        <h2 class="section-title"><i class="fas fa-clock"></i> Documenti Recenti</h2>
-        <a href="{{ route('pa.heritage.index') }}" class="btn-primary">
-            Vedi tutti <i class="fas fa-arrow-right"></i>
-        </a>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-[#1B365D] flex items-center gap-2">
+            <span class="material-symbols-outlined">history</span>
+            Patrimonio Recente
+        </h2>
+        <x-pa.pa-action-button
+            label="Vedi Tutti"
+            route="pa.heritage.index"
+            icon="arrow_forward"
+            variant="secondary"
+            size="md"
+        />
     </div>
 
     @if ($recentHeritage && $recentHeritage->count() > 0)
+        {{-- Heritage Grid with pa-heritage-card components --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            @foreach ($recentHeritage->take(6) as $item)
+                <x-pa.pa-heritage-card
+                    :egi="$item"
+                    :showCoa="true"
+                    layout="grid"
+                    :showActions="true"
+                />
+            @endforeach
+        </div>
+    @else
+        {{-- Empty State --}}
+        <div class="bg-white rounded-xl shadow-md p-12 text-center">
+            <span class="material-symbols-outlined text-6xl text-gray-300 mb-4">inventory_2</span>
+            <p class="text-gray-600 mb-2">Nessun bene culturale catalogato</p>
+            <p class="text-sm text-gray-500">Inizia creando la tua prima collezione di patrimonio</p>
+        </div>
+    @endif
+
+    {{-- OLD TABLE VERSION (kept for reference, can be deleted) --}}
+    @if(false)
         <div class="table-container">
             <table class="table">
                 <thead>
@@ -445,21 +522,72 @@
                 </tbody>
             </table>
         </div>
-    @else
-        <div class="table-container">
-            <div class="empty">
-                <i class="fas fa-inbox"></i>
-                <h3>Nessun Documento Recente</h3>
-                <p>Non ci sono documenti da visualizzare al momento.</p>
-            </div>
-        </div>
     @endif
+    {{-- END OLD TABLE VERSION --}}
 
     <!-- Quick Actions -->
-    <div class="section-header" style="margin-top: 32px;">
-        <h2 class="section-title"><i class="fas fa-bolt"></i> Azioni Rapide</h2>
+    <div class="flex justify-between items-center mb-6 mt-12">
+        <h2 class="text-2xl font-bold text-[#1B365D] flex items-center gap-2">
+            <span class="material-symbols-outlined">bolt</span>
+            Azioni Rapide
+        </h2>
     </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {{-- Archivio Completo --}}
+        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#1B365D] to-[#2D5016] rounded-2xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-3xl text-white">folder_open</span>
+            </div>
+            <h3 class="text-lg font-bold text-[#1B365D] mb-2">Archivio Completo</h3>
+            <p class="text-sm text-gray-600 mb-4">Visualizza tutti i beni certificati del tuo ente</p>
+            <x-pa.pa-action-button
+                label="Apri Archivio"
+                route="pa.heritage.index"
+                icon="arrow_forward"
+                variant="secondary"
+                size="sm"
+                fullWidth
+            />
+        </div>
+
+        {{-- Nuovo Certificato --}}
+        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#D4A574] to-[#E67E22] rounded-2xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-3xl text-white">add_circle</span>
+            </div>
+            <h3 class="text-lg font-bold text-[#1B365D] mb-2">Nuovo Certificato</h3>
+            <p class="text-sm text-gray-600 mb-4">Richiedi un nuovo CoA per un bene culturale</p>
+            <x-pa.pa-action-button
+                label="Crea CoA"
+                href="#"
+                icon="add_circle"
+                variant="primary"
+                size="sm"
+                fullWidth
+            />
+        </div>
+
+        {{-- Assegna Ispettore --}}
+        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2D5016] to-[#1F3810] rounded-2xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-3xl text-white">person_add</span>
+            </div>
+            <h3 class="text-lg font-bold text-[#1B365D] mb-2">Assegna Ispettore</h3>
+            <p class="text-sm text-gray-600 mb-4">Gestisci gli ispettori assegnati alle collezioni</p>
+            <x-pa.pa-action-button
+                label="Gestisci Ispettori"
+                href="#"
+                icon="manage_accounts"
+                variant="success"
+                size="sm"
+                fullWidth
+            />
+        </div>
+    </div>
+
+    {{-- OLD ACTIONS GRID (kept for reference) --}}
+    @if(false)
     <div class="actions-grid">
         <a href="{{ route('pa.heritage.index') }}" class="action-card">
             <div class="action-icon"><i class="fas fa-folder-open"></i></div>
@@ -489,5 +617,7 @@
             <div class="action-link">Apri Guida <i class="fas fa-arrow-right"></i></div>
         </a>
     </div>
+    @endif
+    {{-- END OLD ACTIONS GRID --}}
 
 </x-pa-layout>
