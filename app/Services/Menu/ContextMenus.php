@@ -178,7 +178,7 @@ class ContextMenus {
                 ]);
 
                 $paMainMenu = new MenuGroup('Gestione PA', 'pa-building', [
-                    new OpenCollectionMenu(),
+
                     new PADashboardMenu(),
                     new PAHeritageMenu(),
                     new PACoAMenu(),
