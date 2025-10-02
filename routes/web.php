@@ -1192,3 +1192,18 @@ Route::middleware(['auth'])->name('egi.coa-traits.')->group(function () {
 */
 
 require __DIR__ . '/coa.php';
+
+/*
+|--------------------------------------------------------------------------
+| PA/ENTERPRISE ROUTES
+|--------------------------------------------------------------------------
+|
+| Routes per il sistema PA/Enterprise: dashboard, heritage management,
+| CoA display istituzionale, e gestione ispettori.
+| 
+| Access: role:pa_entity (Pubbliche Amministrazioni)
+| Features: KPI dashboard, heritage list/detail, CoA verification
+|
+*/
+
+require __DIR__ . '/pa-enterprise.php';
