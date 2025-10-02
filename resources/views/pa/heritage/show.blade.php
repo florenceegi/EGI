@@ -1,324 +1,303 @@
-{{-- resources/views/pa/heritage/show.blade.php --}}
-{{-- PA Heritage Detail - STUB VIEW per TASK 3.3 testing --}}
-{{-- Full implementation in TASK 4.4 (4h) --}}
+{{--
+/**
+ * PA Heritage Detail View
+ *
+ * @package Resources\Views\PA\Heritage
+ * @author Padmin D. Curtis (AI Partner OS3.0)
+ * @version 1.0.0 (FlorenceEGI - PA Enterprise MVP)
+ * @date 2025-10-02
+ * @purpose Dettaglio bene culturale PA con CoA completo, firme, blockchain verification
+ */
+--}}
 
-<!DOCTYPE html>
-<html lang="it">
+<x-pa-layout :title="$egi->title">
+    <x-slot:breadcrumb>
+        <a href="{{ route('pa.dashboard') }}" class="text-[#D4A574] hover:text-[#C39463]">Dashboard</a>
+        <span class="mx-2 text-gray-400">/</span>
+        <a href="{{ route('pa.heritage.index') }}" class="text-[#D4A574] hover:text-[#C39463]">Patrimonio</a>
+        <span class="mx-2 text-gray-400">/</span>
+        <span class="text-gray-700">{{ Str::limit($egi->title, 30) }}</span>
+    </x-slot:breadcrumb>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $egi->title }} - FlorenceEGI PA</title>
-    <style>
-        body {
-            font-family: 'IBM Plex Sans', sans-serif;
-            background: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-        }
+    <x-slot:pageTitle>{{ $egi->title }}</x-slot:pageTitle>
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    {{-- PA Entity Header --}}
+    @if($egi->collection && $egi->collection->owner)
+        <x-pa.pa-entity-header :entity="$egi->collection->owner" :collection="$egi->collection" :showContact="false" :showStats="false" :compact="true" class="mb-8" />
+    @endif
 
-        h1 {
-            color: #1B365D;
-            margin-bottom: 10px;
-        }
+    {{-- Main Grid Layout: Image + Details --}}
+    <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
+        {{-- Left Column: Image Gallery --}}
+        <div class="space-y-4">
+            {{-- Main Image --}}
+            <div class="overflow-hidden bg-gray-100 shadow-lg aspect-square rounded-xl">
+                @php
+                    $imageUrl = $egi->main_image_url ?: $egi->original_image_url ?: asset('images/placeholder-heritage.jpg');
+                @endphp
+                <img
+                    src="{{ $imageUrl }}"
+                    alt="{{ $egi->title }}"
+                    class="object-cover w-full h-full"
+                    loading="lazy"
+                />
+            </div>
 
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
+            {{-- Image Info --}}
+            <div class="p-4 text-sm text-gray-600 bg-white rounded-lg shadow">
+                <div class="flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="text-base material-symbols-outlined">image</span>
+                        Immagine certificata
+                    </span>
+                    @if($egi->main_image_url)
+                        <a href="{{ $egi->original_image_url }}" target="_blank" class="text-[#D4A574] hover:underline flex items-center gap-1">
+                            <span class="text-base material-symbols-outlined">download</span>
+                            Alta risoluzione
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </div>
 
-        .badge-success {
-            background: #D1FAE5;
-            color: #065F46;
-        }
-
-        .badge-warning {
-            background: #FEF3C7;
-            color: #92400E;
-        }
-
-        .section {
-            margin: 30px 0;
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 8px;
-        }
-
-        .section-title {
-            color: #1B365D;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .info-item {
-            padding: 15px;
-            background: white;
-            border-radius: 6px;
-        }
-
-        .info-label {
-            color: #64748b;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            color: #1B365D;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .coa-section {
-            background: linear-gradient(135deg, #1B365D 0%, #2D5016 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        .coa-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .coa-status {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .coa-details {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 6px;
-        }
-
-        .back-btn {
-            background: #64748b;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 4px;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-
-        .back-btn:hover {
-            background: #475569;
-        }
-
-        .note {
-            background: #FEF3C7;
-            border-left: 4px solid #F59E0B;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-
-        .debug-info {
-            margin-top: 40px;
-            padding: 20px;
-            background: #f1f5f9;
-            border-radius: 8px;
-            font-size: 12px;
-            color: #64748b;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <a href="{{ route('pa.heritage.index') }}" class="back-btn">← Torna alla lista</a>
-
-        <div style="display: flex; justify-content: space-between; align-items: start;">
+        {{-- Right Column: EGI Details --}}
+        <div class="space-y-6">
+            {{-- Title + CoA Badge --}}
             <div>
-                <h1>{{ $egi->title }}</h1>
-                <p style="color: #64748b; margin-top: 5px;">
-                    @if ($egi->artist)
-                        Artista: <strong>{{ $egi->artist }}</strong>
+                <div class="flex items-start justify-between gap-4 mb-4">
+                    <h1 class="text-3xl font-bold text-[#1B365D]">{{ $egi->title }}</h1>
+                    @if($egi->coa)
+                        <x-pa.pa-coa-badge :status="$egi->coa->status" size="lg" />
+                    @else
+                        <x-pa.pa-coa-badge status="none" size="lg" />
                     @endif
-                </p>
-            </div>
-            @if ($egi->coa)
-                <span class="badge badge-success">✅ CoA Emesso</span>
-            @else
-                <span class="badge badge-warning">⏳ CoA Non Emesso</span>
-            @endif
-        </div>
+                </div>
 
-        <div class="note">
-            <strong>📋 TASK 3.3 COMPLETATO</strong><br>
-            Controller implementato con authorization check, eager loading, ULM logging.<br>
-            View completa sarà implementata in TASK 4.4 (4h)
-        </div>
-
-        {{-- EGI Basic Info --}}
-        <div class="section">
-            <div class="section-title">📋 Informazioni Bene Patrimoniale</div>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">ID EGI</div>
-                    <div class="info-value">#{{ $egi->id }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Data Creazione</div>
-                    <div class="info-value">{{ $egi->created_at->format('d/m/Y H:i') }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Ultimo Aggiornamento</div>
-                    <div class="info-value">{{ $egi->updated_at->format('d/m/Y H:i') }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Collection</div>
-                    <div class="info-value">{{ $egi->collection->name ?? 'N/A' }}</div>
-                </div>
-            </div>
-
-            @if ($egi->description)
-                <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 6px;">
-                    <strong style="color: #1B365D;">Descrizione:</strong><br>
-                    <p style="color: #64748b; margin-top: 10px; line-height: 1.6;">
-                        {{ $egi->description }}
+                @if($egi->artist)
+                    <p class="flex items-center gap-2 text-xl text-gray-700">
+                        <span class="text-base material-symbols-outlined">palette</span>
+                        {{ $egi->artist }}
                     </p>
+                @endif
+            </div>
+
+            {{-- Category Badge --}}
+            @php
+                $categoryColors = [
+                    'artwork' => ['bg' => 'bg-[#8E44AD]/10', 'text' => 'text-[#8E44AD]', 'icon' => 'palette'],
+                    'monument' => ['bg' => 'bg-[#1B365D]/10', 'text' => 'text-[#1B365D]', 'icon' => 'account_balance'],
+                    'artifact' => ['bg' => 'bg-[#E67E22]/10', 'text' => 'text-[#E67E22]', 'icon' => 'inventory_2'],
+                    'document' => ['bg' => 'bg-[#2D5016]/10', 'text' => 'text-[#2D5016]', 'icon' => 'description'],
+                ];
+                $category = $categoryColors[$egi->category] ?? $categoryColors['artwork'];
+            @endphp
+            <div class="inline-flex items-center gap-2 px-4 py-2 {{ $category['bg'] }} {{ $category['text'] }} rounded-full text-sm font-semibold">
+                <span class="text-base material-symbols-outlined">{{ $category['icon'] }}</span>
+                {{ ucfirst($egi->category) }}
+            </div>
+
+            {{-- Description --}}
+            @if($egi->description)
+                <div class="p-6 rounded-lg bg-gray-50">
+                    <h3 class="mb-3 text-sm font-semibold tracking-wide text-gray-600 uppercase">Descrizione</h3>
+                    <p class="leading-relaxed text-gray-700">{{ $egi->description }}</p>
                 </div>
             @endif
-        </div>
 
-        {{-- CoA Section --}}
-        @if ($egi->coa)
-            <div class="coa-section">
-                <div class="coa-header">
-                    <h2 style="margin: 0;">📜 Certificate of Authenticity</h2>
-                    <div class="coa-status">
-                        Status: {{ strtoupper($egi->coa->status) }}
+            {{-- Quick Info Grid --}}
+            <div class="grid grid-cols-2 gap-4">
+                @if($egi->created_at)
+                    <div class="p-4 bg-white rounded-lg shadow">
+                        <p class="mb-1 text-xs tracking-wide text-gray-500 uppercase">Data Catalogazione</p>
+                        <p class="text-lg font-semibold text-[#1B365D]">{{ $egi->created_at->format('d/m/Y') }}</p>
                     </div>
-                </div>
+                @endif
 
-                <div class="coa-details">
-                    <div class="info-grid">
-                        <div>
-                            <div style="opacity: 0.8; font-size: 12px;">CoA ID</div>
-                            <div style="font-weight: 600; margin-top: 5px;">#{{ $egi->coa->id }}</div>
-                        </div>
-                        <div>
-                            <div style="opacity: 0.8; font-size: 12px;">Data Emissione</div>
-                            <div style="font-weight: 600; margin-top: 5px;">
-                                {{ $egi->coa->issued_at ? $egi->coa->issued_at->format('d/m/Y') : 'N/A' }}
-                            </div>
-                        </div>
-                        <div>
-                            <div style="opacity: 0.8; font-size: 12px;">Issuer Type</div>
-                            <div style="font-weight: 600; margin-top: 5px;">
-                                {{ ucfirst($egi->coa->issuer_type) }}
-                            </div>
-                        </div>
-                        <div>
-                            <div style="opacity: 0.8; font-size: 12px;">Verification Hash</div>
-                            <div style="font-weight: 600; margin-top: 5px; font-size: 11px; font-family: monospace;">
-                                {{ $egi->coa->verification_hash ? substr($egi->coa->verification_hash, 0, 16) . '...' : 'N/A' }}
-                            </div>
-                        </div>
+                @if($egi->collection)
+                    <div class="p-4 bg-white rounded-lg shadow">
+                        <p class="mb-1 text-xs tracking-wide text-gray-500 uppercase">Collezione</p>
+                        <p class="text-lg font-semibold text-[#1B365D]">{{ Str::limit($egi->collection->name, 25) }}</p>
                     </div>
+                @endif
 
-                    {{-- CoA Files --}}
-                    @if ($egi->coa->files && $egi->coa->files->count() > 0)
-                        <div style="margin-top: 20px;">
-                            <strong>📎 Files Allegati ({{ $egi->coa->files->count() }}):</strong>
-                            <ul style="margin-top: 10px; list-style: none; padding: 0;">
-                                @foreach ($egi->coa->files as $file)
-                                    <li
-                                        style="padding: 8px; background: rgba(255,255,255,0.1); margin-bottom: 5px; border-radius: 4px;">
-                                        📄 {{ $file->kind ?? 'document' }} - {{ $file->filename ?? 'file.pdf' }}
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    {{-- CoA Signatures --}}
-                    @if ($egi->coa->signatures && $egi->coa->signatures->count() > 0)
-                        <div style="margin-top: 20px;">
-                            <strong>✍️ Firme ({{ $egi->coa->signatures->count() }}):</strong>
-                            <ul style="margin-top: 10px; list-style: none; padding: 0;">
-                                @foreach ($egi->coa->signatures as $signature)
-                                    <li
-                                        style="padding: 8px; background: rgba(255,255,255,0.1); margin-bottom: 5px; border-radius: 4px;">
-                                        ✅ {{ $signature->signer->name ?? 'N/A' }} -
-                                        {{ $signature->created_at->format('d/m/Y H:i') }}
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                </div>
+                @if($egi->is_published)
+                    <div class="col-span-2 p-4 bg-white rounded-lg shadow">
+                        <p class="mb-1 text-xs tracking-wide text-gray-500 uppercase">Stato Pubblicazione</p>
+                        <p class="text-lg font-semibold text-[#2D5016] flex items-center gap-2">
+                            <span class="text-base material-symbols-outlined">check_circle</span>
+                            Pubblicato
+                        </p>
+                    </div>
+                @endif
             </div>
-        @else
-            <div class="section">
-                <div class="section-title">⚠️ Certificate of Authenticity</div>
-                <p style="color: #64748b; text-align: center; padding: 40px;">
-                    <em>Nessun CoA emesso per questo bene patrimoniale.</em>
-                </p>
-            </div>
-        @endif
 
-        {{-- CoA Traits --}}
-        @if ($egi->coaTraits && $egi->coaTraits->count() > 0)
-            <div class="section">
-                <div class="section-title">🎨 Caratteristiche CoA ({{ $egi->coaTraits->count() }} traits)</div>
-                <div class="info-grid">
-                    @foreach ($egi->coaTraits as $trait)
-                        <div class="info-item">
-                            <div class="info-label">{{ ucfirst($trait->category) }}</div>
-                            <div class="info-value">{{ $trait->term }}</div>
-                        </div>
-                    @endforeach
-                </div>
+            {{-- Action Buttons --}}
+            <div class="flex flex-col gap-3 pt-4 sm:flex-row">
+                <x-pa.pa-action-button
+                    label="Torna alla Lista"
+                    href="{{ route('pa.heritage.index') }}"
+                    icon="arrow_back"
+                    variant="outline"
+                    size="md"
+                    class="flex-1"
+                />
+                @if($egi->coa && $egi->coa->status === 'valid')
+                    <x-pa.pa-action-button
+                        label="Scarica CoA PDF"
+                        href="{{ route('coa.pdf.download', $egi->coa->id) }}"
+                        icon="download"
+                        variant="primary"
+                        size="md"
+                        target="_blank"
+                        class="flex-1"
+                    />
+                @endif
             </div>
-        @endif
-
-        {{-- Debug Info --}}
-        <div class="debug-info">
-            <strong>🔧 Debug Info:</strong><br>
-            Controller: PAHeritageController@show ✅<br>
-            Authorization: Ownership verified ✅<br>
-            Eager Loading: coa, files, signatures, traits, media ✅<br>
-            ULM Logging: Active ✅<br>
-            Error Handling: Active ✅<br>
-            User: {{ Auth::user()->email }}<br>
-            EGI ID: {{ $egi->id }}<br>
-            Has CoA: {{ $egi->coa ? 'Yes' : 'No' }}<br>
-            Collection: {{ $egi->collection->name ?? 'N/A' }}<br>
-            Timestamp: {{ now()->toDateTimeString() }}<br>
-            <br>
-            <strong>Next Steps:</strong><br>
-            - TASK 4.1: pa-layout.blade.php (4h)<br>
-            - TASK 4.4: Full heritage/show.blade.php implementation (4h)<br>
-            - TASK 4.5: PA UI Components (6h)
         </div>
     </div>
-</body>
 
-</html>
+    {{-- CoA Section (if exists) --}}
+    @if($egi->coa)
+        <div class="bg-gradient-to-r from-[#1B365D] to-[#0F2342] rounded-xl shadow-lg p-8 text-white mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="flex items-center gap-3 text-2xl font-bold">
+                    <span class="text-3xl material-symbols-outlined">verified</span>
+                    Certificato di Autenticità
+                </h2>
+                <x-pa.pa-coa-badge :status="$egi->coa->status" size="lg" />
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 mb-6 md:grid-cols-3">
+                <div class="p-4 rounded-lg bg-white/10">
+                    <p class="mb-1 text-sm text-white/70">ID Certificato</p>
+                    <p class="font-mono text-lg font-semibold">{{ $egi->coa->id }}</p>
+                </div>
+                <div class="p-4 rounded-lg bg-white/10">
+                    <p class="mb-1 text-sm text-white/70">Data Emissione</p>
+                    <p class="text-lg font-semibold">{{ $egi->coa->issued_at->format('d/m/Y H:i') }}</p>
+                </div>
+                <div class="p-4 rounded-lg bg-white/10">
+                    <p class="mb-1 text-sm text-white/70">Emittente</p>
+                    <p class="text-lg font-semibold">{{ ucfirst($egi->coa->issuer_type) }}</p>
+                </div>
+            </div>
+
+            {{-- CoA Traits (if exists) --}}
+            @if($egi->coaTraits && $egi->coaTraits->isNotEmpty())
+                <div class="p-6 mb-6 rounded-lg bg-white/5">
+                    <h3 class="flex items-center gap-2 mb-4 text-lg font-semibold">
+                        <span class="material-symbols-outlined">info</span>
+                        Caratteristiche Tecniche
+                    </h3>
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        @foreach($egi->coaTraits as $trait)
+                            <div>
+                                <p class="mb-1 text-sm text-white/70">{{ $trait->category }}</p>
+                                <p class="font-semibold">{{ $trait->term }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- Signatures --}}
+            @if($egi->coa->signatures && $egi->coa->signatures->isNotEmpty())
+                <div class="p-6 mb-6 rounded-lg bg-white/5">
+                    <h3 class="flex items-center gap-2 mb-4 text-lg font-semibold">
+                        <span class="material-symbols-outlined">draw</span>
+                        Firme Digitali
+                    </h3>
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        @foreach($egi->coa->signatures as $signature)
+                            <div class="p-4 rounded-lg bg-white/10">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <p class="font-semibold">{{ $signature->signer->name ?? 'Firmatario' }}</p>
+                                        <p class="text-sm text-white/70">{{ $signature->role }}</p>
+                                    </div>
+                                    <span class="material-symbols-outlined text-[#2D5016]">verified_user</span>
+                                </div>
+                                <p class="mt-2 text-xs text-white/60">{{ $signature->created_at->format('d/m/Y H:i') }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- Blockchain Verification --}}
+            @if($egi->coa->verification_hash)
+                <div class="p-6 rounded-lg bg-white/5">
+                    <h3 class="flex items-center gap-2 mb-4 text-lg font-semibold">
+                        <span class="material-symbols-outlined">link</span>
+                        Verifica Blockchain
+                    </h3>
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1">
+                            <p class="mb-1 text-sm text-white/70">Transaction Hash</p>
+                            <p class="px-4 py-2 font-mono text-sm rounded bg-white/10">{{ Str::limit($egi->coa->verification_hash, 60) }}</p>
+                        </div>
+                        <a href="#" class="px-6 py-3 bg-[#D4A574] text-[#1B365D] font-semibold rounded-lg hover:bg-[#C39463] transition-colors flex items-center gap-2">
+                            <span class="material-symbols-outlined">open_in_new</span>
+                            Verifica
+                        </a>
+                    </div>
+                </div>
+            @endif
+
+            {{-- CoA Files --}}
+            @if($egi->coa->files && $egi->coa->files->isNotEmpty())
+                <div class="mt-6">
+                    <h3 class="flex items-center gap-2 mb-4 text-lg font-semibold">
+                        <span class="material-symbols-outlined">folder_open</span>
+                        File Allegati
+                    </h3>
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        @foreach($egi->coa->files as $file)
+                            <a href="{{ Storage::url($file->path) }}" target="_blank" class="flex items-center justify-between p-4 transition-colors rounded-lg bg-white/10 hover:bg-white/20 group">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl material-symbols-outlined">{{ $file->kind === 'pdf' ? 'picture_as_pdf' : 'image' }}</span>
+                                    <div>
+                                        <p class="font-semibold">{{ $file->kind === 'pdf' ? 'Certificato PDF' : 'Immagine' }}</p>
+                                        <p class="text-sm text-white/70">{{ number_format($file->size / 1024, 2) }} KB</p>
+                                    </div>
+                                </div>
+                                <span class="transition-transform material-symbols-outlined group-hover:translate-x-1">download</span>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        </div>
+    @else
+        {{-- No CoA Section --}}
+        <div class="p-12 mb-8 text-center shadow bg-gray-50 rounded-xl">
+            <span class="block mb-4 text-gray-300 material-symbols-outlined text-8xl">description_off</span>
+            <h3 class="mb-3 text-2xl font-bold text-gray-700">Nessun Certificato Emesso</h3>
+            <p class="mb-6 text-gray-600">Questo bene culturale non ha ancora un Certificato di Autenticità associato.</p>
+            <x-pa.pa-action-button
+                label="Richiedi Certificato"
+                href="#"
+                icon="add_circle"
+                variant="primary"
+                size="lg"
+            />
+        </div>
+    @endif
+
+    {{-- Public QR Code Section (Placeholder FASE 3) --}}
+    <div class="p-8 text-center bg-white shadow-md rounded-xl">
+        <span class="block mb-4 text-6xl text-gray-300 material-symbols-outlined">qr_code_2</span>
+        <h3 class="text-xl font-bold text-[#1B365D] mb-2">QR Code Pubblico</h3>
+        <p class="mb-4 text-gray-600">Genera QR code per verifica pubblica (disponibile in FASE 3)</p>
+        <x-pa.pa-action-button
+            label="Genera QR Code"
+            href="#"
+            icon="qr_code_scanner"
+            variant="outline"
+            size="md"
+            disabled
+        />
+    </div>
+
+</x-pa-layout>
+           

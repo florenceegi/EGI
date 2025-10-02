@@ -40,47 +40,45 @@
 ])
 
 @php
-// Variant color mapping (PA Brand Guidelines)
-$variantClasses = [
-    'default' => 'bg-gradient-to-br from-[#1B365D] to-[#0F2342] border-[#D4A574]',
-    'success' => 'bg-gradient-to-br from-[#2D5016] to-[#1F3810] border-[#2D5016]',
-    'warning' => 'bg-gradient-to-br from-[#E67E22] to-[#D35400] border-[#E67E22]',
-    'danger' => 'bg-gradient-to-br from-[#C13120] to-[#A02718] border-[#C13120]',
-];
+    // Variant color mapping (PA Brand Guidelines)
+    $variantClasses = [
+        'default' => 'bg-gradient-to-br from-[#1B365D] to-[#0F2342] border-[#D4A574]',
+        'success' => 'bg-gradient-to-br from-[#2D5016] to-[#1F3810] border-[#2D5016]',
+        'warning' => 'bg-gradient-to-br from-[#E67E22] to-[#D35400] border-[#E67E22]',
+        'danger' => 'bg-gradient-to-br from-[#C13120] to-[#A02718] border-[#C13120]',
+    ];
 
-$bgClass = $variantClasses[$variant] ?? $variantClasses['default'];
+    $bgClass = $variantClasses[$variant] ?? $variantClasses['default'];
 
-// Trend icon mapping
-$trendIcons = [
-    'up' => 'trending_up',
-    'down' => 'trending_down',
-    'neutral' => 'trending_flat',
-];
+    // Trend icon mapping
+    $trendIcons = [
+        'up' => 'trending_up',
+        'down' => 'trending_down',
+        'neutral' => 'trending_flat',
+    ];
 
-$trendColors = [
-    'up' => 'text-[#2D5016]',
-    'down' => 'text-[#C13120]',
-    'neutral' => 'text-[#6B6B6B]',
-];
+    $trendColors = [
+        'up' => 'text-[#2D5016]',
+        'down' => 'text-[#C13120]',
+        'neutral' => 'text-[#6B6B6B]',
+    ];
 @endphp
 
-<div
-    {{ $attributes->merge(['class' => "stat-card rounded-xl p-6 shadow-lg border-2 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] $bgClass"]) }}
-    role="article"
-    aria-label="{{ $title }}: {{ $value }}"
->
+<div {{ $attributes->merge(['class' => "stat-card rounded-xl p-6 shadow-lg border-2 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] $bgClass"]) }}
+    role="article" aria-label="{{ $title }}: {{ $value }}">
     {{-- Header con icona e trend --}}
-    <div class="flex items-start justify-between mb-4">
+    <div class="mb-4 flex items-start justify-between">
         {{-- Icon --}}
-        <div class="stat-icon flex-shrink-0 w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center">
-            <span class="material-symbols-outlined text-[#D4A574] text-3xl" aria-hidden="true">
+        <div class="stat-icon flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white/10">
+            <span class="material-symbols-outlined text-3xl text-[#D4A574]" aria-hidden="true">
                 {{ $icon }}
             </span>
         </div>
 
         {{-- Trend Indicator --}}
         @if ($trend && $trendValue)
-            <div class="flex items-center gap-1 px-2 py-1 rounded-full bg-white/20 {{ $trendColors[$trend] ?? $trendColors['neutral'] }}">
+            <div
+                class="{{ $trendColors[$trend] ?? $trendColors['neutral'] }} flex items-center gap-1 rounded-full bg-white/20 px-2 py-1">
                 <span class="material-symbols-outlined text-sm" aria-hidden="true">
                     {{ $trendIcons[$trend] ?? $trendIcons['neutral'] }}
                 </span>
@@ -91,14 +89,14 @@ $trendColors = [
 
     {{-- Value --}}
     <div class="stat-value mb-2">
-        <p class="text-4xl font-bold text-white tracking-tight" aria-live="polite">
+        <p class="text-4xl font-bold tracking-tight text-white" aria-live="polite">
             {{ $value }}
         </p>
     </div>
 
     {{-- Title --}}
     <div class="stat-title mb-1">
-        <h3 class="text-sm font-medium text-[#D4A574] uppercase tracking-wide">
+        <h3 class="text-sm font-medium uppercase tracking-wide text-[#D4A574]">
             {{ $title }}
         </h3>
     </div>
@@ -106,7 +104,7 @@ $trendColors = [
     {{-- Subtitle (optional) --}}
     @if ($subtitle)
         <div class="stat-subtitle">
-            <p class="text-xs text-white/70 mt-2">
+            <p class="mt-2 text-xs text-white/70">
                 {{ $subtitle }}
             </p>
         </div>
@@ -114,7 +112,7 @@ $trendColors = [
 
     {{-- Optional slot for custom content --}}
     @if ($slot->isNotEmpty())
-        <div class="stat-footer mt-4 pt-4 border-t border-white/10">
+        <div class="stat-footer mt-4 border-t border-white/10 pt-4">
             {{ $slot }}
         </div>
     @endif

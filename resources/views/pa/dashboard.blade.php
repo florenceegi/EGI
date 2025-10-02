@@ -345,135 +345,101 @@
     </x-slot:styles>
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {{-- Heritage Count --}}
-        <x-pa.pa-stat-card
-            title="Patrimonio Totale"
-            :value="$stats['total_heritage'] ?? 0"
-            icon="museum"
-            trend="neutral"
-            subtitle="Beni culturali catalogati"
-            variant="default"
-        />
+        <x-pa.pa-stat-card title="Patrimonio Totale" :value="$stats['total_heritage'] ?? 0" icon="museum" trend="neutral"
+            subtitle="Beni culturali catalogati" variant="default" />
 
         {{-- CoA Issued --}}
-        <x-pa.pa-stat-card
-            title="CoA Emessi"
-            :value="$stats['coa_issued'] ?? 0"
-            icon="verified"
-            trend="up"
-            trendValue="+12%"
-            subtitle="Certificati di autenticità"
-            variant="success"
-        />
+        <x-pa.pa-stat-card title="CoA Emessi" :value="$stats['coa_issued'] ?? 0" icon="verified" trend="up" trendValue="+12%"
+            subtitle="Certificati di autenticità" variant="success" />
 
         {{-- Pending CoA --}}
-        <x-pa.pa-stat-card
-            title="CoA Pendenti"
-            :value="$stats['coa_pending'] ?? 0"
-            icon="pending"
-            trend="neutral"
-            subtitle="In attesa di approvazione"
-            variant="warning"
-        />
+        <x-pa.pa-stat-card title="CoA Pendenti" :value="$stats['coa_pending'] ?? 0" icon="pending" trend="neutral"
+            subtitle="In attesa di approvazione" variant="warning" />
 
         {{-- Inspections --}}
-        <x-pa.pa-stat-card
-            title="Ispezioni Anno"
-            :value="$stats['inspections_year'] ?? 0"
-            icon="fact_check"
-            trend="up"
-            trendValue="+5%"
-            subtitle="Verifiche effettuate"
-            variant="secondary"
-        />
+        <x-pa.pa-stat-card title="Ispezioni Anno" :value="$stats['inspections_year'] ?? 0" icon="fact_check" trend="up" trendValue="+5%"
+            subtitle="Verifiche effettuate" variant="secondary" />
     </div>
 
     {{-- OLD KPI GRID REMOVED - REPLACED WITH COMPONENTS ABOVE --}}
-    @if(false)
-    <div class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-header">
-                <div class="kpi-icon"><i class="fas fa-file-alt"></i></div>
-                <div class="kpi-trend positive"><i class="fas fa-arrow-up"></i> {{ $stats['growth_rate'] ?? '12%' }}</div>
-            </div>
-            <div class="kpi-label">Documenti Totali</div>
-            <div class="kpi-value">{{ $stats['total_heritage'] ?? 0 }}</div>
-            <div class="kpi-desc">Documenti certificati nel sistema</div>
-        </div>
-
-        <div class="kpi-card green">
-            <div class="kpi-header">
-                <div class="kpi-icon"><i class="fas fa-certificate"></i></div>
-                <div class="kpi-trend positive"><i class="fas fa-check-circle"></i> {{ $stats['cert_rate'] ?? '75%' }}
+    @if (false)
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <div class="kpi-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="kpi-trend positive"><i class="fas fa-arrow-up"></i> {{ $stats['growth_rate'] ?? '12%' }}
+                    </div>
                 </div>
+                <div class="kpi-label">Documenti Totali</div>
+                <div class="kpi-value">{{ $stats['total_heritage'] ?? 0 }}</div>
+                <div class="kpi-desc">Documenti certificati nel sistema</div>
             </div>
-            <div class="kpi-label">CoA Emessi</div>
-            <div class="kpi-value">{{ $stats['total_coa'] ?? 0 }}</div>
-            <div class="kpi-desc">Certificati di Autenticità attivi</div>
-        </div>
 
-        <div class="kpi-card gold">
-            <div class="kpi-header">
-                <div class="kpi-icon"><i class="fas fa-user-shield"></i></div>
-                <div class="kpi-trend neutral"><i class="fas fa-users"></i> Attivi</div>
+            <div class="kpi-card green">
+                <div class="kpi-header">
+                    <div class="kpi-icon"><i class="fas fa-certificate"></i></div>
+                    <div class="kpi-trend positive"><i class="fas fa-check-circle"></i>
+                        {{ $stats['cert_rate'] ?? '75%' }}
+                    </div>
+                </div>
+                <div class="kpi-label">CoA Emessi</div>
+                <div class="kpi-value">{{ $stats['total_coa'] ?? 0 }}</div>
+                <div class="kpi-desc">Certificati di Autenticità attivi</div>
             </div>
-            <div class="kpi-label">Ispettori</div>
-            <div class="kpi-value">{{ $stats['total_inspectors'] ?? 0 }}</div>
-            <div class="kpi-desc">Ispettori assegnati alle collezioni</div>
-        </div>
 
-        <div class="kpi-card grey">
-            <div class="kpi-header">
-                <div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div>
-                <div class="kpi-trend neutral"><i class="fas fa-clock"></i> In corso</div>
+            <div class="kpi-card gold">
+                <div class="kpi-header">
+                    <div class="kpi-icon"><i class="fas fa-user-shield"></i></div>
+                    <div class="kpi-trend neutral"><i class="fas fa-users"></i> Attivi</div>
+                </div>
+                <div class="kpi-label">Ispettori</div>
+                <div class="kpi-value">{{ $stats['total_inspectors'] ?? 0 }}</div>
+                <div class="kpi-desc">Ispettori assegnati alle collezioni</div>
             </div>
-            <div class="kpi-label">Verifiche Pending</div>
-            <div class="kpi-value">{{ $stats['pending_verifications'] ?? 0 }}</div>
-            <div class="kpi-desc">Documenti in attesa di certificazione</div>
+
+            <div class="kpi-card grey">
+                <div class="kpi-header">
+                    <div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="kpi-trend neutral"><i class="fas fa-clock"></i> In corso</div>
+                </div>
+                <div class="kpi-label">Verifiche Pending</div>
+                <div class="kpi-value">{{ $stats['pending_verifications'] ?? 0 }}</div>
+                <div class="kpi-desc">Documenti in attesa di certificazione</div>
+            </div>
         </div>
-    </div>
     @endif
     {{-- END OLD KPI GRID --}}
 
     <!-- Recent Documents -->
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-[#1B365D] flex items-center gap-2">
+    <div class="mb-6 flex items-center justify-between">
+        <h2 class="flex items-center gap-2 text-2xl font-bold text-[#1B365D]">
             <span class="material-symbols-outlined">history</span>
             Patrimonio Recente
         </h2>
-        <x-pa.pa-action-button
-            label="Vedi Tutti"
-            route="pa.heritage.index"
-            icon="arrow_forward"
-            variant="secondary"
-            size="md"
-        />
+        <x-pa.pa-action-button label="Vedi Tutti" route="pa.heritage.index" icon="arrow_forward" variant="secondary"
+            size="md" />
     </div>
 
     @if ($recentHeritage && $recentHeritage->count() > 0)
         {{-- Heritage Grid with pa-heritage-card components --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             @foreach ($recentHeritage->take(6) as $item)
-                <x-pa.pa-heritage-card
-                    :egi="$item"
-                    :showCoa="true"
-                    layout="grid"
-                    :showActions="true"
-                />
+                <x-pa.pa-heritage-card :egi="$item" :showCoa="true" layout="grid" :showActions="true" />
             @endforeach
         </div>
     @else
         {{-- Empty State --}}
-        <div class="bg-white rounded-xl shadow-md p-12 text-center">
-            <span class="material-symbols-outlined text-6xl text-gray-300 mb-4">inventory_2</span>
-            <p class="text-gray-600 mb-2">Nessun bene culturale catalogato</p>
+        <div class="rounded-xl bg-white p-12 text-center shadow-md">
+            <span class="material-symbols-outlined mb-4 text-6xl text-gray-300">inventory_2</span>
+            <p class="mb-2 text-gray-600">Nessun bene culturale catalogato</p>
             <p class="text-sm text-gray-500">Inizia creando la tua prima collezione di patrimonio</p>
         </div>
     @endif
 
     {{-- OLD TABLE VERSION (kept for reference, can be deleted) --}}
-    @if(false)
+    @if (false)
         <div class="table-container">
             <table class="table">
                 <thead>
@@ -526,97 +492,82 @@
     {{-- END OLD TABLE VERSION --}}
 
     <!-- Quick Actions -->
-    <div class="flex justify-between items-center mb-6 mt-12">
-        <h2 class="text-2xl font-bold text-[#1B365D] flex items-center gap-2">
+    <div class="mb-6 mt-12 flex items-center justify-between">
+        <h2 class="flex items-center gap-2 text-2xl font-bold text-[#1B365D]">
             <span class="material-symbols-outlined">bolt</span>
             Azioni Rapide
         </h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
         {{-- Archivio Completo --}}
-        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 text-center">
-            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#1B365D] to-[#2D5016] rounded-2xl flex items-center justify-center">
+        <div class="rounded-xl bg-white p-6 text-center shadow-md transition-all duration-300 hover:shadow-xl">
+            <div
+                class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1B365D] to-[#2D5016]">
                 <span class="material-symbols-outlined text-3xl text-white">folder_open</span>
             </div>
-            <h3 class="text-lg font-bold text-[#1B365D] mb-2">Archivio Completo</h3>
-            <p class="text-sm text-gray-600 mb-4">Visualizza tutti i beni certificati del tuo ente</p>
-            <x-pa.pa-action-button
-                label="Apri Archivio"
-                route="pa.heritage.index"
-                icon="arrow_forward"
-                variant="secondary"
-                size="sm"
-                fullWidth
-            />
+            <h3 class="mb-2 text-lg font-bold text-[#1B365D]">Archivio Completo</h3>
+            <p class="mb-4 text-sm text-gray-600">Visualizza tutti i beni certificati del tuo ente</p>
+            <x-pa.pa-action-button label="Apri Archivio" route="pa.heritage.index" icon="arrow_forward"
+                variant="secondary" size="sm" fullWidth />
         </div>
 
         {{-- Nuovo Certificato --}}
-        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 text-center">
-            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#D4A574] to-[#E67E22] rounded-2xl flex items-center justify-center">
+        <div class="rounded-xl bg-white p-6 text-center shadow-md transition-all duration-300 hover:shadow-xl">
+            <div
+                class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D4A574] to-[#E67E22]">
                 <span class="material-symbols-outlined text-3xl text-white">add_circle</span>
             </div>
-            <h3 class="text-lg font-bold text-[#1B365D] mb-2">Nuovo Certificato</h3>
-            <p class="text-sm text-gray-600 mb-4">Richiedi un nuovo CoA per un bene culturale</p>
-            <x-pa.pa-action-button
-                label="Crea CoA"
-                href="#"
-                icon="add_circle"
-                variant="primary"
-                size="sm"
-                fullWidth
-            />
+            <h3 class="mb-2 text-lg font-bold text-[#1B365D]">Nuovo Certificato</h3>
+            <p class="mb-4 text-sm text-gray-600">Richiedi un nuovo CoA per un bene culturale</p>
+            <x-pa.pa-action-button label="Crea CoA" href="#" icon="add_circle" variant="primary"
+                size="sm" fullWidth />
         </div>
 
         {{-- Assegna Ispettore --}}
-        <div class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 text-center">
-            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2D5016] to-[#1F3810] rounded-2xl flex items-center justify-center">
+        <div class="rounded-xl bg-white p-6 text-center shadow-md transition-all duration-300 hover:shadow-xl">
+            <div
+                class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2D5016] to-[#1F3810]">
                 <span class="material-symbols-outlined text-3xl text-white">person_add</span>
             </div>
-            <h3 class="text-lg font-bold text-[#1B365D] mb-2">Assegna Ispettore</h3>
-            <p class="text-sm text-gray-600 mb-4">Gestisci gli ispettori assegnati alle collezioni</p>
-            <x-pa.pa-action-button
-                label="Gestisci Ispettori"
-                href="#"
-                icon="manage_accounts"
-                variant="success"
-                size="sm"
-                fullWidth
-            />
+            <h3 class="mb-2 text-lg font-bold text-[#1B365D]">Assegna Ispettore</h3>
+            <p class="mb-4 text-sm text-gray-600">Gestisci gli ispettori assegnati alle collezioni</p>
+            <x-pa.pa-action-button label="Gestisci Ispettori" href="#" icon="manage_accounts"
+                variant="success" size="sm" fullWidth />
         </div>
     </div>
 
     {{-- OLD ACTIONS GRID (kept for reference) --}}
-    @if(false)
-    <div class="actions-grid">
-        <a href="{{ route('pa.heritage.index') }}" class="action-card">
-            <div class="action-icon"><i class="fas fa-folder-open"></i></div>
-            <div class="action-title">Archivio Completo</div>
-            <div class="action-desc">Visualizza tutti i documenti certificati del tuo ente</div>
-            <div class="action-link">Apri Archivio <i class="fas fa-arrow-right"></i></div>
-        </a>
+    @if (false)
+        <div class="actions-grid">
+            <a href="{{ route('pa.heritage.index') }}" class="action-card">
+                <div class="action-icon"><i class="fas fa-folder-open"></i></div>
+                <div class="action-title">Archivio Completo</div>
+                <div class="action-desc">Visualizza tutti i documenti certificati del tuo ente</div>
+                <div class="action-link">Apri Archivio <i class="fas fa-arrow-right"></i></div>
+            </a>
 
-        <a href="#" class="action-card">
-            <div class="action-icon"><i class="fas fa-award"></i></div>
-            <div class="action-title">Certificati CoA</div>
-            <div class="action-desc">Gestisci i Certificati di Autenticità emessi</div>
-            <div class="action-link">Gestisci CoA <i class="fas fa-arrow-right"></i></div>
-        </a>
+            <a href="#" class="action-card">
+                <div class="action-icon"><i class="fas fa-award"></i></div>
+                <div class="action-title">Certificati CoA</div>
+                <div class="action-desc">Gestisci i Certificati di Autenticità emessi</div>
+                <div class="action-link">Gestisci CoA <i class="fas fa-arrow-right"></i></div>
+            </a>
 
-        <a href="#" class="action-card">
-            <div class="action-icon"><i class="fas fa-user-check"></i></div>
-            <div class="action-title">Ispettori</div>
-            <div class="action-desc">Visualizza e gestisci gli ispettori assegnati</div>
-            <div class="action-link">Gestisci Ispettori <i class="fas fa-arrow-right"></i></div>
-        </a>
+            <a href="#" class="action-card">
+                <div class="action-icon"><i class="fas fa-user-check"></i></div>
+                <div class="action-title">Ispettori</div>
+                <div class="action-desc">Visualizza e gestisci gli ispettori assegnati</div>
+                <div class="action-link">Gestisci Ispettori <i class="fas fa-arrow-right"></i></div>
+            </a>
 
-        <a href="#" class="action-card">
-            <div class="action-icon"><i class="fas fa-question-circle"></i></div>
-            <div class="action-title">Guida Sistema</div>
-            <div class="action-desc">Documentazione e supporto per utilizzare FlorenceEGI</div>
-            <div class="action-link">Apri Guida <i class="fas fa-arrow-right"></i></div>
-        </a>
-    </div>
+            <a href="#" class="action-card">
+                <div class="action-icon"><i class="fas fa-question-circle"></i></div>
+                <div class="action-title">Guida Sistema</div>
+                <div class="action-desc">Documentazione e supporto per utilizzare FlorenceEGI</div>
+                <div class="action-link">Apri Guida <i class="fas fa-arrow-right"></i></div>
+            </a>
+        </div>
     @endif
     {{-- END OLD ACTIONS GRID --}}
 
