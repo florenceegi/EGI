@@ -9,20 +9,29 @@ use Spatie\Permission\Models\Role;
 use Carbon\Carbon;
 
 /**
- * PA/Enterprise Demo Data Seeder
+ * PA/Enterprise Demo Data Seeder - REVISED APPROACH
  *
  * @package Database\Seeders
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - PA/Enterprise System MVP)
+ * @version 2.0.0 (FlorenceEGI - PA/Enterprise System MVP)
  * @date 2025-10-02
- * @purpose Seed demo data for PA Entity (Comune di Firenze) with heritage items
+ * @purpose Seed demo data for PA Entity with ADMINISTRATIVE DOCUMENTS (NOT cultural heritage)
+ *
+ * CRITICAL: Focus on SERVICE demonstration, not specific content
+ * APPROACH: Neutral administrative documents to show certification benefits
  *
  * Data Created:
- * - 1 PA Entity User (Comune di Firenze)
- * - 1 Collection (Patrimonio Monumentale Comunale)
- * - 8 EGI (Heritage items: statue, monumenti, affreschi)
- * - 6 CoA (Certificates issued for some EGI)
+ * - 1 PA Entity User (Comune di Firenze - Ufficio Amministrativo)
+ * - 1 Collection (Archivio Atti Amministrativi - Demo Sistema)
+ * - 8 EGI (Administrative documents: determine, delibere, autorizzazioni, certificati)
+ * - 6 CoA (Certificates issued for some documents)
  * - 1 Inspector user (assigned via collection_user pivot)
+ *
+ * Benefits Demonstrated:
+ * - Timestamp immutability (anti-backdating)
+ * - Document authenticity verification (QR code)
+ * - Audit trail transparency (blockchain)
+ * - Anti-falsification security
  *
  * Notes:
  * - Uses existing 'artwork' type + metadata JSON for MVP
@@ -45,22 +54,23 @@ class PAEnterpriseDemoSeeder extends Seeder {
         $inspector = $this->createInspectorUser();
 
         // 3. Create Collection
-        $this->command->info('Creating heritage collection...');
+        $this->command->info('Creating administrative documents collection...');
         $collection = $this->createCollection($paUser);
 
         // 4. Assign Inspector to Collection
         $this->command->info('Assigning inspector to collection...');
         $this->assignInspector($collection, $inspector, $paUser);
 
-        // 5. Create Heritage EGI
-        $this->command->info('Creating heritage EGI items...');
-        $egis = $this->createHeritageEGIs($collection, $paUser);
+        // 5. Create Administrative Documents EGI
+        $this->command->info('Creating administrative document items...');
+        $egis = $this->createAdministrativeDocuments($collection, $paUser);
 
-        // 6. Create CoA for some EGI
+        // 6. Create CoA for some documents
         $this->command->info('Creating CoA certificates...');
         $this->createCoA($egis, $paUser, $inspector);
 
         $this->command->info('✅ PA/Enterprise demo data seeded successfully!');
+        $this->command->info('   Focus: ADMINISTRATIVE DOCUMENTS (neutral, service-oriented)');
         $this->command->info("   PA User: {$paUser->email} / password");
         $this->command->info("   Inspector: {$inspector->email} / password");
     }
@@ -114,11 +124,11 @@ class PAEnterpriseDemoSeeder extends Seeder {
     }
 
     /**
-     * Create heritage collection
+     * Create administrative documents collection
      */
     protected function createCollection(User $paUser): Collection {
         // Find or create
-        $collection = Collection::where('collection_name', 'Patrimonio Monumentale Comunale')->first();
+        $collection = Collection::where('collection_name', 'Archivio Atti Amministrativi - Demo Sistema')->first();
 
         if ($collection) {
             return $collection;
@@ -127,8 +137,8 @@ class PAEnterpriseDemoSeeder extends Seeder {
         return Collection::create([
             'creator_id' => $paUser->id,
             'owner_id' => $paUser->id,
-            'collection_name' => 'Patrimonio Monumentale Comunale',
-            'description' => 'Collezione del patrimonio culturale monumentale del Comune di Firenze. Include statue, monumenti, affreschi e opere d\'arte di proprietà comunale gestite dall\'Ufficio Cultura e Patrimonio.',
+            'collection_name' => 'Archivio Atti Amministrativi - Demo Sistema',
+            'description' => 'Collezione dimostrativa del sistema di certificazione digitale FlorenceEGI. Include esempi di atti amministrativi (determine, delibere, autorizzazioni, certificati) per mostrare i benefici del servizio: timestamp immutabile, verifica QR code, audit trail blockchain, anti-falsificazione.',
             'type' => 'artwork', // MVP: usa tipo esistente
             'is_default' => false,
             'status' => 'published',
@@ -167,63 +177,63 @@ class PAEnterpriseDemoSeeder extends Seeder {
             'metadata' => json_encode([
                 'assigned_by' => $assignedBy->id,
                 'assignment_date' => now()->toDateTimeString(),
-                'specialization' => 'scultura_monumentale_rinascimentale',
+                'specialization' => 'certificazione_documenti_amministrativi',
                 'compensation' => 500.00,
-                'notes' => 'Specializzato in opere rinascimentali fiorentine',
+                'notes' => 'Specializzato in verifica autenticità atti amministrativi e compliance normativa',
             ]),
             'joined_at' => now(),
         ]);
     }
 
     /**
-     * Create heritage EGI items
+     * Create administrative documents EGI items
      */
-    protected function createHeritageEGIs(Collection $collection, User $owner): array {
-        $heritageItems = [
+    protected function createAdministrativeDocuments(Collection $collection, User $owner): array {
+        $adminDocuments = [
             [
-                'title' => 'Statua David - Replica Piazza Signoria',
-                'description' => 'Replica in marmo del celebre David di Michelangelo (Michelangelo Buonarroti), collocata in Piazza della Signoria dal 1910. Opera simbolo di Firenze e del Rinascimento. Tecnica: Scultura in marmo di Carrara. Ubicazione: Piazza della Signoria, Firenze.',
-                'creation_date' => '1910-01-01',
+                'title' => 'Determina Dirigenziale n. 2024/DEMO-001',
+                'description' => 'Determina dirigenziale tipo per affidamento servizio di manutenzione edifici pubblici (esempio dimostrativo). Beneficio: timestamp blockchain immutabile, anti-backdating, audit trail completo. Verifica autenticità tramite QR code.',
+                'creation_date' => '2024-01-15',
             ],
             [
-                'title' => 'Affresco Sala dei Gigli - Palazzo Vecchio',
-                'description' => 'Ciclo di affreschi nella Sala dei Gigli di Palazzo Vecchio raffigurante eroi romani (Domenico Ghirlandaio, 1482). Capolavoro del Rinascimento fiorentino. Tecnica: Affresco su muro. Ubicazione: Palazzo Vecchio, Sala dei Gigli, Firenze.',
-                'creation_date' => '1482-01-01',
+                'title' => 'Delibera Giunta n. 2024/DEMO-045',
+                'description' => 'Delibera di Giunta tipo per approvazione programma attività culturali annuale (esempio dimostrativo). Beneficio: prova data certa incontestabile, trasparenza amministrativa, verifica istantanea validità.',
+                'creation_date' => '2024-02-20',
             ],
             [
-                'title' => 'Fontana del Nettuno',
-                'description' => 'Monumentale fontana in marmo e bronzo situata in Piazza della Signoria (Bartolomeo Ammannati, 1575). Conosciuta dai fiorentini come "Il Biancone". Tecnica: Scultura marmo e bronzo. Ubicazione: Piazza della Signoria, Firenze.',
-                'creation_date' => '1575-01-01',
+                'title' => 'Autorizzazione Evento Culturale n. 2024/DEMO-078',
+                'description' => 'Autorizzazione tipo per manifestazione pubblica culturale (esempio dimostrativo). Beneficio: QR code verificabile da organizzatori e cittadini, anti-falsificazione, controllo forze ordine semplificato.',
+                'creation_date' => '2024-03-10',
             ],
             [
-                'title' => 'Loggia dei Lanzi - Perseo',
-                'description' => 'Scultura bronzea raffigurante Perseo con la testa di Medusa (Benvenuto Cellini, 1554), capolavoro del Manierismo fiorentino. Tecnica: Fusione in bronzo. Ubicazione: Loggia dei Lanzi, Firenze.',
-                'creation_date' => '1554-01-01',
+                'title' => 'Certificato di Servizio n. 2024/DEMO-156',
+                'description' => 'Certificato di servizio tipo rilasciato a dipendente pubblico (esempio dimostrativo). Beneficio: dipendente può verificare autenticità, ente può confermare validità, riduzione richieste duplicati.',
+                'creation_date' => '2024-04-05',
             ],
             [
-                'title' => 'Palazzo Vecchio - Torre di Arnolfo',
-                'description' => 'Torre campanaria del Palazzo Vecchio (Arnolfo di Cambio, 1310), simbolo architettonico di Firenze. Altezza 94 metri. Tecnica: Architettura pietra forte. Ubicazione: Piazza della Signoria, Firenze.',
-                'creation_date' => '1310-01-01',
+                'title' => 'Convenzione Ente Esterno n. 2024/DEMO-023',
+                'description' => 'Convenzione tipo per collaborazione istituzionale con ente esterno (esempio dimostrativo). Beneficio: entrambe le parti hanno prova data certa, documento immutabile, riduzione contenzioso.',
+                'creation_date' => '2024-05-12',
             ],
             [
-                'title' => 'Cappella Brancacci - Ciclo Affreschi',
-                'description' => 'Ciclo di affreschi nella Cappella Brancacci, Chiesa del Carmine (Masaccio e Masolino, 1427). Capolavoro del primo Rinascimento. Tecnica: Affresco. Ubicazione: Chiesa del Carmine, Cappella Brancacci, Firenze.',
-                'creation_date' => '1427-01-01',
+                'title' => 'Patrocinio Regionale n. 2024/DEMO-089',
+                'description' => 'Atto di concessione patrocinio a iniziativa culturale (esempio dimostrativo). Beneficio: beneficiario mostra QR per verifica immediata, impossibile uso improprio logo istituzionale, trasparenza.',
+                'creation_date' => '2024-06-18',
             ],
             [
-                'title' => 'Monumento a Dante - Santa Croce',
-                'description' => 'Statua in marmo di Dante Alighieri nel sagrato di Santa Croce (Enrico Pazzi, 1865). Inaugurata nel 1865 per il VI centenario della nascita del poeta. Tecnica: Scultura marmo bianco. Ubicazione: Sagrato Santa Croce, Firenze.',
-                'creation_date' => '1865-01-01',
+                'title' => 'Rendiconto Progetto PNRR n. 2024/DEMO-012',
+                'description' => 'Documento rendicontazione spese fondi europei PNRR (esempio dimostrativo). Beneficio: audit trail blockchain per compliance EU, trasparenza totale, certificazione spesa incontestabile.',
+                'creation_date' => '2024-07-22',
             ],
             [
-                'title' => 'Porta del Paradiso - Battistero',
-                'description' => 'Porta bronzea orientale del Battistero di San Giovanni (Lorenzo Ghiberti, originale 1452, copia 1990). Definita da Michelangelo "Porta del Paradiso". Questa è una copia, originale al Museo dell\'Opera. Tecnica: Bassorilievo bronzo dorato. Ubicazione: Battistero di San Giovanni, Firenze.',
-                'creation_date' => '1990-01-01', // Copia moderna
+                'title' => 'Contratto Prestazione Professionale n. 2024/DEMO-034',
+                'description' => 'Contratto tipo per incarico professionale esterno (esempio dimostrativo). Beneficio: data certa firma contrattuale, prova vincolante per entrambe le parti, riduzione contestazioni.',
+                'creation_date' => '2024-08-30',
             ],
         ];
 
         $egis = [];
-        foreach ($heritageItems as $index => $item) {
+        foreach ($adminDocuments as $index => $item) {
             // Find or create
             $egi = Egi::where('title', $item['title'])
                 ->where('collection_id', $collection->id)
