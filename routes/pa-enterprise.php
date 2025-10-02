@@ -6,22 +6,22 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * PA/ENTERPRISE ROUTES
- * 
+ *
  * @package FlorenceEGI\Routes
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - PA/Enterprise System MVP)
  * @date 2025-10-02
  * @purpose Routes for PA Entity dashboard, heritage management, and CoA display
- * 
+ *
  * Access Control:
  * - Middleware: auth (user must be logged in)
  * - Middleware: role:pa_entity (Spatie permission check)
- * 
+ *
  * Route Structure:
  * - /pa/dashboard         → PA Dashboard with KPIs and quick actions
  * - /pa/heritage          → Heritage items list (Collection-owned EGI)
  * - /pa/heritage/{egi}    → Heritage item detail + CoA display
- * 
+ *
  * Notes:
  * - All routes prefixed with /pa
  * - Uses named routes for easy reference (pa.dashboard, pa.heritage, etc.)
@@ -33,19 +33,19 @@ Route::prefix('pa')
     ->middleware(['auth', 'role:pa_entity'])
     ->name('pa.')
     ->group(function () {
-        
+
         /**
          * PA DASHBOARD
-         * 
+         *
          * GET /pa/dashboard
          * Controller: PADashboardController@index
-         * 
+         *
          * Features:
          * - KPI cards (total heritage, CoA issued, inspections active)
          * - Recent CoA list
          * - Pending actions (CoA to approve, inspectors to assign)
          * - Quick actions (issue CoA, assign inspector)
-         * 
+         *
          * View: resources/views/pa/dashboard.blade.php
          * Layout: resources/views/layouts/pa-layout.blade.php
          */
@@ -53,18 +53,31 @@ Route::prefix('pa')
             ->name('dashboard');
 
         /**
+         * QUICK STATS API
+         *
+         * GET /pa/api/quick-stats
+         * Controller: PADashboardController@quickStats
+         *
+         * JSON API endpoint for async stats refresh
+         * Returns dashboard KPI without page reload
+         * Useful for real-time updates via AJAX
+         */
+        Route::get('/api/quick-stats', [PADashboardController::class, 'quickStats'])
+            ->name('api.quickStats');
+
+        /**
          * HERITAGE MANAGEMENT
-         * 
+         *
          * GET /pa/heritage
          * Controller: PAHeritageController@index
-         * 
+         *
          * Features:
          * - Table of heritage items (EGI owned by PA entity)
          * - Filters: search, CoA status, creation date
          * - Sorting: title, creation_date, coa_status
          * - CoA badges (issued, pending, draft)
          * - Pagination: 20 per page
-         * 
+         *
          * View: resources/views/pa/heritage/index.blade.php
          */
         Route::get('/heritage', [PAHeritageController::class, 'index'])
@@ -72,10 +85,10 @@ Route::prefix('pa')
 
         /**
          * HERITAGE DETAIL + CoA DISPLAY
-         * 
+         *
          * GET /pa/heritage/{egi}
          * Controller: PAHeritageController@show
-         * 
+         *
          * Features:
          * - EGI detail (title, description, creation_date, media)
          * - CoA display (serial, status, issued_at, verification_hash)
@@ -83,9 +96,9 @@ Route::prefix('pa')
          * - Signatures (author, inspector)
          * - Blockchain verification badge
          * - Actions: download PDF, verify online, assign inspector
-         * 
+         *
          * Authorization: User must own collection containing this EGI
-         * 
+         *
          * View: resources/views/pa/heritage/show.blade.php
          */
         Route::get('/heritage/{egi}', [PAHeritageController::class, 'show'])
@@ -94,17 +107,17 @@ Route::prefix('pa')
 
         /**
          * FUTURE ROUTES (FASE 2-3)
-         * 
+         *
          * Commented out - implement in POST-MVP phases:
-         * 
+         *
          * // CoA Management
          * // Route::post('/heritage/{egi}/coa/issue', [PACoAController::class, 'issue'])->name('coa.issue');
          * // Route::get('/coa/{coa}', [PACoAController::class, 'show'])->name('coa.show');
-         * 
+         *
          * // Inspector Assignment
          * // Route::post('/heritage/{egi}/inspector/assign', [PAInspectorController::class, 'assign'])->name('inspector.assign');
          * // Route::get('/inspectors', [PAInspectorController::class, 'index'])->name('inspectors.index');
-         * 
+         *
          * // Statistics & Reports
          * // Route::get('/statistics', [PAStatisticsController::class, 'index'])->name('statistics');
          * // Route::get('/reports/heritage', [PAReportsController::class, 'heritage'])->name('reports.heritage');

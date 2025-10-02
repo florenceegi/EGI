@@ -1200,7 +1200,7 @@ require __DIR__ . '/coa.php';
 |
 | Routes per il sistema PA/Enterprise: dashboard, heritage management,
 | CoA display istituzionale, e gestione ispettori.
-| 
+|
 | Access: role:pa_entity (Pubbliche Amministrazioni)
 | Features: KPI dashboard, heritage list/detail, CoA verification
 |
