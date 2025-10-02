@@ -36,11 +36,11 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
 
 ## 📊 PROGRESS TRACKING
 
-**Overall Progress:** 15% (brainstorming + design docs complete)
+**Overall Progress:** 20% (brainstorming + design + database layer complete)
 
 | Fase                  | Progress | Status         | ETA      |
 | --------------------- | -------- | -------------- | -------- |
-| **FASE 1: MVP**       | 10%      | 🟡 IN PROGRESS | 2 weeks  |
+| **FASE 1: MVP**       | 25%      | 🟡 IN PROGRESS | 2 weeks  |
 | **FASE 2: Expansion** | 0%       | ⚪ NOT STARTED | +2 weeks |
 | **FASE 3: Release**   | 0%       | ⚪ NOT STARTED | +4 weeks |
 
@@ -76,54 +76,59 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
     -   CoA traits system analysis (248 termini, 3 categorie sufficienti)
     -   **Files:** PA_ENTERPRISE_ARCHITECTURE.md, PA_ENTERPRISE_ARCHITECTURE_CHANGELOG.md
 
-### 🟡 IN PROGRESS (Database Layer)
+### ✅ COMPLETATO (Database Layer)
 
--   [ ] **TASK 2.1: Database Migrations - Collections** ⏱️ 2h
+-   [x] **TASK 2.1: Database Migrations - Collections** ✅ COMPLETATO (2h)
 
     -   **Priority:** P0 (BLOCKING)
-    -   **File:** `database/migrations/YYYY_MM_DD_add_pa_enterprise_to_collections.php`
-    -   **Changes:**
+    -   **File:** `database/migrations/2025_10_02_075449_add_pa_enterprise_fields_to_collections_table.php`
+    -   **Changes Applied:**
 
         ```php
-        // 1. ADD metadata JSON to collections table
+        // 1. ✅ ADD metadata JSON to collections table
         $table->json('metadata')->nullable()->after('featured_position');
 
-        // 2. EXPAND type VARCHAR(25) → VARCHAR(50)
+        // 2. ✅ EXPAND type VARCHAR(25) → VARCHAR(50)
         DB::statement('ALTER TABLE collections MODIFY type VARCHAR(50)');
 
-        // 3. ADD new type values (optional, can use existing)
-        // 'pa_heritage', 'pa_documents', 'company_products', 'company_catalog'
+        // 3. ✅ ADD composite index for PA queries
+        $table->index(['type', 'owner_id'], 'idx_collections_type_owner');
         ```
 
-    -   **Testing:** `php artisan migrate` + rollback test
-    -   **Dependencies:** None
-    -   **Output:** Migration file + test success
+    -   **Testing:** ✅ migrate UP 111ms, rollback DOWN 200ms, re-migrate UP 111ms
+    -   **Model Update:** ✅ Collection.php `$casts['metadata'] = 'array'` added
+    -   **Commit:** `8ac5322` [FEAT] Add PA/Enterprise fields to collections table
+    -   **Status:** PRODUCTION READY ✅
 
 -   [ ] **TASK 2.2: Database Verification - CoA Tables** ⏱️ 1h
 
     -   **Priority:** P1 (HIGH)
-    -   **Command:** `php artisan tinker --execute="Schema::getColumnListing('coa');"`
-    -   **Verify:**
-        -   `issuer_type` ENUM has PA values OR can use JSON metadata
-        -   `coa_files` table exists with `kind` field
-        -   `coa_signatures` table ready for inspector signatures
-    -   **Decision:** Use metadata JSON or extend ENUM?
+    -   **Status:** PARTIALLY VERIFIED via seeder development
+    -   **Verified:**
+        -   ✅ `issuer_type` ENUM: author|archive|platform (using 'platform' for PA)
+        -   ✅ `status` ENUM: valid|revoked
+        -   ✅ `coa_files` table exists with `kind` field
+        -   ✅ CoA metadata JSON field available for PA-specific data
+        -   ✅ `issued_at` timestamp NOT NULL required
+    -   **Decision:** Use metadata JSON for PA-specific fields ✅
     -   **Dependencies:** None
-    -   **Output:** Schema verification report
+    -   **Output:** ✅ Verified during TASK 2.3 development
 
--   [ ] **TASK 2.3: Seeders - PA Demo Data** ⏱️ 3h
+-   [x] **TASK 2.3: Seeders - PA Demo Data** ✅ COMPLETATO (3h)
     -   **Priority:** P1 (HIGH for demo)
     -   **File:** `database/seeders/PAEnterpriseDemoSeeder.php`
-    -   **Data:**
+    -   **Data Created:**
         ```php
-        // 1. Comune di Firenze (PA Entity user)
-        // 2. Collection "Patrimonio Monumentale Comunale" type=pa_heritage
-        // 3. 5-10 EGI: Statua David (replica), Palazzo Vecchio Affresco, etc.
-        // 4. CoA emessi per alcuni EGI
-        // 5. Inspector assigned via collection_user pivot
+        // ✅ 1. Comune di Firenze (PA Entity: pa.firenze@comune.fi.it)
+        // ✅ 2. Inspector (inspector.demo@florenceegi.com)
+        // ✅ 3. Collection "Patrimonio Monumentale Comunale" type=artwork + metadata JSON
+        // ✅ 4. 8 Heritage EGI: David, Nettuno, Perseo, Ghiberti, etc.
+        // ✅ 5. 6 CoA issued (all valid status with verification_hash)
+        // ✅ 6. Inspector assigned via collection_user pivot with metadata
         ```
-    -   **Dependencies:** TASK 2.1 complete
-    -   **Output:** Seeder file + demo data testabile
+    -   **Test Result:** ✅ `php artisan db:seed --class=PAEnterpriseDemoSeeder` SUCCESS
+    -   **Commit:** `b7d6768` [FEAT] PA Enterprise demo seeder + Collection metadata cast
+    -   **Status:** DEMO READY ✅
 
 ### 🟡 IN PROGRESS (Backend Layer)
 
@@ -149,6 +154,7 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
     -   **Priority:** P0 (BLOCKING)
     -   **File:** `app/Http/Controllers/PA/PADashboardController.php`
     -   **Methods:**
+
         ```php
         public function index(): View
         {
@@ -171,6 +177,7 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
             return view('pa.dashboard', compact('stats', 'recentHeritage'));
         }
         ```
+
     -   **GDPR:** ✅ No data modification, read-only
     -   **ULM:** Log dashboard access
     -   **Dependencies:** TASK 3.1
