@@ -163,11 +163,12 @@ read_file docs/ai/context/PA_ENTERPRISE_TODO_MASTER.md
 ```
 
 **Questo file contiene:**
-- ✅ Status attuale progetto PA/Enterprise
-- ✅ Task completati e da fare (41 task totali)
-- ✅ Dependencies tra task
-- ✅ Effort estimates e priorities
-- ✅ Milestone tracking (MVP → Expansion → Release)
+
+-   ✅ Status attuale progetto PA/Enterprise
+-   ✅ Task completati e da fare (41 task totali)
+-   ✅ Dependencies tra task
+-   ✅ Effort estimates e priorities
+-   ✅ Milestone tracking (MVP → Expansion → Release)
 
 **STEP 2: LEGGI DOCUMENTI ACCESSORI NECESSARI**
 
@@ -190,9 +191,10 @@ read_file docs/ai/context/PA_ENTERPRISE_ARCHITECTURE.md
 **STEP 3: IDENTIFICA TASK CORRENTE**
 
 Cerca nel TODO_MASTER:
-- Task con status 🟡 IN PROGRESS (priorità assoluta)
-- Task con status ⚪ NOT STARTED e Priority P0 (blocking)
-- Verifica dependencies soddisfatte
+
+-   Task con status 🟡 IN PROGRESS (priorità assoluta)
+-   Task con status ⚪ NOT STARTED e Priority P0 (blocking)
+-   Verifica dependencies soddisfatte
 
 **STEP 4: DICHIARA STATUS E PROPONI AZIONE**
 
@@ -235,24 +237,26 @@ Quando completi un task:
 
 ### **📊 FREQUENCY CHECKS:**
 
-- **Ogni nuova chat**: Leggi TODO_MASTER (OBBLIGATORIO)
-- **Ogni ora di lavoro**: Verifica progress milestone
-- **Dopo ogni task**: Update TODO_MASTER status
-- **Prima di proporre nuove feature**: Verifica non sia già in TODO
+-   **Ogni nuova chat**: Leggi TODO_MASTER (OBBLIGATORIO)
+-   **Ogni ora di lavoro**: Verifica progress milestone
+-   **Dopo ogni task**: Update TODO_MASTER status
+-   **Prima di proporre nuove feature**: Verifica non sia già in TODO
 
 ### **RATIONALE:**
 
 **Contesto PA/Enterprise:** Progetto strutturato in 41 task, 8 settimane, 130 ore effort. Senza tracking:
-- ❌ Rischio duplicazione lavoro
-- ❌ Rischio violare dependencies
-- ❌ Impossibile continuare tra sessioni diverse
-- ❌ No visibility per Fabio su avanzamento
+
+-   ❌ Rischio duplicazione lavoro
+-   ❌ Rischio violare dependencies
+-   ❌ Impossibile continuare tra sessioni diverse
+-   ❌ No visibility per Fabio su avanzamento
 
 **Con tracking TODO_MASTER:**
-- ✅ Continuità perfetta tra sessioni AI
-- ✅ Zero duplicazione effort
-- ✅ Dependencies rispettate sempre
-- ✅ Progress trasparente e misurabile
+
+-   ✅ Continuità perfetta tra sessioni AI
+-   ✅ Zero duplicazione effort
+-   ✅ Dependencies rispettate sempre
+-   ✅ Progress trasparente e misurabile
 
 **Questa regola è P0 per progetto PA/Enterprise, non applicare a fix minori o feature isolate non PA.**
 

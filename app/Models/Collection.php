@@ -64,6 +64,7 @@ class Collection extends Model implements HasMedia {
         'image_EGI'    => EGIImageCast::class,
         'is_published' => 'boolean',
         'featured_in_guest' => 'boolean',
+        'metadata' => 'array', // PA/Enterprise JSON metadata
     ];
 
     /**
