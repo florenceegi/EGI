@@ -36,11 +36,11 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
 
 ## 📊 PROGRESS TRACKING
 
-**Overall Progress:** 55% (brainstorming + design + database + routes + controllers + layout + menu system complete)
+**Overall Progress:** 60% (brainstorming + design + database + routes + controllers + layout + menu + heritage list complete)
 
 | Fase                  | Progress | Status         | ETA      |
 | --------------------- | -------- | -------------- | -------- |
-| **FASE 1: MVP**       | 70%      | 🟡 IN PROGRESS | 1 week   |
+| **FASE 1: MVP**       | 78%      | 🟡 IN PROGRESS | 5 days   |
 | **FASE 2: Expansion** | 0%       | ⚪ NOT STARTED | +2 weeks |
 | **FASE 3: Release**   | 0%       | ⚪ NOT STARTED | +4 weeks |
 
@@ -278,18 +278,32 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
     -   **Commit:** `108155b` [FEAT] PADashboardController + PAStatisticsService MOCK + Dashboard view
     -   **Status:** PRODUCTION READY ✅
 
--   [ ] **TASK 4.3: View - pa/heritage/index.blade.php** ⏱️ 3h
+-   [x] **TASK 4.3: View - pa/heritage/index.blade.php** ✅ COMPLETATO (4h)
 
     -   **Priority:** P1 (HIGH)
-    -   **File:** `resources/views/pa/heritage/index.blade.php`
-    -   **Status:** STUB CREATED (needs full implementation)
-    -   **Components Needed:**
-        -   Heritage table with filters (search, CoA status)
-        -   CoA status badges (valid/revoked/no_coa)
-        -   Actions (view detail, download CoA PDF)
-        -   Pagination (15 items per page)
-    -   **Dependencies:** TASK 4.1 ✅
-    -   **Output:** Heritage list view
+    -   **File:** `resources/views/pa/heritage/index.blade.php` (186 lines, component-based)
+    -   **Implementation:**
+        ```blade
+        {{-- ✅ Page header: gradient background + stats (total, current page) --}}
+        {{-- ✅ Filters form: search input + CoA status select (valid|revoked|pending|no_coa) --}}
+        {{-- ✅ Active filters display: dismissable pills with icons --}}
+        {{-- ✅ Heritage grid: responsive 1/2/3 columns with pa-heritage-card components --}}
+        {{-- ✅ Pagination: Tailwind links with query params preserved --}}
+        {{-- ✅ Empty states: filtered (no results) vs no-data (create collection CTA) --}}
+        {{-- ✅ Quick stats footer: 4 cards showing CoA counts by status --}}
+        ```
+    -   **Components Used:**
+        -   ✅ `<x-pa-layout>` wrapper with breadcrumb + pageTitle slots
+        -   ✅ `<x-pa.pa-heritage-card>` for grid items (showCoa, showActions props)
+        -   ✅ `<x-pa.pa-action-button>` for filters/CTAs (primary, secondary, outline variants)
+    -   **Design:** ✅ PA brand colors (#D4A574, #1B365D, #2D5016), WCAG 2.1 AA, responsive mobile-first
+    -   **Data Source:** ✅ PAHeritageController@index (15 items/page, filters: search + coa_status)
+    -   **Bug Fixes:** ✅ Fixed pa-heritage-card route: `coa.download` → `coa.pdf.download`
+    -   **Testing:** ✅ Seeded 16 items (6 with CoA) via PAEnterpriseDemoSeeder
+    -   **Commit:** `acd5006` [FEAT] TASK 4.3: Heritage List View Component-Based + Bug Fixes
+    -   **Status:** PRODUCTION READY ✅
+    -   **Dependencies:** TASK 4.1 ✅, TASK 4.5 ✅
+    -   **Output:** Heritage list view with filters, pagination, component-based architecture
 
 -   [ ] **TASK 4.4: View - pa/heritage/show.blade.php** ⏱️ 4h
 
@@ -329,7 +343,7 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
 -   [x] **TASK 5.1: Menu System - PA Context** ✅ COMPLETATO (3h + BONUS Universal Sidebar)
 
     -   **Priority:** P1 (HIGH)
-    -   **Files:** 
+    -   **Files:**
         -   `app/Services/Menu/ContextMenus.php` (PA case added)
         -   `app/Services/Menu/Items/PADashboardMenu.php` ✅
         -   `app/Services/Menu/Items/PAHeritageMenu.php` ✅
@@ -356,7 +370,7 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
     -   **Livewire Elimination:** ✅ Pure Blade components (NO Livewire) - eliminated hydration issues
     -   **Theme Support:** ✅ 4 themes (pa: #1B365D, inspector: #2D5016, company: #8E44AD, dashboard: neutral)
     -   **Testing:** ✅ Menu visibile su /pa/dashboard con 5 items (4 PA + OpenCollection)
-    -   **Commits:** 
+    -   **Commits:**
         -   `9c0e54f` [FEAT] PA Enterprise Menu System - Pure Blade (NO Livewire)
         -   `828faa9` [REFACTOR] Universal Enterprise Sidebar - Parametrized Component
         -   `a4cbfbe` [FIX] Add Material Symbols font to PA layout
@@ -366,6 +380,7 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
 
     -   **Priority:** P1 (compliance)
     -   **Implementation:**
+
         ```php
         // ✅ PADashboardController@index
         $this->logger->info('PA Dashboard accessed', [
@@ -374,14 +389,14 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
             'context' => 'pa',
             'has_stats' => true,
         ]);
-        
+
         // ✅ PAHeritageController@index
         $this->logger->info('PA Heritage list accessed', [
             'user_id' => $user->id,
             'filters' => $validated,
             'results_count' => $heritage->count(),
         ]);
-        
+
         // ✅ PAHeritageController@show
         $this->logger->info('PA Heritage detail accessed', [
             'user_id' => $user->id,
@@ -389,6 +404,7 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
             'has_coa' => isset($egi->coa),
         ]);
         ```
+
     -   **Read-Only Operations:** ✅ No consent needed (GDPR allows legitimate interest for data viewing)
     -   **ErrorManager Integration:** ✅ All controllers have try-catch with ErrorManager
     -   **Commits:** Included in controller commits (108155b, 2491b95)
@@ -407,6 +423,7 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
         ✓ Heritage detail shows CoA traits
         ✓ CoA PDF download works
         ✓ Accessibility WCAG 2.1 AA (axe DevTools)
+        ```
 
 -   [ ] **TASK 5.3: Testing - MVP Checklist** ⏱️ 4h
 
