@@ -58,10 +58,10 @@ class PAHeritageController extends Controller {
             $user = Auth::user();
 
             // Query heritage owned by PA entity
-            $query = Egi::whereHas('collections', function ($q) use ($user) {
-                $q->where('collections.owner_id', $user->id)
-                    ->where('collections.type', 'artwork'); // MVP uses artwork type
-            })->with(['coa', 'collections', 'media']);
+            $query = Egi::whereHas('collection', function ($q) use ($user) {
+                $q->where('owner_id', $user->id)
+                    ->where('type', 'artwork'); // MVP uses artwork type
+            })->with(['coa', 'collection']);
 
             // Filter: Search by title or artist
             if ($search = $request->input('search')) {
@@ -123,9 +123,7 @@ class PAHeritageController extends Controller {
             $user = Auth::user();
 
             // Authorization: PA entity must own collection containing this EGI
-            $ownsCollection = $egi->collections()
-                ->where('owner_id', $user->id)
-                ->exists();
+            $ownsCollection = $egi->collection && $egi->collection->owner_id === $user->id;
 
             if (!$ownsCollection) {
                 $this->logger->warning('PA Heritage unauthorized access attempt', [
@@ -144,8 +142,7 @@ class PAHeritageController extends Controller {
                 'coa.signatures.signer',
                 'coa.events',
                 'coaTraits', // CoA traits (technique/materials/support)
-                'collections.owner',
-                'media',
+                'collection.owner',
             ]);
 
             // ULM: Log heritage detail access
