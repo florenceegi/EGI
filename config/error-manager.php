@@ -5174,5 +5174,53 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // ====================================================
+        // PA/Enterprise System Errors
+        // ====================================================
+
+        'PA_DASHBOARD_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.pa_dashboard_error',
+            'user_message_key' => 'error-manager::errors_2.user.pa_dashboard_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'PA_DASHBOARD_QUICKSTATS_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.pa_dashboard_quickstats_error',
+            'user_message_key' => 'error-manager::errors_2.user.pa_dashboard_quickstats_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log-only',
+        ],
+
+        'PA_HERITAGE_LIST_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.pa_heritage_list_error',
+            'user_message_key' => 'error-manager::errors_2.user.pa_heritage_list_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'PA_HERITAGE_DETAIL_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.pa_heritage_detail_error',
+            'user_message_key' => 'error-manager::errors_2.user.pa_heritage_detail_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];

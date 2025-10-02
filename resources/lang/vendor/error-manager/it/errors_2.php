@@ -20,6 +20,12 @@ return [
 
         // COA Signature Errors
         'coa_author_sign_error' => 'Errore durante la firma dell\'autore per COA :coa_id. Database query fallita: :error',
+
+        // PA/Enterprise System Errors
+        'pa_dashboard_error' => 'Errore durante il caricamento della dashboard PA per utente :user_id.',
+        'pa_dashboard_quickstats_error' => 'Errore durante il caricamento delle statistiche PA per utente :user_id.',
+        'pa_heritage_list_error' => 'Errore durante il caricamento della lista patrimonio per utente :user_id.',
+        'pa_heritage_detail_error' => 'Errore durante il caricamento del dettaglio patrimonio :egi_id per utente :user_id.',
     ],
 
     'user' => [
@@ -34,6 +40,12 @@ return [
 
         // COA Signature User Messages
         'coa_author_sign_error' => 'Errore durante la firma del certificato. Riprova più tardi o contatta l\'assistenza.',
+
+        // PA/Enterprise System User Messages
+        'pa_dashboard_error' => 'Impossibile caricare la dashboard PA. Riprova tra poco.',
+        'pa_dashboard_quickstats_error' => 'Impossibile aggiornare le statistiche. Riprova.',
+        'pa_heritage_list_error' => 'Impossibile caricare la lista del patrimonio. Riprova tra poco.',
+        'pa_heritage_detail_error' => 'Impossibile caricare il dettaglio del bene patrimoniale. Riprova tra poco.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

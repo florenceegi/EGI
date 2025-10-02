@@ -60,15 +60,15 @@ class PAHeritageController extends Controller {
             // Query heritage owned by PA entity
             $query = Egi::whereHas('collections', function ($q) use ($user) {
                 $q->where('collections.owner_id', $user->id)
-                  ->where('collections.type', 'artwork'); // MVP uses artwork type
+                    ->where('collections.type', 'artwork'); // MVP uses artwork type
             })->with(['coa', 'collections', 'media']);
 
             // Filter: Search by title or artist
             if ($search = $request->input('search')) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
-                      ->orWhere('artist', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('artist', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             }
 
@@ -96,13 +96,8 @@ class PAHeritageController extends Controller {
             ]);
 
             return view('pa.heritage.index', compact('heritage'));
-
         } catch (\Exception $e) {
-            $this->errorManager->handle('PA_HERITAGE_LIST_ERROR', [
-                'user_id' => Auth::id(),
-                'context' => 'Heritage list access failed',
-                'filters' => $request->only(['search', 'coa_status']),
-            ], $e);
+            $this->errorManager->handle('PA_HERITAGE_LIST_ERROR', [], $e);
 
             return redirect()->back()->withErrors([
                 'error' => 'Impossibile caricare la lista del patrimonio. Riprova tra poco.'
@@ -164,18 +159,13 @@ class PAHeritageController extends Controller {
             ]);
 
             return view('pa.heritage.show', compact('egi'));
-
         } catch (\Exception $e) {
             // Skip re-throwing 403 abort exceptions
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException && $e->getStatusCode() === 403) {
                 throw $e;
             }
 
-            $this->errorManager->handle('PA_HERITAGE_DETAIL_ERROR', [
-                'user_id' => Auth::id(),
-                'context' => 'Heritage detail access failed',
-                'egi_id' => $egi->id,
-            ], $e);
+            $this->errorManager->handle('PA_HERITAGE_DETAIL_ERROR', [], $e);
 
             return redirect()->route('pa.heritage.index')->withErrors([
                 'error' => 'Impossibile caricare il dettaglio del bene. Riprova tra poco.'

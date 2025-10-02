@@ -110,13 +110,9 @@ class PADashboardController extends Controller {
             ));
         } catch (\Exception $e) {
             // UEM: Error handling
-            $this->errorManager->handle('PA_DASHBOARD_ERROR', [
-                'user_id' => Auth::id(),
-                'context' => 'Dashboard access failed',
-                'error_message' => $e->getMessage(),
-            ], $e);
+            $this->errorManager->handle('PA_DASHBOARD_ERROR', [], $e);
 
-            // ULM: Log error
+            // ULM: Log error (context qui è OK perché è logger, non errorManager)
             $this->logger->error('PA Dashboard error', [
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
@@ -156,10 +152,7 @@ class PADashboardController extends Controller {
             ]);
         } catch (\Exception $e) {
             // UEM: Error handling
-            $this->errorManager->handle('PA_DASHBOARD_QUICKSTATS_ERROR', [
-                'user_id' => Auth::id(),
-                'context' => 'Quick stats API failed',
-            ], $e);
+            $this->errorManager->handle('PA_DASHBOARD_QUICKSTATS_ERROR', [], $e);
 
             return response()->json([
                 'success' => false,
