@@ -33,8 +33,8 @@ if (isset($egi->coa)) {
     $coaStatus = $egi->coa->status ?? 'none';
 }
 
-// Get first media image or placeholder
-$imageUrl = $egi->getFirstMediaUrl('egi_images', 'thumb') ?: asset('images/placeholder-heritage.jpg');
+// Get thumbnail image or placeholder (using Egi model accessor)
+$imageUrl = $egi->thumbnail_image_url ?: $egi->main_image_url ?: asset('images/placeholder-heritage.jpg');
 
 // Category badge color
 $categoryColor = match($egi->category ?? 'other') {
@@ -114,19 +114,19 @@ $containerClass = $layoutClasses[$layout] ?? $layoutClasses['grid'];
                 {{ $egi->created_at->format('d/m/Y') }}
             </span>
 
-            {{-- Collection Count (if multiple) --}}
-            @if ($egi->collections && $egi->collections->count() > 0)
-                <span class="flex items-center gap-1" title="Collezioni">
+            {{-- Collection (if available) --}}
+            @if ($egi->collection)
+                <span class="flex items-center gap-1" title="Collezione">
                     <span class="material-symbols-outlined text-sm" aria-hidden="true">folder</span>
-                    {{ $egi->collections->count() }}
+                    {{ Str::limit($egi->collection->name, 20) }}
                 </span>
             @endif
 
-            {{-- Media Count --}}
-            @if ($egi->media && $egi->media->count() > 1)
-                <span class="flex items-center gap-1" title="Immagini">
-                    <span class="material-symbols-outlined text-sm" aria-hidden="true">image</span>
-                    {{ $egi->media->count() }}
+            {{-- Status (if published) --}}
+            @if ($egi->is_published)
+                <span class="flex items-center gap-1 text-[#2D5016]" title="Pubblicato">
+                    <span class="material-symbols-outlined text-sm" aria-hidden="true">check_circle</span>
+                    Pubblicato
                 </span>
             @endif
         </div>
