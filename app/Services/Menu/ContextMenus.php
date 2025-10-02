@@ -31,6 +31,12 @@ use App\Services\Menu\Items\PrivacyPolicyMenu;
 use App\Services\Menu\Items\TermOfServiceMenu;
 use App\Services\Menu\Items\BiographyMenu;
 use App\Services\Menu\Items\ViewBiographyMenu;
+// PA Enterprise Menu Items
+use App\Services\Menu\Items\PADashboardMenu;
+use App\Services\Menu\Items\PAHeritageMenu;
+use App\Services\Menu\Items\PACoAMenu;
+use App\Services\Menu\Items\PAInspectorsMenu;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @Oracode Service: Context-aware Menu Provider
@@ -49,6 +55,10 @@ class ContextMenus {
      */
     public static function getMenusForContext(string $context): array {
         $menus = [];
+
+        Log::channel('upload')->info('🔍 CONTEXT MENUS - PA CONTEXT DETECTED', [
+        'context' => $context,
+        ]);
 
         switch ($context) {
             case 'dashboard':
@@ -158,6 +168,23 @@ class ContextMenus {
                     new BackToDashboardMenu(),
                 ]);
                 $menus[] = $statisticsMenu;
+                break;
+
+            case 'pa':
+                // PA Enterprise Context (route: pa.dashboard, pa.heritage.*, etc.)
+
+                Log::channel('upload')->info('🔍 CONTEXT MENUS - PA CONTEXT DETECTED', [
+                    'context' => $context,
+                ]);
+
+                $paMainMenu = new MenuGroup('Gestione PA', 'pa-building', [
+                    new OpenCollectionMenu(),
+                    new PADashboardMenu(),
+                    new PAHeritageMenu(),
+                    new PACoAMenu(),
+                    new PAInspectorsMenu(),
+                ]);
+                $menus[] = $paMainMenu;
                 break;
         }
 

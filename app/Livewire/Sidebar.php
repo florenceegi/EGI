@@ -19,8 +19,7 @@ use Illuminate\Support\Facades\Log;
  *
  * @version 3.0 - OS1 Modal Integration
  */
-class Sidebar extends Component
-{
+class Sidebar extends Component {
     public $menus = [];
     public $contextTitle = '';
     protected $iconRepo;
@@ -30,8 +29,7 @@ class Sidebar extends Component
      *
      * @oracular-purpose Validates menu items for both route and modal action consistency
      */
-    public function mount()
-    {
+    public function mount() {
         $evaluator = new MenuConditionEvaluator();
         $this->iconRepo = app(\App\Repositories\IconRepository::class);
 
@@ -44,13 +42,36 @@ class Sidebar extends Component
 
         // Ottieni i menu per il contesto corrente
         $allMenus = ContextMenus::getMenusForContext($context);
-        Log::channel('upload')->debug('Sidebar component mounted: $allMenus initialized', ['menus' => $allMenus]);
+
+        Log::channel('upload')->info('🔍 SIDEBAR MOUNT - START', [
+            'route' => $currentRouteName,
+            'context' => $context,
+            'menu_groups_received' => count($allMenus),
+            'menu_groups_names' => array_map(fn($m) => $m->name, $allMenus),
+        ]);
 
         // Filtra i menu in base ai permessi dell'utente
         foreach ($allMenus as $menu) {
+            Log::channel('upload')->info('🔍 PROCESSING MenuGroup', [
+                'group_name' => $menu->name,
+                'items_count' => count($menu->items),
+                'items_names' => array_map(fn($i) => $i->name, $menu->items),
+            ]);
+
             $filteredItems = array_filter($menu->items, function ($item) use ($evaluator) {
-                return $evaluator->shouldDisplay($item);
+                $shouldDisplay = $evaluator->shouldDisplay($item);
+                Log::channel('upload')->info('🔍 EVALUATING MenuItem', [
+                    'item_name' => $item->name,
+                    'item_permission' => $item->permission ?? 'NULL',
+                    'should_display' => $shouldDisplay,
+                ]);
+                return $shouldDisplay;
             });
+
+            Log::channel('upload')->info('🔍 FILTERED RESULT', [
+                'group_name' => $menu->name,
+                'filtered_count' => count($filteredItems),
+            ]);
 
             if (!empty($filteredItems)) {
                 // Converti il MenuGroup in un array associativo
@@ -62,10 +83,22 @@ class Sidebar extends Component
                 ];
 
                 foreach ($filteredItems as $item) {
+                    // Gestione icona: se inizia con '<' è HTML diretto, altrimenti è icon name da DB
+                    $iconHtml = null;
+                    if ($item->icon) {
+                        if (str_starts_with(trim($item->icon), '<')) {
+                            // HTML diretto (Font Awesome, custom HTML)
+                            $iconHtml = $item->icon;
+                        } else {
+                            // Icon name da database
+                            $iconHtml = $this->iconRepo->getDefaultIcon($item->icon);
+                        }
+                    }
+
                     $menuItemArray = [
                         'name' => $item->name,
                         'route' => $item->route,
-                        'icon' => $item->icon ? $this->iconRepo->getDefaultIcon($item->icon) : null,
+                        'icon' => $iconHtml,
                         'permission' => $item->permission ?? null,
                         'children' => $item->children ?? [],
                         // OS1 Enhancement: Modal action support
@@ -76,18 +109,24 @@ class Sidebar extends Component
                     ];
 
                     $menuArray['items'][] = $menuItemArray;
-
-                    Log::channel('upload')->debug('Menu item processed', [
-                        'name' => $item->name,
-                        'permission' => $item->permission,
-                        'is_modal' => $menuItemArray['is_modal_action'],
-                        'modal_action' => $menuItemArray['modal_action']
-                    ]);
                 }
 
+                Log::channel('upload')->info('✅ MenuGroup ADDED to sidebar', [
+                    'group_name' => $menu->name,
+                    'items_added' => count($menuArray['items']),
+                ]);
+
                 $this->menus[] = $menuArray;
+            } else {
+                Log::channel('upload')->warning('⚠️ MenuGroup SKIPPED (no items passed filter)', [
+                    'group_name' => $menu->name,
+                ]);
             }
         }
+
+        Log::channel('upload')->info('🎯 SIDEBAR MOUNT - COMPLETE', [
+            'total_menu_groups_added' => count($this->menus),
+        ]);
     }
 
     /**
@@ -95,8 +134,7 @@ class Sidebar extends Component
      *
      * @return \Illuminate\Contracts\View\View
      */
-    public function render()
-    {
+    public function render() {
         return view('livewire.sidebar');
     }
 }

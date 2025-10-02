@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::prefix('pa')
-    ->middleware(['auth', 'role:pa_entity'])
+    ->middleware(['auth'])
     ->name('pa.')
     ->group(function () {
 

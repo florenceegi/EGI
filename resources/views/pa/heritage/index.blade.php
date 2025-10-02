@@ -4,6 +4,7 @@
 
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,18 +16,21 @@
             margin: 0;
             padding: 20px;
         }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
             background: white;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
             color: #1B365D;
             margin-bottom: 10px;
         }
+
         .badge {
             background: #10B981;
             color: white;
@@ -35,6 +39,7 @@
             font-size: 14px;
             font-weight: 600;
         }
+
         .filters {
             background: #f8fafc;
             padding: 20px;
@@ -44,12 +49,15 @@
             gap: 15px;
             align-items: center;
         }
-        .filters input, .filters select {
+
+        .filters input,
+        .filters select {
             padding: 10px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
             font-size: 14px;
         }
+
         .filters button {
             background: #1B365D;
             color: white;
@@ -59,14 +67,17 @@
             cursor: pointer;
             font-weight: 600;
         }
+
         .filters button:hover {
             background: #2D5016;
         }
+
         .heritage-table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
         }
+
         .heritage-table th {
             background: #1B365D;
             color: white;
@@ -74,31 +85,38 @@
             text-align: left;
             font-weight: 600;
         }
+
         .heritage-table td {
             padding: 12px;
             border-bottom: 1px solid #e2e8f0;
         }
+
         .heritage-table tbody tr:hover {
             background: #f8fafc;
         }
+
         .coa-badge {
             padding: 4px 10px;
             border-radius: 4px;
             font-size: 12px;
             font-weight: 600;
         }
+
         .coa-valid {
             background: #D1FAE5;
             color: #065F46;
         }
+
         .coa-pending {
             background: #FEF3C7;
             color: #92400E;
         }
+
         .coa-none {
             background: #F1F5F9;
             color: #475569;
         }
+
         .view-btn {
             background: #1B365D;
             color: white;
@@ -108,15 +126,18 @@
             font-size: 13px;
             font-weight: 500;
         }
+
         .view-btn:hover {
             background: #2D5016;
         }
+
         .pagination {
             margin: 20px 0;
             display: flex;
             justify-content: center;
             gap: 10px;
         }
+
         .note {
             background: #FEF3C7;
             border-left: 4px solid #F59E0B;
@@ -124,6 +145,7 @@
             margin: 20px 0;
             border-radius: 4px;
         }
+
         .debug-info {
             margin-top: 40px;
             padding: 20px;
@@ -134,6 +156,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -153,21 +176,19 @@
 
         {{-- Filters --}}
         <form method="GET" action="{{ route('pa.heritage.index') }}" class="filters">
-            <input type="text" 
-                   name="search" 
-                   placeholder="Cerca per titolo, artista..." 
-                   value="{{ request('search') }}"
-                   style="flex: 1;">
-            
+            <input type="text" name="search" placeholder="Cerca per titolo, artista..."
+                value="{{ request('search') }}" style="flex: 1;">
+
             <select name="coa_status">
                 <option value="">Tutti gli stati CoA</option>
                 <option value="valid" {{ request('coa_status') === 'valid' ? 'selected' : '' }}>CoA Validi</option>
-                <option value="revoked" {{ request('coa_status') === 'revoked' ? 'selected' : '' }}>CoA Revocati</option>
+                <option value="revoked" {{ request('coa_status') === 'revoked' ? 'selected' : '' }}>CoA Revocati
+                </option>
                 <option value="no_coa" {{ request('coa_status') === 'no_coa' ? 'selected' : '' }}>Senza CoA</option>
             </select>
-            
+
             <button type="submit">🔍 Filtra</button>
-            @if(request('search') || request('coa_status'))
+            @if (request('search') || request('coa_status'))
                 <a href="{{ route('pa.heritage.index') }}" style="color: #64748b;">✕ Reset</a>
             @endif
         </form>
@@ -192,7 +213,7 @@
                         <td>{{ $item->artist ?? 'N/A' }}</td>
                         <td>{{ $item->created_at->format('d/m/Y') }}</td>
                         <td>
-                            @if($item->coa)
+                            @if ($item->coa)
                                 <span class="coa-badge coa-{{ $item->coa->status }}">
                                     ✅ {{ ucfirst($item->coa->status) }}
                                 </span>
@@ -210,7 +231,7 @@
                     <tr>
                         <td colspan="6" style="text-align: center; padding: 40px;">
                             <em style="color: #94a3b8;">
-                                @if(request('search') || request('coa_status'))
+                                @if (request('search') || request('coa_status'))
                                     Nessun risultato trovato per i filtri selezionati.
                                 @else
                                     Nessun bene patrimoniale nel catalogo.
@@ -223,7 +244,7 @@
         </table>
 
         {{-- Pagination --}}
-        @if($heritage->hasPages())
+        @if ($heritage->hasPages())
             <div class="pagination">
                 {{ $heritage->links() }}
             </div>
@@ -235,7 +256,8 @@
             <div style="margin-top: 10px; color: #64748b;">
                 Visualizzati: <strong>{{ $heritage->count() }}</strong> item |
                 Totale patrimonio: <strong>{{ $heritage->total() }}</strong> item |
-                Pagina: <strong>{{ $heritage->currentPage() }}</strong> di <strong>{{ $heritage->lastPage() }}</strong>
+                Pagina: <strong>{{ $heritage->currentPage() }}</strong> di
+                <strong>{{ $heritage->lastPage() }}</strong>
             </div>
         </div>
 
@@ -257,4 +279,5 @@
         </div>
     </div>
 </body>
+
 </html>

@@ -4,6 +4,58 @@ return [
     'styles' => [
         'default' => 'elegant',
         'elegant' => [
+            // PA Enterprise Icons
+            [
+                'name' => 'pa-building',
+                'type' => 'heroicon',
+                'class' => 'w-5 h-5',
+                'host' => '',
+                'name_on_host' => '',
+                'html' => '<svg fill="#D4A574" viewBox="0 0 24 24" class="%class%">
+                    <path fill-rule="evenodd" d="M4.5 2.25a.75.75 0 000 1.5v16.5h-.75a.75.75 0 000 1.5h16.5a.75.75 0 000-1.5h-.75V3.75a.75.75 0 000-1.5h-15zM9 6a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H9zm-.75 3.75A.75.75 0 019 9h1.5a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM9 12a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H9zm3.75-5.25A.75.75 0 0113.5 6H15a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM13.5 9a.75.75 0 000 1.5H15A.75.75 0 0015 9h-1.5zm-.75 3.75a.75.75 0 01.75-.75H15a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM9 19.5v-2.25a.75.75 0 01.75-.75h4.5a.75.75 0 01.75.75v2.25a.75.75 0 01-.75.75h-4.5A.75.75 0 019 19.5z" clip-rule="evenodd" />
+                </svg>',
+            ],
+            [
+                'name' => 'pa-dashboard',
+                'type' => 'heroicon',
+                'class' => 'w-5 h-5',
+                'host' => '',
+                'name_on_host' => '',
+                'html' => '<svg fill="#D4A574" viewBox="0 0 24 24" class="%class%">
+                    <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+                </svg>',
+            ],
+            [
+                'name' => 'pa-heritage',
+                'type' => 'heroicon',
+                'class' => 'w-5 h-5',
+                'host' => '',
+                'name_on_host' => '',
+                'html' => '<svg fill="#D4A574" viewBox="0 0 24 24" class="%class%">
+                    <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z" clip-rule="evenodd" />
+                    <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
+                </svg>',
+            ],
+            [
+                'name' => 'pa-coa',
+                'type' => 'heroicon',
+                'class' => 'w-5 h-5',
+                'host' => '',
+                'name_on_host' => '',
+                'html' => '<svg fill="#D4A574" viewBox="0 0 24 24" class="%class%">
+                    <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                </svg>',
+            ],
+            [
+                'name' => 'pa-inspectors',
+                'type' => 'heroicon',
+                'class' => 'w-5 h-5',
+                'host' => '',
+                'name_on_host' => '',
+                'html' => '<svg fill="#D4A574" viewBox="0 0 24 24" class="%class%">
+                    <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 00-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08zm3.094 8.016a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                </svg>',
+            ],
             'user-cog' => [
                 'name' => 'Gestione Utente',
                 'type' => 'heroicon',
@@ -298,8 +350,8 @@ return [
                 'name' => 'fallback',
                 'type' => 'solid',
                 'class' => 'h-6 w-6', // Potresti volerla w-5 h-5 per coerenza se usata nel menu
-                'host'=>'',
-                'name_on_host'=>'',
+                'host' => '',
+                'name_on_host' => '',
                 'html' => '
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 123.01 120.38" class="%class%"><defs><style>.cls-1{fill:none;stroke:#333;stroke-linecap:round;stroke-miterlimit:10;stroke-width:4px}.cls-3{fill:#333}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="General_-_Icon" data-name="General - Icon"><g id="General_-_Icon-2" data-name="General - Icon">
                         <path class="cls-1" d="m26.59 87.36 1.12-6.55A6.1 6.1 0 0 0 26 75.42L3.85 53.86a6.09 6.09 0 0 1 3.37-10.39L37.78 39a6.11 6.11 0 0 0 4.59-3.33L57.89 4.24a4 4 0 0 1 7.22 0l13.3 27M91.73 41.32 117.38 45c3.12.53 5.39 5.3 1.77 8.82L97 75.42a6.1 6.1 0 0 0-1.75 5.39l5.22 30.44a6.09 6.09 0 0 1-8.84 6.42L64.34 103.3a6.13 6.13 0 0 0-5.68 0l-27.33 14.37a6.09 6.09 0 0 1-8.84-6.42l1.33-7.77"/><path d="M66.79 33.5s4.46 13.5 7.83 15.86 16.59 4.23 16.59 4.23" style="stroke-linejoin:round;stroke-width:2px;fill:none;stroke:#333;stroke-linecap:round"/><circle class="cls-3" cx="97.5" cy="54.57" r="1"/><circle class="cls-3" cx="25.5" cy="94.57" r="2"/></g></g></g>
@@ -310,8 +362,8 @@ return [
                 'name' => 'email',
                 'type' => 'solid',
                 'class' => 'h-4 w-4',
-                'host'=>'',
-                'name_on_host'=>'',
+                'host' => '',
+                'name_on_host' => '',
                 'html' => "
                     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor' class='%class%'>
                         <path d='M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z' />
@@ -322,8 +374,8 @@ return [
                 'name' => 'camera',
                 'type' => 'solid',
                 'class' => 'w-6 h-6 opacity-50 text-base-content',
-                'host'=>'',
-                'name_on_host'=>'',
+                'host' => '',
+                'name_on_host' => '',
                 'html' => "
                     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' class='%class%'>
                         <path stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z'/>
@@ -334,8 +386,8 @@ return [
                 'name' => 'collection-name',
                 'type' => 'solid',
                 'class' => 'w-12 h-12 opacity-50 text-base-content',
-                'host'=>'',
-                'name_on_host'=>'',
+                'host' => '',
+                'name_on_host' => '',
                 'html' => "
                     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' class='%class%'>
                         <path d='M3 3h6v6H3V3zm0 9h6v6H3v-6zm9-9h6v6h-6V3zm0 9h6v6h-6v-6z'></path>
@@ -345,8 +397,8 @@ return [
                 'name' => 'url',
                 'type' => 'solid',
                 'class' => 'w-12 h-12 opacity-50 text-base-content',
-                'host'=>'',
-                'name_on_host'=>'',
+                'host' => '',
+                'name_on_host' => '',
                 'html' => "
                     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' class='%class%'>
                         <path d='M10.59 13.41L9.17 12l2.83-2.83a3 3 0 014.24 4.24L14.83 15l1.42 1.41 2.83-2.83a5 5 0 00-7.07-7.07L7.76 10.24a5 5 0 007.07 7.07L13.41 15l-2.82 2.82a3 3 0 01-4.24-4.24l2.82-2.82z'/>
@@ -356,16 +408,16 @@ return [
                 'name' => 'collection-number',
                 'type' => 'material',
                 'class' => 'w-6 h-6 opacity-50 material-symbols-outlined text-base-content',
-                'host'=>'https://fonts.google.com/icons',
-                'name_on_host'=>'pin',
+                'host' => 'https://fonts.google.com/icons',
+                'name_on_host' => 'pin',
                 'html' => "<span class='w-6 h-6 opacity-50 material-symbols-outlined text-base-content'>pin</span>",
             ],
             [
                 'name' => 'collection-position',
                 'type' => 'material-symbols-outlined',
                 'class' => 'w-6 h-6 opacity-50 material-symbols-outlined text-base-content',
-                'host'=>'https://fonts.google.com/icons',
-                'name_on_host'=>'stacks',
+                'host' => 'https://fonts.google.com/icons',
+                'name_on_host' => 'stacks',
                 'html' => "<span class='w-6 h-6 opacity-50 material-symbols-outlined text-base-content'>stacks</span>",
             ],
 
@@ -373,16 +425,16 @@ return [
                 'name' => 'egi-base-price',
                 'type' => 'material',
                 'class' => 'w-6 h-6 opacity-50 material-symbols-outlined text-base-content',
-                'host'=>'https://fonts.google.com/icons',
-                'name_on_host'=>'payments',
+                'host' => 'https://fonts.google.com/icons',
+                'name_on_host' => 'payments',
                 'html' => "<span class='w-6 h-6 opacity-50 material-symbols-outlined text-base-content'>payments</span>",
             ],
             [
                 'name' => 'permissions_roles',
                 'type' => 'solid',
                 'class' => 'w-12 h-12 text-base-content',
-                'host'=>'https://www.reshot.com/free-svg-icons/',
-                'name_on_host'=>'Authorization Manager',
+                'host' => 'https://www.reshot.com/free-svg-icons/',
+                'name_on_host' => 'Authorization Manager',
                 'html' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="40" height="40"> xml:space="preserve">
                                 <switch>
                                     <g>
@@ -448,8 +500,8 @@ return [
                 'name' => 'assign_roles',
                 'type' => 'solid',
                 'class' => 'w-12 h-12 text-base-content',
-                'host'=>'https://www.reshot.com/free-svg-icons/',
-                'name_on_host'=>'Protection',
+                'host' => 'https://www.reshot.com/free-svg-icons/',
+                'name_on_host' => 'Protection',
                 'html' => '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 48 48" width="40" height="40">
                                 <defs>
                                     <linearGradient id="c" x1="19.5" y1="47.82" x2="19.5"
@@ -521,8 +573,8 @@ return [
                 'name' => 'assign_permissions',
                 'type' => 'solid',
                 'class' => 'w-12 h-12 text-base-content',
-                'host'=>'https://www.reshot.com/free-svg-icons/',
-                'name_on_host'=>'System Protection',
+                'host' => 'https://www.reshot.com/free-svg-icons/',
+                'name_on_host' => 'System Protection',
                 'html' => ' <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="40" height="40" xml:space="preserve">
                                 <switch>
                                     <g>
@@ -583,8 +635,8 @@ return [
                 'name' => 'open',
                 'type' => 'solid',
                 'class' => 'w-12 h-12 text-base-content',
-                'host'=>'https://www.reshot.com/free-svg-icons/',
-                'name_on_host'=>'Open Door',
+                'host' => 'https://www.reshot.com/free-svg-icons/',
+                'name_on_host' => 'Open Door',
                 'html' => '<svg xmlns="http://www.w3.org/2000/svg" width="37.504" height="48">
                             <path fill="#c6c6c6" d="M4.129 6.375h29.25v38.532H4.129z"/><path d="M3 5.25v40.782h31.5V5.25zm29.25 38.532h-27V7.5h27z" fill="#7a8e9b"/>
                             <path fill="#525c6b" d="M37.504 46.032H0l3.001-3.282h31.503l3 3.282z"/><path fill="#e49a61" d="M24.128 2.829v42.342l2.25-.524V3.355l-2.25-.526zM34.504 5.25l-3.125-.728V43.48l3.125-.73V5.25zM12.004 0v48l10.375-2.421V2.421L12.004 0z"/>
@@ -595,8 +647,8 @@ return [
                 'name' => 'art_therapy',
                 'type' => 'solid',
                 'class' => 'w-12 h-12 text-base-content',
-                'host'=>'https://www.reshot.com/free-svg-icons/',
-                'name_on_host'=>'Art Therapy',
+                'host' => 'https://www.reshot.com/free-svg-icons/',
+                'name_on_host' => 'Art Therapy',
                 'html' => '
                     <svg version="1.1" id="Icon_Set" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 512 512" width="40" height="40" style="enable-background:new 0 0 512 512" xml:space="preserve"><style>.st1{fill:#fd919e}.st2{fill:#4c4372}.st3{fill:#d3e6f8}.st5{fill:#7babf1}.st6{fill:#fff}</style><g id="Art_Theraphy"><circle cx="256" cy="256" r="207" style="fill:#f0c48a"/><path class="st5" d="M316.468 394.034H132.605c-9.804 0-17.752-7.948-17.752-17.752V135.718c0-9.804 7.948-17.752 17.752-17.752h183.863c9.804 0 17.752 7.948 17.752 17.752v240.564c.001 9.804-7.947 17.752-17.752 17.752z"/>
                         <path class="st6" d="M141.233 143.654h166.609v224.692H141.233z"/>
@@ -610,8 +662,8 @@ return [
                 'name' => 'dahsboard',
                 'type' => 'solid',
                 'class' => 'w-12 h-12 text-base-content',
-                'host'=>'https://www.reshot.com/free-svg-icons/',
-                'name_on_host'=>'Dashboard',
+                'host' => 'https://www.reshot.com/free-svg-icons/',
+                'name_on_host' => 'Dashboard',
                 'html' => '
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="40" height="40"><defs><style>.cls-1{fill:#7c7d7d}.cls-2{fill:#919191}.cls-3{fill:#dad7e5}.cls-4{fill:#edebf2}.cls-7{fill:#c6c3d8}.cls-9{fill:#fc6}.cls-10{fill:#ffde76}</style></defs><g id="Dashboard"><path class="cls-1" d="M6 31h36v16H6z"/>
                         <path class="cls-2" d="M42 31v14H11a3 3 0 0 1-3-3V31z"/>
@@ -629,8 +681,8 @@ return [
                 'name' => 'back',
                 'type' => 'solid',
                 'class' => 'w-12 h-12 text-base-content',
-                'host'=>'https://www.reshot.com/free-svg-icons/',
-                'name_on_host'=>'back',
+                'host' => 'https://www.reshot.com/free-svg-icons/',
+                'name_on_host' => 'back',
                 'html' => '
                     <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="40" height="40" class="rounded-full" style="shape-rendering:geometricPrecision;text-rendering:geometricPrecision;image-rendering:optimizeQuality;fill-rule:evenodd;clip-rule:evenodd" viewBox="0 0 6.827 6.827">
                         <path style="fill:#424242" d="M0 0h6.827v6.827H0z"/>
@@ -724,6 +776,8 @@ return [
         //     'class' => 'icon-class',
         //     'html' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="..."></path></svg>',
         // ],
+
+
     ],
 
 ];

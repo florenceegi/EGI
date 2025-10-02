@@ -55,4 +55,11 @@ return [
     'navigation' => 'Navigazione',
     'activity' => 'Attività',
     'user_management' => 'Gestione Utenti',
+
+    // PA Enterprise
+    'pa' => 'Gestione PA Enterprise',
+    'pa_dashboard' => 'Dashboard',
+    'pa_heritage' => 'Documenti Certificati',
+    'pa_coa' => 'Certificati CoA',
+    'pa_inspectors' => 'Ispettori Assegnati',
 ];

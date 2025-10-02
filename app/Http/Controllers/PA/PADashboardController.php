@@ -50,8 +50,8 @@ class PADashboardController extends Controller {
         ErrorManagerInterface $errorManager,
         PAStatisticsService $statsService
     ) {
-        // Middleware: auth + role:pa_entity
-        $this->middleware(['auth', 'role:pa_entity']);
+        // Only auth middleware - role check done in methods
+        $this->middleware(['auth']);
 
         $this->logger = $logger;
         $this->errorManager = $errorManager;
@@ -69,6 +69,11 @@ class PADashboardController extends Controller {
     public function index(Request $request): View|RedirectResponse {
         try {
             $user = Auth::user();
+
+            // Authorization: Check pa_entity role
+            if (!$user->hasRole('pa_entity')) {
+                abort(403, 'Accesso negato. Ruolo PA Entity richiesto.');
+            }
 
             // ULM: Log dashboard access
             $this->logger->info('PA Dashboard accessed', [
