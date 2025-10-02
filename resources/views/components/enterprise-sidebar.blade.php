@@ -1,3 +1,18 @@
+{{--
+    Enterprise Sidebar Component - Universal Contextual Navigation
+
+    @props
+    - logo: string - Logo text (default: 'FlorenceEGI')
+    - badge: string|null - Badge text below logo (e.g., 'Ente PA', 'Ispettore')
+    - theme: string - Theme identifier (pa|inspector|company|dashboard)
+--}}
+
+@props([
+    'logo' => 'FlorenceEGI',
+    'badge' => null,
+    'theme' => 'pa'
+])
+
 @php
 use App\Services\Menu\ContextMenus;
 use App\Services\Menu\MenuConditionEvaluator;
@@ -11,6 +26,16 @@ $iconRepo = app(IconRepository::class);
 $currentRouteName = Route::currentRouteName();
 $context = explode('.', $currentRouteName)[0] ?? 'dashboard';
 $contextTitle = __('menu.' . $context);
+
+// Theme colors mapping
+$themeColors = [
+    'pa' => 'bg-gradient-to-b from-[#1B365D] to-[#0F2342]', // Blu Algoritmo
+    'inspector' => 'bg-gradient-to-b from-[#2D5016] to-[#1F3810]', // Verde Rinascita
+    'company' => 'bg-gradient-to-b from-[#8E44AD] to-[#6C3483]', // Viola Innovazione
+    'dashboard' => 'bg-neutral', // Default DaisyUI
+];
+
+$sidebarBgClass = $themeColors[$theme] ?? $themeColors['dashboard'];
 
 // Ottieni menu per context
 $allMenus = ContextMenus::getMenusForContext($context);
@@ -56,11 +81,19 @@ foreach ($allMenus as $menuGroup) {
 }
 @endphp
 
-<aside class="flex flex-col min-h-screen w-80 bg-neutral text-neutral-content">
-    <!-- Logo PA -->
+@endphp
+
+<aside class="flex flex-col min-h-screen w-80 {{ $sidebarBgClass }} text-neutral-content">
+    <!-- Logo & Badge -->
     <div class="p-6 text-center border-b border-neutral-focus">
-        <h1 class="text-2xl font-bold text-white">FlorenceEGI</h1>
-        <span class="inline-block mt-2 pa-badge">{{ $contextTitle }}</span>
+        <h1 class="text-2xl font-bold text-white">{{ $logo }}</h1>
+        @if ($badge)
+            <span class="inline-block px-3 py-1 mt-2 text-xs font-semibold rounded-full bg-white/10 text-white/90">
+                {{ $badge }}
+            </span>
+        @else
+            <span class="inline-block mt-2 text-sm text-white/70">{{ $contextTitle }}</span>
+        @endif
     </div>
 
     <!-- Back Button -->

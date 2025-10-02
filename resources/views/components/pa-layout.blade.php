@@ -41,9 +41,8 @@
             background: #F8F9FA;
         }
 
-        /* PA Sidebar Override - Blu Algoritmo Theme */
+        /* PA Sidebar Width */
         .drawer-side aside {
-            background: linear-gradient(180deg, #1B365D 0%, #0F2342 100%) !important;
             width: 280px !important;
         }
 
@@ -222,10 +221,10 @@
             </main>
         </div>
 
-        <!-- PA Sidebar - Pure Blade Component (NO Livewire) -->
+        <!-- Enterprise Sidebar - Contextual Navigation -->
         <div class="drawer-side">
             <label for="main-drawer" class="drawer-overlay"></label>
-            <x-pa-sidebar />
+            <x-enterprise-sidebar logo="FlorenceEGI" badge="Ente PA" theme="pa" />
         </div>
     </div>
     {{ $scripts ?? '' }}
