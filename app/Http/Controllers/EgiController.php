@@ -7,6 +7,8 @@ use App\Models\EgiTrait;
 use App\Models\Collection;
 use App\Helpers\FegiAuth;
 use App\Services\Gdpr\AuditLogService;
+use App\Services\Egi\EgiService;
+use App\Services\View\ViewService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -18,16 +20,23 @@ use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
- * @Oracode Controller: EGI CRUD Management with FegiAuth Integration
- * 🎯 Purpose: Handle EGI (Ecological Goods Invent) CRUD operations with unified authentication
- * 🛡️ Privacy: Full GDPR compliance with audit logging and collection-based authorization
- * 🧱 Core Logic: FegiAuth-based authorization + collection membership validation + UEM error handling
+ * @Oracode Controller: EGI CRUD Management with Service Layer
+ * 🎯 Purpose: Handle EGI (Ecological Goods Invent) CRUD operations with universal architecture
+ * 🛡️ Privacy: Full GDPR compliance with audit logging and Spatie-based authorization
+ * 🧱 Core Logic: Service Layer + FegiAuth + Spatie permissions + UEM error handling
  *
  * @package App\Http\Controllers
- * @author Padmin D. Curtis (AI Partner OS2.0-Compliant) for Fabio Cherici
- * @version 2.0.0 (FlorenceEGI MVP EGI_CRUD)
- * @date 2025-06-28
- * @solution FegiAuth integration + collection permission validation + Ultra ecosystem compliance
+ * @author Padmin D. Curtis (AI Partner OS3.0)
+ * @version 3.0.0 (FlorenceEGI Enterprise Architecture - Service Layer)
+ * @date 2025-10-04
+ * @solution Service Layer Pattern + Spatie authorization + ViewService routing + Universal CRUD
+ *
+ * Architecture:
+ * - EgiService: Business logic layer (CRUD, filtering, authorization checks)
+ * - ViewService: View routing layer (role-based view resolution)
+ * - Spatie: Permission system (NOT Laravel Policy)
+ * - FegiAuth: Unified authentication helper
+ * - ULM/UEM/GDPR: Full Ultra ecosystem integration
  */
 class EgiController extends Controller {
     /**
@@ -52,108 +61,227 @@ class EgiController extends Controller {
     protected AuditLogService $auditLogService;
 
     /**
-     * @Oracode Constructor: Dependency Injection Setup
-     * 🎯 Purpose: Initialize Ultra ecosystem services for EGI CRUD operations
-     * 🧱 Core Logic: DI-based service injection following Ultra patterns
+     * EGI Service for business logic
      *
-     * @param ErrorManagerInterface $errorManager Ultra Error Manager for standardized error handling
-     * @param UltraLogManager $logger Ultra Log Manager for operational logging
-     * @param AuditLogService $auditLogService GDPR audit service for compliance tracking
+     * @var EgiService
+     */
+    protected EgiService $egiService;
+
+    /**
+     * View Service for role-based view routing
+     *
+     * @var ViewService
+     */
+    protected ViewService $viewService;
+
+    /**
+     * @Oracode Constructor: Dependency Injection Setup (Service Layer)
+     * 🎯 Purpose: Initialize Ultra ecosystem + Service Layer for EGI operations
+     * 🧱 Core Logic: DI-based service injection following Enterprise patterns
+     *
+     * @param ErrorManagerInterface $errorManager Ultra Error Manager
+     * @param UltraLogManager $logger Ultra Log Manager
+     * @param AuditLogService $auditLogService GDPR audit service
+     * @param EgiService $egiService Business logic service
+     * @param ViewService $viewService View routing service
      */
     public function __construct(
         ErrorManagerInterface $errorManager,
         UltraLogManager $logger,
-        AuditLogService $auditLogService
+        AuditLogService $auditLogService,
+        EgiService $egiService,
+        ViewService $viewService
     ) {
         $this->errorManager = $errorManager;
         $this->logger = $logger;
         $this->auditLogService = $auditLogService;
+        $this->egiService = $egiService;
+        $this->viewService = $viewService;
     }
 
     /**
-     * @Oracode Method: Show EGI Detail with CRUD Box
-     * 🎯 Purpose: Display EGI detail page with conditional CRUD interface
-     * 📤 Output: View with EGI data and CRUD permissions
-     * 🧱 Core Logic: Load EGI relationships + determine CRUD visibility based on FegiAuth + collection membership
+     * @Oracode Method: EGI List (Service Layer)
+     * 🎯 Purpose: Display EGI list with role-based filtering
+     * 📤 Output: Role-based view with paginated EGI list
+     * 🧱 Core Logic: EgiService filters by role + ViewService routes to correct view
      *
-     * @param int $id EGI ID
-     * @return View
+     * @param Request $request
+     * @return View|RedirectResponse
      */
-    public function show($id): View | RedirectResponse {
+    public function index(Request $request): View | RedirectResponse {
         try {
-            $egi = Egi::with([
-                'collection.creator',
-                'collection.users',
-                'collection.epp',
-                'user',
-                'owner',
-                'likes',
-                'reservationCertificates',
-                'traits.category',
-                'traits.traitType'
-            ])->find($id);
-
-            // Check if EGI exists
-            if (!$egi) {
-                return redirect()->route('collections.index')
-                    ->with('error', __('errors.egi_not_found', ['id' => $id]));
+            // Authentication required for EGI list
+            if (!FegiAuth::check()) {
+                return redirect()->route('login')
+                    ->with('error', __('errors.authentication_required'));
             }
 
-            // Log page access (developers only - English)
-            $this->logger->info('EGI_PAGE_ACCESS: EGI detail page accessed successfully', [
-                'traits_count' => $egi->traits->count(),
-                'egi_id' => $egi->id,
-                'collection_id' => $egi->collection_id,
-                'user_id' => FegiAuth::id(),
-                'auth_type' => FegiAuth::getAuthType()
+            $user = FegiAuth::user();
+
+            // Service handles role-based filtering + pagination
+            $egis = $this->egiService->index($user, $request);
+
+            // ViewService determines correct view based on user role
+            $view = $this->viewService->getViewForRole($user, 'index');
+
+            // ULM logging
+            $this->logger->info('EGI_INDEX_ACCESSED', [
+                'user_id' => $user->id,
+                'user_role' => $user->roles->pluck('name')->first(),
+                'view' => $view,
+                'results_count' => $egis->count(),
+                'total' => $egis->total(),
+                'per_page' => $egis->perPage(),
+                'current_page' => $egis->currentPage(),
+                'filters' => $request->only(['search', 'coa_status']),
             ]);
 
-            // Rarity percentages are pre-calculated and stored in database
-            // No need for dynamic calculation anymore
+            return view($view, compact('egis'));
+        } catch (\Exception $e) {
+            return $this->errorManager->handle('EGI_INDEX_ERROR', [
+                'user_id' => FegiAuth::id(),
+            ], $e);
+        }
+    }
 
-            // Check if user can see CRUD box
-            $canManage = false;
-            if (FegiAuth::check()) {
-                $user = FegiAuth::user();
-                $canManage = $this->canManageEgi($user, $egi);
+    /**
+     * @Oracode Method: Show EGI Creation Form (Service Layer)
+     * 🎯 Purpose: Display EGI upload/creation form
+     * 📤 Output: Role-based view with user collections
+     * 🧱 Core Logic: ViewService routes to correct form + Spatie authorization
+     *
+     * @return View|RedirectResponse
+     */
+    public function create(): View | RedirectResponse {
+        try {
+            // Authentication required
+            if (!FegiAuth::check()) {
+                return redirect()->route('login')
+                    ->with('error', __('errors.authentication_required'));
             }
+
+            $user = FegiAuth::user();
+
+            // Check Spatie permission
+            if (!$user->can('create_EGI')) {
+                return redirect()->back()
+                    ->with('error', __('errors.unauthorized_action'));
+            }
+
+            // Get user collections (only artwork type for MVP)
+            $collections = $user->collections()
+                ->where('type', 'artwork')
+                ->orderBy('name')
+                ->get();
+
+            // ViewService determines correct view based on user role
+            $view = $this->viewService->getViewForRole($user, 'create');
+
+            // ULM logging
+            $this->logger->info('EGI_CREATE_FORM_ACCESSED', [
+                'user_id' => $user->id,
+                'user_role' => $user->roles->pluck('name')->first(),
+                'view' => $view,
+                'collections_count' => $collections->count(),
+            ]);
+
+            return view($view, compact('collections'));
+        } catch (\Exception $e) {
+            return $this->errorManager->handle('EGI_CREATE_FORM_ERROR', [
+                'user_id' => FegiAuth::id(),
+            ], $e);
+        }
+    }
+
+    /**
+     * @Oracode Method: Show EGI Detail (Service Layer)
+     * 🎯 Purpose: Display EGI detail page with conditional CRUD interface
+     * 📤 Output: Role-based view with EGI data and CRUD permissions
+     * 🧱 Core Logic: EgiService for data + ViewService for routing + authorization checks
+     *
+     * @param Egi $egi EGI model instance (route model binding)
+     * @return View|RedirectResponse
+     */
+    public function show(Egi $egi): View | RedirectResponse {
+        try {
+            // Check authentication (public access allowed for published EGIs)
+            if (!FegiAuth::check()) {
+                // For public access: only published EGIs visible
+                if (!$egi->is_published) {
+                    return redirect()->route('collections.index')
+                        ->with('error', __('errors.authentication_required'));
+                }
+
+                // Public view: no CRUD box, minimal data
+                $canManage = false;
+                $egi->is_liked = false;
+                $egi->likes_count = $egi->likes()->count();
+
+                $collectionEgis = $egi->collection->egis()
+                    ->whereNotNull('key_file')
+                    ->whereNotNull('extension')
+                    ->where('is_published', true)
+                    ->orderBy('position')
+                    ->orderBy('id')
+                    ->get();
+
+                // Use default view for public users
+                return view('egis.show', compact('egi', 'canManage', 'collectionEgis'));
+            }
+
+            // Authenticated user: delegate to service
+            $user = FegiAuth::user();
+
+            // Service handles eager loading and authorization check
+            $egi = $this->egiService->show($user, $egi);
+
+            // Check management permissions (for CRUD box display)
+            $canManage = $this->canManageEgi($user, $egi);
 
             // Check likes for authenticated users
-            if (FegiAuth::check()) {
-                $userId = FegiAuth::id();
-                $egi->is_liked = $egi->likes()
-                    ->where('user_id', $userId)
-                    ->exists();
-            } else {
-                $egi->is_liked = false;
-            }
+            $userId = FegiAuth::id();
+            $egi->is_liked = $egi->likes()
+                ->where('user_id', $userId)
+                ->exists();
 
             $egi->likes_count = $egi->likes()->count();
-            $collection = $egi->collection;
 
             // Get all EGIs from the same collection for the navigation carousel
-            $collectionEgis = $collection->egis()
+            $collectionEgis = $egi->collection->egis()
                 ->whereNotNull('key_file')
                 ->whereNotNull('extension')
                 ->orderBy('position')
                 ->orderBy('id')
                 ->get();
 
-            return view('egis.show', compact('egi', 'collection', 'canManage', 'collectionEgis'));
+            // ViewService determines correct view based on user role
+            $view = $this->viewService->getViewForRole($user, 'show');
+
+            // ULM logging
+            $this->logger->info('EGI_DETAIL_ACCESSED', [
+                'egi_id' => $egi->id,
+                'collection_id' => $egi->collection_id,
+                'user_id' => $user->id,
+                'user_role' => $user->roles->pluck('name')->first(),
+                'view' => $view,
+                'can_manage' => $canManage,
+                'auth_type' => FegiAuth::getAuthType(),
+            ]);
+
+            return view($view, compact('egi', 'canManage', 'collectionEgis'));
         } catch (\Exception $e) {
             return $this->errorManager->handle('EGI_PAGE_RENDERING_ERROR', [
-                'egi_id' => $id,
-                'error' => $e->getMessage(),
-                'user_id' => FegiAuth::id()
+                'egi_id' => $egi->id,
+                'user_id' => FegiAuth::id(),
             ], $e);
         }
     }
 
     /**
-     * @Oracode Method: Update EGI Data
+     * @Oracode Method: Update EGI Data (Service Layer)
      * 🎯 Purpose: Update EGI fields with validation and audit logging
      * 📤 Output: JSON response for AJAX or redirect for form submission
-     * 🧱 Core Logic: FegiAuth authorization + collection membership + validation + transaction + audit
+     * 🧱 Core Logic: EgiService handles update + Spatie authorization + GDPR audit
      *
      * @param Request $request
      * @param Egi $egi
@@ -171,7 +299,7 @@ class EgiController extends Controller {
 
             $user = FegiAuth::user();
 
-            // Check basic permission
+            // Check basic permission (Spatie)
             if (!FegiAuth::can('update_EGI')) {
                 return $this->errorManager->handle('EGI_UNAUTHORIZED_ACCESS', [
                     'user_id' => $user->id,
@@ -227,21 +355,8 @@ class EgiController extends Controller {
                 'is_published' => $egi->is_published
             ];
 
-            // Update EGI in transaction
-            DB::transaction(function () use ($egi, $validated, $user) {
-                $egi->fill($validated);
-                $egi->updated_by = $user->id;
-                $egi->save();
-            });
-
-            // Log operational action (developers only - English)
-            $this->logger->info('EGI_UPDATE: EGI updated successfully', [
-                'user_id' => $user->id,
-                'egi_id' => $egi->id,
-                'collection_id' => $egi->collection_id,
-                'updated_fields' => array_keys($validated),
-                'auth_type' => FegiAuth::getAuthType()
-            ]);
+            // Service handles update (transaction, updated_by, cache invalidation)
+            $egi = $this->egiService->update($user, $egi, $validated);
 
             // Log GDPR audit trail
             $this->auditLogService->logUserAction(
@@ -275,16 +390,15 @@ class EgiController extends Controller {
             return $this->errorManager->handle('EGI_UPDATE_FAILED', [
                 'user_id' => FegiAuth::id(),
                 'egi_id' => $egi->id,
-                'error' => $e->getMessage()
             ], $e);
         }
     }
 
     /**
-     * @Oracode Method: Delete EGI
+     * @Oracode Method: Delete EGI (Service Layer)
      * 🎯 Purpose: Soft delete EGI with proper authorization and audit logging
      * 📤 Output: JSON response for AJAX or redirect for form submission
-     * 🧱 Core Logic: FegiAuth authorization + collection membership + soft delete + audit
+     * 🧱 Core Logic: EgiService handles destroy + Spatie authorization + GDPR audit
      *
      * @param Request $request
      * @param Egi $egi
@@ -302,7 +416,7 @@ class EgiController extends Controller {
 
             $user = FegiAuth::user();
 
-            // Check basic permission
+            // Check basic permission (Spatie)
             if (!FegiAuth::can('delete_EGI')) {
                 return $this->errorManager->handle('EGI_UNAUTHORIZED_ACCESS', [
                     'user_id' => $user->id,
@@ -334,26 +448,8 @@ class EgiController extends Controller {
                 'created_at' => $egi->created_at->toISOString()
             ];
 
-            // Soft delete EGI in transaction
-            DB::transaction(function () use ($egi, $user) {
-                $egi->updated_by = $user->id;
-                $egi->save();
-                $egi->delete(); // Soft delete
-            });
-
-            // Clear traits rarity cache after EGI deletion
-            $this->clearTraitsRarityCache($egi->collection_id);
-
-            // Update rarity percentages for remaining traits in collection
-            $this->updateRarityPercentages($egi->collection_id);
-
-            // Log operational action (developers only - English)
-            $this->logger->warning('EGI_DELETE: EGI deleted successfully', [
-                'user_id' => $user->id,
-                'egi_id' => $egi->id,
-                'collection_id' => $egi->collection_id,
-                'auth_type' => FegiAuth::getAuthType()
-            ]);
+            // Service handles soft delete (transaction, updated_by, cache invalidation, rarity updates)
+            $this->egiService->destroy($user, $egi);
 
             // Log GDPR audit trail
             $this->auditLogService->logUserAction(
@@ -372,19 +468,18 @@ class EgiController extends Controller {
                     'success' => true,
                     'message' => __('egi.crud.delete_success'),
                     'data' => [
-                        'egi_id' => $egi->id,
-                        'collection_id' => $egi->collection_id
+                        'egi_id' => $egiData['egi_id'],
+                        'collection_id' => $egiData['collection_id']
                     ]
                 ]);
             }
 
-            return redirect()->route('home.collections.show', $egi->collection)
+            return redirect()->route('home.collections.show', $egiData['collection_id'])
                 ->with('success', __('egi.crud.delete_success'));
         } catch (\Exception $e) {
             return $this->errorManager->handle('EGI_DELETE_FAILED', [
                 'user_id' => FegiAuth::id(),
                 'egi_id' => $egi->id,
-                'error' => $e->getMessage()
             ], $e);
         }
     }
