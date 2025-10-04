@@ -633,8 +633,12 @@ protected array $redirectRegistry = [
 **Integration:**
 
 ```php
-// AuthenticatedSessionController - store() method
+// AuthenticatedSessionController - store() method (LOGIN)
 $redirectRoute = $this->authRedirectService->getRedirectRoute($user);
+return redirect()->route($redirectRoute);
+
+// RegisteredUserController - store() method (REGISTRATION)
+$redirectRoute = $this->authRedirectService->getRedirectRoute($result['user']);
 return redirect()->route($redirectRoute);
 ```
 
@@ -644,13 +648,18 @@ return redirect()->route($redirectRoute);
 - ✅ Route existence check (previene 404)
 - ✅ ULM logging per ogni decisione di redirect
 - ✅ Extensible registry (facile aggiungere nuovi usertype)
+- ✅ Consistent behavior: Login AND Registration use same logic
 
 **Testing:**
-- ✅ PA entity → redirect a pa.dashboard
-- ✅ Creator → redirect a home
+- ✅ PA entity login → redirect a pa.dashboard
+- ✅ PA entity registration → redirect a pa.dashboard
+- ✅ Creator login → redirect a home
+- ✅ Creator registration → redirect a home
 - ✅ Unknown usertype → fallback a home
 
-**Commit:** `40d28d6` - [FEAT] AuthRedirectService - Usertype-based post-login redirect
+**Commits:** 
+- `40d28d6` - [FEAT] AuthRedirectService - Usertype-based post-login redirect
+- `8013383` - [FEAT] AuthRedirectService - Post-registration redirect integration
 
 ---
 
@@ -663,15 +672,18 @@ return redirect()->route($redirectRoute);
 php artisan test --filter=PAModuleTest
 
 # Manual Tests
-1. Login PA → Verify redirect to /pa/dashboard (NEW!)
-2. Navigate to heritage list → Verify egis/pa/index.blade.php
-3. Upload new EGI → Verify creation
-4. Edit EGI → Verify update
-5. View EGI detail → Verify CoA display
+1. Login PA → Verify redirect to /pa/dashboard (AuthRedirectService)
+2. Register NEW PA user → Verify redirect to /pa/dashboard (AuthRedirectService)
+3. Navigate to heritage list → Verify egis/pa/index.blade.php
+4. Upload new EGI → Verify creation
+5. Edit EGI → Verify update
+6. View EGI detail → Verify CoA display
 6. Test filters → Verify search + CoA status
 7. Test pagination → Verify 15 items/page
-8. Logout → Login Creator → Verify redirect to /home
-9. Verify isolation: Creator ≠ PA
+8. Logout
+9. Login Creator → Verify redirect to /home (AuthRedirectService)
+10. Register NEW Creator user → Verify redirect to /home (AuthRedirectService)
+11. Verify isolation: Creator ≠ PA
 ```
 
 **Success Criteria:**
