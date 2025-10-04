@@ -156,7 +156,7 @@ class PaActUploadController extends Controller {
         // Get PA entity collections
         $collections = $user->collections()
             ->where('type', 'artwork') // PA collections use artwork type
-            ->orderBy('title')
+            ->orderBy('collection_name')
             ->get();
 
         return view('pa.acts.upload', compact('docTypes', 'collections'));

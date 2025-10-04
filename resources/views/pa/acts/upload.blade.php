@@ -130,7 +130,7 @@
                         @foreach ($collections as $collection)
                             <option value="{{ $collection->id }}"
                                 {{ old('collection_id') == $collection->id ? 'selected' : '' }}>
-                                {{ $collection->title }}
+                                {{ $collection->collection_name }}
                             </option>
                         @endforeach
                     </select>
