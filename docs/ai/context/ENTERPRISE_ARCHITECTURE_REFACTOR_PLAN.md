@@ -603,7 +603,58 @@ public function store(Request $request) {
 
 ---
 
-### **2.6 Testing & Validation STEP 2**
+### **2.6 AuthRedirectService - Login Redirect by Usertype**
+
+**Status:** ✅ COMPLETATO (2025-10-04)
+
+**File:** `app/Services/Auth/AuthRedirectService.php`
+
+**Purpose:** Gestire redirect post-login basato su usertype dell'utente autenticato.
+
+**Architecture Pattern:**
+- Registry pattern (consistente con ViewService)
+- Usertype-based route mapping
+- ULM logging per audit trail
+- Route existence validation (safety)
+
+**Redirect Registry:**
+
+```php
+protected array $redirectRegistry = [
+    'pa_entity' => 'pa.dashboard',      // PA dashboard
+    'inspector' => 'inspector.dashboard', // Inspector dashboard [FUTURE]
+    'company' => 'company.dashboard',    // Company dashboard [FUTURE]
+    'collector' => 'collector.dashboard', // Collector dashboard [FUTURE]
+    'patron' => 'patron.dashboard',      // Patron dashboard [FUTURE]
+    'creator' => 'home',                 // Creator → Public homepage (default)
+];
+```
+
+**Integration:**
+
+```php
+// AuthenticatedSessionController - store() method
+$redirectRoute = $this->authRedirectService->getRedirectRoute($user);
+return redirect()->route($redirectRoute);
+```
+
+**Features:**
+- ✅ Usertype detection da $user->usertype
+- ✅ Fallback a 'home' per usertype sconosciuti
+- ✅ Route existence check (previene 404)
+- ✅ ULM logging per ogni decisione di redirect
+- ✅ Extensible registry (facile aggiungere nuovi usertype)
+
+**Testing:**
+- ✅ PA entity → redirect a pa.dashboard
+- ✅ Creator → redirect a home
+- ✅ Unknown usertype → fallback a home
+
+**Commit:** `40d28d6` - [FEAT] AuthRedirectService - Usertype-based post-login redirect
+
+---
+
+### **2.7 Testing & Validation STEP 2**
 
 **Test Suite:**
 
@@ -612,19 +663,23 @@ public function store(Request $request) {
 php artisan test --filter=PAModuleTest
 
 # Manual Tests
-1. Login PA → Dashboard → View heritage list
-2. Upload new EGI → Verify creation
-3. Edit EGI → Verify update
-4. View EGI detail → Verify CoA display
-5. Test filters → Verify search + CoA status
-6. Test pagination → Verify 15 items/page
-7. Logout → Login Creator → Verify isolation
+1. Login PA → Verify redirect to /pa/dashboard (NEW!)
+2. Navigate to heritage list → Verify egis/pa/index.blade.php
+3. Upload new EGI → Verify creation
+4. Edit EGI → Verify update
+5. View EGI detail → Verify CoA display
+6. Test filters → Verify search + CoA status
+7. Test pagination → Verify 15 items/page
+8. Logout → Login Creator → Verify redirect to /home
+9. Verify isolation: Creator ≠ PA
 ```
 
 **Success Criteria:**
 
 -   ✅ PA workflow 100% functional (list, show, create, edit)
+-   ✅ PA login redirects to dashboard (AuthRedirectService)
 -   ✅ Creator workflow still 100% functional
+-   ✅ Creator login redirects to home (unchanged)
 -   ✅ Isolation: Creator ≠ PA
 -   ✅ Authorization: role checks work
 
