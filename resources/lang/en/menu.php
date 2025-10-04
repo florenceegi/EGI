@@ -36,4 +36,12 @@ return [
     'navigation' => 'Navigation',
     'activity' => 'Activity',
     'user_management' => 'User Management',
+
+    // PA Enterprise
+    'pa' => 'PA Enterprise Management',
+    'pa_dashboard' => 'Dashboard',
+    'pa_heritage' => 'Certified Documents',
+    'pa_acts' => 'Tokenized Acts',
+    'pa_coa' => 'CoA Certificates',
+    'pa_inspectors' => 'Assigned Inspectors',
 ];

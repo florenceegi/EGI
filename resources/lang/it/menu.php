@@ -60,6 +60,7 @@ return [
     'pa' => 'Gestione PA Enterprise',
     'pa_dashboard' => 'Dashboard',
     'pa_heritage' => 'Documenti Certificati',
+    'pa_acts' => 'Atti Tokenizzati',
     'pa_coa' => 'Certificati CoA',
     'pa_inspectors' => 'Ispettori Assegnati',
 ];

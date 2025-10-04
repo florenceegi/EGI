@@ -36,6 +36,7 @@ use App\Services\Menu\Items\PADashboardMenu;
 use App\Services\Menu\Items\PAHeritageMenu;
 use App\Services\Menu\Items\PACoAMenu;
 use App\Services\Menu\Items\PAInspectorsMenu;
+use App\Services\Menu\Items\PAActsMenu;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -181,6 +182,7 @@ class ContextMenus {
 
                     new PADashboardMenu(),
                     new PAHeritageMenu(),
+                    new PAActsMenu(),
                     new PACoAMenu(),
                     new PAInspectorsMenu(),
                 ]);
