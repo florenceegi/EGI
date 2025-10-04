@@ -19,6 +19,18 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-10-02
  * @purpose Controller per gestione visualizzazione patrimonio culturale PA Entity
  *
+ * @deprecated 2.0.0 Use universal EgiController with ViewService instead
+ * @see App\Http\Controllers\EgiController
+ * @see App\Services\Egi\EgiService
+ * @see App\Services\View\ViewService
+ *
+ * MIGRATION NOTES:
+ * - Views migrated to resources/views/egis/pa/*.blade.php
+ * - Business logic moved to EgiService
+ * - View routing handled by ViewService
+ * - Routes kept for backward compatibility (will be removed in v3.0)
+ * - Controller kept ONLY for backward compatibility
+ *
  * Features:
  * - Lista patrimonio con filtri (search, CoA status)
  * - Dettaglio singolo bene con CoA display
