@@ -180,5 +180,180 @@ return [
         'upload' => 'Carica Atto',
         'view' => 'Visualizza Atto',
         'verify' => 'Verifica'
+    ],
+
+    // Index page
+    'index' => [
+        'page_title' => 'Atti Tokenizzati',
+        'title' => 'Atti Amministrativi Tokenizzati',
+        'subtitle' => 'Gestisci gli atti della tua Pubblica Amministrazione con certificazione blockchain',
+        'upload_new_act' => 'Carica Nuovo Atto',
+        
+        // Stats
+        'stats' => [
+            'total' => 'Totale Atti',
+            'anchored' => 'Ancorati su Blockchain',
+            'pending' => 'In Attesa di Ancoraggio'
+        ],
+        
+        // Filters
+        'filters' => [
+            'search' => 'Cerca',
+            'search_placeholder' => 'Protocollo o titolo...',
+            'doc_type' => 'Tipo Atto',
+            'all_types' => 'Tutti i tipi',
+            'date_from' => 'Data Da',
+            'date_to' => 'Data A',
+            'status' => 'Stato',
+            'status_all' => 'Tutti',
+            'status_anchored' => 'Ancorati',
+            'status_pending' => 'In Attesa',
+            'apply' => 'Applica Filtri',
+            'reset' => 'Resetta'
+        ],
+        
+        // Table
+        'table' => [
+            'protocol' => 'Protocollo',
+            'title' => 'Titolo',
+            'type' => 'Tipo',
+            'status' => 'Stato',
+            'actions' => 'Azioni'
+        ],
+        
+        // Status
+        'status' => [
+            'anchored' => 'Ancorato',
+            'pending' => 'In Attesa'
+        ],
+        
+        // Actions
+        'actions' => [
+            'view' => 'Visualizza',
+            'view_detail' => 'Visualizza Dettaglio'
+        ],
+        
+        // Empty state
+        'empty' => [
+            'title' => 'Nessun Atto Trovato',
+            'description' => 'Non hai ancora caricato atti tokenizzati. Inizia caricando il tuo primo documento firmato digitalmente.',
+            'cta' => 'Carica Primo Atto'
+        ]
+    ],
+
+    // Show page
+    'show' => [
+        'page_title' => 'Atto :protocol',
+        'back_to_list' => 'Torna alla Lista',
+        'protocol_date' => 'Data Protocollo',
+        
+        // Status
+        'status' => [
+            'anchored' => 'Ancorato su Blockchain',
+            'pending' => 'In Attesa di Ancoraggio'
+        ],
+        
+        // Metadata section
+        'metadata' => [
+            'title' => 'Metadati Documento',
+            'act_title' => 'Titolo Atto',
+            'description' => 'Descrizione',
+            'upload_date' => 'Data Caricamento',
+            'entity' => 'Ente'
+        ],
+        
+        // Signature section
+        'signature' => [
+            'title' => 'Firma Digitale',
+            'valid' => 'Firma Valida',
+            'qes_pades' => 'Firma Qualificata QES/PAdES',
+            'signer_name' => 'Firmatario',
+            'signer_role' => 'Ruolo',
+            'organization' => 'Organizzazione',
+            'certificate_issuer' => 'Emittente Certificato',
+            'timestamp' => 'Data e Ora Firma'
+        ],
+        
+        // Blockchain section
+        'blockchain' => [
+            'title' => 'Dati Blockchain',
+            'txid' => 'ID Transazione (TXID)',
+            'merkle_root' => 'Merkle Root',
+            'document_hash' => 'Hash Documento',
+            'anchored_at' => 'Ancorato il',
+            'explorer' => 'Explorer',
+            'view_explorer' => 'Visualizza su Explorer',
+            'pending_title' => 'Ancoraggio in Corso',
+            'pending_description' => 'Il documento sarà ancorato su blockchain nel prossimo batch (entro 24 ore). Una volta completato, riceverai una notifica e potrai visualizzare i dati blockchain.'
+        ],
+        
+        // Verification section
+        'verification' => [
+            'title' => 'Verifica Pubblica',
+            'qr_description' => 'Scansiona per verificare l\'autenticità',
+            'public_code' => 'Codice Verifica',
+            'public_url' => 'URL Verifica Pubblica',
+            'copy_code' => 'Copia Codice',
+            'copy_url' => 'Copia URL',
+            'copied' => 'Copiato negli appunti!',
+            'open_public_page' => 'Apri Pagina Pubblica'
+        ]
+    ],
+
+    // Public verification page
+    'verify' => [
+        'page_title' => 'Verifica Atto PA',
+        'title' => 'Verifica Atto Pubblico',
+        'subtitle' => 'Verifica l\'autenticità di un atto della Pubblica Amministrazione tramite blockchain',
+        'protocol_date' => 'Data Protocollo',
+        'document_title' => 'Titolo Documento',
+        'entity' => 'Ente Emittente',
+        
+        // Verification results
+        'verified' => [
+            'title' => 'DOCUMENTO VERIFICATO SU BLOCKCHAIN',
+        ],
+        'pending' => [
+            'title' => 'DOCUMENTO IN ATTESA DI TOKENIZZAZIONE',
+            'info' => 'Il documento è in attesa di ancoraggio su blockchain. L\'operazione verrà completata entro 24 ore.'
+        ],
+        'failed' => [
+            'title' => 'VERIFICA FALLITA'
+        ],
+        'not_found' => [
+            'title' => 'CODICE VERIFICA NON VALIDO',
+            'message' => 'Il codice di verifica inserito non corrisponde a nessun atto tokenizzato. Verifica di aver copiato correttamente il codice.',
+            'code_shown' => 'Codice inserito'
+        ],
+        
+        // Digital signature
+        'digital_signature' => 'Firma Digitale',
+        'signer_name' => 'Firmatario',
+        'signer_role' => 'Ruolo',
+        'certificate_issuer' => 'Emittente Certificato',
+        'signature_timestamp' => 'Data e Ora Firma',
+        
+        // Blockchain data
+        'blockchain_data' => 'Dati Blockchain',
+        'transaction_id' => 'ID Transazione',
+        'document_hash' => 'Hash Documento (SHA-256)',
+        'anchored_at' => 'Ancorato il',
+        'explorer' => 'Explorer',
+        'view_explorer' => 'Visualizza su Algorand Explorer',
+        
+        // Trust indicators
+        'signature_valid' => 'Firma Valida',
+        'qes_certificate' => 'Certificato QES',
+        'blockchain_confirmed' => 'Confermato su Blockchain',
+        'algorand_network' => 'Rete Algorand',
+        
+        // How to verify
+        'how_to' => [
+            'title' => 'Come Verificare l\'Autenticità',
+            'step1' => 'Trova il codice di verifica sul documento cartaceo o digitale (formato: VER-XXXXXXXXXX)',
+            'step2' => 'Inserisci il codice nella barra di ricerca o scansiona il QR code con il tuo smartphone',
+            'step3' => 'Verifica che i dati mostrati (protocollo, titolo, ente) corrispondano al documento',
+            'step4' => 'Controlla lo stato della firma digitale e dell\'ancoraggio blockchain'
+        ]
     ]
 ];

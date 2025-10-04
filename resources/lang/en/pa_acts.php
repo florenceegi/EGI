@@ -180,5 +180,180 @@ return [
         'upload' => 'Upload Act',
         'view' => 'View Act',
         'verify' => 'Verify'
+    ],
+
+    // Index page
+    'index' => [
+        'page_title' => 'Tokenized Acts',
+        'title' => 'Tokenized Administrative Acts',
+        'subtitle' => 'Manage your Public Administration acts with blockchain certification',
+        'upload_new_act' => 'Upload New Act',
+        
+        // Stats
+        'stats' => [
+            'total' => 'Total Acts',
+            'anchored' => 'Anchored on Blockchain',
+            'pending' => 'Pending Anchoring'
+        ],
+        
+        // Filters
+        'filters' => [
+            'search' => 'Search',
+            'search_placeholder' => 'Protocol or title...',
+            'doc_type' => 'Act Type',
+            'all_types' => 'All types',
+            'date_from' => 'Date From',
+            'date_to' => 'Date To',
+            'status' => 'Status',
+            'status_all' => 'All',
+            'status_anchored' => 'Anchored',
+            'status_pending' => 'Pending',
+            'apply' => 'Apply Filters',
+            'reset' => 'Reset'
+        ],
+        
+        // Table
+        'table' => [
+            'protocol' => 'Protocol',
+            'title' => 'Title',
+            'type' => 'Type',
+            'status' => 'Status',
+            'actions' => 'Actions'
+        ],
+        
+        // Status
+        'status' => [
+            'anchored' => 'Anchored',
+            'pending' => 'Pending'
+        ],
+        
+        // Actions
+        'actions' => [
+            'view' => 'View',
+            'view_detail' => 'View Detail'
+        ],
+        
+        // Empty state
+        'empty' => [
+            'title' => 'No Acts Found',
+            'description' => 'You haven\'t uploaded any tokenized acts yet. Start by uploading your first digitally signed document.',
+            'cta' => 'Upload First Act'
+        ]
+    ],
+
+    // Show page
+    'show' => [
+        'page_title' => 'Act :protocol',
+        'back_to_list' => 'Back to List',
+        'protocol_date' => 'Protocol Date',
+        
+        // Status
+        'status' => [
+            'anchored' => 'Anchored on Blockchain',
+            'pending' => 'Pending Anchoring'
+        ],
+        
+        // Metadata section
+        'metadata' => [
+            'title' => 'Document Metadata',
+            'act_title' => 'Act Title',
+            'description' => 'Description',
+            'upload_date' => 'Upload Date',
+            'entity' => 'Entity'
+        ],
+        
+        // Signature section
+        'signature' => [
+            'title' => 'Digital Signature',
+            'valid' => 'Valid Signature',
+            'qes_pades' => 'Qualified QES/PAdES Signature',
+            'signer_name' => 'Signer',
+            'signer_role' => 'Role',
+            'organization' => 'Organization',
+            'certificate_issuer' => 'Certificate Issuer',
+            'timestamp' => 'Signature Timestamp'
+        ],
+        
+        // Blockchain section
+        'blockchain' => [
+            'title' => 'Blockchain Data',
+            'txid' => 'Transaction ID (TXID)',
+            'merkle_root' => 'Merkle Root',
+            'document_hash' => 'Document Hash',
+            'anchored_at' => 'Anchored At',
+            'explorer' => 'Explorer',
+            'view_explorer' => 'View on Explorer',
+            'pending_title' => 'Anchoring in Progress',
+            'pending_description' => 'The document will be anchored on blockchain in the next batch (within 24 hours). Once completed, you will receive a notification and will be able to view blockchain data.'
+        ],
+        
+        // Verification section
+        'verification' => [
+            'title' => 'Public Verification',
+            'qr_description' => 'Scan to verify authenticity',
+            'public_code' => 'Verification Code',
+            'public_url' => 'Public Verification URL',
+            'copy_code' => 'Copy Code',
+            'copy_url' => 'Copy URL',
+            'copied' => 'Copied to clipboard!',
+            'open_public_page' => 'Open Public Page'
+        ]
+    ],
+
+    // Public verification page
+    'verify' => [
+        'page_title' => 'Verify PA Act',
+        'title' => 'Verify Public Act',
+        'subtitle' => 'Verify the authenticity of a Public Administration act via blockchain',
+        'protocol_date' => 'Protocol Date',
+        'document_title' => 'Document Title',
+        'entity' => 'Issuing Entity',
+        
+        // Verification results
+        'verified' => [
+            'title' => 'DOCUMENT VERIFIED ON BLOCKCHAIN',
+        ],
+        'pending' => [
+            'title' => 'DOCUMENT PENDING TOKENIZATION',
+            'info' => 'The document is pending blockchain anchoring. The operation will be completed within 24 hours.'
+        ],
+        'failed' => [
+            'title' => 'VERIFICATION FAILED'
+        ],
+        'not_found' => [
+            'title' => 'INVALID VERIFICATION CODE',
+            'message' => 'The verification code entered does not match any tokenized act. Please verify you copied the code correctly.',
+            'code_shown' => 'Code entered'
+        ],
+        
+        // Digital signature
+        'digital_signature' => 'Digital Signature',
+        'signer_name' => 'Signer',
+        'signer_role' => 'Role',
+        'certificate_issuer' => 'Certificate Issuer',
+        'signature_timestamp' => 'Signature Timestamp',
+        
+        // Blockchain data
+        'blockchain_data' => 'Blockchain Data',
+        'transaction_id' => 'Transaction ID',
+        'document_hash' => 'Document Hash (SHA-256)',
+        'anchored_at' => 'Anchored At',
+        'explorer' => 'Explorer',
+        'view_explorer' => 'View on Algorand Explorer',
+        
+        // Trust indicators
+        'signature_valid' => 'Valid Signature',
+        'qes_certificate' => 'QES Certificate',
+        'blockchain_confirmed' => 'Confirmed on Blockchain',
+        'algorand_network' => 'Algorand Network',
+        
+        // How to verify
+        'how_to' => [
+            'title' => 'How to Verify Authenticity',
+            'step1' => 'Find the verification code on the paper or digital document (format: VER-XXXXXXXXXX)',
+            'step2' => 'Enter the code in the search bar or scan the QR code with your smartphone',
+            'step3' => 'Verify that the displayed data (protocol, title, entity) matches the document',
+            'step4' => 'Check the digital signature and blockchain anchoring status'
+        ]
     ]
 ];
