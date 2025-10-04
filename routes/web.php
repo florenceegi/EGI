@@ -1215,6 +1215,54 @@ require __DIR__ . '/coa.php';
 
 /*
 |--------------------------------------------------------------------------
+| PA Acts Tokenization Routes
+|--------------------------------------------------------------------------
+|
+| Routes per il sistema di tokenizzazione atti PA su blockchain Algorand.
+| Include upload PDF firmati QES, gestione atti, e verifica pubblica.
+|
+| Access (authenticated): role:pa_entity (Pubbliche Amministrazioni)
+| Access (public): verify/{public_code} (no auth - verifica pubblica)
+|
+| Features:
+| - Upload PDF firmati QES/PAdES
+| - Validazione firma qualificata
+| - Ancoraggio blockchain Algorand (batch via Merkle tree)
+| - Verifica pubblica autenticità documento
+| - QR code per verifica mobile
+|
+| Workflow:
+| 1. PA upload → PaActUploadController::handleUpload()
+| 2. PA index → PaActController::index() (lista atti)
+| 3. PA detail → PaActController::show() (dettaglio atto)
+| 4. Public verify → PaActPublicController::verify() (verifica pubblica)
+|
+*/
+
+use App\Http\Controllers\PaActs\PaActUploadController;
+use App\Http\Controllers\PaActs\PaActController;
+use App\Http\Controllers\PaActs\PaActPublicController;
+
+// PA Acts Upload Endpoint (UUM pattern)
+Route::post('/pa/acts/upload', [PaActUploadController::class, 'handleUpload'])
+    ->middleware(['auth', 'role:pa_entity'])
+    ->name('pa.acts.upload');
+
+// PA Acts CRUD Routes (Authenticated PA entities only)
+Route::prefix('pa/acts')
+    ->middleware(['auth', 'role:pa_entity'])
+    ->group(function() {
+        Route::get('/', [PaActController::class, 'index'])->name('pa.acts.index');
+        Route::get('/{egi}', [PaActController::class, 'show'])->name('pa.acts.show');
+    });
+
+// Public Verification (NO authentication, rate limited)
+Route::get('/verify/{public_code}', [PaActPublicController::class, 'verify'])
+    ->middleware(['throttle:60,1'])
+    ->name('verify.act');
+
+/*
+|--------------------------------------------------------------------------
 | PA/ENTERPRISE ROUTES
 |--------------------------------------------------------------------------
 |
