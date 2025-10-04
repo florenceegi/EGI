@@ -155,4 +155,30 @@ return [
         'no_traits_found' => 'Nessun trait trovato',
         'egi_not_found' => 'L\'EGI con ID :id non è stato trovato. Potrebbe essere stato eliminato o non esistere.',
     ],
+
+    // ====================================================
+    // PA Acts Tokenization Errors
+    // ====================================================
+    'pa_acts' => [
+        // Authentication & Authorization
+        'pa_act_auth_required' => 'Autenticazione richiesta per caricare atti PA. Effettua il login.',
+        'pa_act_role_required' => 'Accesso negato. È necessario il ruolo di Pubblica Amministrazione per questa operazione.',
+        
+        // Validation Errors
+        'pa_act_validation_failed' => 'Errore di validazione. Controlla i dati inseriti e riprova.',
+        'pa_act_invalid_file' => 'File non valido. Solo PDF firmati digitalmente, massimo 20 MB.',
+        'pa_act_invalid_signature' => 'Firma digitale non valida o assente. Il documento deve essere firmato con firma qualificata QES/PAdES.',
+        
+        // Collection/Storage Errors
+        'pa_act_collection_failed' => 'Errore durante la creazione del fascicolo PA. Il team tecnico è stato informato.',
+        'pa_act_upload_failed' => 'Errore durante il caricamento del documento. Riprova o contatta l\'assistenza.',
+        
+        // Blockchain Errors
+        'pa_act_blockchain_anchor_failed' => 'Documento salvato ma ancoraggio blockchain fallito. Sarà ritentato automaticamente.',
+        'pa_act_merkle_verification_failed' => 'Errore durante la verifica della prova crittografica. Il team tecnico è stato informato.',
+        
+        // Public Verification Errors
+        'pa_act_not_found' => 'Codice di verifica non trovato. Controlla di aver copiato correttamente il codice.',
+        'pa_act_verification_error' => 'Errore durante la verifica del documento. Riprova più tardi.',
+    ],
 ];

@@ -1243,6 +1243,108 @@ return [
         ],
 
         // ====================================================
+        // PA Acts Tokenization Error Codes
+        // ====================================================
+        'PA_ACT_AUTH_REQUIRED' => [ // User not authenticated attempting PA act upload
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.pa_act_auth_required',
+            'user_message_key' => 'error-manager::errors.user.pa_act_auth_required',
+            'http_status_code' => 401,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert', // Redirect to login
+        ],
+        
+        'PA_ACT_ROLE_REQUIRED' => [ // User lacks PA entity role
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.pa_act_role_required',
+            'user_message_key' => 'error-manager::errors.user.pa_act_role_required',
+            'http_status_code' => 403,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+        
+        'PA_ACT_VALIDATION_FAILED' => [ // Metadata validation failed
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.pa_act_validation_failed',
+            'user_message_key' => 'error-manager::errors.user.pa_act_validation_failed',
+            'http_status_code' => 422,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'div', // Show near form fields
+        ],
+        
+        'PA_ACT_INVALID_FILE' => [ // Invalid file type or size
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.pa_act_invalid_file',
+            'user_message_key' => 'error-manager::errors.user.pa_act_invalid_file',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'div',
+        ],
+        
+        'PA_ACT_INVALID_SIGNATURE' => [ // QES/PAdES signature validation failed
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.pa_act_invalid_signature',
+            'user_message_key' => 'error-manager::errors.user.pa_act_invalid_signature',
+            'http_status_code' => 400,
+            'devTeam_email_need' => true, // Log signature failures for security
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+        
+        'PA_ACT_COLLECTION_FAILED' => [ // Collection (fascicolo) creation/management failed
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.pa_act_collection_failed',
+            'user_message_key' => 'error-manager::errors.user.pa_act_collection_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+        
+        'PA_ACT_UPLOAD_FAILED' => [ // General upload failure
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.pa_act_upload_failed',
+            'user_message_key' => 'error-manager::errors.user.pa_act_upload_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+        
+        'PA_ACT_BLOCKCHAIN_ANCHOR_FAILED' => [ // Blockchain anchoring failed
+            'type' => 'critical',
+            'blocking' => 'not', // Non-blocking: document saved, anchoring retry later
+            'dev_message_key' => 'error-manager::errors.dev.pa_act_blockchain_anchor_failed',
+            'user_message_key' => 'error-manager::errors.user.pa_act_blockchain_anchor_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'log-only', // User sees warning in UI, not blocking
+        ],
+        
+        'PA_ACT_MERKLE_VERIFICATION_FAILED' => [ // Merkle proof verification failed (public verification)
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.pa_act_merkle_verification_failed',
+            'user_message_key' => 'error-manager::errors.user.pa_act_merkle_verification_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true, // Critical: blockchain data integrity issue
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        // ====================================================
         // Image Optimization Error Codes
         // ====================================================
         'IMAGE_OPTIMIZATION_INVALID_FILE' => [
