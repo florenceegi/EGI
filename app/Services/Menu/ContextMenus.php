@@ -171,15 +171,77 @@ class ContextMenus {
                 $menus[] = $statisticsMenu;
                 break;
 
-            case 'pa':
-                // PA Enterprise Context (route: pa.dashboard, pa.heritage.*, etc.)
-
-                Log::channel('upload')->info('🔍 CONTEXT MENUS - PA CONTEXT DETECTED', [
+            case 'pa.acts':
+                // PA Acts Tokenization Context (route: pa.acts.index, pa.acts.upload, pa.acts.show)
+                Log::channel('upload')->info('🔍 CONTEXT MENUS - PA ACTS CONTEXT', [
                     'context' => $context,
                 ]);
 
-                $paMainMenu = new MenuGroup('Gestione PA', 'pa-building', [
+                $paActsMenu = new MenuGroup(__('menu.pa_acts_management'), 'pa-acts', [
+                    new MenuItem(
+                        translationKey: 'menu.pa_acts_list',
+                        route: 'pa.acts.index',
+                        icon: 'pa-acts-list',
+                        permission: 'access_pa_dashboard'
+                    ),
+                    new MenuItem(
+                        translationKey: 'menu.pa_acts_upload',
+                        route: 'pa.acts.upload',
+                        icon: 'pa-acts-upload',
+                        permission: 'access_pa_dashboard'
+                    ),
+                ]);
+                $menus[] = $paActsMenu;
 
+                // Navigation menu PA generale
+                $paNavMenu = new MenuGroup(__('menu.pa_navigation'), 'pa-navigation', [
+                    new PADashboardMenu(),
+                    new PAHeritageMenu(),
+                    new PACoAMenu(),
+                    new PAInspectorsMenu(),
+                ]);
+                $menus[] = $paNavMenu;
+                break;
+
+            case 'egis':
+                // PA Heritage Context (route: egis.index, egis.create, egis.edit, egis.show)
+                Log::channel('upload')->info('🔍 CONTEXT MENUS - HERITAGE (EGIS) CONTEXT', [
+                    'context' => $context,
+                ]);
+
+                $heritageMenu = new MenuGroup(__('menu.heritage_management'), 'pa-heritage', [
+                    new MenuItem(
+                        translationKey: 'menu.heritage_list',
+                        route: 'egis.index',
+                        icon: 'pa-heritage-list',
+                        permission: 'manage_institutional_collections'
+                    ),
+                    new MenuItem(
+                        translationKey: 'menu.heritage_create',
+                        route: 'egis.create',
+                        icon: 'pa-heritage-create',
+                        permission: 'manage_institutional_collections'
+                    ),
+                ]);
+                $menus[] = $heritageMenu;
+
+                // Navigation menu PA generale
+                $paNavMenu = new MenuGroup(__('menu.pa_navigation'), 'pa-navigation', [
+                    new PADashboardMenu(),
+                    new PAActsMenu(),
+                    new PACoAMenu(),
+                    new PAInspectorsMenu(),
+                ]);
+                $menus[] = $paNavMenu;
+                break;
+
+            case 'pa':
+                // PA Enterprise Context Generic (route: pa.dashboard, etc.)
+                Log::channel('upload')->info('🔍 CONTEXT MENUS - PA GENERIC CONTEXT', [
+                    'context' => $context,
+                ]);
+
+                $paMainMenu = new MenuGroup(__('menu.pa_management'), 'pa-building', [
                     new PADashboardMenu(),
                     new PAHeritageMenu(),
                     new PAActsMenu(),

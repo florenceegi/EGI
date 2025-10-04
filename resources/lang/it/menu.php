@@ -63,4 +63,20 @@ return [
     'pa_acts' => 'Atti Tokenizzati',
     'pa_coa' => 'Certificati CoA',
     'pa_inspectors' => 'Ispettori Assegnati',
+
+    // Context-specific Menu Groups
+    'pa_management' => 'Gestione PA',
+    'pa_navigation' => 'Navigazione PA',
+    'pa_acts_management' => 'Gestione Atti',
+    'heritage_management' => 'Gestione Patrimonio',
+
+    // PA Acts specific items
+    'pa.acts' => 'Atti PA',
+    'pa_acts_list' => 'Lista Atti',
+    'pa_acts_upload' => 'Carica Atto',
+
+    // Heritage specific items
+    'egis' => 'Patrimonio Culturale',
+    'heritage_list' => 'Lista Beni Culturali',
+    'heritage_create' => 'Carica Bene',
 ];

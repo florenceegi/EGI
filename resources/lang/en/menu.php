@@ -44,4 +44,20 @@ return [
     'pa_acts' => 'Tokenized Acts',
     'pa_coa' => 'CoA Certificates',
     'pa_inspectors' => 'Assigned Inspectors',
+
+    // Context-specific Menu Groups
+    'pa_management' => 'PA Management',
+    'pa_navigation' => 'PA Navigation',
+    'pa_acts_management' => 'Acts Management',
+    'heritage_management' => 'Heritage Management',
+
+    // PA Acts specific items
+    'pa.acts' => 'PA Acts',
+    'pa_acts_list' => 'Acts List',
+    'pa_acts_upload' => 'Upload Act',
+
+    // Heritage specific items
+    'egis' => 'Cultural Heritage',
+    'heritage_list' => 'Cultural Assets List',
+    'heritage_create' => 'Upload Asset',
 ];
