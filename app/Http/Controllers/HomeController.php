@@ -187,17 +187,22 @@ class HomeController extends Controller {
 
     /**
      * @Oracode Method: Get Random EGIs for Carousel
-     * 🎯 Purpose: Retrieve latest published EGIs for homepage carousel display
+     * 🎯 Purpose: Retrieve latest published EGIs for homepage carousel display (CREATOR ONLY)
      * 🛡️ Privacy: Uses only publicly published EGIs (is_published = true)
      * ⚡ Performance: Optimized query using latest() instead of inRandomOrder()
+     * 🎨 Filter: Only EGIs from creators with usertype = 'creator' (excludes PA fake EGIs)
      *
      * @return \Illuminate\Database\Eloquent\Collection Collection of latest 5 published EGIs with collection data
-     * @privacy-safe Only public published content
+     * @privacy-safe Only public published content from creators
      */
     private function getRandomEgis() {
         // ⚡ PERFORMANCE: Rimosso inRandomOrder() e prendiamo solo i più recenti
+        // 🎯 FILTER: Solo EGI di creator con usertype = 'creator' (NO PA)
         return Egi::where('is_published', true)
-            ->with(['collection'])
+            ->whereHas('user', function ($query) {
+                $query->where('usertype', 'creator');
+            })
+            ->with(['collection', 'user'])
             ->latest() // Più veloce di inRandomOrder()
             ->take(5)
             ->get();
@@ -256,9 +261,21 @@ class HomeController extends Controller {
      * @return \Illuminate\Database\Eloquent\Collection Latest 20 published EGIs with collection data
      * @privacy-safe Only public published content
      */
+    /**
+     * @Oracode Method: Get Featured EGIs for Homepage
+     * 🎯 Purpose: Retrieve featured published EGIs for homepage display (CREATOR ONLY)
+     * 🛡️ Privacy: Uses only publicly published EGIs (is_published = true)
+     * 🎨 Filter: Only EGIs from creators with usertype = 'creator' (excludes PA fake EGIs)
+     *
+     * @return \Illuminate\Database\Eloquent\Collection Latest 20 published EGIs from creators
+     * @privacy-safe Only public published content from creators
+     */
     private function getFeaturedEgis() {
         return Egi::where('is_published', true)
-            ->with(['collection'])
+            ->whereHas('user', function ($query) {
+                $query->where('usertype', 'creator');
+            })
+            ->with(['collection', 'user'])
             ->latest()
             ->take(20)
             ->get();
@@ -351,10 +368,22 @@ class HomeController extends Controller {
      * @return \Illuminate\Database\Eloquent\Collection All published Hyper EGIs with collection data
      * @privacy-safe Only public published Hyper content
      */
+    /**
+     * @Oracode Method: Get Hyper EGIs for Homepage
+     * 🎯 Purpose: Retrieve hyper-flagged published EGIs for special display (CREATOR ONLY)
+     * 🛡️ Privacy: Uses only publicly published hyper EGIs (is_published = true, hyper = true)
+     * 🎨 Filter: Only EGIs from creators with usertype = 'creator' (excludes PA fake EGIs)
+     *
+     * @return \Illuminate\Database\Eloquent\Collection Hyper-flagged published EGIs from creators
+     * @privacy-safe Only public published hyper content from creators
+     */
     private function getHyperEgis() {
         return Egi::where('is_published', true)
             ->where('hyper', true)
-            ->with(['collection'])
+            ->whereHas('user', function ($query) {
+                $query->where('usertype', 'creator');
+            })
+            ->with(['collection', 'user'])
             ->get();
     }
 }
