@@ -748,8 +748,7 @@ class RegisteredUserController extends Controller {
      * Get active consent version ID (NON-HARDCODED!)
      * Fallback chain: DB lookup -> config -> exception
      */
-    private function getActiveConsentVersionId(): int
-    {
+    private function getActiveConsentVersionId(): int {
         try {
             // Primary: Get from database (active version)
             $activeVersion = \App\Models\ConsentVersion::where('is_active', true)
@@ -778,7 +777,6 @@ class RegisteredUserController extends Controller {
 
             // Complete failure - this should never happen with proper seeding
             throw new \Exception('No consent versions found in database - seeding incomplete');
-
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('[RegisteredUserController] Failed to get consent version ID', [
                 'error' => $e->getMessage(),

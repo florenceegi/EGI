@@ -44,10 +44,9 @@ class AuthenticatedSessionController extends Controller {
         // NO middleware in constructor - handled by routes
     }
 
-    public function boot(): void
-    {
+    public function boot(): void {
         Fortify::ignoreRoutes(); // <— disattiva le route predefinite
-        
+
     }
 
     /**

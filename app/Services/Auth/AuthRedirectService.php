@@ -174,7 +174,7 @@ class AuthRedirectService {
      * @return bool True if custom redirect exists
      */
     public function hasCustomRedirect(string $usertype): bool {
-        return isset($this->redirectRegistry[$usertype]) 
+        return isset($this->redirectRegistry[$usertype])
             && $this->redirectRegistry[$usertype] !== $this->defaultRoute;
     }
 }
