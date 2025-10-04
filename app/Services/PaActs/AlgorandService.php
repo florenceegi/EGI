@@ -25,17 +25,16 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * When Algorand integration is ready, replace mock logic with real SDK calls.
  * Class name and interface remain unchanged - only internal logic changes.
  */
-class AlgorandService
-{
+class AlgorandService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
-    
+
     /**
      * Mock mode flag - set to false when real Algorand SDK is integrated
      * @var bool
      */
     protected bool $mockMode = true;
-    
+
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager
@@ -43,7 +42,7 @@ class AlgorandService
         $this->logger = $logger;
         $this->errorManager = $errorManager;
     }
-    
+
     /**
      * Anchor a single document hash on Algorand blockchain
      * 
@@ -62,21 +61,20 @@ class AlgorandService
      * - Wait for confirmation
      * - Return real TXID and block number
      */
-    public function anchorDocument(string $documentHash, array $metadata = []): array
-    {
+    public function anchorDocument(string $documentHash, array $metadata = []): array {
         try {
             $this->logger->info('[AlgorandService] Anchoring document hash', [
                 'hash' => $documentHash,
                 'metadata' => $metadata,
                 'mode' => $this->mockMode ? 'MOCK' : 'PRODUCTION'
             ]);
-            
+
             if ($this->mockMode) {
                 // MOCK: Generate fake transaction data
                 $txid = $this->generateMockTxid();
                 $timestamp = Carbon::now();
                 $block = random_int(10000000, 99999999);
-                
+
                 $result = [
                     'success' => true,
                     'txid' => $txid,
@@ -87,12 +85,12 @@ class AlgorandService
                     'metadata' => $metadata,
                     'mode' => 'mock'
                 ];
-                
+
                 $this->logger->info('[AlgorandService] Document anchored (MOCK)', $result);
-                
+
                 return $result;
             }
-            
+
             // REAL IMPLEMENTATION (TODO):
             // $client = new AlgorandClient(config('algorand.api_key'));
             // $transaction = $client->createTransaction([
@@ -102,19 +100,18 @@ class AlgorandService
             // $signedTx = $client->signTransaction($transaction, config('algorand.private_key'));
             // $result = $client->submitTransaction($signedTx);
             // return $result;
-            
+
             throw new \Exception('Real Algorand implementation not yet available');
-            
         } catch (\Exception $e) {
             $this->errorManager->handle('ALGORAND_ANCHOR_FAILED', [
                 'hash' => $documentHash,
                 'error' => $e->getMessage()
             ], $e);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Anchor multiple document hashes in a single batch (Merkle tree approach)
      * 
@@ -130,21 +127,20 @@ class AlgorandService
      * - Store Merkle proofs for each document
      * - Return batch TXID and individual proofs
      */
-    public function anchorBatch(array $documentHashes): array
-    {
+    public function anchorBatch(array $documentHashes): array {
         try {
             $this->logger->info('[AlgorandService] Anchoring batch', [
                 'count' => count($documentHashes),
                 'mode' => $this->mockMode ? 'MOCK' : 'PRODUCTION'
             ]);
-            
+
             if ($this->mockMode) {
                 // MOCK: Generate fake Merkle root and batch TXID
                 $merkleRoot = hash('sha256', implode('', $documentHashes));
                 $batchTxid = $this->generateMockTxid();
                 $timestamp = Carbon::now();
                 $batchId = 'BATCH-' . $timestamp->format('Ymd-His');
-                
+
                 // MOCK: Generate fake Merkle proofs for each document
                 $proofs = [];
                 foreach ($documentHashes as $index => $hash) {
@@ -156,7 +152,7 @@ class AlgorandService
                         ]
                     ];
                 }
-                
+
                 $result = [
                     'success' => true,
                     'batch_id' => $batchId,
@@ -168,16 +164,16 @@ class AlgorandService
                     'network' => 'algorand-testnet',
                     'mode' => 'mock'
                 ];
-                
+
                 $this->logger->info('[AlgorandService] Batch anchored (MOCK)', [
                     'batch_id' => $batchId,
                     'txid' => $batchTxid,
                     'count' => count($documentHashes)
                 ]);
-                
+
                 return $result;
             }
-            
+
             // REAL IMPLEMENTATION (TODO):
             // $merkleTree = new MerkleTree($documentHashes);
             // $merkleRoot = $merkleTree->getRoot();
@@ -186,19 +182,18 @@ class AlgorandService
             // $result = $client->submitTransaction($transaction);
             // $proofs = $merkleTree->getProofs();
             // return ['txid' => $result['txid'], 'merkle_root' => $merkleRoot, 'proofs' => $proofs];
-            
+
             throw new \Exception('Real Algorand batch implementation not yet available');
-            
         } catch (\Exception $e) {
             $this->errorManager->handle('ALGORAND_BATCH_ANCHOR_FAILED', [
                 'count' => count($documentHashes),
                 'error' => $e->getMessage()
             ], $e);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Verify a document hash against blockchain transaction
      * 
@@ -215,19 +210,18 @@ class AlgorandService
      * - Compare with provided documentHash
      * - Return verification status with blockchain proof
      */
-    public function verifyDocument(string $txid, string $documentHash): array
-    {
+    public function verifyDocument(string $txid, string $documentHash): array {
         try {
             $this->logger->info('[AlgorandService] Verifying document', [
                 'txid' => $txid,
                 'hash' => $documentHash,
                 'mode' => $this->mockMode ? 'MOCK' : 'PRODUCTION'
             ]);
-            
+
             if ($this->mockMode) {
                 // MOCK: Verify TXID format and return success
                 $isValid = Str::startsWith($txid, 'ALGO-TX-');
-                
+
                 $result = [
                     'valid' => $isValid,
                     'txid' => $txid,
@@ -237,40 +231,38 @@ class AlgorandService
                     'network' => 'algorand-testnet',
                     'mode' => 'mock'
                 ];
-                
+
                 $this->logger->info('[AlgorandService] Document verified (MOCK)', $result);
-                
+
                 return $result;
             }
-            
+
             // REAL IMPLEMENTATION (TODO):
             // $client = new AlgorandClient(config('algorand.api_key'));
             // $transaction = $client->getTransaction($txid);
             // $storedHash = $transaction['note'];
             // $valid = ($storedHash === $documentHash);
             // return ['valid' => $valid, 'txid' => $txid, 'timestamp' => $transaction['timestamp']];
-            
+
             throw new \Exception('Real Algorand verification not yet available');
-            
         } catch (\Exception $e) {
             $this->errorManager->handle('ALGORAND_VERIFY_FAILED', [
                 'txid' => $txid,
                 'hash' => $documentHash,
                 'error' => $e->getMessage()
             ], $e);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Get transaction details from Algorand blockchain
      * 
      * @param string $txid Algorand transaction ID
      * @return array Transaction details
      */
-    public function getTransaction(string $txid): array
-    {
+    public function getTransaction(string $txid): array {
         try {
             if ($this->mockMode) {
                 return [
@@ -282,54 +274,50 @@ class AlgorandService
                     'mode' => 'mock'
                 ];
             }
-            
+
             // REAL IMPLEMENTATION (TODO):
             // $client = new AlgorandClient(config('algorand.api_key'));
             // return $client->getTransaction($txid);
-            
+
             throw new \Exception('Real Algorand transaction query not yet available');
-            
         } catch (\Exception $e) {
             $this->errorManager->handle('ALGORAND_GET_TX_FAILED', [
                 'txid' => $txid,
                 'error' => $e->getMessage()
             ], $e);
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Generate mock Algorand transaction ID
      * Format: ALGO-TX-{timestamp}-{random}
      * 
      * @return string Mock TXID
      */
-    protected function generateMockTxid(): string
-    {
+    protected function generateMockTxid(): string {
         return 'ALGO-TX-' . Carbon::now()->format('YmdHis') . '-' . Str::upper(Str::random(8));
     }
-    
+
     /**
      * Check if service is in mock mode
      * 
      * @return bool True if mock mode, false if production
      */
-    public function isMockMode(): bool
-    {
+    public function isMockMode(): bool {
         return $this->mockMode;
     }
-    
+
     /**
      * Set mock mode (for testing purposes)
      * 
      * @param bool $enabled
      * @return void
      */
-    public function setMockMode(bool $enabled): void
-    {
+    public function setMockMode(bool $enabled): void {
         $this->mockMode = $enabled;
-        
+
         $this->logger->info('[AlgorandService] Mock mode changed', [
             'mode' => $enabled ? 'MOCK' : 'PRODUCTION'
         ]);

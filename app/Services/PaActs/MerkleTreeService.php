@@ -244,8 +244,7 @@ use Illuminate\Support\Str;
  * @algorithm Binary Merkle tree with SHA-256
  * @complexity O(n log n) construction, O(log n) proof generation/verification
  */
-class MerkleTreeService
-{
+class MerkleTreeService {
     /**
      * Tree structure: array of levels, each level is array of hashes
      * Level 0 = leaves (document hashes)
@@ -253,19 +252,19 @@ class MerkleTreeService
      * @var array
      */
     protected array $tree = [];
-    
+
     /**
      * Original document hashes (leaves)
      * @var array
      */
     protected array $leaves = [];
-    
+
     /**
      * Merkle root (top of tree)
      * @var string|null
      */
     protected ?string $root = null;
-    
+
     /**
      * Build Merkle tree from array of document hashes
      * 
@@ -284,31 +283,30 @@ class MerkleTreeService
      * Level 1: [hash('abc123'+'def456'), hash('ghi789'+'ghi789')]
      * Level 2: [hash(Level1[0]+Level1[1])] = ROOT
      */
-    public function buildTree(array $hashes): void
-    {
+    public function buildTree(array $hashes): void {
         if (empty($hashes)) {
             throw new \InvalidArgumentException('Cannot build Merkle tree from empty hash array');
         }
-        
+
         // Reset state
         $this->tree = [];
         $this->leaves = $hashes;
         $this->root = null;
-        
+
         // Level 0: original hashes (leaves)
         $currentLevel = $hashes;
         $this->tree[] = $currentLevel;
-        
+
         // Build tree bottom-up until we have single root
         while (count($currentLevel) > 1) {
             $currentLevel = $this->buildLevel($currentLevel);
             $this->tree[] = $currentLevel;
         }
-        
+
         // Root is the single hash at top level
         $this->root = $currentLevel[0];
     }
-    
+
     /**
      * Build next level of tree by combining pairs of hashes
      * 
@@ -320,30 +318,29 @@ class MerkleTreeService
      * - Per ogni coppia: combina con SHA-256(left || right)
      * - Se numero dispari: duplica ultimo hash
      */
-    protected function buildLevel(array $level): array
-    {
+    protected function buildLevel(array $level): array {
         $nextLevel = [];
         $count = count($level);
-        
+
         // Se numero dispari, duplica ultimo hash
         if ($count % 2 !== 0) {
             $level[] = $level[$count - 1];
             $count++;
         }
-        
+
         // Combina coppie di hash
         for ($i = 0; $i < $count; $i += 2) {
             $left = $level[$i];
             $right = $level[$i + 1];
-            
+
             // Combina hash: SHA-256(left || right)
             $combined = $this->combineHashes($left, $right);
             $nextLevel[] = $combined;
         }
-        
+
         return $nextLevel;
     }
-    
+
     /**
      * Combine two hashes into one
      * 
@@ -356,12 +353,11 @@ class MerkleTreeService
      * 2. Calcola SHA-256 della concatenazione
      * 3. Return hex string
      */
-    protected function combineHashes(string $left, string $right): string
-    {
+    protected function combineHashes(string $left, string $right): string {
         // Concatena e calcola hash
         return hash('sha256', $left . $right);
     }
-    
+
     /**
      * Get Merkle root (top of tree)
      * 
@@ -370,15 +366,14 @@ class MerkleTreeService
      * 
      * QUESTO È L'HASH DA ANCORARE SU BLOCKCHAIN
      */
-    public function getRoot(): string
-    {
+    public function getRoot(): string {
         if ($this->root === null) {
             throw new \RuntimeException('Tree not built. Call buildTree() first.');
         }
-        
+
         return $this->root;
     }
-    
+
     /**
      * Generate Merkle proof for specific document hash
      * 
@@ -407,35 +402,34 @@ class MerkleTreeService
      * Step 2: hash(H(0-1) + H(2-3)) = H(0-3)
      * Step 3: hash(H(0-3) + H(4-7)) = ROOT ✅
      */
-    public function getProof(string $hash): array
-    {
+    public function getProof(string $hash): array {
         if (empty($this->tree)) {
             throw new \RuntimeException('Tree not built. Call buildTree() first.');
         }
-        
+
         // Trova indice dell'hash nelle foglie (level 0)
         $index = array_search($hash, $this->leaves);
-        
+
         if ($index === false) {
             throw new \RuntimeException("Hash not found in tree: {$hash}");
         }
-        
+
         $proof = [];
         $currentIndex = $index;
-        
+
         // Risale l'albero dal basso verso l'alto
         foreach ($this->tree as $levelIndex => $level) {
             // Skip root level (ultimo livello)
             if (count($level) === 1) {
                 break;
             }
-            
+
             // Determina se il nodo è a sinistra o destra
             $isLeft = ($currentIndex % 2 === 0);
-            
+
             // Aggiungi hash del fratello (sibling) al proof
             $siblingIndex = $isLeft ? $currentIndex + 1 : $currentIndex - 1;
-            
+
             // Verifica che sibling esiste (potrebbe non esistere nell'ultimo nodo dispari)
             if (isset($level[$siblingIndex])) {
                 $proof[] = [
@@ -443,14 +437,14 @@ class MerkleTreeService
                     'position' => $isLeft ? 'right' : 'left' // Posizione del sibling rispetto al nodo corrente
                 ];
             }
-            
+
             // Sali al livello successivo (parent node)
             $currentIndex = intdiv($currentIndex, 2);
         }
-        
+
         return $proof;
     }
-    
+
     /**
      * Verify Merkle proof for document hash
      * 
@@ -478,15 +472,14 @@ class MerkleTreeService
      * Step 2: hash(c5d6... || temp1) = calculatedRoot
      * Step 3: calculatedRoot === 3a7f... ? TRUE ✅
      */
-    public function verifyProof(string $hash, array $proof, string $expectedRoot): bool
-    {
+    public function verifyProof(string $hash, array $proof, string $expectedRoot): bool {
         $currentHash = $hash;
-        
+
         // Risali l'albero usando proof
         foreach ($proof as $proofElement) {
             $siblingHash = $proofElement['hash'];
             $position = $proofElement['position'];
-            
+
             // Combina current con sibling nell'ordine corretto
             if ($position === 'right') {
                 // Sibling a destra: hash(current || sibling)
@@ -496,38 +489,35 @@ class MerkleTreeService
                 $currentHash = $this->combineHashes($siblingHash, $currentHash);
             }
         }
-        
+
         // Verifica che hash calcolato corrisponda al root atteso
         return $currentHash === $expectedRoot;
     }
-    
+
     /**
      * Get tree structure (for debugging/visualization)
      * 
      * @return array Complete tree structure
      */
-    public function getTree(): array
-    {
+    public function getTree(): array {
         return $this->tree;
     }
-    
+
     /**
      * Get tree depth (number of levels)
      * 
      * @return int Tree depth
      */
-    public function getDepth(): int
-    {
+    public function getDepth(): int {
         return count($this->tree);
     }
-    
+
     /**
      * Get number of leaves (documents)
      * 
      * @return int Number of documents in tree
      */
-    public function getLeafCount(): int
-    {
+    public function getLeafCount(): int {
         return count($this->leaves);
     }
 }
