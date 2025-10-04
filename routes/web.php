@@ -1243,16 +1243,13 @@ use App\Http\Controllers\PaActs\PaActUploadController;
 use App\Http\Controllers\PaActs\PaActController;
 use App\Http\Controllers\PaActs\PaActPublicController;
 
-// PA Acts Upload Endpoint (UUM pattern)
-Route::post('/pa/acts/upload', [PaActUploadController::class, 'handleUpload'])
-    ->middleware(['auth', 'role:pa_entity'])
-    ->name('pa.acts.upload');
-
-// PA Acts CRUD Routes (Authenticated PA entities only)
+// PA Acts Routes (Authenticated PA entities only)
 Route::prefix('pa/acts')
     ->middleware(['auth', 'role:pa_entity'])
-    ->group(function() {
+    ->group(function () {
         Route::get('/', [PaActController::class, 'index'])->name('pa.acts.index');
+        Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('pa.acts.upload');
+        Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('pa.acts.upload.post');
         Route::get('/{egi}', [PaActController::class, 'show'])->name('pa.acts.show');
     });
 
