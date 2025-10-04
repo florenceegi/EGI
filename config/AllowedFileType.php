@@ -239,12 +239,12 @@ return [
     'pa_documents' => [
         // Maximum size for PA documents (20MB - sufficient for signed PDFs)
         'max_size' => 20 * 1024 * 1024, // 20 MB
-        
+
         // Allowed extensions (PDF only for PA acts)
         'allowed_extensions' => [
             'pdf'
         ],
-        
+
         // Allowed MIME types (strict validation)
         'allowed_mime_types' => [
             'application/pdf',
@@ -254,7 +254,7 @@ return [
             'text/pdf',
             'text/x-pdf'
         ],
-        
+
         // Document type categories for PA (translation keys only)
         'document_types' => [
             'delibera',
@@ -263,7 +263,7 @@ return [
             'decreto',
             'atto'
         ],
-        
+
         // Validation requirements
         'validation' => [
             'require_digital_signature' => true,  // Mock check for now
@@ -273,7 +273,7 @@ return [
             'min_file_size' => 1024, // 1KB minimum (empty PDFs not allowed)
             'check_pdf_structure' => true
         ],
-        
+
         // Storage configuration
         'storage' => [
             'disk' => 'private', // Private storage for official documents
@@ -281,7 +281,7 @@ return [
             'hash_filename' => true, // Use hash as filename for immutability
             'preserve_original_name' => true // Keep original name in metadata
         ],
-        
+
         // Frontend UI configuration
         'ui_display' => [
             'icon' => 'fa-file-contract',
@@ -290,7 +290,7 @@ return [
             'download_enabled' => true,
             'verification_badge' => true
         ],
-        
+
         // Upload limits per session
         'upload_limits' => [
             'max_files_per_upload' => 1, // One document at a time for PA acts
@@ -298,7 +298,7 @@ return [
             'require_authentication' => true,
             'allowed_roles' => ['pa_entity', 'admin']
         ],
-        
+
         // Metadata requirements
         'required_metadata' => [
             'protocol_number',
@@ -307,7 +307,7 @@ return [
             'doc_hash',
             'signature_validation'
         ],
-        
+
         // Optional metadata fields
         'optional_metadata' => [
             'ente',
