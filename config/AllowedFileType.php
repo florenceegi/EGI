@@ -228,6 +228,97 @@ return [
     ],
 
     /**
+     * PA Documents Configuration
+     * Specific rules for Public Administration digitally signed documents
+     * 
+     * @purpose Tokenization of official PA acts on Algorand blockchain
+     * @use_case Upload of delibere, determine, ordinanze, atti amministrativi
+     * @security Only PDF files with digital signatures (QES/PAdES)
+     * @size_limit Higher limit for official documents with embedded signatures
+     */
+    'pa_documents' => [
+        // Maximum size for PA documents (20MB - sufficient for signed PDFs)
+        'max_size' => 20 * 1024 * 1024, // 20 MB
+        
+        // Allowed extensions (PDF only for PA acts)
+        'allowed_extensions' => [
+            'pdf'
+        ],
+        
+        // Allowed MIME types (strict validation)
+        'allowed_mime_types' => [
+            'application/pdf',
+            'application/x-pdf',
+            'application/acrobat',
+            'application/vnd.pdf',
+            'text/pdf',
+            'text/x-pdf'
+        ],
+        
+        // Document type categories for PA (translation keys only)
+        'document_types' => [
+            'delibera',
+            'determina',
+            'ordinanza',
+            'decreto',
+            'atto'
+        ],
+        
+        // Validation requirements
+        'validation' => [
+            'require_digital_signature' => true,  // Mock check for now
+            'require_protocol_number' => true,
+            'require_protocol_date' => true,
+            'require_doc_type' => true,
+            'min_file_size' => 1024, // 1KB minimum (empty PDFs not allowed)
+            'check_pdf_structure' => true
+        ],
+        
+        // Storage configuration
+        'storage' => [
+            'disk' => 'private', // Private storage for official documents
+            'path' => 'pa_acts', // Subdirectory: storage/pa_acts/
+            'hash_filename' => true, // Use hash as filename for immutability
+            'preserve_original_name' => true // Keep original name in metadata
+        ],
+        
+        // Frontend UI configuration
+        'ui_display' => [
+            'icon' => 'fa-file-contract',
+            'color' => '#1B365D', // PA brand blue
+            'preview' => false, // No preview for signed PDFs
+            'download_enabled' => true,
+            'verification_badge' => true
+        ],
+        
+        // Upload limits per session
+        'upload_limits' => [
+            'max_files_per_upload' => 1, // One document at a time for PA acts
+            'max_files_per_day' => 100, // Daily limit per PA entity
+            'require_authentication' => true,
+            'allowed_roles' => ['pa_entity', 'admin']
+        ],
+        
+        // Metadata requirements
+        'required_metadata' => [
+            'protocol_number',
+            'protocol_date',
+            'doc_type',
+            'doc_hash',
+            'signature_validation'
+        ],
+        
+        // Optional metadata fields
+        'optional_metadata' => [
+            'ente',
+            'ufficio',
+            'responsabile',
+            'note',
+            'allegati_count'
+        ]
+    ],
+
+    /**
      * Advanced security rules configuration
      */
     'security' => [
