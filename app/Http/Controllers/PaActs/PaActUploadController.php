@@ -154,10 +154,11 @@ class PaActUploadController extends Controller {
         ];
 
         // Get PA entity collections (all types for now - PA can organize acts in any collection)
+        // Note: Fully qualified column names to avoid ambiguity with pivot table
         $collections = $user->collections()
-            ->whereNull('removed_at')
-            ->where('status', '!=', 'removed')
-            ->orderBy('collection_name')
+            ->whereNull('collections.removed_at')
+            ->where('collections.status', '!=', 'removed')
+            ->orderBy('collections.collection_name')
             ->get();
 
         $this->logger->info('[PaActUploadController] Collections loaded', [
