@@ -199,7 +199,7 @@ class ViewService {
      * Used for CSS classes, UI variants, terminology
      */
     protected function getViewModeForRole(string $role): string {
-        return match($role) {
+        return match ($role) {
             'pa_entity' => 'institutional',
             'inspector' => 'technical',
             'company' => 'commercial',
