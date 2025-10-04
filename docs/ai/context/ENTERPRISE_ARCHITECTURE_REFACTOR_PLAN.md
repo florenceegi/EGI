@@ -612,10 +612,11 @@ public function store(Request $request) {
 **Purpose:** Gestire redirect post-login basato su usertype dell'utente autenticato.
 
 **Architecture Pattern:**
-- Registry pattern (consistente con ViewService)
-- Usertype-based route mapping
-- ULM logging per audit trail
-- Route existence validation (safety)
+
+-   Registry pattern (consistente con ViewService)
+-   Usertype-based route mapping
+-   ULM logging per audit trail
+-   Route existence validation (safety)
 
 **Redirect Registry:**
 
@@ -643,23 +644,26 @@ return redirect()->route($redirectRoute);
 ```
 
 **Features:**
-- ✅ Usertype detection da $user->usertype
-- ✅ Fallback a 'home' per usertype sconosciuti
-- ✅ Route existence check (previene 404)
-- ✅ ULM logging per ogni decisione di redirect
-- ✅ Extensible registry (facile aggiungere nuovi usertype)
-- ✅ Consistent behavior: Login AND Registration use same logic
+
+-   ✅ Usertype detection da $user->usertype
+-   ✅ Fallback a 'home' per usertype sconosciuti
+-   ✅ Route existence check (previene 404)
+-   ✅ ULM logging per ogni decisione di redirect
+-   ✅ Extensible registry (facile aggiungere nuovi usertype)
+-   ✅ Consistent behavior: Login AND Registration use same logic
 
 **Testing:**
-- ✅ PA entity login → redirect a pa.dashboard
-- ✅ PA entity registration → redirect a pa.dashboard
-- ✅ Creator login → redirect a home
-- ✅ Creator registration → redirect a home
-- ✅ Unknown usertype → fallback a home
 
-**Commits:** 
-- `40d28d6` - [FEAT] AuthRedirectService - Usertype-based post-login redirect
-- `8013383` - [FEAT] AuthRedirectService - Post-registration redirect integration
+-   ✅ PA entity login → redirect a pa.dashboard
+-   ✅ PA entity registration → redirect a pa.dashboard
+-   ✅ Creator login → redirect a home
+-   ✅ Creator registration → redirect a home
+-   ✅ Unknown usertype → fallback a home
+
+**Commits:**
+
+-   `40d28d6` - [FEAT] AuthRedirectService - Usertype-based post-login redirect
+-   `8013383` - [FEAT] AuthRedirectService - Post-registration redirect integration
 
 ---
 
