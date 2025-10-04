@@ -432,6 +432,52 @@ class EgiService {
     }
 
     /**
+     * Check if user can manage EGI (edit/delete)
+     *
+     * @param User $user
+     * @param Egi $egi
+     * @return bool
+     *
+     * Authorization rules:
+     * - Creator: can manage own EGIs (user_id match)
+     * - PA Entity: can manage EGIs in owned collections
+     * - Inspector: cannot directly manage (read-only)
+     * - Company: can manage EGIs in owned collections (future)
+     *
+     * Uses collection ownership check via pivot table
+     */
+    public function canManageEgi(User $user, Egi $egi): bool {
+        try {
+            // Check direct ownership (Creator)
+            if ($egi->user_id === $user->id) {
+                return true;
+            }
+
+            // Check collection ownership (PA/Company)
+            if ($egi->collection_id) {
+                $isCollectionOwner = $user->collections()
+                    ->where('collections.id', $egi->collection_id)
+                    ->exists();
+
+                if ($isCollectionOwner) {
+                    return true;
+                }
+            }
+
+            // Default: no permission
+            return false;
+        } catch (\Exception $e) {
+            // Log error and deny access on exception
+            \Log::error('EgiService::canManageEgi error', [
+                'user_id' => $user->id,
+                'egi_id' => $egi->id,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
      * Invalidate EGI-related caches
      *
      * @param Egi $egi
