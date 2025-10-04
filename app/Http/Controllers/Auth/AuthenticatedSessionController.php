@@ -6,6 +6,7 @@ use App\Enums\Gdpr\GdprActivityCategory;
 use App\Http\Controllers\Controller;
 use App\Services\Gdpr\ConsentService;
 use App\Services\Gdpr\AuditLogService;
+use App\Services\Auth\AuthRedirectService;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UltraLogManager\UltraLogManager;
 use Illuminate\Http\JsonResponse;
@@ -36,8 +37,9 @@ class AuthenticatedSessionController extends Controller {
     public function __construct(
         protected ErrorManagerInterface $errorManager,
         protected UltraLogManager $logger,
-        protected ?ConsentService $consentService = null,
-        protected ?AuditLogService $auditService = null
+        protected ConsentService $consentService,
+        protected AuditLogService $auditService,
+        protected AuthRedirectService $authRedirectService
     ) {
         // NO middleware in constructor - handled by routes
     }
@@ -56,7 +58,9 @@ class AuthenticatedSessionController extends Controller {
      */
     public function create(Request $request) {
         if (Auth::check()) {
-            return redirect()->intended(route(config('app.redirect_to_url_after_login', 'home')));
+            // Use AuthRedirectService for usertype-based redirect
+            $redirectRoute = $this->authRedirectService->getRedirectRoute(Auth::user());
+            return redirect()->route($redirectRoute);
         }
 
         return view('auth.login', [
@@ -121,7 +125,9 @@ class AuthenticatedSessionController extends Controller {
 
                     $this->logger->info('[Auth] Redirecting to GDPR consent', $logContext);
 
-                    return redirect()->route(config('app.redirect_to_url_after_login', 'home'));
+                    // Use AuthRedirectService for usertype-based redirect
+                    $redirectRoute = $this->authRedirectService->getRedirectRoute($user);
+                    return redirect()->route($redirectRoute);
                 }
 
                 // Update last login timestamp
@@ -132,8 +138,9 @@ class AuthenticatedSessionController extends Controller {
 
                 $this->logger->info('[Auth] Login completed successfully, returning response', $logContext);
 
-                // Return success response (use Fortify's response if available)
-                return app(LoginResponse::class);
+                // Use AuthRedirectService for usertype-based redirect
+                $redirectRoute = $this->authRedirectService->getRedirectRoute($user);
+                return redirect()->route($redirectRoute);
             } else {
                 // Authentication failed
                 $this->logger->info('[Auth] Authentication failed - invalid credentials', $logContext);

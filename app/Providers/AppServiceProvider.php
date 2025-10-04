@@ -93,7 +93,8 @@ class AppServiceProvider extends ServiceProvider {
                 $app->make(ErrorManagerInterface::class),
                 $app->make(UltraLogManager::class),
                 $app->make(ConsentService::class),
-                $app->make(AuditLogService::class)
+                $app->make(AuditLogService::class),
+                $app->make(\App\Services\Auth\AuthRedirectService::class)
             );
         });
 

@@ -40,23 +40,23 @@
             <div class="flex items-center gap-6">
                 <div class="text-center">
                     <p class="text-4xl font-bold text-[#D4A574]">{{ $heritage->total() }}</p>
-                    <p class="mt-1 text-sm tracking-wide uppercase text-white/70">Beni Totali</p>
+                    <p class="mt-1 text-sm uppercase tracking-wide text-white/70">Beni Totali</p>
                 </div>
                 <div class="text-center">
                     <p class="text-4xl font-bold text-[#D4A574]">{{ $heritage->count() }}</p>
-                    <p class="mt-1 text-sm tracking-wide uppercase text-white/70">In Questa Pagina</p>
+                    <p class="mt-1 text-sm uppercase tracking-wide text-white/70">In Questa Pagina</p>
                 </div>
             </div>
         </div>
     </div>
 
     {{-- Filters Section --}}
-    <div class="p-6 mb-8 bg-white shadow-md rounded-xl">
+    <div class="mb-8 rounded-xl bg-white p-6 shadow-md">
         <form method="GET" action="{{ route('pa.heritage.index') }}" class="space-y-4">
             <div class="flex flex-col gap-4 md:flex-row">
                 <div class="flex-1">
                     <label for="search" class="mb-2 block text-sm font-semibold text-[#1B365D]">
-                        <span class="text-base align-middle material-symbols-outlined">search</span>
+                        <span class="material-symbols-outlined align-middle text-base">search</span>
                         Cerca per Titolo, Artista o Descrizione
                     </label>
                     <input type="text" id="search" name="search" value="{{ request('search') }}"
@@ -66,7 +66,7 @@
 
                 <div class="w-full md:w-64">
                     <label for="coa_status" class="mb-2 block text-sm font-semibold text-[#1B365D]">
-                        <span class="text-base align-middle material-symbols-outlined">verified</span>
+                        <span class="material-symbols-outlined align-middle text-base">verified</span>
                         Stato CoA
                     </label>
                     <select id="coa_status" name="coa_status"
@@ -98,20 +98,20 @@
             </div>
 
             @if (request()->hasAny(['search', 'coa_status']))
-                <div class="pt-4 border-t border-gray-200">
+                <div class="border-t border-gray-200 pt-4">
                     <p class="mb-2 text-sm font-semibold text-gray-600">Filtri Attivi:</p>
                     <div class="flex flex-wrap gap-2">
                         @if (request('search'))
                             <span
                                 class="inline-flex items-center gap-1 rounded-full bg-[#1B365D]/10 px-3 py-1 text-sm font-medium text-[#1B365D]">
-                                <span class="text-sm material-symbols-outlined">search</span>
+                                <span class="material-symbols-outlined text-sm">search</span>
                                 Ricerca: "{{ request('search') }}"
                             </span>
                         @endif
                         @if (request('coa_status'))
                             <span
                                 class="inline-flex items-center gap-1 rounded-full bg-[#D4A574]/10 px-3 py-1 text-sm font-medium text-[#1B365D]">
-                                <span class="text-sm material-symbols-outlined">verified</span>
+                                <span class="material-symbols-outlined text-sm">verified</span>
                                 Stato: {{ ucfirst(str_replace('_', ' ', request('coa_status'))) }}
                             </span>
                         @endif
@@ -123,14 +123,14 @@
 
     {{-- Heritage Grid --}}
     @if ($heritage->count() > 0)
-        <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
+        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             @foreach ($heritage as $item)
                 <x-pa.pa-heritage-card :egi="$item" :showCoa="true" layout="grid" :showActions="true" />
             @endforeach
         </div>
 
         {{-- Pagination --}}
-        <div class="p-6 bg-white shadow-md rounded-xl">
+        <div class="rounded-xl bg-white p-6 shadow-md">
             <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
                 <div class="text-sm text-gray-600">
                     Visualizzati <span class="font-semibold text-[#1B365D]">{{ $heritage->firstItem() }}</span>
@@ -144,8 +144,8 @@
         </div>
     @else
         {{-- Empty State --}}
-        <div class="p-12 text-center bg-white shadow-md rounded-xl">
-            <span class="block mb-4 text-gray-300 material-symbols-outlined text-8xl">inventory_2</span>
+        <div class="rounded-xl bg-white p-12 text-center shadow-md">
+            <span class="material-symbols-outlined mb-4 block text-8xl text-gray-300">inventory_2</span>
             @if (request()->hasAny(['search', 'coa_status']))
                 <h3 class="mb-3 text-2xl font-bold text-[#1B365D]">Nessun risultato trovato</h3>
                 <p class="mb-6 text-gray-600">Non ci sono beni culturali che corrispondono ai filtri applicati. Prova a
@@ -168,23 +168,23 @@
 
     {{-- Quick Stats Footer --}}
     @if ($heritage->total() > 0)
-        <div class="grid grid-cols-1 gap-4 mt-8 md:grid-cols-4">
-            <div class="p-4 text-center bg-white rounded-lg shadow">
+        <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-4">
+            <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#2D5016]">
                     {{ $heritage->where(fn($egi) => $egi->coa && $egi->coa->status === 'valid')->count() }}</p>
                 <p class="mt-1 text-sm text-gray-600">CoA Validi</p>
             </div>
-            <div class="p-4 text-center bg-white rounded-lg shadow">
+            <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#E67E22]">
                     {{ $heritage->where(fn($egi) => $egi->coa && $egi->coa->status === 'pending')->count() }}</p>
                 <p class="mt-1 text-sm text-gray-600">In Attesa</p>
             </div>
-            <div class="p-4 text-center bg-white rounded-lg shadow">
+            <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#C13120]">
                     {{ $heritage->where(fn($egi) => $egi->coa && $egi->coa->status === 'revoked')->count() }}</p>
                 <p class="mt-1 text-sm text-gray-600">Revocati</p>
             </div>
-            <div class="p-4 text-center bg-white rounded-lg shadow">
+            <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#6B6B6B]">{{ $heritage->where(fn($egi) => !$egi->coa)->count() }}
                 </p>
                 <p class="mt-1 text-sm text-gray-600">Senza CoA</p>
@@ -193,4 +193,3 @@
     @endif
 
 </x-pa-layout>
-
