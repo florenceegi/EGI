@@ -225,8 +225,11 @@ class EgiController extends Controller {
                     ->orderBy('id')
                     ->get();
 
+                // Get collection for view (needed by blade template)
+                $collection = $egi->collection;
+
                 // Use default view for public users
-                return view('egis.show', compact('egi', 'canManage', 'collectionEgis'));
+                return view('egis.show', compact('egi', 'collection', 'canManage', 'collectionEgis'));
             }
 
             // Authenticated user: delegate to service
@@ -254,6 +257,9 @@ class EgiController extends Controller {
                 ->orderBy('id')
                 ->get();
 
+            // Get collection for view (needed by blade template)
+            $collection = $egi->collection;
+
             // ViewService determines correct view based on user role
             $view = $this->viewService->getViewForRole($user, 'show');
 
@@ -268,7 +274,7 @@ class EgiController extends Controller {
                 'auth_type' => FegiAuth::getAuthType(),
             ]);
 
-            return view($view, compact('egi', 'canManage', 'collectionEgis'));
+            return view($view, compact('egi', 'collection', 'canManage', 'collectionEgis'));
         } catch (\Exception $e) {
             return $this->errorManager->handle('EGI_PAGE_RENDERING_ERROR', [
                 'egi_id' => $egi->id,
