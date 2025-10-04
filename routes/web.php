@@ -324,19 +324,39 @@ Route::get('/collections/{id}', function ($id) {
 })->where('id', '[0-9]+');
 
 
-// EGI routes
+// EGI routes (Universal Architecture - Service Layer)
 
 Route::group(['prefix' => 'egis'], function () {
+
+    // List EGI (public + authenticated) - role-based filtering via Service
+    Route::get('/', [App\Http\Controllers\EgiController::class, 'index'])
+        ->name('egis.index');
+
+    // Create EGI Form - authenticated only
+    Route::middleware('auth')->group(function () {
+        Route::get('/create', [App\Http\Controllers\EgiController::class, 'create'])
+            ->name('egis.create');
+
+        // Store new EGI
+        Route::post('/', [App\Http\Controllers\EgiController::class, 'store'])
+            ->name('egis.store');
+    });
 
     // Mostra singolo EGI (già esistente, confermo per completezza)
     Route::get('/{egi}', [App\Http\Controllers\EgiController::class, 'show'])
         ->name('egis.show');
 
-    // Update EGI - PATCH per aggiornamento parziale
+    // Edit EGI Form - authenticated only
+    Route::middleware('auth')->group(function () {
+        Route::get('/{egi}/edit', [App\Http\Controllers\EgiController::class, 'edit'])
+            ->name('egis.edit');
+    });
+
+    // Update EGI - PUT for full update
     Route::put('/{egi}', [App\Http\Controllers\EgiController::class, 'update'])
         ->name('egis.update');
 
-    // Delete EGI - DELETE per eliminazione
+    // Delete EGI - DELETE for deletion
     Route::delete('/{egi}', [App\Http\Controllers\EgiController::class, 'destroy'])
         ->name('egis.destroy');
 
