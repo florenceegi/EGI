@@ -83,35 +83,30 @@
 --}}
 
 <x-pa-layout title="{{ __('pa_acts.index.page_title') }}">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <x-slot:breadcrumb>
+        <a href="{{ route('pa.dashboard') }}" class="text-[#D4A574] hover:text-[#C39463]">Dashboard</a>
+        <span class="mx-2 text-gray-400">/</span>
+        <span class="text-gray-700">{{ __('pa_acts.index.title') }}</span>
+    </x-slot:breadcrumb>
 
-            {{-- Header Section --}}
-            <div class="mb-8">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="font-serif text-3xl font-bold text-[#1B365D]">
-                            {{ __('pa_acts.index.title') }}
-                        </h1>
-                        <p class="mt-2 text-gray-600">
-                            {{ __('pa_acts.index.subtitle') }}
-                        </p>
-                    </div>
+    <x-slot:pageTitle>{{ __('pa_acts.index.title') }}</x-slot:pageTitle>
 
-                    {{-- Upload Button --}}
-                    <div>
-                        <a href="{{ route('pa.acts.upload') }}"
-                            class="inline-flex transform items-center rounded-lg bg-[#D4A574] px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-[#C39563]"
-                            aria-label="{{ __('pa_acts.index.upload_new_act') }}">
-                            <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            {{ __('pa_acts.index.upload_new_act') }}
-                        </a>
-                    </div>
-                </div>
-            </div>
+    {{-- Upload Button --}}
+    <div class="mb-8 flex items-center justify-between">
+        <p class="text-gray-600">
+            {{ __('pa_acts.index.subtitle') }}
+        </p>
+        <a href="{{ route('pa.acts.upload') }}"
+            class="inline-flex transform items-center rounded-lg bg-[#D4A574] px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-[#C39563]"
+            aria-label="{{ __('pa_acts.index.upload_new_act') }}">
+            <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            {{ __('pa_acts.index.upload_new_act') }}
+        </a>
+    </div>
 
-            {{-- Stats Cards --}}
+    {{-- Stats Cards --}}
             <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
                 {{-- Total Acts --}}
                 <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -429,7 +424,4 @@
                     </a>
                 </div>
             @endif
-
-        </div>
-    </div>
 </x-pa-layout>

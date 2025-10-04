@@ -101,9 +101,17 @@
 --}}
 
 <x-pa-layout :title="__('pa_acts.show.page_title', ['protocol' => $metadata['protocol_number']])">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
+    <x-slot:breadcrumb>
+        <a href="{{ route('pa.dashboard') }}" class="text-[#D4A574] hover:text-[#C39463]">Dashboard</a>
+        <span class="mx-2 text-gray-400">/</span>
+        <a href="{{ route('pa.acts.index') }}" class="text-[#D4A574] hover:text-[#C39463]">{{ __('pa_acts.index.title') }}</a>
+        <span class="mx-2 text-gray-400">/</span>
+        <span class="text-gray-700">{{ $metadata['protocol_number'] ?? 'N/A' }}</span>
+    </x-slot:breadcrumb>
 
-            {{-- Back Button --}}
+    <x-slot:pageTitle>{{ __('pa_acts.show.page_title', ['protocol' => $metadata['protocol_number']]) }}</x-slot:pageTitle>
+
+    {{-- Back Button --}}
             <div class="mb-6">
                 <a href="{{ route('pa.acts.index') }}"
                     class="inline-flex items-center font-medium text-[#1B365D] transition-colors hover:text-[#D4A574]"
@@ -443,9 +451,6 @@
                     </div>
                 </div>
             </div>
-
-        </div>
-    </div>
 
     @push('scripts')
         <script>
