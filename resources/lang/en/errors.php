@@ -166,20 +166,20 @@ return [
         // Authentication & Authorization
         'pa_act_auth_required' => 'Authentication required to upload PA acts. Please log in.',
         'pa_act_role_required' => 'Access denied. Public Administration role required for this operation.',
-        
+
         // Validation Errors
         'pa_act_validation_failed' => 'Validation error. Check your data and try again.',
         'pa_act_invalid_file' => 'Invalid file. Only digitally signed PDFs, max 20 MB.',
         'pa_act_invalid_signature' => 'Invalid or missing digital signature. Document must be signed with QES/PAdES qualified signature.',
-        
+
         // Collection/Storage Errors
         'pa_act_collection_failed' => 'Error creating PA folder. Technical team has been informed.',
         'pa_act_upload_failed' => 'Error uploading document. Please try again or contact support.',
-        
+
         // Blockchain Errors
         'pa_act_blockchain_anchor_failed' => 'Document saved but blockchain anchoring failed. Will retry automatically.',
         'pa_act_merkle_verification_failed' => 'Error verifying cryptographic proof. Technical team has been informed.',
-        
+
         // Public Verification Errors
         'pa_act_not_found' => 'Verification code not found. Please check you copied the code correctly.',
         'pa_act_verification_error' => 'Error verifying document. Please try again later.',

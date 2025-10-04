@@ -1,21 +1,34 @@
 {{--
-@Oracode OS1: Create Collection Modal Component
-🎯 Purpose: Reusable modal for collection creation across guest and authenticated layouts
-🧱 Core Logic: Minimal form (name only) with rich UX feedback and FlorenceEGI branding
-🛡️ GDPR: Zero data collection beyond authenticated user context
-📥 Input: None (triggered by user action)
-📤 Output: AJAX form submission to collections.create endpoint
-🎨 Design: FlorenceEGI Brand Guidelines compliant with Rinascimento aesthetics
-
-@accessibility Full ARIA support, keyboard navigation, focus management
-@responsive Mobile-first design with graceful desktop enhancement
-@ux-states Loading, error, success states with meaningful feedback
-@color-palette Oro Fiorentino (#D4A574), Verde Rinascita (#2D5016), Blu Algoritmo (#1B365D)
-@typography Playfair Display (headings), Source Sans Pro (body)
-
-@since OS1-v1.0
-@author Padmin D. Curtis (for Fabio Cherici)
+/**
+ * Create Collection Modal Component
+ * 
+ * @package Resources\Views\Components
+ * @author Padmin D. Curtis (AI Partner OS3.0)
+ * @version 3.0.0 (FlorenceEGI - Universal Terminology System)
+ * @date 2025-10-04
+ * @purpose Universal modal with terminology injection (Registry Pattern)
+ * 
+ * SCALABILITY: Like AuthRedirectService
+ * - Modal receives translation keys array
+ * - No context logic inside modal
+ * - CollectionTerminologyService maps user type → keys
+ * - Expandable for any future user type
+ * 
+ * USAGE:
+ * $terms = CollectionTerminologyService::getTerminology($user);
+ * <x-create-collection-modal :terminology="$terms" />
+ * 
+ * PROPS:
+ * - $terminology: array of translation keys (from CollectionTerminologyService)
+ */
 --}}
+
+@php
+    use App\Services\Terminology\CollectionTerminologyService;
+    
+    // Default terminology if not provided
+    $terminology = $terminology ?? CollectionTerminologyService::getTerminology(auth()->user());
+@endphp
 
 <!-- Modal Background Overlay -->
 <div id="create-collection-modal"
@@ -29,7 +42,9 @@
     <!-- Modal Container -->
     <div class="relative bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-[95%] max-w-md mx-4 transform transition-all duration-300 ease-out scale-95 opacity-0"
          id="create-collection-modal-container"
-         role="document">
+         role="document"
+         data-redirect-after-creation="{{ $terminology['redirect_after_creation'] ? 'true' : 'false' }}"
+         data-redirect-url="{{ $terminology['redirect_url'] ?? '' }}">
 
         <!-- Modal Header -->
         <header class="px-6 py-4 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 rounded-t-2xl">
@@ -41,11 +56,11 @@
                     <div>
                         <h2 id="create-collection-modal-title"
                             class="text-xl font-bold text-white font-playfair">
-                            {{ __('collection.create_new_collection') }}
+                            {{ __($terminology['create_title']) }}
                         </h2>
                         <p id="create-collection-modal-description"
                            class="text-sm text-gray-400 font-source-sans">
-                            {{ __('collection.create_modal_subtitle') }}
+                            {{ __($terminology['subtitle']) }}
                         </p>
                     </div>
                 </div>
@@ -69,7 +84,7 @@
                     <span class="text-2xl text-white material-symbols-outlined" aria-hidden="true">check</span>
                 </div>
                 <div class="space-y-2">
-                    <h3 class="text-lg font-semibold text-white font-playfair">{{ __('collection.creation_success_title') }}</h3>
+                    <h3 class="text-lg font-semibold text-white font-playfair">{{ __($terminology['success_title']) }}</h3>
                     <p id="success-message" class="text-gray-300 font-source-sans"></p>
                     <p class="text-sm text-gray-400 font-source-sans">{{ __('collection.redirecting_shortly') }}</p>
                 </div>
@@ -88,7 +103,7 @@
                 <div class="space-y-2">
                     <label for="collection_name"
                            class="block text-sm font-medium text-gray-300 font-source-sans">
-                        {{ __('collection.collection_name') }}
+                        {{ __($terminology['name_label']) }}
                         <span class="ml-1 text-red-400" aria-hidden="true">*</span>
                     </label>
                     <div class="relative">
@@ -96,7 +111,7 @@
                                id="collection_name"
                                name="collection_name"
                                class="w-full px-4 py-3 text-white placeholder-gray-400 transition-colors duration-200 bg-gray-800 border border-gray-600 rounded-lg font-source-sans focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-                               placeholder="{{ __('collection.enter_collection_name') }}"
+                               placeholder="{{ __($terminology['name_placeholder']) }}"
                                maxlength="100"
                                required
                                autocomplete="off"
@@ -173,7 +188,7 @@
                         <!-- Default State -->
                         <span id="submit-text-default" class="flex items-center">
                             <span class="mr-2 text-sm material-symbols-outlined" aria-hidden="true">add</span>
-                            {{ __('collection.create_collection') }}
+                            {{ __($terminology['create_button']) }}
                         </span>
 
                         <!-- Loading State -->

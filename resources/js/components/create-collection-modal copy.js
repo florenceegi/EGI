@@ -4,16 +4,16 @@
  * @version 2.0.0 (FlorenceEGI - PA Acts Integration)
  * @date 2025-10-04
  * @purpose Create Collection Modal - Dynamic context-aware collection creation
- *
+ * 
  * CONTEXT: Universal modal for both Creator and PA contexts
  * - Creator context: "Crea Collezione" - artwork collections
  * - PA context: "Crea Fascicolo" - PA acts grouping
- *
+ * 
  * INTEGRATION POINTS:
  * - PA Acts Upload: Inline fascicolo creation during act upload
  * - Creator Dashboard: Standard collection creation
  * - Collections CRUD: Reusable modal component
- *
+ * 
  * KEY FEATURES:
  * - Context-aware terminology (Collezione vs Fascicolo)
  * - AJAX form submission with real-time validation
@@ -22,17 +22,17 @@
  * - Full keyboard accessibility (ESC, TAB, Enter)
  * - UEM error handling integration
  * - Loading states and user feedback
- *
+ * 
  * ACCESSIBILITY:
  * - WCAG 2.1 AA compliant
  * - Keyboard navigation support
  * - Focus trap management
  * - ARIA states and roles
  * - Screen reader announcements
- *
+ * 
  * EVENTS EMITTED:
  * - collection-created: { collectionId, collectionName, collection: {...} }
- *
+ * 
  * GLOBAL API:
  * - window.CreateCollectionModal.open() - Open modal
  * - window.CreateCollectionModal.close() - Close modal
@@ -42,7 +42,7 @@
 class CreateCollectionModal {
     /**
      * Initialize modal controller
-     *
+     * 
      * Sets up all DOM references, state management, and event handlers.
      * Called once on instantiation for global singleton instance.
      */
@@ -53,7 +53,7 @@ class CreateCollectionModal {
         this.form = null;
         this.nameInput = null;
         this.submitButton = null;
-
+        
         // State management
         this.isOpen = false;
         this.isSubmitting = false;
@@ -66,94 +66,78 @@ class CreateCollectionModal {
     }
 
     /**
-     * //  Initialize modal system with comprehensive setup
+     * @Oracode OS1: Initialize modal system with comprehensive setup
+     * 🎯 Purpose: Setup DOM references, event listeners, and initial state
      */
     initialize() {
         // Wait for DOM ready
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", () => this.setup());
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.setup());
         } else {
             this.setup();
         }
     }
 
     /**
-     * //  Setup modal components and bindings
+     * @Oracode OS1: Setup modal components and bindings
+     * 🎯 Purpose: Establish all DOM references and event handlers
      */
     setup() {
         try {
-            // Semantic Coherence - Consistent element targeting
-            this.modal = document.getElementById("create-collection-modal");
-            this.modalContainer = document.getElementById(
-                "create-collection-modal-container"
-            );
-            this.form = document.getElementById("create-collection-form");
-            this.nameInput = document.getElementById("collection_name");
-            this.submitButton = document.getElementById(
-                "submit-create-collection"
-            );
+            // OS1 Pillar 3: Semantic Coherence - Consistent element targeting
+            this.modal = document.getElementById('create-collection-modal');
+            this.modalContainer = document.getElementById('create-collection-modal-container');
+            this.form = document.getElementById('create-collection-form');
+            this.nameInput = document.getElementById('collection_name');
+            this.submitButton = document.getElementById('submit-create-collection');
 
             // Enhanced validation for critical elements
-            if (
-                !this.modal ||
-                !this.form ||
-                !this.nameInput ||
-                !this.submitButton
-            ) {
-                console.warn(
-                    "[CreateCollectionModal] Missing required DOM elements"
-                );
+            if (!this.modal || !this.form || !this.nameInput || !this.submitButton) {
+                console.warn('[CreateCollectionModal] Missing required DOM elements');
                 return;
             }
 
             this.bindEvents();
             this.loadUserStats();
 
-            // Recursive Evolution - Log successful initialization
-            console.info("[CreateCollectionModal] Initialized successfully");
+            // OS1 Pillar 5: Recursive Evolution - Log successful initialization
+            console.info('[CreateCollectionModal] Initialized successfully');
+
         } catch (error) {
-            console.error("[CreateCollectionModal] Setup failed:", error);
+            console.error('[CreateCollectionModal] Setup failed:', error);
         }
     }
 
     /**
-     * //  Comprehensive event binding with accessibility support
+     * @Oracode OS1: Comprehensive event binding with accessibility support
+     * 🎯 Purpose: Establish all user interaction handlers
      */
     bindEvents() {
         // OS1 Enhanced: Form submission with robust validation
-        this.form.addEventListener("submit", (e) => this.handleSubmit(e));
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
 
         // Modal control events
-        document
-            .getElementById("close-create-collection-modal")
-            ?.addEventListener("click", () => this.close());
-        document
-            .getElementById("cancel-create-collection")
-            ?.addEventListener("click", () => this.close());
+        document.getElementById('close-create-collection-modal')?.addEventListener('click', () => this.close());
+        document.getElementById('cancel-create-collection')?.addEventListener('click', () => this.close());
 
         // OS1 Accessibility: Enhanced keyboard support
-        document.addEventListener("keydown", (e) => this.handleKeydown(e));
+        document.addEventListener('keydown', (e) => this.handleKeydown(e));
 
         // Modal backdrop click to close
-        this.modal.addEventListener("click", (e) => {
+        this.modal.addEventListener('click', (e) => {
             if (e.target === this.modal) {
                 this.close();
             }
         });
 
         // OS1 UX Enhancement: Real-time character counter and validation
-        this.nameInput.addEventListener("input", () =>
-            this.handleInputChange()
-        );
-        this.nameInput.addEventListener("blur", () => this.validateField());
+        this.nameInput.addEventListener('input', () => this.handleInputChange());
+        this.nameInput.addEventListener('blur', () => this.validateField());
 
         // OS1 Performance: Debounced validation
-        this.nameInput.addEventListener("input", () => {
+        this.nameInput.addEventListener('input', () => {
             clearTimeout(this.validationTimeout);
-            this.validationTimeout = setTimeout(
-                () => this.validateField(),
-                300
-            );
+            this.validationTimeout = setTimeout(() => this.validateField(), 300);
         });
 
         // OS1 Trigger buttons throughout the application
@@ -161,27 +145,24 @@ class CreateCollectionModal {
     }
 
     /**
-     * //  Bind trigger buttons across different layouts
+     * @Oracode OS1: Bind trigger buttons across different layouts
+     * 🎯 Purpose: Enable modal opening from any context (guest, dashboard, etc.)
      */
     bindTriggerButtons() {
         // Generic trigger selector for flexibility
-        const triggers = document.querySelectorAll(
-            '[data-action="open-create-collection-modal"]'
-        );
+        const triggers = document.querySelectorAll('[data-action="open-create-collection-modal"]');
 
-        triggers.forEach((trigger) => {
-            trigger.addEventListener("click", (e) => {
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.open();
             });
         });
 
         // OS1 Evolution: Legacy support for existing buttons
-        const legacyTriggers = document.querySelectorAll(
-            ".create-collection-trigger, #create-collection-button"
-        );
-        legacyTriggers.forEach((trigger) => {
-            trigger.addEventListener("click", (e) => {
+        const legacyTriggers = document.querySelectorAll('.create-collection-trigger, #create-collection-button');
+        legacyTriggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.open();
             });
@@ -189,7 +170,8 @@ class CreateCollectionModal {
     }
 
     /**
-     * //  Open modal with enhanced UX and accessibility
+     * @Oracode OS1: Open modal with enhanced UX and accessibility
+     * 🎯 Purpose: Display modal with proper focus management and state setup
      */
     open() {
         if (this.isOpen) return;
@@ -202,14 +184,14 @@ class CreateCollectionModal {
             this.resetModal();
 
             // OS1 UX: Smooth modal appearance
-            this.modal.classList.remove("hidden");
-            this.modal.setAttribute("aria-hidden", "false");
+            this.modal.classList.remove('hidden');
+            this.modal.setAttribute('aria-hidden', 'false');
 
             // Trigger transition after DOM update
             requestAnimationFrame(() => {
-                this.modal.classList.add("modal-open");
-                this.modalContainer.style.transform = "scale(1)";
-                this.modalContainer.style.opacity = "1";
+                this.modal.classList.add('modal-open');
+                this.modalContainer.style.transform = 'scale(1)';
+                this.modalContainer.style.opacity = '1';
             });
 
             // OS1 Accessibility: Focus management
@@ -218,34 +200,36 @@ class CreateCollectionModal {
             }, 150);
 
             // OS1 Body scroll prevention
-            document.body.style.overflow = "hidden";
+            document.body.style.overflow = 'hidden';
 
             this.isOpen = true;
 
             // OS1 Analytics: Track modal opening
-            this.trackEvent("modal_opened");
+            this.trackEvent('modal_opened');
+
         } catch (error) {
-            console.error("[CreateCollectionModal] Open failed:", error);
+            console.error('[CreateCollectionModal] Open failed:', error);
         }
     }
 
     /**
-     * //  Close modal with complete cleanup
+     * @Oracode OS1: Close modal with complete cleanup
+     * 🎯 Purpose: Hide modal and restore application state
      */
     close() {
         if (!this.isOpen) return;
 
         try {
             // OS1 UX: Smooth modal disappearance
-            this.modal.classList.remove("modal-open");
-            this.modalContainer.style.transform = "scale(0.95)";
-            this.modalContainer.style.opacity = "0";
+            this.modal.classList.remove('modal-open');
+            this.modalContainer.style.transform = 'scale(0.95)';
+            this.modalContainer.style.opacity = '0';
 
             // Complete closure after transition
             setTimeout(() => {
-                this.modal.classList.add("hidden");
-                this.modal.setAttribute("aria-hidden", "true");
-                document.body.style.overflow = "";
+                this.modal.classList.add('hidden');
+                this.modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
 
                 // OS1 Accessibility: Restore previous focus
                 if (this.focusedElementBeforeModal) {
@@ -262,14 +246,16 @@ class CreateCollectionModal {
             this.isOpen = false;
 
             // OS1 Analytics: Track modal closing
-            this.trackEvent("modal_closed");
+            this.trackEvent('modal_closed');
+
         } catch (error) {
-            console.error("[CreateCollectionModal] Close failed:", error);
+            console.error('[CreateCollectionModal] Close failed:', error);
         }
     }
 
     /**
-     * //  Reset modal to pristine state
+     * @Oracode OS1: Reset modal to pristine state
+     * 🎯 Purpose: Clear all form data and error states
      */
     resetModal() {
         // Reset form
@@ -279,13 +265,11 @@ class CreateCollectionModal {
         this.clearErrors();
 
         // Reset UI states
-        document
-            .getElementById("create-collection-success-state")
-            .classList.add("hidden");
-        this.form.classList.remove("hidden");
+        document.getElementById('create-collection-success-state').classList.add('hidden');
+        this.form.classList.remove('hidden');
 
         // Reset button state
-        this.setSubmitButtonState("default");
+        this.setSubmitButtonState('default');
 
         // Reset character counter
         this.updateCharacterCounter();
@@ -295,7 +279,8 @@ class CreateCollectionModal {
     }
 
     /**
-     * //  Handle form submission with comprehensive validation
+     * @Oracode OS1: Handle form submission with comprehensive validation
+     * 🎯 Purpose: Process form data with robust error handling and UX feedback
      */
     async handleSubmit(event) {
         event.preventDefault();
@@ -309,25 +294,25 @@ class CreateCollectionModal {
             }
 
             this.isSubmitting = true;
-            this.setSubmitButtonState("loading");
+            this.setSubmitButtonState('loading');
             this.clearErrors();
 
             // OS1 Data Preparation
             const formData = new FormData(this.form);
             const requestData = {
-                collection_name: formData.get("collection_name").trim(),
-                _token: formData.get("_token"),
+                collection_name: formData.get('collection_name').trim(),
+                _token: formData.get('_token')
             };
 
             // OS1 AJAX Request with comprehensive error handling
-            const response = await fetch("/collections/create", {
-                method: "POST",
+            const response = await fetch('/collections/create', {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    "X-Requested-With": "XMLHttpRequest",
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify(requestData),
+                body: JSON.stringify(requestData)
             });
 
             const result = await response.json();
@@ -337,6 +322,7 @@ class CreateCollectionModal {
             } else {
                 this.handleError(result);
             }
+
         } catch (error) {
             this.handleNetworkError(error);
         } finally {
@@ -345,86 +331,56 @@ class CreateCollectionModal {
     }
 
     /**
-     * //  Handle successful collection creation
+     * @Oracode OS1: Handle successful collection creation
+     * 🎯 Purpose: Display success state and manage redirection
      */
     handleSuccess(result) {
         // OS1 UX: Transition to success state
-        this.form.classList.add("hidden");
-        const successState = document.getElementById(
-            "create-collection-success-state"
-        );
-        successState.classList.remove("hidden");
+        this.form.classList.add('hidden');
+        const successState = document.getElementById('create-collection-success-state');
+        successState.classList.remove('hidden');
 
         // Update success message
-        const successMessage = document.getElementById("success-message");
+        const successMessage = document.getElementById('success-message');
         successMessage.textContent = result.message;
 
         // OS1 Progress Indication: Animate redirect progress
-        const progressBar = document.getElementById("redirect-progress");
+        const progressBar = document.getElementById('redirect-progress');
         requestAnimationFrame(() => {
-            progressBar.style.width = "100%";
+            progressBar.style.width = '100%';
         });
 
         // OS1 Analytics: Track successful creation
-        this.trackEvent("collection_created", {
+        this.trackEvent('collection_created', {
             collection_id: result.collection?.id,
-            collection_name: result.collection?.name,
+            collection_name: result.collection?.name
         });
-
-        // DEBUG: Check result structure
-        console.log("[CreateCollectionModal] handleSuccess result:", result);
-        console.log("[CreateCollectionModal] result.collection:", result.collection);
 
         // OS1 Event Dispatch: Notify other components (PA Acts integration)
         if (result.collection) {
-            window.dispatchEvent(
-                new CustomEvent("collection-created", {
-                    detail: { 
-                        collectionId: result.collection.id,
-                        collectionName: result.collection.collection_name || result.collection.name,
-                        collection: result.collection 
-                    },
-                })
-            );
-            console.info(
-                "[CreateCollectionModal] collection-created event dispatched",
-                result.collection
-            );
-        } else {
-            console.warn("[CreateCollectionModal] result.collection is undefined! Cannot dispatch event");
+            window.dispatchEvent(new CustomEvent('collection-created', {
+                detail: { collection: result.collection }
+            }));
+            console.info('[CreateCollectionModal] collection-created event dispatched', result.collection);
         }
 
-        // Universal Redirect System: Based on user type terminology
-        const shouldRedirect =
-            this.modalContainer.dataset.redirectAfterCreation === "true";
-        const redirectUrl = this.modalContainer.dataset.redirectUrl;
-
-        console.log("[CreateCollectionModal] Redirect decision:", {
-            shouldRedirect,
-            redirectUrl,
-            dataAttribute: this.modalContainer.dataset.redirectAfterCreation,
-        });
-
-        if (shouldRedirect && redirectUrl) {
-            // Redirect to specified URL (e.g., Creator → /home/collections)
-            console.log("[CreateCollectionModal] Will redirect to:", redirectUrl);
-            this.redirectTimer = setTimeout(() => {
-                window.location.href = redirectUrl;
-            }, 2000);
-        } else {
-            // No redirect - just close modal (e.g., PA → stay on page with updated select)
-            console.log("[CreateCollectionModal] Will close modal, no redirect");
-            this.redirectTimer = setTimeout(() => {
-                this.close();
-            }, 1500);
-        }
+        // OS1 Navigation: Intelligent redirect with delay
+        this.redirectTimer = setTimeout(() => {
+            if (result.next_action?.url) {
+                window.location.href = result.next_action.url;
+            } else {
+                // Fallback redirect
+                window.location.reload();
+            }
+        }, 3000);
     }
 
     /**
-     * //  Handle server errors with intelligent feedback
+     * @Oracode OS1: Handle server errors with intelligent feedback
+     * 🎯 Purpose: Display appropriate error messages and enable recovery
      */
     handleError(result) {
-        this.setSubmitButtonState("default");
+        this.setSubmitButtonState('default');
 
         // OS1 Error Classification: Handle different error types
         if (result.errors) {
@@ -432,81 +388,67 @@ class CreateCollectionModal {
             this.displayValidationErrors(result.errors);
         } else {
             // General server errors
-            this.displayGlobalError(
-                result.message || "An unexpected error occurred"
-            );
+            this.displayGlobalError(result.message || 'An unexpected error occurred');
         }
 
         // OS1 Accessibility: Announce error to screen readers
-        const errorElement = document.getElementById("global-error-message");
-        if (errorElement && !errorElement.classList.contains("hidden")) {
+        const errorElement = document.getElementById('global-error-message');
+        if (errorElement && !errorElement.classList.contains('hidden')) {
             errorElement.focus();
         }
 
         // OS1 Analytics: Track errors for improvement
-        this.trackEvent("creation_error", {
+        this.trackEvent('creation_error', {
             error_type: result.error,
-            error_message: result.message,
+            error_message: result.message
         });
     }
 
     /**
-     * //  Handle network errors with graceful degradation
+     * @Oracode OS1: Handle network errors with graceful degradation
+     * 🎯 Purpose: Provide fallback UX for connectivity issues
      */
     handleNetworkError(error) {
-        console.error("[CreateCollectionModal] Network error:", error);
+        console.error('[CreateCollectionModal] Network error:', error);
 
-        this.setSubmitButtonState("default");
-        this.displayGlobalError(
-            "Network error. Please check your connection and try again."
-        );
+        this.setSubmitButtonState('default');
+        this.displayGlobalError('Network error. Please check your connection and try again.');
 
         // OS1 Analytics: Track network issues
-        this.trackEvent("network_error", { error: error.message });
+        this.trackEvent('network_error', { error: error.message });
     }
 
     /**
-     * //  Client-side form validation
+     * @Oracode OS1: Client-side form validation
+     * 🎯 Purpose: Immediate feedback before server submission
      */
     validateForm() {
         const name = this.nameInput.value.trim();
 
         // Clear previous errors
-        this.clearFieldError("collection_name");
+        this.clearFieldError('collection_name');
 
         // Required validation
         if (!name) {
-            this.displayFieldError(
-                "collection_name",
-                "Collection name is required"
-            );
+            this.displayFieldError('collection_name', 'Collection name is required');
             return false;
         }
 
         // Length validation
         if (name.length < 2) {
-            this.displayFieldError(
-                "collection_name",
-                "Collection name must be at least 2 characters"
-            );
+            this.displayFieldError('collection_name', 'Collection name must be at least 2 characters');
             return false;
         }
 
         if (name.length > 100) {
-            this.displayFieldError(
-                "collection_name",
-                "Collection name cannot exceed 100 characters"
-            );
+            this.displayFieldError('collection_name', 'Collection name cannot exceed 100 characters');
             return false;
         }
 
         // Character validation
         const validPattern = /^[a-zA-Z0-9\s\-_'"À-ÿ]+$/u;
         if (!validPattern.test(name)) {
-            this.displayFieldError(
-                "collection_name",
-                "Collection name contains invalid characters"
-            );
+            this.displayFieldError('collection_name', 'Collection name contains invalid characters');
             return false;
         }
 
@@ -514,40 +456,40 @@ class CreateCollectionModal {
     }
 
     /**
-     * //  Real-time field validation
+     * @Oracode OS1: Real-time field validation
+     * 🎯 Purpose: Provide immediate feedback during typing
      */
     validateField() {
         const name = this.nameInput.value.trim();
 
         // Clear previous error
-        this.clearFieldError("collection_name");
+        this.clearFieldError('collection_name');
 
         if (name && name.length > 0 && name.length < 2) {
-            this.displayFieldError(
-                "collection_name",
-                "Minimum 2 characters required"
-            );
+            this.displayFieldError('collection_name', 'Minimum 2 characters required');
         }
     }
 
     /**
-     * //  Handle input changes with character counter
+     * @Oracode OS1: Handle input changes with character counter
+     * 🎯 Purpose: Update character counter and provide visual feedback
      */
     handleInputChange() {
         this.updateCharacterCounter();
 
         // Clear validation error while typing
-        this.clearFieldError("collection_name");
+        this.clearFieldError('collection_name');
     }
 
     /**
-     * //  Update character counter with visual states
+     * @Oracode OS1: Update character counter with visual states
+     * 🎯 Purpose: Provide real-time character count feedback
      */
     updateCharacterCounter() {
         const currentLength = this.nameInput.value.length;
         const maxLength = 100;
-        const counter = document.getElementById("character-counter");
-        const currentSpan = document.getElementById("current-length");
+        const counter = document.getElementById('character-counter');
+        const currentSpan = document.getElementById('current-length');
 
         if (currentSpan) {
             currentSpan.textContent = currentLength;
@@ -555,38 +497,40 @@ class CreateCollectionModal {
 
         // OS1 UX: Visual feedback based on character count
         if (counter) {
-            counter.classList.remove("text-warning", "text-danger");
+            counter.classList.remove('text-warning', 'text-danger');
 
             if (currentLength > 80) {
-                counter.classList.add("text-warning");
+                counter.classList.add('text-warning');
             }
             if (currentLength > 95) {
-                counter.classList.add("text-danger");
+                counter.classList.add('text-danger');
             }
         }
     }
 
     /**
-     * //  Enhanced keyboard event handling
+     * @Oracode OS1: Enhanced keyboard event handling
+     * 🎯 Purpose: Provide comprehensive keyboard accessibility
      */
     handleKeydown(event) {
         if (!this.isOpen) return;
 
         // ESC key to close modal
-        if (event.key === "Escape") {
+        if (event.key === 'Escape') {
             event.preventDefault();
             this.close();
             return;
         }
 
         // Tab key focus management
-        if (event.key === "Tab") {
+        if (event.key === 'Tab') {
             this.handleTabNavigation(event);
         }
     }
 
     /**
-     * //  Focus trap for modal accessibility
+     * @Oracode OS1: Focus trap for modal accessibility
+     * 🎯 Purpose: Keep focus within modal during keyboard navigation
      */
     handleTabNavigation(event) {
         const focusableElements = this.modal.querySelectorAll(
@@ -612,76 +556,72 @@ class CreateCollectionModal {
     }
 
     /**
-     * //  Submit button state management
+     * @Oracode OS1: Submit button state management
+     * 🎯 Purpose: Provide clear visual feedback during submission process
      */
     setSubmitButtonState(state) {
-        const defaultText = document.getElementById("submit-text-default");
-        const loadingText = document.getElementById("submit-text-loading");
+        const defaultText = document.getElementById('submit-text-default');
+        const loadingText = document.getElementById('submit-text-loading');
 
         switch (state) {
-            case "loading":
+            case 'loading':
                 this.submitButton.disabled = true;
-                defaultText.classList.add("hidden");
-                loadingText.classList.remove("hidden");
-                loadingText.classList.add("flex");
+                defaultText.classList.add('hidden');
+                loadingText.classList.remove('hidden');
+                loadingText.classList.add('flex');
                 break;
 
-            case "default":
+            case 'default':
             default:
                 this.submitButton.disabled = false;
-                defaultText.classList.remove("hidden");
-                loadingText.classList.add("hidden");
-                loadingText.classList.remove("flex");
+                defaultText.classList.remove('hidden');
+                loadingText.classList.add('hidden');
+                loadingText.classList.remove('flex');
                 break;
         }
     }
 
     /**
-     * //  Display field-specific validation errors
+     * @Oracode OS1: Display field-specific validation errors
+     * 🎯 Purpose: Show contextual error messages for form fields
      */
     displayFieldError(fieldName, message) {
         const errorContainer = document.getElementById(`${fieldName}-error`);
         if (errorContainer) {
             errorContainer.textContent = message;
-            errorContainer.classList.remove("hidden");
+            errorContainer.classList.remove('hidden');
         }
 
         // Add error styling to input
         const input = document.getElementById(fieldName);
         if (input) {
-            input.classList.add(
-                "border-red-500",
-                "focus:border-red-500",
-                "focus:ring-red-500"
-            );
+            input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
         }
     }
 
     /**
-     * //  Clear field-specific errors
+     * @Oracode OS1: Clear field-specific errors
+     * 🎯 Purpose: Remove error states from form fields
      */
     clearFieldError(fieldName) {
         const errorContainer = document.getElementById(`${fieldName}-error`);
         if (errorContainer) {
-            errorContainer.classList.add("hidden");
+            errorContainer.classList.add('hidden');
         }
 
         // Remove error styling from input
         const input = document.getElementById(fieldName);
         if (input) {
-            input.classList.remove(
-                "border-red-500",
-                "focus:border-red-500",
-                "focus:ring-red-500"
-            );
+            input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
         }
     }
 
     /**
-     * //  Display validation errors from server
+     * @Oracode OS1: Display validation errors from server
+     * 🎯 Purpose: Show server-side validation feedback
      */
     displayValidationErrors(errors) {
-        Object.keys(errors).forEach((fieldName) => {
+        Object.keys(errors).forEach(fieldName => {
             const messages = errors[fieldName];
             if (messages && messages.length > 0) {
                 this.displayFieldError(fieldName, messages[0]);
@@ -690,98 +630,95 @@ class CreateCollectionModal {
     }
 
     /**
-     * //  Display global error messages
+     * @Oracode OS1: Display global error messages
+     * 🎯 Purpose: Show application-level error feedback
      */
     displayGlobalError(message) {
-        const errorContainer = document.getElementById("global-error-message");
-        const errorText = document.getElementById("global-error-text");
+        const errorContainer = document.getElementById('global-error-message');
+        const errorText = document.getElementById('global-error-text');
 
         if (errorContainer && errorText) {
             errorText.textContent = message;
-            errorContainer.classList.remove("hidden");
+            errorContainer.classList.remove('hidden');
         }
     }
 
     /**
-     * //  Clear all error states
+     * @Oracode OS1: Clear all error states
+     * 🎯 Purpose: Reset form to clean state
      */
     clearErrors() {
         // Clear field errors
-        this.clearFieldError("collection_name");
+        this.clearFieldError('collection_name');
 
         // Clear global error
-        const globalError = document.getElementById("global-error-message");
+        const globalError = document.getElementById('global-error-message');
         if (globalError) {
-            globalError.classList.add("hidden");
+            globalError.classList.add('hidden');
         }
     }
 
     /**
-     * //  Load and display user collection statistics
+     * @Oracode OS1: Load and display user collection statistics
+     * 🎯 Purpose: Provide contextual information about user's collection usage
      */
     loadUserStats() {
-        const userDataScript = document.getElementById("user-collection-data");
-        const statsElement = document.getElementById("user-collection-stats");
+        const userDataScript = document.getElementById('user-collection-data');
+        const statsElement = document.getElementById('user-collection-stats');
 
         if (userDataScript && statsElement) {
             try {
                 const userData = JSON.parse(userDataScript.textContent);
-                const remaining =
-                    userData.max_allowed - userData.total_collections;
+                const remaining = userData.max_allowed - userData.total_collections;
 
                 statsElement.textContent = `${userData.total_collections}/${userData.max_allowed} collections used`;
 
                 if (remaining <= 2) {
-                    statsElement.classList.add("text-yellow-400");
+                    statsElement.classList.add('text-yellow-400');
                 }
                 if (remaining <= 0) {
-                    statsElement.classList.add("text-red-400");
+                    statsElement.classList.add('text-red-400');
                 }
+
             } catch (error) {
-                console.warn(
-                    "[CreateCollectionModal] Failed to load user stats:",
-                    error
-                );
+                console.warn('[CreateCollectionModal] Failed to load user stats:', error);
             }
         }
     }
 
     /**
-     * //  Analytics event tracking
+     * @Oracode OS1: Analytics event tracking
+     * 🎯 Purpose: Track user interactions for system improvement
      */
     trackEvent(eventName, data = {}) {
-        // Recursive Evolution - Track for improvement
+        // OS1 Pillar 5: Recursive Evolution - Track for improvement
         try {
             // Integration with analytics platform (Google Analytics, etc.)
-            if (typeof gtag !== "undefined") {
-                gtag("event", eventName, {
-                    event_category: "Collection Modal",
-                    ...data,
+            if (typeof gtag !== 'undefined') {
+                gtag('event', eventName, {
+                    event_category: 'Collection Modal',
+                    ...data
                 });
             }
 
             // Custom analytics endpoint if available
-            if (
-                window.analytics &&
-                typeof window.analytics.track === "function"
-            ) {
+            if (window.analytics && typeof window.analytics.track === 'function') {
                 window.analytics.track(eventName, data);
             }
 
             // Console logging for development
-            if (process.env.NODE_ENV === "development") {
+            if (process.env.NODE_ENV === 'development') {
                 console.info(`[Analytics] ${eventName}:`, data);
             }
+
         } catch (error) {
-            console.warn(
-                "[CreateCollectionModal] Analytics tracking failed:",
-                error
-            );
+            console.warn('[CreateCollectionModal] Analytics tracking failed:', error);
         }
     }
 
     /**
-     * //  Public API for programmatic control
+     * @Oracode OS1: Public API for programmatic control
+     * 🎯 Purpose: Enable external systems to control modal
      */
     destroy() {
         // OS1 Cleanup: Remove all event listeners and timers
@@ -797,7 +734,7 @@ class CreateCollectionModal {
             this.close();
         }
 
-        console.info("[CreateCollectionModal] Destroyed successfully");
+        console.info('[CreateCollectionModal] Destroyed successfully');
     }
 }
 
@@ -805,7 +742,7 @@ class CreateCollectionModal {
 let createCollectionModalInstance = null;
 
 // Initialize when DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
     createCollectionModalInstance = new CreateCollectionModal();
 });
 
@@ -813,10 +750,10 @@ document.addEventListener("DOMContentLoaded", () => {
 window.CreateCollectionModal = {
     open: () => createCollectionModalInstance?.open(),
     close: () => createCollectionModalInstance?.close(),
-    instance: () => createCollectionModalInstance,
+    instance: () => createCollectionModalInstance
 };
 
 // Export for module systems
-if (typeof module !== "undefined" && module.exports) {
+if (typeof module !== 'undefined' && module.exports) {
     module.exports = CreateCollectionModal;
 }

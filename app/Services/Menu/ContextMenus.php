@@ -58,7 +58,7 @@ class ContextMenus {
         $menus = [];
 
         Log::channel('upload')->info('🔍 CONTEXT MENUS - PA CONTEXT DETECTED', [
-        'context' => $context,
+            'context' => $context,
         ]);
 
         switch ($context) {

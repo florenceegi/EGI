@@ -1255,7 +1255,7 @@ return [
             'notify_slack' => false,
             'msg_to' => 'sweet-alert', // Redirect to login
         ],
-        
+
         'PA_ACT_ROLE_REQUIRED' => [ // User lacks PA entity role
             'type' => 'error',
             'blocking' => 'blocking',
@@ -1266,7 +1266,7 @@ return [
             'notify_slack' => false,
             'msg_to' => 'sweet-alert',
         ],
-        
+
         'PA_ACT_VALIDATION_FAILED' => [ // Metadata validation failed
             'type' => 'error',
             'blocking' => 'semi-blocking',
@@ -1277,7 +1277,7 @@ return [
             'notify_slack' => false,
             'msg_to' => 'div', // Show near form fields
         ],
-        
+
         'PA_ACT_INVALID_FILE' => [ // Invalid file type or size
             'type' => 'error',
             'blocking' => 'semi-blocking',
@@ -1288,7 +1288,7 @@ return [
             'notify_slack' => false,
             'msg_to' => 'div',
         ],
-        
+
         'PA_ACT_INVALID_SIGNATURE' => [ // QES/PAdES signature validation failed
             'type' => 'error',
             'blocking' => 'blocking',
@@ -1299,7 +1299,7 @@ return [
             'notify_slack' => false,
             'msg_to' => 'sweet-alert',
         ],
-        
+
         'PA_ACT_COLLECTION_FAILED' => [ // Collection (fascicolo) creation/management failed
             'type' => 'critical',
             'blocking' => 'blocking',
@@ -1310,7 +1310,7 @@ return [
             'notify_slack' => true,
             'msg_to' => 'sweet-alert',
         ],
-        
+
         'PA_ACT_UPLOAD_FAILED' => [ // General upload failure
             'type' => 'critical',
             'blocking' => 'blocking',
@@ -1321,7 +1321,7 @@ return [
             'notify_slack' => true,
             'msg_to' => 'sweet-alert',
         ],
-        
+
         'PA_ACT_BLOCKCHAIN_ANCHOR_FAILED' => [ // Blockchain anchoring failed
             'type' => 'critical',
             'blocking' => 'not', // Non-blocking: document saved, anchoring retry later
@@ -1332,7 +1332,7 @@ return [
             'notify_slack' => true,
             'msg_to' => 'log-only', // User sees warning in UI, not blocking
         ],
-        
+
         'PA_ACT_MERKLE_VERIFICATION_FAILED' => [ // Merkle proof verification failed (public verification)
             'type' => 'critical',
             'blocking' => 'blocking',

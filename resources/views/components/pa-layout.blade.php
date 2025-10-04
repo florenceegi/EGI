@@ -32,7 +32,7 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/components/create-collection-modal.js'])
     @livewireStyles
 
     <script>
@@ -231,6 +231,31 @@
             <x-enterprise-sidebar logo="FlorenceEGI" badge="Ente PA" theme="pa" />
         </div>
     </div>
+
+    <!-- Collection Creation Modal (universal terminology system) -->
+    @php
+        $collectionTerms = \App\Services\Terminology\CollectionTerminologyService::getTerminology(auth()->user());
+        // Debug: Log terminology
+        logger()->info('[PA Layout] Collection Terminology', [
+            'user_id' => auth()->id(),
+            'usertype' => auth()->user()->usertype ?? 'unknown',
+            'roles' => auth()->user()->getRoleNames()->toArray(),
+            'terminology' => $collectionTerms
+        ]);
+    @endphp
+    <x-create-collection-modal :terminology="$collectionTerms" />
+
+    <!-- Debug: Show terminology config in console -->
+    <script>
+        console.log('[PA Layout] Terminology Config:', {
+            user_id: {{ auth()->id() }},
+            usertype: '{{ auth()->user()->usertype ?? "unknown" }}',
+            roles: @json(auth()->user()->getRoleNames()->toArray()),
+            terminology: @json($collectionTerms)
+        });
+    </script>
+
+    @stack('scripts')
     {{ $scripts ?? '' }}
 </body>
 

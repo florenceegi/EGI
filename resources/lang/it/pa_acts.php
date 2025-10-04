@@ -188,14 +188,14 @@ return [
         'title' => 'Atti Amministrativi Tokenizzati',
         'subtitle' => 'Gestisci gli atti della tua Pubblica Amministrazione con certificazione blockchain',
         'upload_new_act' => 'Carica Nuovo Atto',
-        
+
         // Stats
         'stats' => [
             'total' => 'Totale Atti',
             'anchored' => 'Ancorati su Blockchain',
             'pending' => 'In Attesa di Ancoraggio'
         ],
-        
+
         // Filters
         'filters' => [
             'search' => 'Cerca',
@@ -211,7 +211,7 @@ return [
             'apply' => 'Applica Filtri',
             'reset' => 'Resetta'
         ],
-        
+
         // Table
         'table' => [
             'protocol' => 'Protocollo',
@@ -220,19 +220,19 @@ return [
             'status' => 'Stato',
             'actions' => 'Azioni'
         ],
-        
+
         // Status
         'status' => [
             'anchored' => 'Ancorato',
             'pending' => 'In Attesa'
         ],
-        
+
         // Actions
         'actions' => [
             'view' => 'Visualizza',
             'view_detail' => 'Visualizza Dettaglio'
         ],
-        
+
         // Empty state
         'empty' => [
             'title' => 'Nessun Atto Trovato',
@@ -246,13 +246,13 @@ return [
         'page_title' => 'Atto :protocol',
         'back_to_list' => 'Torna alla Lista',
         'protocol_date' => 'Data Protocollo',
-        
+
         // Status
         'status' => [
             'anchored' => 'Ancorato su Blockchain',
             'pending' => 'In Attesa di Ancoraggio'
         ],
-        
+
         // Metadata section
         'metadata' => [
             'title' => 'Metadati Documento',
@@ -261,7 +261,7 @@ return [
             'upload_date' => 'Data Caricamento',
             'entity' => 'Ente'
         ],
-        
+
         // Signature section
         'signature' => [
             'title' => 'Firma Digitale',
@@ -273,7 +273,7 @@ return [
             'certificate_issuer' => 'Emittente Certificato',
             'timestamp' => 'Data e Ora Firma'
         ],
-        
+
         // Blockchain section
         'blockchain' => [
             'title' => 'Dati Blockchain',
@@ -286,7 +286,7 @@ return [
             'pending_title' => 'Ancoraggio in Corso',
             'pending_description' => 'Il documento sarà ancorato su blockchain nel prossimo batch (entro 24 ore). Una volta completato, riceverai una notifica e potrai visualizzare i dati blockchain.'
         ],
-        
+
         // Verification section
         'verification' => [
             'title' => 'Verifica Pubblica',
@@ -308,7 +308,7 @@ return [
         'protocol_date' => 'Data Protocollo',
         'document_title' => 'Titolo Documento',
         'entity' => 'Ente Emittente',
-        
+
         // Verification results
         'verified' => [
             'title' => 'DOCUMENTO VERIFICATO SU BLOCKCHAIN',
@@ -325,14 +325,14 @@ return [
             'message' => 'Il codice di verifica inserito non corrisponde a nessun atto tokenizzato. Verifica di aver copiato correttamente il codice.',
             'code_shown' => 'Codice inserito'
         ],
-        
+
         // Digital signature
         'digital_signature' => 'Firma Digitale',
         'signer_name' => 'Firmatario',
         'signer_role' => 'Ruolo',
         'certificate_issuer' => 'Emittente Certificato',
         'signature_timestamp' => 'Data e Ora Firma',
-        
+
         // Blockchain data
         'blockchain_data' => 'Dati Blockchain',
         'transaction_id' => 'ID Transazione',
@@ -340,13 +340,13 @@ return [
         'anchored_at' => 'Ancorato il',
         'explorer' => 'Explorer',
         'view_explorer' => 'Visualizza su Algorand Explorer',
-        
+
         // Trust indicators
         'signature_valid' => 'Firma Valida',
         'qes_certificate' => 'Certificato QES',
         'blockchain_confirmed' => 'Confermato su Blockchain',
         'algorand_network' => 'Rete Algorand',
-        
+
         // How to verify
         'how_to' => [
             'title' => 'Come Verificare l\'Autenticità',

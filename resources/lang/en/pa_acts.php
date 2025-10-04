@@ -188,14 +188,14 @@ return [
         'title' => 'Tokenized Administrative Acts',
         'subtitle' => 'Manage your Public Administration acts with blockchain certification',
         'upload_new_act' => 'Upload New Act',
-        
+
         // Stats
         'stats' => [
             'total' => 'Total Acts',
             'anchored' => 'Anchored on Blockchain',
             'pending' => 'Pending Anchoring'
         ],
-        
+
         // Filters
         'filters' => [
             'search' => 'Search',
@@ -211,7 +211,7 @@ return [
             'apply' => 'Apply Filters',
             'reset' => 'Reset'
         ],
-        
+
         // Table
         'table' => [
             'protocol' => 'Protocol',
@@ -220,19 +220,19 @@ return [
             'status' => 'Status',
             'actions' => 'Actions'
         ],
-        
+
         // Status
         'status' => [
             'anchored' => 'Anchored',
             'pending' => 'Pending'
         ],
-        
+
         // Actions
         'actions' => [
             'view' => 'View',
             'view_detail' => 'View Detail'
         ],
-        
+
         // Empty state
         'empty' => [
             'title' => 'No Acts Found',
@@ -246,13 +246,13 @@ return [
         'page_title' => 'Act :protocol',
         'back_to_list' => 'Back to List',
         'protocol_date' => 'Protocol Date',
-        
+
         // Status
         'status' => [
             'anchored' => 'Anchored on Blockchain',
             'pending' => 'Pending Anchoring'
         ],
-        
+
         // Metadata section
         'metadata' => [
             'title' => 'Document Metadata',
@@ -261,7 +261,7 @@ return [
             'upload_date' => 'Upload Date',
             'entity' => 'Entity'
         ],
-        
+
         // Signature section
         'signature' => [
             'title' => 'Digital Signature',
@@ -273,7 +273,7 @@ return [
             'certificate_issuer' => 'Certificate Issuer',
             'timestamp' => 'Signature Timestamp'
         ],
-        
+
         // Blockchain section
         'blockchain' => [
             'title' => 'Blockchain Data',
@@ -286,7 +286,7 @@ return [
             'pending_title' => 'Anchoring in Progress',
             'pending_description' => 'The document will be anchored on blockchain in the next batch (within 24 hours). Once completed, you will receive a notification and will be able to view blockchain data.'
         ],
-        
+
         // Verification section
         'verification' => [
             'title' => 'Public Verification',
@@ -308,7 +308,7 @@ return [
         'protocol_date' => 'Protocol Date',
         'document_title' => 'Document Title',
         'entity' => 'Issuing Entity',
-        
+
         // Verification results
         'verified' => [
             'title' => 'DOCUMENT VERIFIED ON BLOCKCHAIN',
@@ -325,14 +325,14 @@ return [
             'message' => 'The verification code entered does not match any tokenized act. Please verify you copied the code correctly.',
             'code_shown' => 'Code entered'
         ],
-        
+
         // Digital signature
         'digital_signature' => 'Digital Signature',
         'signer_name' => 'Signer',
         'signer_role' => 'Role',
         'certificate_issuer' => 'Certificate Issuer',
         'signature_timestamp' => 'Signature Timestamp',
-        
+
         // Blockchain data
         'blockchain_data' => 'Blockchain Data',
         'transaction_id' => 'Transaction ID',
@@ -340,13 +340,13 @@ return [
         'anchored_at' => 'Anchored At',
         'explorer' => 'Explorer',
         'view_explorer' => 'View on Algorand Explorer',
-        
+
         // Trust indicators
         'signature_valid' => 'Valid Signature',
         'qes_certificate' => 'QES Certificate',
         'blockchain_confirmed' => 'Confirmed on Blockchain',
         'algorand_network' => 'Algorand Network',
-        
+
         // How to verify
         'how_to' => [
             'title' => 'How to Verify Authenticity',

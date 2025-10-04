@@ -153,13 +153,22 @@ class PaActUploadController extends Controller {
             'atto' => __('pa_acts.doc_types.atto.label'),
         ];
 
-        // Get PA entity collections
+        // Get PA entity collections (all types for now - PA can organize acts in any collection)
         $collections = $user->collections()
-            ->where('type', 'artwork') // PA collections use artwork type
+            ->whereNull('removed_at')
+            ->where('status', '!=', 'removed')
             ->orderBy('collection_name')
             ->get();
 
-        return view('pa.acts.upload', compact('docTypes', 'collections'));
+        $this->logger->info('[PaActUploadController] Collections loaded', [
+            'collections_count' => $collections->count(),
+            'collections' => $collections->pluck('id', 'collection_name')->toArray()
+        ]);
+
+        // PA-specific terminology
+        $collectionLabel = 'Fascicolo';
+
+        return view('pa.acts.upload', compact('docTypes', 'collections', 'collectionLabel'));
     }
 
     /**

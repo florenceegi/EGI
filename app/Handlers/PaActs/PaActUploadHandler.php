@@ -226,12 +226,11 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @gdpr-compliant Audit logging, CAD legal basis, minimal data processing
  * @cad-compliant Implements CAD Art. 20-21 requirements
  */
-class PaActUploadHandler
-{
+class PaActUploadHandler {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected PaActService $paActService;
-    
+
     /**
      * Constructor - Dependency Injection
      * 
@@ -248,7 +247,7 @@ class PaActUploadHandler
         $this->errorManager = $errorManager;
         $this->paActService = $paActService;
     }
-    
+
     /**
      * Handle PA act upload (main entry point)
      * 
@@ -269,45 +268,44 @@ class PaActUploadHandler
      * }
      * ```
      */
-    public function handlePaActUpload(Request $request): JsonResponse
-    {
+    public function handlePaActUpload(Request $request): JsonResponse {
         $operationId = Str::uuid()->toString();
         $logContext = [
             'handler' => static::class,
             'operation_id' => $operationId,
             'method' => __FUNCTION__
         ];
-        
+
         try {
             $this->logger->info('[PaActUploadHandler] Starting PA act upload', $logContext);
-            
+
             // STEP 1: Authenticate user and check PA role
             $user = $this->authenticateUser();
             $logContext['user_id'] = $user->id;
-            
+
             if (!$this->checkPaRole($user)) {
                 $this->logger->warning('[PaActUploadHandler] User not authorized (not PA entity)', $logContext);
                 return $this->errorManager->handle('PA_ACT_ROLE_REQUIRED', $logContext);
             }
-            
+
             // STEP 2: Validate file input
             $file = $this->validateFileInput($request);
             $logContext['filename'] = $file->getClientOriginalName();
             $logContext['file_size'] = $file->getSize();
-            
+
             // STEP 3: Validate file type (PDF only)
             $this->validatePdfFile($file);
-            
+
             // STEP 4: Validate metadata
             $metadata = $this->validateMetadata($request);
             $logContext['protocol_number'] = $metadata['protocol_number'];
             $logContext['doc_type'] = $metadata['doc_type'];
-            
+
             // STEP 5: Delegate to PaActService
             $this->logger->info('[PaActUploadHandler] Delegating to PaActService', $logContext);
-            
+
             $result = $this->paActService->uploadDocument($file, $metadata, $user);
-            
+
             // STEP 6: Handle service result
             if (!$result['success']) {
                 $this->logger->error('[PaActUploadHandler] Service returned error', [
@@ -315,7 +313,7 @@ class PaActUploadHandler
                     'error' => $result['error'],
                     'message' => $result['message']
                 ]);
-                
+
                 // Map service error to UEM error code
                 $errorCode = $this->mapServiceErrorToUem($result['error']);
                 return $this->errorManager->handle($errorCode, [
@@ -323,14 +321,14 @@ class PaActUploadHandler
                     'service_error' => $result['error']
                 ]);
             }
-            
+
             // STEP 7: Success response
             $this->logger->info('[PaActUploadHandler] PA act uploaded successfully', [
                 ...$logContext,
                 'egi_id' => $result['egi_id'],
                 'public_code' => $result['public_code']
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => $result['message'],
@@ -343,51 +341,48 @@ class PaActUploadHandler
                     'status' => 'pending_anchoring'
                 ]
             ], 200);
-            
         } catch (ValidationException $e) {
             $this->logger->error('[PaActUploadHandler] Validation failed', [
                 ...$logContext,
                 'errors' => $e->errors()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'error' => 'VALIDATION_FAILED',
                 'message' => __('pa_acts.errors.validation_failed'),
                 'errors' => $e->errors()
             ], 422);
-            
         } catch (\Exception $e) {
             $this->logger->error('[PaActUploadHandler] Upload failed', [
                 ...$logContext,
                 'error' => $e->getMessage(),
                 'exception' => get_class($e)
             ]);
-            
+
             return $this->errorManager->handle('PA_ACT_UPLOAD_FAILED', [
                 ...$logContext,
                 'error' => $e->getMessage()
             ], $e);
         }
     }
-    
+
     /**
      * Authenticate user
      * 
      * @return User
      * @throws \Exception If not authenticated
      */
-    protected function authenticateUser(): User
-    {
+    protected function authenticateUser(): User {
         $user = auth()->user();
-        
+
         if (!$user instanceof User) {
             throw new \Exception('User not authenticated');
         }
-        
+
         return $user;
     }
-    
+
     /**
      * Check if user has PA entity role
      * 
@@ -398,21 +393,20 @@ class PaActUploadHandler
      * - Check Spatie permission: 'manage_pa_acts'
      * - Or check role: 'pa_entity'
      */
-    protected function checkPaRole(User $user): bool
-    {
+    protected function checkPaRole(User $user): bool {
         // Check Spatie permission (preferred)
         if (method_exists($user, 'can') && $user->can('manage_pa_acts')) {
             return true;
         }
-        
+
         // Fallback: Check role name
         if (method_exists($user, 'hasRole') && $user->hasRole('pa_entity')) {
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Validate file input from request
      * 
@@ -420,22 +414,21 @@ class PaActUploadHandler
      * @return UploadedFile
      * @throws \Exception If file invalid or missing
      */
-    protected function validateFileInput(Request $request): UploadedFile
-    {
+    protected function validateFileInput(Request $request): UploadedFile {
         if (!$request->hasFile('file')) {
             throw new \Exception('File input missing');
         }
-        
+
         $file = $request->file('file');
-        
+
         if (!$file->isValid()) {
             $uploadError = $file->getError();
             throw new \Exception("Invalid file upload. Error code: {$uploadError}");
         }
-        
+
         return $file;
     }
-    
+
     /**
      * Validate PDF file (extension, MIME type, size)
      * 
@@ -448,10 +441,9 @@ class PaActUploadHandler
      * - MIME types: application/pdf, application/x-pdf, etc.
      * - Max size: 20MB (20 * 1024 * 1024)
      */
-    protected function validatePdfFile(UploadedFile $file): void
-    {
+    protected function validatePdfFile(UploadedFile $file): void {
         $config = config('AllowedFileType.pa_documents');
-        
+
         // Check extension
         $extension = strtolower($file->getClientOriginalExtension());
         if (!in_array($extension, $config['allowed_extensions'])) {
@@ -459,7 +451,7 @@ class PaActUploadHandler
                 'file' => [__('pa_acts.validation.pdf_only')]
             ]);
         }
-        
+
         // Check MIME type
         $mimeType = $file->getMimeType();
         if (!in_array($mimeType, $config['allowed_mime_types'])) {
@@ -467,7 +459,7 @@ class PaActUploadHandler
                 'file' => [__('pa_acts.validation.invalid_pdf')]
             ]);
         }
-        
+
         // Check size
         $maxSize = $config['max_size'];
         if ($file->getSize() > $maxSize) {
@@ -476,7 +468,7 @@ class PaActUploadHandler
             ]);
         }
     }
-    
+
     /**
      * Validate metadata from request
      * 
@@ -491,10 +483,9 @@ class PaActUploadHandler
      * - title: Required, string, max 255
      * - description: Optional, string, max 5000
      */
-    protected function validateMetadata(Request $request): array
-    {
+    protected function validateMetadata(Request $request): array {
         $docTypes = config('AllowedFileType.pa_documents.document_types');
-        
+
         return $request->validate([
             'protocol_number' => ['required', 'string', 'regex:/^\d{1,10}\/\d{4}$/'],
             'protocol_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:today'],
@@ -513,7 +504,7 @@ class PaActUploadHandler
             'description.max' => __('pa_acts.validation.description_max')
         ]);
     }
-    
+
     /**
      * Map service error code to UEM error code
      * 
@@ -526,9 +517,8 @@ class PaActUploadHandler
      * - UPLOAD_FAILED → PA_ACT_UPLOAD_FAILED
      * - DEFAULT → PA_ACT_UPLOAD_FAILED
      */
-    protected function mapServiceErrorToUem(string $serviceError): string
-    {
-        return match($serviceError) {
+    protected function mapServiceErrorToUem(string $serviceError): string {
+        return match ($serviceError) {
             'INVALID_SIGNATURE' => 'PA_ACT_INVALID_SIGNATURE',
             'COLLECTION_SERVICE_ERROR' => 'PA_ACT_COLLECTION_FAILED',
             'UPLOAD_FAILED' => 'PA_ACT_UPLOAD_FAILED',

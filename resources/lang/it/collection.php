@@ -8,6 +8,15 @@
  */
 
 return [
+    // PA Context - Fascicolo terminology
+    'create_new_fascicolo' => 'Crea Nuovo Fascicolo',
+    'fascicolo_modal_subtitle' => 'Organizza gli atti tokenizzati in fascicoli',
+    'fascicolo_name' => 'Nome del Fascicolo',
+    'enter_fascicolo_name' => 'Inserisci il nome del fascicolo...',
+    'create_fascicolo' => 'Crea Fascicolo',
+    'fascicolo_creation_success' => 'Fascicolo Creato con Successo!',
+
+    // Creator Context - Collezione terminology (existing)
     'my_galleries' => 'Le mie Collezioni',
     'create_new_collection' => 'Crea Nuova Collezione',
     'create_modal_subtitle' => 'Inizia il tuo viaggio artistico con una nuova collezione',

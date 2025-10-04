@@ -176,12 +176,11 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @route GET /verify/{public_code} (name: verify.act)
  * @privacy Public data only, GDPR compliant
  */
-class PaActPublicController extends Controller
-{
+class PaActPublicController extends Controller {
     protected UltraLogManager $logger;
     protected PaActService $paActService;
     protected MerkleTreeService $merkleService;
-    
+
     /**
      * Constructor - Dependency Injection
      * 
@@ -197,10 +196,10 @@ class PaActPublicController extends Controller
         $this->logger = $logger;
         $this->paActService = $paActService;
         $this->merkleService = $merkleService;
-        
+
         // No authentication required - public endpoint
     }
-    
+
     /**
      * Display public verification page
      * 
@@ -216,36 +215,35 @@ class PaActPublicController extends Controller
      * EXAMPLE URL:
      * /verify/VER-ABC123XYZ
      */
-    public function verify(string $publicCode): View
-    {
+    public function verify(string $publicCode): View {
         try {
             $this->logger->info('[PaActPublicController] Public verification request', [
                 'public_code' => $publicCode,
                 'ip' => request()->ip(),
                 'user_agent' => request()->userAgent()
             ]);
-            
+
             // STEP 1: Find document
             $egi = $this->paActService->getDocumentByPublicCode($publicCode);
-            
+
             if (!$egi) {
                 $this->logger->warning('[PaActPublicController] Public code not found', [
                     'public_code' => $publicCode
                 ]);
-                
+
                 return view('pa.acts.verify', [
                     'found' => false,
                     'public_code' => $publicCode,
                     'error' => __('pa_acts.verify.not_found')
                 ]);
             }
-            
+
             // STEP 2: Extract public metadata
             $metadata = $this->extractPublicMetadata($egi);
-            
+
             // STEP 3: Verify Merkle proof (if anchored)
             $verificationResult = $this->verifyMerkleProof($egi);
-            
+
             // STEP 4: Log successful verification
             $this->logger->info('[PaActPublicController] Verification completed', [
                 'public_code' => $publicCode,
@@ -253,7 +251,7 @@ class PaActPublicController extends Controller
                 'anchored' => $metadata['anchored'],
                 'verified' => $verificationResult['verified']
             ]);
-            
+
             return view('pa.acts.verify', [
                 'found' => true,
                 'public_code' => $publicCode,
@@ -261,13 +259,12 @@ class PaActPublicController extends Controller
                 'verification' => $verificationResult,
                 'algorand_explorer_url' => $this->getAlgorandExplorerUrl($metadata['anchor_txid'])
             ]);
-            
         } catch (\Exception $e) {
             $this->logger->error('[PaActPublicController] Verification error', [
                 'public_code' => $publicCode,
                 'error' => $e->getMessage()
             ]);
-            
+
             return view('pa.acts.verify', [
                 'found' => false,
                 'public_code' => $publicCode,
@@ -275,7 +272,7 @@ class PaActPublicController extends Controller
             ]);
         }
     }
-    
+
     /**
      * Extract public metadata from EGI
      * 
@@ -290,31 +287,30 @@ class PaActPublicController extends Controller
      * - Signer info (from certificate)
      * - Hash + blockchain data
      */
-    protected function extractPublicMetadata($egi): array
-    {
+    protected function extractPublicMetadata($egi): array {
         $metadata = $egi->metadata ?? [];
         $signature = $metadata['signature_validation'] ?? [];
-        
+
         return [
             // Document info
             'protocol_number' => $metadata['protocol_number'] ?? null,
             'protocol_date' => $metadata['protocol_date'] ?? null,
             'doc_type' => $metadata['doc_type'] ?? null,
             'title' => $egi->title ?? null,
-            
+
             // Entity info
             'entity_name' => $signature['signer_organization'] ?? __('pa_acts.verify.unknown_entity'),
-            
+
             // Signer info (from QES certificate - public data)
             'signer_cn' => $signature['signer_cn'] ?? null,
             'signer_organization' => $signature['signer_organization'] ?? null,
             'signer_role' => $signature['signer_role'] ?? null,
             'signature_timestamp' => $signature['signature_timestamp'] ?? null,
             'cert_issuer' => $signature['cert_issuer'] ?? null,
-            
+
             // Document hash
             'doc_hash' => $metadata['doc_hash'] ?? null,
-            
+
             // Blockchain data
             'anchored' => $metadata['anchored'] ?? false,
             'anchor_txid' => $metadata['anchor_txid'] ?? null,
@@ -322,7 +318,7 @@ class PaActPublicController extends Controller
             'anchored_at' => $metadata['anchored_at'] ?? null
         ];
     }
-    
+
     /**
      * Verify Merkle proof
      * 
@@ -336,10 +332,9 @@ class PaActPublicController extends Controller
      *   'message' => 'Verification success message'
      * ]
      */
-    protected function verifyMerkleProof($egi): array
-    {
+    protected function verifyMerkleProof($egi): array {
         $metadata = $egi->metadata ?? [];
-        
+
         // Not anchored yet
         if (!($metadata['anchored'] ?? false)) {
             return [
@@ -348,12 +343,12 @@ class PaActPublicController extends Controller
                 'message' => __('pa_acts.verify.pending_anchoring')
             ];
         }
-        
+
         // Check Merkle proof data
         $docHash = $metadata['doc_hash'] ?? null;
         $merkleProof = $metadata['merkle_proof'] ?? [];
         $merkleRoot = $metadata['anchor_root'] ?? null;
-        
+
         if (!$docHash || empty($merkleProof) || !$merkleRoot) {
             return [
                 'verified' => false,
@@ -361,25 +356,24 @@ class PaActPublicController extends Controller
                 'message' => __('pa_acts.verify.missing_proof_data')
             ];
         }
-        
+
         // Verify Merkle proof
         try {
             $isValid = $this->merkleService->verifyProof($docHash, $merkleProof, $merkleRoot);
-            
+
             return [
                 'verified' => $isValid,
                 'method' => 'merkle_proof',
-                'message' => $isValid 
+                'message' => $isValid
                     ? __('pa_acts.verify.verified_success')
                     : __('pa_acts.verify.verification_failed')
             ];
-            
         } catch (\Exception $e) {
             $this->logger->error('[PaActPublicController] Merkle verification error', [
                 'egi_id' => $egi->id,
                 'error' => $e->getMessage()
             ]);
-            
+
             return [
                 'verified' => false,
                 'method' => 'merkle_proof',
@@ -387,7 +381,7 @@ class PaActPublicController extends Controller
             ];
         }
     }
-    
+
     /**
      * Get Algorand Explorer URL for transaction
      * 
@@ -397,15 +391,14 @@ class PaActPublicController extends Controller
      * EXAMPLE:
      * https://testnet.algoexplorer.io/tx/ALGO-TX-20250915143022-A1B2C3D4
      */
-    protected function getAlgorandExplorerUrl(?string $txid): ?string
-    {
+    protected function getAlgorandExplorerUrl(?string $txid): ?string {
         if (!$txid) {
             return null;
         }
-        
+
         // Testnet explorer (production uses mainnet)
         $baseUrl = config('services.algorand.explorer_url', 'https://testnet.algoexplorer.io');
-        
+
         return "{$baseUrl}/tx/{$txid}";
     }
 }

@@ -39,35 +39,33 @@ use Illuminate\Support\Facades\Schema;
  *   }
  * }
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('egis', function (Blueprint $table) {
             // PA Act type column (nullable for backward compatibility)
             $table->enum('pa_act_type', [
                 'delibera',
-                'determina', 
+                'determina',
                 'ordinanza',
                 'decreto',
                 'atto'
             ])->nullable()->after('type')->index();
-            
+
             // Protocol number (indexed for fast search)
             $table->string('pa_protocol_number', 50)->nullable()->after('pa_act_type')->index();
-            
+
             // Protocol date (indexed for date range filters)
             $table->date('pa_protocol_date')->nullable()->after('pa_protocol_number')->index();
-            
+
             // Public verification code (indexed for fast lookup)
             $table->string('pa_public_code', 20)->nullable()->after('pa_protocol_date')->unique();
-            
+
             // Anchoring status (for filtering anchored vs pending)
             $table->boolean('pa_anchored')->default(false)->after('pa_public_code')->index();
-            
+
             // Anchor timestamp
             $table->timestamp('pa_anchored_at')->nullable()->after('pa_anchored')->index();
         });
@@ -76,8 +74,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('egis', function (Blueprint $table) {
             $table->dropColumn([
                 'pa_act_type',

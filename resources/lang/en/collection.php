@@ -8,6 +8,15 @@
  */
 
 return [
+    // PA Context - Fascicolo terminology
+    'create_new_fascicolo' => 'Create New Folder',
+    'fascicolo_modal_subtitle' => 'Organize tokenized acts into folders',
+    'fascicolo_name' => 'Folder Name',
+    'enter_fascicolo_name' => 'Enter folder name...',
+    'create_fascicolo' => 'Create Folder',
+    'fascicolo_creation_success' => 'Folder Created Successfully!',
+
+    // Creator Context - Collection terminology (existing)
     'my_galleries' => 'My Galleries',
     'create_new_collection' => 'Create New Collection',
     'create_modal_subtitle' => 'Start your artistic journey with a new collection',
