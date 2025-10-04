@@ -194,6 +194,64 @@ class EgiController extends Controller {
     }
 
     /**
+     * @Oracode Method: Show EGI Edit Form (Service Layer)
+     * 🎯 Purpose: Display EGI edit form with pre-populated data
+     * 📤 Output: Role-based edit view with EGI data and user collections
+     * 🧱 Core Logic: ViewService routes to correct form + Spatie authorization
+     *
+     * @param Egi $egi EGI model instance (route model binding)
+     * @return View|RedirectResponse
+     */
+    public function edit(Egi $egi): View | RedirectResponse {
+        try {
+            // Authentication required
+            if (!FegiAuth::check()) {
+                return redirect()->route('login')
+                    ->with('error', __('errors.authentication_required'));
+            }
+
+            $user = FegiAuth::user();
+
+            // Check Spatie permission
+            if (!$user->can('update_EGI')) {
+                return redirect()->back()
+                    ->with('error', __('errors.unauthorized_action'));
+            }
+
+            // Check ownership via EgiService
+            if (!$this->egiService->canManageEgi($user, $egi)) {
+                return redirect()->back()
+                    ->with('error', __('errors.unauthorized_egi_edit'));
+            }
+
+            // Get user collections (only artwork type for MVP)
+            $collections = $user->collections()
+                ->where('type', 'artwork')
+                ->orderBy('name')
+                ->get();
+
+            // ViewService determines correct view based on user role
+            $view = $this->viewService->getViewForRole($user, 'edit');
+
+            // ULM logging
+            $this->logger->info('EGI_EDIT_FORM_ACCESSED', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'user_role' => $user->roles->pluck('name')->first(),
+                'view' => $view,
+                'collections_count' => $collections->count(),
+            ]);
+
+            return view($view, compact('egi', 'collections'));
+        } catch (\Exception $e) {
+            return $this->errorManager->handle('EGI_EDIT_FORM_ERROR', [
+                'egi_id' => $egi->id,
+                'user_id' => FegiAuth::id(),
+            ], $e);
+        }
+    }
+
+    /**
      * @Oracode Method: Show EGI Detail (Service Layer)
      * 🎯 Purpose: Display EGI detail page with conditional CRUD interface
      * 📤 Output: Role-based view with EGI data and CRUD permissions
