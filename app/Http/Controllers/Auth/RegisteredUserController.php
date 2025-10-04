@@ -15,6 +15,7 @@ use App\Services\Gdpr\ConsentService;
 use App\Services\Gdpr\AuditLogService;
 use App\Services\Gdpr\LegalContentService;
 use App\Services\CollectionService;
+use App\Services\Auth\AuthRedirectService;
 use Ultra\EgiModule\Contracts\WalletServiceInterface;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -52,6 +53,7 @@ class RegisteredUserController extends Controller {
         protected WalletServiceInterface $walletService,
         protected UserRoleServiceInterface $userRoleService,
         protected LegalContentService $legalContentService,
+        protected AuthRedirectService $authRedirectService
 
     ) {
     }
@@ -171,8 +173,8 @@ class RegisteredUserController extends Controller {
                 'ecosystem_created' => $result['ecosystem_created']
             ]);
 
-            // Use configurable redirect route from config/app.php
-            $redirectRoute = config('app.redirect_to_url_after_register', 'home');
+            // Use AuthRedirectService for usertype-based redirect
+            $redirectRoute = $this->authRedirectService->getRedirectRoute($result['user']);
 
             return redirect()->route($redirectRoute)
                 ->with('success', $successMessage)
