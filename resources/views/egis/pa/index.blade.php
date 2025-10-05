@@ -59,62 +59,61 @@
                 <div class="flex-1">
                     <label for="search" class="mb-2 block text-sm font-semibold text-[#1B365D]">
                         <span class="text-base align-middle material-symbols-outlined">search</span>
-                        {{ __('pa_heritage.search_placeholder') }}
+                        {{ __('pa_heritage.filter_search_label') }}
                     </label>
                     <input type="text" id="search" name="search" value="{{ request('search') }}"
-                        placeholder="Inserisci il termine {{ __('pa_heritage.of_items') }} ricerca..."
+                        placeholder="{{ __('pa_heritage.filter_search_placeholder') }}"
                         class="w-full rounded-lg border-2 border-gray-300 px-4 py-2.5 outline-none transition-all focus:border-[#D4A574] focus:ring-2 focus:ring-[#D4A574]/20" />
                 </div>
 
                 <div class="w-full md:w-64">
                     <label for="coa_status" class="mb-2 block text-sm font-semibold text-[#1B365D]">
                         <span class="text-base align-middle material-symbols-outlined">verified</span>
-                        Stato CoA
+                        {{ __('pa_heritage.filter_coa_status_label') }}
                     </label>
                     <select id="coa_status" name="coa_status"
                         class="w-full rounded-lg border-2 border-gray-300 px-4 py-2.5 outline-none transition-all focus:border-[#D4A574] focus:ring-2 focus:ring-[#D4A574]/20">
-                        <option value="">Tutti gli stati</option>
-                        <option value="valid" {{ request('coa_status') === 'valid' ? 'selected' : '' }}>✓ CoA Valido
+                        <option value="">{{ __('pa_heritage.filter_all_states') }}</option>
+                        <option value="valid" {{ request('coa_status') === 'valid' ? 'selected' : '' }}>{{ __('pa_heritage.filter_coa_valid') }}
                         </option>
-                        <option value="revoked" {{ request('coa_status') === 'revoked' ? 'selected' : '' }}>✗ CoA
-                            Revocato</option>
-                        <option value="pending" {{ request('coa_status') === 'pending' ? 'selected' : '' }}>⏳ In Attesa
+                        <option value="revoked" {{ request('coa_status') === 'revoked' ? 'selected' : '' }}>{{ __('pa_heritage.filter_coa_revoked') }}</option>
+                        <option value="pending" {{ request('coa_status') === 'pending' ? 'selected' : '' }}>{{ __('pa_heritage.filter_coa_pending') }}
                         </option>
-                        <option value="no_coa" {{ request('coa_status') === 'no_coa' ? 'selected' : '' }}>− Nessun CoA
+                        <option value="no_coa" {{ request('coa_status') === 'no_coa' ? 'selected' : '' }}>{{ __('pa_heritage.filter_no_coa') }}
                         </option>
                     </select>
                 </div>
             </div>
 
             <div class="flex flex-col gap-3 sm:flex-row">
-                <x-pa.pa-action-button label="Applica Filtri" type="submit" icon="filter_alt" variant="primary"
+                <x-pa.pa-action-button :label="__('pa_heritage.btn_apply_filters')" type="submit" icon="filter_alt" variant="primary"
                     size="md" />
                 @if (request()->hasAny(['search', 'coa_status']))
-                    <x-pa.pa-action-button label="Azzera Filtri" href="{{ route('pa.heritage.index') }}"
+                    <x-pa.pa-action-button :label="__('pa_heritage.btn_reset_filters')" href="{{ route('pa.heritage.index') }}"
                         icon="filter_alt_off" variant="outline" size="md" />
                 @endif
                 <div class="sm:ml-auto">
-                    <x-pa.pa-action-button label="Nuovo Bene" href="#" icon="add_circle" variant="success"
+                    <x-pa.pa-action-button :label="__('pa_heritage.btn_new_item')" href="#" icon="add_circle" variant="success"
                         size="md" />
                 </div>
             </div>
 
             @if (request()->hasAny(['search', 'coa_status']))
                 <div class="pt-4 border-t border-gray-200">
-                    <p class="mb-2 text-sm font-semibold text-gray-600">Filtri Attivi:</p>
+                    <p class="mb-2 text-sm font-semibold text-gray-600">{{ __('pa_heritage.active_filters') }}</p>
                     <div class="flex flex-wrap gap-2">
                         @if (request('search'))
                             <span
                                 class="inline-flex items-center gap-1 rounded-full bg-[#1B365D]/10 px-3 py-1 text-sm font-medium text-[#1B365D]">
                                 <span class="text-sm material-symbols-outlined">search</span>
-                                Ricerca: "{{ request('search') }}"
+                                {{ __('pa_heritage.filter_search_term') }} "{{ request('search') }}"
                             </span>
                         @endif
                         @if (request('coa_status'))
                             <span
                                 class="inline-flex items-center gap-1 rounded-full bg-[#D4A574]/10 px-3 py-1 text-sm font-medium text-[#1B365D]">
                                 <span class="text-sm material-symbols-outlined">verified</span>
-                                Stato: {{ ucfirst(str_replace('_', ' ', request('coa_status'))) }}
+                                {{ __('pa_heritage.filter_status_term') }} {{ ucfirst(str_replace('_', ' ', request('coa_status'))) }}
                             </span>
                         @endif
                     </div>
@@ -152,21 +151,17 @@
         <div class="p-12 text-center bg-white shadow-md rounded-xl">
             <span class="block mb-4 text-gray-300 material-symbols-outlined text-8xl">inventory_2</span>
             @if (request()->hasAny(['search', 'coa_status']))
-                <h3 class="mb-3 text-2xl font-bold text-[#1B365D]">Nessun risultato trovato</h3>
-                <p class="mb-6 text-gray-600">Non ci sono {{ __('pa_heritage.cultural_assets') }} che corrispondono ai
-                    filtri applicati. Prova a
-                    modificare i criteri {{ __('pa_heritage.of_items') }} ricerca.</p>
-                <x-pa.pa-action-button label="Azzera Filtri" href="{{ route('pa.heritage.index') }}"
+                <h3 class="mb-3 text-2xl font-bold text-[#1B365D]">{{ __('pa_heritage.no_results_title') }}</h3>
+                <p class="mb-6 text-gray-600">{{ __('pa_heritage.no_results_message') }}</p>
+                <x-pa.pa-action-button :label="__('pa_heritage.btn_reset_filters')" href="{{ route('pa.heritage.index') }}"
                     icon="filter_alt_off" variant="secondary" size="md" />
             @else
-                <h3 class="mb-3 text-2xl font-bold text-[#1B365D]">Nessun bene culturale catalogato</h3>
-                <p class="mb-6 text-gray-600">Il tuo ente non ha ancora caricato
-                    {{ __('pa_heritage.cultural_assets') }} nel sistema. Inizia
-                    creando la tua prima collezione {{ __('pa_heritage.of_items') }} patrimonio.</p>
+                <h3 class="mb-3 text-2xl font-bold text-[#1B365D]">{{ __('pa_heritage.no_items_cataloged') }}</h3>
+                <p class="mb-6 text-gray-600">{{ __('pa_heritage.no_items_loaded') }}</p>
                 <div class="flex flex-col justify-center gap-3 sm:flex-row">
-                    <x-pa.pa-action-button label="{{ __('pa_heritage.btn_create_collection') }}" href="#"
+                    <x-pa.pa-action-button :label="__('pa_heritage.btn_create_collection')" href="#"
                         icon="create_new_folder" variant="primary" size="lg" />
-                    <x-pa.pa-action-button label="Guida Introduttiva" href="#" icon="help" variant="outline"
+                    <x-pa.pa-action-button :label="__('pa_heritage.btn_intro_guide')" href="#" icon="help" variant="outline"
                         size="lg" />
                 </div>
             @endif
@@ -179,22 +174,22 @@
             <div class="p-4 text-center bg-white rounded-lg shadow">
                 <p class="text-2xl font-bold text-[#2D5016]">
                     {{ $egis->where(fn($egi) => $egi->coa && $egi->coa->status === 'valid')->count() }}</p>
-                <p class="mt-1 text-sm text-gray-600">CoA Validi</p>
+                <p class="mt-1 text-sm text-gray-600">{{ __('pa_heritage.footer_coa_valid') }}</p>
             </div>
             <div class="p-4 text-center bg-white rounded-lg shadow">
                 <p class="text-2xl font-bold text-[#E67E22]">
                     {{ $egis->where(fn($egi) => $egi->coa && $egi->coa->status === 'pending')->count() }}</p>
-                <p class="mt-1 text-sm text-gray-600">In Attesa</p>
+                <p class="mt-1 text-sm text-gray-600">{{ __('pa_heritage.footer_pending') }}</p>
             </div>
             <div class="p-4 text-center bg-white rounded-lg shadow">
                 <p class="text-2xl font-bold text-[#C13120]">
                     {{ $egis->where(fn($egi) => $egi->coa && $egi->coa->status === 'revoked')->count() }}</p>
-                <p class="mt-1 text-sm text-gray-600">Revocati</p>
+                <p class="mt-1 text-sm text-gray-600">{{ __('pa_heritage.footer_revoked') }}</p>
             </div>
             <div class="p-4 text-center bg-white rounded-lg shadow">
                 <p class="text-2xl font-bold text-[#6B6B6B]">{{ $egis->where(fn($egi) => !$egi->coa)->count() }}
                 </p>
-                <p class="mt-1 text-sm text-gray-600">Senza CoA</p>
+                <p class="mt-1 text-sm text-gray-600">{{ __('pa_heritage.footer_no_coa') }}</p>
             </div>
         </div>
     @endif

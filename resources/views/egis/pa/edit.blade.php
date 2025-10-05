@@ -87,11 +87,9 @@
                     </path>
                 </svg>
                 <div>
-                    <h3 class="text-sm font-medium text-amber-800">Certificato di Autenticità Attivo</h3>
+                    <h3 class="text-sm font-medium text-amber-800">{{ __('pa_heritage.coa_active_warning_title') }}</h3>
                     <p class="mt-1 text-sm text-amber-700">
-                        Questo bene culturale ha un Certificato di Autenticità (CoA) verificato.
-                        Le modifiche ai dati principali richiederanno una nuova verifica da parte dell'ente
-                        certificatore.
+                        {{ __('pa_heritage.coa_active_warning_message') }}
                     </p>
                 </div>
             </div>
@@ -124,7 +122,7 @@
                 {{-- Collection Selector --}}
                 <div>
                     <label for="collection_id" class="mb-2 block text-sm font-medium text-gray-700">
-                        Collezione di Appartenenza <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_collection_label') }} <span class="text-red-500">*</span>
                     </label>
                     <select id="collection_id" name="collection_id" required
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
@@ -143,10 +141,10 @@
                 {{-- Title --}}
                 <div>
                     <label for="title" class="mb-2 block text-sm font-medium text-gray-700">
-                        Titolo del Bene Culturale <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_title_label') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="title" name="title" value="{{ old('title', $egi->title) }}"
-                        required maxlength="255" placeholder="Es: Statua di David, Palazzo Vecchio, etc."
+                        required maxlength="255" placeholder="{{ __('pa_heritage.field_title_placeholder') }}"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
                     @error('title')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -156,10 +154,10 @@
                 {{-- Artist --}}
                 <div>
                     <label for="artist" class="mb-2 block text-sm font-medium text-gray-700">
-                        Artista / Autore <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_artist_label') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="artist" name="artist" value="{{ old('artist', $egi->artist) }}"
-                        required maxlength="255" placeholder="Es: Michelangelo, Leonardo da Vinci, etc."
+                        required maxlength="255" placeholder="{{ __('pa_heritage.field_artist_placeholder') }}"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
                     @error('artist')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -169,10 +167,10 @@
                 {{-- Description --}}
                 <div>
                     <label for="description" class="mb-2 block text-sm font-medium text-gray-700">
-                        Descrizione Dettagliata <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_description_label') }} <span class="text-red-500">*</span>
                     </label>
                     <textarea id="description" name="description" rows="6" required
-                        placeholder="Inserisci una descrizione dettagliata del bene culturale"
+                        placeholder="{{ __('pa_heritage.field_description_placeholder_edit') }}"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">{{ old('description', $egi->description) }}</textarea>
                     @error('description')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -182,11 +180,11 @@
                 {{-- Creation Date --}}
                 <div>
                     <label for="creation_date" class="mb-2 block text-sm font-medium text-gray-700">
-                        Anno di Creazione / Datazione <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_creation_date') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="creation_date" name="creation_date"
                         value="{{ old('creation_date', $egi->creation_date) }}" required
-                        placeholder="Es: 1504, XVI secolo, 1450-1460, etc." maxlength="100"
+                        placeholder="{{ __('pa_heritage.field_creation_date_placeholder') }}" maxlength="100"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
                     @error('creation_date')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -196,7 +194,7 @@
                 {{-- Current Image & Upload New --}}
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700">
-                        Immagine Principale
+                        {{ __('pa_heritage.field_image_label') }}
                     </label>
 
                     {{-- Current Image Preview --}}
@@ -222,12 +220,12 @@
                             </svg>
 
                             <p class="mb-1 text-sm font-medium text-gray-700" x-show="!fileName">
-                                Clicca per caricare una nuova immagine (opzionale)
+                                {{ __('pa_heritage.field_upload_new_optional') }}
                             </p>
                             <p class="mb-1 text-sm font-medium text-[#1B365D]" x-show="fileName" x-text="fileName">
                             </p>
                             <p class="text-xs text-gray-500">
-                                JPG, PNG o WebP (Max 10MB)
+                                {{ __('pa_heritage.image_format') }}
                             </p>
                         </label>
                     </div>
@@ -236,7 +234,7 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-2 text-xs text-gray-500">
-                        Lascia vuoto per mantenere l'immagine attuale
+                        {{ __('pa_heritage.field_keep_current') }}
                     </p>
                 </div>
 
@@ -248,11 +246,11 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            Certificato di Autenticità (CoA)
+                            {{ __('pa_heritage.coa_info_title') }}
                         </h3>
                         <div class="grid gap-3 text-sm md:grid-cols-2">
                             <div>
-                                <span class="font-medium text-gray-700">Stato:</span>
+                                <span class="font-medium text-gray-700">{{ __('pa_heritage.coa_info_status') }}</span>
                                 <span
                                     class="@if ($egi->coa->status === 'verified') bg-green-100 text-green-800
                                 @elseif($egi->coa->status === 'pending') bg-yellow-100 text-yellow-800
@@ -262,21 +260,20 @@
                             </div>
                             @if ($egi->coa->serial_number)
                                 <div>
-                                    <span class="font-medium text-gray-700">Seriale:</span>
+                                    <span class="font-medium text-gray-700">{{ __('pa_heritage.coa_info_serial') }}</span>
                                     <span class="ml-2 text-gray-600">{{ $egi->coa->serial_number }}</span>
                                 </div>
                             @endif
                             @if ($egi->coa->issued_at)
                                 <div>
-                                    <span class="font-medium text-gray-700">Emesso il:</span>
+                                    <span class="font-medium text-gray-700">{{ __('pa_heritage.coa_info_issued') }}</span>
                                     <span
                                         class="ml-2 text-gray-600">{{ $egi->coa->issued_at->format('d/m/Y') }}</span>
                                 </div>
                             @endif
                         </div>
                         <p class="mt-3 text-xs text-gray-600">
-                            Le informazioni del CoA non possono essere modificate direttamente.
-                            Contatta l'amministratore per modifiche ai dati certificati.
+                            {{ __('pa_heritage.coa_info_readonly') }}
                         </p>
                     </div>
                 @endif
@@ -289,7 +286,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
-                        Annulla
+                        {{ __('pa_heritage.btn_cancel_edit') }}
                     </a>
 
                     <button type="submit"

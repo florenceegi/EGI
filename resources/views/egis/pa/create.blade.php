@@ -39,16 +39,16 @@
  */
 --}}
 
-<x-pa-layout title="Carica Nuovo Bene Culturale">
+<x-pa-layout :title="__('pa_heritage.page_title_new')">
     <x-slot:breadcrumb>
         <a href="{{ route('pa.dashboard') }}" class="text-[#D4A574] hover:text-[#C39463]">Dashboard</a>
         <span class="mx-2 text-gray-400">/</span>
-        <a href="{{ route('egis.index') }}" class="text-[#D4A574] hover:text-[#C39463]">Patrimonio Culturale</a>
+        <a href="{{ route('egis.index') }}" class="text-[#D4A574] hover:text-[#C39463]">{{ __('pa_heritage.title') }}</a>
         <span class="mx-2 text-gray-400">/</span>
-        <span class="text-gray-700">Carica Nuovo Bene</span>
+        <span class="text-gray-700">{{ __('pa_heritage.page_title_new') }}</span>
     </x-slot:breadcrumb>
 
-    <x-slot:pageTitle>Carica Nuovo Bene Culturale</x-slot:pageTitle>
+    <x-slot:pageTitle>{{ __('pa_heritage.page_title_new') }}</x-slot:pageTitle>
 
     {{-- Page Header --}}
     <div class="mb-8 rounded-xl bg-gradient-to-r from-[#1B365D] to-[#0F2342] p-6 text-white shadow-lg">
@@ -59,7 +59,7 @@
                 </svg>
             </div>
             <div>
-                <h1 class="mb-1 text-2xl font-bold md:text-3xl">Carica Nuovo Bene Culturale</h1>
+                <h1 class="mb-1 text-2xl font-bold md:text-3xl">{{ __('pa_heritage.page_title_new') }}</h1>
                 <p class="text-white/80">{{ __('pa_heritage.create_subtitle') }}</p>
             </div>
         </div>
@@ -129,7 +129,7 @@
                         {{ __('pa_heritage.field_artist') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="artist" name="artist" value="{{ old('artist') }}" required
-                        maxlength="255" placeholder="Es: Michelangelo, Leonardo da Vinci, etc."
+                        maxlength="255" placeholder="{{ __('pa_heritage.field_artist_placeholder') }}"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
                     @error('artist')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -148,23 +148,23 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-1 text-xs text-gray-500">
-                        Fornisci informazioni complete sul bene culturale per facilitare la catalogazione
+                        {{ __('pa_heritage.field_description_help') }}
                     </p>
                 </div>
 
                 {{-- Creation Date --}}
                 <div>
                     <label for="creation_date" class="mb-2 block text-sm font-medium text-gray-700">
-                        Anno di Creazione / Datazione <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_creation_date') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="creation_date" name="creation_date" value="{{ old('creation_date') }}"
-                        required placeholder="Es: 1504, XVI secolo, 1450-1460, etc." maxlength="100"
+                        required placeholder="{{ __('pa_heritage.field_creation_date_placeholder') }}" maxlength="100"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
                     @error('creation_date')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-1 text-xs text-gray-500">
-                        Indica l'anno o il periodo di creazione del bene culturale
+                        {{ __('pa_heritage.field_creation_date_help') }}
                     </p>
                 </div>
 
@@ -196,14 +196,14 @@
                             <p class="mb-1 text-sm font-medium text-[#1B365D]" x-show="fileName" x-text="fileName">
                             </p>
                             <p class="text-xs text-gray-500">
-                                JPG, PNG o WebP (Max 10MB)
+                                {{ __('pa_heritage.image_format') }}
                             </p>
                         </label>
                     </div>
 
                     {{-- Image Preview --}}
                     <div x-show="imagePreview" class="mt-4">
-                        <p class="mb-2 text-sm font-medium text-gray-700">Anteprima:</p>
+                        <p class="mb-2 text-sm font-medium text-gray-700">{{ __('pa_heritage.image_preview') }}</p>
                         <div class="overflow-hidden rounded-lg border-2 border-gray-200">
                             <img :src="imagePreview" alt="Preview" class="h-auto w-full max-w-md object-cover">
                         </div>
@@ -245,32 +245,28 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                Linee Guida per il Caricamento
+                {{ __('pa_heritage.guidelines_title') }}
             </h3>
             <ul class="space-y-2 text-sm text-gray-700">
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>Collezione:</strong> Seleziona la collezione appropriata tra quelle gestite dal tuo
-                        ente</span>
+                    <span><strong>{{ __('pa_heritage.field_collection') }}:</strong> {{ __('pa_heritage.guidelines_collection') }}</span>
                 </li>
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>Titolo:</strong> Usa il nome ufficiale o storico del bene culturale</span>
+                    <span><strong>{{ __('pa_heritage.field_title') }}:</strong> {{ __('pa_heritage.guidelines_title_field') }}</span>
                 </li>
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>Descrizione:</strong> Includi informazioni sulla storia, caratteristiche artistiche e
-                        stato di conservazione</span>
+                    <span><strong>{{ __('pa_heritage.field_description') }}:</strong> {{ __('pa_heritage.guidelines_description') }}</span>
                 </li>
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>Immagine:</strong> Carica un'immagine di alta qualità che rappresenti fedelmente il
-                        bene culturale</span>
+                    <span><strong>{{ __('pa_heritage.field_image') }}:</strong> {{ __('pa_heritage.guidelines_image') }}</span>
                 </li>
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>Certificazione:</strong> Dopo il caricamento, potrai richiedere l'emissione del
-                        Certificato di Autenticità (CoA)</span>
+                    <span><strong>{{ __('pa_heritage.coa_badge') }}:</strong> {{ __('pa_heritage.guidelines_certification') }}</span>
                 </li>
             </ul>
         </div>
