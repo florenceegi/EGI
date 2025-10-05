@@ -58,7 +58,7 @@
 
     <!-- Header Istituzionale -->
     <header class="sticky top-0 z-50 py-4 text-white shadow-lg bg-institutional-blue sm:py-5">
-        <div class="container px-4 mx-auto max-w-6xl sm:px-6">
+        <div class="container max-w-6xl px-4 mx-auto sm:px-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <span class="text-3xl material-icons sm:text-4xl">account_balance</span>
@@ -70,8 +70,9 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden space-x-4 sm:space-x-6 md:flex">
-                    <a href="#" class="text-sm transition hover:text-blue-200 lg:text-base">Home</a>
+                    <a href="{{ route('home') }}" class="text-sm transition hover:text-blue-200 lg:text-base">Home</a>
                     <a href="#sfide" class="text-sm transition hover:text-blue-200 lg:text-base">Le Sfide</a>
+                    <a href="#operativita" class="text-sm transition hover:text-blue-200 lg:text-base">Come Funziona</a>
                     <a href="#contatti" class="text-sm transition hover:text-blue-200 lg:text-base">Contatti</a>
                 </div>
 
@@ -93,6 +94,10 @@
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
                         <span class="mr-3 text-lg material-icons">business_center</span>Le Sfide
                     </a>
+                    <a href="#operativita"
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
+                        <span class="mr-3 text-lg material-icons">settings</span>Come Funziona
+                    </a>
                     <a href="#contatti"
                         class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700">
                         <span class="mr-3 text-lg material-icons">contact_mail</span>Contatti
@@ -102,36 +107,36 @@
         </div>
     </header>
 
-    <div class="container mx-auto max-w-6xl px-4 py-8 md:py-16">
+    <div class="container max-w-6xl px-4 py-8 mx-auto md:py-16">
         <!-- Main Header -->
-        <header class="text-center mb-12 md:mb-20 fade-in">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Atti Pubblici a Prova di Dubbio</h1>
-            <p class="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto">La soluzione definitiva per garantire
+        <header class="mb-12 text-center md:mb-20 fade-in">
+            <h1 class="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">Atti Pubblici a Prova di Dubbio</h1>
+            <p class="max-w-4xl mx-auto text-lg text-gray-600 md:text-xl">La soluzione definitiva per garantire
                 autenticità, trasparenza e certezza legale ai documenti della Vostra Amministrazione.</p>
         </header>
 
         <main>
             <!-- Sezione 1: Il Problema -->
-            <section class="bg-white p-8 rounded-xl shadow-md border border-gray-200 mb-12 fade-in"
+            <section class="p-8 mb-12 bg-white border border-gray-200 shadow-md rounded-xl fade-in"
                 style="animation-delay: 0.2s;">
-                <h2 class="text-3xl font-bold text-institutional-blue mb-4">La sfida quotidiana di ogni dirigente</h2>
+                <h2 class="mb-4 text-3xl font-bold text-institutional-blue">La sfida quotidiana di ogni dirigente</h2>
                 <p class="mb-4 text-lg">Ogni giorno producete documenti cruciali: delibere, determine, permessi. Ma come
                     garantire a tutti — cittadini, imprese, organi di controllo — che la copia che stanno leggendo sia
                     <span class="font-bold text-red-700">l'unica e autentica versione ufficiale?</span></p>
-                <p class="text-gray-600 text-lg">La circolazione di copie modificate, le contestazioni via PEC e il
+                <p class="text-lg text-gray-600">La circolazione di copie modificate, le contestazioni via PEC e il
                     tempo speso in continue verifiche generano incertezza, minano la fiducia e sovraccaricano gli
                     uffici.</p>
             </section>
 
             <!-- Sezione: I 10 Punti Chiave -->
             <section id="sfide" class="mb-12 fade-in" style="animation-delay: 0.4s;">
-                <h2 class="text-3xl font-bold text-institutional-blue mb-10 text-center">Le 10 sfide che risolviamo, una
+                <h2 class="mb-10 text-3xl font-bold text-center text-institutional-blue">Le 10 sfide che risolviamo, una
                     per una</h2>
-                <div class="grid md:grid-cols-2 gap-8">
+                <div class="grid gap-8 md:grid-cols-2">
 
                     <!-- Punto 1: Autenticità/Manomissioni -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">1. Garantire l'Autenticità</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">1. Garantire l'Autenticità</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">Circolano PDF modificati o versioni “alternative” di atti
@@ -150,8 +155,8 @@
                     </div>
 
                     <!-- Punto 2: Trasparenza Visibile -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">2. Rendere la Trasparenza "Visibile"</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">2. Rendere la Trasparenza "Visibile"</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">L’Albo Pretorio mostra i file, ma non dà una prova immediata di
@@ -169,8 +174,8 @@
                     </div>
 
                     <!-- Punto 3: Reperibilità -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">3. Trovare l'Atto Giusto, Subito</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">3. Trovare l'Atto Giusto, Subito</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">È difficile e lento trovare subito l'atto corretto o la sua ultima
@@ -189,8 +194,8 @@
                     </div>
 
                     <!-- Punto 4: Versioni e Rettifiche -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">4. Gestire Rettifiche e Revoche</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">4. Gestire Rettifiche e Revoche</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">Non si capisce cosa è cambiato tra una versione e l'altra, e
@@ -209,8 +214,8 @@
                     </div>
 
                     <!-- Punto 5: Tempo Operativo -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">5. Ottimizzare il Tempo Operativo</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">5. Ottimizzare il Tempo Operativo</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">Poco personale e troppi micro-adempimenti dopo la pubblicazione
@@ -228,8 +233,8 @@
                     </div>
 
                     <!-- Punto 6: Compliance -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">6. Lavorare in Piena Conformità</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">6. Lavorare in Piena Conformità</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">Timore costante di commettere errori su privacy (GDPR) e validità
@@ -248,8 +253,8 @@
                     </div>
 
                     <!-- Punto 7: Lock-in Tecnologico -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">7. Evitare il "Lock-in" Tecnologico</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">7. Evitare il "Lock-in" Tecnologico</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">Cambiare fornitore o piattaforma informatica spesso significa
@@ -268,8 +273,8 @@
                     </div>
 
                     <!-- Punto 8: KPI e Accountability -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">8. Misurare Efficienza e Risultati</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">8. Misurare Efficienza e Risultati</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">Mancano numeri chiari da portare in report e audit per dimostrare
@@ -288,8 +293,8 @@
                     </div>
 
                     <!-- Punto 9: Copie Ufficiali -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">9. Tracciare le Copie Ufficiali</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">9. Tracciare le Copie Ufficiali</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">Attestati e permessi sono difficili da tracciare una volta emessi.
@@ -308,8 +313,8 @@
                     </div>
 
                     <!-- Punto 10: Budget e Quick-Win -->
-                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">10. Partire Subito con Poche Risorse</h3>
+                    <div class="flex flex-col p-6 bg-white border border-gray-200 shadow-md rounded-xl">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900">10. Partire Subito con Poche Risorse</h3>
                         <div class="mb-3">
                             <p class="font-semibold text-red-700">Problema:</p>
                             <p class="text-gray-600">Poche risorse economiche e poca tolleranza per progetti lunghi e
@@ -329,16 +334,113 @@
                 </div>
             </section>
 
-            <!-- Call to Action -->
-            <section id="contatti" class="text-center bg-institutional-blue text-white p-10 rounded-xl fade-in"
+            <!-- Operatività Quotidiana - Come si usa -->
+            <section id="operativita" class="p-10 mb-12 text-white shadow-2xl bg-gradient-to-br from-florence-gold to-yellow-600 md:p-16 rounded-xl fade-in"
                 style="animation-delay: 0.6s;">
-                <h2 class="text-3xl font-bold mb-4">Pronti a vedere la certezza in azione?</h2>
+                <div class="mb-10 text-center">
+                    <span class="inline-block px-4 py-2 mb-4 text-sm font-bold bg-white rounded-full text-florence-gold">
+                        💡 OPERATIVITÀ QUOTIDIANA
+                    </span>
+                    <h2 class="mb-4 text-3xl font-bold md:text-4xl">Come si usa ogni volta che pubblicate un atto</h2>
+                    <p class="max-w-3xl mx-auto text-xl text-yellow-100">Tre mosse semplici dopo firma digitale e protocollo. Zero complessità, massima sicurezza.</p>
+                </div>
+
+                <div class="grid gap-6 mb-12 md:grid-cols-3">
+                    <!-- Passo 1 -->
+                    <div class="p-8 text-gray-900 transition-transform duration-300 transform bg-white shadow-lg rounded-xl hover:scale-105">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 text-2xl font-bold text-white rounded-full bg-florence-gold">
+                            1
+                        </div>
+                        <h3 class="mb-3 text-xl font-bold text-center">Carica il PDF</h3>
+                        <p class="text-center text-gray-600">Trascina e rilascia il documento già firmato e protocollato nella nostra pagina. Facilissimo.</p>
+                    </div>
+
+                    <!-- Passo 2 -->
+                    <div class="p-8 text-gray-900 transition-transform duration-300 transform bg-white shadow-lg rounded-xl hover:scale-105">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 text-2xl font-bold text-white rounded-full bg-florence-gold">
+                            2
+                        </div>
+                        <h3 class="mb-3 text-xl font-bold text-center">Attendi pochi secondi</h3>
+                        <p class="text-center text-gray-600">Il sistema sigilla il documento e registra la prova su blockchain. Tutto automatico.</p>
+                    </div>
+
+                    <!-- Passo 3 -->
+                    <div class="p-8 text-gray-900 transition-transform duration-300 transform bg-white shadow-lg rounded-xl hover:scale-105">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 text-2xl font-bold text-white rounded-full bg-florence-gold">
+                            3
+                        </div>
+                        <h3 class="mb-3 text-xl font-bold text-center">Pubblica QR/Link</h3>
+                        <p class="text-center text-gray-600">Copia e incolla dove già pubblichi: Albo Pretorio, sito Trasparenza, comunicazioni PEC.</p>
+                    </div>
+                </div>
+
+                <!-- Cosa succede in automatico -->
+                <div class="p-8 mb-10 bg-white border border-white bg-opacity-10 backdrop-blur-sm rounded-xl border-opacity-30">
+                    <h3 class="mb-6 text-2xl font-bold text-center">✨ Cosa succede in automatico</h3>
+                    <div class="grid gap-6 md:grid-cols-3 text-yellow-50">
+                        <div class="flex items-start">
+                            <span class="flex-shrink-0 mr-3 text-3xl material-icons">verified</span>
+                            <div>
+                                <h4 class="mb-2 font-bold">Impronta & Blockchain</h4>
+                                <p class="text-sm">Impronta crittografica + TXID pubblico registrato su blockchain carbon-negative.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="flex-shrink-0 mr-3 text-3xl material-icons">description</span>
+                            <div>
+                                <h4 class="mb-2 font-bold">Pagina Verifica</h4>
+                                <p class="text-sm">Generata automaticamente: titolo, protocollo, firma valida, download originale.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="flex-shrink-0 mr-3 text-3xl material-icons">dashboard</span>
+                            <div>
+                                <h4 class="mb-2 font-bold">Cruscotto Aggiornato</h4>
+                                <p class="text-sm">Atti sigillati, tempo protocollo→QR, visite cittadini. Tutto tracciato.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Varianti equivalenti -->
+                <div class="p-6 mb-10 bg-opacity-50 border-2 border-white bg-institutional-blue rounded-xl border-opacity-30">
+                    <h3 class="flex items-center mb-4 text-xl font-bold">
+                        <span class="mr-2 material-icons">settings</span>
+                        Varianti equivalenti (se preferite)
+                    </h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="mt-1 mr-3 material-icons">email</span>
+                            <span><strong>Email dedicato:</strong> Inviate il PDF a un indirizzo riservato, lo importiamo noi automaticamente.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mt-1 mr-3 material-icons">integration_instructions</span>
+                            <span><strong>Integrazione software:</strong> Bottone "Invia a verifica" nel gestionale che già usate (chiediamo al fornitore).</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Risultato finale -->
+                <div class="p-8 text-center bg-white shadow-2xl text-institutional-blue rounded-xl">
+                    <span class="mb-4 text-6xl material-icons">check_circle</span>
+                    <h3 class="mb-4 text-2xl font-bold">🎯 Risultato finale</h3>
+                    <p class="max-w-2xl mx-auto text-lg">
+                        <strong>Ogni atto pubblicato ha QR e prova pubblica di autenticità.</strong><br>
+                        Il cittadino verifica in 1 click e scarica l'originale. Zero dubbi, massima trasparenza.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Call to Action -->
+            <section id="contatti" class="p-10 text-center text-white bg-institutional-blue rounded-xl fade-in"
+                style="animation-delay: 0.8s;">
+                <h2 class="mb-4 text-3xl font-bold">Pronti a vedere la certezza in azione?</h2>
                 <p class="max-w-2xl mx-auto mb-6">Saremmo lieti di mostrarvi, senza impegno, una demo di 15 minuti
                     applicata a un Vostro documento tipo. Vedrete con i vostri occhi com'è semplice trasformare un
                     dubbio in una certezza.</p>
                 <a href="mailto:pa-services@florenceegi.com?subject=Richiesta%20Demo%20Sigillo%20Digitale"
-                    class="bg-florence-gold text-white font-bold py-3 px-8 rounded-full hover:bg-yellow-600 transition-colors duration-300 inline-flex items-center">
-                    <span class="material-icons mr-2">description</span>
+                    class="inline-flex items-center px-8 py-3 font-bold text-white transition-colors duration-300 rounded-full bg-florence-gold hover:bg-yellow-600">
+                    <span class="mr-2 material-icons">description</span>
                     Richiedi una Demo
                 </a>
             </section>
@@ -346,9 +448,9 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white mt-16">
-        <div class="container max-w-6xl mx-auto px-6 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer class="mt-16 text-white bg-gray-900">
+        <div class="container max-w-6xl px-6 py-12 mx-auto">
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
                 <div class="md:col-span-2">
                     <h3 class="text-xl font-bold">Florence EGI</h3>
                     <p class="mt-2 text-gray-400">Servizi enterprise di certificazione digitale eIDAS-compliant per
@@ -357,27 +459,28 @@
                 <div>
                     <h4 class="text-lg font-semibold">Link Utili</h4>
                     <ul class="mt-4 space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Home</a></li>
-                        <li><a href="#sfide" class="text-gray-400 hover:text-white transition">Le Sfide che
+                        <li><a href="#" class="text-gray-400 transition hover:text-white">Home</a></li>
+                        <li><a href="#sfide" class="text-gray-400 transition hover:text-white">Le Sfide che
                                 Risolviamo</a></li>
-                        <li><a href="#contatti" class="text-gray-400 hover:text-white transition">Richiedi Demo</a></li>
+                        <li><a href="#operativita" class="text-gray-400 transition hover:text-white">Come Funziona</a></li>
+                        <li><a href="#contatti" class="text-gray-400 transition hover:text-white">Richiedi Demo</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-lg font-semibold">Contatti Istituzionali</h4>
                     <ul class="mt-4 space-y-2 text-gray-400">
                         <li class="flex items-center">
-                            <span class="material-icons mr-2">email</span>
+                            <span class="mr-2 material-icons">email</span>
                             <span>pa-services@florenceegi.com</span>
                         </li>
                         <li class="flex items-center">
-                            <span class="material-icons mr-2">phone</span>
+                            <span class="mr-2 material-icons">phone</span>
                             <span>+39 055 123 4567</span>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div class="mt-12 border-t border-gray-800 pt-8 text-center text-gray-500">
+            <div class="pt-8 mt-12 text-center text-gray-500 border-t border-gray-800">
                 <p>&copy; 2025 Florence EGI | Tutti i diritti riservati.</p>
             </div>
         </div>
