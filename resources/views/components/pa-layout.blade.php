@@ -62,13 +62,6 @@
             border-color: rgba(255, 255, 255, 0.1) !important;
         }
 
-        /* Fix drawer-content margin for sidebar space */
-        @media (min-width: 1024px) {
-            .drawer.lg\:drawer-open .drawer-content {
-                margin-left: 280px;
-            }
-        }
-
         /* PA Logo Area */
         .drawer-side aside>div:first-of-type {
             padding: 24px 20px;
@@ -131,8 +124,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            max-width: 1400px;
-            margin: 0 auto;
         }
 
         .pa-breadcrumb {
@@ -147,8 +138,6 @@
 
         .pa-content {
             padding: 24px;
-            max-width: 1400px;
-            margin: 0 auto;
         }
 
         .pa-title {
@@ -250,39 +239,11 @@
     <!-- Collection Creation Modal (universal terminology system) -->
     @php
         $collectionTerms = \App\Services\Terminology\CollectionTerminologyService::getTerminology(auth()->user());
-
-        // DEBUG: Log current route and context detection
         $currentRoute = Route::currentRouteName();
         $routeSegments = explode('.', $currentRoute);
-        $detectedContext =
-            count($routeSegments) >= 2 ? $routeSegments[0] . '.' . $routeSegments[1] : $routeSegments[0] ?? 'unknown';
-
-        logger()->info('[PA Layout DEBUG] Sidebar Context Detection', [
-            'route' => $currentRoute,
-            'segments' => $routeSegments,
-            'context' => $detectedContext,
-            'user_id' => auth()->id(),
-        ]);
-
-        // Debug: Log terminology
-        logger()->info('[PA Layout] Collection Terminology', [
-            'user_id' => auth()->id(),
-            'usertype' => auth()->user()->usertype ?? 'unknown',
-            'roles' => auth()->user()->getRoleNames()->toArray(),
-            'terminology' => $collectionTerms,
-        ]);
+        $detectedContext = count($routeSegments) >= 2 ? $routeSegments[0] . '.' . $routeSegments[1] : $routeSegments[0] ?? 'unknown';
     @endphp
     <x-create-collection-modal :terminology="$collectionTerms" />
-
-    <!-- Debug: Show terminology config in console -->
-    <script>
-        console.log('[PA Layout] Terminology Config:', {
-            user_id: {{ auth()->id() }},
-            usertype: '{{ auth()->user()->usertype ?? 'unknown' }}',
-            roles: @json(auth()->user()->getRoleNames()->toArray()),
-            terminology: @json($collectionTerms)
-        });
-    </script>
 
     @stack('scripts')
     {{ $scripts ?? '' }}
