@@ -373,16 +373,21 @@ class CreateCollectionModal {
 
         // DEBUG: Check result structure
         console.log("[CreateCollectionModal] handleSuccess result:", result);
-        console.log("[CreateCollectionModal] result.collection:", result.collection);
+        console.log(
+            "[CreateCollectionModal] result.collection:",
+            result.collection
+        );
 
         // OS1 Event Dispatch: Notify other components (PA Acts integration)
         if (result.collection) {
             window.dispatchEvent(
                 new CustomEvent("collection-created", {
-                    detail: { 
+                    detail: {
                         collectionId: result.collection.id,
-                        collectionName: result.collection.collection_name || result.collection.name,
-                        collection: result.collection 
+                        collectionName:
+                            result.collection.collection_name ||
+                            result.collection.name,
+                        collection: result.collection,
                     },
                 })
             );
@@ -391,7 +396,9 @@ class CreateCollectionModal {
                 result.collection
             );
         } else {
-            console.warn("[CreateCollectionModal] result.collection is undefined! Cannot dispatch event");
+            console.warn(
+                "[CreateCollectionModal] result.collection is undefined! Cannot dispatch event"
+            );
         }
 
         // Universal Redirect System: Based on user type terminology
@@ -407,13 +414,18 @@ class CreateCollectionModal {
 
         if (shouldRedirect && redirectUrl) {
             // Redirect to specified URL (e.g., Creator → /home/collections)
-            console.log("[CreateCollectionModal] Will redirect to:", redirectUrl);
+            console.log(
+                "[CreateCollectionModal] Will redirect to:",
+                redirectUrl
+            );
             this.redirectTimer = setTimeout(() => {
                 window.location.href = redirectUrl;
             }, 2000);
         } else {
             // No redirect - just close modal (e.g., PA → stay on page with updated select)
-            console.log("[CreateCollectionModal] Will close modal, no redirect");
+            console.log(
+                "[CreateCollectionModal] Will close modal, no redirect"
+            );
             this.redirectTimer = setTimeout(() => {
                 this.close();
             }, 1500);
