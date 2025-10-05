@@ -250,23 +250,28 @@
             <ul class="space-y-2 text-sm text-gray-700">
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>{{ __('pa_heritage.field_collection') }}:</strong> {{ __('pa_heritage.guidelines_collection') }}</span>
+                    <span><strong>{{ __('pa_heritage.field_collection') }}:</strong>
+                        {{ __('pa_heritage.guidelines_collection') }}</span>
                 </li>
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>{{ __('pa_heritage.field_title') }}:</strong> {{ __('pa_heritage.guidelines_title_field') }}</span>
+                    <span><strong>{{ __('pa_heritage.field_title') }}:</strong>
+                        {{ __('pa_heritage.guidelines_title_field') }}</span>
                 </li>
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>{{ __('pa_heritage.field_description') }}:</strong> {{ __('pa_heritage.guidelines_description') }}</span>
+                    <span><strong>{{ __('pa_heritage.field_description') }}:</strong>
+                        {{ __('pa_heritage.guidelines_description') }}</span>
                 </li>
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>{{ __('pa_heritage.field_image') }}:</strong> {{ __('pa_heritage.guidelines_image') }}</span>
+                    <span><strong>{{ __('pa_heritage.field_image') }}:</strong>
+                        {{ __('pa_heritage.guidelines_image') }}</span>
                 </li>
                 <li class="flex items-start">
                     <span class="mr-2 text-[#D4A574]">•</span>
-                    <span><strong>{{ __('pa_heritage.coa_badge') }}:</strong> {{ __('pa_heritage.guidelines_certification') }}</span>
+                    <span><strong>{{ __('pa_heritage.coa_badge') }}:</strong>
+                        {{ __('pa_heritage.guidelines_certification') }}</span>
                 </li>
             </ul>
         </div>

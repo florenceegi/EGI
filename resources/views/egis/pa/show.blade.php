@@ -120,7 +120,8 @@
             {{-- Description --}}
             @if ($egi->description)
                 <div class="rounded-lg bg-gray-50 p-6">
-                    <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">{{ __('pa_heritage.section_description') }}</h3>
+                    <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
+                        {{ __('pa_heritage.section_description') }}</h3>
                     <p class="leading-relaxed text-gray-700">{{ $egi->description }}</p>
                 </div>
             @endif
@@ -129,14 +130,16 @@
             <div class="grid grid-cols-2 gap-4">
                 @if ($egi->created_at)
                     <div class="rounded-lg bg-white p-4 shadow">
-                        <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">{{ __('pa_heritage.cataloged_date') }}</p>
+                        <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">
+                            {{ __('pa_heritage.cataloged_date') }}</p>
                         <p class="text-lg font-semibold text-[#1B365D]">{{ $egi->created_at->format('d/m/Y') }}</p>
                     </div>
                 @endif
 
                 @if ($egi->collection)
                     <div class="rounded-lg bg-white p-4 shadow">
-                        <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">{{ __('pa_heritage.section_collection') }}</p>
+                        <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">
+                            {{ __('pa_heritage.section_collection') }}</p>
                         <p class="text-lg font-semibold text-[#1B365D]">{{ Str::limit($egi->collection->name, 25) }}
                         </p>
                     </div>
@@ -144,7 +147,8 @@
 
                 @if ($egi->is_published)
                     <div class="col-span-2 rounded-lg bg-white p-4 shadow">
-                        <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">{{ __('pa_heritage.publication_status') }}</p>
+                        <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">
+                            {{ __('pa_heritage.publication_status') }}</p>
                         <p class="flex items-center gap-2 text-lg font-semibold text-[#2D5016]">
                             <span class="material-symbols-outlined text-base">check_circle</span>
                             {{ __('pa_heritage.published') }}
@@ -155,12 +159,11 @@
 
             {{-- Action Buttons --}}
             <div class="flex flex-col gap-3 pt-4 sm:flex-row">
-                <x-pa.pa-action-button :label="__('pa_heritage.btn_back_to_list')" href="{{ route('pa.heritage.index') }}"
-                    icon="arrow_back" variant="outline" size="md" class="flex-1" />
+                <x-pa.pa-action-button :label="__('pa_heritage.btn_back_to_list')" href="{{ route('pa.heritage.index') }}" icon="arrow_back"
+                    variant="outline" size="md" class="flex-1" />
                 @if ($egi->coa && $egi->coa->status === 'valid')
-                    <x-pa.pa-action-button :label="__('pa_heritage.btn_download_coa')"
-                        href="{{ route('coa.pdf.download', $egi->coa->id) }}" icon="download" variant="primary"
-                        size="md" target="_blank" class="flex-1" />
+                    <x-pa.pa-action-button :label="__('pa_heritage.btn_download_coa')" href="{{ route('coa.pdf.download', $egi->coa->id) }}"
+                        icon="download" variant="primary" size="md" target="_blank" class="flex-1" />
                 @endif
             </div>
         </div>
@@ -222,7 +225,8 @@
                             <div class="rounded-lg bg-white/10 p-4">
                                 <div class="mb-2 flex items-start justify-between">
                                     <div>
-                                        <p class="font-semibold">{{ $signature->signer->name ?? __('pa_heritage.coa_signer') }}</p>
+                                        <p class="font-semibold">
+                                            {{ $signature->signer->name ?? __('pa_heritage.coa_signer') }}</p>
                                         <p class="text-sm text-white/70">{{ $signature->role }}</p>
                                     </div>
                                     <span class="material-symbols-outlined text-[#2D5016]">verified_user</span>
@@ -273,7 +277,8 @@
                                         class="material-symbols-outlined text-2xl">{{ $file->kind === 'pdf' ? 'picture_as_pdf' : 'image' }}</span>
                                     <div>
                                         <p class="font-semibold">
-                                            {{ $file->kind === 'pdf' ? __('pa_heritage.file_pdf') : __('pa_heritage.coa_image_file') }}</p>
+                                            {{ $file->kind === 'pdf' ? __('pa_heritage.file_pdf') : __('pa_heritage.coa_image_file') }}
+                                        </p>
                                         <p class="text-sm text-white/70">{{ number_format($file->size / 1024, 2) }} KB
                                         </p>
                                     </div>

@@ -40,12 +40,12 @@
             <div class="flex items-center gap-6">
                 <div class="text-center">
                     <p class="text-4xl font-bold text-[#D4A574]">{{ $egis->total() }}</p>
-                    <p class="mt-1 text-sm tracking-wide uppercase text-white/70">{{ __('pa_heritage.total_items') }}
+                    <p class="mt-1 text-sm uppercase tracking-wide text-white/70">{{ __('pa_heritage.total_items') }}
                     </p>
                 </div>
                 <div class="text-center">
                     <p class="text-4xl font-bold text-[#D4A574]">{{ $egis->count() }}</p>
-                    <p class="mt-1 text-sm tracking-wide uppercase text-white/70">{{ __('pa_heritage.items_in_page') }}
+                    <p class="mt-1 text-sm uppercase tracking-wide text-white/70">{{ __('pa_heritage.items_in_page') }}
                     </p>
                 </div>
             </div>
@@ -53,12 +53,12 @@
     </div>
 
     {{-- Filters Section --}}
-    <div class="p-6 mb-8 bg-white shadow-md rounded-xl">
+    <div class="mb-8 rounded-xl bg-white p-6 shadow-md">
         <form method="GET" action="{{ route('pa.heritage.index') }}" class="space-y-4">
             <div class="flex flex-col gap-4 md:flex-row">
                 <div class="flex-1">
                     <label for="search" class="mb-2 block text-sm font-semibold text-[#1B365D]">
-                        <span class="text-base align-middle material-symbols-outlined">search</span>
+                        <span class="material-symbols-outlined align-middle text-base">search</span>
                         {{ __('pa_heritage.filter_search_label') }}
                     </label>
                     <input type="text" id="search" name="search" value="{{ request('search') }}"
@@ -68,18 +68,22 @@
 
                 <div class="w-full md:w-64">
                     <label for="coa_status" class="mb-2 block text-sm font-semibold text-[#1B365D]">
-                        <span class="text-base align-middle material-symbols-outlined">verified</span>
+                        <span class="material-symbols-outlined align-middle text-base">verified</span>
                         {{ __('pa_heritage.filter_coa_status_label') }}
                     </label>
                     <select id="coa_status" name="coa_status"
                         class="w-full rounded-lg border-2 border-gray-300 px-4 py-2.5 outline-none transition-all focus:border-[#D4A574] focus:ring-2 focus:ring-[#D4A574]/20">
                         <option value="">{{ __('pa_heritage.filter_all_states') }}</option>
-                        <option value="valid" {{ request('coa_status') === 'valid' ? 'selected' : '' }}>{{ __('pa_heritage.filter_coa_valid') }}
+                        <option value="valid" {{ request('coa_status') === 'valid' ? 'selected' : '' }}>
+                            {{ __('pa_heritage.filter_coa_valid') }}
                         </option>
-                        <option value="revoked" {{ request('coa_status') === 'revoked' ? 'selected' : '' }}>{{ __('pa_heritage.filter_coa_revoked') }}</option>
-                        <option value="pending" {{ request('coa_status') === 'pending' ? 'selected' : '' }}>{{ __('pa_heritage.filter_coa_pending') }}
+                        <option value="revoked" {{ request('coa_status') === 'revoked' ? 'selected' : '' }}>
+                            {{ __('pa_heritage.filter_coa_revoked') }}</option>
+                        <option value="pending" {{ request('coa_status') === 'pending' ? 'selected' : '' }}>
+                            {{ __('pa_heritage.filter_coa_pending') }}
                         </option>
-                        <option value="no_coa" {{ request('coa_status') === 'no_coa' ? 'selected' : '' }}>{{ __('pa_heritage.filter_no_coa') }}
+                        <option value="no_coa" {{ request('coa_status') === 'no_coa' ? 'selected' : '' }}>
+                            {{ __('pa_heritage.filter_no_coa') }}
                         </option>
                     </select>
                 </div>
@@ -99,21 +103,22 @@
             </div>
 
             @if (request()->hasAny(['search', 'coa_status']))
-                <div class="pt-4 border-t border-gray-200">
+                <div class="border-t border-gray-200 pt-4">
                     <p class="mb-2 text-sm font-semibold text-gray-600">{{ __('pa_heritage.active_filters') }}</p>
                     <div class="flex flex-wrap gap-2">
                         @if (request('search'))
                             <span
                                 class="inline-flex items-center gap-1 rounded-full bg-[#1B365D]/10 px-3 py-1 text-sm font-medium text-[#1B365D]">
-                                <span class="text-sm material-symbols-outlined">search</span>
+                                <span class="material-symbols-outlined text-sm">search</span>
                                 {{ __('pa_heritage.filter_search_term') }} "{{ request('search') }}"
                             </span>
                         @endif
                         @if (request('coa_status'))
                             <span
                                 class="inline-flex items-center gap-1 rounded-full bg-[#D4A574]/10 px-3 py-1 text-sm font-medium text-[#1B365D]">
-                                <span class="text-sm material-symbols-outlined">verified</span>
-                                {{ __('pa_heritage.filter_status_term') }} {{ ucfirst(str_replace('_', ' ', request('coa_status'))) }}
+                                <span class="material-symbols-outlined text-sm">verified</span>
+                                {{ __('pa_heritage.filter_status_term') }}
+                                {{ ucfirst(str_replace('_', ' ', request('coa_status'))) }}
                             </span>
                         @endif
                     </div>
@@ -124,14 +129,14 @@
 
     {{-- Heritage Grid --}}
     @if ($egis->count() > 0)
-        <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
+        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             @foreach ($egis as $item)
                 <x-pa.pa-heritage-card :egi="$item" :showCoa="true" layout="grid" :showActions="true" />
             @endforeach
         </div>
 
         {{-- Pagination --}}
-        <div class="p-6 bg-white shadow-md rounded-xl">
+        <div class="rounded-xl bg-white p-6 shadow-md">
             <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
                 <div class="text-sm text-gray-600">
                     {{ __('pa_heritage.displayed_items') }} <span
@@ -148,19 +153,19 @@
         </div>
     @else
         {{-- Empty State --}}
-        <div class="p-12 text-center bg-white shadow-md rounded-xl">
-            <span class="block mb-4 text-gray-300 material-symbols-outlined text-8xl">inventory_2</span>
+        <div class="rounded-xl bg-white p-12 text-center shadow-md">
+            <span class="material-symbols-outlined mb-4 block text-8xl text-gray-300">inventory_2</span>
             @if (request()->hasAny(['search', 'coa_status']))
                 <h3 class="mb-3 text-2xl font-bold text-[#1B365D]">{{ __('pa_heritage.no_results_title') }}</h3>
                 <p class="mb-6 text-gray-600">{{ __('pa_heritage.no_results_message') }}</p>
-                <x-pa.pa-action-button :label="__('pa_heritage.btn_reset_filters')" href="{{ route('pa.heritage.index') }}"
-                    icon="filter_alt_off" variant="secondary" size="md" />
+                <x-pa.pa-action-button :label="__('pa_heritage.btn_reset_filters')" href="{{ route('pa.heritage.index') }}" icon="filter_alt_off"
+                    variant="secondary" size="md" />
             @else
                 <h3 class="mb-3 text-2xl font-bold text-[#1B365D]">{{ __('pa_heritage.no_items_cataloged') }}</h3>
                 <p class="mb-6 text-gray-600">{{ __('pa_heritage.no_items_loaded') }}</p>
                 <div class="flex flex-col justify-center gap-3 sm:flex-row">
-                    <x-pa.pa-action-button :label="__('pa_heritage.btn_create_collection')" href="#"
-                        icon="create_new_folder" variant="primary" size="lg" />
+                    <x-pa.pa-action-button :label="__('pa_heritage.btn_create_collection')" href="#" icon="create_new_folder" variant="primary"
+                        size="lg" />
                     <x-pa.pa-action-button :label="__('pa_heritage.btn_intro_guide')" href="#" icon="help" variant="outline"
                         size="lg" />
                 </div>
@@ -170,23 +175,23 @@
 
     {{-- Quick Stats Footer --}}
     @if ($egis->total() > 0)
-        <div class="grid grid-cols-1 gap-4 mt-8 md:grid-cols-4">
-            <div class="p-4 text-center bg-white rounded-lg shadow">
+        <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-4">
+            <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#2D5016]">
                     {{ $egis->where(fn($egi) => $egi->coa && $egi->coa->status === 'valid')->count() }}</p>
                 <p class="mt-1 text-sm text-gray-600">{{ __('pa_heritage.footer_coa_valid') }}</p>
             </div>
-            <div class="p-4 text-center bg-white rounded-lg shadow">
+            <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#E67E22]">
                     {{ $egis->where(fn($egi) => $egi->coa && $egi->coa->status === 'pending')->count() }}</p>
                 <p class="mt-1 text-sm text-gray-600">{{ __('pa_heritage.footer_pending') }}</p>
             </div>
-            <div class="p-4 text-center bg-white rounded-lg shadow">
+            <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#C13120]">
                     {{ $egis->where(fn($egi) => $egi->coa && $egi->coa->status === 'revoked')->count() }}</p>
                 <p class="mt-1 text-sm text-gray-600">{{ __('pa_heritage.footer_revoked') }}</p>
             </div>
-            <div class="p-4 text-center bg-white rounded-lg shadow">
+            <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#6B6B6B]">{{ $egis->where(fn($egi) => !$egi->coa)->count() }}
                 </p>
                 <p class="mt-1 text-sm text-gray-600">{{ __('pa_heritage.footer_no_coa') }}</p>

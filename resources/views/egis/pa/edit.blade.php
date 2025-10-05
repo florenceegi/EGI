@@ -260,13 +260,15 @@
                             </div>
                             @if ($egi->coa->serial_number)
                                 <div>
-                                    <span class="font-medium text-gray-700">{{ __('pa_heritage.coa_info_serial') }}</span>
+                                    <span
+                                        class="font-medium text-gray-700">{{ __('pa_heritage.coa_info_serial') }}</span>
                                     <span class="ml-2 text-gray-600">{{ $egi->coa->serial_number }}</span>
                                 </div>
                             @endif
                             @if ($egi->coa->issued_at)
                                 <div>
-                                    <span class="font-medium text-gray-700">{{ __('pa_heritage.coa_info_issued') }}</span>
+                                    <span
+                                        class="font-medium text-gray-700">{{ __('pa_heritage.coa_info_issued') }}</span>
                                     <span
                                         class="ml-2 text-gray-600">{{ $egi->coa->issued_at->format('d/m/Y') }}</span>
                                 </div>
