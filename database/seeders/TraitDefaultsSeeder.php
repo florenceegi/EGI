@@ -76,7 +76,15 @@ class TraitDefaultsSeeder extends Seeder {
                             'Nature',
                             'Fashion',
                             'Food',
-                            'Travel'
+                            'Travel',
+                            // PA Heritage categories
+                            'Artwork',
+                            'Monument',
+                            'Artifact',
+                            'Document',
+                            'Heritage',
+                            'Booklet',
+                            
                         ])
                     ],
                 ];

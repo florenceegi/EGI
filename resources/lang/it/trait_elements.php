@@ -75,6 +75,15 @@ return [
         'Food' => 'Cibo',
         'Travel' => 'Viaggi',
 
+        // PA Heritage categories (lowercase keys)
+        'Artwork' => 'Opera d\'arte',
+        'Monument' => 'Monumento',
+        'Artifact' => 'Reperto',
+        'Document' => 'Documento',
+        'Heritage' => 'Patrimonio',
+        'Booklet' => 'Fascicolo',
+        'Other' => 'Altro',
+
         // Primary Material values
         'Wood' => 'Legno',
 
