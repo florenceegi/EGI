@@ -39,11 +39,11 @@
             </div>
             <div class="flex items-center gap-6">
                 <div class="text-center">
-                    <p class="text-4xl font-bold text-[#D4A574]">{{ $heritage->total() }}</p>
+                    <p class="text-4xl font-bold text-[#D4A574]">{{ $egis->total() }}</p>
                     <p class="mt-1 text-sm uppercase tracking-wide text-white/70">Beni Totali</p>
                 </div>
                 <div class="text-center">
-                    <p class="text-4xl font-bold text-[#D4A574]">{{ $heritage->count() }}</p>
+                    <p class="text-4xl font-bold text-[#D4A574]">{{ $egis->count() }}</p>
                     <p class="mt-1 text-sm uppercase tracking-wide text-white/70">In Questa Pagina</p>
                 </div>
             </div>
@@ -122,9 +122,9 @@
     </div>
 
     {{-- Heritage Grid --}}
-    @if ($heritage->count() > 0)
+    @if ($egis->count() > 0)
         <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            @foreach ($heritage as $item)
+            @foreach ($egis as $item)
                 <x-pa.pa-heritage-card :egi="$item" :showCoa="true" layout="grid" :showActions="true" />
             @endforeach
         </div>
@@ -133,12 +133,12 @@
         <div class="rounded-xl bg-white p-6 shadow-md">
             <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
                 <div class="text-sm text-gray-600">
-                    Visualizzati <span class="font-semibold text-[#1B365D]">{{ $heritage->firstItem() }}</span>
-                    - <span class="font-semibold text-[#1B365D]">{{ $heritage->lastItem() }}</span>
-                    di <span class="font-semibold text-[#1B365D]">{{ $heritage->total() }}</span> beni culturali
+                    Visualizzati <span class="font-semibold text-[#1B365D]">{{ $egis->firstItem() }}</span>
+                    - <span class="font-semibold text-[#1B365D]">{{ $egis->lastItem() }}</span>
+                    di <span class="font-semibold text-[#1B365D]">{{ $egis->total() }}</span> beni culturali
                 </div>
                 <div>
-                    {{ $heritage->appends(request()->query())->links('pagination::tailwind') }}
+                    {{ $egis->appends(request()->query())->links('pagination::tailwind') }}
                 </div>
             </div>
         </div>
@@ -167,25 +167,25 @@
     @endif
 
     {{-- Quick Stats Footer --}}
-    @if ($heritage->total() > 0)
+    @if ($egis->total() > 0)
         <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-4">
             <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#2D5016]">
-                    {{ $heritage->where(fn($egi) => $egi->coa && $egi->coa->status === 'valid')->count() }}</p>
+                    {{ $egis->where(fn($egi) => $egi->coa && $egi->coa->status === 'valid')->count() }}</p>
                 <p class="mt-1 text-sm text-gray-600">CoA Validi</p>
             </div>
             <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#E67E22]">
-                    {{ $heritage->where(fn($egi) => $egi->coa && $egi->coa->status === 'pending')->count() }}</p>
+                    {{ $egis->where(fn($egi) => $egi->coa && $egi->coa->status === 'pending')->count() }}</p>
                 <p class="mt-1 text-sm text-gray-600">In Attesa</p>
             </div>
             <div class="rounded-lg bg-white p-4 text-center shadow">
                 <p class="text-2xl font-bold text-[#C13120]">
-                    {{ $heritage->where(fn($egi) => $egi->coa && $egi->coa->status === 'revoked')->count() }}</p>
+                    {{ $egis->where(fn($egi) => $egi->coa && $egi->coa->status === 'revoked')->count() }}</p>
                 <p class="mt-1 text-sm text-gray-600">Revocati</p>
             </div>
             <div class="rounded-lg bg-white p-4 text-center shadow">
-                <p class="text-2xl font-bold text-[#6B6B6B]">{{ $heritage->where(fn($egi) => !$egi->coa)->count() }}
+                <p class="text-2xl font-bold text-[#6B6B6B]">{{ $egis->where(fn($egi) => !$egi->coa)->count() }}
                 </p>
                 <p class="mt-1 text-sm text-gray-600">Senza CoA</p>
             </div>
