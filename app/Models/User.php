@@ -183,7 +183,7 @@ class User extends Authenticatable implements HasMedia {
             return substr($wallet, 0, min(8, strlen($wallet))) . (strlen($wallet) > 8 ? '...' : '');
         }
 
-        return 'Utente Anonimo';
+        return __('user_personal_data.anonymous_user');
     }
 
     /**
