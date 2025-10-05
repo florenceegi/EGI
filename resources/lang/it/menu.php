@@ -41,6 +41,7 @@ return [
     ],
 
     // Navigation Menu Translations
+    'dashboard' => 'Dashboard',
     'manage_account' => 'Gestisci Account',
     'profile_overview' => 'Panoramica Profilo',
     'edit_personal_data' => 'Modifica Dati Personali',

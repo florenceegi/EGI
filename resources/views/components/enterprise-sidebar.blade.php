@@ -102,9 +102,15 @@
         @endif
     </div>
 
-    <!-- Back Button -->
-    <div class="px-4 py-6">
-        <x-back-button />
+    <!-- Dashboard Link (sempre visibile) -->
+    <div class="px-4 py-4">
+        <a href="{{ route('pa.dashboard') }}" 
+           class="{{ Route::currentRouteName() === 'pa.dashboard' ? 'bg-primary text-primary-content font-semibold shadow-sm' : 'bg-white/10 hover:bg-white/20' }} flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors duration-150">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+            </svg>
+            <span>{{ __('menu.dashboard') }}</span>
+        </a>
     </div>
 
     <!-- Menu Navigation -->
@@ -186,6 +192,20 @@
                 <p>Nessun menu disponibile</p>
             </div>
         @endif
+    </div>
+
+    <!-- Logout Button -->
+    <div class="px-4 py-4">
+        <form method="POST" action="{{ route('logout') }}" class="w-full">
+            @csrf
+            <button type="submit"
+                class="flex w-full items-center gap-3 rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span>{{ __('menu.logout') }}</span>
+            </button>
+        </form>
     </div>
 
     <!-- Footer (optional) -->

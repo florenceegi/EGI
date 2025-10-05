@@ -23,6 +23,7 @@ return [
     'general' => 'General',
 
     // Navigation
+    'dashboard' => 'Dashboard',
     'manage_account' => 'Manage Account',
     'profile_overview' => 'Profile Overview',
     'edit_personal_data' => 'Edit Personal Data',
