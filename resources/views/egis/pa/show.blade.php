@@ -67,7 +67,7 @@
                 <div class="flex items-center justify-between">
                     <span class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-base">image</span>
-                        Immagine certificata
+                        {{ __('pa_heritage.certified_image') }}
                     </span>
                     @if ($egi->main_image_url)
                         <a href="{{ $egi->original_image_url }}" target="_blank"
@@ -120,7 +120,7 @@
             {{-- Description --}}
             @if ($egi->description)
                 <div class="rounded-lg bg-gray-50 p-6">
-                    <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">Descrizione</h3>
+                    <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">{{ __('pa_heritage.section_description') }}</h3>
                     <p class="leading-relaxed text-gray-700">{{ $egi->description }}</p>
                 </div>
             @endif
@@ -136,7 +136,7 @@
 
                 @if ($egi->collection)
                     <div class="rounded-lg bg-white p-4 shadow">
-                        <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">Collezione</p>
+                        <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">{{ __('pa_heritage.section_collection') }}</p>
                         <p class="text-lg font-semibold text-[#1B365D]">{{ Str::limit($egi->collection->name, 25) }}
                         </p>
                     </div>
@@ -273,7 +273,7 @@
                                         class="material-symbols-outlined text-2xl">{{ $file->kind === 'pdf' ? 'picture_as_pdf' : 'image' }}</span>
                                     <div>
                                         <p class="font-semibold">
-                                            {{ $file->kind === 'pdf' ? 'Certificato PDF' : 'Immagine' }}</p>
+                                            {{ $file->kind === 'pdf' ? '{{ __('pa_heritage.file_pdf') }}' : 'Immagine' }}</p>
                                         <p class="text-sm text-white/70">{{ number_format($file->size / 1024, 2) }} KB
                                         </p>
                                     </div>

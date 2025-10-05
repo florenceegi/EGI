@@ -60,7 +60,7 @@
             </div>
             <div>
                 <h1 class="mb-1 text-2xl font-bold md:text-3xl">Carica Nuovo Bene Culturale</h1>
-                <p class="text-white/80">Registra un nuovo bene nel patrimonio culturale del tuo ente</p>
+                <p class="text-white/80">{{ __('pa_heritage.create_subtitle') }}</p>
             </div>
         </div>
     </div>
@@ -90,11 +90,11 @@
                 {{-- Collection Selector --}}
                 <div>
                     <label for="collection_id" class="mb-2 block text-sm font-medium text-gray-700">
-                        Collezione di Appartenenza <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_collection') }} <span class="text-red-500">*</span>
                     </label>
                     <select id="collection_id" name="collection_id" required
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">
-                        <option value="">Seleziona una collezione</option>
+                        <option value="">{{ __('pa_heritage.field_select_collection') }}</option>
                         @foreach ($collections as $collection)
                             <option value="{{ $collection->id }}"
                                 {{ old('collection_id') == $collection->id ? 'selected' : '' }}>
@@ -106,14 +106,14 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                     <p class="mt-1 text-xs text-gray-500">
-                        Seleziona la collezione a cui appartiene questo bene culturale
+                        {{ __('pa_heritage.field_collection_help') }}
                     </p>
                 </div>
 
                 {{-- Title --}}
                 <div>
                     <label for="title" class="mb-2 block text-sm font-medium text-gray-700">
-                        Titolo del Bene Culturale <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_title') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="title" name="title" value="{{ old('title') }}" required
                         maxlength="255" placeholder="Es: Statua di David, Palazzo Vecchio, etc."
@@ -126,7 +126,7 @@
                 {{-- Artist --}}
                 <div>
                     <label for="artist" class="mb-2 block text-sm font-medium text-gray-700">
-                        Artista / Autore <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_artist') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="artist" name="artist" value="{{ old('artist') }}" required
                         maxlength="255" placeholder="Es: Michelangelo, Leonardo da Vinci, etc."
@@ -139,10 +139,10 @@
                 {{-- Description --}}
                 <div>
                     <label for="description" class="mb-2 block text-sm font-medium text-gray-700">
-                        Descrizione Dettagliata <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_description') }} <span class="text-red-500">*</span>
                     </label>
                     <textarea id="description" name="description" rows="6" required
-                        placeholder="Inserisci una descrizione dettagliata del bene culturale: storia, caratteristiche artistiche, stato di conservazione, etc."
+                        placeholder="{{ __('pa_heritage.field_description_placeholder') }}"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-[#1B365D] focus:outline-none focus:ring-2 focus:ring-[#1B365D]/20">{{ old('description') }}</textarea>
                     @error('description')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -171,7 +171,7 @@
                 {{-- Image Upload --}}
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700">
-                        Immagine Principale <span class="text-red-500">*</span>
+                        {{ __('pa_heritage.field_image') }} <span class="text-red-500">*</span>
                     </label>
 
                     {{-- Upload Area --}}
@@ -191,7 +191,7 @@
 
                             {{-- Upload Text --}}
                             <p class="mb-1 text-sm font-medium text-gray-700" x-show="!fileName">
-                                Clicca per caricare un'immagine
+                                {{ __('pa_heritage.field_image_click') }}
                             </p>
                             <p class="mb-1 text-sm font-medium text-[#1B365D]" x-show="fileName" x-text="fileName">
                             </p>
@@ -222,7 +222,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
-                        Annulla
+                        {{ __('pa_heritage.btn_cancel') }}
                     </a>
 
                     <button type="submit"
@@ -232,7 +232,7 @@
                                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
                             </path>
                         </svg>
-                        Carica Bene Culturale
+                        {{ __('pa_heritage.create_title') }}
                     </button>
                 </div>
             </div>

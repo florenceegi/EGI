@@ -45,7 +45,7 @@
  */
 --}}
 
-<x-pa-layout title="Modifica Bene Culturale">
+<x-pa-layout title="{{ __('pa_heritage.edit_title') }}">
     <x-slot:breadcrumb>
         <a href="{{ route('pa.dashboard') }}" class="text-[#D4A574] hover:text-[#C39463]">Dashboard</a>
         <span class="mx-2 text-gray-400">/</span>
@@ -57,7 +57,7 @@
         <span class="text-gray-700">Modifica</span>
     </x-slot:breadcrumb>
 
-    <x-slot:pageTitle>Modifica Bene Culturale</x-slot:pageTitle>
+    <x-slot:pageTitle>{{ __('pa_heritage.edit_title') }}</x-slot:pageTitle>
 
     {{-- Page Header --}}
     <div class="mb-8 rounded-xl bg-gradient-to-r from-[#1B365D] to-[#0F2342] p-6 text-white shadow-lg">
@@ -70,7 +70,7 @@
                 </svg>
             </div>
             <div>
-                <h1 class="mb-1 text-2xl font-bold md:text-3xl">Modifica Bene Culturale</h1>
+                <h1 class="mb-1 text-2xl font-bold md:text-3xl">{{ __('pa_heritage.edit_title') }}</h1>
                 <p class="text-white/80">{{ $egi->title }}</p>
             </div>
         </div>
@@ -201,7 +201,7 @@
 
                     {{-- Current Image Preview --}}
                     <div class="mb-4">
-                        <p class="mb-2 text-sm text-gray-600">Immagine attuale:</p>
+                        <p class="mb-2 text-sm text-gray-600">{{ __('pa_heritage.field_image_current') }}</p>
                         <div class="overflow-hidden rounded-lg border-2 border-gray-200">
                             <img :src="imagePreview" alt="{{ $egi->title }}"
                                 class="h-auto w-full max-w-md object-cover">
@@ -298,7 +298,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
                             </path>
                         </svg>
-                        Salva Modifiche
+                        {{ __('pa_heritage.btn_save') }}
                     </button>
                 </div>
             </div>
