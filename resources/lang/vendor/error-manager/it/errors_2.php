@@ -26,6 +26,15 @@ return [
         'pa_dashboard_quickstats_error' => 'Errore durante il caricamento delle statistiche PA per utente :user_id.',
         'pa_heritage_list_error' => 'Errore durante il caricamento della lista patrimonio per utente :user_id.',
         'pa_heritage_detail_error' => 'Errore durante il caricamento del dettaglio patrimonio :egi_id per utente :user_id.',
+
+        // PA Acts Upload Errors (Dev)
+        'pa_act_auth_required' => 'Tentativo di upload atto PA senza autenticazione. User: :user_id, IP: :ip',
+        'pa_act_role_required' => 'Utente :user_id non autorizzato (ruolo non PA) per upload atto.',
+        'pa_act_validation_failed' => 'Validazione fallita per upload atto PA. User: :user_id, Errori: :errors',
+        'pa_act_invalid_file' => 'File non valido o mancante per upload atto PA. User: :user_id, File: :filename',
+        'pa_act_invalid_signature' => 'Firma digitale non valida o mancante su PDF. User: :user_id, File: :filename, Reason: :reason',
+        'pa_act_upload_failed' => 'Errore durante upload atto PA. User: :user_id, File: :filename, Error: :error',
+        'pa_act_collection_failed' => 'Errore creazione/recupero fascicolo per atto PA. User: :user_id, Protocol: :protocol_number',
     ],
 
     'user' => [
@@ -46,6 +55,15 @@ return [
         'pa_dashboard_quickstats_error' => 'Impossibile aggiornare le statistiche. Riprova.',
         'pa_heritage_list_error' => 'Impossibile caricare la lista del patrimonio. Riprova tra poco.',
         'pa_heritage_detail_error' => 'Impossibile caricare il dettaglio del bene patrimoniale. Riprova tra poco.',
+
+        // PA Acts Upload Errors (User-Friendly)
+        'pa_act_auth_required' => 'Devi effettuare l\'accesso per caricare atti PA.',
+        'pa_act_role_required' => 'Solo gli enti della Pubblica Amministrazione possono caricare atti amministrativi.',
+        'pa_act_validation_failed' => 'I dati inseriti non sono validi. Controlla i campi e riprova.',
+        'pa_act_invalid_file' => 'Il file caricato non è valido o è mancante. Assicurati di caricare un PDF.',
+        'pa_act_invalid_signature' => 'Il PDF deve essere firmato digitalmente con firma qualificata (QES/PAdES). Il documento caricato non ha una firma valida.',
+        'pa_act_upload_failed' => 'Si è verificato un errore durante il caricamento dell\'atto. Riprova più tardi o contatta l\'assistenza.',
+        'pa_act_collection_failed' => 'Impossibile creare o recuperare il fascicolo per l\'atto. Riprova o contatta l\'assistenza.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
