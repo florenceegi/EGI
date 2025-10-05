@@ -267,6 +267,109 @@
 
                     console.info('[PA Acts] Fascicolo created and selected:', collection);
                 });
+
+                // Handle form submission via AJAX
+                const uploadForm = document.querySelector('form[action="{{ route('pa.acts.upload.post') }}"]');
+                if (uploadForm) {
+                    uploadForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+
+                        const formData = new FormData(this);
+                        const submitBtn = this.querySelector('button[type="submit"]');
+                        const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+
+                        // Disable submit button and show loading
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.innerHTML =
+                                '<svg class="animate-spin h-5 w-5 inline mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Caricamento in corso...';
+                        }
+
+                        try {
+                            const response = await fetch(this.action, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            });
+
+                            const data = await response.json();
+
+                            // Re-enable button
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalBtnText;
+                            }
+
+                            if (data.success) {
+                                // Success toast with SweetAlert2
+                                await Swal.fire({
+                                    icon: 'success',
+                                    title: 'Atto caricato con successo!',
+                                    html: `
+                                    <div class="text-left">
+                                        <p class="mb-3">${data.message || 'L\'atto è stato caricato e sarà ancorato su blockchain.'}</p>
+                                        <div class="bg-blue-50 border-l-4 border-[#1B365D] p-4 rounded">
+                                            <p class="text-sm"><strong>Codice verifica:</strong> <code class="bg-gray-200 px-2 py-1 rounded">${data.data.public_code}</code></p>
+                                            <p class="text-sm mt-2"><strong>Protocollo:</strong> ${data.data.protocol_number}</p>
+                                            <p class="text-sm mt-2"><strong>Status:</strong> <span class="text-yellow-600">In attesa di ancoraggio</span></p>
+                                        </div>
+                                    </div>
+                                `,
+                                    confirmButtonText: 'Vai agli atti',
+                                    confirmButtonColor: '#1B365D',
+                                    showCancelButton: true,
+                                    cancelButtonText: 'Carica altro atto',
+                                    cancelButtonColor: '#6B6B6B'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = '{{ route('pa.acts.index') }}';
+                                    } else {
+                                        // Reset form for new upload
+                                        uploadForm.reset();
+                                    }
+                                });
+                            } else {
+                                // Error toast with SweetAlert2
+                                let errorMessage = data.message ||
+                                    'Si è verificato un errore durante il caricamento.';
+
+                                // Handle validation errors
+                                if (data.errors) {
+                                    const errorList = Object.values(data.errors).flat().map(err =>
+                                        `<li class="text-left">${err}</li>`).join('');
+                                    errorMessage +=
+                                        `<ul class="mt-3 list-disc list-inside">${errorList}</ul>`;
+                                }
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Errore caricamento',
+                                    html: errorMessage,
+                                    confirmButtonText: 'Riprova',
+                                    confirmButtonColor: '#C13120'
+                                });
+                            }
+                        } catch (error) {
+                            console.error('[PA Acts Upload] Error:', error);
+
+                            // Re-enable button
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalBtnText;
+                            }
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Errore di connessione',
+                                text: 'Impossibile comunicare con il server. Verifica la connessione e riprova.',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#C13120'
+                            });
+                        }
+                    });
+                }
             });
         </script>
     @endpush

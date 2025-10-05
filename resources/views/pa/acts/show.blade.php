@@ -391,12 +391,18 @@
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
             {{-- QR Code --}}
             <div class="text-center">
-                <div class="inline-block rounded-xl border-4 border-[#1B365D] bg-white p-4">
-                    {!! QrCode::size(200)->generate($verification_url) !!}
-                </div>
-                <p class="mt-4 text-sm text-gray-600">
-                    {{ __('pa_acts.show.verification.qr_description') }}
-                </p>
+                @if ($qr_code_svg)
+                    <div class="inline-block rounded-xl border-4 border-[#1B365D] bg-white p-4">
+                        {!! $qr_code_svg !!}
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600">
+                        {{ __('pa_acts.show.verification.qr_description') }}
+                    </p>
+                @else
+                    <div class="inline-block rounded-xl border-4 border-gray-300 bg-gray-50 p-8">
+                        <p class="text-gray-500">{{ __('pa_acts.show.verification.qr_unavailable') }}</p>
+                    </div>
+                @endif
             </div>
 
             {{-- Public Code & URL --}}
