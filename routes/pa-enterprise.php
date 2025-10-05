@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\PA\PADashboardController;
 use App\Http\Controllers\PA\PAHeritageController;
+use App\Http\Controllers\PaActs\PaActUploadController;
+use App\Http\Controllers\PaActs\PaActController;
+use App\Http\Controllers\PaActs\PaActPublicController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -30,7 +33,7 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::prefix('pa')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'role:pa_entity'])
     ->name('pa.')
     ->group(function () {
 
@@ -105,7 +108,16 @@ Route::prefix('pa')
             ->name('heritage.show')
             ->where('egi', '[0-9]+'); // EGI ID must be numeric
 
-        /**
+        
+        Route::prefix('/acts')->group(function () {
+            Route::get('/', [PaActController::class, 'index'])->name('acts.index');
+            Route::get('/egis', [App\Http\Controllers\EgiController::class, 'index'])->name('acts.egis.index');
+            Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('acts.upload');
+            Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('acts.upload.post');
+            Route::get('/{egi}', [PaActController::class, 'show'])->name('acts.show');
+            
+        });
+            /**
          * FUTURE ROUTES (FASE 2-3)
          *
          * Commented out - implement in POST-MVP phases:

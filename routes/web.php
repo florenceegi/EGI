@@ -1244,14 +1244,14 @@ use App\Http\Controllers\PaActs\PaActController;
 use App\Http\Controllers\PaActs\PaActPublicController;
 
 // PA Acts Routes (Authenticated PA entities only)
-Route::prefix('pa/acts')
-    ->middleware(['auth', 'role:pa_entity'])
-    ->group(function () {
-        Route::get('/', [PaActController::class, 'index'])->name('pa.acts.index');
-        Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('pa.acts.upload');
-        Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('pa.acts.upload.post');
-        Route::get('/{egi}', [PaActController::class, 'show'])->name('pa.acts.show');
-    });
+// Route::prefix('pa/acts')
+//     ->middleware(['auth', 'role:pa_entity'])
+//     ->group(function () {
+//         Route::get('/', [PaActController::class, 'index'])->name('pa.acts.index');
+//         Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('pa.acts.upload');
+//         Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('pa.acts.upload.post');
+//         Route::get('/{egi}', [PaActController::class, 'show'])->name('pa.acts.show');
+//     });
 
 // Public Verification (NO authentication, rate limited)
 Route::get('/verify/{public_code}', [PaActPublicController::class, 'verify'])
