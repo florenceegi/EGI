@@ -37,6 +37,9 @@ return [
     'identity_verification' => 'Verificación de Identidad',
     'identity_description' => 'Verifica tu identidad para cambios sensibles',
 
+    // GENERAL
+    'anonymous_user' => 'Usuario Anónimo',
+
     // CAMPOS DEL FORMULARIO
     'first_name' => 'Nombre',
     'first_name_placeholder' => 'Introduce tu nombre',
@@ -182,4 +185,3 @@ return [
         'processing_time' => 'La solicitud será procesada en un plazo de 30 días laborables',
     ],
 ];
-

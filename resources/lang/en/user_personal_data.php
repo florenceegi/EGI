@@ -38,6 +38,9 @@ return [
     'privacy_policy' => 'Privacy Policy',
     'contact_support' => 'Contact DPO or Support',
 
+    // --- General ---
+    'anonymous_user' => 'Anonymous User',
+
     // --- Deletion ---
     'delete_account' => 'Delete Account',
     'delete_account_description' => 'Permanently delete your account and all personal data.',
@@ -267,4 +270,3 @@ return [
         'processing_time' => 'Request will be processed within 30 business days',
     ],
 ];
-

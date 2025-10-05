@@ -44,6 +44,7 @@ return [
     // ===================================================================
     // FORM FIELDS
     // ===================================================================
+    'anonymous_user' => 'Utente Anonimo',
     'full_name' => 'Nome Completo',
     'full_name_help' => 'Il tuo nome legale completo (per uso interno)',
     'last_name' => 'Cognome',

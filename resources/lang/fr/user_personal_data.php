@@ -37,6 +37,9 @@ return [
     'identity_verification' => 'Vérification d\'Identité',
     'identity_description' => 'Vérifiez votre identité pour des modifications sensibles',
 
+    // GÉNÉRAL
+    'anonymous_user' => 'Utilisateur Anonyme',
+
     // CHAMPS DU FORMULAIRE
     'first_name' => 'Prénom',
     'first_name_placeholder' => 'Entrez votre prénom',

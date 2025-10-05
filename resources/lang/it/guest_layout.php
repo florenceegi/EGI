@@ -38,6 +38,7 @@ return [
         'trader_pro' => 'Trader Pro',
         'pa_entity' => 'PA',
         'natan' => 'Natan',
+        'inspector' => 'Ispettore',
     ],
 
     'header_aria_label' => 'Intestazione del sito',

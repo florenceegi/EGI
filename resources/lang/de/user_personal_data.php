@@ -37,6 +37,9 @@ return [
     'identity_verification' => 'Identitätsprüfung',
     'identity_description' => 'Verifiziere deine Identität für sensible Änderungen',
 
+    // ALLGEMEIN
+    'anonymous_user' => 'Anonymer Benutzer',
+
     // FORMULARFELDER
     'first_name' => 'Vorname',
     'first_name_placeholder' => 'Gib deinen Vornamen ein',

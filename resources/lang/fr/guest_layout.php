@@ -38,6 +38,7 @@ return [
         'trader_pro' => 'Trader Pro',
         'pa_entity' => 'AP',
         'natan' => 'Natan',
+        'inspector' => 'Inspecteur',
     ],
 
     // Header/Navbar
