@@ -1,8 +1,8 @@
     <?php
 
-return [
+    return [
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Default Filesystem Disk
     |--------------------------------------------------------------------------
@@ -13,9 +13,9 @@ return [
     |
     */
 
-    'default' => env('FILESYSTEM_DISK', 'local'),
+        'default' => env('FILESYSTEM_DISK', 'local'),
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
@@ -28,62 +28,79 @@ return [
     |
     */
 
-    'disks' => [
+        'disks' => [
 
-        'local' => [
-            'driver' => 'local',
-            'root' => storage_path('app'),
-            'url' => env('APP_URL').'/storage',
-            'permissions' => [
-                'file' => [
-                    'public' => 0644,
-                    'private' => 0600,
+            'local' => [
+                'driver' => 'local',
+                'root' => storage_path('app'),
+                'url' => env('APP_URL') . '/storage',
+                'permissions' => [
+                    'file' => [
+                        'public' => 0644,
+                        'private' => 0600,
+                    ],
+                    'dir' => [
+                        'public' => 0755,
+                        'private' => 0700,
+                    ],
                 ],
-                'dir' => [
-                    'public' => 0755,
-                    'private' => 0700,
-                ],
+                'throw' => false,
             ],
-            'throw' => false,
+
+
+            'public' => [
+                'driver' => 'local',
+                'root' => storage_path('app/public'),
+                'url' => env('APP_URL', 'http://localhost:8004') . '/storage',
+                // 'url' => 'http://localhost:8000'.'/storage',
+                'visibility' => 'public',
+                'throw' => false,
+            ],
+
+            'private' => [
+                'driver' => 'local',
+                'root' => storage_path('app/private'),
+                'visibility' => 'private',
+                'permissions' => [
+                    'file' => [
+                        'public' => 0644,
+                        'private' => 0600,
+                    ],
+                    'dir' => [
+                        'public' => 0755,
+                        'private' => 0700,
+                    ],
+                ],
+                'throw' => false,
+            ],
+
+            's3' => [
+                'driver' => 's3',
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                'region' => env('AWS_DEFAULT_REGION'),
+                'bucket' => env('AWS_BUCKET'),
+                'url' => env('AWS_URL'),
+                'endpoint' => env('AWS_ENDPOINT'),
+                'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+                'throw' => false,
+            ],
+
+            'do' => [
+                'driver' => 's3',
+                'key' => env('DO_ACCESS_KEY_ID'),
+                'secret' => env('DO_SECRET_ACCESS_KEY'),
+                'region' => env('DO_DEFAULT_REGION'),
+                'bucket' => env('DO_BUCKET'),
+                'url' => env('DO_URL'),
+                'endpoint' => env('DO_ENDPOINT'),
+                'use_path_style_endpoint' => env('DO_USE_PATH_STYLE_ENDPOINT', false),
+                'throw' => false,
+            ],
+
         ],
 
-
-        'public' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL', 'http://localhost:8004').'/storage',
-            // 'url' => 'http://localhost:8000'.'/storage',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-
-        's3' => [
-            'driver' => 's3',
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET'),
-            'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-            'throw' => false,
-        ],
-
-        'do' => [
-            'driver' => 's3',
-            'key' => env('DO_ACCESS_KEY_ID'),
-            'secret' => env('DO_SECRET_ACCESS_KEY'),
-            'region' => env('DO_DEFAULT_REGION'),
-            'bucket' => env('DO_BUCKET'),
-            'url' => env('DO_URL'),
-            'endpoint' => env('DO_ENDPOINT'),
-            'use_path_style_endpoint' => env('DO_USE_PATH_STYLE_ENDPOINT', false),
-            'throw' => false,
-        ],
-
-    ],
-
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Symbolic Links
     |--------------------------------------------------------------------------
@@ -94,8 +111,8 @@ return [
     |
     */
 
-    'links' => [
-        public_path('storage') => storage_path('app/public'),
-    ],
+        'links' => [
+            public_path('storage') => storage_path('app/public'),
+        ],
 
-];
+    ];
