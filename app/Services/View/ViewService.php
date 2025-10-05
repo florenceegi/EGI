@@ -165,28 +165,33 @@ class ViewService {
      * Get user primary role
      *
      * @param User $user
-     * @return string Role name (pa_entity, inspector, company, creator)
+     * @return string Role name (from PlatformRole enum)
      *
-     * Priority order:
-     * 1. pa_entity
-     * 2. inspector
-     * 3. company
-     * 4. creator (default)
+     * Uses PlatformRole::priorityOrder() for dynamic role resolution.
+     * Returns first matching role from priority list, or 'creator' as default.
+     *
+     * Priority order (from PlatformRole enum):
+     * 1. natan (system role)
+     * 2. epp (environmental programs)
+     * 3. pa_entity (public administration)
+     * 4. inspector (technical validation)
+     * 5. company (commercial entities)
+     * 6. trader_pro (professional traders)
+     * 7. vip (premium users)
+     * 8. commissioner (curators)
+     * 9. collector (art collectors)
+     * 10. weak (limited access)
+     * 11. creator (default - artists)
      */
     protected function getUserPrimaryRole(User $user): string {
-        if ($user->hasRole('pa_entity')) {
-            return 'pa_entity';
+        // Iterate through PlatformRole priority order
+        foreach (\App\Enums\PlatformRole::priorityOrder() as $role) {
+            if ($user->hasRole($role->value)) {
+                return $role->value;
+            }
         }
 
-        if ($user->hasRole('inspector')) {
-            return 'inspector';
-        }
-
-        if ($user->hasRole('company')) {
-            return 'company';
-        }
-
-        // Default: Creator
+        // Fallback: Creator (should never reach here if CREATOR is in priorityOrder)
         return 'creator';
     }
 
