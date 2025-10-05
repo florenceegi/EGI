@@ -195,44 +195,44 @@ class PaActController extends Controller {
                 ->whereHas('collection', function ($q) use ($user) {
                     $q->where('creator_id', $user->id);
                 })
-                ->whereNotNull('metadata->protocol_number'); // Solo atti PA
+                ->whereNotNull('pa_protocol_number'); // Solo atti PA (colonna dedicata)
 
             // Filter: Search (protocol number or title)
             if ($search = $request->input('search')) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('metadata->protocol_number', 'LIKE', "%{$search}%")
+                    $q->where('pa_protocol_number', 'LIKE', "%{$search}%")
                         ->orWhere('title', 'LIKE', "%{$search}%");
                 });
             }
 
             // Filter: Doc type
             if ($docType = $request->input('doc_type')) {
-                $query->where('metadata->doc_type', $docType);
+                $query->where('pa_act_type', $docType);
             }
 
             // Filter: Date range
             if ($dateFrom = $request->input('date_from')) {
-                $query->whereDate('metadata->protocol_date', '>=', $dateFrom);
+                $query->whereDate('pa_protocol_date', '>=', $dateFrom);
             }
 
             if ($dateTo = $request->input('date_to')) {
-                $query->whereDate('metadata->protocol_date', '<=', $dateTo);
+                $query->whereDate('pa_protocol_date', '<=', $dateTo);
             }
 
             // Filter: Anchoring status
             if ($status = $request->input('status')) {
                 if ($status === 'anchored') {
-                    $query->where('metadata->anchored', true);
+                    $query->where('pa_anchored', true);
                 } elseif ($status === 'pending') {
                     $query->where(function ($q) {
-                        $q->whereNull('metadata->anchored')
-                            ->orWhere('metadata->anchored', false);
+                        $q->whereNull('pa_anchored')
+                            ->orWhere('pa_anchored', false);
                     });
                 }
             }
 
             // Sort: Protocol date desc (default)
-            $query->orderByRaw("JSON_EXTRACT(metadata, '$.protocol_date') DESC");
+            $query->orderBy('pa_protocol_date', 'desc');
 
             // Paginate
             $acts = $query->paginate(15)->withQueryString();
@@ -240,16 +240,16 @@ class PaActController extends Controller {
             // Stats
             $stats = [
                 'total' => Egi::whereHas('collection', fn($q) => $q->where('creator_id', $user->id))
-                    ->whereNotNull('metadata->protocol_number')
+                    ->whereNotNull('pa_protocol_number')
                     ->count(),
                 'anchored' => Egi::whereHas('collection', fn($q) => $q->where('creator_id', $user->id))
-                    ->where('metadata->anchored', true)
+                    ->where('pa_anchored', true)
                     ->count(),
                 'pending' => Egi::whereHas('collection', fn($q) => $q->where('creator_id', $user->id))
-                    ->whereNotNull('metadata->protocol_number')
+                    ->whereNotNull('pa_protocol_number')
                     ->where(function ($q) {
-                        $q->whereNull('metadata->anchored')
-                            ->orWhere('metadata->anchored', false);
+                        $q->whereNull('pa_anchored')
+                            ->orWhere('pa_anchored', false);
                     })
                     ->count()
             ];
@@ -323,19 +323,38 @@ class PaActController extends Controller {
             // Load relationships
             $egi->load(['collection', 'user']);
 
-            // Extract metadata
+            // Extract metadata (use dedicated columns + jsonMetadata for extra data)
+            $signatureValidation = $egi->jsonMetadata['signature_validation'] ?? [];
+            
             $metadata = [
-                'protocol_number' => $egi->metadata['protocol_number'] ?? null,
-                'protocol_date' => $egi->metadata['protocol_date'] ?? null,
-                'doc_type' => $egi->metadata['doc_type'] ?? null,
-                'doc_hash' => $egi->metadata['doc_hash'] ?? null,
-                'signature_validation' => $egi->metadata['signature_validation'] ?? [],
-                'anchor_txid' => $egi->metadata['anchor_txid'] ?? null,
-                'anchor_root' => $egi->metadata['anchor_root'] ?? null,
-                'merkle_proof' => $egi->metadata['merkle_proof'] ?? [],
-                'public_code' => $egi->metadata['public_code'] ?? null,
-                'anchored' => $egi->metadata['anchored'] ?? false,
-                'anchored_at' => $egi->metadata['anchored_at'] ?? null
+                // Protocol info (dedicated columns)
+                'protocol_number' => $egi->pa_protocol_number,
+                'protocol_date' => $egi->pa_protocol_date,
+                'doc_type' => $egi->pa_act_type,
+                'title' => $egi->title,
+                'entity_name' => $egi->user->name ?? 'N/A',
+                
+                // Document hash & blockchain
+                'doc_hash' => $egi->jsonMetadata['doc_hash'] ?? null,
+                'anchor_txid' => $egi->jsonMetadata['anchor_txid'] ?? null,
+                'anchor_root' => $egi->jsonMetadata['anchor_root'] ?? null,
+                'merkle_proof' => $egi->jsonMetadata['merkle_proof'] ?? [],
+                'public_code' => $egi->pa_public_code,
+                'anchored' => $egi->pa_anchored,
+                'anchored_at' => $egi->pa_anchored_at,
+                
+                // Signature data (extracted from signature_validation sub-array)
+                'signer_cn' => $signatureValidation['signer_cn'] ?? null,
+                'signer_email' => $signatureValidation['signer_email'] ?? null,
+                'signer_organization' => $signatureValidation['signer_organization'] ?? null,
+                'signer_role' => $signatureValidation['signer_role'] ?? null,
+                'cert_serial' => $signatureValidation['cert_serial'] ?? null,
+                'cert_issuer' => $signatureValidation['cert_issuer'] ?? null,
+                'signature_timestamp' => $signatureValidation['signature_timestamp'] ?? null,
+                'signature_type' => $signatureValidation['signature_type'] ?? null,
+                
+                // Keep full signature_validation for debugging
+                'signature_validation' => $signatureValidation
             ];
 
             // Verification URL
@@ -343,14 +362,24 @@ class PaActController extends Controller {
                 ? route('verify.act', $metadata['public_code'])
                 : null;
 
-            // QR code URL
-            $qrCodeUrl = $egi->metadata['qr_code_path'] ?? null;
+            // Generate QR Code SVG (using BaconQrCode - same as Jetstream 2FA)
+            $qrCodeSvg = null;
+            if ($verificationUrl) {
+                try {
+                    $qrCodeSvg = $this->generateQrCodeSvg($verificationUrl);
+                } catch (\Exception $qrError) {
+                    $this->logger->warning('[PaActController] QR code generation failed', [
+                        'error' => $qrError->getMessage()
+                    ]);
+                }
+            }
 
             return view('pa.acts.show', [
-                'act' => $egi,
+                'egi' => $egi, // Pass EGI object
+                'act' => $egi, // Backward compatibility alias
                 'metadata' => $metadata,
                 'verification_url' => $verificationUrl,
-                'qr_code_url' => $qrCodeUrl,
+                'qr_code_svg' => $qrCodeSvg,
                 'doc_type_label' => $this->getDocTypeLabel($metadata['doc_type'])
             ]);
         } catch (\Exception $e) {
@@ -410,5 +439,24 @@ class PaActController extends Controller {
         }
 
         return __("pa_acts.doc_types.{$docType}.label");
+    }
+
+    /**
+     * Generate QR Code SVG
+     * 
+     * @param string $data Data to encode (URL)
+     * @return string SVG markup
+     * 
+     * Uses BaconQrCode (same library as Jetstream 2FA)
+     */
+    protected function generateQrCodeSvg(string $data): string {
+        $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+            new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200),
+            new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+        );
+
+        $writer = new \BaconQrCode\Writer($renderer);
+
+        return $writer->writeString($data);
     }
 }
