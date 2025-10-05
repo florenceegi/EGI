@@ -247,15 +247,14 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @gdpr-compliant Minimal data processing, audit logging, CAD legal basis
  * @cad-compliant Implements CAD Art. 20-23 requirements
  */
-class PaActService
-{
+class PaActService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AlgorandService $algorandService;
     protected SignatureValidationService $signatureService;
     protected MerkleTreeService $merkleService;
     protected CollectionService $collectionService;
-    
+
     /**
      * Constructor - Dependency Injection
      * 
@@ -281,7 +280,7 @@ class PaActService
         $this->merkleService = $merkleService;
         $this->collectionService = $collectionService;
     }
-    
+
     /**
      * Handle PA act upload (main orchestration method)
      * 
@@ -320,8 +319,7 @@ class PaActService
      * ]
      * ```
      */
-    public function uploadDocument(UploadedFile $file, array $metadata, User $user): array
-    {
+    public function uploadDocument(UploadedFile $file, array $metadata, User $user): array {
         try {
             $this->logger->info('[PaActService] Starting PA act upload', [
                 'user_id' => $user->id,
@@ -329,16 +327,16 @@ class PaActService
                 'size' => $file->getSize(),
                 'metadata' => $metadata
             ]);
-            
+
             // STEP 1: Validate signature
             $signatureValidation = $this->signatureService->validatePdfSignature($file);
-            
+
             if (!$signatureValidation['valid']) {
                 $this->logger->warning('[PaActService] Invalid signature', [
                     'user_id' => $user->id,
                     'error' => $signatureValidation['error'] ?? 'UNKNOWN'
                 ]);
-                
+
                 return [
                     'success' => false,
                     'error' => 'INVALID_SIGNATURE',
@@ -346,21 +344,21 @@ class PaActService
                     'details' => $signatureValidation
                 ];
             }
-            
+
             // STEP 2: Calculate hash
             $docHash = hash_file('sha256', $file->getRealPath());
-            
+
             $this->logger->info('[PaActService] Document hash calculated', [
                 'user_id' => $user->id,
                 'hash' => $docHash
             ]);
-            
+
             // STEP 3: Find/create collection (fascicolo)
             $collectionResult = $this->collectionService->findOrCreateUserCollection($user, [
                 'context' => 'pa_act_upload',
                 'user_id' => $user->id
             ]);
-            
+
             // Handle JsonResponse error from CollectionService
             if ($collectionResult instanceof \Illuminate\Http\JsonResponse) {
                 return [
@@ -369,39 +367,39 @@ class PaActService
                     'message' => __('pa_acts.errors.collection_failed')
                 ];
             }
-            
+
             $collection = $collectionResult;
-            
+
             // STEP 4: Generate public code
             $publicCode = $this->generatePublicCode();
-            
+
             // STEP 5: Create EGI with metadata
             $egi = $this->createEgi($file, $collection, $user, $metadata, [
                 'doc_hash' => $docHash,
                 'signature_validation' => $signatureValidation,
                 'public_code' => $publicCode
             ]);
-            
+
             // STEP 6: Store file securely
             $filePath = $this->storeFile($file, $docHash);
-            
-            // Update EGI with file path
-            $egi->metadata = array_merge($egi->metadata ?? [], ['file_path' => $filePath]);
+
+            // Update EGI with file path in jsonMetadata
+            $egi->jsonMetadata = array_merge($egi->jsonMetadata ?? [], ['file_path' => $filePath]);
             $egi->save();
-            
+
             // STEP 7: Queue for batch anchoring (will be processed by cron job)
             // Note: Batch processing happens asynchronously via TokenizePaActBatch job
-            
+
             // STEP 8: Generate verification URL
             $verificationUrl = route('verify.act', $publicCode);
-            
+
             $this->logger->info('[PaActService] PA act uploaded successfully', [
                 'user_id' => $user->id,
                 'egi_id' => $egi->id,
                 'public_code' => $publicCode,
                 'doc_hash' => $docHash
             ]);
-            
+
             return [
                 'success' => true,
                 'egi_id' => $egi->id,
@@ -410,20 +408,19 @@ class PaActService
                 'verification_url' => $verificationUrl,
                 'message' => __('pa_acts.success.upload_completed')
             ];
-            
         } catch (\Exception $e) {
             $this->logger->error('[PaActService] PA act upload failed', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
                 'file' => $file->getClientOriginalName()
             ]);
-            
+
             $this->errorManager->handle('PA_ACT_UPLOAD_FAILED', [
                 'user_id' => $user->id,
                 'filename' => $file->getClientOriginalName(),
                 'error' => $e->getMessage()
             ], $e);
-            
+
             return [
                 'success' => false,
                 'error' => 'UPLOAD_FAILED',
@@ -431,7 +428,7 @@ class PaActService
             ];
         }
     }
-    
+
     /**
      * Create EGI record with PA act metadata
      * 
@@ -449,35 +446,44 @@ class PaActService
         array $userMetadata,
         array $systemMetadata
     ): Egi {
-        // Merge all metadata
+        // Merge all metadata for jsonMetadata field
         $fullMetadata = array_merge($userMetadata, $systemMetadata, [
             'uploaded_at' => now()->toIso8601String(),
             'original_filename' => $file->getClientOriginalName(),
             'file_size' => $file->getSize(),
             'mime_type' => $file->getMimeType()
         ]);
-        
-        // Create EGI
+
+        // Create EGI with PA Acts dedicated columns
         $egi = Egi::create([
             'collection_id' => $collection->id,
             'user_id' => $user->id,
             'owner_id' => $user->id,
             'title' => $userMetadata['title'] ?? 'Atto PA',
             'description' => $userMetadata['description'] ?? null,
-            'metadata' => $fullMetadata,
+            'jsonMetadata' => $fullMetadata, // CORRECT: use jsonMetadata column
+            'type' => 'pa_act', // Mark as PA act
+            // PA Acts dedicated columns
+            'pa_act_type' => $userMetadata['doc_type'],
+            'pa_protocol_number' => $userMetadata['protocol_number'],
+            'pa_protocol_date' => $userMetadata['protocol_date'],
+            'pa_public_code' => $systemMetadata['public_code'],
+            'pa_anchored' => false,
+            'pa_anchored_at' => null,
+            // Status
             'status' => 'published', // PA acts are always published
             'is_published' => true
         ]);
-        
+
         $this->logger->info('[PaActService] EGI created', [
             'egi_id' => $egi->id,
             'collection_id' => $collection->id,
             'user_id' => $user->id
         ]);
-        
+
         return $egi;
     }
-    
+
     /**
      * Store PDF file securely in private storage
      * 
@@ -490,21 +496,20 @@ class PaActService
      * - Filename: hash-based (prevents collisions + directory traversal)
      * - Path: pa_acts/ (dedicated folder)
      */
-    protected function storeFile(UploadedFile $file, string $hash): string
-    {
+    protected function storeFile(UploadedFile $file, string $hash): string {
         $filename = $hash . '.pdf';
         $path = 'pa_acts/' . $filename;
-        
+
         Storage::disk('private')->put($path, file_get_contents($file->getRealPath()));
-        
+
         $this->logger->info('[PaActService] File stored securely', [
             'path' => $path,
             'hash' => $hash
         ]);
-        
+
         return $path;
     }
-    
+
     /**
      * Generate unique public verification code
      * 
@@ -517,16 +522,15 @@ class PaActService
      * - Check database for collisions (retry if exists)
      * - Used in public URL: /verify/{public_code}
      */
-    protected function generatePublicCode(): string
-    {
+    protected function generatePublicCode(): string {
         do {
             $code = 'VER-' . strtoupper(Str::random(10));
-            $exists = Egi::where('metadata->public_code', $code)->exists();
+            $exists = Egi::where('pa_public_code', $code)->exists();
         } while ($exists);
-        
+
         return $code;
     }
-    
+
     /**
      * Get document by public verification code
      * 
@@ -535,11 +539,10 @@ class PaActService
      * 
      * USAGE: Public verification page (/verify/{public_code})
      */
-    public function getDocumentByPublicCode(string $publicCode): ?Egi
-    {
-        return Egi::where('metadata->public_code', $publicCode)->first();
+    public function getDocumentByPublicCode(string $publicCode): ?Egi {
+        return Egi::where('pa_public_code', $publicCode)->first();
     }
-    
+
     /**
      * Tokenize document (anchor on blockchain)
      * 
@@ -554,61 +557,61 @@ class PaActService
      * 3. Update metadata with TXID + merkle proof
      * 4. Mark as anchored
      */
-    public function tokenizeDocument(Egi $egi): array
-    {
+    public function tokenizeDocument(Egi $egi): array {
         try {
-            $docHash = $egi->metadata['doc_hash'] ?? null;
-            
+            $docHash = $egi->jsonMetadata['doc_hash'] ?? null;
+
             if (!$docHash) {
-                throw new \Exception('Document hash not found in metadata');
+                throw new \Exception('Document hash not found in jsonMetadata');
             }
-            
+
             $this->logger->info('[PaActService] Tokenizing document', [
                 'egi_id' => $egi->id,
                 'doc_hash' => $docHash
             ]);
-            
+
             // Anchor on blockchain (single document for now)
             // TODO: Implement batch anchoring with MerkleTreeService
             $anchorResult = $this->algorandService->anchorDocument($docHash, [
                 'egi_id' => $egi->id,
-                'public_code' => $egi->metadata['public_code']
+                'public_code' => $egi->pa_public_code // Use dedicated column
             ]);
-            
+
             if (!$anchorResult['success']) {
                 throw new \Exception('Blockchain anchoring failed');
             }
-            
-            // Update EGI metadata
-            $metadata = $egi->metadata;
+
+            // Update EGI jsonMetadata
+            $metadata = $egi->jsonMetadata;
             $metadata['anchor_txid'] = $anchorResult['txid'];
-            $metadata['anchored'] = true;
-            $metadata['anchored_at'] = now()->toIso8601String();
-            $egi->metadata = $metadata;
+            $egi->jsonMetadata = $metadata;
+
+            // Update PA Acts dedicated columns
+            $egi->pa_anchored = true;
+            $egi->pa_anchored_at = now();
             $egi->save();
-            
+
             $this->logger->info('[PaActService] Document tokenized successfully', [
                 'egi_id' => $egi->id,
                 'txid' => $anchorResult['txid']
             ]);
-            
+
             return [
                 'success' => true,
                 'txid' => $anchorResult['txid'],
                 'egi_id' => $egi->id
             ];
-            
         } catch (\Exception $e) {
             $this->logger->error('[PaActService] Tokenization failed', [
                 'egi_id' => $egi->id,
                 'error' => $e->getMessage()
             ]);
-            
+
             $this->errorManager->handle('PA_ACT_TOKENIZATION_FAILED', [
                 'egi_id' => $egi->id,
                 'error' => $e->getMessage()
             ], $e);
-            
+
             return [
                 'success' => false,
                 'error' => 'TOKENIZATION_FAILED',

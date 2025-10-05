@@ -116,6 +116,12 @@ class Egi extends Model {
         'extension',
         'media',
         'type',
+        'pa_act_type',          // PA Acts: Document type (delibera, determina, ordinanza, decreto, atto)
+        'pa_protocol_number',   // PA Acts: Protocol number (e.g., 12345/2025)
+        'pa_protocol_date',     // PA Acts: Protocol date
+        'pa_public_code',       // PA Acts: Public verification code (VER-XXXXXXXXXX)
+        'pa_anchored',          // PA Acts: Blockchain anchored flag
+        'pa_anchored_at',       // PA Acts: Blockchain anchored timestamp
         'bind',
         'paired',
         'price',
@@ -158,6 +164,9 @@ class Egi extends Model {
         'rebind'         => 'boolean',      // Cast 'rebind' to boolean
         'hyper'          => 'boolean',      // Cast 'hyper' to boolean
         'is_public'      => 'boolean',      // Cast 'is_public' to boolean
+        'pa_protocol_date' => 'date',       // PA Acts: Protocol date as Carbon date
+        'pa_anchored'    => 'boolean',      // PA Acts: Anchored flag as boolean
+        'pa_anchored_at' => 'datetime',     // PA Acts: Anchored timestamp as Carbon datetime
         'created_at'     => 'datetime',     // Standard timestamp casting
         'updated_at'     => 'datetime',     // Standard timestamp casting
         'deleted_at'     => 'datetime',     // Required for SoftDeletes
