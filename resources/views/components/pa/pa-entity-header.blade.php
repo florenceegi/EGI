@@ -28,7 +28,7 @@
 
 @php
     // Get entity name (use profile name or fallback to user name)
-    $entityName = $entity->profile->institution_name ?? ($entity->name ?? 'Ente PA');
+    $entityName = $entity->profile->institution_name ?? ($entity->name ?? __('pa_heritage.entity_default_name'));
 
     // Get logo/avatar (use profile avatar or default)
     $logoUrl = $entity->profile->avatar_url ?? ($entity->profile_photo_url ?? asset('images/pa-entity-logo.svg'));
@@ -81,7 +81,7 @@
                 {{-- Collection Info (if provided) --}}
                 @if ($collection)
                     <div class="mb-3 rounded-lg bg-white/10 p-3">
-                        <p class="mb-1 text-xs uppercase tracking-wide text-white/70">Collezione</p>
+                        <p class="mb-1 text-xs uppercase tracking-wide text-white/70">{{ __('pa_heritage.entity_collection_label') }}</p>
                         <p class="text-sm font-semibold text-white">{{ $collection->name }}</p>
                     </div>
                 @endif
@@ -112,7 +112,7 @@
                                 class="flex items-center gap-1 transition-colors hover:text-[#D4A574]"
                                 aria-label="Sito web {{ $entityName }}">
                                 <span class="material-symbols-outlined text-base" aria-hidden="true">language</span>
-                                <span class="hidden sm:inline">Sito Web</span>
+                                <span class="hidden sm:inline">{{ __('pa_heritage.entity_website_label') }}</span>
                             </a>
                         @endif
                     </div>
@@ -126,19 +126,19 @@
                     {{-- Heritage Count --}}
                     <div class="text-center">
                         <p class="text-2xl font-bold text-[#D4A574]">{{ $stats['heritage_count'] }}</p>
-                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">Beni</p>
+                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">{{ __('pa_heritage.entity_stats_heritage') }}</p>
                     </div>
 
                     {{-- CoA Issued --}}
                     <div class="text-center">
                         <p class="text-2xl font-bold text-[#D4A574]">{{ $stats['coa_issued'] }}</p>
-                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">CoA</p>
+                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">{{ __('pa_heritage.entity_stats_coa') }}</p>
                     </div>
 
                     {{-- Collections --}}
                     <div class="text-center">
                         <p class="text-2xl font-bold text-[#D4A574]">{{ $stats['collections'] }}</p>
-                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">Collezioni</p>
+                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">{{ __('pa_heritage.entity_stats_collections') }}</p>
                     </div>
                 </div>
             @endif

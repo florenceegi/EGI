@@ -113,7 +113,7 @@ return [
     'field_description_help' => 'Fornisci informazioni complete sul bene culturale per facilitare la catalogazione',
     'image_preview' => 'Anteprima:',
     'image_format' => 'JPG, PNG o WebP (Max 10MB)',
-    
+
     // Create Page - Guidelines
     'guidelines_title' => 'Linee Guida per il Caricamento',
     'guidelines_collection' => 'Seleziona la collezione appropriata tra quelle gestite dal tuo ente',
@@ -129,7 +129,7 @@ return [
     'published' => 'Pubblicato',
     'btn_back_to_list' => 'Torna alla Lista',
     'btn_download_coa' => 'Scarica CoA PDF',
-    
+
     // Show Page - CoA Section
     'coa_title' => 'Certificato di Autenticità',
     'coa_id' => 'ID Certificato',
@@ -143,12 +143,12 @@ return [
     'btn_verify' => 'Verifica',
     'coa_attached_files' => 'File Allegati',
     'coa_image_file' => 'Immagine',
-    
+
     // Show Page - No CoA
     'no_coa_issued' => 'Nessun Certificato Emesso',
     'no_coa_message' => 'Questo bene culturale non ha ancora un Certificato di Autenticità associato.',
     'btn_request_coa' => 'Richiedi Certificato',
-    
+
     // Show Page - QR Code
     'qr_public_title' => 'QR Code Pubblico',
     'qr_public_message' => 'Genera QR code per verifica pubblica (disponibile in FASE 3)',
@@ -165,7 +165,7 @@ return [
     'field_image_label' => 'Immagine Principale',
     'field_upload_new_optional' => 'Clicca per caricare una nuova immagine (opzionale)',
     'field_keep_current' => 'Lascia vuoto per mantenere l\'immagine attuale',
-    
+
     // Edit Page - CoA Info Box
     'coa_info_title' => 'Certificato di Autenticità (CoA)',
     'coa_info_status' => 'Stato:',
@@ -173,4 +173,39 @@ return [
     'coa_info_issued' => 'Emesso il:',
     'coa_info_readonly' => 'Le informazioni del CoA non possono essere modificate direttamente. Contatta l\'amministratore per modifiche ai dati certificati.',
     'btn_cancel_edit' => 'Annulla',
+
+    // =========================================
+    // COMPONENTS SECTION
+    // =========================================
+
+    // Component: pa-coa-badge
+    'coa_badge_valid' => 'CoA Valido',
+    'coa_badge_valid_aria' => 'Certificato di Autenticità valido e verificato',
+    'coa_badge_revoked' => 'CoA Revocato',
+    'coa_badge_revoked_aria' => 'Certificato di Autenticità revocato',
+    'coa_badge_pending' => 'In Attesa',
+    'coa_badge_pending_aria' => 'Certificato di Autenticità in attesa di approvazione',
+    'coa_badge_expired' => 'Scaduto',
+    'coa_badge_expired_aria' => 'Certificato di Autenticità scaduto',
+    'coa_badge_none' => 'Nessun CoA',
+    'coa_badge_none_aria' => 'Nessun Certificato di Autenticità emesso',
+
+    // Component: pa-entity-header
+    'entity_default_name' => 'Ente PA',
+    'entity_collection_label' => 'Collezione',
+    'entity_website_label' => 'Sito Web',
+    'entity_stats_heritage' => 'Beni',
+    'entity_stats_coa' => 'CoA',
+    'entity_stats_collections' => 'Collezioni',
+
+    // Component: pa-heritage-card
+    'card_published_status' => 'Pubblicato',
+    'card_btn_details' => 'Dettagli',
+    'card_btn_coa' => 'CoA',
+    'card_aria_view_details' => 'Visualizza dettagli',
+    'card_aria_download_coa' => 'Scarica CoA',
+    'card_aria_item' => 'Bene culturale:',
+    'card_created_date_title' => 'Data creazione',
+    'card_collection_title' => 'Collezione',
+    'card_published_title' => 'Pubblicato',
 ];

@@ -31,34 +31,34 @@
     // Status configuration (PA Brand Guidelines compliant)
     $statusConfig = [
         'valid' => [
-            'label' => 'CoA Valido',
+            'label' => __('pa_heritage.coa_badge_valid'),
             'color' => 'bg-[#2D5016] text-white border-[#2D5016]',
             'icon' => 'verified',
-            'ariaLabel' => 'Certificato di Autenticità valido e verificato',
+            'ariaLabel' => __('pa_heritage.coa_badge_valid_aria'),
         ],
         'revoked' => [
-            'label' => 'CoA Revocato',
+            'label' => __('pa_heritage.coa_badge_revoked'),
             'color' => 'bg-[#C13120] text-white border-[#C13120]',
             'icon' => 'cancel',
-            'ariaLabel' => 'Certificato di Autenticità revocato',
+            'ariaLabel' => __('pa_heritage.coa_badge_revoked_aria'),
         ],
         'pending' => [
-            'label' => 'In Attesa',
+            'label' => __('pa_heritage.coa_badge_pending'),
             'color' => 'bg-[#E67E22] text-white border-[#E67E22]',
             'icon' => 'pending',
-            'ariaLabel' => 'Certificato di Autenticità in attesa di approvazione',
+            'ariaLabel' => __('pa_heritage.coa_badge_pending_aria'),
         ],
         'expired' => [
-            'label' => 'Scaduto',
+            'label' => __('pa_heritage.coa_badge_expired'),
             'color' => 'bg-[#6B6B6B] text-white border-[#6B6B6B]',
             'icon' => 'event_busy',
-            'ariaLabel' => 'Certificato di Autenticità scaduto',
+            'ariaLabel' => __('pa_heritage.coa_badge_expired_aria'),
         ],
         'none' => [
-            'label' => 'Nessun CoA',
+            'label' => __('pa_heritage.coa_badge_none'),
             'color' => 'bg-gray-200 text-gray-600 border-gray-300',
             'icon' => 'description_off',
-            'ariaLabel' => 'Nessun Certificato di Autenticità emesso',
+            'ariaLabel' => __('pa_heritage.coa_badge_none_aria'),
         ],
     ];
 
