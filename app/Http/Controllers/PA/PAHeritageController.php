@@ -108,6 +108,7 @@ class PAHeritageController extends Controller {
             ]);
 
             return view('pa.heritage.index', compact('heritage'));
+        
         } catch (\Exception $e) {
             $this->errorManager->handle('PA_HERITAGE_LIST_ERROR', [], $e);
 
@@ -168,6 +169,7 @@ class PAHeritageController extends Controller {
             ]);
 
             return view('pa.heritage.show', compact('egi'));
+        
         } catch (\Exception $e) {
             // Skip re-throwing 403 abort exceptions
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException && $e->getStatusCode() === 403) {

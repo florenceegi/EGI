@@ -136,6 +136,8 @@ class EgiController extends Controller {
                 'filters' => $request->only(['search', 'coa_status']),
             ]);
 
+            // dd($view, $egis);
+
             return view($view, compact('egis'));
         } catch (\Exception $e) {
             return $this->errorManager->handle('EGI_INDEX_ERROR', [
@@ -243,6 +245,7 @@ class EgiController extends Controller {
             ]);
 
             return view($view, compact('egi', 'collections'));
+        
         } catch (\Exception $e) {
             return $this->errorManager->handle('EGI_EDIT_FORM_ERROR', [
                 'egi_id' => $egi->id,
