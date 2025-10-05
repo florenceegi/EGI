@@ -27,19 +27,19 @@
 @props(['entity', 'collection' => null, 'showContact' => true, 'showStats' => false, 'compact' => false])
 
 @php
-    // Get entity name (use profile name or fallback to user name)
-    $entityName = $entity->profile->institution_name ?? ($entity->name ?? __('pa_heritage.entity_default_name'));
+    // Get entity name (use organization name or fallback to user name)
+    $entityName = $entity->organizationData->org_name ?? ($entity->name ?? __('pa_heritage.entity_default_name'));
 
-    // Get logo/avatar (use profile avatar or default)
-    $logoUrl = $entity->profile->avatar_url ?? ($entity->profile_photo_url ?? asset('images/pa-entity-logo.svg'));
+    // Get logo/avatar (use Jetstream profile photo or default)
+    $logoUrl = $entity->profile_photo_url ?? asset('images/pa-entity-logo.svg');
 
-    // Municipality/Location
-    $municipality = $entity->profile->municipality ?? ($entity->profile->city ?? 'Firenze');
+    // Municipality/Location (from organization data)
+    $municipality = $entity->organizationData->org_city ?? 'Firenze';
 
-    // Contact info
-    $email = $entity->email ?? null;
-    $phone = $entity->profile->phone ?? null;
-    $website = $entity->profile->website ?? null;
+    // Contact info (from organization data)
+    $email = $entity->organizationData->org_email ?? ($entity->email ?? null);
+    $phone = $entity->organizationData->org_phone_1 ?? null;
+    $website = $entity->organizationData->org_site_url ?? null;
 
     // Statistics (if enabled)
     $stats = [];
@@ -61,7 +61,7 @@
             <div class="flex-shrink-0">
                 <div
                     class="{{ $compact ? 'md:w-16 md:h-16' : 'md:w-24 md:h-24' }} h-20 w-20 rounded-full bg-white p-2 shadow-xl">
-                    <img src="{{ $logoUrl }}" alt="Logo {{ $entityName }}" class="h-full w-full object-contain" />
+                    <img src="{{ $logoUrl }}" alt="Logo {{ $entityName }}" class="object-contain w-full h-full" />
                 </div>
             </div>
 
@@ -74,15 +74,16 @@
 
                 {{-- Municipality --}}
                 <div class="mb-3 flex items-center gap-2 text-[#D4A574]">
-                    <span class="material-symbols-outlined text-lg" aria-hidden="true">location_on</span>
+                    <span class="text-lg material-symbols-outlined" aria-hidden="true">location_on</span>
                     <span class="text-sm font-medium">{{ $municipality }}</span>
                 </div>
 
                 {{-- Collection Info (if provided) --}}
                 @if ($collection)
-                    <div class="mb-3 rounded-lg bg-white/10 p-3">
-                        <p class="mb-1 text-xs uppercase tracking-wide text-white/70">{{ __('pa_heritage.entity_collection_label') }}</p>
-                        <p class="text-sm font-semibold text-white">{{ $collection->name }}</p>
+                    <div class="p-3 mb-3 rounded-lg bg-white/10">
+                        <p class="mb-1 text-xs tracking-wide uppercase text-white/70">
+                            {{ __('pa_heritage.entity_collection_label') }}</p>
+                        <p class="text-sm font-semibold text-white">{{ $collection->collection_name }}</p>
                     </div>
                 @endif
 
@@ -93,7 +94,7 @@
                             <a href="mailto:{{ $email }}"
                                 class="flex items-center gap-1 transition-colors hover:text-[#D4A574]"
                                 aria-label="Email {{ $entityName }}">
-                                <span class="material-symbols-outlined text-base" aria-hidden="true">mail</span>
+                                <span class="text-base material-symbols-outlined" aria-hidden="true">mail</span>
                                 <span class="hidden sm:inline">{{ $email }}</span>
                             </a>
                         @endif
@@ -102,7 +103,7 @@
                             <a href="tel:{{ $phone }}"
                                 class="flex items-center gap-1 transition-colors hover:text-[#D4A574]"
                                 aria-label="Telefono {{ $entityName }}">
-                                <span class="material-symbols-outlined text-base" aria-hidden="true">call</span>
+                                <span class="text-base material-symbols-outlined" aria-hidden="true">call</span>
                                 <span>{{ $phone }}</span>
                             </a>
                         @endif
@@ -111,7 +112,7 @@
                             <a href="{{ $website }}" target="_blank" rel="noopener noreferrer"
                                 class="flex items-center gap-1 transition-colors hover:text-[#D4A574]"
                                 aria-label="Sito web {{ $entityName }}">
-                                <span class="material-symbols-outlined text-base" aria-hidden="true">language</span>
+                                <span class="text-base material-symbols-outlined" aria-hidden="true">language</span>
                                 <span class="hidden sm:inline">{{ __('pa_heritage.entity_website_label') }}</span>
                             </a>
                         @endif
@@ -126,19 +127,22 @@
                     {{-- Heritage Count --}}
                     <div class="text-center">
                         <p class="text-2xl font-bold text-[#D4A574]">{{ $stats['heritage_count'] }}</p>
-                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">{{ __('pa_heritage.entity_stats_heritage') }}</p>
+                        <p class="mt-1 text-xs tracking-wide uppercase text-white/70">
+                            {{ __('pa_heritage.entity_stats_heritage') }}</p>
                     </div>
 
                     {{-- CoA Issued --}}
                     <div class="text-center">
                         <p class="text-2xl font-bold text-[#D4A574]">{{ $stats['coa_issued'] }}</p>
-                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">{{ __('pa_heritage.entity_stats_coa') }}</p>
+                        <p class="mt-1 text-xs tracking-wide uppercase text-white/70">
+                            {{ __('pa_heritage.entity_stats_coa') }}</p>
                     </div>
 
                     {{-- Collections --}}
                     <div class="text-center">
                         <p class="text-2xl font-bold text-[#D4A574]">{{ $stats['collections'] }}</p>
-                        <p class="mt-1 text-xs uppercase tracking-wide text-white/70">{{ __('pa_heritage.entity_stats_collections') }}</p>
+                        <p class="mt-1 text-xs tracking-wide uppercase text-white/70">
+                            {{ __('pa_heritage.entity_stats_collections') }}</p>
                     </div>
                 </div>
             @endif
@@ -146,7 +150,7 @@
 
         {{-- Optional slot for custom content --}}
         @if ($slot->isNotEmpty())
-            <div class="mt-6 border-t border-white/10 pt-6">
+            <div class="pt-6 mt-6 border-t border-white/10">
                 {{ $slot }}
             </div>
         @endif

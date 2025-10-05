@@ -59,7 +59,7 @@
         <div class="absolute left-2 top-2">
             <span
                 class="{{ $categoryColor }} rounded-full px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-md">
-                {{ __('categories.' . ($egi->category ?? 'other')) }}
+                {{ __('categories.' . ($egi->category ?? 'Other')) }}
             </span>
         </div>
 
@@ -107,13 +107,14 @@
             @if ($egi->collection)
                 <span class="flex items-center gap-1" title="{{ __('pa_heritage.card_collection_title') }}">
                     <span class="text-sm material-symbols-outlined" aria-hidden="true">folder</span>
-                    {{ Str::limit($egi->collection->name, 20) }}
+                    {{ Str::limit($egi->collection->collection_name, 20) }}
                 </span>
             @endif
 
             {{-- Status (if published) --}}
             @if ($egi->is_published)
-                <span class="flex items-center gap-1 text-[#2D5016]" title="{{ __('pa_heritage.card_published_title') }}">
+                <span class="flex items-center gap-1 text-[#2D5016]"
+                    title="{{ __('pa_heritage.card_published_title') }}">
                     <span class="text-sm material-symbols-outlined" aria-hidden="true">check_circle</span>
                     {{ __('pa_heritage.card_published_status') }}
                 </span>
@@ -135,7 +136,8 @@
                 @if ($coaStatus === 'valid' && isset($egi->coa))
                     <a href="{{ route('coa.pdf.download', $egi->coa->id) }}"
                         class="inline-flex items-center justify-center gap-1 rounded-lg border-2 border-[#2D5016] bg-white px-4 py-2 text-sm font-semibold text-[#2D5016] transition-colors duration-200 hover:bg-[#2D5016] hover:text-white"
-                        aria-label="{{ __('pa_heritage.card_aria_download_coa') }} {{ $egi->title }}" target="_blank">
+                        aria-label="{{ __('pa_heritage.card_aria_download_coa') }} {{ $egi->title }}"
+                        target="_blank">
                         <span class="text-base material-symbols-outlined" aria-hidden="true">download</span>
                         <span class="hidden sm:inline">{{ __('pa_heritage.card_btn_coa') }}</span>
                     </a>

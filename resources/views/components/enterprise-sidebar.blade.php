@@ -91,30 +91,30 @@
 
 <aside class="{{ $sidebarBgClass }} flex min-h-screen w-80 flex-col text-neutral-content">
     <!-- Logo & Badge -->
-    <div class="border-neutral-focus border-b p-6 text-center">
+    <div class="p-6 text-center border-b border-neutral-focus">
         <h1 class="text-2xl font-bold text-white">{{ $logo }}</h1>
         @if ($badge)
-            <span class="mt-2 inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/90">
+            <span class="inline-block px-3 py-1 mt-2 text-xs font-semibold rounded-full bg-white/10 text-white/90">
                 {{ $badge }}
             </span>
         @else
-            <span class="mt-2 inline-block text-sm text-white/70">{{ $contextTitle }}</span>
+            <span class="inline-block mt-2 text-sm text-white/70">{{ $contextTitle }}</span>
         @endif
     </div>
 
     <!-- Dashboard Link (sempre visibile) -->
     <div class="px-4 py-4">
-        <a href="{{ route('pa.dashboard') }}" 
-           class="{{ Route::currentRouteName() === 'pa.dashboard' ? 'bg-primary text-primary-content font-semibold shadow-sm' : 'bg-white/10 hover:bg-white/20' }} flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors duration-150">
-            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+        <a href="{{ route('pa.dashboard') }}"
+            class="{{ Route::currentRouteName() === 'pa.dashboard' ? 'bg-primary text-primary-content font-semibold shadow-sm' : 'bg-white/10 hover:bg-white/20' }} flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors duration-150">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
             </svg>
             <span>{{ __('menu.dashboard') }}</span>
         </a>
     </div>
 
     <!-- Menu Navigation -->
-    <div class="flex-1 space-y-3 overflow-y-auto px-4 py-2">
+    <div class="flex-1 px-4 py-2 space-y-3 overflow-y-auto">
         @if (!empty($menus))
             @foreach ($menus as $menu)
                 @php
@@ -128,11 +128,11 @@
                     }
                 @endphp
 
-                <details class="group collapse collapse-arrow bg-transparent"
+                <details class="bg-transparent group collapse collapse-arrow"
                     @if ($isGroupActive) open @endif>
                     <summary
                         class="{{ $isGroupActive ? 'bg-primary text-primary-content shadow-sm rounded-md' : 'hover:bg-base-content hover:bg-opacity-10 rounded-md' }} cursor-pointer list-none transition-colors duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-                        <div class="collapse-title flex items-center gap-3 px-3 py-3 text-base font-medium">
+                        <div class="flex items-center gap-3 px-3 py-3 text-base font-medium collapse-title">
                             @if (!empty($menu['icon']))
                                 <span
                                     class="{{ $isGroupActive ? '' : 'opacity-60 group-hover:opacity-100 transition-opacity' }} flex-shrink-0">
@@ -144,7 +144,7 @@
                     </summary>
 
                     <!-- Submenu Items -->
-                    <div class="collapse-content space-y-1 pb-1 pl-6 pr-2 pt-2">
+                    <div class="pt-2 pb-1 pl-6 pr-2 space-y-1 collapse-content">
                         @foreach ($menu['items'] as $item)
                             @php
                                 $isItemActive = !$item['is_modal_action'] && $currentRouteName == $item['route'];
@@ -158,14 +158,14 @@
                                     class="flex w-full items-center justify-start gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors duration-150 ease-in-out hover:bg-base-content hover:bg-opacity-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                                     @if (!empty($item['icon']))
                                         <span
-                                            class="flex-shrink-0 opacity-60 transition-opacity group-hover:opacity-100">
+                                            class="flex-shrink-0 transition-opacity opacity-60 group-hover:opacity-100">
                                             {!! $item['icon'] !!}
                                         </span>
                                     @else
-                                        <span class="h-5 w-5"></span>
+                                        <span class="w-5 h-5"></span>
                                     @endif
                                     <span class="flex-grow truncate">{{ $item['name'] }}</span>
-                                    <span class="material-symbols-outlined text-xs opacity-40">open_in_new</span>
+                                    <span class="text-xs material-symbols-outlined opacity-40">open_in_new</span>
                                 </button>
                             @else
                                 <!-- Route Link -->
@@ -177,7 +177,7 @@
                                             {!! $item['icon'] !!}
                                         </span>
                                     @else
-                                        <span class="h-5 w-5"></span>
+                                        <span class="w-5 h-5"></span>
                                     @endif
                                     <span class="flex-grow truncate">{{ $item['name'] }}</span>
                                 </a>
@@ -188,7 +188,7 @@
             @endforeach
         @else
             <!-- No menu available -->
-            <div class="px-3 py-6 text-center text-sm opacity-60">
+            <div class="px-3 py-6 text-sm text-center opacity-60">
                 <p>Nessun menu disponibile</p>
             </div>
         @endif
@@ -199,9 +199,10 @@
         <form method="POST" action="{{ route('logout') }}" class="w-full">
             @csrf
             <button type="submit"
-                class="flex w-full items-center gap-3 rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                class="flex items-center w-full gap-3 px-4 py-3 text-sm font-medium text-white transition-colors duration-150 bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 <span>{{ __('menu.logout') }}</span>
             </button>
@@ -209,7 +210,7 @@
     </div>
 
     <!-- Footer (optional) -->
-    <div class="border-neutral-focus border-t p-4 text-center text-xs opacity-60">
+    <div class="p-4 text-xs text-center border-t border-neutral-focus opacity-60">
         <p>FlorenceEGI PA Enterprise</p>
         <p class="mt-1">© 2025 FlorenceEGI</p>
     </div>

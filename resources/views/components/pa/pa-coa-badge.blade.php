@@ -28,45 +28,45 @@
 ])
 
 @php
-    // Status configuration (PA Brand Guidelines compliant)
+    // Status configuration (FlorenceEGI Brand Guidelines compliant - Impatto visivo + Eleganza geometrica)
     $statusConfig = [
         'valid' => [
             'label' => __('pa_heritage.coa_badge_valid'),
-            'color' => 'bg-[#2D5016] text-white border-[#2D5016]',
+            'color' => 'bg-[#2D5016] text-white border-[#2D5016]', // Verde Rinascita - Successo
             'icon' => 'verified',
             'ariaLabel' => __('pa_heritage.coa_badge_valid_aria'),
         ],
         'revoked' => [
             'label' => __('pa_heritage.coa_badge_revoked'),
-            'color' => 'bg-[#C13120] text-white border-[#C13120]',
+            'color' => 'bg-[#C13120] text-white border-[#C13120]', // Rosso Urgenza - Errore
             'icon' => 'cancel',
             'ariaLabel' => __('pa_heritage.coa_badge_revoked_aria'),
         ],
         'pending' => [
             'label' => __('pa_heritage.coa_badge_pending'),
-            'color' => 'bg-[#E67E22] text-white border-[#E67E22]',
+            'color' => 'bg-[#E67E22] text-white border-[#E67E22]', // Arancio Energia - Warning
             'icon' => 'pending',
             'ariaLabel' => __('pa_heritage.coa_badge_pending_aria'),
         ],
         'expired' => [
             'label' => __('pa_heritage.coa_badge_expired'),
-            'color' => 'bg-[#6B6B6B] text-white border-[#6B6B6B]',
+            'color' => 'bg-[#C13120] text-white border-[#C13120]', // Rosso Urgenza - Non valido
             'icon' => 'event_busy',
             'ariaLabel' => __('pa_heritage.coa_badge_expired_aria'),
         ],
         'none' => [
             'label' => __('pa_heritage.coa_badge_none'),
-            'color' => 'bg-gray-200 text-gray-600 border-gray-300',
-            'icon' => 'description_off',
+            'color' => 'bg-[#1B365D] text-white border-[#1B365D]', // Blu Algoritmo - Assente
+            'icon' => 'block',
             'ariaLabel' => __('pa_heritage.coa_badge_none_aria'),
         ],
     ];
 
-    // Size classes
+    // Size classes (multipli di 8px per eleganza geometrica)
     $sizeClasses = [
-        'sm' => 'text-xs px-2 py-1 gap-1',
-        'md' => 'text-sm px-3 py-1.5 gap-1.5',
-        'lg' => 'text-base px-4 py-2 gap-2',
+        'sm' => 'text-xs px-2 py-1 gap-2', // 8px padding
+        'md' => 'text-sm px-4 py-2 gap-2', // 16px padding
+        'lg' => 'text-base px-4 py-2 gap-2', // 16px padding
     ];
 
     $iconSizes = [
@@ -81,7 +81,7 @@
 @endphp
 
 <span
-    {{ $attributes->merge(['class' => "coa-badge inline-flex items-center font-semibold rounded-full border-2 transition-all duration-200 $config[color] $sizeClass"]) }}
+    {{ $attributes->merge(['class' => "coa-badge inline-flex items-center font-semibold rounded-md border shadow-sm transition-all duration-200 $config[color] $sizeClass"]) }}
     role="status" aria-label="{{ $config['ariaLabel'] }}">
     {{-- Icon --}}
     @if ($showIcon)
