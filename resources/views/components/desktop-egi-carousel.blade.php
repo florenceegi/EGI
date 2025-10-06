@@ -12,7 +12,7 @@
 ])
 
 @if($egis->count() > 0)
-<section class="py-8 bg-gradient-to-br from-gray-900 via-gray-800 to-black hidden lg:block">
+<section class="hidden py-8 bg-gradient-to-br from-gray-900 via-gray-800 to-black lg:block">
     <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
 
         {{-- Header --}}
