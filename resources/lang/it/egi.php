@@ -342,7 +342,7 @@ return [
 
     'desktop_carousel' => [
         'title' => 'Opere Digitali in Evidenza',
-        'subtitle' => 'Le migliori creazioni NFT dalla nostra comunità',
+        'subtitle' => 'Le migliori creazioni EGI dalla nostra comunità',
         'navigation' => [
             'previous' => 'Precedente',
             'next' => 'Successivo',
