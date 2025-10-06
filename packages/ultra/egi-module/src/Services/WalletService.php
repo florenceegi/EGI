@@ -206,9 +206,18 @@ class WalletService implements WalletServiceInterface {
      * configuration values. Used by attachDefaultWalletsToCollection
      * to create the three required wallets.
      *
+     * --- Logic ---
+     * 1. If wallet address is null, generates unique placeholder: pending_wallet_{user_id}_{collection_id}_{timestamp}
+     * 2. Checks if wallet already exists for this collection/user/address combination
+     * 3. If exists, updates existing wallet with new royalty values
+     * 4. Validates wallet address is not already associated with different user/collection
+     * 5. Creates new wallet record with provided parameters
+     * 6. Logs operation via ULM
+     * --- End Logic ---
+     *
      * @param int $collectionId Collection ID to associate the wallet with
      * @param int $userId User ID to associate the wallet with
-     * @param string|null $walletAddress Wallet address (blockchain address)
+     * @param string|null $walletAddress Wallet address (blockchain address). If null, generates unique placeholder.
      * @param float $royaltyMint Mint royalty percentage value
      * @param float $royaltyRebind Rebind royalty percentage value
      * @param string $platform_role Role of the wallet (Creator, EPP, Natan)
@@ -217,11 +226,12 @@ class WalletService implements WalletServiceInterface {
      * @return RedirectResponse If UEM handles the error and returns a response
      *
      * @throws Throwable If wallet creation fails and UEM throws
+     * @throws \Exception If wallet address already associated with different user
      *
      * @internal Used by attachDefaultWalletsToCollection to avoid code duplication
      *
      * @privacy-purpose Create individual wallet record with assigned royalties
-     * @privacy-data Processes blockchain wallet address
+     * @privacy-data Processes blockchain wallet address or generates unique placeholder
      */
     public function createWallet(
         int $collectionId,
@@ -242,8 +252,24 @@ class WalletService implements WalletServiceInterface {
         ];
 
         try {
-            // If no wallet address is provided, use a placeholder
-            $address = $walletAddress ?? config('app.default_wallet_placeholder', 'pending_wallet_address');
+            // If no wallet address is provided, generate a unique placeholder
+            if ($walletAddress === null) {
+                // Generate unique placeholder: pending_wallet_{user_id}_{collection_id}_{timestamp}
+                $address = sprintf(
+                    'pending_wallet_%d_%d_%s',
+                    $userId,
+                    $collectionId,
+                    microtime(true)
+                );
+                
+                // Log placeholder generation
+                $this->logger->info('Generated unique placeholder wallet address', array_merge($context, [
+                    'generated_address' => $address,
+                    'reason' => 'no_wallet_provided'
+                ]));
+            } else {
+                $address = $walletAddress;
+            }
 
             // Check if wallet already exists for this collection/user/address combination
             $existingWallet = Wallet::where('collection_id', $collectionId)
