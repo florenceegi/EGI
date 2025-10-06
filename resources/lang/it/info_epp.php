@@ -209,7 +209,7 @@ return [
     'participation' => [
         'aria_label' => 'Come partecipare ai programmi di protezione ambientale',
         'section_title' => 'Come Contribuire agli EPP',
-        'section_description' => 'Ogni EGI creato sulla piattaforma FlorenceEGI destina automaticamente **il 20% del valore di vendita** ai programmi EPP selezionati.',
+        'section_description' => 'Ogni EGI Creator sulla piattaforma FlorenceEGI destina automaticamente <strong>il 20% del valore di vendita</strong> ai programmi EPP selezionati.',
 
         'steps' => [
             'create' => [

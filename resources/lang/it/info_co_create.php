@@ -160,7 +160,7 @@ return [
 
         'economic_structure_title' => 'Struttura Economica Ottimizzata',
         'zero_creator_fee_title' => 'Zero Fee Creator',
-        'zero_creator_fee_content' => 'Il Creator <strong>non paga commissioni</strong> sugli EGI PT, mantenendo il focus sul marketing gratuito.',
+        'zero_creator_fee_content' => 'Il Creator <strong>non trattiene commissioni</strong> sugli EGI PT, mantenendo il focus sul marketing gratuito.',
         'zero_platform_fee_title' => 'Zero Fee Piattaforma',
         'zero_platform_fee_content' => 'FlorenceEGI <strong>non trattiene commissioni</strong> sugli EGI PT, massimizzando i volumi di trading.',
         'epp_fee_title' => 'Solo 0,5% EPP',
