@@ -647,16 +647,35 @@ class Reservation extends Model {
      * @return EgiReservationCertificate
      */
     public function createCertificate(array $additionalData = []): EgiReservationCertificate {
+        // Generate certificate UUID first
+        $certificateUuid = \Illuminate\Support\Str::uuid();
+        $walletAddress = $this->wallet_address ?? ($this->user?->wallet ?? 'unknown');
+        $reservationType = $this->type ?? 'strong';
+        $offerAmountFiat = $this->amount_eur;
+
+        // Generate verification data string (MUST match EgiReservationCertificate::generateVerificationData())
+        $verificationData = implode('|', [
+            $certificateUuid,
+            $this->egi_id,
+            $walletAddress,
+            $reservationType,
+            $offerAmountFiat,
+            now()->toIso8601String()
+        ]);
+
+        // Generate signature hash from verification data
+        $signatureHash = hash('sha256', $verificationData);
+
         return EgiReservationCertificate::create([
             'reservation_id' => $this->id,
             'egi_id' => $this->egi_id,
             'user_id' => $this->user_id,
-            'wallet_address' => $this->wallet_address ?? ($this->user?->wallet ?? 'unknown'),
-            'reservation_type' => $this->type ?? 'strong',
-            'offer_amount_fiat' => $this->amount_eur,
+            'wallet_address' => $walletAddress,
+            'reservation_type' => $reservationType,
+            'offer_amount_fiat' => $offerAmountFiat,
             'offer_amount_algo' => $this->offer_amount_algo ?? 0,
-            'certificate_uuid' => \Illuminate\Support\Str::uuid(),
-            'signature_hash' => hash('sha256', $this->id . $this->egi_id . $this->user_id . now()),
+            'certificate_uuid' => $certificateUuid,
+            'signature_hash' => $signatureHash,
             'is_superseded' => false,
             'is_current_highest' => $this->is_highest ?? false,
             ...$additionalData
