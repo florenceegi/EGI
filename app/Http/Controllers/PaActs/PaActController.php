@@ -325,7 +325,7 @@ class PaActController extends Controller {
 
             // Extract metadata (use dedicated columns + jsonMetadata for extra data)
             $signatureValidation = $egi->jsonMetadata['signature_validation'] ?? [];
-            
+
             $metadata = [
                 // Protocol info (dedicated columns)
                 'protocol_number' => $egi->pa_protocol_number,
@@ -333,7 +333,7 @@ class PaActController extends Controller {
                 'doc_type' => $egi->pa_act_type,
                 'title' => $egi->title,
                 'entity_name' => $egi->user->name ?? 'N/A',
-                
+
                 // Document hash & blockchain
                 'doc_hash' => $egi->jsonMetadata['doc_hash'] ?? null,
                 'anchor_txid' => $egi->jsonMetadata['anchor_txid'] ?? null,
@@ -342,7 +342,7 @@ class PaActController extends Controller {
                 'public_code' => $egi->pa_public_code,
                 'anchored' => $egi->pa_anchored,
                 'anchored_at' => $egi->pa_anchored_at,
-                
+
                 // Signature data (extracted from signature_validation sub-array)
                 'signer_cn' => $signatureValidation['signer_cn'] ?? null,
                 'signer_email' => $signatureValidation['signer_email'] ?? null,
@@ -352,7 +352,7 @@ class PaActController extends Controller {
                 'cert_issuer' => $signatureValidation['cert_issuer'] ?? null,
                 'signature_timestamp' => $signatureValidation['signature_timestamp'] ?? null,
                 'signature_type' => $signatureValidation['signature_type'] ?? null,
-                
+
                 // Keep full signature_validation for debugging
                 'signature_validation' => $signatureValidation
             ];
