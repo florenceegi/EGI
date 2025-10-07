@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * @purpose Add 'notification_management' value to user_activities.category enum
- * @author AI Assistant for Fabio Cherici  
+ * @author AI Assistant for Fabio Cherici
  * @date 2025-09-06
  */
 return new class extends Migration {

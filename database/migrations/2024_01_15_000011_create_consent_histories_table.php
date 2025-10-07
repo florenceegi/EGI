@@ -16,16 +16,14 @@ use Illuminate\Support\Facades\DB;
  * @version 1.0.0
  * @date 2024-01-15
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
      * @return void
      * @privacy-safe Creates immutable consent history tracking
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('consent_histories', function (Blueprint $table) {
             $table->id();
 
@@ -134,8 +132,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('consent_histories');
     }
 };

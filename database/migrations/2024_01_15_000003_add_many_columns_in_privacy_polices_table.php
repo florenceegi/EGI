@@ -16,15 +16,13 @@ use Illuminate\Support\Facades\DB;
  * @version 2.0.0
  * @date 2025-06-20
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations - Fix completo allineamento
      *
      * @return void
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('privacy_policies', function (Blueprint $table) {
 
             // ===== 1. DOCUMENT TYPE (enum) =====
@@ -55,14 +53,14 @@ return new class extends Migration
             ])->default('pending')->after('approval_date');
 
             $table->foreignId('legal_reviewer')->nullable()
-                  ->constrained('users')->onDelete('set null')->after('legal_review_status');
+                ->constrained('users')->onDelete('set null')->after('legal_review_status');
 
             $table->text('review_notes')->nullable()->after('legal_reviewer');
 
             // ===== 5. CHANGE MANAGEMENT =====
             $table->text('change_description')->nullable()->after('review_notes');
             $table->foreignId('previous_version_id')->nullable()
-                  ->constrained('privacy_policies')->onDelete('set null')->after('change_description');
+                ->constrained('privacy_policies')->onDelete('set null')->after('change_description');
 
             // ===== 6. NOTIFICATION SYSTEM =====
             $table->boolean('notification_sent')->default(false)->after('previous_version_id');
@@ -70,7 +68,6 @@ return new class extends Migration
 
             // ===== 7. CONSENT REQUIREMENT =====
             $table->boolean('requires_consent')->default(true)->after('notification_date');
-
         });
 
         // ===== 8. STATUS ENUM UPDATE =====
@@ -102,8 +99,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('privacy_policies', function (Blueprint $table) {
 
             // Drop indexes

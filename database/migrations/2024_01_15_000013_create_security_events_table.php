@@ -15,16 +15,14 @@ use Illuminate\Support\Facades\DB;
  * @version 1.0.0
  * @date 2025-05-22
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations
      *
      * @return void
      * @privacy-safe Creates security event tracking table
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('security_events', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
@@ -75,8 +73,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('security_events');
     }
 };
