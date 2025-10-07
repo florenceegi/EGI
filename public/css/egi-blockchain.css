@@ -1,0 +1,200 @@
+/**
+ * @package FlorenceEGI - Blockchain UI Styles
+ * @author Padmin D. Curtis (AI Partner OS3.0)
+ * @version 1.0.0 (FlorenceEGI - Frontend Integration Phase 6)
+ * @date 2025-01-20
+ * @purpose Blockchain status indicators, badges, and UI components
+ */
+
+/* ===== BLOCKCHAIN BADGE STYLES ===== */
+
+/* Base blockchain badge styling */
+.blockchain-minted {
+    position: relative;
+    overflow: hidden;
+}
+
+.blockchain-minted::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(59, 130, 246, 0.4),
+        transparent
+    );
+    animation: blockchain-shimmer 3s infinite;
+}
+
+@keyframes blockchain-shimmer {
+    0% {
+        left: -100%;
+    }
+    50% {
+        left: 100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Badge composite for blockchain + hyper */
+.badge-composite .blockchain-base {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* ===== BLOCKCHAIN INFO PANEL ===== */
+
+/* Enhanced blockchain info styling */
+[data-blockchain-info] {
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.1);
+    transition: all 0.3s ease;
+}
+
+[data-blockchain-info]:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.15);
+    transform: translateY(-1px);
+}
+
+/* ASA ID mono font styling */
+.text-xs.font-mono {
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", Monaco,
+        "Cascadia Code", monospace;
+    letter-spacing: -0.025em;
+}
+
+/* ===== BUTTON ENHANCEMENTS ===== */
+
+/* Re-bind button special styling */
+.rebind-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.rebind-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transition: left 0.6s;
+}
+
+.rebind-button:hover::before {
+    left: 100%;
+}
+
+/* ===== STATUS INDICATORS ===== */
+
+/* Blockchain status colors */
+.status-unminted {
+    color: #9ca3af;
+}
+.status-minting-queued {
+    color: #f59e0b;
+}
+.status-minting {
+    color: #10b981;
+}
+.status-minted {
+    color: #3b82f6;
+}
+.status-failed {
+    color: #ef4444;
+}
+
+/* Certificate verification link */
+.certificate-verify-link {
+    transition: all 0.2s ease;
+    border-radius: 0.375rem;
+    padding: 0.125rem 0.25rem;
+}
+
+.certificate-verify-link:hover {
+    background: rgba(59, 130, 246, 0.1);
+    transform: scale(1.02);
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+
+@media (max-width: 640px) {
+    .badge-composite .blockchain-base {
+        font-size: 0.5rem;
+        padding: 0.125rem 0.375rem;
+    }
+
+    [data-blockchain-info] {
+        padding: 0.5rem;
+    }
+
+    .text-xs.font-mono {
+        font-size: 0.625rem;
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    [data-blockchain-info] {
+        border-width: 2px;
+        background: rgba(59, 130, 246, 0.2);
+    }
+
+    .blockchain-minted {
+        border: 1px solid #3b82f6;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .blockchain-shimmer,
+    .rebind-button::before {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* ===== DARK MODE ADJUSTMENTS ===== */
+
+@media (prefers-color-scheme: dark) {
+    .status-unminted {
+        color: #6b7280;
+    }
+    .status-minting-queued {
+        color: #fbbf24;
+    }
+    .status-minting {
+        color: #34d399;
+    }
+    .status-minted {
+        color: #60a5fa;
+    }
+    .status-failed {
+        color: #f87171;
+    }
+}
