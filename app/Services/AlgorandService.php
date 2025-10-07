@@ -23,6 +23,12 @@ use App\Models\User;
  * - Improved reliability and error handling
  * - TypeScript AlgoKit backend for better blockchain integration
  *
+ * MiCA-SAFE COMPLIANCE:
+ * - Treasury wallet mode: platform custody for EGI minting only
+ * - No crypto-asset custody for user accounts (MiCA-compliant)
+ * - Fiat payments via PSP, blockchain operations via treasury
+ * - Transfer to user wallets after minting (non-custodial)
+ *
  * @package App\Services
  * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
  * @version 3.0.0 - EGI MARKETPLACE INTEGRATION
