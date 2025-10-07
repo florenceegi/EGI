@@ -13,52 +13,56 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        // Add the new enum value to the existing category column
-        DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
-            'authentication',
-            'authentication_login',
-            'authentication_logout',
-            'registration',
-            'gdpr_actions',
-            'data_access',
-            'data_deletion',
-            'content_creation',
-            'content_modification',
-            'platform_usage',
-            'system_interaction',
-            'security_events',
-            'blockchain_activity',
-            'media_management',
-            'privacy_management',
-            'personal_data_update',
-            'wallet_management',
-            'notification_management'
-        )");
+        // Add the new enum value to the existing category column (MySQL only)
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
+                'authentication',
+                'authentication_login',
+                'authentication_logout',
+                'registration',
+                'gdpr_actions',
+                'data_access',
+                'data_deletion',
+                'content_creation',
+                'content_modification',
+                'platform_usage',
+                'system_interaction',
+                'security_events',
+                'blockchain_activity',
+                'media_management',
+                'privacy_management',
+                'personal_data_update',
+                'wallet_management',
+                'notification_management'
+            )");
+        }
     }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void {
-        // Remove the notification_management value from enum
-        DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
-            'authentication',
-            'authentication_login',
-            'authentication_logout',
-            'registration',
-            'gdpr_actions',
-            'data_access',
-            'data_deletion',
-            'content_creation',
-            'content_modification',
-            'platform_usage',
-            'system_interaction',
-            'security_events',
-            'blockchain_activity',
-            'media_management',
-            'privacy_management',
-            'personal_data_update',
-            'wallet_management'
-        )");
+        // Remove the notification_management value from enum (MySQL only)
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
+                'authentication',
+                'authentication_login',
+                'authentication_logout',
+                'registration',
+                'gdpr_actions',
+                'data_access',
+                'data_deletion',
+                'content_creation',
+                'content_modification',
+                'platform_usage',
+                'system_interaction',
+                'security_events',
+                'blockchain_activity',
+                'media_management',
+                'privacy_management',
+                'personal_data_update',
+                'wallet_management'
+            )");
+        }
     }
 };

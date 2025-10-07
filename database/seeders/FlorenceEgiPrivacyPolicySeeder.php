@@ -198,6 +198,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
             'description' => 'User account and profile data retention policy',
             'data_category' => 'user_data',
             'data_type' => 'personal_data',
+            'retention_trigger' => 'time_based',
             'retention_days' => 2555, // 7 years
             'legal_basis' => 'Contract performance and legal obligations',
             'is_automated' => true,
@@ -221,6 +222,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
             'description' => 'NFT transaction and blockchain data retention policy',
             'data_category' => 'transaction_data',
             'data_type' => 'financial_data',
+            'retention_trigger' => 'legal_basis_ends',
             'retention_days' => 3650, // 10 years for financial records
             'legal_basis' => 'Legal obligations (financial regulations)',
             'is_automated' => false, // Blockchain data cannot be deleted

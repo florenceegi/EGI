@@ -106,8 +106,10 @@ class SystemUsersSeeder extends Seeder {
         $this->command->info('🚀 Creating System Users with Complete Ecosystem...');
 
         try {
-            // Disable foreign key checks for forced IDs
-            DB::statement('SET foreign_key_checks=0;');
+            // Disable foreign key checks for forced IDs (MySQL only)
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET foreign_key_checks=0;');
+            }
 
             DB::transaction(function () {
                 foreach ($this->systemUsers as $userData) {
@@ -115,13 +117,18 @@ class SystemUsersSeeder extends Seeder {
                 }
             });
 
-            // Re-enable foreign key checks
-            DB::statement('SET foreign_key_checks=1;');
+            // Re-enable foreign key checks (MySQL only)
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET foreign_key_checks=1;');
+            }
 
             $this->command->info('✅ System Users created successfully with full ecosystem!');
             $this->logCreationSummary();
         } catch (\Exception $e) {
-            DB::statement('SET foreign_key_checks=1;');
+            // Re-enable foreign key checks (MySQL only) in case of error
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET foreign_key_checks=1;');
+            }
 
             $this->command->error('❌ Failed to create system users: ' . $e->getMessage());
             \Log::error('[SystemUsersSeeder] Failed to create system users', [

@@ -36,7 +36,10 @@ return new class extends Migration {
 
         // 3. EXPAND type field VARCHAR(25) → VARCHAR(50)
         // Allows longer type names like 'pa_heritage', 'company_products', 'pa_documents'
-        DB::statement('ALTER TABLE collections MODIFY type VARCHAR(50)');
+        // Solo per MySQL - SQLite non supporta MODIFY COLUMN
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE collections MODIFY type VARCHAR(50)');
+        }
     }
 
     /**
@@ -53,6 +56,9 @@ return new class extends Migration {
 
         // Revert type field to VARCHAR(25)
         // WARNING: This will TRUNCATE values longer than 25 chars if any exist
-        DB::statement('ALTER TABLE collections MODIFY type VARCHAR(25)');
+        // Solo per MySQL - SQLite non supporta MODIFY COLUMN
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE collections MODIFY type VARCHAR(25)');
+        }
     }
 };

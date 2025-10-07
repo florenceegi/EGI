@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @Oracode Migration: Security Events Table
@@ -62,8 +63,10 @@ return new class extends Migration
             $table->index('status');
             $table->index('expires_at');
 
-            // Full-text search on description for security analysis
-            $table->fullText('description');
+            // Full-text search on description for security analysis (MySQL only)
+            if (DB::getDriverName() === 'mysql') {
+                $table->fullText('description');
+            }
         });
     }
 

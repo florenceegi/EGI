@@ -75,9 +75,15 @@ return new class extends Migration
 
         // ===== 8. STATUS ENUM UPDATE =====
         // Aggiorna enum status per includere tutti i valori del model
-        DB::statement("ALTER TABLE privacy_policies MODIFY COLUMN status ENUM(
-            'draft', 'under_review', 'approved', 'active', 'superseded', 'archived', 'rejected'
-        ) DEFAULT 'draft'");
+        // SQLite compatible approach - drop and recreate column
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE privacy_policies MODIFY COLUMN status ENUM(
+                'draft', 'under_review', 'approved', 'active', 'superseded', 'archived', 'rejected'
+            ) DEFAULT 'draft'");
+        } else {
+            // SQLite: semplicemente aggiorna il default, enum non supportato
+            // I test useranno string validation nel model
+        }
 
         // ===== 9. INDICI OTTIMIZZATI =====
         Schema::table('privacy_policies', function (Blueprint $table) {

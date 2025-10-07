@@ -18,25 +18,29 @@ return new class extends Migration {
      */
     public function up(): void {
         // Per MySQL/MariaDB, modifichiamo l'enum aggiungendo wallet_management
-        DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
-            'authentication',
-            'authentication_login',
-            'authentication_logout',
-            'registration',
-            'gdpr_actions',
-            'data_access',
-            'data_deletion',
-            'content_creation',
-            'content_modification',
-            'platform_usage',
-            'system_interaction',
-            'security_events',
-            'blockchain_activity',
-            'media_management',
-            'privacy_management',
-            'personal_data_update',
-            'wallet_management'
-        )");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
+                'authentication',
+                'authentication_login',
+                'authentication_logout',
+                'registration',
+                'gdpr_actions',
+                'data_access',
+                'data_deletion',
+                'content_creation',
+                'content_modification',
+                'platform_usage',
+                'system_interaction',
+                'security_events',
+                'blockchain_activity',
+                'media_management',
+                'privacy_management',
+                'personal_data_update',
+                'wallet_management'
+            )");
+        } else {
+            // SQLite: non supporta ENUM, i test useranno string validation nel model
+        }
     }
 
     /**
@@ -44,23 +48,25 @@ return new class extends Migration {
      */
     public function down(): void {
         // Rimuovi wallet_management dall'enum (solo se non ci sono record con questo valore)
-        DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
-            'authentication',
-            'authentication_login',
-            'authentication_logout',
-            'registration',
-            'gdpr_actions',
-            'data_access',
-            'data_deletion',
-            'content_creation',
-            'content_modification',
-            'platform_usage',
-            'system_interaction',
-            'security_events',
-            'blockchain_activity',
-            'media_management',
-            'privacy_management',
-            'personal_data_update'
-        )");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
+                'authentication',
+                'authentication_login',
+                'authentication_logout',
+                'registration',
+                'gdpr_actions',
+                'data_access',
+                'data_deletion',
+                'content_creation',
+                'content_modification',
+                'platform_usage',
+                'system_interaction',
+                'security_events',
+                'blockchain_activity',
+                'media_management',
+                'privacy_management',
+                'personal_data_update'
+            )");
+        }
     }
 };

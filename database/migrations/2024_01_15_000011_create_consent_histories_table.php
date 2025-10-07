@@ -4,6 +4,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @Oracode Migration: Consent Histories Table
@@ -121,8 +122,10 @@ return new class extends Migration
             $table->index('action_timestamp', 'ch_action_timestamp');
             $table->index(['requires_review', 'action_timestamp'], 'ch_review_time');
 
-            // Full-text search on reason and notes
-            $table->fullText(['reason_for_action', 'admin_notes']);
+            // Full-text search on reason and notes (MySQL only)
+            if (DB::getDriverName() === 'mysql') {
+                $table->fullText(['reason_for_action', 'admin_notes']);
+            }
         });
     }
 

@@ -45,8 +45,11 @@ class UserFactory extends Factory
     public function configure(): static
     {
         return $this->afterCreating(function (User $user) {
-            // Recupera il ruolo di creator o crealo se non esiste
-            $role = Role::find(7) ?? Role::firstOrCreate(['id' => 7, 'name' => 'creator']);
+            // Recupera il ruolo di creator o crealo se non esiste (senza ID fisso)
+            $role = Role::firstOrCreate(
+                ['name' => 'creator', 'guard_name' => 'web'],
+                ['name' => 'creator', 'guard_name' => 'web']
+            );
 
             // Assegna il ruolo all'utente
             $user->assignRole($role);

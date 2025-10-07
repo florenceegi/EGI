@@ -27,6 +27,10 @@ class ReservationFactory extends Factory {
             'type' => $this->faker->randomElement(['weak', 'strong']),
             'status' => 'active',
             'offer_amount_fiat' => $offerEur,
+            'amount_eur' => $offerEur, // Canonical amount in EUR
+            'input_amount' => $offerEur, // Input amount
+            'input_currency' => 'EUR',
+            'input_timestamp' => now(),
             'offer_amount_algo' => $offerEur * 0.5, // Conversione approssimativa
             'is_current' => true,
             'expires_at' => now()->addDays(30),

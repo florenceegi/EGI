@@ -19,10 +19,14 @@ class TraitDefaultsSeeder extends Seeder {
      */
     public function run(): void {
         // Truncate tables to start fresh
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        }
         DB::table('trait_types')->truncate();
         DB::table('trait_categories')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        }
 
         // Default Categories with colors
         $categories = [

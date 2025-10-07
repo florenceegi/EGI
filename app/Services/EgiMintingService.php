@@ -207,6 +207,7 @@ class EgiMintingService {
                 'ownership_type' => 'treasury',
                 'platform_wallet' => config('algorand.algorand.treasury_address'),
                 'buyer_user_id' => $user->id, // GDPR: Track user for audit trail
+                'certificate_uuid' => \Illuminate\Support\Str::uuid()->toString(),
                 'created_at' => now(),
                 'updated_at' => now()
             ]
