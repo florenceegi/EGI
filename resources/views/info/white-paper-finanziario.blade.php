@@ -113,12 +113,15 @@
         #backToTextButton {
             position: fixed;
             bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, #1B365D 0%, #2D5016 100%);
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(27, 54, 93, 0.85) 0%, rgba(45, 80, 22, 0.85) 100%);
             color: white;
             padding: 12px 24px;
             border-radius: 50px;
             box-shadow: 0 10px 25px rgba(27, 54, 93, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: none;
             align-items: center;
             gap: 8px;
@@ -126,13 +129,14 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
-            border: 2px solid #D4A574;
+            border: 2px solid rgba(212, 165, 116, 0.8);
         }
 
         #backToTextButton:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 15px 35px rgba(212, 165, 116, 0.4);
-            background: linear-gradient(135deg, #2D5016 0%, #1B365D 100%);
+            transform: translateX(-50%) translateY(-2px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(212, 165, 116, 0.5);
+            background: linear-gradient(135deg, rgba(45, 80, 22, 0.95) 0%, rgba(27, 54, 93, 0.95) 100%);
+            border-color: #D4A574;
         }
 
         #backToTextButton.show {
@@ -145,6 +149,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -892,7 +897,7 @@
                     if (activeSection) {
                         previousSection = activeSection.id.replace('section-', '');
                         previousScrollPosition = window.scrollY;
-                        
+
                         // Trova il nome della sezione per il pulsante
                         const sectionData = contentData[previousSection];
                         if (sectionData) {
@@ -920,7 +925,7 @@
                 if (previousSection) {
                     // Torna alla sezione precedente
                     showSection(previousSection);
-                    
+
                     // Riporta allo scroll precedente con un piccolo delay per permettere il render
                     setTimeout(() => {
                         window.scrollTo({
@@ -928,12 +933,13 @@
                             behavior: 'smooth'
                         });
                     }, 100);
-                    
+
                     // Nascondi pulsante
                     backButton.classList.remove('show');
-                    
+
                     // Rimuovi hash dall'URL
-                    history.pushState('', document.title, window.location.pathname + window.location.search);
+                    history.pushState('', document.title, window.location.pathname + window.location
+                    .search);
                 }
             });
 
