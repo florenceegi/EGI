@@ -88,7 +88,7 @@ class TraitDefaultsSeeder extends Seeder {
                             'Document',
                             'Heritage',
                             'Booklet',
-                            
+
                         ])
                     ],
                 ];

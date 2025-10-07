@@ -21,13 +21,11 @@ use Carbon\Carbon;
  * 🌐 LOCALIZATION: Italian and English versions
  * ✅ GDPR: Art. 12 "concise, transparent, intelligible" compliance
  */
-class FlorenceEgiPrivacyPolicySeeder extends Seeder
-{
+class FlorenceEgiPrivacyPolicySeeder extends Seeder {
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
+    public function run(): void {
         $adminUser = User::first();
 
         // Clear existing policies if any (use delete instead of truncate due to foreign keys)
@@ -42,8 +40,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     /**
      * Create core privacy policies (3 types x 2 languages = 6 policies)
      */
-    private function seedCorePrivacyPolicies(?User $admin): void
-    {
+    private function seedCorePrivacyPolicies(?User $admin): void {
         $languages = ['it', 'en']; // Italiano come primary, inglese come secondary
 
         foreach ($languages as $lang) {
@@ -62,8 +59,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     /**
      * Create data retention policies
      */
-    private function seedDataRetentionPolicies(?User $admin): void
-    {
+    private function seedDataRetentionPolicies(?User $admin): void {
         $retentionPolicies = [
             $this->createUserDataRetention($admin),
             $this->createTransactionDataRetention($admin),
@@ -77,8 +73,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     /**
      * Main Privacy Policy - GDPR compliant, concise (localized)
      */
-    private function createMainPrivacyPolicy(?User $admin, string $language = 'it'): array
-    {
+    private function createMainPrivacyPolicy(?User $admin, string $language = 'it'): array {
         $titles = [
             'it' => 'Informativa Privacy FlorenceEGI',
             'en' => 'FlorenceEGI Privacy Policy'
@@ -124,8 +119,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     /**
      * NFT Marketplace specific policy (localized)
      */
-    private function createMarketplacePolicy(?User $admin, string $language = 'it'): array
-    {
+    private function createMarketplacePolicy(?User $admin, string $language = 'it'): array {
         $titles = [
             'it' => 'Policy Dati Marketplace NFT',
             'en' => 'NFT Marketplace Data Policy'
@@ -157,8 +151,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     /**
      * Cookie Policy (localized)
      */
-    private function createCookiePolicy(?User $admin, string $language = 'it'): array
-    {
+    private function createCookiePolicy(?User $admin, string $language = 'it'): array {
         $titles = [
             'it' => 'Policy Cookie',
             'en' => 'Cookie Policy'
@@ -190,8 +183,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     /**
      * User data retention policy
      */
-    private function createUserDataRetention(?User $admin): array
-    {
+    private function createUserDataRetention(?User $admin): array {
         return [
             'name' => 'User Account Data Retention',
             'slug' => 'user-account-data',
@@ -214,8 +206,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     /**
      * Transaction data retention policy
      */
-    private function createTransactionDataRetention(?User $admin): array
-    {
+    private function createTransactionDataRetention(?User $admin): array {
         return [
             'name' => 'NFT Transaction Data Retention',
             'slug' => 'nft-transaction-data',
@@ -238,8 +229,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     /**
      * Main Privacy Policy Content - GDPR Art. 13-14 compliant (localized)
      */
-    private function getMainPrivacyContent(string $language = 'it'): string
-    {
+    private function getMainPrivacyContent(string $language = 'it'): string {
         if ($language === 'it') {
             return $this->getMainPrivacyContentItalian();
         }
@@ -250,8 +240,7 @@ class FlorenceEgiPrivacyPolicySeeder extends Seeder
     /**
      * Main Privacy Policy Content - Italian version
      */
-    private function getMainPrivacyContentItalian(): string
-    {
+    private function getMainPrivacyContentItalian(): string {
         return "
 # Informativa Privacy FlorenceEGI
 
@@ -345,8 +334,7 @@ Per reclami, contatta la tua autorità locale protezione dati.
     /**
      * Main Privacy Policy Content - English version
      */
-    private function getMainPrivacyContentEnglish(): string
-    {
+    private function getMainPrivacyContentEnglish(): string {
         return "
 # FlorenceEGI Privacy Policy
 
@@ -440,8 +428,7 @@ For complaints, contact your local data protection authority.
     /**
      * NFT Marketplace Policy Content
      */
-    private function getMarketplacePolicyContent(string $language = 'it'): string
-    {
+    private function getMarketplacePolicyContent(string $language = 'it'): string {
         if ($language === 'it') {
             return $this->getMarketplacePolicyContentItalian();
         }
@@ -452,8 +439,7 @@ For complaints, contact your local data protection authority.
     /**
      * Marketplace Policy - Italian version
      */
-    private function getMarketplacePolicyContentItalian(): string
-    {
+    private function getMarketplacePolicyContentItalian(): string {
         return "
 # Policy Dati Marketplace NFT
 
@@ -501,8 +487,7 @@ Contatto: marketplace@florenceegi.com
     /**
      * Marketplace Policy - English version
      */
-    private function getMarketplacePolicyContentEnglish(): string
-    {
+    private function getMarketplacePolicyContentEnglish(): string {
         return "
 # NFT Marketplace Data Policy
 
@@ -550,8 +535,7 @@ Contact: marketplace@florenceegi.com
     /**
      * Cookie Policy Content
      */
-    private function getCookiePolicyContent(string $language = 'it'): string
-    {
+    private function getCookiePolicyContent(string $language = 'it'): string {
         if ($language === 'it') {
             return $this->getCookiePolicyContentItalian();
         }
@@ -562,8 +546,7 @@ Contact: marketplace@florenceegi.com
     /**
      * Cookie Policy - Italian version
      */
-    private function getCookiePolicyContentItalian(): string
-    {
+    private function getCookiePolicyContentItalian(): string {
         return "
 # Policy Cookie
 
@@ -614,8 +597,7 @@ Contatto: cookies@florenceegi.com
     /**
      * Cookie Policy - English version
      */
-    private function getCookiePolicyContentEnglish(): string
-    {
+    private function getCookiePolicyContentEnglish(): string {
         return "
 # Cookie Policy
 
