@@ -29,8 +29,7 @@ use Exception;
  * @date 2025-10-07
  * @purpose Secure PSP webhook processing with async job dispatching
  */
-class PspWebhookController extends Controller
-{
+class PspWebhookController extends Controller {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -71,8 +70,7 @@ class PspWebhookController extends Controller
      * @security Stripe signature verification mandatory
      * @gdpr-compliant Audit trail for payment events
      */
-    public function handleStripeWebhook(Request $request): JsonResponse
-    {
+    public function handleStripeWebhook(Request $request): JsonResponse {
         return $this->processWebhook($request, 'stripe');
     }
 
@@ -86,8 +84,7 @@ class PspWebhookController extends Controller
      * @security PayPal signature verification mandatory
      * @gdpr-compliant Audit trail for payment events
      */
-    public function handlePayPalWebhook(Request $request): JsonResponse
-    {
+    public function handlePayPalWebhook(Request $request): JsonResponse {
         return $this->processWebhook($request, 'paypal');
     }
 
@@ -102,10 +99,9 @@ class PspWebhookController extends Controller
      * @security Signature verification mandatory
      * @privacy-safe No sensitive data exposure in logs
      */
-    private function processWebhook(Request $request, string $provider): JsonResponse
-    {
+    private function processWebhook(Request $request, string $provider): JsonResponse {
         $webhookId = 'webhook_' . uniqid();
-        
+
         try {
             // 1. ULM: Log webhook reception
             $this->logger->info("PSP webhook received", [
@@ -136,7 +132,7 @@ class PspWebhookController extends Controller
 
             // 4. Extract payment information
             $paymentData = $this->extractPaymentData($payload, $provider);
-            
+
             if (!$paymentData) {
                 return response()->json([
                     'message' => 'Event not relevant for processing',
@@ -155,7 +151,6 @@ class PspWebhookController extends Controller
                 'webhook_id' => $webhookId,
                 'payment_id' => $paymentData['payment_id'] ?? null
             ], Response::HTTP_OK);
-
         } catch (ValidationException $e) {
             // 7. UEM: Validation error
             $this->errorManager->handle('PSP_WEBHOOK_VALIDATION_ERROR', [
@@ -168,7 +163,6 @@ class PspWebhookController extends Controller
                 'error' => 'Invalid webhook payload',
                 'webhook_id' => $webhookId
             ], Response::HTTP_BAD_REQUEST);
-
         } catch (Exception $e) {
             // 8. UEM: Processing error
             $this->errorManager->handle('PSP_WEBHOOK_PROCESSING_ERROR', [
@@ -192,8 +186,7 @@ class PspWebhookController extends Controller
      * @return array|null Payment data or null if not relevant
      * @privacy-safe Extract only necessary payment data
      */
-    private function extractPaymentData(array $payload, string $provider): ?array
-    {
+    private function extractPaymentData(array $payload, string $provider): ?array {
         // Mock implementation - extract payment completion events
         switch ($provider) {
             case 'stripe':
@@ -234,8 +227,7 @@ class PspWebhookController extends Controller
      * @gdpr-compliant Audit trail for all payment events
      * @blockchain-safe Async job dispatch for minting
      */
-    private function processPaymentEvent(array $paymentData, string $provider, string $webhookId): void
-    {
+    private function processPaymentEvent(array $paymentData, string $provider, string $webhookId): void {
         $paymentId = $paymentData['payment_id'];
         $metadata = $paymentData['metadata'] ?? [];
 
@@ -343,8 +335,7 @@ class PspWebhookController extends Controller
      * @return JsonResponse Health status
      * @security Public endpoint for PSP health checks
      */
-    public function health(): JsonResponse
-    {
+    public function health(): JsonResponse {
         return response()->json([
             'status' => 'healthy',
             'service' => 'psp-webhook-controller',

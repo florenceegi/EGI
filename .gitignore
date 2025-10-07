@@ -45,3 +45,22 @@ docs/**/.Zone.Identifier
 
 # Editor state (non versionare)
 .cursor/
+
+# PA Acts Testing Files (non versionare - sono file di test/mock)
+storage/testing/mock_pa_acts/*.pdf
+storage/testing/mock_pa_acts/*.json
+storage/testing/real_signed_pa_acts/*.pdf
+storage/testing/real_signed_pa_acts/*.json
+
+# Certificate files (non versionare - contengono dati sensibili)
+storage/certificates/*.pdf
+storage/certificates/**/*.pdf
+storage/certificates/*.p12
+storage/certificates/**/*.p12
+
+# Logs and temp files
+storage/logs/*.log
+storage/app/temp/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*

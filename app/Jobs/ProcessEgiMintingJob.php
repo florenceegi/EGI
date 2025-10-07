@@ -25,12 +25,11 @@ use Exception;
  *
  * @package App\Jobs
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Blockchain Integration)  
+ * @version 1.0.0 (FlorenceEGI - Blockchain Integration)
  * @date 2025-10-07
  * @purpose Async EGI minting with retry, progress tracking, and user notifications
  */
-class ProcessEgiMintingJob implements ShouldQueue
-{
+class ProcessEgiMintingJob implements ShouldQueue {
     use Queueable, InteractsWithQueue, SerializesModels;
 
     /**
@@ -63,10 +62,10 @@ class ProcessEgiMintingJob implements ShouldQueue
         $this->egiBlockchainId = $egiBlockchainId;
         $this->webhookId = $webhookId;
         $this->jobMetadata = $jobMetadata;
-        
+
         // Configure job queue
         $this->onQueue('blockchain');
-        
+
         // Add delay if specified in metadata
         if (isset($jobMetadata['delay_seconds'])) {
             $this->delay($jobMetadata['delay_seconds']);
@@ -91,7 +90,7 @@ class ProcessEgiMintingJob implements ShouldQueue
     ): void {
         $jobId = $this->job->getJobId();
         $attempt = $this->attempts();
-        
+
         try {
             // 1. ULM: Log job start
             $logger->info('EGI minting job started', [
@@ -164,11 +163,10 @@ class ProcessEgiMintingJob implements ShouldQueue
                 'processing_time' => now()->diffInSeconds($egiBlockchain->minting_started_at),
                 'attempt' => $attempt
             ]);
-
         } catch (Exception $e) {
             // 10. Handle job failure
             $this->handleJobFailure($e, $logger, $errorManager, $auditService, $jobId, $attempt);
-            
+
             // Re-throw to trigger Laravel's retry mechanism
             throw $e;
         }
@@ -198,7 +196,7 @@ class ProcessEgiMintingJob implements ShouldQueue
             $egiBlockchain = EgiBlockchain::find($this->egiBlockchainId);
             if ($egiBlockchain) {
                 $status = $attempt >= $this->tries ? 'failed' : 'minting_queued';
-                
+
                 $egiBlockchain->update([
                     'mint_status' => $status,
                     'mint_error' => substr($exception->getMessage(), 0, 500),
@@ -236,7 +234,6 @@ class ProcessEgiMintingJob implements ShouldQueue
                 'error' => $exception->getMessage(),
                 'webhook_id' => $this->webhookId
             ], $exception);
-
         } catch (Exception $handlingException) {
             // Log handling failure but don't throw
             $logger->error('Failed to handle job failure', [
@@ -255,8 +252,7 @@ class ProcessEgiMintingJob implements ShouldQueue
      * @return void
      * @throws Exception Validation failed
      */
-    private function validateJobPreconditions(EgiBlockchain $egiBlockchain, UltraLogManager $logger): void
-    {
+    private function validateJobPreconditions(EgiBlockchain $egiBlockchain, UltraLogManager $logger): void {
         // Check if already minted
         if ($egiBlockchain->mint_status === 'minted') {
             throw new Exception("EGI #{$egiBlockchain->egi_id} is already minted (ASA: {$egiBlockchain->asa_id})");
@@ -286,8 +282,7 @@ class ProcessEgiMintingJob implements ShouldQueue
      * @param UltraLogManager $logger Ultra logging manager
      * @return void
      */
-    private function sendSuccessNotification(EgiBlockchain $egiBlockchain, UltraLogManager $logger): void
-    {
+    private function sendSuccessNotification(EgiBlockchain $egiBlockchain, UltraLogManager $logger): void {
         try {
             if ($egiBlockchain->buyerUser) {
                 // TODO: Implement actual notification sending
@@ -315,8 +310,7 @@ class ProcessEgiMintingJob implements ShouldQueue
      * @param UltraLogManager $logger Ultra logging manager
      * @return void
      */
-    private function sendFailureNotification(EgiBlockchain $egiBlockchain, Exception $exception, UltraLogManager $logger): void
-    {
+    private function sendFailureNotification(EgiBlockchain $egiBlockchain, Exception $exception, UltraLogManager $logger): void {
         try {
             // TODO: Implement actual notification sending
             // For now, just log the intent
@@ -339,8 +333,7 @@ class ProcessEgiMintingJob implements ShouldQueue
      *
      * @return int Seconds to wait
      */
-    public function backoff(): int
-    {
+    public function backoff(): int {
         // Exponential backoff: 60s, 120s, 180s
         return $this->backoff * $this->attempts();
     }
@@ -350,8 +343,7 @@ class ProcessEgiMintingJob implements ShouldQueue
      *
      * @return array Job tags for monitoring
      */
-    public function tags(): array
-    {
+    public function tags(): array {
         return [
             'egi-minting',
             'blockchain',

@@ -206,10 +206,10 @@ Route::middleware(['auth:sanctum'])->get('/user/welcome-message', function (Requ
 |--------------------------------------------------------------------------
 | PSP Webhook Routes (No Authentication - External PSP Callbacks)
 |--------------------------------------------------------------------------
-| 
+|
 | These routes handle payment provider webhooks with signature verification.
 | No Laravel auth required as PSPs authenticate via signature verification.
-| 
+|
 | Security: Signature verification performed within controller methods.
 | Rate limiting: Applied to prevent webhook flooding attacks.
 */
@@ -220,7 +220,7 @@ Route::prefix('webhooks')->name('api.webhooks.')->group(function () {
         ->name('stripe')
         ->middleware('throttle:100,1'); // Allow 100 webhooks per minute
 
-    // PayPal webhook endpoint  
+    // PayPal webhook endpoint
     Route::post('/paypal', [PspWebhookController::class, 'handlePayPalWebhook'])
         ->name('paypal')
         ->middleware('throttle:100,1'); // Allow 100 webhooks per minute

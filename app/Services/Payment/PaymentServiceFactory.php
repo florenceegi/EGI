@@ -23,8 +23,7 @@ use Exception;
  * @date 2025-10-07
  * @purpose Factory for payment service provider instantiation
  */
-class PaymentServiceFactory
-{
+class PaymentServiceFactory {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -60,8 +59,7 @@ class PaymentServiceFactory
      * @throws Exception Unsupported provider
      * @gdpr-compliant All created services are GDPR-compliant
      */
-    public function create(string $provider): PaymentServiceInterface
-    {
+    public function create(string $provider): PaymentServiceInterface {
         // Use cached instance if available
         if (isset($this->serviceCache[$provider])) {
             return $this->serviceCache[$provider];
@@ -102,8 +100,7 @@ class PaymentServiceFactory
      *
      * @return array List of supported provider identifiers
      */
-    public function getSupportedProviders(): array
-    {
+    public function getSupportedProviders(): array {
         return ['stripe', 'paypal'];
     }
 
@@ -113,8 +110,7 @@ class PaymentServiceFactory
      * @param string $provider Provider identifier
      * @return bool True if provider is supported
      */
-    public function isProviderSupported(string $provider): bool
-    {
+    public function isProviderSupported(string $provider): bool {
         return in_array(strtolower($provider), $this->getSupportedProviders(), true);
     }
 
@@ -123,10 +119,9 @@ class PaymentServiceFactory
      *
      * @return void
      */
-    public function clearCache(): void
-    {
+    public function clearCache(): void {
         $this->serviceCache = [];
-        
+
         $this->logger->info('Payment service cache cleared', [
             'services_cleared' => count($this->serviceCache)
         ]);
