@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Notifications\Gdpr\GdprNotificationResponseController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\Payment\PspWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TraitsApiController;
@@ -200,3 +201,31 @@ Route::middleware(['auth:sanctum'])->get('/user/welcome-message', function (Requ
         'user_name' => App\Helpers\FegiAuth::getUserName()
     ]);
 })->name('api.user.welcome-message');
+
+/*
+|--------------------------------------------------------------------------
+| PSP Webhook Routes (No Authentication - External PSP Callbacks)
+|--------------------------------------------------------------------------
+| 
+| These routes handle payment provider webhooks with signature verification.
+| No Laravel auth required as PSPs authenticate via signature verification.
+| 
+| Security: Signature verification performed within controller methods.
+| Rate limiting: Applied to prevent webhook flooding attacks.
+*/
+
+Route::prefix('webhooks')->name('api.webhooks.')->group(function () {
+    // Stripe webhook endpoint
+    Route::post('/stripe', [PspWebhookController::class, 'handleStripeWebhook'])
+        ->name('stripe')
+        ->middleware('throttle:100,1'); // Allow 100 webhooks per minute
+
+    // PayPal webhook endpoint  
+    Route::post('/paypal', [PspWebhookController::class, 'handlePayPalWebhook'])
+        ->name('paypal')
+        ->middleware('throttle:100,1'); // Allow 100 webhooks per minute
+
+    // Health check for webhook endpoints
+    Route::get('/health', [PspWebhookController::class, 'health'])
+        ->name('health');
+});
