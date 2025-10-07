@@ -939,7 +939,7 @@
 
                     // Rimuovi hash dall'URL
                     history.pushState('', document.title, window.location.pathname + window.location
-                    .search);
+                        .search);
                 }
             });
 
