@@ -36,7 +36,7 @@ class EgiMintingServiceTest extends TestCase {
 
     protected function setUp(): void {
         parent::setUp();
-        
+
         // Create mocks for all dependencies
         $this->mockLogger = Mockery::mock(UltraLogManager::class);
         $this->mockErrorManager = Mockery::mock(ErrorManagerInterface::class);
@@ -112,7 +112,7 @@ class EgiMintingServiceTest extends TestCase {
         // Arrange
         $user = $this->createTestUser();
         $egi = $this->createTestEgi();
-        
+
         $mockAsaId = '123456';
         $mockTxId = 'ALGO-TX-' . time() . '-TEST';
         $mockTreasuryAddress = $this->generateAlgorandAddress();
@@ -136,7 +136,7 @@ class EgiMintingServiceTest extends TestCase {
 
         // Mock logging calls
         $this->mockLogger->shouldReceive('info')->atLeast()->once();
-        
+
         // Mock audit logging
         $this->mockAuditService
             ->shouldReceive('logActivity')
@@ -189,7 +189,7 @@ class EgiMintingServiceTest extends TestCase {
         // Act & Assert
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('User consent required for blockchain operations');
-        
+
         $this->mintingService->mintEgi($egi, $user);
     }
 
@@ -228,7 +228,7 @@ class EgiMintingServiceTest extends TestCase {
         // Act & Assert
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('EGI already has blockchain record');
-        
+
         $this->mintingService->mintEgi($egi, $user);
     }
 
@@ -264,7 +264,7 @@ class EgiMintingServiceTest extends TestCase {
         // Act & Assert
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('EGI minting failed: Blockchain network error');
-        
+
         $this->mintingService->mintEgi($egi, $user);
 
         // Verify database record was created with failed status
@@ -362,13 +362,13 @@ class EgiMintingServiceTest extends TestCase {
         // Assert both succeeded
         $this->assertIsArray($result1);
         $this->assertIsArray($result2);
-        
+
         // Verify both database records
         $this->assertDatabaseHas('egi_blockchain', [
             'egi_id' => $egi1->id,
             'mint_status' => 'minted'
         ]);
-        
+
         $this->assertDatabaseHas('egi_blockchain', [
             'egi_id' => $egi2->id,
             'mint_status' => 'minted'
@@ -382,7 +382,7 @@ class EgiMintingServiceTest extends TestCase {
         // Arrange
         $user = $this->createTestUser();
         $egi = $this->createTestEgi();
-        
+
         $mockResponse = [
             'asaId' => '123456',
             'txId' => 'ALGO-TX-12345',
@@ -394,11 +394,11 @@ class EgiMintingServiceTest extends TestCase {
         $this->mockConsentService
             ->shouldReceive('hasConsent')
             ->andReturn(true);
-            
+
         $this->mockAlgorandService
             ->shouldReceive('mintEgi')
             ->andReturn($mockResponse);
-            
+
         $this->mockLogger->shouldReceive('info')->atLeast()->once();
         $this->mockAuditService->shouldReceive('logActivity')->once();
 
@@ -407,7 +407,7 @@ class EgiMintingServiceTest extends TestCase {
 
         // Assert database record completeness
         $blockchainRecord = EgiBlockchain::where('egi_id', $egi->id)->first();
-        
+
         $this->assertNotNull($blockchainRecord);
         $this->assertEquals($egi->id, $blockchainRecord->egi_id);
         $this->assertEquals('123456', $blockchainRecord->asa_id);

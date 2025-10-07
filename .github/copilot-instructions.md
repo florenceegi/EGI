@@ -131,6 +131,92 @@ P0 NO = ❌ BLOCCO TOTALE (anche se P1-P3 perfetti)
 
 Contrasta la natura predittiva LLM. Meglio fermarsi e chiedere che procedere con assunzioni sbagliate.
 
+---
+
+## **🏛️ REGOLA MiCA-SAFE - COMPLIANCE EUROPEA OBBLIGATORIA**
+
+### **🚨 FLORENCE EGI DEVE RIMANERE 100% MiCA-SAFE 🚨**
+
+**PRINCIPIO FONDAMENTALE:** La piattaforma FlorenceEGI NON deve mai richiedere licenze crypto europee.
+
+### **✅ COSA È PERMESSO (MiCA-SAFE):**
+
+-   **Emettere NFT/ASA** per conto dell'utente (minting service)
+-   **Custodire temporaneamente** NFT in wallet della piattaforma
+-   **Trasferire NFT** a wallet utenti su richiesta
+-   **Gestire pagamenti FIAT** tramite PSP tradizionali (Stripe, PayPal)
+-   **Fornire servizi tecnologici** blockchain senza toccare crypto-asset per conto terzi
+
+### **❌ COSA È VIETATO (RICHIEDE LICENZA):**
+
+-   **Custodire criptovalute** (ALGO, USDC, etc.) per conto degli utenti
+-   **Fare da exchange** crypto/fiat
+-   **Processare pagamenti crypto** direttamente
+-   **Fornire wallet custodial** per crypto-asset degli utenti
+-   **Gestire chiavi private** di wallet utenti contenenti crypto
+
+### **📋 IMPLICAZIONI OPERATIVE:**
+
+#### **LIVELLO 1 - Nessun wallet (100% tradizionale):**
+
+-   ✅ Cliente paga in EUR via PSP
+-   ✅ Piattaforma minta EGI su wallet proprio
+-   ✅ Cliente riceve certificato PDF + QR verifica
+-   ❌ **NO wallet custodial per il cliente**
+-   ❌ **NO gestione crypto per conto del cliente**
+
+#### **LIVELLO 2 - Ho un wallet, pago in FIAT:**
+
+-   ✅ Cliente paga in EUR via PSP
+-   ✅ Cliente fornisce indirizzo wallet proprio
+-   ✅ Piattaforma trasferisce EGI al wallet cliente
+-   ❌ **NO gestione del wallet cliente**
+-   ❌ **NO custodia crypto per il cliente**
+
+#### **LIVELLO 3 - Pagamenti Crypto (Partner esterni):**
+
+-   ✅ Partner CASP/EMI gestisce pagamenti crypto
+-   ✅ Piattaforma riceve solo notifica di pagamento completato
+-   ❌ **NO gestione diretta pagamenti crypto**
+-   ❌ **NO custodia crypto anche temporanea**
+
+### **🛡️ CONTROLLI AUTOMATICI:**
+
+**PRIMA DI IMPLEMENTARE QUALSIASI FEATURE BLOCKCHAIN:**
+
+1. ❓ **"Questa funzione richiede custodia crypto per utenti?"** → SE SÌ: ❌ STOP
+2. ❓ **"Questa funzione tocca crypto-asset di proprietà utenti?"** → SE SÌ: ❌ STOP
+3. ❓ **"Questa funzione richiede licenza CASP/EMI?"** → SE SÌ: ❌ STOP
+4. ❓ **"Posso implementarla solo con NFT/ASA + FIAT?"** → SE NO: ❌ STOP
+
+### **🚨 SE VIOLI MiCA-SAFE:**
+
+```
+🛑 VIOLAZIONE MiCA-SAFE RILEVATA!
+
+Funzione proposta: [nome funzione]
+Violazione: [descrizione]
+Licenza richiesta: [CASP/EMI/ALTRO]
+
+AZIONI OBBLIGATORIE:
+1. STOP implementazione immediato
+2. Propongo alternative MiCA-safe
+3. Documento il rischio di compliance
+4. Aspetto conferma esplicita per procedere
+```
+
+### **🎯 ARCHITECTURE PATTERN MiCA-SAFE:**
+
+**SEMPRE APPLICARE:**
+
+-   **Gateway PSP** per tutti i pagamenti fiat
+-   **Microservizio blockchain** separato per operazioni tecniche
+-   **Wallet piattaforma** per custodia temporanea EGI
+-   **Transfer automatici** EGI → wallet utenti
+-   **Zero gestione crypto** proprietà utenti
+
+**Questa regola è P0-BLOCKING: se violi MiCA-safe, tutto il progetto è a rischio normativo.**
+
 ### **⏱️ TIMEOUT & RETRY POLICY:**
 
 ```

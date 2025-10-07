@@ -31,7 +31,7 @@ class EgiMintingServiceCoreTest extends TestCase {
 
     protected function setUp(): void {
         parent::setUp();
-        
+
         // Create mocks for all dependencies
         $this->mockLogger = Mockery::mock(UltraLogManager::class);
         $this->mockErrorManager = Mockery::mock(ErrorManagerInterface::class);
@@ -77,7 +77,7 @@ class EgiMintingServiceCoreTest extends TestCase {
 
         // Assert service is created successfully with dependencies
         $this->assertInstanceOf(EgiMintingService::class, $service);
-        
+
         // Test that the service is ready to use
         $this->assertTrue(true, 'EgiMintingService successfully instantiated with all GDPR/Ultra dependencies');
     }
@@ -89,12 +89,12 @@ class EgiMintingServiceCoreTest extends TestCase {
         // Verify that the constructor signature is correct
         $reflection = new ReflectionClass(EgiMintingService::class);
         $constructor = $reflection->getConstructor();
-        
+
         $this->assertNotNull($constructor, 'Constructor should exist');
-        
+
         $parameters = $constructor->getParameters();
         $this->assertCount(5, $parameters, 'Constructor should have 5 parameters');
-        
+
         // Verify parameter types
         $expectedTypes = [
             UltraLogManager::class,
@@ -103,7 +103,7 @@ class EgiMintingServiceCoreTest extends TestCase {
             ConsentService::class,
             AlgorandService::class
         ];
-        
+
         foreach ($parameters as $index => $parameter) {
             $type = $parameter->getType();
             $this->assertInstanceOf(\ReflectionNamedType::class, $type);
@@ -116,22 +116,22 @@ class EgiMintingServiceCoreTest extends TestCase {
      */
     public function test_service_has_required_methods(): void {
         $reflection = new \ReflectionClass(EgiMintingService::class);
-        
+
         // Check main public method exists
         $this->assertTrue($reflection->hasMethod('mintEgi'), 'Service should have mintEgi method');
-        
+
         $mintEgiMethod = $reflection->getMethod('mintEgi');
         $this->assertTrue($mintEgiMethod->isPublic(), 'mintEgi method should be public');
-        
+
         // Check method parameters
         $parameters = $mintEgiMethod->getParameters();
         $this->assertCount(3, $parameters, 'mintEgi should have 3 parameters');
-        
+
         // Verify parameter names
         $this->assertEquals('egi', $parameters[0]->getName());
         $this->assertEquals('user', $parameters[1]->getName());
         $this->assertEquals('metadata', $parameters[2]->getName());
-        
+
         // Verify third parameter is optional
         $this->assertTrue($parameters[2]->isOptional(), 'metadata parameter should be optional');
     }
@@ -142,7 +142,7 @@ class EgiMintingServiceCoreTest extends TestCase {
     public function test_service_class_documentation(): void {
         $reflection = new \ReflectionClass(EgiMintingService::class);
         $docComment = $reflection->getDocComment();
-        
+
         $this->assertNotFalse($docComment, 'Service should have class documentation');
         $this->assertStringContainsString('@package', $docComment);
         $this->assertStringContainsString('@author', $docComment);
@@ -154,10 +154,10 @@ class EgiMintingServiceCoreTest extends TestCase {
      */
     public function test_service_namespace_and_location(): void {
         $reflection = new \ReflectionClass(EgiMintingService::class);
-        
+
         // Verify correct namespace
         $this->assertEquals('App\Services', $reflection->getNamespaceName());
-        
+
         // Verify filename location
         $filename = $reflection->getFileName();
         $this->assertStringContainsString('app/Services/EgiMintingService.php', $filename);
@@ -173,10 +173,10 @@ class EgiMintingServiceCoreTest extends TestCase {
         $this->assertInstanceOf(\Mockery\MockInterface::class, $this->mockAuditService);
         $this->assertInstanceOf(\Mockery\MockInterface::class, $this->mockConsentService);
         $this->assertInstanceOf(\Mockery\MockInterface::class, $this->mockAlgorandService);
-        
+
         // Verify mocks implement expected interfaces
         $this->assertTrue($this->mockLogger instanceof UltraLogManager);
-        $this->assertTrue($this->mockErrorManager instanceof ErrorManagerInterface); 
+        $this->assertTrue($this->mockErrorManager instanceof ErrorManagerInterface);
         $this->assertTrue($this->mockAuditService instanceof AuditLogService);
     }
 
@@ -185,14 +185,14 @@ class EgiMintingServiceCoreTest extends TestCase {
      */
     public function test_gdpr_compliance_patterns(): void {
         $reflection = new \ReflectionClass(EgiMintingService::class);
-        
+
         // Check for GDPR-related dependencies
         $constructor = $reflection->getConstructor();
         $parameters = $constructor->getParameters();
-        
+
         $hasAuditService = false;
         $hasConsentService = false;
-        
+
         foreach ($parameters as $parameter) {
             $type = $parameter->getType();
             if ($type && $type->getName() === AuditLogService::class) {
@@ -202,7 +202,7 @@ class EgiMintingServiceCoreTest extends TestCase {
                 $hasConsentService = true;
             }
         }
-        
+
         $this->assertTrue($hasAuditService, 'Service should have AuditLogService for GDPR compliance');
         $this->assertTrue($hasConsentService, 'Service should have ConsentService for GDPR compliance');
     }
@@ -214,10 +214,10 @@ class EgiMintingServiceCoreTest extends TestCase {
         $reflection = new \ReflectionClass(EgiMintingService::class);
         $constructor = $reflection->getConstructor();
         $parameters = $constructor->getParameters();
-        
+
         $hasUltraLogger = false;
         $hasErrorManager = false;
-        
+
         foreach ($parameters as $parameter) {
             $type = $parameter->getType();
             if ($type && $type->getName() === UltraLogManager::class) {
@@ -227,7 +227,7 @@ class EgiMintingServiceCoreTest extends TestCase {
                 $hasErrorManager = true;
             }
         }
-        
+
         $this->assertTrue($hasUltraLogger, 'Service should have UltraLogManager for logging');
         $this->assertTrue($hasErrorManager, 'Service should have ErrorManagerInterface for error handling');
     }

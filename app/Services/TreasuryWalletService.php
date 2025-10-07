@@ -55,11 +55,11 @@ class TreasuryWalletService {
         $this->auditService = $auditService;
         $this->consentService = $consentService;
         $this->algorandService = $algorandService;
-        
+
         // Load treasury configuration
         $this->treasuryAddress = config('algorand.algorand.treasury_address', '');
         $this->treasuryMnemonic = config('algorand.algorand.treasury_mnemonic', '');
-        
+
         if (empty($this->treasuryAddress)) {
             throw new \Exception('Treasury address not configured. Run: php artisan egi:generate-treasury-wallet');
         }
@@ -76,10 +76,10 @@ class TreasuryWalletService {
 
             // Get treasury status from AlgorandService
             $treasuryStatus = $this->algorandService->getTreasuryStatus();
-            
+
             // Get EGI custody information
             $custodyInfo = $this->getEgiCustodyInfo();
-            
+
             $status = [
                 'address' => $this->treasuryAddress,
                 'balance' => $treasuryStatus['balance'] ?? 0,
@@ -92,13 +92,12 @@ class TreasuryWalletService {
 
             $this->logger->info('TREASURY_STATUS_SUCCESS', $status);
             return $status;
-
         } catch (\Exception $e) {
             $this->errorManager->handle('TREASURY_STATUS_FAILED', [
                 'address' => $this->treasuryAddress,
                 'error' => $e->getMessage()
             ], $e);
-            
+
             throw new \Exception("Treasury status check failed: {$e->getMessage()}");
         }
     }
@@ -172,7 +171,6 @@ class TreasuryWalletService {
                 'amount' => $amount,
                 'timestamp' => now()->toISOString()
             ];
-
         } catch (\Exception $e) {
             // UEM: Error handling
             $this->errorManager->handle('TREASURY_TRANSFER_FAILED', [
@@ -214,12 +212,12 @@ class TreasuryWalletService {
      */
     private function checkTreasuryHealth(): array {
         $cacheKey = 'treasury_health_' . substr($this->treasuryAddress, 0, 8);
-        
+
         return Cache::remember($cacheKey, 300, function () {
             try {
                 // Get network status
                 $networkStatus = $this->algorandService->getNetworkStatus();
-                
+
                 // Check for pending transfers
                 $pendingTransfers = EgiBlockchain::where('ownership_type', 'treasury')
                     ->whereNotNull('buyer_wallet')
@@ -232,7 +230,6 @@ class TreasuryWalletService {
                     'last_activity' => $this->getLastTreasuryActivity(),
                     'status' => $pendingTransfers > 0 ? 'pending_transfers' : 'healthy'
                 ];
-                
             } catch (\Exception $e) {
                 return [
                     'network_connected' => false,
@@ -251,7 +248,7 @@ class TreasuryWalletService {
         $lastActivity = EgiBlockchain::where('ownership_type', 'treasury')
             ->orderBy('updated_at', 'desc')
             ->first();
-            
+
         return $lastActivity ? $lastActivity->updated_at->toISOString() : null;
     }
 
@@ -292,7 +289,7 @@ class TreasuryWalletService {
         if (strlen($address) !== 58) {
             return false;
         }
-        
+
         // Check if contains only valid Base32 characters (A-Z, 2-7)
         $validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
         for ($i = 0; $i < strlen($address); $i++) {
@@ -300,7 +297,7 @@ class TreasuryWalletService {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -346,7 +343,6 @@ class TreasuryWalletService {
                     );
 
                     $results['processed']++;
-
                 } catch (\Exception $e) {
                     $results['failed']++;
                     $results['errors'][] = [
@@ -358,7 +354,6 @@ class TreasuryWalletService {
 
             $this->logger->info('TREASURY_BATCH_PROCESSING_COMPLETE', $results);
             return $results;
-
         } catch (\Exception $e) {
             $this->errorManager->handle('TREASURY_BATCH_PROCESSING_FAILED', [
                 'error' => $e->getMessage()

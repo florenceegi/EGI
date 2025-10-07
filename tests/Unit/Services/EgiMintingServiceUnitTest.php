@@ -32,7 +32,7 @@ class EgiMintingServiceUnitTest extends TestCase {
 
     protected function setUp(): void {
         parent::setUp();
-        
+
         // Create mocks for all dependencies
         $this->mockLogger = Mockery::mock(UltraLogManager::class);
         $this->mockErrorManager = Mockery::mock(ErrorManagerInterface::class);
@@ -80,17 +80,17 @@ class EgiMintingServiceUnitTest extends TestCase {
         $egi->shouldReceive('getAttribute')->with('creator_id')->andReturn(1);
         $egi->shouldReceive('getAttribute')->with('price')->andReturn(100.00);
         $egi->shouldReceive('getAttribute')->with('currency')->andReturn('EUR');
-        
+
         $egi->shouldReceive('__get')->with('id')->andReturn(1);
         $egi->shouldReceive('__get')->with('title')->andReturn('Test EGI');
         $egi->shouldReceive('__get')->with('description')->andReturn('Test Description');
         $egi->shouldReceive('__get')->with('creator_id')->andReturn(1);
         $egi->shouldReceive('__get')->with('price')->andReturn(100.00);
         $egi->shouldReceive('__get')->with('currency')->andReturn('EUR');
-        
+
         // Mock blockchain relationship
         $egi->shouldReceive('blockchain')->andReturn(null);
-        
+
         return $egi;
     }
 
@@ -128,7 +128,7 @@ class EgiMintingServiceUnitTest extends TestCase {
         // Act & Assert
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('User consent required for blockchain operations');
-        
+
         $this->mintingService->mintEgi($egi, $user);
     }
 
@@ -214,7 +214,7 @@ class EgiMintingServiceUnitTest extends TestCase {
         // Act & Assert
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('EGI minting failed: Blockchain network error');
-        
+
         $this->mintingService->mintEgi($egi, $user);
     }
 
@@ -245,7 +245,7 @@ class EgiMintingServiceUnitTest extends TestCase {
             ->shouldReceive('info')
             ->with('EGI minting initiated', Mockery::any())
             ->once();
-            
+
         $this->mockLogger
             ->shouldReceive('info')
             ->with('EGI minting successful', Mockery::any())
@@ -334,7 +334,7 @@ class EgiMintingServiceUnitTest extends TestCase {
         // Act & Assert
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('EGI already has blockchain record');
-        
+
         $this->mintingService->mintEgi($egi, $user);
     }
 }

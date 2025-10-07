@@ -17,17 +17,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @date 2025-10-07
  * @purpose Unit tests for EgiBlockchain model - relationships, scopes, accessors, validation
  */
-class EgiBlockchainTest extends TestCase
-{
+class EgiBlockchainTest extends TestCase {
     use RefreshDatabase;
 
     /**
      * Test model can be instantiated
      */
-    public function test_model_instantiation(): void
-    {
+    public function test_model_instantiation(): void {
         $egiBlockchain = new EgiBlockchain();
-        
+
         $this->assertInstanceOf(EgiBlockchain::class, $egiBlockchain);
         $this->assertEquals('egi_blockchain', $egiBlockchain->getTable());
     }
@@ -35,27 +33,42 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test fillable attributes are correctly defined
      */
-    public function test_fillable_attributes(): void
-    {
+    public function test_fillable_attributes(): void {
         $fillable = [
-            'egi_id', 'asa_id', 'anchor_hash', 'blockchain_tx_id', 'platform_wallet',
-            'payment_method', 'psp_provider', 'payment_reference', 'paid_amount', 'paid_currency',
-            'ownership_type', 'buyer_wallet', 'buyer_user_id',
-            'certificate_uuid', 'certificate_path', 'verification_url',
-            'reservation_id', 'mint_status', 'minted_at', 'mint_error',
-            'merchant_psp_config', 'crypto_payment_reference', 'supports_crypto_payments'
+            'egi_id',
+            'asa_id',
+            'anchor_hash',
+            'blockchain_tx_id',
+            'platform_wallet',
+            'payment_method',
+            'psp_provider',
+            'payment_reference',
+            'paid_amount',
+            'paid_currency',
+            'ownership_type',
+            'buyer_wallet',
+            'buyer_user_id',
+            'certificate_uuid',
+            'certificate_path',
+            'verification_url',
+            'reservation_id',
+            'mint_status',
+            'minted_at',
+            'mint_error',
+            'merchant_psp_config',
+            'crypto_payment_reference',
+            'supports_crypto_payments'
         ];
 
         $egiBlockchain = new EgiBlockchain();
-        
+
         $this->assertEquals($fillable, $egiBlockchain->getFillable());
     }
 
     /**
      * Test casts are correctly applied
      */
-    public function test_casts(): void
-    {
+    public function test_casts(): void {
         $egiBlockchain = new EgiBlockchain([
             'paid_amount' => '99.99',
             'supports_crypto_payments' => '1',
@@ -74,20 +87,18 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test hidden attributes
      */
-    public function test_hidden_attributes(): void
-    {
+    public function test_hidden_attributes(): void {
         $egiBlockchain = new EgiBlockchain();
-        
+
         $this->assertEquals(['mint_error', 'merchant_psp_config'], $egiBlockchain->getHidden());
     }
 
     /**
      * Test certificate UUID auto-generation on creation
      */
-    public function test_certificate_uuid_auto_generated(): void
-    {
+    public function test_certificate_uuid_auto_generated(): void {
         $egi = Egi::factory()->create();
-        
+
         $egiBlockchain = EgiBlockchain::create([
             'egi_id' => $egi->id,
             'mint_status' => 'unminted',
@@ -101,11 +112,10 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test certificate UUID is not overwritten if provided
      */
-    public function test_certificate_uuid_not_overwritten(): void
-    {
+    public function test_certificate_uuid_not_overwritten(): void {
         $egi = Egi::factory()->create();
         $customUuid = '12345678-1234-1234-1234-123456789012';
-        
+
         $egiBlockchain = EgiBlockchain::create([
             'egi_id' => $egi->id,
             'certificate_uuid' => $customUuid,
@@ -119,8 +129,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test egi relationship
      */
-    public function test_egi_relationship(): void
-    {
+    public function test_egi_relationship(): void {
         $egiBlockchain = new EgiBlockchain();
         $relation = $egiBlockchain->egi();
 
@@ -132,8 +141,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test buyer relationship
      */
-    public function test_buyer_relationship(): void
-    {
+    public function test_buyer_relationship(): void {
         $egiBlockchain = new EgiBlockchain();
         $relation = $egiBlockchain->buyer();
 
@@ -145,8 +153,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test reservation relationship
      */
-    public function test_reservation_relationship(): void
-    {
+    public function test_reservation_relationship(): void {
         $egiBlockchain = new EgiBlockchain();
         $relation = $egiBlockchain->reservation();
 
@@ -158,17 +165,16 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test minted scope
      */
-    public function test_minted_scope(): void
-    {
+    public function test_minted_scope(): void {
         $egi = Egi::factory()->create();
-        
+
         // Create minted record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
             'mint_status' => 'minted',
             'ownership_type' => 'treasury'
         ]);
-        
+
         // Create unminted record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
@@ -177,44 +183,42 @@ class EgiBlockchainTest extends TestCase
         ]);
 
         $mintedRecords = EgiBlockchain::minted()->count();
-        
+
         $this->assertEquals(1, $mintedRecords);
     }
 
     /**
      * Test pending scope
      */
-    public function test_pending_scope(): void
-    {
+    public function test_pending_scope(): void {
         $egi = Egi::factory()->create();
-        
+
         // Create pending records
         EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'unminted', 'ownership_type' => 'treasury']);
         EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'minting_queued', 'ownership_type' => 'treasury']);
         EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'minting', 'ownership_type' => 'treasury']);
-        
+
         // Create non-pending record
         EgiBlockchain::create(['egi_id' => $egi->id, 'mint_status' => 'minted', 'ownership_type' => 'treasury']);
 
         $pendingRecords = EgiBlockchain::pending()->count();
-        
+
         $this->assertEquals(3, $pendingRecords);
     }
 
     /**
      * Test failed scope
      */
-    public function test_failed_scope(): void
-    {
+    public function test_failed_scope(): void {
         $egi = Egi::factory()->create();
-        
+
         // Create failed record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
             'mint_status' => 'failed',
             'ownership_type' => 'treasury'
         ]);
-        
+
         // Create non-failed record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
@@ -223,24 +227,23 @@ class EgiBlockchainTest extends TestCase
         ]);
 
         $failedRecords = EgiBlockchain::failed()->count();
-        
+
         $this->assertEquals(1, $failedRecords);
     }
 
     /**
      * Test byOwnership scope
      */
-    public function test_by_ownership_scope(): void
-    {
+    public function test_by_ownership_scope(): void {
         $egi = Egi::factory()->create();
-        
+
         // Create treasury record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
             'ownership_type' => 'treasury',
             'mint_status' => 'unminted'
         ]);
-        
+
         // Create wallet record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
@@ -250,7 +253,7 @@ class EgiBlockchainTest extends TestCase
 
         $treasuryRecords = EgiBlockchain::byOwnership('treasury')->count();
         $walletRecords = EgiBlockchain::byOwnership('wallet')->count();
-        
+
         $this->assertEquals(1, $treasuryRecords);
         $this->assertEquals(1, $walletRecords);
     }
@@ -258,10 +261,9 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test byPaymentMethod scope
      */
-    public function test_by_payment_method_scope(): void
-    {
+    public function test_by_payment_method_scope(): void {
         $egi = Egi::factory()->create();
-        
+
         // Create stripe payment record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
@@ -269,7 +271,7 @@ class EgiBlockchainTest extends TestCase
             'mint_status' => 'unminted',
             'ownership_type' => 'treasury'
         ]);
-        
+
         // Create paypal payment record
         EgiBlockchain::create([
             'egi_id' => $egi->id,
@@ -280,7 +282,7 @@ class EgiBlockchainTest extends TestCase
 
         $stripeRecords = EgiBlockchain::byPaymentMethod('stripe')->count();
         $paypalRecords = EgiBlockchain::byPaymentMethod('paypal')->count();
-        
+
         $this->assertEquals(1, $stripeRecords);
         $this->assertEquals(1, $paypalRecords);
     }
@@ -288,8 +290,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test formatted amount accessor
      */
-    public function test_formatted_amount_accessor(): void
-    {
+    public function test_formatted_amount_accessor(): void {
         $egiBlockchain = new EgiBlockchain([
             'paid_amount' => 99.99,
             'paid_currency' => 'EUR'
@@ -305,8 +306,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test mint status label accessor
      */
-    public function test_mint_status_label_accessor(): void
-    {
+    public function test_mint_status_label_accessor(): void {
         $testCases = [
             'unminted' => 'Non Mintato',
             'minting_queued' => 'In Coda',
@@ -325,8 +325,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test ownership type label accessor
      */
-    public function test_ownership_type_label_accessor(): void
-    {
+    public function test_ownership_type_label_accessor(): void {
         $testCases = [
             'treasury' => 'Deposito Piattaforma',
             'wallet' => 'Wallet Utente',
@@ -342,8 +341,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test isMinted method
      */
-    public function test_is_minted_method(): void
-    {
+    public function test_is_minted_method(): void {
         // Test minted with ASA ID
         $egiBlockchain = new EgiBlockchain([
             'mint_status' => 'minted',
@@ -369,17 +367,16 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test isPending method
      */
-    public function test_is_pending_method(): void
-    {
+    public function test_is_pending_method(): void {
         $pendingStatuses = ['unminted', 'minting_queued', 'minting'];
-        
+
         foreach ($pendingStatuses as $status) {
             $egiBlockchain = new EgiBlockchain(['mint_status' => $status]);
             $this->assertTrue($egiBlockchain->isPending(), "Status {$status} should be pending");
         }
 
         $nonPendingStatuses = ['minted', 'failed'];
-        
+
         foreach ($nonPendingStatuses as $status) {
             $egiBlockchain = new EgiBlockchain(['mint_status' => $status]);
             $this->assertFalse($egiBlockchain->isPending(), "Status {$status} should not be pending");
@@ -389,8 +386,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test hasFailed method
      */
-    public function test_has_failed_method(): void
-    {
+    public function test_has_failed_method(): void {
         $egiBlockchain = new EgiBlockchain(['mint_status' => 'failed']);
         $this->assertTrue($egiBlockchain->hasFailed());
 
@@ -401,8 +397,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test hasCertificate method
      */
-    public function test_has_certificate_method(): void
-    {
+    public function test_has_certificate_method(): void {
         // Test with both path and URL
         $egiBlockchain = new EgiBlockchain([
             'certificate_path' => '/certificates/test.pdf',
@@ -428,11 +423,10 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test getVerificationUrl method
      */
-    public function test_get_verification_url_method(): void
-    {
+    public function test_get_verification_url_method(): void {
         $url = 'https://example.com/verify';
         $egiBlockchain = new EgiBlockchain(['verification_url' => $url]);
-        
+
         $this->assertEquals($url, $egiBlockchain->getVerificationUrl());
 
         $egiBlockchain = new EgiBlockchain(['verification_url' => null]);
@@ -442,8 +436,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test isOwnedByUser method
      */
-    public function test_is_owned_by_user_method(): void
-    {
+    public function test_is_owned_by_user_method(): void {
         // Test user ownership with wallet
         $egiBlockchain = new EgiBlockchain([
             'ownership_type' => 'wallet',
@@ -466,8 +459,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test isInTreasury method
      */
-    public function test_is_in_treasury_method(): void
-    {
+    public function test_is_in_treasury_method(): void {
         $egiBlockchain = new EgiBlockchain(['ownership_type' => 'treasury']);
         $this->assertTrue($egiBlockchain->isInTreasury());
 
@@ -478,8 +470,7 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test blockchain explorer URL generation
      */
-    public function test_blockchain_explorer_url(): void
-    {
+    public function test_blockchain_explorer_url(): void {
         // Test mainnet
         config(['algorand.network' => 'mainnet']);
         $egiBlockchain = new EgiBlockchain([
@@ -507,11 +498,10 @@ class EgiBlockchainTest extends TestCase
     /**
      * Test model relationships work with real data
      */
-    public function test_model_relationships_with_data(): void
-    {
+    public function test_model_relationships_with_data(): void {
         $user = User::factory()->create();
         $egi = Egi::factory()->create();
-        
+
         $egiBlockchain = EgiBlockchain::create([
             'egi_id' => $egi->id,
             'buyer_user_id' => $user->id,

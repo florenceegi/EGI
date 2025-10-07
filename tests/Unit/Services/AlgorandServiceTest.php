@@ -28,7 +28,7 @@ class AlgorandServiceTest extends TestCase {
 
     protected function setUp(): void {
         parent::setUp();
-        
+
         // Create mocks for all dependencies
         $this->mockLogger = Mockery::mock(UltraLogManager::class);
         $this->mockErrorManager = Mockery::mock(ErrorManagerInterface::class);
@@ -76,7 +76,7 @@ class AlgorandServiceTest extends TestCase {
 
         // Assert service is created successfully with all GDPR/Ultra dependencies
         $this->assertInstanceOf(AlgorandService::class, $service);
-        
+
         // Test that the service is ready for blockchain operations
         $this->assertTrue(true, 'AlgorandService successfully instantiated with GDPR/Ultra compliance');
     }
@@ -88,12 +88,12 @@ class AlgorandServiceTest extends TestCase {
         // Verify that the constructor signature is correct
         $reflection = new ReflectionClass(AlgorandService::class);
         $constructor = $reflection->getConstructor();
-        
+
         $this->assertNotNull($constructor, 'Constructor should exist');
-        
+
         $parameters = $constructor->getParameters();
         $this->assertCount(4, $parameters, 'Constructor should have 4 parameters');
-        
+
         // Verify parameter types
         $expectedTypes = [
             UltraLogManager::class,
@@ -101,7 +101,7 @@ class AlgorandServiceTest extends TestCase {
             AuditLogService::class,
             ConsentService::class
         ];
-        
+
         foreach ($parameters as $index => $parameter) {
             $type = $parameter->getType();
             $this->assertInstanceOf(\ReflectionNamedType::class, $type);
@@ -114,7 +114,7 @@ class AlgorandServiceTest extends TestCase {
      */
     public function test_service_has_required_blockchain_methods(): void {
         $reflection = new ReflectionClass(AlgorandService::class);
-        
+
         // Core blockchain methods
         $requiredMethods = [
             'mintEgi',
@@ -124,16 +124,16 @@ class AlgorandServiceTest extends TestCase {
             'getNetworkStatus',
             'getTreasuryStatus'
         ];
-        
+
         foreach ($requiredMethods as $methodName) {
             $this->assertTrue(
-                $reflection->hasMethod($methodName), 
+                $reflection->hasMethod($methodName),
                 "Service should have {$methodName} method"
             );
-            
+
             $method = $reflection->getMethod($methodName);
             $this->assertTrue(
-                $method->isPublic(), 
+                $method->isPublic(),
                 "{$methodName} method should be public"
             );
         }
@@ -145,16 +145,16 @@ class AlgorandServiceTest extends TestCase {
     public function test_mint_egi_method_signature(): void {
         $reflection = new ReflectionClass(AlgorandService::class);
         $mintEgiMethod = $reflection->getMethod('mintEgi');
-        
+
         // Check method parameters
         $parameters = $mintEgiMethod->getParameters();
         $this->assertCount(3, $parameters, 'mintEgi should have 3 parameters');
-        
+
         // Verify parameter names and types
         $this->assertEquals('egiId', $parameters[0]->getName());
         $this->assertEquals('metadata', $parameters[1]->getName());
         $this->assertEquals('user', $parameters[2]->getName());
-        
+
         // Verify parameter types
         $this->assertEquals('int', $parameters[0]->getType()->getName());
         $this->assertEquals('array', $parameters[1]->getType()->getName());
@@ -167,17 +167,17 @@ class AlgorandServiceTest extends TestCase {
     public function test_transfer_egi_asset_method_signature(): void {
         $reflection = new ReflectionClass(AlgorandService::class);
         $transferMethod = $reflection->getMethod('transferEgiAsset');
-        
+
         // Check method parameters
         $parameters = $transferMethod->getParameters();
         $this->assertCount(4, $parameters, 'transferEgiAsset should have 4 parameters');
-        
+
         // Verify parameter names
         $this->assertEquals('to', $parameters[0]->getName());
         $this->assertEquals('asaId', $parameters[1]->getName());
         $this->assertEquals('user', $parameters[2]->getName());
         $this->assertEquals('amount', $parameters[3]->getName());
-        
+
         // Verify amount parameter is optional with default value
         $this->assertTrue($parameters[3]->isOptional(), 'amount parameter should be optional');
         $this->assertEquals(1, $parameters[3]->getDefaultValue(), 'amount default should be 1');
@@ -189,7 +189,7 @@ class AlgorandServiceTest extends TestCase {
     public function test_service_class_documentation(): void {
         $reflection = new ReflectionClass(AlgorandService::class);
         $docComment = $reflection->getDocComment();
-        
+
         $this->assertNotFalse($docComment, 'Service should have class documentation');
         $this->assertStringContainsString('@package', $docComment);
         $this->assertStringContainsString('@author', $docComment);
@@ -201,10 +201,10 @@ class AlgorandServiceTest extends TestCase {
      */
     public function test_service_namespace_and_location(): void {
         $reflection = new ReflectionClass(AlgorandService::class);
-        
+
         // Verify correct namespace
         $this->assertEquals('App\Services', $reflection->getNamespaceName());
-        
+
         // Verify filename location
         $filename = $reflection->getFileName();
         $this->assertStringContainsString('app/Services/AlgorandService.php', $filename);
@@ -215,14 +215,14 @@ class AlgorandServiceTest extends TestCase {
      */
     public function test_gdpr_compliance_patterns(): void {
         $reflection = new ReflectionClass(AlgorandService::class);
-        
+
         // Check for GDPR-related dependencies
         $constructor = $reflection->getConstructor();
         $parameters = $constructor->getParameters();
-        
+
         $hasAuditService = false;
         $hasConsentService = false;
-        
+
         foreach ($parameters as $parameter) {
             $type = $parameter->getType();
             if ($type && $type->getName() === AuditLogService::class) {
@@ -232,7 +232,7 @@ class AlgorandServiceTest extends TestCase {
                 $hasConsentService = true;
             }
         }
-        
+
         $this->assertTrue($hasAuditService, 'Service should have AuditLogService for GDPR compliance');
         $this->assertTrue($hasConsentService, 'Service should have ConsentService for GDPR compliance');
     }
@@ -244,10 +244,10 @@ class AlgorandServiceTest extends TestCase {
         $reflection = new ReflectionClass(AlgorandService::class);
         $constructor = $reflection->getConstructor();
         $parameters = $constructor->getParameters();
-        
+
         $hasUltraLogger = false;
         $hasErrorManager = false;
-        
+
         foreach ($parameters as $parameter) {
             $type = $parameter->getType();
             if ($type && $type->getName() === UltraLogManager::class) {
@@ -257,7 +257,7 @@ class AlgorandServiceTest extends TestCase {
                 $hasErrorManager = true;
             }
         }
-        
+
         $this->assertTrue($hasUltraLogger, 'Service should have UltraLogManager for logging');
         $this->assertTrue($hasErrorManager, 'Service should have ErrorManagerInterface for error handling');
     }
@@ -271,10 +271,10 @@ class AlgorandServiceTest extends TestCase {
         $this->assertInstanceOf(\Mockery\MockInterface::class, $this->mockErrorManager);
         $this->assertInstanceOf(\Mockery\MockInterface::class, $this->mockAuditService);
         $this->assertInstanceOf(\Mockery\MockInterface::class, $this->mockConsentService);
-        
+
         // Verify mocks implement expected interfaces
         $this->assertTrue($this->mockLogger instanceof UltraLogManager);
-        $this->assertTrue($this->mockErrorManager instanceof ErrorManagerInterface); 
+        $this->assertTrue($this->mockErrorManager instanceof ErrorManagerInterface);
         $this->assertTrue($this->mockAuditService instanceof AuditLogService);
         $this->assertTrue($this->mockConsentService instanceof ConsentService);
     }
@@ -286,16 +286,16 @@ class AlgorandServiceTest extends TestCase {
         // This test verifies that the service loads configuration properly
         // We can't test actual config values in unit tests without mocking config
         // but we can verify the service instantiates without config errors
-        
+
         $service = new AlgorandService(
             $this->mockLogger,
             $this->mockErrorManager,
             $this->mockAuditService,
             $this->mockConsentService
         );
-        
+
         $this->assertInstanceOf(AlgorandService::class, $service);
-        
+
         // Service should be ready for blockchain operations
         $this->assertTrue(true, 'AlgorandService loads configuration successfully');
     }
@@ -306,15 +306,15 @@ class AlgorandServiceTest extends TestCase {
     public function test_microservice_integration_pattern(): void {
         $reflection = new ReflectionClass(AlgorandService::class);
         $docComment = $reflection->getDocComment();
-        
+
         // Should mention microservice integration in documentation
         $this->assertStringContainsString('microservice', $docComment);
-        
+
         // Should have private methods for microservice calls
         $this->assertTrue(
-            $reflection->hasMethod('callMicroservice') || 
-            $reflection->hasMethod('makeRequest') ||
-            method_exists($this->algorandService, 'callMicroservice'),
+            $reflection->hasMethod('callMicroservice') ||
+                $reflection->hasMethod('makeRequest') ||
+                method_exists($this->algorandService, 'callMicroservice'),
             'Service should have microservice integration methods'
         );
     }
@@ -325,16 +325,16 @@ class AlgorandServiceTest extends TestCase {
     public function test_mica_safe_compliance_indicators(): void {
         $reflection = new ReflectionClass(AlgorandService::class);
         $docComment = $reflection->getDocComment();
-        
+
         // Check for MiCA-SAFE compliance mentions in documentation
-        $hasComplianceIndicators = 
+        $hasComplianceIndicators =
             strpos($docComment, 'MiCA') !== false ||
             strpos($docComment, 'compliant') !== false ||
             strpos($docComment, 'treasury') !== false ||
             strpos($docComment, 'custody') !== false;
-            
+
         $this->assertTrue(
-            $hasComplianceIndicators, 
+            $hasComplianceIndicators,
             'Service documentation should indicate MiCA-SAFE compliance patterns'
         );
     }

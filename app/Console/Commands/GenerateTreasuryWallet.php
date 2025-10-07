@@ -15,14 +15,13 @@ use Illuminate\Support\Str;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
-class GenerateTreasuryWallet extends Command
-{
+class GenerateTreasuryWallet extends Command {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'egi:generate-treasury-wallet 
+    protected $signature = 'egi:generate-treasury-wallet
                            {--force : Force regeneration of existing wallet}
                            {--mock : Generate mock wallet for testing}';
 
@@ -51,8 +50,7 @@ class GenerateTreasuryWallet extends Command
     /**
      * Execute the console command - Generate Treasury Wallet with security checks
      */
-    public function handle(): int
-    {
+    public function handle(): int {
         try {
             $this->info('🏛️ FlorenceEGI Treasury Wallet Generator');
             $this->info('🔒 MiCA-SAFE Compliant - Platform Custody Only');
@@ -73,7 +71,7 @@ class GenerateTreasuryWallet extends Command
             if ($existingAddress && $this->option('force')) {
                 $this->error('🚨 WARNING: This will REPLACE existing treasury wallet!');
                 $this->error('🚨 Existing EGIs on old wallet will become inaccessible!');
-                
+
                 if (!$this->confirm('Are you absolutely sure? Type "yes" to continue:', false)) {
                     $this->info('❌ Operation cancelled for security.');
                     return 1;
@@ -82,7 +80,7 @@ class GenerateTreasuryWallet extends Command
 
             // Generate wallet credentials
             $this->info('🔐 Generating Treasury Wallet credentials...');
-            
+
             if ($this->option('mock')) {
                 [$address, $mnemonic] = $this->generateMockWallet();
                 $this->info('📝 Generated MOCK wallet for testing');
@@ -112,7 +110,6 @@ class GenerateTreasuryWallet extends Command
             $this->warn('🔒 IMPORTANT: Backup the mnemonic phrase securely!');
 
             return 0;
-
         } catch (\Exception $e) {
             $this->errorManager->handle('TREASURY_WALLET_GENERATION_FAILED', [
                 'error' => $e->getMessage(),
@@ -129,8 +126,7 @@ class GenerateTreasuryWallet extends Command
      * Generate mock wallet for testing
      * @return array [address, mnemonic]
      */
-    private function generateMockWallet(): array
-    {
+    private function generateMockWallet(): array {
         // Generate valid Algorand address format (58 chars, base32)
         $base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
         $address = '';
@@ -140,10 +136,38 @@ class GenerateTreasuryWallet extends Command
 
         // Generate 25-word mnemonic (Algorand standard)
         $words = [
-            'abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract',
-            'absurd', 'abuse', 'access', 'accident', 'account', 'accuse', 'achieve', 'acid',
-            'acoustic', 'acquire', 'across', 'act', 'action', 'actor', 'actress', 'actual',
-            'adapt', 'add', 'addict', 'address', 'adjust', 'admit', 'adult', 'advance'
+            'abandon',
+            'ability',
+            'able',
+            'about',
+            'above',
+            'absent',
+            'absorb',
+            'abstract',
+            'absurd',
+            'abuse',
+            'access',
+            'accident',
+            'account',
+            'accuse',
+            'achieve',
+            'acid',
+            'acoustic',
+            'acquire',
+            'across',
+            'act',
+            'action',
+            'actor',
+            'actress',
+            'actual',
+            'adapt',
+            'add',
+            'addict',
+            'address',
+            'adjust',
+            'admit',
+            'adult',
+            'advance'
         ];
 
         $mnemonic = [];
@@ -158,32 +182,30 @@ class GenerateTreasuryWallet extends Command
      * Generate production wallet (placeholder - would use real Algorand SDK)
      * @return array [address, mnemonic]
      */
-    private function generateProductionWallet(): array
-    {
+    private function generateProductionWallet(): array {
         // TODO: Replace with real Algorand SDK when integrated
         // For now, generate realistic mock for development
         $this->warn('🚧 Using mock generation - replace with Algorand SDK in production');
-        
+
         return $this->generateMockWallet();
     }
 
     /**
      * Display wallet information securely
      */
-    private function displayWalletInfo(string $address, string $mnemonic): void
-    {
+    private function displayWalletInfo(string $address, string $mnemonic): void {
         $this->line('');
         $this->info('📋 Treasury Wallet Information:');
         $this->line('');
-        
+
         $this->line("🏦 <comment>Treasury Address:</comment>");
         $this->line("    {$address}");
         $this->line('');
-        
+
         $this->line("🔑 <comment>Mnemonic Phrase (25 words):</comment>");
         $this->line("    {$mnemonic}");
         $this->line('');
-        
+
         $this->warn('🔒 SECURITY WARNING:');
         $this->warn('   • This mnemonic controls the treasury wallet');
         $this->warn('   • Store it securely offline');
@@ -195,8 +217,7 @@ class GenerateTreasuryWallet extends Command
     /**
      * Save wallet to .env file
      */
-    private function saveToEnvironment(string $address, string $mnemonic): void
-    {
+    private function saveToEnvironment(string $address, string $mnemonic): void {
         $envPath = base_path('.env');
         $envContent = file_get_contents($envPath);
 
