@@ -6,7 +6,7 @@ use Tests\TestCase;
 use Mockery;
 use App\Models\User;
 use App\Models\Egi;
-use App\Models\Reservation; 
+use App\Models\Reservation;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
@@ -29,14 +29,14 @@ class PaymentServiceTest extends TestCase {
         // Test che l'interfaccia PaymentServiceInterface deve esistere
         $requiredInterfaceMethods = [
             'processPayment',
-            'verifyWebhook', 
+            'verifyWebhook',
             'refundPayment',
             'getPaymentStatus'
         ];
 
         // Verifica che questi metodi siano definiti quando l'interfaccia sarà creata
         $this->assertTrue(true, 'PaymentServiceInterface requirements documented');
-        
+
         // Log per debug
         foreach ($requiredInterfaceMethods as $method) {
             $this->assertIsString($method, "Method {$method} should be string for interface definition");
@@ -85,7 +85,7 @@ class PaymentServiceTest extends TestCase {
         // Test della struttura PaymentRequest DTO
         $expectedPaymentRequestFields = [
             'amount',
-            'currency', 
+            'currency',
             'customer_email',
             'egi_id',
             'reservation_id'
@@ -246,7 +246,7 @@ class PaymentServiceTest extends TestCase {
         // Verify forbidden operations
         $forbiddenOperations = [
             'crypto_wallet_custody',
-            'crypto_exchange_operations', 
+            'crypto_exchange_operations',
             'direct_crypto_payments',
             'crypto_asset_management'
         ];

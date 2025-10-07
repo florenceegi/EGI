@@ -132,7 +132,7 @@ class BlockchainWorkflowIntegrationTest extends TestCase {
                 'treasury_address' => 'TEST_TREASURY_ADDRESS_1234567890ABCDEF'
             ]);
 
-        // Step 1: Create reservation  
+        // Step 1: Create reservation
         $reservationData = [
             'user_id' => $this->testUser->id,
             'egi_id' => $this->testEgi->id,
@@ -263,7 +263,7 @@ class BlockchainWorkflowIntegrationTest extends TestCase {
         // Arrange: Create specific error manager mock for this test
         $errorManagerMock = Mockery::mock(ErrorManagerInterface::class);
         $algorandMock = Mockery::mock(AlgorandService::class);
-        
+
         // Mock: Simulate Algorand service failure
         $algorandMock
             ->shouldReceive('mintEgi')
@@ -327,13 +327,13 @@ class BlockchainWorkflowIntegrationTest extends TestCase {
 
         // Assert: Verify GDPR compliance
         $this->assertInstanceOf(EgiBlockchain::class, $result);
-        
+
         // Verify audit trail was created
         $this->mockAuditService->shouldHaveReceived('logUserAction')->once();
-        
+
         // Verify consent was checked
         $this->mockConsentService->shouldHaveReceived('hasConsent')->atLeast()->once();
-        
+
         // Verify blockchain record includes GDPR-required fields
         $egiBlockchain = EgiBlockchain::where('egi_id', $this->testEgi->id)->first();
         $this->assertNotNull($egiBlockchain->buyer_user_id);
@@ -369,17 +369,17 @@ class BlockchainWorkflowIntegrationTest extends TestCase {
 
         // Assert: Verify MiCA-SAFE compliance
         $this->assertInstanceOf(EgiBlockchain::class, $result);
-        
+
         $egiBlockchain = EgiBlockchain::where('egi_id', $this->testEgi->id)->first();
-        
+
         // Verify platform retains treasury ownership (MiCA-SAFE)
         $this->assertEquals('treasury', $egiBlockchain->ownership_type);
         $this->assertEquals('TEST_TREASURY_ADDRESS_1234567890ABCDEF', $egiBlockchain->platform_wallet);
-        
+
         // Verify no custodial crypto handling
         $this->assertNull($egiBlockchain->buyer_wallet);
         $this->assertFalse($egiBlockchain->supports_crypto_payments);
-        
+
         // Verify fiat payment method only
         $this->assertEquals('mock', $egiBlockchain->payment_method);
         $this->assertEquals('EUR', $egiBlockchain->paid_currency);
@@ -414,14 +414,14 @@ class BlockchainWorkflowIntegrationTest extends TestCase {
 
         // Assert: Verify certificate generation
         $this->assertInstanceOf(EgiBlockchain::class, $result);
-        
+
         $egiBlockchain = EgiBlockchain::where('egi_id', $this->testEgi->id)->first();
-        
+
         // Verify certificate-related fields
         $this->assertNotNull($egiBlockchain->certificate_uuid);
         $this->assertEquals('CERT-GEN-001', $egiBlockchain->anchor_hash);
         $this->assertNotNull($egiBlockchain->minted_at);
-        
+
         // Certificate generation creates proper blockchain linkage
         $this->assertEquals('111222333', $egiBlockchain->asa_id);
         $this->assertEquals('CERT_TEST_TX_444', $egiBlockchain->blockchain_tx_id);
@@ -456,17 +456,17 @@ class BlockchainWorkflowIntegrationTest extends TestCase {
 
         // Assert: Verify database consistency
         $this->assertInstanceOf(EgiBlockchain::class, $result);
-        
+
         // Verify referential integrity
         $egiBlockchain = EgiBlockchain::where('egi_id', $this->testEgi->id)->first();
         $this->assertEquals($this->testEgi->id, $egiBlockchain->egi_id);
         $this->assertEquals($this->testUser->id, $egiBlockchain->buyer_user_id);
-        
+
         // Verify timestamps consistency
         $this->assertNotNull($egiBlockchain->created_at);
         $this->assertNotNull($egiBlockchain->updated_at);
         $this->assertNotNull($egiBlockchain->minted_at);
-        
+
         // Verify data integrity
         $this->assertEquals('minted', $egiBlockchain->mint_status);
         $this->assertNull($egiBlockchain->mint_error);
@@ -490,7 +490,7 @@ class BlockchainWorkflowIntegrationTest extends TestCase {
 
         // Act: Execute minting workflow with performance monitoring
         $startTime = microtime(true);
-        
+
         $mintingService = new EgiMintingService(
             $this->mockLogger,
             $this->mockErrorManager,
@@ -500,13 +500,13 @@ class BlockchainWorkflowIntegrationTest extends TestCase {
         );
 
         $result = $mintingService->mintEgi($this->testEgi, $this->testUser);
-        
+
         $executionTime = microtime(true) - $startTime;
 
         // Assert: Verify performance benchmarks
         $this->assertInstanceOf(EgiBlockchain::class, $result);
         $this->assertLessThan(5.0, $executionTime, 'Minting workflow should complete within 5 seconds');
-        
+
         // Verify efficient database operations
         $egiBlockchain = EgiBlockchain::where('egi_id', $this->testEgi->id)->first();
         $this->assertNotNull($egiBlockchain);
@@ -568,11 +568,11 @@ class BlockchainWorkflowIntegrationTest extends TestCase {
         // Assert: Verify concurrent processing
         $this->assertInstanceOf(EgiBlockchain::class, $result1);
         $this->assertInstanceOf(EgiBlockchain::class, $result2);
-        
+
         // Verify separate blockchain records
         $blockchain1 = EgiBlockchain::where('egi_id', $egi1->id)->first();
         $blockchain2 = EgiBlockchain::where('egi_id', $egi2->id)->first();
-        
+
         $this->assertNotNull($blockchain1);
         $this->assertNotNull($blockchain2);
         $this->assertNotEquals($blockchain1->id, $blockchain2->id);

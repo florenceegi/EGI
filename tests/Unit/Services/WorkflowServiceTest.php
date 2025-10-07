@@ -191,7 +191,7 @@ class WorkflowServiceTest extends TestCase {
             'WorkflowStarted',
             'PaymentInitiated',
             'PaymentConfirmed',
-            'MintingStarted', 
+            'MintingStarted',
             'MintingCompleted',
             'CertificateGenerated',
             'WorkflowCompleted',
