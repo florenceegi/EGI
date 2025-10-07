@@ -4,6 +4,10 @@ namespace App\Services;
 
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use App\Services\Gdpr\AuditLogService;
+use App\Services\Gdpr\ConsentService;
+use App\Enums\Gdpr\GdprActivityCategory;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 /**
@@ -18,43 +22,69 @@ use Illuminate\Support\Str;
  * @date 2025-10-07
  * @purpose Certificate anchoring and verification service
  */
-class CertificateAnchorService
-{
+class CertificateAnchorService {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
+    private AuditLogService $auditService;
+    private ConsentService $consentService;
     private AlgorandService $algorandService;
 
+    /**
+     * Constructor with GDPR/Ultra compliance
+     *
+     * @param UltraLogManager $logger Ultra logging manager for audit trails
+     * @param ErrorManagerInterface $errorManager Ultra error manager for error handling
+     * @param AuditLogService $auditService GDPR audit logging service
+     * @param ConsentService $consentService GDPR consent management service
+     * @param AlgorandService $algorandService Algorand blockchain service
+     * @privacy-safe All injected services handle GDPR compliance
+     */
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
+        AuditLogService $auditService,
+        ConsentService $consentService,
         AlgorandService $algorandService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
+        $this->auditService = $auditService;
+        $this->consentService = $consentService;
         $this->algorandService = $algorandService;
     }
 
     /**
-     * Crea anchor hash per certificato
+     * Crea anchor hash per certificato - GDPR COMPLIANT
      * @param string $certificateContent Content del certificato
+     * @param User $user User requesting certificate anchor
      * @return array [anchor_hash, verification_url, certificate_uuid]
      * @throws \Exception
+     * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function createCertificateAnchor(string $certificateContent): array
-    {
-        $this->logger->info('CERTIFICATE_ANCHOR_START');
-
+    public function createCertificateAnchor(string $certificateContent, User $user): array {
         try {
-            // Genera UUID univoco per certificato
+            // 1. ULM: Log start
+            $this->logger->info('Certificate anchor process initiated', [
+                'user_id' => $user->id,
+                'content_length' => strlen($certificateContent),
+                'log_category' => 'CERTIFICATE_ANCHOR_START'
+            ]);
+
+            // 2. GDPR: Check consent
+            if (!$this->consentService->hasConsent($user, 'allow-certificate-operations')) {
+                throw new \Exception('Missing certificate operations consent');
+            }
+
+            // 3. Genera UUID univoco per certificato
             $certificateUuid = Str::uuid()->toString();
 
-            // Genera hash del contenuto
+            // 4. Genera hash del contenuto
             $contentHash = $this->generateContentHash($certificateContent);
 
-            // Crea anchor su blockchain
+            // 5. Crea anchor su blockchain (senza user per questo metodo)
             $anchorHash = $this->algorandService->createCertificateAnchor($contentHash);
 
-            // Genera URL di verifica
+            // 6. Genera URL di verifica
             $verificationUrl = $this->generateVerificationUrl($anchorHash);
 
             $result = [
@@ -64,17 +94,36 @@ class CertificateAnchorService
                 'content_hash' => $contentHash
             ];
 
-            $this->logger->info('CERTIFICATE_ANCHOR_SUCCESS', [
+            // 7. GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'certificate_anchor_created',
+                [
+                    'certificate_uuid' => $certificateUuid,
+                    'anchor_hash' => $anchorHash,
+                    'content_hash' => $contentHash,
+                    'verification_url' => $verificationUrl
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );
+
+            // 8. ULM: Log success
+            $this->logger->info('Certificate anchor created successfully', [
+                'user_id' => $user->id,
                 'certificate_uuid' => $certificateUuid,
-                'anchor_hash' => $anchorHash
+                'anchor_hash' => $anchorHash,
+                'log_category' => 'CERTIFICATE_ANCHOR_SUCCESS'
             ]);
 
             return $result;
-
         } catch (\Exception $e) {
-            $this->logger->error('CERTIFICATE_ANCHOR_FAILED', [
-                'error' => $e->getMessage()
-            ]);
+            // 9. UEM: Error handling
+            $this->errorManager->handle('CERTIFICATE_ANCHOR_FAILED', [
+                'user_id' => $user->id,
+                'content_length' => strlen($certificateContent),
+                'error_message' => $e->getMessage()
+            ], $e);
+
             throw new \Exception("Errore creazione anchor certificato: {$e->getMessage()}");
         }
     }
@@ -85,8 +134,7 @@ class CertificateAnchorService
      * @param string $certificateContent Content da verificare
      * @return array Verification result
      */
-    public function verifyCertificate(string $anchorHash, string $certificateContent): array
-    {
+    public function verifyCertificate(string $anchorHash, string $certificateContent): array {
         $this->logger->info('CERTIFICATE_VERIFICATION_START', [
             'anchor_hash' => $anchorHash
         ]);
@@ -111,7 +159,6 @@ class CertificateAnchorService
             ]);
 
             return $result;
-
         } catch (\Exception $e) {
             $this->logger->error('CERTIFICATE_VERIFICATION_FAILED', [
                 'error' => $e->getMessage()
@@ -126,10 +173,9 @@ class CertificateAnchorService
      * @param string $certificateUuid Certificate UUID
      * @return array QR code data
      */
-    public function generateQRCodeData(string $anchorHash, string $certificateUuid): array
-    {
+    public function generateQRCodeData(string $anchorHash, string $certificateUuid): array {
         $verificationUrl = $this->generateVerificationUrl($anchorHash);
-        
+
         return [
             'type' => 'egi_certificate_verification',
             'url' => $verificationUrl,
@@ -145,8 +191,7 @@ class CertificateAnchorService
      * @param string $content Certificate content
      * @return string Content hash
      */
-    private function generateContentHash(string $content): string
-    {
+    private function generateContentHash(string $content): string {
         $algorithm = config('algorand.anchoring.hash_algorithm', 'sha256');
         return hash($algorithm, $content);
     }
@@ -156,8 +201,7 @@ class CertificateAnchorService
      * @param string $anchorHash Anchor hash
      * @return string Verification URL
      */
-    private function generateVerificationUrl(string $anchorHash): string
-    {
+    private function generateVerificationUrl(string $anchorHash): string {
         $template = config('algorand.anchoring.verification_url_template');
         return str_replace('{hash}', $anchorHash, $template);
     }
@@ -168,11 +212,10 @@ class CertificateAnchorService
      * @param string $contentHash Content hash
      * @return bool Is valid
      */
-    private function verifyOnBlockchain(string $anchorHash, string $contentHash): bool
-    {
+    private function verifyOnBlockchain(string $anchorHash, string $contentHash): bool {
         // TODO: Implementare verifica reale su blockchain
         // Per ora restituisce true come placeholder
-        
+
         $this->logger->debug('BLOCKCHAIN_VERIFICATION_PLACEHOLDER', [
             'anchor_hash' => $anchorHash,
             'content_hash' => $contentHash

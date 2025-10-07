@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use App\Services\Gdpr\AuditLogService;
+use App\Services\Gdpr\ConsentService;
+use App\Enums\Gdpr\GdprActivityCategory;
+use App\Models\User;
 
 /**
  * @Oracode Algorand Service per FlorenceEGI Marketplace - BLOCKCHAIN INTEGRATION
@@ -25,10 +29,11 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-10-07
  * @purpose Laravel HTTP client bridge to AlgoKit microservice for EGI
  */
-class AlgorandService
-{
+class AlgorandService {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
+    private AuditLogService $auditService;
+    private ConsentService $consentService;
     private string $microserviceUrl;
     private int $apiTimeout;
     private int $apiRetries;
@@ -37,15 +42,25 @@ class AlgorandService
     private array $asaConfig;
 
     /**
-     * AlgorandService constructor.
-     * Carica config e imposta HTTP client per microservice
+     * AlgorandService constructor with GDPR/Ultra compliance.
+     * Carica config e imposta HTTP client per microservice + GDPR services
+     *
+     * @param UltraLogManager $logger Ultra logging manager for audit trails
+     * @param ErrorManagerInterface $errorManager Ultra error manager for error handling
+     * @param AuditLogService $auditService GDPR audit logging service
+     * @param ConsentService $consentService GDPR consent management service
+     * @privacy-safe All injected services handle GDPR compliance
      */
     public function __construct(
         UltraLogManager $logger,
-        ErrorManagerInterface $errorManager
+        ErrorManagerInterface $errorManager,
+        AuditLogService $auditService,
+        ConsentService $consentService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
+        $this->auditService = $auditService;
+        $this->consentService = $consentService;
 
         // Carico la config principale
         $cfg = config('algorand');
@@ -65,21 +80,32 @@ class AlgorandService
     }
 
     /**
-     * Crea un nuovo ASA per EGI su blockchain
+     * Mint Algorand Standard Asset per EGI con metadata - GDPR COMPLIANT
      * @param int $egiId EGI ID dal database
      * @param array $metadata Metadata EGI
+     * @param User $user User requesting mint operation
      * @return array [asaId, txId, certificate_number, asset_url, treasury_address]
      * @throws \Exception
+     * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function mintEgi(int $egiId, array $metadata): array
-    {
-        $this->logger->info('ALGORAND_EGI_MINT_START', ['egi_id' => $egiId]);
-
+    public function mintEgi(int $egiId, array $metadata, User $user): array {
         try {
-            // Prepara metadata per il certificato EGI
+            // 1. ULM: Log start
+            $this->logger->info('EGI minting initiated', [
+                'user_id' => $user->id,
+                'egi_id' => $egiId,
+                'log_category' => 'BLOCKCHAIN_MINT_START'
+            ]);
+
+            // 2. GDPR: Check consent
+            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
+                throw new \Exception('Missing blockchain operations consent');
+            }
+
+            // 3. Prepara metadata per il certificato EGI
             $egiMetadata = $this->buildEgiMetadata($egiId, $metadata);
 
-            // Chiama microservice per mint
+            // 4. Chiama microservice per mint
             $response = $this->callMicroservice('POST', '/mint-egi-token', [
                 'egi_id' => $egiId,
                 'metadata' => $egiMetadata
@@ -93,7 +119,27 @@ class AlgorandService
             $asaId = $data['asaId'];
             $txId = $data['txId'];
 
-            $this->logger->info('ALGORAND_EGI_MINT_SUCCESS', compact('egiId', 'asaId', 'txId'));
+            // 5. GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'blockchain_egi_minted',
+                [
+                    'egi_id' => $egiId,
+                    'asa_id' => $asaId,
+                    'tx_id' => $txId,
+                    'metadata' => $egiMetadata
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );
+
+            // 6. ULM: Log success
+            $this->logger->info('EGI minting completed successfully', [
+                'user_id' => $user->id,
+                'egi_id' => $egiId,
+                'asa_id' => $asaId,
+                'tx_id' => $txId,
+                'log_category' => 'BLOCKCHAIN_MINT_SUCCESS'
+            ]);
 
             return [
                 'asaId' => $asaId,
@@ -102,31 +148,50 @@ class AlgorandService
                 'asset_url' => $data['asset_url'] ?? null,
                 'treasury_address' => $data['treasury_address'] ?? null
             ];
-
         } catch (\Exception $e) {
-            $this->logger->error('ALGORAND_EGI_MINT_FAILED', ['error' => $e->getMessage(), 'egi_id' => $egiId]);
+            // 7. UEM: Error handling
+            $this->errorManager->handle('BLOCKCHAIN_MINT_FAILED', [
+                'user_id' => $user->id,
+                'egi_id' => $egiId,
+                'metadata' => $metadata,
+                'error_message' => $e->getMessage()
+            ], $e);
+
             throw new \Exception("Fallimento creazione EGI token ASA: {$e->getMessage()}");
         }
     }
-
     /**
-     * Trasferisce ASA EGI al wallet acquirente
+     * Trasferisce ASA EGI al wallet acquirente - GDPR COMPLIANT
      * @param string $to Wallet address destinazione
      * @param string $asaId ASA ID da trasferire
+     * @param User $user User requesting transfer
      * @param int $amount Quantità (default 1 per NFT)
      * @return string Transaction ID
      * @throws \Exception
+     * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function transferEgiAsset(string $to, string $asaId, int $amount = 1): string
-    {
-        $this->logger->info('ALGORAND_EGI_TRANSFER_START', compact('to', 'asaId', 'amount'));
-
+    public function transferEgiAsset(string $to, string $asaId, User $user, int $amount = 1): string {
         try {
-            if (!$this->isValidAlgorandAddress($to)) {
-                throw new \InvalidArgumentException('Address Algorand non valido');
+            // 1. ULM: Log start
+            $this->logger->info('EGI transfer initiated', [
+                'user_id' => $user->id,
+                'to_address' => $to,
+                'asa_id' => $asaId,
+                'amount' => $amount,
+                'log_category' => 'BLOCKCHAIN_TRANSFER_START'
+            ]);
+
+            // 2. GDPR: Check consent
+            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
+                throw new \Exception('Missing blockchain operations consent');
             }
 
-            // Chiama microservice per transfer
+            // 3. Validate address
+            if (!$this->isValidAlgorandAddress($to)) {
+                throw new \Exception('Invalid Algorand address format');
+            }
+
+            // 4. Chiama microservice per transfer
             $response = $this->callMicroservice('POST', '/transfer-egi-asset', [
                 'to' => $to,
                 'asaId' => $asaId,
@@ -139,11 +204,39 @@ class AlgorandService
 
             $txId = $response['data']['txId'];
 
-            $this->logger->info('ALGORAND_EGI_TRANSFER_SUCCESS', ['txId' => $txId]);
-            return $txId;
+            // 5. GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'blockchain_egi_transferred',
+                [
+                    'to_address' => $to,
+                    'asa_id' => $asaId,
+                    'tx_id' => $txId,
+                    'amount' => $amount
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );
 
+            // 6. ULM: Log success
+            $this->logger->info('EGI transfer completed successfully', [
+                'user_id' => $user->id,
+                'tx_id' => $txId,
+                'to_address' => $to,
+                'asa_id' => $asaId,
+                'log_category' => 'BLOCKCHAIN_TRANSFER_SUCCESS'
+            ]);
+
+            return $txId;
         } catch (\Exception $e) {
-            $this->logger->error('ALGORAND_EGI_TRANSFER_FAILED', ['error' => $e->getMessage()]);
+            // 7. UEM: Error handling
+            $this->errorManager->handle('BLOCKCHAIN_TRANSFER_FAILED', [
+                'user_id' => $user->id,
+                'to_address' => $to,
+                'asa_id' => $asaId,
+                'amount' => $amount,
+                'error_message' => $e->getMessage()
+            ], $e);
+
             throw new \Exception("Fallimento trasferimento EGI token: {$e->getMessage()}");
         }
     }
@@ -154,8 +247,7 @@ class AlgorandService
      * @return string Anchor hash su blockchain
      * @throws \Exception
      */
-    public function createCertificateAnchor(string $certificateHash): string
-    {
+    public function createCertificateAnchor(string $certificateHash): string {
         $this->logger->info('ALGORAND_ANCHOR_START', ['certificate_hash' => $certificateHash]);
 
         try {
@@ -173,7 +265,6 @@ class AlgorandService
 
             $this->logger->info('ALGORAND_ANCHOR_SUCCESS', compact('anchorHash', 'txId'));
             return $anchorHash;
-
         } catch (\Exception $e) {
             $this->logger->error('ALGORAND_ANCHOR_FAILED', ['error' => $e->getMessage()]);
             throw new \Exception("Fallimento creazione anchor hash: {$e->getMessage()}");
@@ -186,8 +277,7 @@ class AlgorandService
      * @return array Account info
      * @throws \Exception
      */
-    public function getAccountInfo(string $address): array
-    {
+    public function getAccountInfo(string $address): array {
         try {
             if (!$this->isValidAlgorandAddress($address)) {
                 throw new \InvalidArgumentException('Address Algorand non valido');
@@ -200,7 +290,6 @@ class AlgorandService
             }
 
             return $response['data'];
-
         } catch (\Exception $e) {
             $this->logger->error('ALGORAND_ACCOUNT_INFO_FAILED', ['error' => $e->getMessage()]);
             throw new \Exception("Errore recupero info account: {$e->getMessage()}");
@@ -212,8 +301,7 @@ class AlgorandService
      * @return array Network status
      * @throws \Exception
      */
-    public function getNetworkStatus(): array
-    {
+    public function getNetworkStatus(): array {
         try {
             $response = $this->callMicroservice('GET', '/health');
 
@@ -224,7 +312,6 @@ class AlgorandService
                 'algorand' => $response['algorand'] ?? [],
                 'timestamp' => $response['timestamp'] ?? now()->toISOString()
             ];
-
         } catch (\Exception $e) {
             $this->logger->error('NETWORK_STATUS_FAILED', ['error' => $e->getMessage()]);
             throw new \Exception("Errore verifica stato rete: {$e->getMessage()}");
@@ -236,8 +323,7 @@ class AlgorandService
      * @return array Treasury info
      * @throws \Exception
      */
-    public function getTreasuryStatus(): array
-    {
+    public function getTreasuryStatus(): array {
         try {
             $healthStatus = $this->getNetworkStatus();
             $treasuryAddress = $healthStatus['algorand']['treasury_address'] ?? null;
@@ -247,7 +333,6 @@ class AlgorandService
             }
 
             return $this->getAccountInfo($treasuryAddress);
-
         } catch (\Exception $e) {
             $this->logger->error('TREASURY_STATUS_FAILED', ['error' => $e->getMessage()]);
             throw new \Exception("Errore stato treasury: {$e->getMessage()}");
@@ -266,8 +351,7 @@ class AlgorandService
      * @return array Response data
      * @throws \Exception
      */
-    private function callMicroservice(string $method, string $endpoint, array $data = []): array
-    {
+    private function callMicroservice(string $method, string $endpoint, array $data = []): array {
         $url = $this->microserviceUrl . $endpoint;
         $attempt = 0;
         $lastException = null;
@@ -314,7 +398,6 @@ class AlgorandService
                 ]);
 
                 return $responseData;
-
             } catch (\Exception $e) {
                 $lastException = $e;
                 $this->logger->warning('MICROSERVICE_CALL_FAILED', [
@@ -331,7 +414,7 @@ class AlgorandService
 
         throw new \Exception(
             "Microservice call failed after {$this->apiRetries} attempts. Last error: " .
-            ($lastException ? $lastException->getMessage() : 'Unknown error')
+                ($lastException ? $lastException->getMessage() : 'Unknown error')
         );
     }
 
@@ -341,8 +424,7 @@ class AlgorandService
      * @param array $metadata EGI data
      * @return array Formatted metadata
      */
-    private function buildEgiMetadata(int $egiId, array $metadata): array
-    {
+    private function buildEgiMetadata(int $egiId, array $metadata): array {
         $cfg = $this->asaConfig;
 
         return [
@@ -381,8 +463,7 @@ class AlgorandService
      * @param string $address Wallet address
      * @return bool Is valid
      */
-    private function isValidAlgorandAddress(string $address): bool
-    {
+    private function isValidAlgorandAddress(string $address): bool {
         // Basic validation - 58 characters, alphanumeric
         if (strlen($address) !== 58) {
             return false;
