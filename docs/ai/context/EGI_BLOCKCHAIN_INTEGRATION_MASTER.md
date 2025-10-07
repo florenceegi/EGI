@@ -1,9 +1,10 @@
 # 🏛️ EGI BLOCKCHAIN INTEGRATION - MASTER IMPLEMENTATION PLAN
 
-**Versione:** 1.0.0  
+**Versione:** 1.1.0  
 **Data:** 7 Ottobre 2025  
 **Stato:** 🚧 IN DEVELOPMENT  
-**Fase Attuale:** FASE 1 - Database & Core Services
+**Fase Attuale:** FASE 5 - Workflow Integration  
+**Progress:** 32/42 tasks completati (76%)
 
 ---
 
@@ -86,46 +87,46 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
 
 #### **2.1 AlgorandService Migration**
 
--   [ ] **2.1.1** - Portare `AlgorandService.php` da fegi-marketplace
+-   [x] **2.1.1** - Portare `AlgorandService.php` da fegi-marketplace ✅ COMPLETATO
 
-    -   [ ] Copiare service class completa
-    -   [ ] Adattare per namespace EGI
-    -   [ ] Configurazione per Algorand Sandbox locale
-    -   [ ] Methods: `mintEGI()`, `transferEGI()`, `createAnchorHash()`
+    -   [x] Copiare service class completa ✅ COMPLETATO
+    -   [x] Adattare per namespace EGI ✅ COMPLETATO
+    -   [x] Configurazione per Algorand Sandbox locale ✅ COMPLETATO
+    -   [x] Methods: `mintEGI()`, `transferEGI()`, `createAnchorHash()` ✅ COMPLETATO
 
--   [ ] **2.1.2** - Creare nuovo Treasury Wallet
-    -   [ ] Generare nuovo mnemonic per EGI
-    -   [ ] Configurare in `.env` separato da fegi-marketplace
-    -   [ ] Setup Algorand Sandbox locale
-    -   [ ] Test connectivity
+-   [x] **2.1.2** - Creare nuovo Treasury Wallet ✅ COMPLETATO
+    -   [x] Generare nuovo mnemonic per EGI ✅ COMPLETATO
+    -   [x] Configurare in `.env` separato da fegi-marketplace ✅ COMPLETATO
+    -   [x] Setup Algorand Sandbox locale ✅ COMPLETATO
+    -   [x] Test connectivity ✅ COMPLETATO
 
 #### **2.2 Blockchain Configuration**
 
--   [ ] **2.2.1** - Config file `config/algorand.php`
+-   [x] **2.2.1** - Config file `config/algorand.php` ✅ COMPLETATO
 
-    -   [ ] Network settings (sandbox/testnet)
-    -   [ ] Treasury wallet configuration
-    -   [ ] API endpoints Algorand
-    -   [ ] Retry policies e timeouts
+    -   [x] Network settings (sandbox/testnet) ✅ COMPLETATO
+    -   [x] Treasury wallet configuration ✅ COMPLETATO
+    -   [x] API endpoints Algorand ✅ COMPLETATO
+    -   [x] Retry policies e timeouts ✅ COMPLETATO
 
--   [ ] **2.2.2** - Environment variables
-    -   [ ] `ALGORAND_NETWORK=sandbox`
-    -   [ ] `ALGORAND_TREASURY_MNEMONIC=...`
-    -   [ ] `ALGORAND_API_URL=...`
+-   [x] **2.2.2** - Environment variables ✅ COMPLETATO
+    -   [x] `ALGORAND_NETWORK=sandbox` ✅ COMPLETATO
+    -   [x] `ALGORAND_TREASURY_MNEMONIC=...` ✅ COMPLETATO
+    -   [x] `ALGORAND_API_URL=...` ✅ COMPLETATO
 
 #### **2.3 Blockchain Services**
 
--   [ ] **2.3.1** - Service `EgiMintingService.php`
+-   [x] **2.3.1** - Service `EgiMintingService.php` ✅ COMPLETATO
 
-    -   [ ] Method `mintEgi(Egi $egi, array $metadata): EgiBlockchain`
-    -   [ ] Error handling e retry logic
-    -   [ ] Progress tracking e logging
-    -   [ ] Integration con EgiBlockchain model
+    -   [x] Method `mintEgi(Egi $egi, array $metadata): EgiBlockchain` ✅ COMPLETATO
+    -   [x] Error handling e retry logic ✅ COMPLETATO
+    -   [x] Progress tracking e logging ✅ COMPLETATO
+    -   [x] Integration con EgiBlockchain model ✅ COMPLETATO
 
--   [ ] **2.3.2** - Service `CertificateAnchorService.php`
-    -   [ ] Method `createAnchorHash(string $fileHash): string`
-    -   [ ] Blockchain anchoring per verifica pubblica
-    -   [ ] QR code data generation
+-   [x] **2.3.2** - Service `CertificateAnchorService.php` ✅ COMPLETATO
+    -   [x] Method `createAnchorHash(string $fileHash): string` ✅ COMPLETATO
+    -   [x] Blockchain anchoring per verifica pubblica ✅ COMPLETATO
+    -   [x] QR code data generation ✅ COMPLETATO
 
 ---
 
@@ -133,37 +134,47 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
 
 #### **3.1 Payment Interfaces**
 
--   [ ] **3.1.1** - Interface `PaymentServiceInterface.php`
-    -   [ ] Method `processPayment(PaymentRequest $request): PaymentResult`
-    -   [ ] Method `verifyWebhook(array $payload): bool`
-    -   [ ] Method `refundPayment(string $paymentId): RefundResult`
-    -   [ ] Method `getPaymentStatus(string $paymentId): PaymentStatus`
+-   [x] **3.1.1** - Interface `PaymentServiceInterface.php` ✅ COMPLETATO
+    -   [x] Method `processPayment(PaymentRequest $request): PaymentResult` ✅ COMPLETATO
+    -   [x] Method `verifyWebhook(array $payload): bool` ✅ COMPLETATO
+    -   [x] Method `refundPayment(string $paymentId): RefundResult` ✅ COMPLETATO
+    -   [x] Method `getPaymentStatus(string $paymentId): PaymentStatus` ✅ COMPLETATO
 
 #### **3.2 Mock Implementations**
 
--   [ ] **3.2.1** - Service `StripePaymentService.php` (MOCK)
+-   [x] **3.2.1** - Service `StripePaymentService.php` (MOCK) ✅ COMPLETATO
 
-    -   [ ] Simulate payment success/failure
-    -   [ ] Generate mock payment IDs
-    -   [ ] Webhook simulation with timer
-    -   [ ] Logging per debugging
+    -   [x] Simulate payment success/failure ✅ COMPLETATO
+    -   [x] Generate mock payment IDs ✅ COMPLETATO
+    -   [x] Webhook simulation with timer ✅ COMPLETATO
+    -   [x] Logging per debugging ✅ COMPLETATO
 
--   [ ] **3.2.2** - Service `PayPalPaymentService.php` (MOCK)
+-   [ ] **3.2.2** - Service `PayPalPaymentService.php` (MOCK) 🚧 IN PROGRESS
     -   [ ] Similar mock implementation
     -   [ ] Different payment flow simulation
     -   [ ] Error scenarios testing
 
 #### **3.3 Payment DTOs**
 
--   [ ] **3.3.1** - DTO `PaymentRequest.php`
+-   [x] **3.3.1** - DTO `PaymentRequest.php` ✅ COMPLETATO
 
-    -   [ ] Properties: amount, currency, customer_email, egi_id, reservation_id
-    -   [ ] Validation rules
-    -   [ ] Type safety
+    -   [x] Properties: amount, currency, customer_email, egi_id, reservation_id ✅ COMPLETATO
+    -   [x] Validation rules ✅ COMPLETATO
+    -   [x] Type safety ✅ COMPLETATO
 
--   [ ] **3.3.2** - DTO `PaymentResult.php`
-    -   [ ] Properties: success, payment_id, amount, currency, error_message
-    -   [ ] Status mapping
+-   [x] **3.3.2** - DTO `PaymentResult.php` ✅ COMPLETATO
+
+    -   [x] Properties: success, payment_id, amount, currency, error_message ✅ COMPLETATO
+    -   [x] Status mapping ✅ COMPLETATO
+
+-   [x] **3.3.3** - DTO `RefundResult.php` ✅ COMPLETATO
+
+    -   [x] Properties: success, refund_id, amount, currency, error_message ✅ COMPLETATO
+    -   [x] Refund status management ✅ COMPLETATO
+
+-   [x] **3.3.4** - DTO `PaymentStatus.php` ✅ COMPLETATO
+    -   [x] Enum-based status tracking ✅ COMPLETATO
+    -   [x] Status validation methods ✅ COMPLETATO
 
 ---
 
@@ -171,32 +182,32 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
 
 #### **4.1 Certificate Generation**
 
--   [ ] **4.1.1** - Service `EgiCertificateService.php`
+-   [x] **4.1.1** - Service `EgiCertificateService.php` ✅ COMPLETATO
 
-    -   [ ] Method `generateCertificate(EgiBlockchain $egiBlockchain): string`
-    -   [ ] PDF generation con QR code
-    -   [ ] Template design Florence EGI brand
-    -   [ ] File storage management
+    -   [x] Method `generateCertificate(EgiBlockchain $egiBlockchain): string` ✅ COMPLETATO
+    -   [x] PDF generation con QR code ✅ COMPLETATO
+    -   [x] Template design Florence EGI brand ✅ COMPLETATO
+    -   [x] File storage management ✅ COMPLETATO
 
--   [ ] **4.1.2** - Migliorare template PDF esistente
-    -   [ ] QR code con verification URL
-    -   [ ] Blockchain data display (ASA ID, anchor hash)
-    -   [ ] Brand design Florence EGI
-    -   [ ] Responsive per mobile viewing
+-   [x] **4.1.2** - Migliorare template PDF esistente ✅ COMPLETATO
+    -   [x] QR code con verification URL ✅ COMPLETATO
+    -   [x] Blockchain data display (ASA ID, anchor hash) ✅ COMPLETATO
+    -   [x] Brand design Florence EGI ✅ COMPLETATO
+    -   [x] Responsive per mobile viewing ✅ COMPLETATO
 
 #### **4.2 Public Verification**
 
--   [ ] **4.2.1** - Controller `CertificateController.php`
+-   [x] **4.2.1** - Controller `CertificateController.php` ✅ COMPLETATO
 
-    -   [ ] Route `/verify/{uuid}` pubblica (no auth)
-    -   [ ] Display blockchain verification data
-    -   [ ] QR code scanner integration
-    -   [ ] Mobile-friendly UI
+    -   [x] Route `/verify/{uuid}` pubblica (no auth) ✅ COMPLETATO
+    -   [x] Display blockchain verification data ✅ COMPLETATO
+    -   [x] QR code scanner integration ✅ COMPLETATO
+    -   [x] Mobile-friendly UI ✅ COMPLETATO
 
--   [ ] **4.2.2** - Migliorare view certificate esistente
-    -   [ ] Integration con EgiBlockchain data
-    -   [ ] Blockchain status display
-    -   [ ] Public verification link
+-   [x] **4.2.2** - Migliorare view certificate esistente ✅ COMPLETATO
+    -   [x] Integration con EgiBlockchain data ✅ COMPLETATO
+    -   [x] Blockchain status display ✅ COMPLETATO
+    -   [x] Public verification link ✅ COMPLETATO
 
 ---
 
@@ -294,23 +305,23 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
 
 #### **7.1 Unit Tests**
 
--   [ ] **7.1.1** - Test `EgiBlockchainTest.php`
--   [ ] **7.1.2** - Test `AlgorandServiceTest.php`
--   [ ] **7.1.3** - Test `PaymentServiceTest.php`
--   [ ] **7.1.4** - Test `WorkflowServiceTest.php`
+-   [x] **7.1.1** - Test `EgiBlockchainTest.php` ✅ COMPLETATO
+-   [x] **7.1.2** - Test `AlgorandServiceTest.php` ✅ COMPLETATO
+-   [x] **7.1.3** - Test `PaymentServiceTest.php` ✅ COMPLETATO
+-   [x] **7.1.4** - Test `WorkflowServiceTest.php` ✅ COMPLETATO
 
 #### **7.2 Integration Tests**
 
--   [ ] **7.2.1** - Test complete workflow Reservation→Payment→Mint
--   [ ] **7.2.2** - Test error scenarios e recovery
--   [ ] **7.2.3** - Test performance con multiple concurrent mints
+-   [x] **7.2.1** - Test complete workflow Reservation→Payment→Mint ✅ COMPLETATO
+-   [x] **7.2.2** - Test error scenarios e recovery ✅ COMPLETATO
+-   [x] **7.2.3** - Test performance con multiple concurrent mints ✅ COMPLETATO
 
 #### **7.3 Security Testing**
 
--   [ ] **7.3.1** - Webhook security verification
--   [ ] **7.3.2** - Payment data encryption
--   [ ] **7.3.3** - Access control verification
--   [ ] **7.3.4** - GDPR compliance audit
+-   [x] **7.3.1** - Webhook security verification ✅ COMPLETATO
+-   [x] **7.3.2** - Payment data encryption ✅ COMPLETATO
+-   [x] **7.3.3** - Access control verification ✅ COMPLETATO
+-   [x] **7.3.4** - GDPR compliance audit ✅ COMPLETATO
 
 ---
 
@@ -347,18 +358,18 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
 ### **COMPLETION STATUS**
 
 -   **FASE 1**: ✅ 8/8 tasks completed (Database & Models COMPLETATA!)
--   **FASE 2**: ⏳ 0/6 tasks completed
--   **FASE 3**: ⏳ 0/6 tasks completed
--   **FASE 4**: ⏳ 0/4 tasks completed
+-   **FASE 2**: ✅ 6/6 tasks completed (Algorand Integration COMPLETATA!)
+-   **FASE 3**: ✅ 5/6 tasks completed (Payment Services - Solo PayPal mancante!)
+-   **FASE 4**: ✅ 4/4 tasks completed (Certificate System COMPLETATA!)
 -   **FASE 5**: ⏳ 0/6 tasks completed
 -   **FASE 6**: ⏳ 0/8 tasks completed
--   **FASE 7**: ✅ 5/5 tasks completed (Testing COMPLETATO!)
+-   **FASE 7**: ✅ 10/10 tasks completed (Testing COMPLETATO!)
 
-**TOTAL PROGRESS: 13/42 tasks (31%)**
+**TOTAL PROGRESS: 32/42 tasks (76%)**
 
-### **CURRENT PHASE:** ⛓️ FASE 2 - Algorand Integration (READY TO START)
+### **CURRENT PHASE:** 🔄 FASE 5 - Workflow Integration (READY TO START)
 
-**NEXT TASK:** 2.1.1 - Portare AlgorandService.php da fegi-marketplace
+**NEXT TASK:** 5.1.1 - Service EgiPurchaseWorkflowService.php orchestratore
 
 ---
 
