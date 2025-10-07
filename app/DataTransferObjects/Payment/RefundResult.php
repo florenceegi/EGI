@@ -14,8 +14,7 @@ namespace App\DataTransferObjects\Payment;
  * @date 2025-10-07
  * @purpose Refund processing response data with status and details
  */
-readonly class RefundResult
-{
+readonly class RefundResult {
     public function __construct(
         public bool $success,
         public string $refundId,
@@ -33,7 +32,7 @@ readonly class RefundResult
 
     /**
      * Create successful refund result
-     * 
+     *
      * @param string $refundId PSP refund ID
      * @param string $originalPaymentId Original payment ID
      * @param float $refundAmount Refund amount
@@ -65,7 +64,7 @@ readonly class RefundResult
 
     /**
      * Create failed refund result
-     * 
+     *
      * @param string $refundId PSP refund ID (may be empty for early failures)
      * @param string $originalPaymentId Original payment ID
      * @param string $errorMessage Human-readable error message
@@ -96,7 +95,7 @@ readonly class RefundResult
 
     /**
      * Create pending refund result
-     * 
+     *
      * @param string $refundId PSP refund ID
      * @param string $originalPaymentId Original payment ID
      * @param float $refundAmount Refund amount
@@ -128,11 +127,10 @@ readonly class RefundResult
 
     /**
      * Convert to array
-     * 
+     *
      * @return array
      */
-    public function toArray(): array
-    {
+    public function toArray(): array {
         return [
             'success' => $this->success,
             'refund_id' => $this->refundId,
@@ -150,41 +148,37 @@ readonly class RefundResult
 
     /**
      * Check if refund is completed and successful
-     * 
+     *
      * @return bool
      */
-    public function isCompleted(): bool
-    {
+    public function isCompleted(): bool {
         return $this->success && $this->status === 'completed';
     }
 
     /**
      * Check if refund is still processing
-     * 
+     *
      * @return bool
      */
-    public function isPending(): bool
-    {
+    public function isPending(): bool {
         return $this->status === 'pending';
     }
 
     /**
      * Check if refund failed permanently
-     * 
+     *
      * @return bool
      */
-    public function isFailed(): bool
-    {
+    public function isFailed(): bool {
         return !$this->success && $this->status === 'failed';
     }
 
     /**
      * Get user-friendly status message
-     * 
+     *
      * @return string
      */
-    public function getStatusMessage(): string
-    {
+    public function getStatusMessage(): string {
         return match ($this->status) {
             'completed' => "Refund of {$this->refundAmount} {$this->currency} completed successfully",
             'pending' => 'Refund is being processed',

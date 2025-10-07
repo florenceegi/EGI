@@ -14,8 +14,7 @@ namespace App\DataTransferObjects\Payment;
  * @date 2025-10-07
  * @purpose Payment processing response data with status and details
  */
-readonly class PaymentResult
-{
+readonly class PaymentResult {
     public function __construct(
         public bool $success,
         public string $paymentId,
@@ -33,7 +32,7 @@ readonly class PaymentResult
 
     /**
      * Create successful payment result
-     * 
+     *
      * @param string $paymentId PSP payment ID
      * @param float $amount Payment amount
      * @param string $currency Payment currency
@@ -59,7 +58,7 @@ readonly class PaymentResult
 
     /**
      * Create failed payment result
-     * 
+     *
      * @param string $paymentId PSP payment ID (may be empty for early failures)
      * @param string $errorMessage Human-readable error message
      * @param string $errorCode Error code for debugging
@@ -87,7 +86,7 @@ readonly class PaymentResult
 
     /**
      * Create pending payment result (requires user action)
-     * 
+     *
      * @param string $paymentId PSP payment ID
      * @param float $amount Payment amount
      * @param string $currency Payment currency
@@ -116,11 +115,10 @@ readonly class PaymentResult
 
     /**
      * Convert to array
-     * 
+     *
      * @return array
      */
-    public function toArray(): array
-    {
+    public function toArray(): array {
         return [
             'success' => $this->success,
             'payment_id' => $this->paymentId,
@@ -138,41 +136,37 @@ readonly class PaymentResult
 
     /**
      * Check if payment is completed and successful
-     * 
+     *
      * @return bool
      */
-    public function isCompleted(): bool
-    {
+    public function isCompleted(): bool {
         return $this->success && $this->status === 'completed';
     }
 
     /**
      * Check if payment requires user action
-     * 
+     *
      * @return bool
      */
-    public function requiresAction(): bool
-    {
+    public function requiresAction(): bool {
         return $this->status === 'pending' && !empty($this->redirectUrl);
     }
 
     /**
      * Check if payment failed permanently
-     * 
+     *
      * @return bool
      */
-    public function isFailed(): bool
-    {
+    public function isFailed(): bool {
         return !$this->success && $this->status === 'failed';
     }
 
     /**
      * Get user-friendly status message
-     * 
+     *
      * @return string
      */
-    public function getStatusMessage(): string
-    {
+    public function getStatusMessage(): string {
         return match ($this->status) {
             'completed' => 'Payment completed successfully',
             'pending' => 'Payment pending user action',

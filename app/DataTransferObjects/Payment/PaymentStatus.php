@@ -14,8 +14,7 @@ namespace App\DataTransferObjects\Payment;
  * @date 2025-10-07
  * @purpose Payment status tracking with lifecycle information
  */
-readonly class PaymentStatus
-{
+readonly class PaymentStatus {
     public function __construct(
         public string $paymentId,
         public string $status,
@@ -35,12 +34,11 @@ readonly class PaymentStatus
 
     /**
      * Create from PSP response data
-     * 
+     *
      * @param array $data PSP response data
      * @return static
      */
-    public static function fromArray(array $data): static
-    {
+    public static function fromArray(array $data): static {
         return new static(
             paymentId: $data['payment_id'] ?? '',
             status: $data['status'] ?? 'unknown',
@@ -60,11 +58,10 @@ readonly class PaymentStatus
 
     /**
      * Convert to array
-     * 
+     *
      * @return array
      */
-    public function toArray(): array
-    {
+    public function toArray(): array {
         return [
             'payment_id' => $this->paymentId,
             'status' => $this->status,
@@ -84,61 +81,55 @@ readonly class PaymentStatus
 
     /**
      * Check if payment is completed successfully
-     * 
+     *
      * @return bool
      */
-    public function isCompleted(): bool
-    {
+    public function isCompleted(): bool {
         return $this->isPaid && $this->status === 'succeeded';
     }
 
     /**
      * Check if payment is still processing
-     * 
+     *
      * @return bool
      */
-    public function isPending(): bool
-    {
+    public function isPending(): bool {
         return in_array($this->status, ['pending', 'processing', 'requires_action']);
     }
 
     /**
      * Check if payment failed permanently
-     * 
+     *
      * @return bool
      */
-    public function isFailed(): bool
-    {
+    public function isFailed(): bool {
         return in_array($this->status, ['failed', 'cancelled', 'declined']);
     }
 
     /**
      * Check if payment was refunded
-     * 
+     *
      * @return bool
      */
-    public function isRefunded(): bool
-    {
+    public function isRefunded(): bool {
         return !empty($this->refunds) && $this->getTotalRefunded() > 0;
     }
 
     /**
      * Check if payment was fully refunded
-     * 
+     *
      * @return bool
      */
-    public function isFullyRefunded(): bool
-    {
+    public function isFullyRefunded(): bool {
         return $this->getTotalRefunded() >= $this->amount;
     }
 
     /**
      * Get total refunded amount
-     * 
+     *
      * @return float
      */
-    public function getTotalRefunded(): float
-    {
+    public function getTotalRefunded(): float {
         if (empty($this->refunds)) {
             return 0.0;
         }
@@ -148,11 +139,10 @@ readonly class PaymentStatus
 
     /**
      * Get user-friendly status message
-     * 
+     *
      * @return string
      */
-    public function getStatusMessage(): string
-    {
+    public function getStatusMessage(): string {
         if ($this->isFullyRefunded()) {
             return 'Payment fully refunded';
         }
@@ -176,11 +166,10 @@ readonly class PaymentStatus
 
     /**
      * Get status color for UI display
-     * 
+     *
      * @return string CSS color class
      */
-    public function getStatusColor(): string
-    {
+    public function getStatusColor(): string {
         if ($this->isCompleted()) {
             return 'green';
         }

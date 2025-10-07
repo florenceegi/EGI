@@ -16,8 +16,7 @@ use InvalidArgumentException;
  * @date 2025-10-07
  * @purpose Payment request data transfer object with validation
  */
-readonly class PaymentRequest
-{
+readonly class PaymentRequest {
     public function __construct(
         public float $amount,
         public string $currency,
@@ -38,13 +37,12 @@ readonly class PaymentRequest
 
     /**
      * Create from array data
-     * 
+     *
      * @param array $data Input data array
      * @return static
      * @throws \InvalidArgumentException Invalid data provided
      */
-    public static function fromArray(array $data): static
-    {
+    public static function fromArray(array $data): static {
         return new static(
             amount: (float) ($data['amount'] ?? 0),
             currency: strtoupper($data['currency'] ?? 'EUR'),
@@ -61,11 +59,10 @@ readonly class PaymentRequest
 
     /**
      * Convert to array
-     * 
+     *
      * @return array
      */
-    public function toArray(): array
-    {
+    public function toArray(): array {
         return [
             'amount' => $this->amount,
             'currency' => $this->currency,
@@ -82,21 +79,19 @@ readonly class PaymentRequest
 
     /**
      * Get formatted amount in cents/pence for PSP
-     * 
+     *
      * @return int Amount in cents
      */
-    public function getAmountInCents(): int
-    {
+    public function getAmountInCents(): int {
         return (int) round($this->amount * 100);
     }
 
     /**
      * Get PSP-compatible metadata
-     * 
+     *
      * @return array Metadata formatted for PSP
      */
-    public function getPspMetadata(): array
-    {
+    public function getPspMetadata(): array {
         $base = [
             'egi_id' => (string) $this->egiId,
             'platform' => 'FlorenceEGI',
@@ -116,12 +111,11 @@ readonly class PaymentRequest
 
     /**
      * Validate amount
-     * 
+     *
      * @param float $amount
      * @throws \InvalidArgumentException
      */
-    private function validateAmount(float $amount): void
-    {
+    private function validateAmount(float $amount): void {
         if ($amount <= 0) {
             throw new InvalidArgumentException('Payment amount must be greater than 0');
         }
@@ -133,14 +127,13 @@ readonly class PaymentRequest
 
     /**
      * Validate currency
-     * 
+     *
      * @param string $currency
      * @throws \InvalidArgumentException
      */
-    private function validateCurrency(string $currency): void
-    {
+    private function validateCurrency(string $currency): void {
         $supportedCurrencies = ['EUR', 'USD', 'GBP'];
-        
+
         if (!in_array(strtoupper($currency), $supportedCurrencies)) {
             throw new InvalidArgumentException("Currency {$currency} not supported");
         }
@@ -148,12 +141,11 @@ readonly class PaymentRequest
 
     /**
      * Validate email
-     * 
+     *
      * @param string $email
      * @throws \InvalidArgumentException
      */
-    private function validateEmail(string $email): void
-    {
+    private function validateEmail(string $email): void {
         if (!\filter_var($email, \FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException('Invalid customer email format');
         }
@@ -161,12 +153,11 @@ readonly class PaymentRequest
 
     /**
      * Validate EGI ID
-     * 
+     *
      * @param int $egiId
      * @throws \InvalidArgumentException
      */
-    private function validateEgiId(int $egiId): void
-    {
+    private function validateEgiId(int $egiId): void {
         if ($egiId <= 0) {
             throw new InvalidArgumentException('Invalid EGI ID');
         }

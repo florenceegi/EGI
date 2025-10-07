@@ -27,8 +27,7 @@ use Carbon\Carbon;
  * @date 2025-10-07
  * @purpose Mock Stripe payment processing for MVP development
  */
-class StripePaymentService implements PaymentServiceInterface
-{
+class StripePaymentService implements PaymentServiceInterface {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -62,8 +61,7 @@ class StripePaymentService implements PaymentServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function processPayment(PaymentRequest $request): PaymentResult
-    {
+    public function processPayment(PaymentRequest $request): PaymentResult {
         try {
             // 1. ULM: Log payment start
             $this->logger->info('Stripe payment processing started (MOCK)', [
@@ -141,7 +139,6 @@ class StripePaymentService implements PaymentServiceInterface
                     ]
                 );
             }
-
         } catch (\Exception $e) {
             // 9. UEM: Handle unexpected error
             $this->errorManager->handle('STRIPE_PAYMENT_PROCESSING_ERROR', [
@@ -161,8 +158,7 @@ class StripePaymentService implements PaymentServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function verifyWebhook(array $payload): bool
-    {
+    public function verifyWebhook(array $payload): bool {
         // MOCK: Always return true for development
         $this->logger->info('Stripe webhook verification (MOCK)', [
             'payload_keys' => array_keys($payload),
@@ -176,8 +172,7 @@ class StripePaymentService implements PaymentServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function refundPayment(string $paymentId): RefundResult
-    {
+    public function refundPayment(string $paymentId): RefundResult {
         try {
             $this->logger->info('Stripe refund processing started (MOCK)', [
                 'original_payment_id' => $paymentId,
@@ -223,7 +218,6 @@ class StripePaymentService implements PaymentServiceInterface
                     errorCode: $errorCode
                 );
             }
-
         } catch (\Exception $e) {
             $this->errorManager->handle('STRIPE_REFUND_ERROR', [
                 'payment_id' => $paymentId,
@@ -242,8 +236,7 @@ class StripePaymentService implements PaymentServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function getPaymentStatus(string $paymentId): PaymentStatus
-    {
+    public function getPaymentStatus(string $paymentId): PaymentStatus {
         // MOCK: Generate realistic payment status
         $status = $this->getMockPaymentStatus($paymentId);
 
@@ -259,16 +252,14 @@ class StripePaymentService implements PaymentServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function getProviderName(): string
-    {
+    public function getProviderName(): string {
         return 'stripe_mock';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsCurrency(string $currency): bool
-    {
+    public function supportsCurrency(string $currency): bool {
         $supported = ['EUR', 'USD', 'GBP'];
         return in_array(strtoupper($currency), $supported);
     }
@@ -276,60 +267,54 @@ class StripePaymentService implements PaymentServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function getSupportedCurrencies(): array
-    {
+    public function getSupportedCurrencies(): array {
         return ['EUR', 'USD', 'GBP'];
     }
 
     /**
      * Generate mock Stripe payment ID
      * Format: pi_mock_{timestamp}_{random}
-     * 
+     *
      * @return string
      */
-    private function generateMockPaymentId(): string
-    {
+    private function generateMockPaymentId(): string {
         return 'pi_mock_' . Carbon::now()->format('YmdHis') . '_' . Str::random(8);
     }
 
     /**
      * Generate mock Stripe refund ID
      * Format: re_mock_{timestamp}_{random}
-     * 
+     *
      * @return string
      */
-    private function generateMockRefundId(): string
-    {
+    private function generateMockRefundId(): string {
         return 're_mock_' . Carbon::now()->format('YmdHis') . '_' . Str::random(8);
     }
 
     /**
      * Determine if should simulate payment success
-     * 
+     *
      * @return bool
      */
-    private function shouldSimulateSuccess(): bool
-    {
+    private function shouldSimulateSuccess(): bool {
         return \mt_rand(1, 100) <= ($this->mockSuccessRate * 100);
     }
 
     /**
      * Determine if should simulate refund success (higher rate)
-     * 
+     *
      * @return bool
      */
-    private function shouldSimulateRefundSuccess(): bool
-    {
+    private function shouldSimulateRefundSuccess(): bool {
         return \mt_rand(1, 100) <= 98; // 98% success rate for refunds
     }
 
     /**
      * Get random failure message for testing
-     * 
+     *
      * @return string
      */
-    private function getRandomFailureMessage(): string
-    {
+    private function getRandomFailureMessage(): string {
         $messages = [
             'Your card was declined.',
             'Insufficient funds.',
@@ -343,11 +328,10 @@ class StripePaymentService implements PaymentServiceInterface
 
     /**
      * Get random failure code for testing
-     * 
+     *
      * @return string
      */
-    private function getRandomFailureCode(): string
-    {
+    private function getRandomFailureCode(): string {
         $codes = [
             'card_declined',
             'insufficient_funds',
@@ -361,12 +345,11 @@ class StripePaymentService implements PaymentServiceInterface
 
     /**
      * Generate mock payment status
-     * 
+     *
      * @param string $paymentId
      * @return array
      */
-    private function getMockPaymentStatus(string $paymentId): array
-    {
+    private function getMockPaymentStatus(string $paymentId): array {
         // Determine status based on payment ID for consistency
         $statusOptions = ['succeeded', 'pending', 'failed'];
         $statusIndex = abs(crc32($paymentId)) % count($statusOptions);
