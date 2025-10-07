@@ -88,6 +88,15 @@ Route::get('/test-create-fegi', function () {
     return $controller->connect($request);
 });
 
+// Mint routes (blockchain integration) - authenticated only
+Route::middleware('auth')->group(function () {
+    Route::get('/mint/checkout', [App\Http\Controllers\MintController::class, 'showCheckout'])
+        ->name('mint.checkout');
+
+    Route::post('/mint/process', [App\Http\Controllers\MintController::class, 'processMint'])
+        ->name('mint.process');
+});
+
 // Aggiungi questa route in web.php per debug
 Route::get('/debug-user-lookup', function () {
     $userId = session('connected_user_id');

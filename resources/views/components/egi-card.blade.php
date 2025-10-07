@@ -411,7 +411,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                         @endphp
                         @if($collectionImageUrl)
                             <img src="{{ $collectionImageUrl }}" alt="{{ $egiCollection->collection_name }}"
-                                class="object-cover w-full h-full rounded-full transition-transform duration-300 group-hover:scale-105" loading="lazy"
+                                class="object-cover w-full h-full transition-transform duration-300 rounded-full group-hover:scale-105" loading="lazy"
                                 decoding="async">
                         @else
                             <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -656,7 +656,39 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
     @endif --}}
     @if(!$isCreator)
         <div class="mt-3">
-            @if($egi->price && $egi->price > 0)
+            @php
+            // Check if user can mint this EGI (has winning reservation and in mint window)
+            $canMint = false;
+            $mintPrice = null;
+            if (auth()->check() && $egi->price && $egi->price > 0) {
+                $winningReservation = $egi->reservations()
+                    ->where('user_id', auth()->id())
+                    ->where('sub_status', 'highest')
+                    ->where('status', 'active')
+                    ->where('is_current', true)
+                    ->first();
+
+                if ($winningReservation) {
+                    // Check if user is in mint window (for now, always allow if has winning reservation)
+                    $canMint = !$egi->mint; // Can mint if not already minted
+                    $mintPrice = $winningReservation->amount_eur ?? $winningReservation->offer_amount_fiat;
+                }
+            }
+            @endphp
+
+            @if($canMint)
+            {{-- Mint Button - User has winning reservation --}}
+            <a href="{{ route('mint.checkout', ['egi_id' => $egi->id, 'reservation_id' => $winningReservation->id]) }}"
+               class="mint-button w-full flex items-center justify-center px-4 py-2 text-sm font-bold text-white
+                      bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700
+                      rounded-t-none rounded-b-lg transition-all transform hover:scale-[1.01] shadow-lg">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m-3-6h6" />
+                </svg>
+                {{ __('mint.mint_button', ['price' => '€' . number_format($mintPrice, 2, ',', '.')]) }}
+            </a>
+            @elseif($egi->price && $egi->price > 0)
+            {{-- Reserve/Outbid Button --}}
             <button type="button" class="reserve-button w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white
                     {{ $hasCurrentReservation ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700' : 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700' }}
                     rounded-t-none rounded-b-lg transition-all transform hover:scale-[1.01]" data-egi-id="{{ $egi->id }}">
@@ -673,6 +705,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                 @endif
             </button>
             @else
+            {{-- Not for sale --}}
             <div
                 class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-t-none rounded-b-lg">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
