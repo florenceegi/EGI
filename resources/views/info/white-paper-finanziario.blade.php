@@ -108,6 +108,48 @@
                 transform: scale(1);
             }
         }
+
+        /* Pulsante Torna al Testo */
+        #backToTextButton {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #1B365D 0%, #2D5016 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(27, 54, 93, 0.3);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            border: 2px solid #D4A574;
+        }
+
+        #backToTextButton:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(212, 165, 116, 0.4);
+            background: linear-gradient(135deg, #2D5016 0%, #1B365D 100%);
+        }
+
+        #backToTextButton.show {
+            display: flex;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
@@ -354,7 +396,8 @@
                             <dd class="mt-1 text-gray-700">L'autore o il proprietario originale di un bene che crea un
                                 <a href="#glossary-egi" class="glossary-link">EGI</a> sulla piattaforma. Il Creator
                                 riceve i proventi delle vendite e può impostare <a href="#glossary-royalties"
-                                    class="glossary-link">royalties</a> per vendite future.</dd>
+                                    class="glossary-link">royalties</a> per vendite future.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-mecenate" class="text-xl font-bold text-emerald-700">Mecenate</dt>
@@ -502,7 +545,8 @@
                                     class="glossary-link">Blockchain</a> di tipo "proof-of-stake pura" ad alte
                                 prestazioni, basso costo e impatto ambientale ridotto, utilizzata da FlorenceEGI per la
                                 creazione e gestione degli <a href="#glossary-egi" class="glossary-link">EGI</a> come
-                                <a href="#glossary-asa" class="glossary-link">ASA</a>.</dd>
+                                <a href="#glossary-asa" class="glossary-link">ASA</a>.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-hash" class="text-xl font-bold text-emerald-700">Hash (Impronta Digitale)
@@ -551,6 +595,12 @@
                 <p class="text-center text-gray-500">&copy; 2025 Florence EGI | Tutti i diritti riservati.</p>
             </div>
         </footer>
+
+        <!-- Pulsante Torna al Testo -->
+        <button id="backToTextButton" aria-label="Torna al testo">
+            <span class="material-icons" style="font-size: 20px;">arrow_back</span>
+            <span id="backToTextLabel">Torna al testo</span>
+        </button>
 
     </div>
 
@@ -751,6 +801,14 @@
                 return button;
             };
 
+            // Add Home button
+            const homeButton = document.createElement('a');
+            homeButton.href = '/';
+            homeButton.className =
+                'inline-flex items-center gap-2 px-5 py-3 font-medium text-white transition-all duration-200 ease-in-out transform bg-emerald-600 rounded-xl hover:bg-emerald-700 hover:scale-105 hover:shadow-lg nav-item';
+            homeButton.innerHTML = '<span class="text-xl material-icons">home</span><span>Home</span>';
+            roleNav.appendChild(homeButton);
+
             Object.keys(contentData).forEach(key => {
                 const sectionData = contentData[key];
                 roleNav.appendChild(createNavButton(key, sectionData.nav));
@@ -818,6 +876,74 @@
                 });
             }
             showSection('panoramica');
+
+            // === LOGICA TORNA AL TESTO ===
+            let previousSection = null;
+            let previousScrollPosition = 0;
+            const backButton = document.getElementById('backToTextButton');
+            const backButtonLabel = document.getElementById('backToTextLabel');
+
+            // Intercetta click sui glossary links
+            document.addEventListener('click', (e) => {
+                const glossaryLink = e.target.closest('.glossary-link');
+                if (glossaryLink && glossaryLink.getAttribute('href')?.startsWith('#glossary-')) {
+                    // Salva la sezione attiva corrente
+                    const activeSection = document.querySelector('.content-section.active');
+                    if (activeSection) {
+                        previousSection = activeSection.id.replace('section-', '');
+                        previousScrollPosition = window.scrollY;
+                        
+                        // Trova il nome della sezione per il pulsante
+                        const sectionData = contentData[previousSection];
+                        if (sectionData) {
+                            backButtonLabel.textContent = `Torna a ${sectionData.nav}`;
+                        }
+                    }
+                }
+            });
+
+            // Mostra/nascondi pulsante quando si è in una voce di glossario
+            window.addEventListener('hashchange', () => {
+                const hash = window.location.hash;
+                if (hash.startsWith('#glossary-') && previousSection) {
+                    // Sei in una voce di glossario
+                    backButton.classList.add('show');
+                } else {
+                    // Non sei in una voce di glossario
+                    backButton.classList.remove('show');
+                    previousSection = null;
+                }
+            });
+
+            // Gestisci click sul pulsante Torna al Testo
+            backButton.addEventListener('click', () => {
+                if (previousSection) {
+                    // Torna alla sezione precedente
+                    showSection(previousSection);
+                    
+                    // Riporta allo scroll precedente con un piccolo delay per permettere il render
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: previousScrollPosition,
+                            behavior: 'smooth'
+                        });
+                    }, 100);
+                    
+                    // Nascondi pulsante
+                    backButton.classList.remove('show');
+                    
+                    // Rimuovi hash dall'URL
+                    history.pushState('', document.title, window.location.pathname + window.location.search);
+                }
+            });
+
+            // Check iniziale se siamo già in una voce di glossario (es. deep link)
+            if (window.location.hash.startsWith('#glossary-')) {
+                // Non possiamo sapere da dove veniva, quindi offriamo ritorno a panoramica
+                previousSection = 'panoramica';
+                backButtonLabel.textContent = 'Torna a Panoramica';
+                backButton.classList.add('show');
+            }
         });
     </script>
 </body>
