@@ -293,6 +293,15 @@ class Egi extends Model {
         return $this->hasOne(EgiCoaTrait::class, 'egi_id');
     }
 
+    /**
+     * 🔗 Blockchain: Get blockchain data for this EGI (1:1 relationship)
+     *
+     * @return HasOne
+     */
+    public function blockchain(): HasOne {
+        return $this->hasOne(EgiBlockchain::class, 'egi_id');
+    }
+
     //--------------------------------------------------------------------------
     // Likes & Social Relationships
     //--------------------------------------------------------------------------
@@ -687,6 +696,140 @@ class Egi extends Model {
      */
     public function getValidCoaCount(): int {
         return $this->coas()->where('status', 'valid')->count();
+    }
+
+    //--------------------------------------------------------------------------
+    // Blockchain Integration Helper Methods
+    //--------------------------------------------------------------------------
+
+    /**
+     * Check if this EGI has been minted on blockchain.
+     *
+     * @return bool
+     */
+    public function isMinted(): bool {
+        return $this->blockchain()->exists() && $this->blockchain->isMinted();
+    }
+
+    /**
+     * Check if this EGI has a certificate generated.
+     *
+     * @return bool
+     */
+    public function hasCertificate(): bool {
+        return $this->blockchain()->exists() && $this->blockchain->hasCertificate();
+    }
+
+    /**
+     * Get the public verification URL for this EGI's certificate.
+     *
+     * @return string|null
+     */
+    public function getVerificationUrl(): ?string {
+        if (!$this->blockchain()->exists()) {
+            return null;
+        }
+
+        return $this->blockchain->getVerificationUrl();
+    }
+
+    /**
+     * Check if this EGI has blockchain data associated.
+     *
+     * @return bool
+     */
+    public function hasBlockchainData(): bool {
+        return $this->blockchain()->exists();
+    }
+
+    /**
+     * Get blockchain status label for UI display.
+     *
+     * @return string
+     */
+    public function getBlockchainStatusLabel(): string {
+        if (!$this->hasBlockchainData()) {
+            return 'Non Blockchain';
+        }
+
+        return $this->blockchain->getMintStatusLabelAttribute();
+    }
+
+    /**
+     * Check if this EGI is owned by a specific user.
+     *
+     * @param User|null $user
+     * @return bool
+     */
+    public function isOwnedByUser(?User $user = null): bool {
+        if (!$user) {
+            $user = auth()->user();
+        }
+
+        if (!$user || !$this->hasBlockchainData()) {
+            return false;
+        }
+
+        return $this->blockchain->buyer_user_id === $user->id;
+    }
+
+    //--------------------------------------------------------------------------
+    // Blockchain Integration Scopes
+    //--------------------------------------------------------------------------
+
+    /**
+     * Scope to include blockchain data in queries.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithBlockchain($query) {
+        return $query->with('blockchain');
+    }
+
+    /**
+     * Scope to get only EGIs that have been minted on blockchain.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeMintedOnly($query) {
+        return $query->whereHas('blockchain', function ($blockchainQuery) {
+            $blockchainQuery->where('mint_status', 'minted');
+        });
+    }
+
+    /**
+     * Scope to get only EGIs with blockchain data.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeHasBlockchain($query) {
+        return $query->whereHas('blockchain');
+    }
+
+    /**
+     * Scope to get EGIs without blockchain data.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithoutBlockchain($query) {
+        return $query->whereDoesntHave('blockchain');
+    }
+
+    /**
+     * Scope to filter by blockchain mint status.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $status
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeByMintStatus($query, string $status) {
+        return $query->whereHas('blockchain', function ($blockchainQuery) use ($status) {
+            $blockchainQuery->where('mint_status', $status);
+        });
     }
 
     // Add other relationships as needed (e.g., with Auction, Drop models later)
