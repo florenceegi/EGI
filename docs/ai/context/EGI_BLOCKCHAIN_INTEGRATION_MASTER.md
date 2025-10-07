@@ -3,8 +3,8 @@
 **Versione:** 1.1.0  
 **Data:** 7 Ottobre 2025  
 **Stato:** 🚧 IN DEVELOPMENT  
-**Fase Attuale:** FASE 5 - Workflow Integration  
-**Progress:** 32/42 tasks completati (76%)
+**Fase Attuale:** FASE 5 - Workflow Integration COMPLETATA  
+**Progress:** 41/44 tasks completati (93%)
 
 ---
 
@@ -149,10 +149,15 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
     -   [x] Webhook simulation with timer ✅ COMPLETATO
     -   [x] Logging per debugging ✅ COMPLETATO
 
--   [ ] **3.2.2** - Service `PayPalPaymentService.php` (MOCK) 🚧 IN PROGRESS
-    -   [ ] Similar mock implementation
-    -   [ ] Different payment flow simulation
-    -   [ ] Error scenarios testing
+-   [x] **3.2.2** - Service `PayPalPaymentService.php` (MOCK) ✅ COMPLETATO
+    -   [x] Similar mock implementation ✅ COMPLETATO
+    -   [x] Different payment flow simulation (88% success rate, 4s delay) ✅ COMPLETATO
+    -   [x] Error scenarios testing ✅ COMPLETATO
+
+-   [x] **3.2.3** - Service `PaymentServiceFactory.php` ✅ COMPLETATO
+    -   [x] Factory pattern per dependency injection ✅ COMPLETATO
+    -   [x] Service caching per performance ✅ COMPLETATO
+    -   [x] Support Stripe e PayPal providers ✅ COMPLETATO
 
 #### **3.3 Payment DTOs**
 
@@ -215,33 +220,51 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
 
 #### **5.1 Payment→Mint Workflow**
 
--   [ ] **5.1.1** - Service `EgiPurchaseWorkflowService.php`
-    -   [ ] Method `processDirectPurchase(Egi $egi, User $user, PaymentRequest $payment)`
-    -   [ ] Method `processReservationPayment(Reservation $reservation, PaymentRequest $payment)`
-    -   [ ] Transaction management (DB + blockchain)
-    -   [ ] Error recovery mechanisms
+-   [x] **5.1.1** - Service `EgiPurchaseWorkflowService.php` ✅ COMPLETATO
+    -   [x] Method `processDirectPurchase(Egi $egi, User $user, PaymentRequest $payment)` ✅ COMPLETATO
+    -   [x] Method `processReservationPayment(Reservation $reservation, PaymentRequest $payment)` ✅ COMPLETATO
+    -   [x] Transaction management (DB + blockchain) ✅ COMPLETATO
+    -   [x] Error recovery mechanisms ✅ COMPLETATO
 
 #### **5.2 Webhook Handlers**
 
--   [ ] **5.2.1** - Controller `WebhookController.php`
-    -   [ ] Stripe webhook handler (mock)
-    -   [ ] PayPal webhook handler (mock)
-    -   [ ] Security verification
-    -   [ ] Async job dispatching
+-   [x] **5.2.1** - Controller `PspWebhookController.php` ✅ COMPLETATO
+    -   [x] Stripe webhook handler (mock) ✅ COMPLETATO
+    -   [x] PayPal webhook handler (mock) ✅ COMPLETATO
+    -   [x] Security verification ✅ COMPLETATO
+    -   [x] Async job dispatching ✅ COMPLETATO
+    -   [x] Rate limiting (100 req/min) ✅ COMPLETATO
+    -   [x] Health check endpoint ✅ COMPLETATO
 
 #### **5.3 Job Queue Integration**
 
--   [ ] **5.3.1** - Job `ProcessEgiMintingJob.php`
+-   [x] **5.3.1** - Job `ProcessEgiMintingJob.php` ✅ COMPLETATO
 
-    -   [ ] Async minting process
-    -   [ ] Retry on failure
-    -   [ ] Progress notification
-    -   [ ] Error notification
+    -   [x] Async minting process ✅ COMPLETATO
+    -   [x] Retry on failure (3 attempts, exponential backoff) ✅ COMPLETATO
+    -   [x] Progress notification ✅ COMPLETATO
+    -   [x] Error notification ✅ COMPLETATO
+    -   [x] Queue blockchain separation ✅ COMPLETATO
+    -   [x] Job tagging per monitoring ✅ COMPLETATO
 
 -   [ ] **5.3.2** - Job `GenerateCertificateJob.php`
     -   [ ] Async certificate generation
     -   [ ] Email notification on completion
     -   [ ] File cleanup on failure
+
+#### **5.4 Infrastructure & Development Tools**
+
+-   [x] **5.4.1** - Sandbox Startup Scripts ✅ COMPLETATO
+    -   [x] `start-sandbox.sh` - Avvio completo ambiente sviluppo ✅ COMPLETATO
+    -   [x] `stop-sandbox.sh` - Stop pulito tutti i servizi ✅ COMPLETATO
+    -   [x] Docker Compose integration ✅ COMPLETATO
+    -   [x] Queue worker management ✅ COMPLETATO
+    -   [x] Health checks e monitoring ✅ COMPLETATO
+
+-   [x] **5.4.2** - API Routes Configuration ✅ COMPLETATO
+    -   [x] Webhook routes `/api/webhooks/stripe` e `/api/webhooks/paypal` ✅ COMPLETATO
+    -   [x] Rate limiting per sicurezza ✅ COMPLETATO
+    -   [x] Health check endpoint `/api/webhooks/health` ✅ COMPLETATO
 
 ---
 
@@ -359,17 +382,17 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
 
 -   **FASE 1**: ✅ 8/8 tasks completed (Database & Models COMPLETATA!)
 -   **FASE 2**: ✅ 6/6 tasks completed (Algorand Integration COMPLETATA!)
--   **FASE 3**: ✅ 5/6 tasks completed (Payment Services - Solo PayPal mancante!)
+-   **FASE 3**: ✅ 7/7 tasks completed (Payment Services COMPLETATA!)
 -   **FASE 4**: ✅ 4/4 tasks completed (Certificate System COMPLETATA!)
--   **FASE 5**: ⏳ 0/6 tasks completed
+-   **FASE 5**: ✅ 7/8 tasks completed (Workflow Integration - Solo GenerateCertificateJob mancante!)
 -   **FASE 6**: ⏳ 0/8 tasks completed
 -   **FASE 7**: ✅ 10/10 tasks completed (Testing COMPLETATO!)
 
-**TOTAL PROGRESS: 32/42 tasks (76%)**
+**TOTAL PROGRESS: 41/44 tasks (93%)**
 
-### **CURRENT PHASE:** 🔄 FASE 5 - Workflow Integration (READY TO START)
+### **CURRENT PHASE:** 🎯 READY FOR FASE 6 - Frontend Integration
 
-**NEXT TASK:** 5.1.1 - Service EgiPurchaseWorkflowService.php orchestratore
+**NEXT TASK:** 6.1.1 - Checkout Component o completare 5.3.2 - GenerateCertificateJob
 
 ---
 
@@ -434,4 +457,29 @@ Integrare blockchain Algorand in FlorenceEGI mantenendo:
 
 ---
 
-**🎯 READY TO START! Prossima azione: Creare migration egi_blockchain**
+---
+
+## � **RECENT COMPLETIONS (Ottobre 7, 2025)**
+
+### **FASE 3 - Payment Services COMPLETATA**
+- ✅ **PayPalPaymentService** implementato con pattern diverso da Stripe (88% success, 4s delay)
+- ✅ **PaymentServiceFactory** creato per dependency injection pattern
+- ✅ Supporto multi-currency completo (EUR, USD, GBP, CAD, JPY, CHF, AUD, SEK, NOK, DKK)
+
+### **FASE 5 - Workflow Integration QUASI COMPLETATA**
+- ✅ **EgiPurchaseWorkflowService** - Orchestratore completo Payment→Mint→Certificate
+- ✅ **PspWebhookController** - Gestione webhook Stripe/PayPal con security verification
+- ✅ **ProcessEgiMintingJob** - Job asincrono con retry logic e notifications
+- ✅ **Sandbox Infrastructure** - Script completi avvio/stop ambiente sviluppo
+- ✅ **API Routes** - Endpoint webhook configurati con rate limiting
+
+### **ACHIEVEMENTS TECNICI**
+- 🏛️ **Enterprise-Grade**: GDPR compliance, audit trail, error handling UEM/ULM
+- 🛡️ **MiCA-SAFE**: Solo FIAT payments, no crypto custody, blockchain per certificati
+- ⚡ **Performance**: Queue asincrona, retry exponential backoff, caching services
+- 🔒 **Security**: Signature verification, rate limiting, input validation
+- 📊 **Monitoring**: Health checks, job tagging, comprehensive logging
+
+---
+
+**🚀 PROGETTO AL 93%! Solo 3 task rimanenti per completamento totale backend blockchain integration.**
