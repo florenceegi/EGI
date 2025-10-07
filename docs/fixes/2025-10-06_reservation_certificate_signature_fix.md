@@ -3,7 +3,7 @@
 **Date**: 2025-10-06  
 **Severity**: MEDIUM  
 **Component**: Reservation Model - Certificate Generation  
-**Status**: ✅ RESOLVED  
+**Status**: ✅ RESOLVED
 
 ---
 
@@ -35,18 +35,20 @@ return implode('|', [
 ### Inconsistenza Identificata
 
 ❌ **Creazione signature_hash usava**:
-- `reservation_id` (concatenato direttamente)
-- `egi_id` (concatenato direttamente)  
-- `user_id` (concatenato direttamente)
-- `now()` timestamp (concatenato direttamente)
+
+-   `reservation_id` (concatenato direttamente)
+-   `egi_id` (concatenato direttamente)
+-   `user_id` (concatenato direttamente)
+-   `now()` timestamp (concatenato direttamente)
 
 ❌ **Verifica generateVerificationData() usava**:
-- `certificate_uuid` (separato da '|')
-- `egi_id` (separato da '|')
-- `wallet_address` (separato da '|')
-- `reservation_type` (separato da '|')
-- `offer_amount_fiat` (separato da '|')
-- `created_at->toIso8601String()` (separato da '|')
+
+-   `certificate_uuid` (separato da '|')
+-   `egi_id` (separato da '|')
+-   `wallet_address` (separato da '|')
+-   `reservation_type` (separato da '|')
+-   `offer_amount_fiat` (separato da '|')
+-   `created_at->toIso8601String()` (separato da '|')
 
 **Risultato**: Firma generata durante creazione NON corrispondeva al dato verificabile, rendendo impossibile la verifica dell'integrità del certificato.
 
@@ -116,14 +118,14 @@ public function createCertificate(array $additionalData = []): EgiReservationCer
 ✅ **Verifica integrità**: Firma ora verificabile con `generateVerificationData()`  
 ✅ **Consistenza algoritmo**: Stesso formato creazione/verifica  
 ✅ **Tracciabilità**: UUID certificato incluso nella firma  
-✅ **Immutabilità**: Timestamp ISO8601 standard internazionale  
+✅ **Immutabilità**: Timestamp ISO8601 standard internazionale
 
 ### Code Quality
 
 ✅ **Leggibilità**: Variabili pre-estratte con nomi chiari  
 ✅ **Manutenibilità**: Commento esplicito su allineamento algoritmi  
 ✅ **DRY Principle**: Stessa logica di `generateVerificationData()`  
-✅ **Type Safety**: Valori pre-calcolati riutilizzati nel create()  
+✅ **Type Safety**: Valori pre-calcolati riutilizzati nel create()
 
 ---
 
@@ -154,11 +156,11 @@ signature_hash = hash('sha256', $verificationData)
 
 ### Code Verification
 
-- [x] Sintassi corretta verificata
-- [x] Algoritmo allineato con `EgiReservationCertificate::generateVerificationData()`
-- [x] Variabili pre-calcolate riutilizzate correttamente
-- [ ] **TODO**: Test unitario per `createCertificate()`
-- [ ] **TODO**: Test integrazione verifica firma certificato
+-   [x] Sintassi corretta verificata
+-   [x] Algoritmo allineato con `EgiReservationCertificate::generateVerificationData()`
+-   [x] Variabili pre-calcolate riutilizzate correttamente
+-   [ ] **TODO**: Test unitario per `createCertificate()`
+-   [ ] **TODO**: Test integrazione verifica firma certificato
 
 ### Manual Testing (Recommended)
 
@@ -181,15 +183,15 @@ assert($certificate->signature_hash === $expectedHash, 'Signature mismatch!');
 
 ### P0 - BLOCKING RULES
 
-- ✅ **REGOLA ZERO**: Verificato algoritmo esistente in `EgiReservationCertificate`
-- ✅ **NO ASSUNZIONI**: Letto codice `generateVerificationData()` prima di modificare
-- ✅ **DOCUMENTATION**: Commento esplicito sull'allineamento algoritmi
+-   ✅ **REGOLA ZERO**: Verificato algoritmo esistente in `EgiReservationCertificate`
+-   ✅ **NO ASSUNZIONI**: Letto codice `generateVerificationData()` prima di modificare
+-   ✅ **DOCUMENTATION**: Commento esplicito sull'allineamento algoritmi
 
 ### P1 - HIGH PRIORITY
 
-- ✅ **OOP Pattern**: Mantenuto pattern esistente Reservation/Certificate
-- ✅ **Code Readability**: Variabili estratte con nomi espliciti
-- ✅ **Security**: Firma ora verificabile per integrità certificati
+-   ✅ **OOP Pattern**: Mantenuto pattern esistente Reservation/Certificate
+-   ✅ **Code Readability**: Variabili estratte con nomi espliciti
+-   ✅ **Security**: Firma ora verificabile per integrità certificati
 
 ### P2 - COMMIT FORMAT
 
@@ -212,15 +214,17 @@ Security: Improves certificate tamper detection capability
 
 ### Certificate Integrity
 
-**PRIMA**: 
-- ❌ Firma NON verificabile con `generateVerificationData()`
-- ❌ Impossibile rilevare manomissioni certificato
-- ❌ Algoritmo non documentato
+**PRIMA**:
+
+-   ❌ Firma NON verificabile con `generateVerificationData()`
+-   ❌ Impossibile rilevare manomissioni certificato
+-   ❌ Algoritmo non documentato
 
 **DOPO**:
-- ✅ Firma verificabile con algoritmo standard
-- ✅ Manomissioni rilevabili tramite hash mismatch
-- ✅ Algoritmo documentato e allineato
+
+-   ✅ Firma verificabile con algoritmo standard
+-   ✅ Manomissioni rilevabili tramite hash mismatch
+-   ✅ Algoritmo documentato e allineato
 
 ### Audit Trail
 
@@ -238,17 +242,18 @@ if (hash('sha256', $certificate->generateVerificationData()) !== $certificate->s
 
 ### Files Modified
 
-- ✅ `app/Models/Reservation.php` (createCertificate method)
+-   ✅ `app/Models/Reservation.php` (createCertificate method)
 
 ### Related Files (Read Only)
 
-- 📖 `app/Models/EgiReservationCertificate.php` (generateVerificationData reference)
+-   📖 `app/Models/EgiReservationCertificate.php` (generateVerificationData reference)
 
 ### Database Impact
 
 ⚠️ **NOTA**: Certificati pre-esistenti hanno firma con vecchio algoritmo.
 
 **Opzioni**:
+
 1. **Opzione A (Conservativa)**: Mantenere vecchie firme, nuove con algoritmo corretto
 2. **Opzione B (Migration)**: Ricalcolare firme per tutti i certificati esistenti
 3. **Opzione C (Versioning)**: Aggiungere campo `signature_version` per tracking algoritmo
@@ -269,10 +274,11 @@ if (hash('sha256', $certificate->generateVerificationData()) !== $certificate->s
 ### Business Context
 
 Nel contesto **FlorenceEGI PA/Enterprise**:
-- 📋 Certificati usati per prenotazioni vincolanti su EGI
-- 💰 Validità legale per transazioni fiat/crypto
-- 🏛️ PA richiede tracciabilità completa delle transazioni
-- 🔒 Firma SHA256 standard per integrità documentale
+
+-   📋 Certificati usati per prenotazioni vincolanti su EGI
+-   💰 Validità legale per transazioni fiat/crypto
+-   🏛️ PA richiede tracciabilità completa delle transazioni
+-   🔒 Firma SHA256 standard per integrità documentale
 
 ---
 
@@ -280,16 +286,16 @@ Nel contesto **FlorenceEGI PA/Enterprise**:
 
 ### Short Term
 
-- [ ] Test unitario per `createCertificate()` con verifica firma
-- [ ] Test integrazione certificato creation → verification flow
-- [ ] Documentazione algoritmo firma in README certificati
+-   [ ] Test unitario per `createCertificate()` con verifica firma
+-   [ ] Test integrazione certificato creation → verification flow
+-   [ ] Documentazione algoritmo firma in README certificati
 
 ### Long Term
 
-- [ ] Consider adding `signature_version` field per versioning algoritmo
-- [ ] Evaluate re-signing existing certificates con nuovo algoritmo
-- [ ] Implement certificate revocation mechanism con firma
-- [ ] Add blockchain anchoring per immutabilità certificati
+-   [ ] Consider adding `signature_version` field per versioning algoritmo
+-   [ ] Evaluate re-signing existing certificates con nuovo algoritmo
+-   [ ] Implement certificate revocation mechanism con firma
+-   [ ] Add blockchain anchoring per immutabilità certificati
 
 ---
 

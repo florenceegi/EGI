@@ -261,7 +261,7 @@ class WalletService implements WalletServiceInterface {
                     $collectionId,
                     microtime(true)
                 );
-                
+
                 // Log placeholder generation
                 $this->logger->info('Generated unique placeholder wallet address', array_merge($context, [
                     'generated_address' => $address,

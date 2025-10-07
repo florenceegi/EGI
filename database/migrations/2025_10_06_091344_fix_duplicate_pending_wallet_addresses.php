@@ -22,19 +22,17 @@ use App\Models\Wallet;
  *              instead of using a fixed 'pending_wallet_address' value. This migration ensures database
  *              consistency by applying the same logic to existing duplicate records.
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         // Find all wallets with 'pending_wallet_address' placeholder
         $duplicateWallets = Wallet::where('wallet', 'pending_wallet_address')->get();
 
         if ($duplicateWallets->count() > 0) {
             echo "\n🔧 Found {$duplicateWallets->count()} wallet(s) with 'pending_wallet_address' placeholder.\n";
-            
+
             foreach ($duplicateWallets as $wallet) {
                 // Generate unique placeholder using same format as WalletService
                 $uniqueAddress = sprintf(
@@ -60,8 +58,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         // Cannot reverse this migration as we don't track original duplicate state
         echo "\n⚠️  WARNING: This migration cannot be reversed.\n";
         echo "   Original duplicate 'pending_wallet_address' entries were intentionally fixed.\n";
