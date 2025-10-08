@@ -35,6 +35,11 @@ return [
         'pa_act_invalid_signature' => 'Firma digitale non valida o mancante su PDF. User: :user_id, File: :filename, Reason: :reason',
         'pa_act_upload_failed' => 'Errore durante upload atto PA. User: :user_id, File: :filename, Error: :error',
         'pa_act_collection_failed' => 'Errore creazione/recupero fascicolo per atto PA. User: :user_id, Protocol: :protocol_number',
+
+        // Blockchain Minting Errors (Dev)
+        'mint_checkout_error' => 'Errore durante caricamento checkout mint. User: :user_id, EGI: :egi_id, Error: :error',
+        'mint_process_error' => 'Errore processo mint blockchain. User: :user_id, EGI: :egi_id, Reservation: :reservation_id, Payment: :payment_method, Error: :error',
+        'real_blockchain_mint_failed' => 'CRITICAL: Real blockchain mint failed. EgiBlockchain: :egi_blockchain_id, Attempt: :attempt, Error: :error',
     ],
 
     'user' => [
@@ -64,6 +69,11 @@ return [
         'pa_act_invalid_signature' => 'Il PDF deve essere firmato digitalmente con firma qualificata (QES/PAdES). Il documento caricato non ha una firma valida.',
         'pa_act_upload_failed' => 'Si è verificato un errore durante il caricamento dell\'atto. Riprova più tardi o contatta l\'assistenza.',
         'pa_act_collection_failed' => 'Impossibile creare o recuperare il fascicolo per l\'atto. Riprova o contatta l\'assistenza.',
+
+        // Blockchain Minting Errors (User)
+        'mint_checkout_error' => 'Impossibile caricare la pagina di acquisto. Riprova tra poco.',
+        'mint_process_error' => 'Errore durante il processo di acquisto. Il pagamento non è stato effettuato. Riprova o contatta l\'assistenza.',
+        'real_blockchain_mint_failed' => 'Il mint sulla blockchain è fallito. Il tuo pagamento è al sicuro, contatteremo l\'assistenza per risolvere.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

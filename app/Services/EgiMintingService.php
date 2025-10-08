@@ -74,9 +74,9 @@ class EgiMintingService {
                 'log_category' => 'EGI_MINTING_START'
             ]);
 
-            // 2. GDPR: Check consent
-            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
-                throw new \Exception('Missing blockchain operations consent');
+            // 2. Check Spatie Permission (not GDPR consent)
+            if (!$user->hasPermissionTo('allow-blockchain-operations')) {
+                throw new \Exception('Missing blockchain operations permission');
             }
 
             // 3. Verifica se EGI è già mintato
@@ -162,10 +162,17 @@ class EgiMintingService {
                 throw new \Exception("EGI deve essere mintato prima del trasferimento");
             }
 
+            // Get User object for GDPR compliance
+            $user = $buyerUserId ? User::findOrFail($buyerUserId) : $egiBlockchain->buyer;
+            if (!$user) {
+                throw new \Exception("User not found for transfer operation");
+            }
+
             // Trasferisce su blockchain
             $transferTxId = $this->algorandService->transferEgiAsset(
                 $buyerWallet,
-                $egiBlockchain->asa_id
+                $egiBlockchain->asa_id,
+                $user
             );
 
             // Aggiorna ownership

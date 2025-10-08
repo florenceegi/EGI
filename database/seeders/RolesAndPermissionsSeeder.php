@@ -84,6 +84,8 @@ class RolesAndPermissionsSeeder extends Seeder {
         'can_request_export',
         'can_request_deletion',
 
+        // Blockchain operations (FlorenceEGI Blockchain Integration)
+        'allow-blockchain-operations',
 
         // Patron specifici
         'support_creators',
@@ -290,6 +292,8 @@ class RolesAndPermissionsSeeder extends Seeder {
             'can_request_deletion',
             // ✅ CoA / QES
             'sign_coa',
+            // ✅ Blockchain operations
+            'allow-blockchain-operations',
         ],
 
         'admin' => [
@@ -336,6 +340,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             'manage_bio_profile',
             'can_request_export',
             'can_request_deletion',
+            'allow-blockchain-operations'
         ],
 
         'editor' => [
@@ -434,6 +439,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             'manage_bio_profile',
             'can_request_export',
             'can_request_deletion',
+            'allow-blockchain-operations'
 
         ],
 
@@ -493,6 +499,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             'can_request_deletion',
             'manage_own_biographies',
             'manage_bio_profile',
+            'allow-blockchain-operations'
         ],
 
         // ═══ NUOVO RUOLO COMMISSIONER (AGGIUNTO) ═══
@@ -547,6 +554,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             // ...e in più ha i permessi di visibilità pubblica.
             'display_public_avatar_on_egi',
             'display_public_name_on_egi',
+            'allow-blockchain-operations'
         ],
 
         'enterprise' => [
@@ -636,6 +644,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             'can_request_deletion',
             'manage_own_biographies',
             'manage_bio_profile',
+            'allow-blockchain-operations'
         ],
 
         'trader_pro' => [
@@ -698,6 +707,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             'can_request_deletion',
             'manage_own_biographies',
             'manage_bio_profile',
+            'allow-blockchain-operations'
         ],
 
         'epp_entity' => [
@@ -781,6 +791,7 @@ class RolesAndPermissionsSeeder extends Seeder {
 
             // Base profile management
             'edit_own_profile_data',
+            'allow-blockchain-operations'
 
             // NO: create_multiple_collections
             // NO: priority_reservations
@@ -833,6 +844,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             // Translation management (future feature)
             'legal.translations.view',
             'legal.translations.manage',
+            'allow-blockchain-operations'
         ],
 
         // ✅ Nuovo ruolo Ispettore per co-firma CoA
@@ -940,6 +952,8 @@ class RolesAndPermissionsSeeder extends Seeder {
             // Standard rights
             'can_request_export',
             'can_request_deletion',
+
+            'allow-blockchain-operations'
         ],
     ];
 

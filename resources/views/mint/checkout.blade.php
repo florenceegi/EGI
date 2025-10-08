@@ -1,7 +1,7 @@
 {{-- resources/views/mint/checkout.blade.php --}}
 <x-platform-layout :title="__('mint.page_title', ['title' => $egi->title])">
-    <div class="container px-4 py-8 mx-auto">
-        <div class="max-w-4xl mx-auto">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mx-auto max-w-4xl">
             {{-- Header --}}
             <div class="mb-8">
                 <h1 class="mb-2 text-3xl font-bold text-gray-900">
@@ -15,13 +15,13 @@
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
                 {{-- EGI Preview --}}
                 <div class="space-y-6">
-                    <div class="p-6 bg-white rounded-lg shadow-lg">
+                    <div class="rounded-lg bg-white p-6 shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.egi_preview.title') }}</h2>
 
                         {{-- EGI Card Preview --}}
-                        <div class="mb-4 overflow-hidden rounded-lg aspect-square">
+                        <div class="mb-4 aspect-square overflow-hidden rounded-lg">
                             <img src="{{ $egi->main_image_url }}" alt="{{ $egi->title }}"
-                                class="object-cover w-full h-full">
+                                class="h-full w-full object-cover">
                         </div>
 
                         <h3 class="text-lg font-semibold text-gray-900">{{ $egi->title }}</h3>
@@ -34,7 +34,7 @@
                     </div>
 
                     {{-- Blockchain Info --}}
-                    <div class="p-6 rounded-lg bg-blue-50">
+                    <div class="rounded-lg bg-blue-50 p-6">
                         <h3 class="mb-3 text-lg font-semibold text-blue-900">{{ __('mint.blockchain_info.title') }}</h3>
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between">
@@ -55,11 +55,11 @@
 
                 {{-- Checkout Form --}}
                 <div class="space-y-6">
-                    <div class="p-6 bg-white rounded-lg shadow-lg">
+                    <div class="rounded-lg bg-white p-6 shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.payment.title') }}</h2>
 
                         {{-- Reservation Summary --}}
-                        <div class="p-4 mb-6 rounded-lg bg-green-50">
+                        <div class="mb-6 rounded-lg bg-green-50 p-4">
                             <h3 class="mb-2 font-semibold text-green-900">{{ __('mint.payment.winning_reservation') }}
                             </h3>
                             <div class="space-y-1 text-sm">
@@ -77,26 +77,26 @@
                         </div>
 
                         {{-- Payment Form --}}
-                        <form id="mint-form" class="space-y-4">
+                        <form id="mint-form" action="{{ route('mint.process') }}" method="POST" class="space-y-4">
                             @csrf
                             <input type="hidden" name="egi_id" value="{{ $egi->id }}">
                             <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
 
                             {{-- Payment Method --}}
                             <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">
+                                <label class="mb-2 block text-sm font-medium text-gray-700">
                                     {{ __('mint.payment.payment_method_label') }}
                                 </label>
                                 <div class="space-y-2">
                                     <label class="flex items-center">
                                         <input type="radio" name="payment_method" value="stripe" checked
-                                            class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
                                         <span
                                             class="ml-2 text-sm text-gray-900">{{ __('mint.payment.credit_card') }}</span>
                                     </label>
                                     <label class="flex items-center">
                                         <input type="radio" name="payment_method" value="paypal"
-                                            class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
                                         <span class="ml-2 text-sm text-gray-900">{{ __('mint.payment.paypal') }}</span>
                                     </label>
                                 </div>
@@ -104,19 +104,19 @@
 
                             {{-- Optional Wallet Address --}}
                             <div>
-                                <label for="buyer_wallet" class="block mb-2 text-sm font-medium text-gray-700">
+                                <label for="buyer_wallet" class="mb-2 block text-sm font-medium text-gray-700">
                                     {{ __('mint.payment.wallet_label') }}
                                 </label>
                                 <input type="text" id="buyer_wallet" name="buyer_wallet"
                                     placeholder="{{ __('mint.payment.wallet_placeholder') }}"
-                                    class="w-full px-3 py-2 font-mono text-sm border border-gray-300 rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    class="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <p class="mt-1 text-xs text-gray-500">
                                     {{ __('mint.payment.wallet_help') }}
                                 </p>
                             </div>
 
                             {{-- Total --}}
-                            <div class="pt-4 border-t">
+                            <div class="border-t pt-4">
                                 <div class="flex items-center justify-between text-lg font-semibold">
                                     <span>{{ __('mint.payment.total_label') }}</span>
                                     <span
@@ -128,7 +128,7 @@
                             <button type="submit"
                                 class="w-full transform rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3 font-medium text-white transition-all duration-200 hover:scale-[1.02] hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                                 <span class="flex items-center justify-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -139,11 +139,10 @@
                     </div>
 
                     {{-- Info MiCA Compliance --}}
-                    <div class="p-4 rounded-lg bg-yellow-50">
-                        <h3 class="mb-2 font-semibold text-yellow-900">⚖️ MiCA Compliance</h3>
+                    <div class="rounded-lg bg-yellow-50 p-4">
+                        <h3 class="mb-2 font-semibold text-yellow-900">{{ __('mint.compliance.mica_title') }}</h3>
                         <p class="text-sm text-yellow-800">
-                            Questo processo è completamente MiCA-SAFE. Paghiamo in FIAT tramite PSP autorizzati,
-                            mintiamo l'NFT per tuo conto, e gestiamo solo la custodia temporanea se necessario.
+                            {{ __('mint.compliance.mica_description') }}
                         </p>
                     </div>
                 </div>
@@ -154,12 +153,12 @@
     {{-- Loading Modal --}}
     {{-- Loading Modal --}}
     <div id="loading-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50"></div>
-            <div class="relative w-full max-w-md p-6 transition-all transform bg-white rounded-lg shadow-xl">
+        <div class="flex min-h-screen items-center justify-center p-4">
+            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+            <div class="relative w-full max-w-md transform rounded-lg bg-white p-6 shadow-xl transition-all">
                 <div class="text-center">
-                    <div class="flex items-center justify-center w-12 h-12 mx-auto bg-blue-100 rounded-full">
-                        <svg class="w-6 h-6 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                        <svg class="h-6 w-6 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                 stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor"
@@ -180,6 +179,8 @@
 
     @push('scripts')
         <script>
+            const form = document.getElementById('mint-form');
+
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 

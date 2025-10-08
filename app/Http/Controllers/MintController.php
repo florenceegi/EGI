@@ -128,7 +128,7 @@ class MintController extends Controller {
             $blockchainRecord = EgiBlockchain::create([
                 'egi_id' => $egi->id,
                 'reservation_id' => $reservation->id,
-                'payment_method' => 'fiat_' . $validated['payment_method'],
+                'payment_method' => $validated['payment_method'], // stripe, paypal, bank_transfer
                 'psp_provider' => $paymentResult['provider'],
                 'payment_reference' => $paymentResult['reference'],
                 'paid_amount' => $paymentAmount,
@@ -136,23 +136,30 @@ class MintController extends Controller {
                 'buyer_user_id' => Auth::id(),
                 'buyer_wallet' => $validated['buyer_wallet'] ?? null,
                 'ownership_type' => $validated['buyer_wallet'] ? 'wallet' : 'treasury',
+                'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
                 'mint_status' => 'minting_queued',
             ]);
 
-            // Queue mint job
-            // TODO: dispatch(new MintEgiJob($blockchainRecord->id)); when job is created
+            // Queue REAL blockchain mint job
+            dispatch(new MintEgiJob($blockchainRecord->id));
 
-            // GDPR audit log
-            $this->auditService->logActivity(
+            $this->logger->info('REAL blockchain mint job dispatched', [
+                'blockchain_record_id' => $blockchainRecord->id,
+                'egi_id' => $egi->id,
+                'user_id' => Auth::id()
+            ]);
+
+            // GDPR audit log - CORRETTO: metodo E costante verificati
+            $this->auditService->logUserAction(
                 Auth::user(),
-                GdprActivityCategory::PURCHASE,
                 'EGI mint initiated',
                 [
                     'egi_id' => $egi->id,
                     'reservation_id' => $reservation->id,
                     'amount' => $paymentAmount,
                     'payment_method' => $validated['payment_method']
-                ]
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
             );
 
             $this->logger->info('[MintController] Mint initiated successfully', [
@@ -176,7 +183,9 @@ class MintController extends Controller {
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_PROCESS_ERROR', [
                 'user_id' => Auth::id(),
-                'request_data' => $request->all(),
+                'egi_id' => $request->input('egi_id'),
+                'reservation_id' => $request->input('reservation_id'),
+                'payment_method' => $request->input('payment_method'),
                 'error' => $e->getMessage()
             ], $e);
 

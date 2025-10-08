@@ -5324,5 +5324,39 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // ====================================================
+        // BLOCKCHAIN MINTING ERRORS
+        // ====================================================
+        'MINT_CHECKOUT_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_checkout_error',
+            'user_message_key' => 'error-manager::errors_2.user.mint_checkout_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'MINT_PROCESS_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_process_error',
+            'user_message_key' => 'error-manager::errors_2.user.mint_process_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+        'REAL_BLOCKCHAIN_MINT_FAILED' => [
+            'type' => 'critical',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.real_blockchain_mint_failed',
+            'user_message_key' => 'error-manager::errors_2.user.real_blockchain_mint_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
     ]
 ];

@@ -1,5 +1,6 @@
 /.phpunit.cache
 /node_modules
+/algokit-microservice/node_modules
 # /codesensei
 /public/build
 /public/hot

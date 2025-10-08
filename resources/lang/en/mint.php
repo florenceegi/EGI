@@ -86,4 +86,10 @@ return [
         'wallet_format' => 'Wallet address must be a valid Algorand address.',
         'terms_required' => 'You must accept the terms and conditions.',
     ],
+
+    // MiCA Compliance
+    'compliance' => [
+        'mica_title' => '⚖️ MiCA Compliance',
+        'mica_description' => 'This process is completely MiCA-SAFE. We pay in FIAT through authorized PSPs, mint the NFT on your behalf, and only handle temporary custody if necessary.',
+    ],
 ];

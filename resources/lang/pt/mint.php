@@ -3,6 +3,20 @@
 return [
     // Page Meta
     'page_title' => 'Mint :title - FlorenceEGI',
+    // Validation
+    'validation' => [
+        'wallet_required' => 'Endereço da carteira é obrigatório.',
+        'wallet_format' => 'Endereço da carteira deve ser um endereço Algorand válido.',
+        'terms_required' => 'Deves aceitar os Termos e Condições.',
+    ],
+
+    // MiCA Compliance
+    'compliance' => [
+        'mica_title' => '⚖️ Conformidade MiCA',
+        'mica_description' => 'Este processo é totalmente MiCA-SAFE. Pagamos em FIAT através de PSPs autorizados, criamos o NFT para ti, e gerimos apenas custódia temporária se necessário.',
+    ],
+
+    // Meta descriptions
     'meta_description' => 'Faça mint do seu EGI :title na blockchain Algorand. Processo seguro e transparente.',
 
     // Header
