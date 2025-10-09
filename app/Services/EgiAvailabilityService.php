@@ -234,7 +234,7 @@ class EgiAvailabilityService {
                 'status' => $egi->status,
                 'is_published' => $egi->is_published
             ]);
-            
+
             if ($egi->isMinted()) {
                 return ['can_mint' => false, 'reason' => 'already_minted'];
             }
@@ -244,20 +244,12 @@ class EgiAvailabilityService {
             return ['can_mint' => false, 'reason' => 'egi_not_mintable'];
         }
 
-        // Check user has blockchain operations permission
-        if (!$user->can('allow-blockchain-operations')) {
-            $this->logger->warning('EGI_MINT_CHECK_FAILED_PERMISSION', [
-                'egi_id' => $egi->id,
-                'user_id' => $user->id
-            ]);
-            return ['can_mint' => false, 'reason' => 'missing_permission'];
-        }
-
-        // Check GDPR consent
-        if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
+        // Check user has accepted platform services (implies consent for all operations)
+        if (!$this->consentService->hasConsent($user, 'platform-services')) {
             $this->logger->warning('EGI_MINT_CHECK_FAILED_CONSENT', [
                 'egi_id' => $egi->id,
-                'user_id' => $user->id
+                'user_id' => $user->id,
+                'reason' => 'platform_services_consent_missing'
             ]);
             return ['can_mint' => false, 'reason' => 'missing_consent'];
         }
@@ -287,7 +279,7 @@ class EgiAvailabilityService {
                 'status' => $egi->status,
                 'is_published' => $egi->is_published
             ]);
-            
+
             if ($egi->isMinted()) {
                 return ['can_reserve' => false, 'reason' => 'already_minted'];
             }
@@ -306,11 +298,12 @@ class EgiAvailabilityService {
             return ['can_reserve' => false, 'reason' => 'user_already_reserved'];
         }
 
-        // Check GDPR consent for reservation operations
-        if (!$this->consentService->hasConsent($user, 'allow-reservation-operations')) {
+        // Check user has accepted platform services (implies consent for all operations)
+        if (!$this->consentService->hasConsent($user, 'platform-services')) {
             $this->logger->warning('EGI_RESERVE_CHECK_FAILED_CONSENT', [
                 'egi_id' => $egi->id,
-                'user_id' => $user->id
+                'user_id' => $user->id,
+                'reason' => 'platform_services_consent_missing'
             ]);
             return ['can_reserve' => false, 'reason' => 'missing_consent'];
         }
