@@ -434,4 +434,308 @@ class PaymentDistributionService {
             }),
         ];
     }
+
+    // ========================================================================
+    // PHASE 2: MINT-BASED DISTRIBUTION METHODS (AREA 2.2.1)
+    // ========================================================================
+
+    /**
+     * Create distributions for a mint transaction (Phase 2)
+     * Splits payment according to collection wallet percentages
+     * GDPR Compliance: Full audit trail with user_activities
+     *
+     * @param \App\Models\EgiBlockchain $egiBlockchain
+     * @param array $paymentData ['paid_amount' => float, 'paid_currency' => string, 'payment_method' => string]
+     * @return array
+     * @throws \Exception
+     */
+    public function recordMintDistribution(\App\Models\EgiBlockchain $egiBlockchain, array $paymentData): array {
+        try {
+            // Start database transaction
+            return DB::transaction(function () use ($egiBlockchain, $paymentData) {
+                // Validate mint record
+                $this->validateMintForDistribution($egiBlockchain, $paymentData);
+
+                // Get collection and validate wallets
+                $collection = $egiBlockchain->egi->collection;
+
+                // Log operation start
+                if ($this->logger) {
+                    $this->logger->info('[Payment Distribution] Starting mint distribution creation', [
+                        'egi_blockchain_id' => $egiBlockchain->id,
+                        'egi_id' => $egiBlockchain->egi_id,
+                        'collection_id' => $collection->id,
+                        'paid_amount' => $paymentData['paid_amount'],
+                        'paid_currency' => $paymentData['paid_currency'],
+                        'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                        'timestamp' => now()->toIso8601String()
+                    ]);
+                }
+
+                // Get all wallets for the collection
+                $wallets = $this->getCollectionWallets($collection);
+
+                // Calculate distributions for all wallets (mint-based)
+                $distributionsData = $this->calculateMintDistributions($egiBlockchain, $paymentData, $wallets);
+
+                // Create distribution records in database
+                $distributions = $this->createDistributionRecords($distributionsData);
+
+                // Log GDPR-compliant user activities (mint-based)
+                $this->logMintUserActivities($egiBlockchain, $distributions);
+
+                // Log completion
+                if ($this->logger) {
+                    $this->logger->info('[Payment Distribution] Mint distribution creation completed', [
+                        'egi_blockchain_id' => $egiBlockchain->id,
+                        'total_distributions' => $distributions->count(),
+                        'total_amount' => $distributions->sum('amount_eur')
+                    ]);
+                }
+
+                return $distributions->toArray();
+            });
+        } catch (\Exception $e) {
+            // Handle error with UEM
+            $this->errorManager->handle('MINT_DISTRIBUTION_ERROR', [
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'egi_id' => $egiBlockchain->egi_id,
+                'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'operation' => 'recordMintDistribution',
+                'timestamp' => now()->toIso8601String(),
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Validate that mint record is eligible for distribution
+     *
+     * @param \App\Models\EgiBlockchain $egiBlockchain
+     * @param array $paymentData
+     * @throws \Exception
+     */
+    private function validateMintForDistribution(\App\Models\EgiBlockchain $egiBlockchain, array $paymentData): void {
+        // Check if mint is completed
+        if ($egiBlockchain->status !== 'minted') {
+            $this->errorManager->handle('MINT_NOT_COMPLETED', [
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'current_status' => $egiBlockchain->status,
+                'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                'timestamp' => now()->toIso8601String()
+            ]);
+            throw new \Exception("Mint {$egiBlockchain->id} is not completed (status: {$egiBlockchain->status})");
+        }
+
+        // Validate payment amount
+        if (!isset($paymentData['paid_amount']) || $paymentData['paid_amount'] <= 0) {
+            $this->errorManager->handle('INVALID_PAYMENT_AMOUNT', [
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'paid_amount' => $paymentData['paid_amount'] ?? null,
+                'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                'timestamp' => now()->toIso8601String()
+            ]);
+            throw new \Exception("Invalid payment amount for mint {$egiBlockchain->id}");
+        }
+
+        // Validate paid_currency
+        if (!isset($paymentData['paid_currency']) || empty($paymentData['paid_currency'])) {
+            $paymentData['paid_currency'] = 'EUR'; // Default to EUR
+        }
+
+        // Check if EGI and collection exist
+        if (!$egiBlockchain->egi || !$egiBlockchain->egi->collection) {
+            $this->errorManager->handle('COLLECTION_NOT_FOUND', [
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'egi_id' => $egiBlockchain->egi_id,
+                'timestamp' => now()->toIso8601String()
+            ]);
+            throw new \Exception("Mint {$egiBlockchain->id} has no associated collection");
+        }
+
+        // Check if distributions already exist for this mint
+        $existingDistributions = PaymentDistribution::where('egi_blockchain_id', $egiBlockchain->id)->count();
+        if ($existingDistributions > 0) {
+            if ($this->logger) {
+                $this->logger->warning('[Payment Distribution] Distributions already exist for mint', [
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'existing_distributions' => $existingDistributions
+                ]);
+            }
+            throw new \Exception("Distributions already exist for mint {$egiBlockchain->id}");
+        }
+    }
+
+    /**
+     * Calculate distributions for mint based on wallet percentages
+     *
+     * @param \App\Models\EgiBlockchain $egiBlockchain
+     * @param array $paymentData
+     * @param \Illuminate\Database\Eloquent\Collection<Wallet> $wallets
+     * @return array
+     */
+    private function calculateMintDistributions(\App\Models\EgiBlockchain $egiBlockchain, array $paymentData, $wallets): array {
+        $distributions = [];
+        $totalAmount = $paymentData['paid_amount'];
+        $currency = $paymentData['paid_currency'] ?? 'EUR';
+
+        foreach ($wallets as $wallet) {
+            $percentage = $wallet->royalty_mint;
+            $amount = round(($totalAmount * $percentage) / 100, 2);
+
+            // Determine user type from wallet platform_role and user data
+            $userType = $this->determineUserType($wallet);
+
+            $distributions[] = [
+                'source_type' => 'mint', // NEW: Phase 2 source type
+                'reservation_id' => null, // NULL for mint-based distributions
+                'egi_blockchain_id' => $egiBlockchain->id, // NEW: Link to blockchain record
+                'blockchain_tx_id' => $egiBlockchain->algorand_tx_id, // NEW: Algorand TXID
+                'collection_id' => $egiBlockchain->egi->collection_id,
+                'user_id' => $wallet->user_id,
+                'user_type' => $userType,
+                'percentage' => $percentage,
+                'amount_eur' => $amount,
+                'exchange_rate' => 1.0, // TODO: Implement multi-currency exchange rates
+                'is_epp' => $this->isEppWallet($wallet),
+                'distribution_status' => DistributionStatusEnum::PENDING,
+                'metadata' => [
+                    'wallet_id' => $wallet->id,
+                    'wallet_address' => $wallet->wallet,
+                    'platform_role' => $wallet->platform_role,
+                    'calculation_timestamp' => now()->toISOString(),
+                    'payment_method' => $paymentData['payment_method'] ?? 'unknown',
+                    'paid_currency' => $currency,
+                    'buyer_wallet' => $egiBlockchain->buyer_wallet,
+                    'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                    'ownership_type' => $egiBlockchain->ownership_type,
+                ]
+            ];
+        }
+
+        return $distributions;
+    }
+
+    /**
+     * Log GDPR-compliant user activities for mint distributions
+     *
+     * @param \App\Models\EgiBlockchain $egiBlockchain
+     * @param \Illuminate\Database\Eloquent\Collection<PaymentDistribution> $distributions
+     */
+    private function logMintUserActivities(\App\Models\EgiBlockchain $egiBlockchain, $distributions): void {
+        foreach ($distributions as $distribution) {
+            try {
+                UserActivity::create([
+                    'user_id' => $distribution->user_id,
+                    'action' => 'mint_payment_distribution_created',
+                    'category' => GdprActivityCategory::BLOCKCHAIN_ACTIVITY,
+                    'context' => [
+                        'egi_blockchain_id' => $egiBlockchain->id,
+                        'egi_id' => $egiBlockchain->egi_id,
+                        'collection_id' => $distribution->collection_id,
+                        'distribution_id' => $distribution->id,
+                        'amount_eur' => $distribution->amount_eur,
+                        'percentage' => $distribution->percentage,
+                        'user_type' => $distribution->user_type->value,
+                        'is_epp' => $distribution->is_epp,
+                        'transaction_type' => 'mint_payment_distribution',
+                        'source_type' => 'mint'
+                    ],
+                    'metadata' => [
+                        'algorand_tx_id' => $egiBlockchain->algorand_tx_id,
+                        'buyer_wallet' => $egiBlockchain->buyer_wallet,
+                        'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                        'ownership_type' => $egiBlockchain->ownership_type,
+                        'paid_amount' => $egiBlockchain->paid_amount,
+                        'paid_currency' => $egiBlockchain->paid_currency,
+                        'distribution_status' => $distribution->distribution_status->value,
+                        'source' => 'PaymentDistributionService::recordMintDistribution'
+                    ],
+                    'privacy_level' => GdprActivityCategory::BLOCKCHAIN_ACTIVITY->privacyLevel(),
+                    'ip_address' => request()->ip() ?? '127.0.0.1',
+                    'user_agent' => request()->userAgent() ?? 'System/PaymentDistributionService',
+                    'expires_at' => now()->addYears(7), // GDPR retention for financial records
+                ]);
+            } catch (\Exception $e) {
+                // Log error but don't fail the whole process
+                $this->errorManager->handle('USER_ACTIVITY_LOGGING_FAILED', [
+                    'user_id' => $distribution->user_id,
+                    'distribution_id' => $distribution->id,
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'operation' => 'logMintUserActivities',
+                    'error' => $e->getMessage(),
+                    'timestamp' => now()->toIso8601String()
+                ], $e);
+            }
+        }
+    }
+
+    /**
+     * Get distributions for a specific mint (Phase 2)
+     *
+     * @param \App\Models\Egi $egi
+     * @return \Illuminate\Database\Eloquent\Collection<PaymentDistribution>
+     */
+    public function getMintDistributions(\App\Models\Egi $egi) {
+        return PaymentDistribution::where('source_type', 'mint')
+            ->whereHas('egiBlockchain', function ($query) use ($egi) {
+                $query->where('egi_id', $egi->id);
+            })
+            ->with(['user', 'egiBlockchain'])
+            ->get();
+    }
+
+    /**
+     * Compare DB distributions vs Blockchain records (Phase 2 utility)
+     * Verifies consistency between database and blockchain
+     *
+     * @param \App\Models\Egi $egi
+     * @return array
+     */
+    public function compareDbVsBlockchain(\App\Models\Egi $egi): array {
+        // Get mint-based distributions from DB
+        $dbDistributions = $this->getMintDistributions($egi);
+
+        // Get blockchain record
+        $blockchainRecord = $egi->egiBlockchain()
+            ->where('status', 'minted')
+            ->first();
+
+        if (!$blockchainRecord) {
+            return [
+                'status' => 'no_blockchain_record',
+                'message' => 'No minted blockchain record found for this EGI',
+                'db_distributions_count' => $dbDistributions->count(),
+                'blockchain_tx_id' => null,
+            ];
+        }
+
+        // Compare totals
+        $dbTotalAmount = $dbDistributions->sum('amount_eur');
+        $blockchainAmount = $blockchainRecord->paid_amount;
+
+        $isConsistent = abs($dbTotalAmount - $blockchainAmount) < 0.01; // 1 cent tolerance
+
+        return [
+            'status' => $isConsistent ? 'consistent' : 'inconsistent',
+            'db_total_amount' => round($dbTotalAmount, 2),
+            'blockchain_amount' => round($blockchainAmount, 2),
+            'difference' => round($dbTotalAmount - $blockchainAmount, 2),
+            'db_distributions_count' => $dbDistributions->count(),
+            'blockchain_tx_id' => $blockchainRecord->algorand_tx_id,
+            'distributions' => $dbDistributions->map(function ($dist) {
+                return [
+                    'user_id' => $dist->user_id,
+                    'user_type' => $dist->user_type->value,
+                    'amount_eur' => $dist->amount_eur,
+                    'percentage' => $dist->percentage,
+                    'is_epp' => $dist->is_epp,
+                ];
+            }),
+        ];
+    }
 }

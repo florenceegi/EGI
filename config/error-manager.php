@@ -5358,5 +5358,37 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        // AREA 2.2.1 - Payment Distribution Service (Mint-based) Error Codes
+        'MINT_DISTRIBUTION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_distribution_error',
+            'user_message_key' => 'error-manager::errors_2.user.mint_distribution_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+        'MINT_NOT_COMPLETED' => [
+            'type' => 'warning',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_not_completed',
+            'user_message_key' => 'error-manager::errors_2.user.mint_not_completed',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'INVALID_PAYMENT_AMOUNT' => [
+            'type' => 'warning',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.invalid_payment_amount',
+            'user_message_key' => 'error-manager::errors_2.user.invalid_payment_amount',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];

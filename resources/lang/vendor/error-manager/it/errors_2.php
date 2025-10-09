@@ -40,6 +40,11 @@ return [
         'mint_checkout_error' => 'Errore durante caricamento checkout mint. User: :user_id, EGI: :egi_id, Error: :error',
         'mint_process_error' => 'Errore processo mint blockchain. User: :user_id, EGI: :egi_id, Reservation: :reservation_id, Payment: :payment_method, Error: :error',
         'real_blockchain_mint_failed' => 'CRITICAL: Real blockchain mint failed. EgiBlockchain: :egi_blockchain_id, Attempt: :attempt, Error: :error',
+
+        // AREA 2.2.1 - Payment Distribution Service (Mint-based) Errors (Dev)
+        'mint_distribution_error' => 'Errore durante creazione distribuzioni pagamento mint. EgiBlockchain: :egi_blockchain_id, Buyer: :buyer_user_id, Error: :error',
+        'mint_not_completed' => 'Tentativo di creare distribuzione per mint non completato. EgiBlockchain: :egi_blockchain_id, Status: :current_status',
+        'invalid_payment_amount' => 'Importo pagamento non valido per mint distribution. EgiBlockchain: :egi_blockchain_id, Amount: :paid_amount',
     ],
 
     'user' => [
@@ -74,6 +79,11 @@ return [
         'mint_checkout_error' => 'Impossibile caricare la pagina di acquisto. Riprova tra poco.',
         'mint_process_error' => 'Errore durante il processo di acquisto. Il pagamento non è stato effettuato. Riprova o contatta l\'assistenza.',
         'real_blockchain_mint_failed' => 'Il mint sulla blockchain è fallito. Il tuo pagamento è al sicuro, contatteremo l\'assistenza per risolvere.',
+
+        // AREA 2.2.1 - Payment Distribution Service (Mint-based) Errors (User)
+        'mint_distribution_error' => 'Errore durante la distribuzione del pagamento. Contatta l\'assistenza.',
+        'mint_not_completed' => 'Il mint deve essere completato prima della distribuzione. Riprova dopo il completamento.',
+        'invalid_payment_amount' => 'Importo del pagamento non valido. Contatta l\'assistenza.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
