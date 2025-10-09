@@ -779,7 +779,7 @@ class Egi extends Model {
 
     /**
      * Check if this EGI can be minted directly.
-     * 
+     *
      * Business rules:
      * - EGI must be published (is_published = true OR status = 'published')
      * - EGI must NOT already be minted (no blockchain record with status 'minted')
@@ -793,7 +793,7 @@ class Egi extends Model {
     public function canBeMinted(): bool {
         // Check if EGI is published
         $isPublished = $this->is_published || $this->status === 'published';
-        
+
         if (!$isPublished) {
             return false;
         }
@@ -813,7 +813,7 @@ class Egi extends Model {
 
     /**
      * Check if this EGI can be reserved.
-     * 
+     *
      * Business rules:
      * - EGI must be published (is_published = true OR status = 'published')
      * - EGI must NOT already be minted (reservation system only for non-minted)
@@ -832,7 +832,7 @@ class Egi extends Model {
 
     /**
      * Check if this EGI has any pending/active reservations.
-     * 
+     *
      * A pending reservation is one that is:
      * - status = 'active'
      * - is_current = true
@@ -853,7 +853,7 @@ class Egi extends Model {
 
     /**
      * Check if a specific user has an active reservation for this EGI.
-     * 
+     *
      * User has reservation if:
      * - User has a reservation record
      * - status = 'active'
@@ -877,7 +877,7 @@ class Egi extends Model {
 
     /**
      * Get the highest/winning reservation for this EGI.
-     * 
+     *
      * Returns the reservation with sub_status = 'highest' if exists.
      *
      * @return Reservation|null
@@ -895,7 +895,7 @@ class Egi extends Model {
 
     /**
      * Get user's active reservation for this EGI.
-     * 
+     *
      * @param User $user The user whose reservation to retrieve
      * @return Reservation|null
      * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
@@ -976,7 +976,7 @@ class Egi extends Model {
 
     /**
      * Scope to get EGIs available for direct minting.
-     * 
+     *
      * Filters EGIs that:
      * - Are published (is_published = true OR status = 'published')
      * - Are NOT already minted
@@ -991,17 +991,17 @@ class Egi extends Model {
     public function scopeAvailableForMint($query) {
         return $query->where(function ($q) {
             $q->where('is_published', true)
-              ->orWhere('status', 'published');
+                ->orWhere('status', 'published');
         })
-        ->where('status', '!=', 'draft')
-        ->whereDoesntHave('blockchain', function ($blockchainQuery) {
-            $blockchainQuery->where('mint_status', 'minted');
-        });
+            ->where('status', '!=', 'draft')
+            ->whereDoesntHave('blockchain', function ($blockchainQuery) {
+                $blockchainQuery->where('mint_status', 'minted');
+            });
     }
 
     /**
      * Scope to get EGIs available for reservation.
-     * 
+     *
      * Filters EGIs that:
      * - Are published (is_published = true OR status = 'published')
      * - Are NOT already minted
@@ -1023,7 +1023,7 @@ class Egi extends Model {
 
     /**
      * Scope to get EGIs with active reservations.
-     * 
+     *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
@@ -1033,14 +1033,14 @@ class Egi extends Model {
     public function scopeWithActiveReservations($query) {
         return $query->whereHas('reservations', function ($reservationQuery) {
             $reservationQuery->where('status', 'active')
-                            ->where('is_current', true)
-                            ->whereNull('superseded_by_id');
+                ->where('is_current', true)
+                ->whereNull('superseded_by_id');
         });
     }
 
     /**
      * Scope to get EGIs reserved by a specific user.
-     * 
+     *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param User $user The user to filter by
      * @return \Illuminate\Database\Eloquent\Builder
@@ -1051,9 +1051,9 @@ class Egi extends Model {
     public function scopeReservedByUser($query, User $user) {
         return $query->whereHas('reservations', function ($reservationQuery) use ($user) {
             $reservationQuery->where('user_id', $user->id)
-                            ->where('status', 'active')
-                            ->where('is_current', true)
-                            ->whereNull('superseded_by_id');
+                ->where('status', 'active')
+                ->where('is_current', true)
+                ->whereNull('superseded_by_id');
         });
     }
 

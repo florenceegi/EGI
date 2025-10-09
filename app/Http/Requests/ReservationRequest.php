@@ -25,10 +25,10 @@ use Illuminate\Support\Facades\Auth;
  * - Payment captured only on mint completion
  */
 class ReservationRequest extends FormRequest {
-    
+
     /**
      * Determine if the user is authorized to make this request.
-     * 
+     *
      * Authorization checks:
      * - User must be authenticated
      * - User must have 'allow-reservation-operations' permission
@@ -48,13 +48,13 @@ class ReservationRequest extends FormRequest {
 
         // Get EGI from route parameter
         $egiId = $this->route('id') ?? $this->input('egi_id');
-        
+
         if (!$egiId) {
             return false;
         }
 
         $egi = Egi::find($egiId);
-        
+
         if (!$egi) {
             return false;
         }
@@ -65,9 +65,9 @@ class ReservationRequest extends FormRequest {
         }
 
         // Check permission (can use blockchain permission or dedicated reservation permission)
-        $hasPermission = $user->can('allow-reservation-operations') 
-                      || $user->can('allow-blockchain-operations');
-        
+        $hasPermission = $user->can('allow-reservation-operations')
+            || $user->can('allow-blockchain-operations');
+
         if (!$hasPermission) {
             return false;
         }
@@ -217,7 +217,7 @@ class ReservationRequest extends FormRequest {
         } elseif ($egi) {
             $availabilityService = app(EgiAvailabilityService::class);
             $availability = $availabilityService->checkAvailability($egi, $user);
-            
+
             if (!$availability['can_reserve']) {
                 $reason = $availability['reserve_reason'] ?? 'egi_not_reservable';
             }
@@ -262,14 +262,14 @@ class ReservationRequest extends FormRequest {
             $egiId = $this->input('egi_id');
 
             // Additional cross-field validations
-            
+
             // Verify GDPR consent is actually stored
             if ($user && $this->input('consent_reservation')) {
                 $consentService = app(\App\Services\Gdpr\ConsentService::class);
-                
+
                 $hasConsent = $consentService->hasConsent($user, 'allow-reservation-operations')
-                           || $consentService->hasConsent($user, 'allow-blockchain-operations');
-                
+                    || $consentService->hasConsent($user, 'allow-blockchain-operations');
+
                 if (!$hasConsent) {
                     $validator->errors()->add(
                         'consent_reservation',
@@ -281,7 +281,7 @@ class ReservationRequest extends FormRequest {
             // Verify user doesn't have existing reservation (prevent duplicates)
             if ($user && $egiId) {
                 $egi = Egi::find($egiId);
-                
+
                 if ($egi && $egi->isReservedByUser($user)) {
                     $validator->errors()->add(
                         'egi_id',
@@ -293,7 +293,7 @@ class ReservationRequest extends FormRequest {
             // Verify EGI is still available (prevent race conditions)
             if ($egiId) {
                 $egi = Egi::find($egiId);
-                
+
                 if ($egi && $egi->isMinted()) {
                     $validator->errors()->add(
                         'egi_id',
@@ -305,7 +305,7 @@ class ReservationRequest extends FormRequest {
             // Rate limiting check (prevent spam)
             $rateLimitKey = 'reservation_attempt_' . ($user?->id ?? 'guest');
             $attempts = cache()->get($rateLimitKey, 0);
-            
+
             if ($attempts >= 10) {
                 $validator->errors()->add(
                     'rate_limit',
@@ -322,9 +322,9 @@ class ReservationRequest extends FormRequest {
                     ->where('status', 'active')
                     ->where('sub_status', 'pending')
                     ->count();
-                
+
                 $maxReservations = config('egi.max_active_reservations', 5);
-                
+
                 if ($activeReservationsCount >= $maxReservations) {
                     $validator->errors()->add(
                         'user_limit',
@@ -337,7 +337,7 @@ class ReservationRequest extends FormRequest {
 
     /**
      * Get validated data with defaults.
-     * 
+     *
      * Adds default values for optional fields.
      *
      * @return array

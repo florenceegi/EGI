@@ -25,10 +25,10 @@ use Illuminate\Support\Facades\Auth;
  * - Treasury wallet mint service
  */
 class MintDirectRequest extends FormRequest {
-    
+
     /**
      * Determine if the user is authorized to make this request.
-     * 
+     *
      * Authorization checks:
      * - User must be authenticated
      * - User must have 'allow-blockchain-operations' permission
@@ -47,13 +47,13 @@ class MintDirectRequest extends FormRequest {
 
         // Get EGI from route parameter
         $egiId = $this->route('id') ?? $this->input('egi_id');
-        
+
         if (!$egiId) {
             return false;
         }
 
         $egi = Egi::find($egiId);
-        
+
         if (!$egi) {
             return false;
         }
@@ -202,7 +202,7 @@ class MintDirectRequest extends FormRequest {
         } elseif ($egi) {
             $availabilityService = app(EgiAvailabilityService::class);
             $availability = $availabilityService->checkAvailability($egi, $user);
-            
+
             if (!$availability['can_mint']) {
                 $reason = $availability['mint_reason'] ?? 'egi_not_mintable';
             }
@@ -246,11 +246,11 @@ class MintDirectRequest extends FormRequest {
             $egiId = $this->input('egi_id');
 
             // Additional cross-field validations
-            
+
             // Verify GDPR consent is actually stored (not just accepted in form)
             if ($user && $this->input('consent_blockchain')) {
                 $consentService = app(\App\Services\Gdpr\ConsentService::class);
-                
+
                 if (!$consentService->hasConsent($user, 'allow-blockchain-operations')) {
                     $validator->errors()->add(
                         'consent_blockchain',
@@ -262,7 +262,7 @@ class MintDirectRequest extends FormRequest {
             // Verify EGI is still available (prevent race conditions)
             if ($egiId) {
                 $egi = Egi::find($egiId);
-                
+
                 if ($egi && $egi->isMinted()) {
                     $validator->errors()->add(
                         'egi_id',
@@ -274,7 +274,7 @@ class MintDirectRequest extends FormRequest {
             // Rate limiting check (prevent spam)
             $rateLimitKey = 'mint_direct_attempt_' . ($user?->id ?? 'guest');
             $attempts = cache()->get($rateLimitKey, 0);
-            
+
             if ($attempts >= 5) {
                 $validator->errors()->add(
                     'rate_limit',

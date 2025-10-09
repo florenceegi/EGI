@@ -29,14 +29,14 @@ use App\Enums\Gdpr\GdprActivityCategory;
  * - EGI prenotato da user → solo MINT disponibile
  * - EGI prenotato da altri → MINT disponibile (se permesso)
  * - Creator non può prenotare/mintare il proprio EGI
- * 
+ *
  * MiCA-SAFE Compliance:
  * - Solo mint service (no crypto custody per users)
  * - FIAT payments only
  * - Treasury wallet platform management
  */
 class EgiAvailabilityService {
-    
+
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -65,13 +65,13 @@ class EgiAvailabilityService {
 
     /**
      * Check comprehensive availability of an EGI for a specific user.
-     * 
+     *
      * Returns detailed availability status for both mint and reservation actions.
-     * 
+     *
      * @param Egi $egi The EGI to check
      * @param User|null $user The user checking availability (null = guest)
      * @return array Availability status array
-     * 
+     *
      * @example Return structure:
      * [
      *     'can_mint' => bool,
@@ -116,7 +116,7 @@ class EgiAvailabilityService {
             if (!$user) {
                 $result['mint_reason'] = 'authentication_required';
                 $result['reserve_reason'] = 'authentication_required';
-                
+
                 $this->logger->info('EGI_AVAILABILITY_CHECK_GUEST', [
                     'egi_id' => $egi->id,
                     'result' => 'guest_no_actions'
@@ -127,11 +127,11 @@ class EgiAvailabilityService {
 
             // Check if user is the creator
             $result['is_creator'] = $egi->user_id === $user->id;
-            
+
             if ($result['is_creator']) {
                 $result['mint_reason'] = 'own_egi_cannot_mint';
                 $result['reserve_reason'] = 'own_egi_cannot_reserve';
-                
+
                 $this->logger->info('EGI_AVAILABILITY_CHECK_CREATOR', [
                     'egi_id' => $egi->id,
                     'user_id' => $user->id,
@@ -178,7 +178,6 @@ class EgiAvailabilityService {
             ]);
 
             return $result;
-
         } catch (\Exception $e) {
             // UEM: Error handling
             $this->errorManager->handle('EGI_AVAILABILITY_CHECK_FAILED', [
@@ -206,7 +205,7 @@ class EgiAvailabilityService {
 
     /**
      * Get available actions for an EGI and user.
-     * 
+     *
      * Simplified method that returns only the list of available actions.
      *
      * @param Egi $egi The EGI to check
@@ -220,7 +219,7 @@ class EgiAvailabilityService {
 
     /**
      * Check if user can mint this EGI.
-     * 
+     *
      * @param Egi $egi The EGI to check
      * @param User $user The user
      * @param array $context Context data from main availability check
@@ -254,7 +253,7 @@ class EgiAvailabilityService {
 
     /**
      * Check if user can reserve this EGI.
-     * 
+     *
      * @param Egi $egi The EGI to check
      * @param User $user The user
      * @param array $context Context data from main availability check
@@ -288,7 +287,7 @@ class EgiAvailabilityService {
 
     /**
      * Determine the recommended action for the user.
-     * 
+     *
      * Priority logic:
      * - If user has reservation → recommend MINT
      * - If both available → recommend RESERVE (lower commitment)
@@ -325,7 +324,7 @@ class EgiAvailabilityService {
 
     /**
      * Log availability check for GDPR audit trail.
-     * 
+     *
      * Called when user views EGI detail page or checks availability.
      *
      * @param Egi $egi The EGI checked
@@ -360,7 +359,7 @@ class EgiAvailabilityService {
 
     /**
      * Batch check availability for multiple EGIs.
-     * 
+     *
      * Optimized method for checking multiple EGIs at once (e.g., for lists/grids).
      *
      * @param \Illuminate\Support\Collection $egis Collection of Egi models
