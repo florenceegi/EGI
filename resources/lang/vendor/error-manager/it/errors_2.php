@@ -57,6 +57,12 @@ return [
         // EgiMintingService Errors (Dev) - P1 Compliance Fix
         'egi_transfer_failed' => 'Trasferimento EGI ownership fallito. EGI: :egi_id, EgiBlockchain: :egi_blockchain_id, BuyerWallet: :buyer_wallet, BuyerUser: :buyer_user_id, Error: :error',
         'egi_minting_failed' => 'Mint EGI su blockchain fallito. EGI: :egi_id, BlockchainRecord: :blockchain_record_id, Error: :error',
+
+        // AREA 2.3.1 - Analytics Errors (Dev)
+        'analytics_distribution_summary_error' => 'Errore calcolo summary distribuzioni. Collection: :collection_id, Filters: :filters, Error: :error',
+        'analytics_revenue_breakdown_error' => 'Errore calcolo breakdown revenue. Collection: :collection_id, StartDate: :start_date, EndDate: :end_date, Error: :error',
+        'analytics_wallet_performance_error' => 'Errore calcolo performance wallet. Collection: :collection_id, Filters: :filters, Error: :error',
+        'analytics_mint_vs_reservation_error' => 'Errore calcolo ratio mint vs reservation. StartDate: :start_date, EndDate: :end_date, Error: :error',
     ],
 
     'user' => [
@@ -108,6 +114,12 @@ return [
         // EgiMintingService Errors (User) - P1 Compliance Fix
         'egi_transfer_failed' => 'Errore durante il trasferimento dell\'EGI al tuo wallet. Contatta l\'assistenza.',
         'egi_minting_failed' => 'Errore durante il mint dell\'EGI sulla blockchain. Il pagamento non è stato effettuato. Riprova o contatta l\'assistenza.',
+
+        // AREA 2.3.1 - Analytics Errors (User)
+        'analytics_distribution_summary_error' => 'Impossibile caricare il riepilogo delle distribuzioni. Riprova tra poco.',
+        'analytics_revenue_breakdown_error' => 'Impossibile calcolare il breakdown dei ricavi. Riprova tra poco.',
+        'analytics_wallet_performance_error' => 'Impossibile caricare le performance dei wallet. Riprova tra poco.',
+        'analytics_mint_vs_reservation_error' => 'Impossibile calcolare il ratio mint vs reservation. Riprova tra poco.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

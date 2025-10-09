@@ -5456,5 +5456,49 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        // ====================================================
+        // AREA 2.3.1 - Analytics Errors
+        // ====================================================
+        'ANALYTICS_DISTRIBUTION_SUMMARY_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.analytics_distribution_summary_error',
+            'user_message_key' => 'error-manager::errors_2.user.analytics_distribution_summary_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'ANALYTICS_REVENUE_BREAKDOWN_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.analytics_revenue_breakdown_error',
+            'user_message_key' => 'error-manager::errors_2.user.analytics_revenue_breakdown_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'ANALYTICS_WALLET_PERFORMANCE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.analytics_wallet_performance_error',
+            'user_message_key' => 'error-manager::errors_2.user.analytics_wallet_performance_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'ANALYTICS_MINT_VS_RESERVATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.analytics_mint_vs_reservation_error',
+            'user_message_key' => 'error-manager::errors_2.user.analytics_mint_vs_reservation_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];
