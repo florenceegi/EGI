@@ -15,6 +15,7 @@
         "laravel/vapor-core": "^2.39",
         "league/flysystem-aws-s3-v3": "^3.29",
         "livewire/livewire": "^3.0",
+        "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-medialibrary": "^11.0",
         "spatie/laravel-permission": "^6.10",
         "tecnickcom/tcpdf": "^6.9",

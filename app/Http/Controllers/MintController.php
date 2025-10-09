@@ -246,7 +246,7 @@ class MintController extends Controller {
                     'egi_title' => $egi->title,
                     'price' => $egi->price
                 ],
-                GdprActivityCategory::EGI_INTERACTION
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
             );
 
             $this->logger->info('DIRECT_MINT_CHECKOUT_VIEWED', [
@@ -255,7 +255,10 @@ class MintController extends Controller {
                 'availability' => $availability
             ]);
 
-            return view('mint.direct-checkout', compact('egi', 'availability'));
+            // Direct mint = no reservation
+            $reservation = null;
+
+            return view('mint.checkout', compact('egi', 'availability', 'reservation'));
         } catch (\Exception $e) {
             $this->errorManager->handle('DIRECT_MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),

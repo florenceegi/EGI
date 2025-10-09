@@ -55,7 +55,8 @@ class MintEgiJob implements ShouldQueue {
     public function handle(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
-        EgiMintingService $mintingService
+        EgiMintingService $mintingService,
+        \App\Services\CertificateGeneratorService $certificateService
     ): void {
         try {
             // 1. Load blockchain record
@@ -71,8 +72,7 @@ class MintEgiJob implements ShouldQueue {
 
             // 2. Update status to processing
             $egiBlockchain->update([
-                'mint_status' => 'minting',
-                'minting_started_at' => now()
+                'mint_status' => 'minting'
             ]);
 
             // 3. REAL BLOCKCHAIN MINT (not mock!)
@@ -100,14 +100,36 @@ class MintEgiJob implements ShouldQueue {
                 'asa_id' => $result->asa_id,
                 'tx_id' => $result->blockchain_tx_id
             ]);
+
+            // 5. Generate blockchain certificate (NUOVO)
+            try {
+                $certificatePath = $certificateService->generateBlockchainCertificate($egiBlockchain->fresh());
+
+                $logger->info('Blockchain certificate generated', [
+                    'egi_blockchain_id' => $this->egiBlockchainId,
+                    'certificate_path' => $certificatePath,
+                    'certificate_uuid' => $egiBlockchain->certificate_uuid
+                ]);
+            } catch (\Exception $certException) {
+                // Certificate generation failure is NOT blocking - mint already completed
+                $logger->warning('Certificate generation failed (mint completed successfully)', [
+                    'egi_blockchain_id' => $this->egiBlockchainId,
+                    'error' => $certException->getMessage()
+                ]);
+
+                $errorManager->handle('CERTIFICATE_GENERATION_FAILED_POST_MINT', [
+                    'egi_blockchain_id' => $this->egiBlockchainId,
+                    'asa_id' => $result->asa_id,
+                    'error' => $certException->getMessage()
+                ], $certException);
+            }
         } catch (\Exception $e) {
             // Update error status
             $egiBlockchain = EgiBlockchain::find($this->egiBlockchainId);
             if ($egiBlockchain) {
                 $egiBlockchain->update([
                     'mint_status' => 'failed',
-                    'mint_error' => $e->getMessage(),
-                    'failed_at' => now()
+                    'mint_error' => $e->getMessage()
                 ]);
             }
 
@@ -130,8 +152,7 @@ class MintEgiJob implements ShouldQueue {
         if ($egiBlockchain) {
             $egiBlockchain->update([
                 'mint_status' => 'failed',
-                'mint_error' => 'Job failed after ' . $this->tries . ' attempts: ' . $exception->getMessage(),
-                'failed_at' => now()
+                'mint_error' => 'Job failed after ' . $this->tries . ' attempts: ' . $exception->getMessage()
             ]);
         }
     }

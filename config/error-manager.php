@@ -2217,6 +2217,28 @@ return [
             'msg_to' => 'json',
         ],
 
+        'CERTIFICATE_GENERATION_FAILED_POST_MINT' => [
+            'type' => 'warning',
+            'blocking' => 'not', // Mint already completed successfully
+            'dev_message_key'  => 'error-manager::errors.dev.certificate_generation_failed_post_mint',
+            'user_message_key' => 'error-manager::errors.user.certificate_generation_failed_post_mint',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'log', // Non blocca l'utente, solo log interno
+        ],
+
+        'BLOCKCHAIN_CERTIFICATE_GENERATION_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key'  => 'error-manager::errors.dev.blockchain_certificate_generation_failed',
+            'user_message_key' => 'error-manager::errors.user.blockchain_certificate_generation_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'json',
+        ],
+
         'CERTIFICATE_ANCHOR_FAILED' => [
             'type' => 'warning',
             'blocking' => 'not', // il certificato resta valido ma in stato "pending_anchor"

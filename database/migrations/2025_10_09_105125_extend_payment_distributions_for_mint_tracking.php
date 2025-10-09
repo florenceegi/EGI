@@ -17,13 +17,11 @@ use Illuminate\Support\Facades\Schema;
  * - Add indexes for performance on new fields
  * - Maintain backward compatibility with existing reservation-based distributions
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('payment_distributions', function (Blueprint $table) {
             // ===== SOURCE TRACKING =====
             $table->enum('source_type', ['reservation', 'mint', 'transfer'])
@@ -57,8 +55,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('payment_distributions', function (Blueprint $table) {
             // Drop indexes first
             $table->dropIndex('idx_payment_dist_source_type');

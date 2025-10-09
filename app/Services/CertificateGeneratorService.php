@@ -21,8 +21,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @version 1.0.0
  * @date 2025-05-16
  */
-class CertificateGeneratorService
-{
+class CertificateGeneratorService {
     /**
      * @var UltraLogManager
      */
@@ -33,8 +32,7 @@ class CertificateGeneratorService
      *
      * @param UltraLogManager $logger
      */
-    public function __construct(UltraLogManager $logger)
-    {
+    public function __construct(UltraLogManager $logger) {
         $this->logger = $logger;
     }
 
@@ -48,8 +46,7 @@ class CertificateGeneratorService
      *
      * @privacy-safe Creates certificates with minimal PII
      */
-    public function generateCertificate(Reservation $reservation, array $additionalData = []): EgiReservationCertificate
-    {
+    public function generateCertificate(Reservation $reservation, array $additionalData = []): EgiReservationCertificate {
         try {
             // Create the certificate record
             $certificate = $reservation->createCertificate($additionalData);
@@ -64,7 +61,6 @@ class CertificateGeneratorService
             ]);
 
             return $certificate;
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to generate certificate', [
                 'error' => $e->getMessage(),
@@ -85,8 +81,7 @@ class CertificateGeneratorService
      * @param EgiReservationCertificate $certificate The certificate
      * @return bool Whether PDF generation was successful
      */
-    public function generatePdf(EgiReservationCertificate $certificate): bool
-    {
+    public function generatePdf(EgiReservationCertificate $certificate): bool {
         try {
             // Create PDF filename
             $filename = 'certificate_' . $certificate->certificate_uuid . '.pdf';
@@ -109,7 +104,6 @@ class CertificateGeneratorService
             ]);
 
             return true;
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to generate PDF for certificate', [
                 'error' => $e->getMessage(),
@@ -127,8 +121,7 @@ class CertificateGeneratorService
      * @param EgiReservationCertificate $certificate The certificate
      * @return string The PDF content
      */
-    private function createPdfContent(EgiReservationCertificate $certificate): string
-    {
+    private function createPdfContent(EgiReservationCertificate $certificate): string {
         // For MVP, we'll use a simple approach with TCPDF
         // In a real implementation, you might want to use a template with more styling
         // This is a placeholder for the actual PDF generation logic
@@ -189,8 +182,7 @@ class CertificateGeneratorService
      * @param EgiReservationCertificate $certificate The certificate
      * @return string HTML content
      */
-    private function generateHtmlForCertificate(EgiReservationCertificate $certificate): string
-    {
+    private function generateHtmlForCertificate(EgiReservationCertificate $certificate): string {
         // Load certificate details
         $egi = $certificate->egi;
         $reservation = $certificate->reservation;
@@ -249,7 +241,7 @@ class CertificateGeneratorService
 
             <div class="section">
                 <span class="badge badge-' . $certificate->reservation_type . '">' .
-                    ucfirst($certificate->reservation_type) . ' Reservation
+            ucfirst($certificate->reservation_type) . ' Reservation
                 </span>
             </div>
 
@@ -297,5 +289,113 @@ class CertificateGeneratorService
         </div>';
 
         return $html;
+    }
+
+    /**
+     * Generate blockchain certificate for minted EGI
+     *
+     * @param \App\Models\EgiBlockchain $egiBlockchain Minted EGI blockchain record
+     * @return string Certificate file path
+     * @throws \Exception Certificate generation failed
+     *
+     * @privacy-safe Minimal PII in certificate, GDPR compliant
+     */
+    public function generateBlockchainCertificate(\App\Models\EgiBlockchain $egiBlockchain): string {
+        try {
+            // Validate blockchain record has required data
+            if (!$egiBlockchain->asa_id || !$egiBlockchain->blockchain_tx_id) {
+                throw new \Exception('Blockchain record missing required data (asa_id or blockchain_tx_id)');
+            }
+
+            // Generate certificate path
+            $certificateFileName = "egi_blockchain_certificate_{$egiBlockchain->certificate_uuid}.pdf";
+            $certificatePath = "certificates/blockchain/{$certificateFileName}";
+
+            // Get buyer information
+            $buyer = $egiBlockchain->buyer;
+            $buyerName = $buyer ? $buyer->name : 'Anonymous Buyer';
+
+            // Prepare certificate data
+            $certificateData = [
+                'certificate_uuid' => $egiBlockchain->certificate_uuid,
+                'egi_id' => $egiBlockchain->egi_id,
+                'egi_title' => $egiBlockchain->egi->title ?? 'Unknown EGI',
+                'buyer_name' => $buyerName,
+                'buyer_wallet' => $egiBlockchain->buyer_wallet ?? 'Treasury Custody',
+                'asa_id' => $egiBlockchain->asa_id,
+                'blockchain_tx_id' => $egiBlockchain->blockchain_tx_id,
+                'purchase_amount' => $egiBlockchain->paid_amount,
+                'purchase_currency' => $egiBlockchain->paid_currency ?? 'EUR',
+                'minted_at' => $egiBlockchain->minted_at ? $egiBlockchain->minted_at->toDateTimeString() : now()->toDateTimeString(),
+                'ownership_type' => $egiBlockchain->ownership_type,
+                'verification_url' => url("/verify/{$egiBlockchain->certificate_uuid}")
+            ];
+
+            // Generate PDF content
+            $pdfContent = $this->generateBlockchainCertificatePdf($certificateData);
+
+            // Store certificate file
+            Storage::put($certificatePath, $pdfContent);
+
+            // Update blockchain record with certificate path and verification URL
+            $egiBlockchain->update([
+                'certificate_path' => $certificatePath,
+                'verification_url' => url("/verify/{$egiBlockchain->certificate_uuid}")
+            ]);
+
+            $this->logger->info('Blockchain certificate generated successfully', [
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'egi_id' => $egiBlockchain->egi_id,
+                'certificate_path' => $certificatePath,
+                'certificate_uuid' => $egiBlockchain->certificate_uuid
+            ]);
+
+            return $certificatePath;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to generate blockchain certificate', [
+                'error' => $e->getMessage(),
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            throw UltraError::handle('BLOCKCHAIN_CERTIFICATE_GENERATION_FAILED', [
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'error' => $e->getMessage()
+            ], $e);
+        }
+    }
+
+    /**
+     * Generate blockchain certificate PDF content
+     *
+     * @param array $certificateData Certificate data array
+     * @return string PDF content as string
+     */
+    private function generateBlockchainCertificatePdf(array $certificateData): string {
+        // For MVP: Simple text-based certificate
+        // TODO Phase 2: Use TCPDF for professional PDF with QR code
+
+        $content = "========================================\n";
+        $content .= "  FLORENCE EGI BLOCKCHAIN CERTIFICATE\n";
+        $content .= "========================================\n\n";
+        $content .= "Certificate UUID: {$certificateData['certificate_uuid']}\n";
+        $content .= "EGI Title: {$certificateData['egi_title']}\n";
+        $content .= "EGI ID: {$certificateData['egi_id']}\n\n";
+        $content .= "Owner: {$certificateData['buyer_name']}\n";
+        $content .= "Wallet Address: {$certificateData['buyer_wallet']}\n";
+        $content .= "Ownership Type: {$certificateData['ownership_type']}\n\n";
+        $content .= "BLOCKCHAIN DATA:\n";
+        $content .= "Asset ID (ASA): {$certificateData['asa_id']}\n";
+        $content .= "Transaction ID: {$certificateData['blockchain_tx_id']}\n";
+        $content .= "Minted At: {$certificateData['minted_at']}\n\n";
+        $content .= "PAYMENT INFO:\n";
+        $content .= "Amount: {$certificateData['purchase_amount']} {$certificateData['purchase_currency']}\n\n";
+        $content .= "VERIFICATION:\n";
+        $content .= "Verification URL: {$certificateData['verification_url']}\n\n";
+        $content .= "This certificate proves blockchain ownership of the EGI asset.\n";
+        $content .= "Generated by FlorenceEGI Platform - " . now()->toDateTimeString() . "\n";
+        $content .= "========================================\n";
+
+        return $content;
     }
 }

@@ -54,9 +54,9 @@ return [
         'creator' => 'creator',
         'patron' => 'patron',
         'collector' => 'collector',
-        'enterprise' => 'enterprise',
+        'company' => 'company',
         'trader_pro' => 'trader_pro',
-        'epp_entity' => 'epp_entity',
+        'epp' => 'epp',
         'pa_entity' => 'pa_entity',
     ],
 

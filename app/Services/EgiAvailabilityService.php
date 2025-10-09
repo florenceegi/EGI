@@ -388,7 +388,7 @@ class EgiAvailabilityService {
                     'available_actions' => $result['available_actions'],
                     'recommended_action' => $result['recommended_action']
                 ],
-                GdprActivityCategory::EGI_INTERACTION
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
             );
         } catch (\Exception $e) {
             // Silent fail for audit logging (non-blocking)

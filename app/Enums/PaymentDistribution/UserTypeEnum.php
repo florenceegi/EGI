@@ -23,8 +23,8 @@ enum UserTypeEnum: string {
     case TRADER_PRO = 'trader-pro';
     case VIP = 'vip';
     case NATAN = 'natan';
-
-        // Aggiunti da UserRoleForInvite.php
+    
+    // Aggiunti da UserRoleForInvite.php
     case PATRON = 'patron';
     case ADMIN = 'admin';
     case EDITOR = 'editor';

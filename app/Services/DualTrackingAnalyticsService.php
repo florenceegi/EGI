@@ -19,8 +19,7 @@ use Illuminate\Support\Facades\Cache;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
-class DualTrackingAnalyticsService
-{
+class DualTrackingAnalyticsService {
     /**
      * Dependencies
      */
@@ -40,18 +39,17 @@ class DualTrackingAnalyticsService
 
     /**
      * Ottiene il riepilogo delle distribuzioni aggregate per source_type
-     * 
+     *
      * Analizza tutti i payment_distributions di una collezione e raggruppa per:
      * - source_type (reservation, mint, transfer)
      * - user_type (artist, creator, owner, etc.)
      * - is_epp (true/false)
-     * 
+     *
      * @param Collection $collection Collezione da analizzare
      * @param array $filters Filtri opzionali ['start_date' => ..., 'end_date' => ..., 'source_type' => ...]
      * @return array Summary con counts e amounts per categoria
      */
-    public function getDistributionSummary(Collection $collection, array $filters = []): array
-    {
+    public function getDistributionSummary(Collection $collection, array $filters = []): array {
         try {
             // ULM: Log start
             $this->logger->info('DualTrackingAnalyticsService: getDistributionSummary started', [
@@ -89,10 +87,10 @@ class DualTrackingAnalyticsService
 
     /**
      * Calcola il breakdown dei ricavi per periodo temporale
-     * 
+     *
      * Confronta i ricavi generati da reservation vs mint in intervalli temporali
      * configurabili (giorno, settimana, mese)
-     * 
+     *
      * @param Collection $collection Collezione da analizzare
      * @param string|null $startDate Data inizio formato Y-m-d
      * @param string|null $endDate Data fine formato Y-m-d
@@ -148,19 +146,18 @@ class DualTrackingAnalyticsService
 
     /**
      * Analizza le performance per singolo wallet
-     * 
+     *
      * Per ogni wallet coinvolto nelle distribuzioni, calcola:
      * - Totale ricevuto
      * - Numero distribuzioni
      * - Split tra reservation/mint
      * - Performance EPP vs non-EPP
-     * 
+     *
      * @param Collection $collection Collezione da analizzare
      * @param array $filters Filtri opzionali ['wallet_address' => ..., 'user_type' => ...]
      * @return array Performance per wallet con statistiche dettagliate
      */
-    public function getWalletPerformance(Collection $collection, array $filters = []): array
-    {
+    public function getWalletPerformance(Collection $collection, array $filters = []): array {
         try {
             // ULM: Log start
             $this->logger->info('DualTrackingAnalyticsService: getWalletPerformance started', [
@@ -197,18 +194,17 @@ class DualTrackingAnalyticsService
 
     /**
      * Calcola il ratio platform-wide mint vs reservation
-     * 
+     *
      * Analizza TUTTE le collections per ottenere trend generali:
      * - % distribuzioni da mint vs reservation
      * - Evoluzione nel tempo
      * - Medie per collection type
-     * 
+     *
      * @param string|null $startDate Data inizio formato Y-m-d
      * @param string|null $endDate Data fine formato Y-m-d
      * @return array Ratios con trend temporali e medie
      */
-    public function getMintVsReservationRatio(?string $startDate = null, ?string $endDate = null): array
-    {
+    public function getMintVsReservationRatio(?string $startDate = null, ?string $endDate = null): array {
         try {
             // ULM: Log start
             $this->logger->info('DualTrackingAnalyticsService: getMintVsReservationRatio started', [
@@ -247,12 +243,11 @@ class DualTrackingAnalyticsService
 
     /**
      * Invalida la cache per una collezione specifica
-     * 
+     *
      * @param int $collectionId ID collezione
      * @return void
      */
-    public function invalidateCache(int $collectionId): void
-    {
+    public function invalidateCache(int $collectionId): void {
         $patterns = [
             "analytics:distribution_summary:{$collectionId}:*",
             "analytics:revenue_breakdown:{$collectionId}:*",
@@ -273,8 +268,7 @@ class DualTrackingAnalyticsService
     /**
      * Computa distribution summary (logica interna)
      */
-    private function computeDistributionSummary(Collection $collection, array $filters): array
-    {
+    private function computeDistributionSummary(Collection $collection, array $filters): array {
         $query = PaymentDistribution::query()
             ->where('collection_id', $collection->id);
 
@@ -362,8 +356,7 @@ class DualTrackingAnalyticsService
     /**
      * Computa wallet performance
      */
-    private function computeWalletPerformance(Collection $collection, array $filters): array
-    {
+    private function computeWalletPerformance(Collection $collection, array $filters): array {
         $query = PaymentDistribution::query()
             ->where('collection_id', $collection->id);
 
@@ -410,8 +403,7 @@ class DualTrackingAnalyticsService
     /**
      * Computa mint vs reservation ratio platform-wide
      */
-    private function computeMintVsReservationRatio(?string $startDate, ?string $endDate): array
-    {
+    private function computeMintVsReservationRatio(?string $startDate, ?string $endDate): array {
         $query = PaymentDistribution::query()
             ->selectRaw('source_type')
             ->selectRaw('COUNT(*) as count')
@@ -453,8 +445,7 @@ class DualTrackingAnalyticsService
     /**
      * Applica filtri alla query
      */
-    private function applyFilters($query, array $filters)
-    {
+    private function applyFilters($query, array $filters) {
         if (isset($filters['start_date'])) {
             $query->where('created_at', '>=', $filters['start_date']);
         }
@@ -485,8 +476,7 @@ class DualTrackingAnalyticsService
     /**
      * Raggruppa per source_type
      */
-    private function groupBySourceType(SupportCollection $distributions): array
-    {
+    private function groupBySourceType(SupportCollection $distributions): array {
         return $distributions->groupBy('source_type')->map(function ($group) {
             return [
                 'count' => $group->count(),
@@ -499,8 +489,7 @@ class DualTrackingAnalyticsService
     /**
      * Raggruppa per user_type
      */
-    private function groupByUserType(SupportCollection $distributions): array
-    {
+    private function groupByUserType(SupportCollection $distributions): array {
         return $distributions->groupBy('user_type')->map(function ($group) {
             return [
                 'count' => $group->count(),
@@ -513,8 +502,7 @@ class DualTrackingAnalyticsService
     /**
      * Raggruppa per is_epp
      */
-    private function groupByEpp(SupportCollection $distributions): array
-    {
+    private function groupByEpp(SupportCollection $distributions): array {
         $epp = $distributions->where('is_epp', true);
         $nonEpp = $distributions->where('is_epp', false);
 
@@ -535,8 +523,7 @@ class DualTrackingAnalyticsService
     /**
      * Calcola mediana
      */
-    private function calculateMedian(SupportCollection $values): float
-    {
+    private function calculateMedian(SupportCollection $values): float {
         $sorted = $values->sort()->values();
         $count = $sorted->count();
 
@@ -556,8 +543,7 @@ class DualTrackingAnalyticsService
     /**
      * Costruisce cache key univoco
      */
-    private function buildCacheKey(string $method, int $collectionId, array $params): string
-    {
+    private function buildCacheKey(string $method, int $collectionId, array $params): string {
         $paramsHash = md5(json_encode($params));
         return "analytics:{$method}:{$collectionId}:{$paramsHash}";
     }

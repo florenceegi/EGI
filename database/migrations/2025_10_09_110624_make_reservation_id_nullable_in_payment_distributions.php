@@ -17,23 +17,21 @@ use Illuminate\Support\Facades\Schema;
  * - Maintains backward compatibility (all existing records have reservation_id)
  * - Application-level validation ensures data integrity
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('payment_distributions', function (Blueprint $table) {
             // Drop existing foreign key constraint
             $table->dropForeign(['reservation_id']);
-            
+
             // Make reservation_id nullable
             $table->foreignId('reservation_id')
                 ->nullable()
                 ->change()
                 ->comment('Reservation link (NULL for mint-based distributions)');
-            
+
             // Re-add foreign key with same cascade behavior
             $table->foreign('reservation_id')
                 ->references('id')
@@ -45,18 +43,17 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('payment_distributions', function (Blueprint $table) {
             // Drop foreign key
             $table->dropForeign(['reservation_id']);
-            
+
             // Make reservation_id NOT NULL again
             $table->foreignId('reservation_id')
                 ->nullable(false)
                 ->change()
                 ->comment('Collegamento alla prenotazione originale');
-            
+
             // Re-add foreign key
             $table->foreign('reservation_id')
                 ->references('id')

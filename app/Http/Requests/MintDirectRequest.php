@@ -63,11 +63,6 @@ class MintDirectRequest extends FormRequest {
             return false;
         }
 
-        // Check permission
-        if (!$user->can('allow-blockchain-operations')) {
-            return false;
-        }
-
         // Check EGI availability using service
         $availabilityService = app(EgiAvailabilityService::class);
         $availability = $availabilityService->checkAvailability($egi, $user);
@@ -99,13 +94,6 @@ class MintDirectRequest extends FormRequest {
                 'required',
                 'string',
                 'in:stripe,paypal,bank_transfer' // NO crypto payment methods
-            ],
-
-            // GDPR consent confirmation
-            'consent_blockchain' => [
-                'required',
-                'boolean',
-                'accepted' // Must be true
             ],
 
             // Optional: wallet address if user has one
@@ -148,11 +136,6 @@ class MintDirectRequest extends FormRequest {
             'payment_method.required' => 'Metodo di pagamento obbligatorio',
             'payment_method.in' => 'Metodo di pagamento non valido. Usa Stripe, PayPal o bonifico bancario.',
 
-            // GDPR consent
-            'consent_blockchain.required' => 'Consenso blockchain obbligatorio',
-            'consent_blockchain.boolean' => 'Consenso deve essere true/false',
-            'consent_blockchain.accepted' => 'Devi accettare i termini delle operazioni blockchain',
-
             // Wallet address
             'wallet_address.regex' => 'Indirizzo wallet Algorand non valido (formato: 58 caratteri A-Z2-7)',
 
@@ -173,7 +156,6 @@ class MintDirectRequest extends FormRequest {
         return [
             'egi_id' => 'EGI',
             'payment_method' => 'metodo di pagamento',
-            'consent_blockchain' => 'consenso blockchain',
             'wallet_address' => 'indirizzo wallet',
             'custom_metadata' => 'metadata personalizzato',
         ];
@@ -246,18 +228,6 @@ class MintDirectRequest extends FormRequest {
             $egiId = $this->input('egi_id');
 
             // Additional cross-field validations
-
-            // Verify GDPR consent is actually stored (not just accepted in form)
-            if ($user && $this->input('consent_blockchain')) {
-                $consentService = app(\App\Services\Gdpr\ConsentService::class);
-
-                if (!$consentService->hasConsent($user, 'allow-blockchain-operations')) {
-                    $validator->errors()->add(
-                        'consent_blockchain',
-                        'Il consenso blockchain non è stato registrato nel sistema. Aggiorna le tue preferenze GDPR.'
-                    );
-                }
-            }
 
             // Verify EGI is still available (prevent race conditions)
             if ($egiId) {
