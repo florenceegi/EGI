@@ -7,6 +7,8 @@ use App\Models\EgiBlockchain;
 use App\Models\User;
 use App\Services\AlgorandService;
 use App\Services\PaymentDistributionService;
+use App\Services\EgiMetadataBuilderService;
+use App\Services\DisplayNameService;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
@@ -33,6 +35,8 @@ class EgiMintingService {
     private ConsentService $consentService;
     private AlgorandService $algorandService;
     private PaymentDistributionService $distributionService;
+    private EgiMetadataBuilderService $metadataBuilder;
+    private DisplayNameService $displayNameService;
 
     /**
      * Constructor with GDPR/Ultra compliance
@@ -43,6 +47,8 @@ class EgiMintingService {
      * @param ConsentService $consentService GDPR consent management service
      * @param AlgorandService $algorandService Algorand blockchain service
      * @param PaymentDistributionService $distributionService Payment distribution service (AREA 2)
+     * @param EgiMetadataBuilderService $metadataBuilder Metadata builder service (AREA 5)
+     * @param DisplayNameService $displayNameService Display name service (AREA 5)
      * @privacy-safe All injected services handle GDPR compliance
      */
     public function __construct(
@@ -51,7 +57,9 @@ class EgiMintingService {
         AuditLogService $auditService,
         ConsentService $consentService,
         AlgorandService $algorandService,
-        PaymentDistributionService $distributionService
+        PaymentDistributionService $distributionService,
+        EgiMetadataBuilderService $metadataBuilder,
+        DisplayNameService $displayNameService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
@@ -59,14 +67,16 @@ class EgiMintingService {
         $this->consentService = $consentService;
         $this->algorandService = $algorandService;
         $this->distributionService = $distributionService;
+        $this->metadataBuilder = $metadataBuilder;
+        $this->displayNameService = $displayNameService;
     }
 
     /**
-     * Mint EGI su blockchain Algorand - GDPR COMPLIANT
+     * Mint EGI su blockchain Algorand - GDPR COMPLIANT + METADATA (AREA 5.6.1)
      * @param Egi $egi EGI model instance
-     * @param User $user User requesting mint operation
-     * @param array $metadata Additional metadata
-     * @return EgiBlockchain Created blockchain record
+     * @param User $user User requesting mint operation (minter/co-creator)
+     * @param array $metadata Additional metadata (optional custom co_creator_name)
+     * @return EgiBlockchain Created blockchain record with metadata
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
@@ -93,13 +103,55 @@ class EgiMintingService {
             // 4. Crea o aggiorna record blockchain
             $egiBlockchain = $this->createOrUpdateBlockchainRecord($egi, 'minting', $user);
 
-            // 5. Prepara metadata per blockchain
+            // ========================================================================
+            // AREA 5.6.1: BUILD METADATA + FREEZE DISPLAY NAMES
+            // ========================================================================
+
+            // 5a. Build complete NFT metadata (OpenSea-compatible)
+            $egiMetadataStructure = $this->metadataBuilder->buildMetadata($egi, $user);
+            
+            $this->logger->info('EGI metadata structure built', [
+                'egi_id' => $egi->id,
+                'traits_count' => count($egiMetadataStructure->traits),
+                'has_coa' => !empty($egiMetadataStructure->coa_reference),
+                'log_category' => 'EGI_METADATA_BUILT'
+            ]);
+
+            // 5b. Freeze creator display name (snapshot at EGI creation)
+            $creatorDisplayName = $this->displayNameService->freezeCreatorName($egi);
+
+            // 5c. Freeze co-creator display name (snapshot at mint time)
+            // User can provide custom name in $metadata['co_creator_display_name']
+            $customCoCreatorName = $metadata['co_creator_display_name'] ?? null;
+            $coCreatorDisplayName = $this->displayNameService->freezeCoCreatorName($user, $customCoCreatorName);
+
+            $this->logger->info('Display names frozen', [
+                'egi_id' => $egi->id,
+                'creator_display_name' => $creatorDisplayName,
+                'co_creator_display_name' => $coCreatorDisplayName,
+                'custom_name_provided' => !empty($customCoCreatorName),
+                'log_category' => 'EGI_NAMES_FROZEN'
+            ]);
+
+            // 5d. Validate metadata before blockchain mint
+            $metadataArray = $egiMetadataStructure->toArray();
+            if (!$this->metadataBuilder->validateMetadata($metadataArray)) {
+                throw new \Exception('Metadata validation failed before blockchain mint');
+            }
+
+            // ========================================================================
+            // BLOCKCHAIN MINTING
+            // ========================================================================
+
+            // 6. Prepara metadata per blockchain (backward compatible)
             $blockchainMetadata = $this->prepareMetadata($egi, $metadata);
 
-            // 6. Mint su Algorand (con User per GDPR)
+            // 7. Mint su Algorand (con User per GDPR)
+            // NOTE: IPFS upload will be integrated in AREA 6
+            // For now, metadata stored in DB only
             $algorandResult = $this->algorandService->mintEgi($egi->id, $blockchainMetadata, $user);
 
-            // 7. Aggiorna record con dati blockchain
+            // 8. Aggiorna record con dati blockchain + metadata + display names
             $egiBlockchain->update([
                 'asa_id' => $algorandResult['asaId'],
                 'blockchain_tx_id' => $algorandResult['txId'],
@@ -107,10 +159,16 @@ class EgiMintingService {
                 'platform_wallet' => $algorandResult['treasury_address'] ?? null,
                 'mint_status' => 'minted',
                 'minted_at' => now(),
-                'mint_error' => null
+                'mint_error' => null,
+                
+                // AREA 5.6.1: Store metadata + display names
+                'metadata' => $metadataArray,
+                'creator_display_name' => $creatorDisplayName,
+                'co_creator_display_name' => $coCreatorDisplayName,
+                'metadata_last_updated_at' => now(),
             ]);
 
-            // 8. GDPR: Audit trail
+            // 9. GDPR: Audit trail (includes metadata info)
             $this->auditService->logUserAction(
                 $user,
                 'egi_minting_completed',
@@ -119,24 +177,30 @@ class EgiMintingService {
                     'egi_title' => $egi->title,
                     'asa_id' => $algorandResult['asaId'],
                     'tx_id' => $algorandResult['txId'],
-                    'blockchain_record_id' => $egiBlockchain->id
+                    'blockchain_record_id' => $egiBlockchain->id,
+                    'creator_display_name' => $creatorDisplayName,
+                    'co_creator_display_name' => $coCreatorDisplayName,
+                    'metadata_traits_count' => count($egiMetadataStructure->traits),
+                    'has_coa' => !empty($egiMetadataStructure->coa_reference),
                 ],
                 GdprActivityCategory::BLOCKCHAIN_ACTIVITY
             );
 
-            // 9. ULM: Log success
+            // 10. ULM: Log success
             $this->logger->info('EGI minting process completed successfully', [
                 'user_id' => $user->id,
                 'egi_id' => $egi->id,
                 'asa_id' => $algorandResult['asaId'],
                 'tx_id' => $algorandResult['txId'],
                 'blockchain_record_id' => $egiBlockchain->id,
+                'creator_display_name' => $creatorDisplayName,
+                'co_creator_display_name' => $coCreatorDisplayName,
                 'log_category' => 'EGI_MINTING_SUCCESS'
             ]);
 
             return $egiBlockchain->fresh();
         } catch (\Exception $e) {
-            // 10. UEM: Error handling
+            // 11. UEM: Error handling
             $this->errorManager->handle('EGI_MINTING_FAILED', [
                 'user_id' => $user->id,
                 'egi_id' => $egi->id,
