@@ -1,81 +1,81 @@
 {{--
 /**
  * PA Acts Index View
- * 
+ *
  * ============================================================================
  * CONTESTO - LISTA ATTI PA TOKENIZZATI
  * ============================================================================
- * 
+ *
  * View per la lista degli atti PA tokenizzati su blockchain.
- * 
+ *
  * TARGET USER: PA entities (autenticate, role:pa_entity)
  * ACCESS: Authenticated only (middleware: auth, role:pa_entity)
- * 
+ *
  * PURPOSE:
  * - Overview atti tokenizzati da PA entity
  * - Ricerca per protocollo, titolo
  * - Filtri: Tipo atto, Date range, Stato ancoraggio
  * - Stats: Total, Anchored, Pending
- * 
+ *
  * ============================================================================
  * FEATURES
  * ============================================================================
- * 
+ *
  * STATS CARDS:
  * - Total atti tokenizzati
  * - Atti ancorati su blockchain
  * - Atti in attesa di ancoraggio
- * 
+ *
  * FILTERS:
  * - Search: Protocol number, Titolo (full-text)
  * - Doc type: Delibera, Determina, Ordinanza, Decreto, Atto
  * - Date range: Protocol date FROM → TO
  * - Status: All / Anchored / Pending
- * 
+ *
  * TABLE COLUMNS:
  * - Protocol number + date
  * - Title (truncated)
  * - Doc type badge
  * - Anchor status (✅ Anchored / ⏳ Pending)
  * - Actions: View detail, QR code
- * 
+ *
  * ============================================================================
  * PA BRAND DESIGN
  * ============================================================================
- * 
+ *
  * COLORS:
  * - Primary: #1B365D (Blu Algoritmo - trust, blockchain)
  * - Accent: #D4A574 (Oro Fiorentino - premium, CTA)
  * - Success: #2D5016 (Verde Rinascita - confirmed, anchored)
  * - Warning: #E67E22 (Arancio Energia - pending status)
- * 
+ *
  * TYPOGRAPHY:
  * - Headers: font-serif (Playfair Display fallback)
  * - Body: font-sans (Source Sans Pro fallback)
- * 
+ *
  * LAYOUT:
  * - Spazi bianchi generosi (proporzioni auree)
  * - Cards con ombre leggere
  * - Bordi sottili eleganti
- * 
+ *
  * ============================================================================
  * ACCESSIBILITY
  * ============================================================================
- * 
+ *
  * WCAG 2.1 AA:
  * - Contrast ratios: Primary (#1B365D) on white = 11.4:1 ✅
  * - ARIA labels: All interactive elements
  * - Keyboard navigation: Tab order logical
  * - Screen reader: Descriptive text for badges/icons
- * 
+ *
  * ============================================================================
- * 
+ *
  * @package Resources\Views\Pa\Acts
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - PA Acts Tokenization)
  * @date 2025-10-04
  * @purpose PA acts index view with filters and stats
- * 
+ *
  * @architecture View Layer (PA brand)
  * @dependencies PaActController::index(), pa_acts localization
  * @accessibility WCAG 2.1 AA compliant
@@ -350,7 +350,7 @@
                                 {{-- Protocol --}}
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <div class="text-sm font-medium text-[#1B365D]">
-                                        {{ $act->pa_protocol_number ?? $act->jsonMetadata['protocol_number'] ?? 'N/A' }}
+                                        {{ $act->pa_protocol_number ?? ($act->jsonMetadata['protocol_number'] ?? 'N/A') }}
                                     </div>
                                     <div class="text-xs text-gray-500">
                                         {{ $act->pa_protocol_date ? $act->pa_protocol_date->format('d/m/Y') : (isset($act->jsonMetadata['protocol_date']) ? \Carbon\Carbon::parse($act->jsonMetadata['protocol_date'])->format('d/m/Y') : '') }}
@@ -367,7 +367,7 @@
                                 {{-- Type --}}
                                 <td class="whitespace-nowrap px-6 py-4">
                                     @php
-                                        $docType = $act->pa_act_type ?? $act->jsonMetadata['doc_type'] ?? null;
+                                        $docType = $act->pa_act_type ?? ($act->jsonMetadata['doc_type'] ?? null);
                                         $colors = [
                                             'delibera' => 'bg-blue-100 text-blue-800',
                                             'determina' => 'bg-green-100 text-green-800',

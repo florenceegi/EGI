@@ -230,4 +230,3 @@ class TokenizePaActJob implements ShouldQueue
         // Notification::send(User::find($this->egi->user_id), new TokenizationFailedNotification($this->egi));
     }
 }
-

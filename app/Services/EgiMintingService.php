@@ -109,7 +109,7 @@ class EgiMintingService {
 
             // 5a. Build complete NFT metadata (OpenSea-compatible)
             $egiMetadataStructure = $this->metadataBuilder->buildMetadata($egi, $user);
-            
+
             $this->logger->info('EGI metadata structure built', [
                 'egi_id' => $egi->id,
                 'traits_count' => count($egiMetadataStructure->traits),
@@ -133,8 +133,16 @@ class EgiMintingService {
                 'log_category' => 'EGI_NAMES_FROZEN'
             ]);
 
-            // 5d. Validate metadata before blockchain mint
-            $metadataArray = $egiMetadataStructure->toArray();
+            // 5d. Convert to OpenSea format for validation and storage
+            // NOTE: Using EGI image_url as fallback until Area 6 IPFS integration
+            $metadataArray = $egiMetadataStructure->toOpenSeaFormat(
+                "FlorenceEGI #{$egi->id}",
+                $egi->description ?? "Digital Certificate for EGI #{$egi->id} - Florence Ecological Renaissance",
+                route('egis.show', $egi->id),
+                $egi->image_url ?? asset('images/egi-placeholder.png')
+            );
+
+            // 5e. Validate metadata before blockchain mint
             if (!$this->metadataBuilder->validateMetadata($metadataArray)) {
                 throw new \Exception('Metadata validation failed before blockchain mint');
             }
@@ -160,7 +168,7 @@ class EgiMintingService {
                 'mint_status' => 'minted',
                 'minted_at' => now(),
                 'mint_error' => null,
-                
+
                 // AREA 5.6.1: Store metadata + display names
                 'metadata' => $metadataArray,
                 'creator_display_name' => $creatorDisplayName,
@@ -199,6 +207,9 @@ class EgiMintingService {
             ]);
 
             return $egiBlockchain->fresh();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Re-throw ValidationException without wrapping so we can see validation errors
+            throw $e;
         } catch (\Exception $e) {
             // 11. UEM: Error handling
             $this->errorManager->handle('EGI_MINTING_FAILED', [

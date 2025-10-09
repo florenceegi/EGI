@@ -35,7 +35,8 @@ use App\Models\User;
  * @date 2025-10-07
  * @purpose Laravel HTTP client bridge to AlgoKit microservice for EGI
  */
-class AlgorandService {
+class AlgorandService
+{
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -94,7 +95,8 @@ class AlgorandService {
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function mintEgi(int $egiId, array $metadata, User $user): array {
+    public function mintEgi(int $egiId, array $metadata, User $user): array
+    {
         try {
             // 1. ULM: Log start
             $this->logger->info('EGI minting initiated', [
@@ -178,7 +180,8 @@ class AlgorandService {
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function transferEgiAsset(string $to, string $asaId, User $user, int $amount = 1): string {
+    public function transferEgiAsset(string $to, string $asaId, User $user, int $amount = 1): string
+    {
         try {
             // 1. ULM: Log start
             $this->logger->info('EGI transfer initiated', [
@@ -255,7 +258,8 @@ class AlgorandService {
      * @return string Anchor hash su blockchain
      * @throws \Exception
      */
-    public function createCertificateAnchor(string $certificateHash): string {
+    public function createCertificateAnchor(string $certificateHash): string
+    {
         $this->logger->info('ALGORAND_ANCHOR_START', ['certificate_hash' => $certificateHash]);
 
         try {
@@ -285,7 +289,8 @@ class AlgorandService {
      * @return array Account info
      * @throws \Exception
      */
-    public function getAccountInfo(string $address): array {
+    public function getAccountInfo(string $address): array
+    {
         try {
             if (!$this->isValidAlgorandAddress($address)) {
                 throw new \InvalidArgumentException('Address Algorand non valido');
@@ -309,7 +314,8 @@ class AlgorandService {
      * @return array Network status
      * @throws \Exception
      */
-    public function getNetworkStatus(): array {
+    public function getNetworkStatus(): array
+    {
         try {
             $response = $this->callMicroservice('GET', '/health');
 
@@ -331,7 +337,8 @@ class AlgorandService {
      * @return array Treasury info
      * @throws \Exception
      */
-    public function getTreasuryStatus(): array {
+    public function getTreasuryStatus(): array
+    {
         try {
             $healthStatus = $this->getNetworkStatus();
             $treasuryAddress = $healthStatus['algorand']['treasury_address'] ?? null;
@@ -359,7 +366,8 @@ class AlgorandService {
      * @return array Response data
      * @throws \Exception
      */
-    private function callMicroservice(string $method, string $endpoint, array $data = []): array {
+    private function callMicroservice(string $method, string $endpoint, array $data = []): array
+    {
         $url = $this->microserviceUrl . $endpoint;
         $attempt = 0;
         $lastException = null;
@@ -432,7 +440,8 @@ class AlgorandService {
      * @param array $metadata EGI data
      * @return array Formatted metadata
      */
-    private function buildEgiMetadata(int $egiId, array $metadata): array {
+    private function buildEgiMetadata(int $egiId, array $metadata): array
+    {
         $cfg = $this->asaConfig;
 
         return [
@@ -476,7 +485,8 @@ class AlgorandService {
      * @throws \Exception
      * @privacy-safe Only document hash (no PII) is anchored on blockchain
      */
-    public function anchorDocument(string $documentHash, array $metadata = []): array {
+    public function anchorDocument(string $documentHash, array $metadata = []): array
+    {
         try {
             $this->logger->info('Document anchoring initiated', [
                 'doc_hash' => substr($documentHash, 0, 16) . '...',
@@ -538,7 +548,8 @@ class AlgorandService {
      * @param string $address Wallet address
      * @return bool Is valid
      */
-    private function isValidAlgorandAddress(string $address): bool {
+    private function isValidAlgorandAddress(string $address): bool
+    {
         // Basic validation - 58 characters, alphanumeric
         if (strlen($address) !== 58) {
             return false;

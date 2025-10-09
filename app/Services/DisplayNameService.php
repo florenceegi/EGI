@@ -56,8 +56,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * - Only metadata management
  * - FIAT payment flow compatible
  */
-class DisplayNameService
-{
+class DisplayNameService {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -109,8 +108,7 @@ class DisplayNameService
      * // Returns: "Leonardo Da Vinci"
      * ```
      */
-    public function freezeCreatorName(Egi $egi): string
-    {
+    public function freezeCreatorName(Egi $egi): string {
         try {
             // 1. ULM: Log freeze operation start
             $this->logger->info('DisplayNameService: Freezing creator name', [
@@ -150,7 +148,6 @@ class DisplayNameService
             ]);
 
             return $creatorName;
-
         } catch (\Exception $e) {
             // 7. UEM: Error handling
             $this->errorManager->handle('DISPLAY_NAME_FREEZE_CREATOR_FAILED', [
@@ -193,8 +190,7 @@ class DisplayNameService
      * // Returns: "John Doe" (profile name)
      * ```
      */
-    public function freezeCoCreatorName(User $minter, ?string $customName = null): string
-    {
+    public function freezeCoCreatorName(User $minter, ?string $customName = null): string {
         try {
             // 1. ULM: Log freeze operation start
             $this->logger->info('DisplayNameService: Freezing co-creator name', [
@@ -222,18 +218,17 @@ class DisplayNameService
             ]);
 
             // 5. GDPR: Audit log name freeze
-            $this->auditService->logActivity(
+            $this->auditService->logUserAction(
                 $minter,
-                GdprActivityCategory::BLOCKCHAIN_OPERATION,
-                'Co-creator display name frozen for mint',
+                'co_creator_display_name_frozen',
                 [
                     'frozen_name' => $coCreatorName,
                     'was_custom' => !is_null($customName)
-                ]
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
             );
 
             return $coCreatorName;
-
         } catch (\Exception $e) {
             // 6. UEM: Error handling
             $this->errorManager->handle('DISPLAY_NAME_FREEZE_CO_CREATOR_FAILED', [
@@ -265,8 +260,7 @@ class DisplayNameService
      * // User sees this in form and can modify to "Johnny Artist"
      * ```
      */
-    public function proposeCoCreatorName(User $user): string
-    {
+    public function proposeCoCreatorName(User $user): string {
         // 1. ULM: Log proposal
         $this->logger->info('DisplayNameService: Proposing co-creator name', [
             'user_id' => $user->id,
@@ -305,8 +299,7 @@ class DisplayNameService
      * $displayNameService->validateDisplayName("Name🎨"); // ❌ Fail (emoji)
      * ```
      */
-    public function validateDisplayName(string $name): bool
-    {
+    public function validateDisplayName(string $name): bool {
         try {
             // 1. ULM: Log validation start
             $this->logger->info('DisplayNameService: Validating display name', [
@@ -357,7 +350,6 @@ class DisplayNameService
             ]);
 
             return true;
-
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
@@ -425,19 +417,18 @@ class DisplayNameService
 
             // 4. GDPR: Audit log storage
             if ($egiBlockchain->buyer) {
-                $this->auditService->logActivity(
+                $this->auditService->logUserAction(
                     $egiBlockchain->buyer,
-                    GdprActivityCategory::BLOCKCHAIN_OPERATION,
-                    'Display names frozen in blockchain record',
+                    'display_names_frozen_in_blockchain',
                     [
                         'egi_blockchain_id' => $egiBlockchain->id,
                         'egi_id' => $egiBlockchain->egi_id,
                         'creator_name' => $creatorName,
                         'co_creator_name' => $coCreatorName
-                    ]
+                    ],
+                    GdprActivityCategory::BLOCKCHAIN_ACTIVITY
                 );
             }
-
         } catch (\Exception $e) {
             // 5. UEM: Error handling
             $this->errorManager->handle('DISPLAY_NAME_STORE_FAILED', [
@@ -465,9 +456,8 @@ class DisplayNameService
      * }
      * ```
      */
-    public function areNamesFrozen(EgiBlockchain $egiBlockchain): bool
-    {
-        return !is_null($egiBlockchain->creator_display_name) 
+    public function areNamesFrozen(EgiBlockchain $egiBlockchain): bool {
+        return !is_null($egiBlockchain->creator_display_name)
             && !is_null($egiBlockchain->co_creator_display_name);
     }
 
@@ -480,8 +470,7 @@ class DisplayNameService
      * @return void
      * @throws \Exception If business rules violated
      */
-    private function validateBusinessRules(string $name): void
-    {
+    private function validateBusinessRules(string $name): void {
         // Business rule: No leading or trailing spaces
         if ($name !== trim($name)) {
             throw new \Exception('Display name cannot have leading or trailing spaces');
@@ -521,8 +510,7 @@ class DisplayNameService
      * @return void
      * @throws \Exception If profanity detected
      */
-    private function checkProfanity(string $name): void
-    {
+    private function checkProfanity(string $name): void {
         // Simple blacklist (can be enhanced with external service)
         $profanityList = [
             // Add common inappropriate terms in multiple languages

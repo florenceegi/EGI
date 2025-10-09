@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     /**
      * Run the migrations.
-     * 
+     *
      * Adds:
      * - metadata JSON field for OpenSea-compatible metadata
      * - creator_display_name / co_creator_display_name for frozen user names

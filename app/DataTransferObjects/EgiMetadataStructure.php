@@ -14,11 +14,11 @@ use Carbon\Carbon;
 
 /**
  * EgiMetadataStructure - Data Transfer Object for NFT Metadata
- * 
+ *
  * OpenSea/NFT.Storage compatible metadata structure for EGI tokens.
- * Supports standard NFT traits, CoA (Certificate of Authenticity), 
+ * Supports standard NFT traits, CoA (Certificate of Authenticity),
  * IPFS references, and collection metadata.
- * 
+ *
  * @see https://docs.opensea.io/docs/metadata-standards
  */
 class EgiMetadataStructure {
@@ -97,7 +97,7 @@ class EgiMetadataStructure {
 
     /**
      * Convert to array for database storage or JSON export
-     * 
+     *
      * @return array
      */
     public function toArray(): array {
@@ -119,17 +119,23 @@ class EgiMetadataStructure {
 
     /**
      * Convert to OpenSea-compatible JSON structure
-     * 
+     *
      * @param string $name NFT name (e.g., "EGI #123")
      * @param string $description NFT description
      * @param string $externalUrl External URL (e.g., "https://florenceegi.it/egi/123")
+     * @param string|null $fallbackImageUrl Fallback image URL if IPFS not available (pre-Area 6)
      * @return array
      */
-    public function toOpenSeaFormat(string $name, string $description, string $externalUrl): array {
+    public function toOpenSeaFormat(string $name, string $description, string $externalUrl, ?string $fallbackImageUrl = null): array {
+        // Use IPFS if available, otherwise fallback URL (until Area 6 IPFS integration)
+        $imageUrl = $this->ipfs_image_cid 
+            ? "ipfs://{$this->ipfs_image_cid}" 
+            : ($fallbackImageUrl ?? 'https://florenceegi.it/images/egi-placeholder.png');
+
         return [
             'name' => $name,
             'description' => $description,
-            'image' => $this->ipfs_image_cid ? "ipfs://{$this->ipfs_image_cid}" : null,
+            'image' => $imageUrl,
             'external_url' => $externalUrl,
             'attributes' => $this->attributes,
             'properties' => array_merge($this->properties, [
@@ -143,18 +149,18 @@ class EgiMetadataStructure {
 
     /**
      * Create from array (for database retrieval)
-     * 
+     *
      * @param array $data
      * @return self
      */
     public static function fromArray(array $data): self {
         $instance = new self();
-        
+
         $instance->traits = $data['traits'] ?? [];
         $instance->coa_traits = $data['coa_traits'] ?? [];
         $instance->coa_reference = $data['coa_reference'] ?? null;
-        $instance->creation_date = isset($data['creation_date']) 
-            ? Carbon::parse($data['creation_date']) 
+        $instance->creation_date = isset($data['creation_date'])
+            ? Carbon::parse($data['creation_date'])
             : Carbon::now();
         $instance->edition = $data['edition'] ?? '1/1';
         $instance->technical_specs = $data['technical_specs'] ?? [];
@@ -164,51 +170,51 @@ class EgiMetadataStructure {
         $instance->collection_id = $data['collection_id'] ?? null;
         $instance->properties = $data['properties'] ?? [];
         $instance->attributes = $data['attributes'] ?? [];
-        
+
         return $instance;
     }
 
     /**
      * Add a standard trait
-     * 
+     *
      * @param string $name Trait name
      * @param mixed $value Trait value
      * @return self
      */
     public function addTrait(string $name, $value): self {
         $this->traits[$name] = $value;
-        
+
         // Also add to OpenSea attributes format
         $this->attributes[] = [
             'trait_type' => $name,
             'value' => $value,
         ];
-        
+
         return $this;
     }
 
     /**
      * Add a CoA-specific trait
-     * 
+     *
      * @param string $name Trait name
      * @param mixed $value Trait value
      * @return self
      */
     public function addCoaTrait(string $name, $value): self {
         $this->coa_traits[$name] = $value;
-        
+
         // Also add to OpenSea attributes format with CoA prefix
         $this->attributes[] = [
             'trait_type' => "CoA: {$name}",
             'value' => $value,
         ];
-        
+
         return $this;
     }
 
     /**
      * Set technical specifications
-     * 
+     *
      * @param array $specs Technical specs array
      * @return self
      */
@@ -219,7 +225,7 @@ class EgiMetadataStructure {
 
     /**
      * Check if metadata has CoA
-     * 
+     *
      * @return bool
      */
     public function hasCoA(): bool {
@@ -228,7 +234,7 @@ class EgiMetadataStructure {
 
     /**
      * Get all traits (standard + CoA)
-     * 
+     *
      * @return array
      */
     public function getAllTraits(): array {

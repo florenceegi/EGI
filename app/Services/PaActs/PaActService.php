@@ -14,78 +14,78 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * PA Acts Service - Main Orchestration Service
- * 
+ *
  * ============================================================================
  * CONTESTO BUSINESS - WORKFLOW COMPLETO TOKENIZZAZIONE ATTI PA
  * ============================================================================
- * 
+ *
  * Questo è il SERVICE PRINCIPALE che orchestra l'intero workflow di
  * tokenizzazione atti PA su blockchain Algorand.
- * 
+ *
  * WORKFLOW COMPLETO (8 STEP):
- * 
+ *
  * 1. UPLOAD PDF FIRMATO (handleUpload)
  *    - PA entity carica PDF con firma digitale QES/PAdES
  *    - Validazione file (tipo, dimensione, estensione)
  *    - Salvataggio temporaneo per elaborazione
- * 
+ *
  * 2. VALIDAZIONE FIRMA DIGITALE (SignatureValidationService)
  *    - Estrae certificato X.509 dal PDF
  *    - Verifica validità firma QES
  *    - Estrae dati firmatario (nome, email, org, ruolo)
  *    - Verifica certificato non scaduto/revocato
- * 
+ *
  * 3. CALCOLO HASH DOCUMENTO (hashDocument)
  *    - Calcola SHA-256 del PDF integrale
  *    - Hash diventa "fingerprint" immutabile documento
  *    - Usato per verifica integrità + blockchain anchoring
- * 
+ *
  * 4. GESTIONE COLLECTION (CollectionService)
  *    - Trova/crea "Fascicolo PA" (Collection type='pa_documents')
  *    - Organizza documenti per procedimento/progetto
  *    - Supporta multi-user PA entities
- * 
+ *
  * 5. CREAZIONE EGI (createEgi)
  *    - Crea record Egi con metadata JSON esteso
  *    - Metadata contiene: hash, firma, protocol number, doc type
  *    - Salva file PDF in storage privato
  *    - Genera public code per verifica (VER-ABC123XYZ)
- * 
+ *
  * 6. BATCH ANCHORING (AlgorandService + MerkleTreeService)
  *    - Agrupa documenti in batch giornaliero
  *    - Costruisce Merkle tree con hash documenti
  *    - Ancora solo Merkle root su blockchain (1 TX per N documenti)
  *    - Genera Merkle proof per ogni documento
- * 
+ *
  * 7. GENERAZIONE QR CODE (generateQrCode)
  *    - Crea QR code con URL verifica pubblica
  *    - URL: https://florenceegi.it/verify/{public_code}
  *    - Stampabile su documento cartaceo per tracciabilità
- * 
+ *
  * 8. PUBBLICAZIONE (finalize)
  *    - Aggiorna metadata con TXID blockchain + Merkle proof
  *    - Marca documento come "ancorato" (anchored=true)
  *    - Invia notifica PA entity (documento tokenizzato)
  *    - Atto pronto per verifica pubblica
- * 
+ *
  * RISULTATO FINALE:
  * - PDF firmato salvato in storage privato
  * - Hash documento ancorato su blockchain Algorand
  * - Merkle proof per verifica indipendente
  * - QR code + URL pubblico per verifica
  * - Metadata completo in egis.metadata JSON
- * 
+ *
  * ============================================================================
  * ESEMPIO REALE - DELIBERA COMUNE FIRENZE
  * ============================================================================
- * 
+ *
  * INPUT:
  * - File: "Delibera_GC_2025_123_firmata.pdf" (2.5 MB)
  * - Protocol: 12345/2025 del 15/09/2025
  * - Firmatario: Dario Nardella (Sindaco)
  * - Tipo: Delibera Giunta Comunale
  * - Oggetto: "Approvazione bilancio preventivo 2026"
- * 
+ *
  * PROCESSING:
  * 1. Upload: File salvato in storage/pa_acts/
  * 2. Firma: QES valida, cert InfoCert, scadenza 2028
@@ -95,7 +95,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * 6. Batch: Incluso in batch giornaliero con altre 49 delibere
  * 7. Blockchain: Merkle root ancorato → TXID: ALGO-TX-20250915143022-A1B2C3D4
  * 8. QR: Generato con URL https://florenceegi.it/verify/VER-ABC123XYZ
- * 
+ *
  * OUTPUT (egis.metadata JSON):
  * ```json
  * {
@@ -126,63 +126,63 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *   "anchored_at": "2025-09-15T14:35:00Z"
  * }
  * ```
- * 
+ *
  * VERIFICA PUBBLICA:
  * Cittadino scansiona QR → Browser apre /verify/VER-ABC123XYZ
  * - Mostra: Delibera GC 123/2025, firmata Sindaco, hash verificato
  * - Verifica Merkle proof: ✅ Documento autentico
  * - Link blockchain: Algorand Explorer TXID
  * - Download PDF originale (se permesso)
- * 
+ *
  * ============================================================================
  * ARCHITETTURA SERVICE LAYER
  * ============================================================================
- * 
+ *
  * QUESTO SERVICE ORCHESTRA:
- * 
+ *
  * 1. AlgorandService (blockchain anchoring)
  *    - anchorDocument(): Single document anchoring
  *    - anchorBatch(): Batch Merkle tree anchoring
  *    - verifyDocument(): Blockchain verification
- * 
+ *
  * 2. SignatureValidationService (QES validation)
  *    - validatePdfSignature(): Full signature validation
  *    - extractSignerInfo(): Signer details from certificate
  *    - hasSignature(): Quick signature detection
- * 
+ *
  * 3. MerkleTreeService (batch optimization)
  *    - buildTree(): Construct Merkle tree from hashes
  *    - getRoot(): Get Merkle root for blockchain
  *    - getProof(): Generate Merkle proof for document
  *    - verifyProof(): Verify document in batch
- * 
+ *
  * 4. CollectionService (fascicolo management)
  *    - findOrCreateUserCollection(): Get/create PA fascicolo
  *    - createDefaultCollection(): Create new fascicolo
- * 
+ *
  * 5. UltraLogManager (audit logging)
  *    - info(): Log successful operations
  *    - error(): Log failures with context
- * 
+ *
  * 6. ErrorManager (error handling)
  *    - handle(): Standardized error responses
  *    - User-friendly messages + dev context
- * 
+ *
  * DESIGN PATTERN: Orchestrator Service
  * - Coordina operazioni multi-service
  * - Gestisce transazioni e rollback
  * - Centralizza business logic complessa
  * - Fornisce API semplice ai controller/handler
- * 
+ *
  * ============================================================================
  * INTEGRAZIONE CON ALTRI COMPONENTI
  * ============================================================================
- * 
+ *
  * CHIAMATO DA:
  * - PaActUploadHandler::handlePaActUpload() - Upload workflow
  * - PaActController::store() - Manual upload
  * - TokenizePaActBatch Job - Batch processing cron
- * 
+ *
  * CHIAMA:
  * - AlgorandService - Blockchain anchoring
  * - SignatureValidationService - QES validation
@@ -190,64 +190,65 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - CollectionService - Fascicolo management
  * - Storage facade - File management
  * - Egi model - Database persistence
- * 
+ *
  * DATI SALVATI IN:
  * - egis table - Record principale
  * - egis.metadata JSON - Dati tokenizzazione
  * - storage/pa_acts/ - PDF files
  * - storage/qr_codes/ - QR code images
  * - audit_logs - Tracciabilità operazioni
- * 
+ *
  * UTILIZZATO DA:
  * - PaActPublicController::verify() - Verifica pubblica
  * - PaActController::show() - Dettaglio atto PA
  * - Blade views - Display dati tokenizzazione
- * 
+ *
  * ============================================================================
  * SICUREZZA E COMPLIANCE
  * ============================================================================
- * 
+ *
  * GDPR:
  * - Dati personali: Nome firmatario, email (base legale: CAD art. 20-21)
  * - Consent: Non richiesto (obblighi legali PA)
  * - Retention: Conservazione permanente atti PA (CAD art. 22)
  * - Audit log: UltraLogManager traccia ogni operazione
  * - Data minimization: Solo dati essenziali da certificato
- * 
+ *
  * CAD (Codice Amministrazione Digitale):
  * - Art. 20: Validità documenti informatici PA
  * - Art. 21: Valore probatorio firma digitale
  * - Art. 22: Copie informatiche e duplicati
  * - Art. 23: Copie per immagine su supporto informatico
  * - Conformità garantita da workflow + blockchain anchoring
- * 
+ *
  * BLOCKCHAIN SECURITY:
  * - Hash SHA-256: Collision-resistant
  * - Merkle tree: Tamper-proof batch integrity
  * - Algorand: Byzantine fault tolerant consensus
  * - Immutability: Blockchain anchoring irreversibile
- * 
+ *
  * FILE SECURITY:
  * - Storage: disk='private' (non accessibile via HTTP)
  * - Access control: Authorization middleware required
  * - Hash filename: Previene directory traversal
  * - Signature validation: Solo PDF firmati QES accettati
- * 
+ *
  * ============================================================================
- * 
+ *
  * @package App\Services\PaActs
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - PA Acts Tokenization)
  * @date 2025-10-04
  * @purpose Main orchestration service for PA acts tokenization workflow
- * 
+ *
  * @architecture Service Layer Pattern (Orchestrator)
  * @dependencies AlgorandService, SignatureValidationService, MerkleTreeService, CollectionService
  * @security QES validation, blockchain anchoring, private storage, audit trail
  * @gdpr-compliant Minimal data processing, audit logging, CAD legal basis
  * @cad-compliant Implements CAD Art. 20-23 requirements
  */
-class PaActService {
+class PaActService
+{
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AlgorandService $algorandService;
@@ -257,7 +258,7 @@ class PaActService {
 
     /**
      * Constructor - Dependency Injection
-     * 
+     *
      * @param UltraLogManager $logger
      * @param ErrorManagerInterface $errorManager
      * @param AlgorandService $algorandService
@@ -283,12 +284,12 @@ class PaActService {
 
     /**
      * Handle PA act upload (main orchestration method)
-     * 
+     *
      * @param UploadedFile $file PDF file with QES signature
      * @param array $metadata Additional metadata (protocol, date, type, etc.)
      * @param User $user PA entity user
      * @return array Result with egi_id, public_code, hash, txid
-     * 
+     *
      * WORKFLOW:
      * 1. Validate signature (SignatureValidationService)
      * 2. Calculate hash (SHA-256)
@@ -298,7 +299,7 @@ class PaActService {
      * 6. Queue for batch anchoring
      * 7. Generate public code + QR
      * 8. Return success data
-     * 
+     *
      * EXAMPLE:
      * ```php
      * $result = $paActService->uploadDocument($pdfFile, [
@@ -307,7 +308,7 @@ class PaActService {
      *     'doc_type' => 'delibera',
      *     'title' => 'Approvazione bilancio 2026'
      * ], Auth::user());
-     * 
+     *
      * // Returns:
      * [
      *     'success' => true,
@@ -319,7 +320,8 @@ class PaActService {
      * ]
      * ```
      */
-    public function uploadDocument(UploadedFile $file, array $metadata, User $user): array {
+    public function uploadDocument(UploadedFile $file, array $metadata, User $user): array
+    {
         try {
             $this->logger->info('[PaActService] Starting PA act upload', [
                 'user_id' => $user->id,
@@ -432,7 +434,7 @@ class PaActService {
 
     /**
      * Create EGI record with PA act metadata
-     * 
+     *
      * @param UploadedFile $file
      * @param Collection $collection
      * @param User $user
@@ -487,17 +489,18 @@ class PaActService {
 
     /**
      * Store PDF file securely in private storage
-     * 
+     *
      * @param UploadedFile $file
      * @param string $hash Document hash (used for filename)
      * @return string Stored file path
-     * 
+     *
      * SECURITY:
      * - Disk: 'private' (not accessible via HTTP)
      * - Filename: hash-based (prevents collisions + directory traversal)
      * - Path: pa_acts/ (dedicated folder)
      */
-    protected function storeFile(UploadedFile $file, string $hash): string {
+    protected function storeFile(UploadedFile $file, string $hash): string
+    {
         $filename = $hash . '.pdf';
         $path = 'pa_acts/' . $filename;
 
@@ -513,17 +516,18 @@ class PaActService {
 
     /**
      * Generate unique public verification code
-     * 
+     *
      * @return string Public code (format: VER-XXXXXXXXXX)
-     * 
+     *
      * EXAMPLE: VER-ABC123XYZ7
-     * 
+     *
      * UNIQUENESS:
      * - Format: VER-{10 uppercase alphanumeric}
      * - Check database for collisions (retry if exists)
      * - Used in public URL: /verify/{public_code}
      */
-    protected function generatePublicCode(): string {
+    protected function generatePublicCode(): string
+    {
         do {
             $code = 'VER-' . strtoupper(Str::random(10));
             $exists = Egi::where('pa_public_code', $code)->exists();
@@ -534,31 +538,33 @@ class PaActService {
 
     /**
      * Get document by public verification code
-     * 
+     *
      * @param string $publicCode Public verification code
      * @return Egi|null
-     * 
+     *
      * USAGE: Public verification page (/verify/{public_code})
      */
-    public function getDocumentByPublicCode(string $publicCode): ?Egi {
+    public function getDocumentByPublicCode(string $publicCode): ?Egi
+    {
         return Egi::where('pa_public_code', $publicCode)->first();
     }
 
     /**
      * Tokenize document (anchor on blockchain)
-     * 
+     *
      * @param Egi $egi
      * @return array Result with txid, merkle_root, proof
-     * 
+     *
      * CALLED BY: TokenizePaActBatch job (async batch processing)
-     * 
+     *
      * WORKFLOW:
      * 1. Get document hash from metadata
      * 2. Anchor on Algorand (single or batch)
      * 3. Update metadata with TXID + merkle proof
      * 4. Mark as anchored
      */
-    public function tokenizeDocument(Egi $egi): array {
+    public function tokenizeDocument(Egi $egi): array
+    {
         try {
             $docHash = $egi->jsonMetadata['doc_hash'] ?? null;
 

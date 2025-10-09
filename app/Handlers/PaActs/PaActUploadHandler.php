@@ -14,46 +14,46 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * PA Act Upload Handler
- * 
+ *
  * ============================================================================
  * CONTESTO - ULTRA UPLOAD MANAGER (UUM) PATTERN
  * ============================================================================
- * 
+ *
  * Questo handler segue il pattern UUM (Ultra Upload Manager) identico a
  * EgiUploadHandler ma adattato per PA acts (documenti amministrativi firmati).
- * 
+ *
  * PATTERN UUM:
  * - Handler: Coordina validazione + business logic + storage
  * - Controller: Riceve request e delega al handler
  * - Service: Contiene business logic specifica (PaActService)
  * - Response: JsonResponse standardizzato per frontend
- * 
+ *
  * DIFFERENZE PA ACTS vs EGI:
  * - File type: PDF firmato QES/PAdES (non immagini)
  * - Validation: Firma digitale + protocol number (non dimensioni immagine)
  * - Storage: Disk 'private' (non public)
  * - Metadata: Protocol, signature, blockchain (non artist, collection estetica)
  * - Target: PA entities only (not creators)
- * 
+ *
  * ============================================================================
  * WORKFLOW COMPLETO
  * ============================================================================
- * 
+ *
  * INPUT: POST request con PDF firmato + metadata
  * - File: 'file' (PDF con firma QES)
  * - Metadata: protocol_number, protocol_date, doc_type, title, description
- * 
+ *
  * STEP 1: VALIDAZIONE REQUEST
  * - Check file presente e valido
  * - Validate metadata (protocol number obbligatorio, doc_type valido)
  * - Check user autenticato e ruolo PA entity
- * 
+ *
  * STEP 2: VALIDAZIONE FILE
  * - Extension: Solo PDF
  * - Size: Max 20MB (config AllowedFileType.pa_documents.max_size)
  * - MIME type: application/pdf variants
  * - Signature: Check presenza firma digitale (quick check)
- * 
+ *
  * STEP 3: BUSINESS LOGIC (PaActService)
  * - Validate signature QES completa (SignatureValidationService)
  * - Calculate document hash SHA-256
@@ -61,19 +61,19 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - Create EGI with PA metadata
  * - Store file securely (private storage)
  * - Generate public verification code
- * 
+ *
  * STEP 4: RESPONSE
  * - Success: JsonResponse con egi_id, public_code, verification_url
  * - Error: UEM standardized error con codici specifici
- * 
+ *
  * ============================================================================
  * ESEMPIO REQUEST/RESPONSE
  * ============================================================================
- * 
+ *
  * REQUEST:
  * POST /pa/acts/upload
  * Content-Type: multipart/form-data
- * 
+ *
  * FormData:
  * - file: delibera_2025_123.pdf (2.5 MB, firmato QES)
  * - protocol_number: 12345/2025
@@ -81,7 +81,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - doc_type: delibera
  * - title: Approvazione bilancio preventivo 2026
  * - description: Delibera Giunta Comunale...
- * 
+ *
  * RESPONSE SUCCESS (200):
  * ```json
  * {
@@ -97,7 +97,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *   }
  * }
  * ```
- * 
+ *
  * RESPONSE ERROR (422 - Validation Failed):
  * ```json
  * {
@@ -110,7 +110,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *   }
  * }
  * ```
- * 
+ *
  * RESPONSE ERROR (400 - Invalid Signature):
  * ```json
  * {
@@ -122,13 +122,13 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *   }
  * }
  * ```
- * 
+ *
  * ============================================================================
  * INTEGRAZIONE FRONTEND (TypeScript)
  * ============================================================================
- * 
+ *
  * Frontend TypeScript (pa_act_upload_manager.ts) chiama questo handler via AJAX:
- * 
+ *
  * ```typescript
  * const formData = new FormData();
  * formData.append('file', pdfFile);
@@ -136,7 +136,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * formData.append('protocol_date', '2025-09-15');
  * formData.append('doc_type', 'delibera');
  * formData.append('title', 'Approvazione bilancio...');
- * 
+ *
  * const response = await fetch('/pa/acts/upload', {
  *   method: 'POST',
  *   body: formData,
@@ -145,7 +145,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *     'Accept': 'application/json'
  *   }
  * });
- * 
+ *
  * const result = await response.json();
  * if (result.success) {
  *   showSuccessToast(result.message);
@@ -154,86 +154,87 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *   showErrorToast(result.message);
  * }
  * ```
- * 
+ *
  * ============================================================================
  * SICUREZZA E VALIDAZIONE
  * ============================================================================
- * 
+ *
  * AUTHORIZATION:
  * - Middleware: 'auth' + 'role:pa_entity'
  * - Solo PA entities possono uploadare atti
  * - Check ownership collection (se specificata)
- * 
+ *
  * FILE VALIDATION:
  * - Extension whitelist: Solo 'pdf'
  * - MIME type whitelist: PDF variants (config)
  * - Size limit: 20MB (config)
  * - Signature check: Quick check firma presente (full check in service)
- * 
+ *
  * METADATA VALIDATION:
  * - protocol_number: Required, formato XXXXX/YYYY
  * - protocol_date: Required, formato YYYY-MM-DD, non futuro
  * - doc_type: Required, enum ['delibera', 'determina', 'ordinanza', 'decreto', 'atto']
  * - title: Required, string, max 255 chars
  * - description: Optional, string, max 5000 chars
- * 
+ *
  * GDPR:
  * - Dati personali: Nome firmatario da certificato (base legale: CAD art. 20-21)
  * - Audit trail: UltraLogManager traccia ogni upload
  * - Retention: Conservazione permanente (obblighi PA)
- * 
+ *
  * ============================================================================
  * ERRORI UEM
  * ============================================================================
- * 
+ *
  * Codici errore standardizzati (config/error-manager.php):
- * 
+ *
  * PA_ACT_AUTH_REQUIRED:
  * - Type: error, Blocking: blocking, HTTP: 401
  * - Message: "Autenticazione richiesta per caricare atti PA"
- * 
+ *
  * PA_ACT_ROLE_REQUIRED:
  * - Type: error, Blocking: blocking, HTTP: 403
  * - Message: "Solo enti PA possono caricare atti amministrativi"
- * 
+ *
  * PA_ACT_VALIDATION_FAILED:
  * - Type: error, Blocking: semi-blocking, HTTP: 422
  * - Message: "Validazione dati fallita"
- * 
+ *
  * PA_ACT_INVALID_FILE:
  * - Type: error, Blocking: semi-blocking, HTTP: 400
  * - Message: "File non valido o mancante"
- * 
+ *
  * PA_ACT_INVALID_SIGNATURE:
  * - Type: error, Blocking: blocking, HTTP: 400
  * - Message: "Firma digitale non valida o mancante"
- * 
+ *
  * PA_ACT_UPLOAD_FAILED:
  * - Type: error, Blocking: blocking, HTTP: 500
  * - Message: "Errore durante il caricamento dell'atto"
- * 
+ *
  * ============================================================================
- * 
+ *
  * @package App\Handlers\PaActs
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - PA Acts Tokenization)
  * @date 2025-10-04
  * @purpose UUM pattern handler for PA administrative acts upload
- * 
+ *
  * @architecture Handler Layer Pattern (UUM)
  * @dependencies PaActService, UltraLogManager, ErrorManager
  * @security PA role required, signature validation, private storage
  * @gdpr-compliant Audit logging, CAD legal basis, minimal data processing
  * @cad-compliant Implements CAD Art. 20-21 requirements
  */
-class PaActUploadHandler {
+class PaActUploadHandler
+{
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected PaActService $paActService;
 
     /**
      * Constructor - Dependency Injection
-     * 
+     *
      * @param UltraLogManager $logger
      * @param ErrorManagerInterface $errorManager
      * @param PaActService $paActService
@@ -250,17 +251,17 @@ class PaActUploadHandler {
 
     /**
      * Handle PA act upload (main entry point)
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
-     * 
+     *
      * WORKFLOW:
      * 1. Authenticate user + check PA role
      * 2. Validate file input
      * 3. Validate metadata
      * 4. Delegate to PaActService
      * 5. Return success/error response
-     * 
+     *
      * EXAMPLE USAGE (from PaActUploadController):
      * ```php
      * public function handleUpload(Request $request, PaActUploadHandler $handler): JsonResponse {
@@ -268,7 +269,8 @@ class PaActUploadHandler {
      * }
      * ```
      */
-    public function handlePaActUpload(Request $request): JsonResponse {
+    public function handlePaActUpload(Request $request): JsonResponse
+    {
         $operationId = Str::uuid()->toString();
         $logContext = [
             'handler' => static::class,
@@ -391,11 +393,12 @@ class PaActUploadHandler {
 
     /**
      * Authenticate user
-     * 
+     *
      * @return User
      * @throws \Exception If not authenticated
      */
-    protected function authenticateUser(): User {
+    protected function authenticateUser(): User
+    {
         $user = auth()->user();
 
         if (!$user instanceof User) {
@@ -407,15 +410,16 @@ class PaActUploadHandler {
 
     /**
      * Check if user has PA entity role
-     * 
+     *
      * @param User $user
      * @return bool
-     * 
+     *
      * AUTHORIZATION:
      * - Check Spatie permission: 'manage_pa_acts'
      * - Or check role: 'pa_entity'
      */
-    protected function checkPaRole(User $user): bool {
+    protected function checkPaRole(User $user): bool
+    {
         // Check Spatie permission (preferred)
         if (method_exists($user, 'can') && $user->can('manage_pa_acts')) {
             return true;
@@ -431,12 +435,13 @@ class PaActUploadHandler {
 
     /**
      * Validate file input from request
-     * 
+     *
      * @param Request $request
      * @return UploadedFile
      * @throws \Exception If file invalid or missing
      */
-    protected function validateFileInput(Request $request): UploadedFile {
+    protected function validateFileInput(Request $request): UploadedFile
+    {
         if (!$request->hasFile('file')) {
             throw new \Exception('File input missing');
         }
@@ -453,17 +458,18 @@ class PaActUploadHandler {
 
     /**
      * Validate PDF file (extension, MIME type, size)
-     * 
+     *
      * @param UploadedFile $file
      * @return void
      * @throws ValidationException If validation fails
-     * 
+     *
      * VALIDATION RULES (from config/AllowedFileType.pa_documents):
      * - Extension: pdf
      * - MIME types: application/pdf, application/x-pdf, etc.
      * - Max size: 20MB (20 * 1024 * 1024)
      */
-    protected function validatePdfFile(UploadedFile $file): void {
+    protected function validatePdfFile(UploadedFile $file): void
+    {
         $config = config('AllowedFileType.pa_documents');
 
         // Check extension
@@ -493,11 +499,11 @@ class PaActUploadHandler {
 
     /**
      * Validate metadata from request
-     * 
+     *
      * @param Request $request
      * @return array Validated metadata
      * @throws ValidationException If validation fails
-     * 
+     *
      * VALIDATION RULES:
      * - protocol_number: Required, string, formato XXXXX/YYYY
      * - protocol_date: Required, date, formato YYYY-MM-DD, non futuro
@@ -505,7 +511,8 @@ class PaActUploadHandler {
      * - title: Required, string, max 255
      * - description: Optional, string, max 5000
      */
-    protected function validateMetadata(Request $request): array {
+    protected function validateMetadata(Request $request): array
+    {
         $docTypes = config('AllowedFileType.pa_documents.document_types');
 
         return $request->validate([
@@ -529,17 +536,18 @@ class PaActUploadHandler {
 
     /**
      * Map service error code to UEM error code
-     * 
+     *
      * @param string $serviceError Error code from PaActService
      * @return string UEM error code
-     * 
+     *
      * MAPPING:
      * - INVALID_SIGNATURE → PA_ACT_INVALID_SIGNATURE
      * - COLLECTION_SERVICE_ERROR → PA_ACT_COLLECTION_FAILED
      * - UPLOAD_FAILED → PA_ACT_UPLOAD_FAILED
      * - DEFAULT → PA_ACT_UPLOAD_FAILED
      */
-    protected function mapServiceErrorToUem(string $serviceError): string {
+    protected function mapServiceErrorToUem(string $serviceError): string
+    {
         return match ($serviceError) {
             'INVALID_SIGNATURE' => 'PA_ACT_INVALID_SIGNATURE',
             'COLLECTION_SERVICE_ERROR' => 'PA_ACT_COLLECTION_FAILED',

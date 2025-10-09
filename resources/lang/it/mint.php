@@ -56,7 +56,7 @@ return [
         'wallet_label' => 'Wallet Algorand (Opzionale)',
         'wallet_placeholder' => 'Inserisci il tuo indirizzo wallet Algorand',
         'wallet_help' => 'Se inserisci un wallet, l\'EGI verrà trasferito direttamente lì. Altrimenti sarà custodito nel Treasury della piattaforma.',
-        
+
         // AREA 5.5.1: Co-Creator Display Name
         'optional' => 'opzionale',
         'co_creator_name_label' => 'Il tuo Nome come Co-Creatore',

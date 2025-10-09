@@ -1,7 +1,7 @@
 {{-- resources/views/mint/checkout.blade.php --}}
 <x-platform-layout :title="__('mint.page_title', ['title' => $egi->title])">
-    <div class="container mx-auto px-4 py-8">
-        <div class="mx-auto max-w-4xl">
+    <div class="container px-4 py-8 mx-auto">
+        <div class="max-w-4xl mx-auto">
             {{-- Header --}}
             <div class="mb-8">
                 <h1 class="mb-2 text-3xl font-bold text-gray-900">
@@ -15,13 +15,13 @@
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
                 {{-- EGI Preview --}}
                 <div class="space-y-6">
-                    <div class="rounded-lg bg-white p-6 shadow-lg">
+                    <div class="p-6 bg-white rounded-lg shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.egi_preview.title') }}</h2>
 
                         {{-- EGI Card Preview --}}
-                        <div class="mb-4 aspect-square overflow-hidden rounded-lg">
+                        <div class="mb-4 overflow-hidden rounded-lg aspect-square">
                             <img src="{{ $egi->main_image_url }}" alt="{{ $egi->title }}"
-                                class="h-full w-full object-cover">
+                                class="object-cover w-full h-full">
                         </div>
 
                         <h3 class="text-lg font-semibold text-gray-900">{{ $egi->title }}</h3>
@@ -34,7 +34,7 @@
                     </div>
 
                     {{-- Blockchain Info --}}
-                    <div class="rounded-lg bg-blue-50 p-6">
+                    <div class="p-6 rounded-lg bg-blue-50">
                         <h3 class="mb-3 text-lg font-semibold text-blue-900">{{ __('mint.blockchain_info.title') }}</h3>
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between">
@@ -55,12 +55,12 @@
 
                 {{-- Checkout Form --}}
                 <div class="space-y-6">
-                    <div class="rounded-lg bg-white p-6 shadow-lg">
+                    <div class="p-6 bg-white rounded-lg shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.payment.title') }}</h2>
 
                         {{-- Reservation Summary (if minting after reservation) --}}
                         @if ($reservation)
-                            <div class="mb-6 rounded-lg bg-green-50 p-4">
+                            <div class="p-4 mb-6 rounded-lg bg-green-50">
                                 <h3 class="mb-2 font-semibold text-green-900">
                                     {{ __('mint.payment.winning_reservation') }}
                                 </h3>
@@ -79,7 +79,7 @@
                             </div>
                         @else
                             {{-- Direct Mint Price --}}
-                            <div class="mb-6 rounded-lg bg-blue-50 p-4">
+                            <div class="p-4 mb-6 rounded-lg bg-blue-50">
                                 <h3 class="mb-2 font-semibold text-blue-900">
                                     {{ __('mint.payment.direct_mint_price') }}
                                 </h3>
@@ -105,19 +105,19 @@
 
                             {{-- Payment Method --}}
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">
+                                <label class="block mb-2 text-sm font-medium text-gray-700">
                                     {{ __('mint.payment.payment_method_label') }}
                                 </label>
                                 <div class="space-y-2">
                                     <label class="flex items-center">
                                         <input type="radio" name="payment_method" value="stripe" checked
-                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                                         <span
                                             class="ml-2 text-sm text-gray-900">{{ __('mint.payment.credit_card') }}</span>
                                     </label>
                                     <label class="flex items-center">
                                         <input type="radio" name="payment_method" value="paypal"
-                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                                         <span class="ml-2 text-sm text-gray-900">{{ __('mint.payment.paypal') }}</span>
                                     </label>
                                 </div>
@@ -125,12 +125,12 @@
 
                             {{-- Optional Wallet Address --}}
                             <div>
-                                <label for="buyer_wallet" class="mb-2 block text-sm font-medium text-gray-700">
+                                <label for="buyer_wallet" class="block mb-2 text-sm font-medium text-gray-700">
                                     {{ __('mint.payment.wallet_label') }}
                                 </label>
                                 <input type="text" id="buyer_wallet" name="buyer_wallet"
                                     placeholder="{{ __('mint.payment.wallet_placeholder') }}"
-                                    class="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    class="w-full px-3 py-2 font-mono text-sm border border-gray-300 rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <p class="mt-1 text-xs text-gray-500">
                                     {{ __('mint.payment.wallet_help') }}
                                 </p>
@@ -138,18 +138,18 @@
 
                             {{-- AREA 5.5.1: Co-Creator Display Name (IMMUTABLE AFTER MINT) --}}
                             <div>
-                                <label for="co_creator_display_name" class="mb-2 block text-sm font-medium text-gray-700">
+                                <label for="co_creator_display_name"
+                                    class="block mb-2 text-sm font-medium text-gray-700">
                                     {{ __('mint.payment.co_creator_name_label') }}
                                     <span class="text-xs text-gray-500">({{ __('mint.payment.optional') }})</span>
                                 </label>
                                 <input type="text" id="co_creator_display_name" name="co_creator_display_name"
                                     value="{{ old('co_creator_display_name', Auth::user()->name) }}"
-                                    placeholder="{{ Auth::user()->name }}"
-                                    maxlength="100"
-                                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="{{ Auth::user()->name }}" maxlength="100"
+                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     pattern="[a-zA-Z0-9\s.\'\-]+"
                                     title="{{ __('mint.payment.co_creator_name_pattern') }}">
-                                <div class="mt-1 flex items-start justify-between">
+                                <div class="flex items-start justify-between mt-1">
                                     <p class="text-xs text-gray-500">
                                         {{ __('mint.payment.co_creator_name_help') }}
                                     </p>
@@ -157,10 +157,13 @@
                                         <span id="char-count">{{ strlen(Auth::user()->name) }}</span>/100
                                     </span>
                                 </div>
-                                <div class="mt-2 rounded-md bg-amber-50 p-3 border border-amber-200">
+                                <div class="p-3 mt-2 border rounded-md border-amber-200 bg-amber-50">
                                     <div class="flex">
-                                        <svg class="h-5 w-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        <svg class="flex-shrink-0 w-5 h-5 text-amber-500" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                         <div class="ml-3">
                                             <p class="text-xs font-medium text-amber-800">
@@ -175,7 +178,7 @@
                             </div>
 
                             {{-- Total --}}
-                            <div class="border-t pt-4">
+                            <div class="pt-4 border-t">
                                 <div class="flex items-center justify-between text-lg font-semibold">
                                     <span>{{ __('mint.payment.total_label') }}</span>
                                     <span class="text-green-600">
@@ -188,7 +191,8 @@
                             <button type="submit"
                                 class="w-full transform rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3 font-medium text-white transition-all duration-200 hover:scale-[1.02] hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                                 <span class="flex items-center justify-center">
-                                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -199,7 +203,7 @@
                     </div>
 
                     {{-- Info MiCA Compliance --}}
-                    <div class="rounded-lg bg-yellow-50 p-4">
+                    <div class="p-4 rounded-lg bg-yellow-50">
                         <h3 class="mb-2 font-semibold text-yellow-900">{{ __('mint.compliance.mica_title') }}</h3>
                         <p class="text-sm text-yellow-800">
                             {{ __('mint.compliance.mica_description') }}
@@ -213,12 +217,12 @@
     {{-- Loading Modal --}}
     {{-- Loading Modal --}}
     <div id="loading-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div class="flex min-h-screen items-center justify-center p-4">
-            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-            <div class="relative w-full max-w-md transform rounded-lg bg-white p-6 shadow-xl transition-all">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50"></div>
+            <div class="relative w-full max-w-md p-6 transition-all transform bg-white rounded-lg shadow-xl">
                 <div class="text-center">
-                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                        <svg class="h-6 w-6 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24">
+                    <div class="flex items-center justify-center w-12 h-12 mx-auto bg-blue-100 rounded-full">
+                        <svg class="w-6 h-6 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                 stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor"
@@ -244,12 +248,12 @@
             // AREA 5.5.1: Character counter for Co-Creator Display Name
             const coCreatorNameInput = document.getElementById('co_creator_display_name');
             const charCountSpan = document.getElementById('char-count');
-            
+
             if (coCreatorNameInput && charCountSpan) {
                 coCreatorNameInput.addEventListener('input', function() {
                     const length = this.value.length;
                     charCountSpan.textContent = length;
-                    
+
                     // Visual feedback quando si avvicina al limite
                     const charCounter = document.getElementById('char-counter');
                     if (length > 90) {

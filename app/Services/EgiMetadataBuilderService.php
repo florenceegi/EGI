@@ -50,8 +50,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * - Only metadata management service
  * - FIAT payment flow compatible
  */
-class EgiMetadataBuilderService
-{
+class EgiMetadataBuilderService {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -108,8 +107,7 @@ class EgiMetadataBuilderService
      * $metadata = $metadataBuilder->buildMetadata($egi, Auth::user());
      * ```
      */
-    public function buildMetadata(Egi $egi, ?User $coCreator = null): EgiMetadataStructure
-    {
+    public function buildMetadata(Egi $egi, ?User $coCreator = null): EgiMetadataStructure {
         try {
             // 1. ULM: Log metadata construction start
             $this->logger->info('EgiMetadataBuilderService: Building metadata started', [
@@ -176,21 +174,20 @@ class EgiMetadataBuilderService
 
             // 12. GDPR: Audit log metadata construction
             if ($coCreator) {
-                $this->auditService->logActivity(
+                $this->auditService->logUserAction(
                     $coCreator,
-                    GdprActivityCategory::BLOCKCHAIN_OPERATION,
-                    'EGI metadata constructed for mint',
+                    'egi_metadata_constructed',
                     [
                         'egi_id' => $egi->id,
                         'egi_title' => $egi->title,
                         'traits_count' => count($standardTraits),
                         'has_coa' => !is_null($coaReference)
-                    ]
+                    ],
+                    GdprActivityCategory::BLOCKCHAIN_ACTIVITY
                 );
             }
 
             return $metadata;
-
         } catch (\Exception $e) {
             // 13. UEM: Error handling
             $this->errorManager->handle('EGI_METADATA_BUILD_FAILED', [
@@ -224,8 +221,7 @@ class EgiMetadataBuilderService
      * $isValid = $metadataBuilder->validateMetadata($metadata->toArray());
      * ```
      */
-    public function validateMetadata(array $metadata): bool
-    {
+    public function validateMetadata(array $metadata): bool {
         try {
             // 1. ULM: Log validation start
             $this->logger->info('EgiMetadataBuilderService: Validating metadata', [
@@ -267,7 +263,6 @@ class EgiMetadataBuilderService
             ]);
 
             return true;
-
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
@@ -310,8 +305,7 @@ class EgiMetadataBuilderService
      * ]);
      * ```
      */
-    public function updateMetadata(EgiBlockchain $egiBlockchain, array $updates): void
-    {
+    public function updateMetadata(EgiBlockchain $egiBlockchain, array $updates): void {
         try {
             // 1. ULM: Log update start
             $this->logger->info('EgiMetadataBuilderService: Updating metadata', [
@@ -349,18 +343,17 @@ class EgiMetadataBuilderService
 
             // 7. GDPR: Audit log metadata update
             if ($egiBlockchain->buyer) {
-                $this->auditService->logActivity(
+                $this->auditService->logUserAction(
                     $egiBlockchain->buyer,
-                    GdprActivityCategory::BLOCKCHAIN_OPERATION,
-                    'EGI metadata updated',
+                    'egi_metadata_updated',
                     [
                         'egi_blockchain_id' => $egiBlockchain->id,
                         'egi_id' => $egiBlockchain->egi_id,
                         'updated_fields' => array_keys($updates)
-                    ]
+                    ],
+                    GdprActivityCategory::BLOCKCHAIN_ACTIVITY
                 );
             }
-
         } catch (\Exception $e) {
             // 8. UEM: Error handling
             $this->errorManager->handle('EGI_METADATA_UPDATE_FAILED', [
@@ -393,8 +386,7 @@ class EgiMetadataBuilderService
      * // Upload $json to IPFS via IpfsService
      * ```
      */
-    public function exportForIpfs(EgiMetadataStructure $metadata): string
-    {
+    public function exportForIpfs(EgiMetadataStructure $metadata): string {
         try {
             // 1. ULM: Log export start
             $this->logger->info('EgiMetadataBuilderService: Exporting metadata for IPFS', [
@@ -408,7 +400,7 @@ class EgiMetadataBuilderService
             $name = "EGI #{$metadata->collection_id}";
             $description = $metadata->properties['description'] ?? 'FlorenceEGI NFT - Ecological Goods Invent';
             $externalUrl = $metadata->properties['external_url'] ?? "https://florenceegi.it/egi/{$metadata->collection_id}";
-            
+
             $openSeaFormat = $metadata->toOpenSeaFormat($name, $description, $externalUrl);
 
             // 3. Encode to JSON (pretty-printed for IPFS readability)
@@ -425,7 +417,6 @@ class EgiMetadataBuilderService
             ]);
 
             return $json;
-
         } catch (\Exception $e) {
             // 5. UEM: Error handling
             $this->errorManager->handle('EGI_METADATA_EXPORT_FAILED', [
@@ -445,8 +436,7 @@ class EgiMetadataBuilderService
      * @param Egi $egi EGI model with traits loaded
      * @return array Associative array of trait type => value
      */
-    private function extractStandardTraits(Egi $egi): array
-    {
+    private function extractStandardTraits(Egi $egi): array {
         $traits = [];
 
         foreach ($egi->traits as $trait) {
@@ -470,8 +460,7 @@ class EgiMetadataBuilderService
      * @param Egi $egi EGI model with traits loaded
      * @return array Associative array of CoA trait type => value
      */
-    private function extractCoaTraits(Egi $egi): array
-    {
+    private function extractCoaTraits(Egi $egi): array {
         $coaTraits = [];
 
         foreach ($egi->traits as $trait) {
@@ -495,8 +484,7 @@ class EgiMetadataBuilderService
      * @param Egi $egi EGI model
      * @return string|null CoA reference (e.g., "COA-123-XYZ") or null
      */
-    private function generateCoaReference(Egi $egi): ?string
-    {
+    private function generateCoaReference(Egi $egi): ?string {
         // Check if EGI has CoA traits
         $hasCoaTraits = $egi->traits->contains(function ($trait) {
             return $trait->category && str_contains(strtolower($trait->category->slug ?? ''), 'coa');
@@ -516,8 +504,7 @@ class EgiMetadataBuilderService
      * @param Egi $egi EGI model
      * @return array Technical specs (dimensions, format, size)
      */
-    private function buildTechnicalSpecs(Egi $egi): array
-    {
+    private function buildTechnicalSpecs(Egi $egi): array {
         return [
             'dimensions' => $egi->dimension ?? 'Unknown',
             'size' => $egi->size ?? 'Unknown',
@@ -533,8 +520,7 @@ class EgiMetadataBuilderService
      * @param Egi $egi EGI model
      * @return string Edition string
      */
-    private function determineEdition(Egi $egi): string
-    {
+    private function determineEdition(Egi $egi): string {
         // Default to "1/1" for unique pieces
         // Future: Implement edition logic based on collection settings
         return '1/1';
@@ -547,8 +533,7 @@ class EgiMetadataBuilderService
      * @param User|null $coCreator Co-creator user
      * @return array Properties object
      */
-    private function buildProperties(Egi $egi, ?User $coCreator): array
-    {
+    private function buildProperties(Egi $egi, ?User $coCreator): array {
         return [
             'egi_id' => $egi->id,
             'collection_id' => $egi->collection_id,
@@ -570,8 +555,7 @@ class EgiMetadataBuilderService
      * @param User|null $coCreator Co-creator user
      * @return array Attributes array (OpenSea format)
      */
-    private function buildAttributes(array $standardTraits, array $coaTraits, Egi $egi, ?User $coCreator): array
-    {
+    private function buildAttributes(array $standardTraits, array $coaTraits, Egi $egi, ?User $coCreator): array {
         $attributes = [];
 
         // Add standard traits as attributes
@@ -623,8 +607,7 @@ class EgiMetadataBuilderService
      * @return void
      * @throws \Exception If business rules violated
      */
-    private function validateBusinessRules(array $metadata): void
-    {
+    private function validateBusinessRules(array $metadata): void {
         // Business rule: attributes array must have at least one entry
         if (isset($metadata['attributes']) && is_array($metadata['attributes']) && count($metadata['attributes']) === 0) {
             throw new \Exception('Metadata must have at least one attribute');
@@ -637,7 +620,7 @@ class EgiMetadataBuilderService
             $urlValidator = Validator::make(['url' => $image], ['url' => 'url']);
             $isValidUrl = !$urlValidator->fails();
             $isIpfsUri = str_starts_with($image, 'ipfs://');
-            
+
             if (!$isValidUrl && !$isIpfsUri) {
                 throw new \Exception('Image must be a valid URL or IPFS URI');
             }

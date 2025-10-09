@@ -384,8 +384,8 @@ class PaActController extends Controller
             $algorandExplorerUrl = null;
             if ($metadata['anchor_txid']) {
                 $network = $egi->jsonMetadata['anchor_network'] ?? 'algorand-testnet';
-                $baseUrl = $network === 'algorand-mainnet' 
-                    ? 'https://algoexplorer.io/tx/' 
+                $baseUrl = $network === 'algorand-mainnet'
+                    ? 'https://algoexplorer.io/tx/'
                     : 'https://testnet.algoexplorer.io/tx/';
                 $algorandExplorerUrl = $baseUrl . $metadata['anchor_txid'];
             }

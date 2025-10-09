@@ -279,7 +279,7 @@ class EgiBlockchain extends Model {
 
     /**
      * Get metadata as EgiMetadataStructure object.
-     * 
+     *
      * @return \App\DataTransferObjects\EgiMetadataStructure|null
      */
     public function getMetadataStructure(): ?\App\DataTransferObjects\EgiMetadataStructure {
@@ -292,7 +292,7 @@ class EgiBlockchain extends Model {
 
     /**
      * Check if blockchain record has metadata.
-     * 
+     *
      * @return bool
      */
     public function hasMetadata(): bool {
@@ -301,7 +301,7 @@ class EgiBlockchain extends Model {
 
     /**
      * Check if metadata includes CoA reference.
-     * 
+     *
      * @return bool
      */
     public function hasCoaReference(): bool {
@@ -310,7 +310,7 @@ class EgiBlockchain extends Model {
 
     /**
      * Get standard traits from metadata.
-     * 
+     *
      * @return array
      */
     public function getTraits(): array {
@@ -319,7 +319,7 @@ class EgiBlockchain extends Model {
 
     /**
      * Get CoA traits from metadata.
-     * 
+     *
      * @return array
      */
     public function getCoaTraits(): array {
@@ -328,7 +328,7 @@ class EgiBlockchain extends Model {
 
     /**
      * Get OpenSea-compatible attributes array.
-     * 
+     *
      * @return array
      */
     public function getOpenSeaAttributes(): array {
@@ -337,7 +337,7 @@ class EgiBlockchain extends Model {
 
     /**
      * Get IPFS gateway URL for metadata.
-     * 
+     *
      * @return string|null
      */
     public function getMetadataIpfsUrl(): ?string {
@@ -352,7 +352,7 @@ class EgiBlockchain extends Model {
     /**
      * Check if display names are frozen (immutable after mint).
      * Display names cannot be changed after minting completes.
-     * 
+     *
      * @return bool
      */
     public function areDisplayNamesFrozen(): bool {
@@ -361,7 +361,7 @@ class EgiBlockchain extends Model {
 
     /**
      * Get creator display name (frozen at EGI creation).
-     * 
+     *
      * @return string|null
      */
     public function getCreatorDisplayName(): ?string {
@@ -370,11 +370,10 @@ class EgiBlockchain extends Model {
 
     /**
      * Get co-creator display name (frozen at mint time).
-     * 
+     *
      * @return string|null
      */
     public function getCoCreatorDisplayName(): ?string {
         return $this->co_creator_display_name;
     }
 }
-
