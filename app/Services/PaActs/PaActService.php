@@ -402,6 +402,7 @@ class PaActService {
 
             return [
                 'success' => true,
+                'egi' => $egi, // Return Egi object for tokenization job
                 'egi_id' => $egi->id,
                 'public_code' => $publicCode,
                 'doc_hash' => $docHash,

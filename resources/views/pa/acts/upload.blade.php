@@ -229,6 +229,92 @@
             </div>
         </div>
 
+        {{-- N.A.T.A.N. Tokenization Section --}}
+        <div class="rounded-xl border-2 border-[#2D5016] bg-gradient-to-br from-green-50 to-blue-50 p-8 shadow-lg">
+            <div class="mb-6 flex items-start">
+                <span class="material-icons mr-3 text-4xl text-[#2D5016]">smart_toy</span>
+                <div>
+                    <h2 class="mb-2 text-2xl font-bold text-[#1B365D]">N.A.T.A.N. - Tokenizzazione Blockchain</h2>
+                    <p class="text-sm text-gray-700">
+                        Sistema di Intelligence Artificiale per Notarizzazione e Tracciamento Atti
+                    </p>
+                </div>
+            </div>
+
+            {{-- Checkbox Tokenization --}}
+            <div class="mb-6">
+                <label class="flex cursor-pointer items-start space-x-3 rounded-lg border-2 border-[#2D5016] bg-white p-4 transition-all hover:shadow-md">
+                    <input type="checkbox" id="enable_tokenization" name="enable_tokenization" value="1"
+                        checked
+                        class="mt-1 h-5 w-5 cursor-pointer rounded border-gray-300 text-[#2D5016] transition-all focus:ring-2 focus:ring-[#2D5016] focus:ring-offset-2" />
+                    <div class="flex-1">
+                        <span class="text-lg font-bold text-[#1B365D]">
+                            Abilita Tokenizzazione su Blockchain Algorand
+                        </span>
+                        <p class="mt-2 text-sm text-gray-600">
+                            L'hash del documento verrà ancorato su blockchain Algorand tramite il nostro microservizio AlgoKit.
+                            Questo garantisce l'immutabilità e la verificabilità del documento nel tempo.
+                        </p>
+                    </div>
+                </label>
+            </div>
+
+            {{-- Features List --}}
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div class="flex items-start space-x-3 rounded-lg bg-white p-4">
+                    <span class="material-icons text-2xl text-green-600">verified</span>
+                    <div>
+                        <p class="font-semibold text-gray-800">Immutabilità Garantita</p>
+                        <p class="text-xs text-gray-600">Hash ancorato su blockchain Algorand</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3 rounded-lg bg-white p-4">
+                    <span class="material-icons text-2xl text-blue-600">qr_code</span>
+                    <div>
+                        <p class="font-semibold text-gray-800">QR Code Verifica</p>
+                        <p class="text-xs text-gray-600">Codice pubblico per verifica trasparente</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3 rounded-lg bg-white p-4">
+                    <span class="material-icons text-2xl text-purple-600">schedule</span>
+                    <div>
+                        <p class="font-semibold text-gray-800">Processamento Asincrono</p>
+                        <p class="text-xs text-gray-600">Upload immediato, tokenizzazione in background</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3 rounded-lg bg-white p-4">
+                    <span class="material-icons text-2xl text-orange-600">security</span>
+                    <div>
+                        <p class="font-semibold text-gray-800">GDPR Compliant</p>
+                        <p class="text-xs text-gray-600">Solo hash del documento (nessun dato sensibile)</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Info Note --}}
+            <div class="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                <div class="flex items-start">
+                    <span class="material-icons mr-2 text-xl text-blue-600">info</span>
+                    <div class="text-sm text-blue-800">
+                        <p class="font-semibold">Processo di Tokenizzazione:</p>
+                        <ol class="ml-4 mt-2 list-decimal space-y-1">
+                            <li>Upload del documento e validazione firma digitale</li>
+                            <li>Calcolo hash SHA-256 del documento</li>
+                            <li>Ancoraggio hash su blockchain Algorand (queue asincrona)</li>
+                            <li>Generazione QR code per verifica pubblica</li>
+                            <li>Notifica completamento tokenizzazione</li>
+                        </ol>
+                        <p class="mt-3 font-medium">
+                            ⏱️ Tempo stimato: <strong>30-60 secondi</strong> dopo il caricamento
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- Submit Buttons --}}
         <div class="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <a href="{{ route('pa.acts.index') }}"

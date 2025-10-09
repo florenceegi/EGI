@@ -322,7 +322,28 @@ class PaActUploadHandler {
                 ]);
             }
 
-            // STEP 7: Success response
+            // STEP 7: Dispatch tokenization job if enabled
+            $enableTokenization = $request->input('enable_tokenization', '0') === '1';
+            $logContext['tokenization_enabled'] = $enableTokenization;
+
+            if ($enableTokenization && isset($result['egi'])) {
+                $this->logger->info('[PaActUploadHandler] Dispatching tokenization job', [
+                    ...$logContext,
+                    'egi_id' => $result['egi_id']
+                ]);
+
+                // Dispatch asynchronous tokenization job
+                \App\Jobs\TokenizePaActJob::dispatch($result['egi']);
+
+                $this->logger->info('[PaActUploadHandler] Tokenization job dispatched successfully', [
+                    ...$logContext,
+                    'queue' => 'blockchain'
+                ]);
+            } else {
+                $this->logger->info('[PaActUploadHandler] Tokenization skipped (disabled by user)', $logContext);
+            }
+
+            // STEP 8: Success response
             $this->logger->info('[PaActUploadHandler] PA act uploaded successfully', [
                 ...$logContext,
                 'egi_id' => $result['egi_id'],
@@ -338,7 +359,8 @@ class PaActUploadHandler {
                     'doc_hash' => $result['doc_hash'],
                     'verification_url' => $result['verification_url'],
                     'protocol_number' => $metadata['protocol_number'],
-                    'status' => 'pending_anchoring'
+                    'status' => $enableTokenization ? 'pending_tokenization' : 'uploaded',
+                    'tokenization_enabled' => $enableTokenization
                 ]
             ], 200);
         } catch (ValidationException $e) {
