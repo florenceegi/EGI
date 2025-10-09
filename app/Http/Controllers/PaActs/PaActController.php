@@ -13,51 +13,51 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * PA Act Controller - CRUD Views
- * 
+ *
  * ============================================================================
  * CONTESTO - GESTIONE VISUALIZZAZIONI ATTI PA
  * ============================================================================
- * 
+ *
  * Controller per le views CRUD degli atti PA tokenizzati:
  * - Index: Lista atti PA dell'ente
  * - Show: Dettaglio singolo atto + info blockchain
  * - (Create/Edit gestiti da EgiController con ViewService routing)
- * 
+ *
  * TARGET USER: PA entities (enti pubblici amministrazione)
- * 
+ *
  * DIFFERENZE vs EgiController:
  * - Filtri specifici PA: protocol number, doc type, date range
  * - Display: Metadata PA (protocol, signature, blockchain)
  * - Brand: PA colors (#1B365D, #D4A574, #2D5016)
  * - Terminology: "Atto" not "Opera", "Protocollo" not "Position"
- * 
+ *
  * ============================================================================
  * ROUTES
  * ============================================================================
- * 
+ *
  * GET /pa/acts
  * - Name: pa.acts.index
  * - Middleware: auth, role:pa_entity
  * - View: pa/acts/index.blade.php
  * - Purpose: Lista atti PA dell'ente con filtri
- * 
+ *
  * GET /pa/acts/{egi}
  * - Name: pa.acts.show
  * - Middleware: auth, role:pa_entity
  * - View: pa/acts/show.blade.php
  * - Purpose: Dettaglio atto con blockchain info
- * 
+ *
  * ============================================================================
  * INDEX - LISTA ATTI PA
  * ============================================================================
- * 
+ *
  * FEATURES:
  * - Lista atti dell'ente autenticato
  * - Filtri: Protocol number, doc type, date range, anchoring status
  * - Sort: Protocol date desc (default), protocol number, upload date
  * - Pagination: 15 items per page
  * - Search: Full-text su title + description
- * 
+ *
  * QUERY:
  * ```php
  * Egi::with(['collection', 'user'])
@@ -68,7 +68,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *     ->orderBy('metadata->protocol_date', 'desc')
  *     ->paginate(15);
  * ```
- * 
+ *
  * VIEW DATA:
  * ```php
  * return view('pa.acts.index', [
@@ -82,11 +82,11 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *     ]
  * ]);
  * ```
- * 
+ *
  * ============================================================================
  * SHOW - DETTAGLIO ATTO
  * ============================================================================
- * 
+ *
  * FEATURES:
  * - Metadata completo atto PA
  * - Info firma digitale (signer, cert, timestamp)
@@ -94,7 +94,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - QR code per verifica pubblica
  * - Link verifica pubblica
  * - Download PDF originale (se autorizzato)
- * 
+ *
  * VIEW DATA:
  * ```php
  * return view('pa.acts.show', [
@@ -113,28 +113,28 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *     'qr_code_url' => $egi->metadata['qr_code_path'] ?? null
  * ]);
  * ```
- * 
+ *
  * ============================================================================
  * AUTHORIZATION
  * ============================================================================
- * 
+ *
  * INDEX:
  * - Solo atti dell'ente autenticato
  * - Query filtrata: whereHas('collection', creator_id = auth_user_id)
- * 
+ *
  * SHOW:
  * - Check ownership: atto appartiene all'ente
  * - Or: check collection admin (multi-user PA)
  * - 403 se non autorizzato
- * 
+ *
  * ============================================================================
- * 
+ *
  * @package App\Http\Controllers\PaActs
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - PA Acts Tokenization)
  * @date 2025-10-04
  * @purpose CRUD views controller for PA administrative acts
- * 
+ *
  * @architecture Controller Layer (Views rendering)
  * @dependencies PaActService, UltraLogManager, ErrorManager
  * @middleware auth, role:pa_entity
@@ -148,7 +148,7 @@ class PaActController extends Controller
 
     /**
      * Constructor - Dependency Injection
-     * 
+     *
      * @param UltraLogManager $logger
      * @param ErrorManagerInterface $errorManager
      * @param PaActService $paActService
@@ -168,17 +168,17 @@ class PaActController extends Controller
 
     /**
      * Display list of PA acts
-     * 
+     *
      * @param Request $request
      * @return View
-     * 
+     *
      * FILTERS:
      * - search: Protocol number or title search
      * - doc_type: Filter by document type
      * - date_from: Filter by protocol date >= date
      * - date_to: Filter by protocol date <= date
      * - status: Filter by anchoring status (anchored, pending)
-     * 
+     *
      * EXAMPLE URL:
      * /pa/acts?search=12345&doc_type=delibera&date_from=2025-01-01&status=anchored
      */
@@ -292,14 +292,14 @@ class PaActController extends Controller
 
     /**
      * Display PA act detail
-     * 
+     *
      * @param Egi $egi
      * @return View|RedirectResponse
-     * 
+     *
      * AUTHORIZATION:
      * - Check atto appartiene all'ente autenticato
      * - Or check collection admin (multi-user PA)
-     * 
+     *
      * DISPLAY:
      * - Metadata completo PA
      * - Firma digitale info
@@ -380,12 +380,23 @@ class PaActController extends Controller
                 }
             }
 
+            // Algorand explorer URL (if transaction exists)
+            $algorandExplorerUrl = null;
+            if ($metadata['anchor_txid']) {
+                $network = $egi->jsonMetadata['anchor_network'] ?? 'algorand-testnet';
+                $baseUrl = $network === 'algorand-mainnet' 
+                    ? 'https://algoexplorer.io/tx/' 
+                    : 'https://testnet.algoexplorer.io/tx/';
+                $algorandExplorerUrl = $baseUrl . $metadata['anchor_txid'];
+            }
+
             return view('pa.acts.show', [
                 'egi' => $egi, // Pass EGI object
                 'act' => $egi, // Backward compatibility alias
                 'metadata' => $metadata,
                 'verification_url' => $verificationUrl,
                 'qr_code_svg' => $qrCodeSvg,
+                'algorand_explorer_url' => $algorandExplorerUrl,
                 'doc_type_label' => $this->getDocTypeLabel($metadata['doc_type'])
             ]);
         } catch (\Exception $e) {
@@ -402,11 +413,11 @@ class PaActController extends Controller
 
     /**
      * Check if user can view PA act
-     * 
+     *
      * @param User $user
      * @param Egi $egi
      * @return bool
-     * 
+     *
      * AUTHORIZATION:
      * - User owns collection (creator_id match)
      * - Or user is collection admin (pivot role = admin)
@@ -436,7 +447,7 @@ class PaActController extends Controller
 
     /**
      * Get document type label (localized)
-     * 
+     *
      * @param string|null $docType
      * @return string
      */
@@ -451,10 +462,10 @@ class PaActController extends Controller
 
     /**
      * Generate QR Code SVG
-     * 
+     *
      * @param string $data Data to encode (URL)
      * @return string SVG markup
-     * 
+     *
      * Uses BaconQrCode (same library as Jetstream 2FA)
      */
     protected function generateQrCodeSvg(string $data): string
