@@ -19,20 +19,23 @@ NULLABLE: NO (NOT NULL in original migration)
 **⚠️ ISSUE IDENTIFIED:** NOT NULLABLE incompatible with Phase 2 mint-based distributions!
 
 **IMPACT:**
-- Mint-based distributions DON'T have a reservation_id
-- Current schema requires reservation_id (NOT NULL)
-- Phase 2 will FAIL on insert without reservation
+
+-   Mint-based distributions DON'T have a reservation_id
+-   Current schema requires reservation_id (NOT NULL)
+-   Phase 2 will FAIL on insert without reservation
 
 **SOLUTION REQUIRED:**
+
 ```sql
-ALTER TABLE payment_distributions 
+ALTER TABLE payment_distributions
 MODIFY COLUMN reservation_id BIGINT UNSIGNED NULL;
 ```
 
 **Business Rules:**
-- `source_type='reservation'` → reservation_id REQUIRED
-- `source_type='mint'` → reservation_id NULL, egi_blockchain_id REQUIRED
-- `source_type='transfer'` → TBD (future)
+
+-   `source_type='reservation'` → reservation_id REQUIRED
+-   `source_type='mint'` → reservation_id NULL, egi_blockchain_id REQUIRED
+-   `source_type='transfer'` → TBD (future)
 
 ---
 
@@ -112,13 +115,14 @@ public function up(): void {
 ```
 
 **Validation Logic:**
+
 ```php
 // In PaymentDistribution model or service
 public function validate() {
     if ($this->source_type === 'reservation' && !$this->reservation_id) {
         throw new \Exception('Reservation-based distribution requires reservation_id');
     }
-    
+
     if ($this->source_type === 'mint' && !$this->egi_blockchain_id) {
         throw new \Exception('Mint-based distribution requires egi_blockchain_id');
     }
@@ -130,6 +134,7 @@ public function validate() {
 ## 📋 INDEX OPTIMIZATION REVIEW
 
 ### Existing Indexes:
+
 1. ✅ `idx_payments_dist_reservation` - Single (reservation_id)
 2. ✅ `idx_payments_dist_collection` - Single (collection_id)
 3. ✅ `idx_payments_dist_user` - Single (user_id)
@@ -142,6 +147,7 @@ public function validate() {
 10. ✅ `idx_payments_dist_epp_date` - Composite (is_epp, created_at)
 
 ### New Indexes (Phase 2 - Already Added):
+
 11. ✅ `idx_payment_dist_source_type` - Single (source_type)
 12. ✅ `idx_payment_dist_blockchain` - Single (egi_blockchain_id)
 13. ✅ `idx_payment_dist_tx_id` - Single (blockchain_tx_id)
@@ -156,33 +162,36 @@ public function validate() {
 ### ON DELETE Behaviors:
 
 1. **reservation_id (CASCADE):**
-   - ❓ **QUESTION:** Should mint distributions survive if reservation deleted?
-   - **RECOMMENDATION:** Keep CASCADE for reservation-based, mint-based unaffected (NULL)
+
+    - ❓ **QUESTION:** Should mint distributions survive if reservation deleted?
+    - **RECOMMENDATION:** Keep CASCADE for reservation-based, mint-based unaffected (NULL)
 
 2. **collection_id (CASCADE):**
-   - ✅ **OK:** If collection deleted, all distributions should be deleted
-   - Protects referential integrity
+
+    - ✅ **OK:** If collection deleted, all distributions should be deleted
+    - Protects referential integrity
 
 3. **user_id (CASCADE):**
-   - ⚠️ **RISK:** If user deleted, all financial records lost
-   - **RECOMMENDATION:** Consider `SET NULL` or soft deletes for GDPR compliance
+
+    - ⚠️ **RISK:** If user deleted, all financial records lost
+    - **RECOMMENDATION:** Consider `SET NULL` or soft deletes for GDPR compliance
 
 4. **egi_blockchain_id (SET NULL):**
-   - ✅ **OK:** If blockchain record deleted, distribution remains with NULL link
-   - Preserves financial history
+    - ✅ **OK:** If blockchain record deleted, distribution remains with NULL link
+    - Preserves financial history
 
 ---
 
 ## ✅ VERIFICATION CHECKLIST
 
-- [x] Foreign key constraints identified
-- [x] Nullable requirements analyzed
-- [x] Business rules validated
-- [x] Conflict identified: reservation_id NOT NULL
-- [x] Solution proposed: Make nullable + validation logic
-- [x] Index optimization reviewed (all OK)
-- [x] Cascading rules reviewed
-- [x] GDPR implications considered
+-   [x] Foreign key constraints identified
+-   [x] Nullable requirements analyzed
+-   [x] Business rules validated
+-   [x] Conflict identified: reservation_id NOT NULL
+-   [x] Solution proposed: Make nullable + validation logic
+-   [x] Index optimization reviewed (all OK)
+-   [x] Cascading rules reviewed
+-   [x] GDPR implications considered
 
 ---
 
@@ -206,15 +215,17 @@ The original `payment_distributions` table was designed ONLY for reservation-bas
 3. Ensuring backward compatibility with existing reservation data
 
 **Backward Compatibility:**
-- All existing records have `source_type='reservation'` (default)
-- All existing records have valid `reservation_id`
-- New mint-based records will have `source_type='mint'` and NULL `reservation_id`
+
+-   All existing records have `source_type='reservation'` (default)
+-   All existing records have valid `reservation_id`
+-   New mint-based records will have `source_type='mint'` and NULL `reservation_id`
 
 **Data Integrity:**
-- Application-level validation ensures:
-  - Reservation distributions MUST have reservation_id
-  - Mint distributions MUST have egi_blockchain_id
-  - No orphaned distributions possible
+
+-   Application-level validation ensures:
+    -   Reservation distributions MUST have reservation_id
+    -   Mint distributions MUST have egi_blockchain_id
+    -   No orphaned distributions possible
 
 ---
 

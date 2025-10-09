@@ -58,29 +58,50 @@
                     <div class="rounded-lg bg-white p-6 shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.payment.title') }}</h2>
 
-                        {{-- Reservation Summary --}}
-                        <div class="mb-6 rounded-lg bg-green-50 p-4">
-                            <h3 class="mb-2 font-semibold text-green-900">{{ __('mint.payment.winning_reservation') }}
-                            </h3>
-                            <div class="space-y-1 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="text-green-700">{{ __('mint.payment.your_offer') }}</span>
-                                    <span
-                                        class="font-bold text-green-900">€{{ number_format($reservation->offer_amount_fiat ?? $reservation->amount_eur, 2) }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-green-700">{{ __('mint.payment.reservation_date') }}</span>
-                                    <span
-                                        class="text-green-900">{{ $reservation->created_at->format('d/m/Y H:i') }}</span>
+                        {{-- Reservation Summary (if minting after reservation) --}}
+                        @if ($reservation)
+                            <div class="mb-6 rounded-lg bg-green-50 p-4">
+                                <h3 class="mb-2 font-semibold text-green-900">
+                                    {{ __('mint.payment.winning_reservation') }}
+                                </h3>
+                                <div class="space-y-1 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-green-700">{{ __('mint.payment.your_offer') }}</span>
+                                        <span
+                                            class="font-bold text-green-900">€{{ number_format($reservation->amount_eur ?? 0, 2) }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-green-700">{{ __('mint.payment.reservation_date') }}</span>
+                                        <span
+                                            class="text-green-900">{{ $reservation->created_at->format('d/m/Y H:i') }}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @else
+                            {{-- Direct Mint Price --}}
+                            <div class="mb-6 rounded-lg bg-blue-50 p-4">
+                                <h3 class="mb-2 font-semibold text-blue-900">
+                                    {{ __('mint.payment.direct_mint_price') }}
+                                </h3>
+                                <div class="space-y-1 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-700">{{ __('mint.payment.base_price') }}</span>
+                                        <span
+                                            class="font-bold text-blue-900">€{{ number_format($egi->price ?? 0, 2) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
 
                         {{-- Payment Form --}}
-                        <form id="mint-form" action="{{ route('mint.process') }}" method="POST" class="space-y-4">
+                        <form id="mint-form"
+                            action="{{ $reservation ? route('mint.process') : route('egi.mint-direct.process', $egi->id) }}"
+                            method="POST" class="space-y-4">
                             @csrf
                             <input type="hidden" name="egi_id" value="{{ $egi->id }}">
-                            <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
+                            @if ($reservation)
+                                <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
+                            @endif
 
                             {{-- Payment Method --}}
                             <div>
@@ -119,8 +140,9 @@
                             <div class="border-t pt-4">
                                 <div class="flex items-center justify-between text-lg font-semibold">
                                     <span>{{ __('mint.payment.total_label') }}</span>
-                                    <span
-                                        class="text-green-600">€{{ number_format($reservation->offer_amount_fiat ?? $reservation->amount_eur, 2) }}</span>
+                                    <span class="text-green-600">
+                                        €{{ number_format($reservation ? $reservation->amount_eur : $egi->price, 2) }}
+                                    </span>
                                 </div>
                             </div>
 
@@ -194,9 +216,17 @@
                         body: formData,
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                'content')
+                                'content'),
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Server response:', errorText);
+                        throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+                    }
 
                     const result = await response.json();
 
@@ -204,7 +234,7 @@
                         // Redirect to success page or reload
                         window.location.href = result.redirect || window.location.href + '?success=1';
                     } else {
-                        throw new Error(result.message || '{{ __('mint.js.default_error') }}');
+                        throw new Error(result.message || result.error || '{{ __('mint.js.default_error') }}');
                     }
                 } catch (error) {
                     console.error('Mint error:', error);

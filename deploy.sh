@@ -78,3 +78,8 @@ $PHP_CMD artisan route:cache
 $PHP_CMD artisan view:cache || true
 
 echo "==> DONE (default)"
+
+
+
+
+
