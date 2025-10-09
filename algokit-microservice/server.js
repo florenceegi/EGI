@@ -133,6 +133,85 @@ app.post("/mint-egi-token", async (req, res) => {
     }
 });
 
+// ANCHOR DOCUMENT ENDPOINT - N.A.T.A.N. PA Acts
+app.post("/anchor-document", async (req, res) => {
+    try {
+        console.log("🔐 DOCUMENT ANCHORING REQUEST:", req.body);
+
+        const { document_hash, note, metadata } = req.body;
+
+        if (!document_hash) {
+            return res.status(400).json({
+                success: false,
+                error: "Missing document_hash",
+            });
+        }
+
+        // Get network parameters
+        const params = await algodClient.getTransactionParams().do();
+
+        // Create payment transaction with note containing document hash
+        // Note: We use a minimal payment (0 ALGO) just to anchor the hash
+        const noteData =
+            note ||
+            JSON.stringify({
+                type: "document_anchor",
+                hash: document_hash,
+                protocol: metadata?.protocol_number,
+                timestamp: new Date().toISOString(),
+            });
+
+        const txn = algosdk.makePaymentTxnWithSuggestedParams(
+            treasuryAccount.addr, // from (treasury)
+            treasuryAccount.addr, // to (self)
+            0, // amount (0 ALGO)
+            undefined, // close remainder to
+            new Uint8Array(Buffer.from(noteData)), // note with document hash
+            params // suggested params
+        );
+
+        // Sign transaction
+        const signedTxn = txn.signTxn(treasuryAccount.sk);
+
+        // Submit to REAL blockchain
+        console.log("📡 Submitting document anchor to blockchain...");
+        const txResponse = await algodClient.sendRawTransaction(signedTxn).do();
+
+        // Wait for confirmation
+        console.log("⏳ Waiting for confirmation...");
+        const confirmation = await algosdk.waitForConfirmation(
+            algodClient,
+            txResponse.txId,
+            4
+        );
+
+        console.log("✅ DOCUMENT ANCHORED ON BLOCKCHAIN!");
+        console.log("   TX ID:", txResponse.txId);
+        console.log("   Round:", confirmation["confirmed-round"]);
+        console.log("   Hash:", document_hash.substring(0, 16) + "...");
+
+        res.json({
+            success: true,
+            data: {
+                txid: txResponse.txId,
+                block: confirmation["confirmed-round"],
+                network: "algorand-sandbox",
+                hash: document_hash,
+                timestamp: new Date().toISOString(),
+                mode: "REAL_BLOCKCHAIN",
+            },
+        });
+    } catch (error) {
+        console.error("❌ DOCUMENT ANCHORING FAILED:", error);
+
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            mode: "REAL_BLOCKCHAIN",
+        });
+    }
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`🔥 REAL BLOCKCHAIN MICROSERVICE running on port ${PORT}`);
