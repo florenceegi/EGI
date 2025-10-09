@@ -37,6 +37,7 @@ use App\Services\Menu\Items\PAHeritageMenu;
 use App\Services\Menu\Items\PACoAMenu;
 use App\Services\Menu\Items\PAInspectorsMenu;
 use App\Services\Menu\Items\PAActsMenu;
+use App\Services\Menu\Items\PANatanMenu;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -47,14 +48,16 @@ use Illuminate\Support\Facades\Log;
  * @package App\Services\Menu
  * @version 2.0
  */
-class ContextMenus {
+class ContextMenus
+{
     /**
      * Get menu groups for specific application context
      *
      * @param string $context The current application context
      * @return array Array of MenuGroup objects for the context
      */
-    public static function getMenusForContext(string $context): array {
+    public static function getMenusForContext(string $context): array
+    {
         $menus = [];
 
         Log::channel('upload')->info('🔍 CONTEXT MENUS - PA CONTEXT DETECTED', [
@@ -176,9 +179,9 @@ class ContextMenus {
                 Log::channel('upload')->info('🔍 CONTEXT MENUS - PA ACTS CONTEXT', [
                     'context' => $context,
                 ]);
-                
+
                 $paActsMenu = new MenuGroup(__('menu.pa_acts_management'), 'pa-acts', [
-                    
+
                     new MenuItem(
                         translationKey: 'menu.pa_acts_list',
                         route: 'pa.acts.index',
@@ -193,7 +196,7 @@ class ContextMenus {
                     ),
                 ]);
                 $menus[] = $paActsMenu;
-              
+
                 break;
 
             // case 'egis':
@@ -226,7 +229,7 @@ class ContextMenus {
             //     ]);
             //     $menus[] = $paNavMenu;
             //     break;
-                
+
             case 'pa.egis':
             case 'pa.dashboard':
             case 'pa.heritage':
@@ -241,6 +244,7 @@ class ContextMenus {
                 $paMainMenu = new MenuGroup(__('menu.pa_management'), 'pa-building', [
                     new PAHeritageMenu(),
                     new PAActsMenu(),
+                    new PANatanMenu(),
                     new PACoAMenu(),
                     new PAInspectorsMenu(),
                 ]);

@@ -62,6 +62,7 @@ return [
     'pa_dashboard' => 'Dashboard',
     'pa_heritage' => 'Documenti Certificati',
     'pa_acts' => 'Atti Tokenizzati',
+    'pa_natan' => 'N.A.T.A.N. AI Intelligence',
     'pa_coa' => 'Certificati CoA',
     'pa_inspectors' => 'Ispettori Assegnati',
 
@@ -80,4 +81,12 @@ return [
     'egis' => 'Patrimonio Culturale',
     'heritage_list' => 'Lista Beni Culturali',
     'heritage_create' => 'Carica Bene',
+
+    // N.A.T.A.N. specific items
+    'pa.natan' => 'N.A.T.A.N. AI',
+    'pa_natan_dashboard' => 'Dashboard N.A.T.A.N.',
+    'pa_natan_upload' => 'Carica Documento',
+    'pa_natan_acts' => 'Atti Analizzati',
+    'pa_natan_search' => 'Ricerca Intelligente',
+    'pa_natan_stats' => 'Statistiche AI',
 ];

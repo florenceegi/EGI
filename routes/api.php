@@ -204,6 +204,61 @@ Route::middleware(['auth:sanctum'])->get('/user/welcome-message', function (Requ
 
 /*
 |--------------------------------------------------------------------------
+| N.A.T.A.N. API Routes (AI Document Intelligence for PA)
+|--------------------------------------------------------------------------
+|
+| RESTful API endpoints for N.A.T.A.N. module:
+| - Document upload and AI analysis
+| - Acts management and retrieval
+| - Search and statistics
+|
+| Authentication: Sanctum (PA users only)
+| Permission: access_pa_dashboard
+| Rate limiting: Tiered by endpoint type
+|
+| @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+| @version 1.0.0 (FlorenceEGI - N.A.T.A.N.)
+| @date 2025-10-09
+*/
+
+Route::prefix('natan')->name('api.natan.')->middleware(['auth:sanctum'])->group(function () {
+
+    // Document upload and analysis (rate limited: 20 uploads per hour)
+    Route::post('/analyze', [App\Http\Controllers\Api\NatanController::class, 'analyze'])
+        ->name('analyze')
+        ->middleware('throttle:20,60');
+
+    // Job status polling (rate limited: 120 requests per minute for active polling)
+    Route::get('/jobs/{jobId}', [App\Http\Controllers\Api\NatanController::class, 'getJobStatus'])
+        ->name('jobs.status')
+        ->middleware('throttle:120,1');
+
+    // Acts retrieval and management (standard rate limit)
+    Route::middleware('throttle:60,1')->group(function () {
+        // Get paginated acts with filters
+        Route::get('/acts', [App\Http\Controllers\Api\NatanController::class, 'getActs'])
+            ->name('acts.index');
+
+        // Get single act by ID
+        Route::get('/acts/{id}', [App\Http\Controllers\Api\NatanController::class, 'getAct'])
+            ->name('acts.show');
+
+        // Search acts by full-text query
+        Route::get('/search', [App\Http\Controllers\Api\NatanController::class, 'searchActs'])
+            ->name('acts.search');
+
+        // Get statistics
+        Route::get('/stats', [App\Http\Controllers\Api\NatanController::class, 'getStats'])
+            ->name('stats');
+
+        // Get available filter options
+        Route::get('/filters', [App\Http\Controllers\Api\NatanController::class, 'getFilters'])
+            ->name('filters');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
 | PSP Webhook Routes (No Authentication - External PSP Callbacks)
 |--------------------------------------------------------------------------
 |

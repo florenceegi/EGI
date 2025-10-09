@@ -238,6 +238,10 @@ Route::prefix('info')->name('info.')->group(function () {
         return view('info.white-paper-finanziario');
     })->name('white-paper-finanziario');
 
+    Route::get('/florenceegi-source-truth', function () {
+        return view('info.florenceegi_source_truth');
+    })->name('florenceegi-source-truth');
+
     Route::get('/attivare', function () {
         return view('info.under-construction', ['title' => 'Come co-creare un EGI?', 'subtitle' => 'Guida step-by-step per co-creare il tuo EGI (Environmental Goods Invent)']);
     })->name('attivare');

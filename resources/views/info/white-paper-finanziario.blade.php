@@ -161,16 +161,16 @@
 <body class="antialiased">
     <div class="min-h-screen">
         <header class="sticky top-0 z-50 bg-white shadow-sm">
-            <div class="px-4 py-6 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 py-6 text-center sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold text-emerald-800">White Paper Finanziario Interattivo</h1>
-                <p class="mt-2 text-gray-600 text-md">Esplora la gestione finanziaria e fiscale di FlorenceEGI in modo
+                <p class="text-md mt-2 text-gray-600">Esplora la gestione finanziaria e fiscale di FlorenceEGI in modo
                     semplice e intuitivo.</p>
             </div>
         </header>
 
-        <main class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="p-6 mb-8 bg-white shadow-lg rounded-2xl">
-                <h2 class="mb-4 text-xl font-bold text-center text-gray-800">Inizia da qui: seleziona un argomento o il
+        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <div class="mb-8 rounded-2xl bg-white p-6 shadow-lg">
+                <h2 class="mb-4 text-center text-xl font-bold text-gray-800">Inizia da qui: seleziona un argomento o il
                     tuo ruolo.</h2>
                 <nav id="role-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4">
                 </nav>
@@ -180,10 +180,10 @@
             </div>
 
             <!-- GLOSSARIO INSERITO QUI -->
-            <section id="glossario" class="mt-16 fade-in">
-                <h2 class="pt-12 mb-10 text-4xl font-bold text-center border-t border-gray-200 text-emerald-800">
+            <section id="glossario" class="fade-in mt-16">
+                <h2 class="mb-10 border-t border-gray-200 pt-12 text-center text-4xl font-bold text-emerald-800">
                     Glossario</h2>
-                <div class="p-8 bg-white shadow-lg rounded-2xl">
+                <div class="rounded-2xl bg-white p-8 shadow-lg">
                     <dl class="space-y-8">
                         <div>
                             <dt id="glossary-anchor-hash" class="text-xl font-bold text-emerald-700">Anchor hash</dt>
@@ -595,8 +595,8 @@
             </section>
         </main>
 
-        <footer class="mt-16 text-white bg-gray-900">
-            <div class="container px-6 py-12 mx-auto max-w-7xl">
+        <footer class="mt-16 bg-gray-900 text-white">
+            <div class="container mx-auto max-w-7xl px-6 py-12">
                 <p class="text-center text-gray-500">&copy; 2025 Florence EGI | Tutti i diritti riservati.</p>
             </div>
         </footer>
@@ -813,6 +813,15 @@
                 'inline-flex items-center gap-2 px-5 py-3 font-medium text-white transition-all duration-200 ease-in-out transform bg-emerald-600 rounded-xl hover:bg-emerald-700 hover:scale-105 hover:shadow-lg nav-item';
             homeButton.innerHTML = '<span class="text-xl material-icons">home</span><span>Home</span>';
             roleNav.appendChild(homeButton);
+
+            // Add FlorenceEGI Source Truth button
+            const sourceTruthButton = document.createElement('a');
+            sourceTruthButton.href = '{{ route('info.florenceegi-source-truth') }}';
+            sourceTruthButton.className =
+                'inline-flex items-center gap-2 px-5 py-3 font-medium text-white transition-all duration-200 ease-in-out transform bg-blue-600 rounded-xl hover:bg-blue-700 hover:scale-105 hover:shadow-lg nav-item';
+            sourceTruthButton.innerHTML =
+                '<span class="text-xl material-icons">description</span><span>Source Truth</span>';
+            roleNav.appendChild(sourceTruthButton);
 
             Object.keys(contentData).forEach(key => {
                 const sectionData = contentData[key];
