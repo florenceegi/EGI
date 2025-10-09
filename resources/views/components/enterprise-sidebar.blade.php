@@ -101,18 +101,7 @@
             <span class="inline-block mt-2 text-sm text-white/70">{{ $contextTitle }}</span>
         @endif
     </div>
-
-    <!-- Dashboard Link (sempre visibile) -->
-    <div class="px-4 py-4">
-        <a href="{{ route('pa.dashboard') }}"
-            class="{{ Route::currentRouteName() === 'pa.dashboard' ? 'bg-primary text-primary-content font-semibold shadow-sm' : 'bg-white/10 hover:bg-white/20' }} flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors duration-150">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
-            </svg>
-            <span>{{ __('menu.dashboard') }}</span>
-        </a>
-    </div>
-
+   
     <!-- Menu Navigation -->
     <div class="flex-1 px-4 py-2 space-y-3 overflow-y-auto">
         @if (!empty($menus))

@@ -170,6 +170,38 @@
                 </div>
             </div>
         </div>
+
+        {{-- N.A.T.A.N. AI Analysis Widget --}}
+        <div
+            class="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#1B365D] to-[#D4A574] p-6 text-white shadow-lg">
+            <div class="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-white/10"></div>
+            <div class="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-white/5"></div>
+
+            <div class="relative">
+                <div class="mb-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="rounded-lg bg-white/20 p-2">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <div class="text-xs font-medium text-white/80">N.A.T.A.N.</div>
+                    </div>
+
+                    <div class="mb-1 text-2xl font-bold text-white">
+                        {{ $stats['natan_analyzed'] ?? 0 }}
+                    </div>
+
+                    <div class="text-xs text-white/70">
+                        Atti analizzati con AI
+                    </div>
+                </div>
+
+                <div class="text-sm text-white/90">
+                    Neuro-Analytical Text Analysis Network
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Filters Section --}}

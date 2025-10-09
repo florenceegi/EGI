@@ -1,7 +1,7 @@
 {{--
 /**
  * PA Acts Upload Form
- * 
+ *
  * @package Resources\Views\Pa\Acts
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - PA Acts Tokenization)
@@ -14,12 +14,12 @@
     <x-slot:breadcrumb>
         <a href="{{ route('pa.dashboard') }}" class="text-[#D4A574] hover:text-[#C39463]">Dashboard</a>
         <span class="mx-2 text-gray-400">/</span>
-        <a href="{{ route('pa.acts.index') }}" class="text-[#D4A574] hover:text-[#C39463]">Atti Tokenizzati</a>
+        <a href="{{ route('pa.acts.index') }}" class="text-[#D4A574] hover:text-[#C39463]">N.A.T.A.N. Intelligence</a>
         <span class="mx-2 text-gray-400">/</span>
         <span class="text-gray-700">Carica Nuovo Atto</span>
     </x-slot:breadcrumb>
 
-    <x-slot:pageTitle>Carica Nuovo Atto</x-slot:pageTitle>
+    <x-slot:pageTitle>N.A.T.A.N. - Carica Nuovo Atto</x-slot:pageTitle>
 
     {{-- Instructions Card --}}
     <div class="mb-8 rounded-xl border-l-4 border-[#1B365D] bg-blue-50 p-6">
@@ -149,9 +149,56 @@
             </div>
         </div>
 
+        {{-- N.A.T.A.N. AI Analysis Section --}}
+        <div class="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+            <div class="mb-6 flex items-center">
+                <div
+                    class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-[#1B365D] to-[#D4A574]">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-[#1B365D]">3. N.A.T.A.N. - Analisi Intelligente</h2>
+                    <p class="text-sm text-gray-600">Neuro-Analytical Text Analysis Network per l'Intelligenza
+                        Documentale</p>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-[#D4A574] bg-gradient-to-r from-blue-50 to-[#D4A574]/10 p-6">
+                <div class="flex items-start">
+                    <input type="checkbox" id="enable_natan_analysis" name="enable_natan_analysis" value="1"
+                        checked class="mt-1 h-4 w-4 rounded border-gray-300 text-[#1B365D] focus:ring-[#D4A574]">
+                    <div class="ml-3">
+                        <label for="enable_natan_analysis"
+                            class="cursor-pointer text-sm font-semibold text-[#1B365D]">
+                            Abilita Analisi N.A.T.A.N.
+                        </label>
+                        <p class="mt-1 text-xs text-gray-700">
+                            Il nostro assistente AI analizzerà automaticamente il documento per estrarre:
+                        </p>
+                        <ul class="mt-2 list-inside list-disc space-y-1 text-xs text-gray-700">
+                            <li><strong>Classificazione automatica</strong> del tipo di atto</li>
+                            <li><strong>Estrazione metadati</strong> (date, numeri, riferimenti normativi)</li>
+                            <li><strong>Analisi semantica</strong> per identificare argomenti chiave</li>
+                            <li><strong>Suggerimenti</strong> per migliorare la classificazione</li>
+                        </ul>
+                        <div class="mt-3 flex items-center text-xs text-[#1B365D]">
+                            <svg class="mr-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">Powered by FlorenceEGI AI Engine</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- Title and Description --}}
         <div class="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-            <h2 class="mb-6 text-xl font-bold text-[#1B365D]">3. Titolo e descrizione</h2>
+            <h2 class="mb-6 text-xl font-bold text-[#1B365D]">4. Titolo e descrizione</h2>
 
             {{-- Title --}}
             <div class="mb-6">
@@ -314,6 +361,12 @@
                                             <p class="text-sm"><strong>Codice verifica:</strong> <code class="bg-gray-200 px-2 py-1 rounded">${data.data.public_code}</code></p>
                                             <p class="text-sm mt-2"><strong>Protocollo:</strong> ${data.data.protocol_number}</p>
                                             <p class="text-sm mt-2"><strong>Status:</strong> <span class="text-yellow-600">In attesa di ancoraggio</span></p>
+                                            ${data.data.natan_analysis ? `
+                                                                    <div class="mt-3 pt-3 border-t border-blue-200">
+                                                                        <p class="text-xs text-[#1B365D] font-medium">🤖 N.A.T.A.N. Analysis</p>
+                                                                        <p class="text-xs text-gray-600">Analisi AI completata con successo</p>
+                                                                    </div>
+                                                                    ` : ''}
                                         </div>
                                     </div>
                                 `,

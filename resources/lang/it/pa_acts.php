@@ -1,20 +1,20 @@
 <?php
 
 /**
- * Italian translations for PA Acts Tokenization System
+ * Italian translations for N.A.T.A.N. Intelligence System
  * 
  * @package Resources\Lang\IT
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - PA Acts Tokenization)
+ * @version 1.0.0 (FlorenceEGI - N.A.T.A.N. AI Document Intelligence)
  * @date 2025-10-04
- * @purpose Localizzazione italiana per sistema tokenizzazione atti PA
+ * @purpose Localizzazione italiana per sistema N.A.T.A.N. - Neuro-Analytical Text Analysis Network
  */
 
 return [
     // Page titles
-    'title' => 'Atti Tokenizzati',
-    'page_title' => 'Gestione Atti Amministrativi',
-    'dashboard_title' => 'Dashboard Atti',
+    'title' => 'N.A.T.A.N. Intelligence Center',
+    'page_title' => 'N.A.T.A.N. - Neuro-Analytical Text Analysis Network',
+    'dashboard_title' => 'N.A.T.A.N. AI Dashboard',
 
     // Actions
     'upload_act' => 'Carica Atto',
@@ -191,9 +191,9 @@ return [
 
     // Index page
     'index' => [
-        'page_title' => 'Atti Tokenizzati',
-        'title' => 'Atti Amministrativi Tokenizzati',
-        'subtitle' => 'Gestisci gli atti della tua Pubblica Amministrazione con certificazione blockchain',
+        'page_title' => 'N.A.T.A.N. Intelligence Center',
+        'title' => 'N.A.T.A.N. - Neuro-Analytical Text Analysis Network',
+        'subtitle' => 'Intelligenza Artificiale per l\'analisi e certificazione blockchain degli atti amministrativi',
         'upload_new_act' => 'Carica Nuovo Atto',
 
         // Stats
@@ -250,7 +250,7 @@ return [
 
     // Show page
     'show' => [
-        'page_title' => 'Atto :protocol',
+        'page_title' => 'N.A.T.A.N. Analysis - :protocol',
         'back_to_list' => 'Torna alla Lista',
         'protocol_date' => 'Data Protocollo',
 

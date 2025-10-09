@@ -140,7 +140,8 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @middleware auth, role:pa_entity
  * @views pa/acts/index.blade.php, pa/acts/show.blade.php
  */
-class PaActController extends Controller {
+class PaActController extends Controller
+{
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected PaActService $paActService;
@@ -181,7 +182,8 @@ class PaActController extends Controller {
      * EXAMPLE URL:
      * /pa/acts?search=12345&doc_type=delibera&date_from=2025-01-01&status=anchored
      */
-    public function index(Request $request): View {
+    public function index(Request $request): View
+    {
         try {
             $user = auth()->user();
 
@@ -251,6 +253,10 @@ class PaActController extends Controller {
                         $q->whereNull('pa_anchored')
                             ->orWhere('pa_anchored', false);
                     })
+                    ->count(),
+                'natan_analyzed' => Egi::whereHas('collection', fn($q) => $q->where('creator_id', $user->id))
+                    ->whereNotNull('pa_protocol_number')
+                    ->whereNotNull('ai_analysis_completed_at') // Atti analizzati da N.A.T.A.N.
                     ->count()
             ];
 
@@ -301,7 +307,8 @@ class PaActController extends Controller {
      * - Blockchain data (TXID, Merkle)
      * - QR code + verification URL
      */
-    public function show(Egi $egi): View|RedirectResponse {
+    public function show(Egi $egi): View|RedirectResponse
+    {
         try {
             $user = auth()->user();
 
@@ -405,7 +412,8 @@ class PaActController extends Controller {
      * - User owns collection (creator_id match)
      * - Or user is collection admin (pivot role = admin)
      */
-    protected function canViewAct($user, Egi $egi): bool {
+    protected function canViewAct($user, Egi $egi): bool
+    {
         // Check collection ownership
         if ($egi->collection && $egi->collection->creator_id === $user->id) {
             return true;
@@ -433,7 +441,8 @@ class PaActController extends Controller {
      * @param string|null $docType
      * @return string
      */
-    protected function getDocTypeLabel(?string $docType): string {
+    protected function getDocTypeLabel(?string $docType): string
+    {
         if (!$docType) {
             return __('pa_acts.doc_types.unknown');
         }
@@ -449,7 +458,8 @@ class PaActController extends Controller {
      * 
      * Uses BaconQrCode (same library as Jetstream 2FA)
      */
-    protected function generateQrCodeSvg(string $data): string {
+    protected function generateQrCodeSvg(string $data): string
+    {
         $renderer = new \BaconQrCode\Renderer\ImageRenderer(
             new \BaconQrCode\Renderer\RendererStyle\RendererStyle(200),
             new \BaconQrCode\Renderer\Image\SvgImageBackEnd()

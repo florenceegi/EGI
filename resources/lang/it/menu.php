@@ -61,32 +61,31 @@ return [
     'pa' => 'Gestione PA Enterprise',
     'pa_dashboard' => 'Dashboard',
     'pa_heritage' => 'Documenti Certificati',
-    'pa_acts' => 'Atti Tokenizzati',
-    'pa_natan' => 'N.A.T.A.N. AI Intelligence',
+    'pa_acts' => 'N.A.T.A.N. Intelligence',
     'pa_coa' => 'Certificati CoA',
     'pa_inspectors' => 'Ispettori Assegnati',
 
     // Context-specific Menu Groups
     'pa_management' => 'Gestione PA',
     'pa_navigation' => 'Navigazione PA',
-    'pa_acts_management' => 'Gestione Atti',
+    'pa_acts_management' => 'N.A.T.A.N. Management',
     'heritage_management' => 'Gestione Patrimonio',
 
     // PA Acts specific items
-    'pa.acts' => 'Atti PA',
-    'pa_acts_list' => 'Lista Atti',
-    'pa_acts_upload' => 'Carica Atto',
+    'pa.acts' => 'N.A.T.A.N. Intelligence',
+    'pa_acts_list' => 'Lista Atti N.A.T.A.N.',
+    'pa_acts_upload' => 'Carica Atto N.A.T.A.N.',
 
     // Heritage specific items
     'egis' => 'Patrimonio Culturale',
     'heritage_list' => 'Lista Beni Culturali',
     'heritage_create' => 'Carica Bene',
 
-    // N.A.T.A.N. specific items
-    'pa.natan' => 'N.A.T.A.N. AI',
-    'pa_natan_dashboard' => 'Dashboard N.A.T.A.N.',
-    'pa_natan_upload' => 'Carica Documento',
+    // N.A.T.A.N. specific items (integrated in pa_acts)
+    'pa.natan' => 'N.A.T.A.N. AI Assistant',
+    'pa_natan_dashboard' => 'Dashboard Atti',
+    'pa_natan_upload' => 'Carica con N.A.T.A.N.',
     'pa_natan_acts' => 'Atti Analizzati',
-    'pa_natan_search' => 'Ricerca Intelligente',
+    'pa_natan_search' => 'Ricerca N.A.T.A.N.',
     'pa_natan_stats' => 'Statistiche AI',
 ];

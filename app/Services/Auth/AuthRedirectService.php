@@ -30,7 +30,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  *
  * Redirect Structure:
  * - creator → 'home' (public homepage)
- * - pa_entity → 'pa.dashboard' (PA dashboard)
+ * - pa_entity → 'pa.acts.index' (PA N.A.T.A.N. Intelligence Center)
  * - inspector → 'inspector.dashboard' (Inspector dashboard) [FUTURE]
  * - company → 'company.dashboard' (Company dashboard) [FUTURE]
  * - collector → 'collector.dashboard' (Collector dashboard) [FUTURE]
@@ -48,7 +48,8 @@ use Ultra\UltraLogManager\UltraLogManager;
  * }
  * ```
  */
-class AuthRedirectService {
+class AuthRedirectService
+{
     /**
      * Ultra Log Manager instance
      */
@@ -61,7 +62,7 @@ class AuthRedirectService {
      * Add new usertypes here as they are implemented
      */
     protected array $redirectRegistry = [
-        'pa_entity' => 'pa.dashboard',      // PA dashboard
+        'pa_entity' => 'pa.acts.index',     // PA N.A.T.A.N. Intelligence Center
         'inspector' => 'inspector.dashboard', // Inspector dashboard [FUTURE]
         'company' => 'company.dashboard',    // Company dashboard [FUTURE]
         'collector' => 'collector.dashboard', // Collector dashboard [FUTURE]
@@ -79,7 +80,8 @@ class AuthRedirectService {
      *
      * @param UltraLogManager $logger
      */
-    public function __construct(UltraLogManager $logger) {
+    public function __construct(UltraLogManager $logger)
+    {
         $this->logger = $logger;
     }
 
@@ -104,11 +106,12 @@ class AuthRedirectService {
      * 5. Log decision for audit
      *
      * Example:
-     * - PA entity user → 'pa.dashboard'
+     * - PA entity user → 'pa.acts.index'
      * - Creator user → 'home'
      * - Unknown usertype → 'home' (fallback)
      */
-    public function getRedirectRoute(User $user): string {
+    public function getRedirectRoute(User $user): string
+    {
         // Get user usertype
         $usertype = $user->usertype ?? 'creator'; // Default to creator if null
 
@@ -153,7 +156,8 @@ class AuthRedirectService {
      *
      * Note: Use getRedirectRoute() and redirect()->route() instead when possible
      */
-    public function getRedirectUrl(User $user): string {
+    public function getRedirectUrl(User $user): string
+    {
         $routeName = $this->getRedirectRoute($user);
         return route($routeName);
     }
@@ -163,7 +167,8 @@ class AuthRedirectService {
      *
      * @return array Redirect registry map
      */
-    public function getRedirectRegistry(): array {
+    public function getRedirectRegistry(): array
+    {
         return $this->redirectRegistry;
     }
 
@@ -173,7 +178,8 @@ class AuthRedirectService {
      * @param string $usertype User type
      * @return bool True if custom redirect exists
      */
-    public function hasCustomRedirect(string $usertype): bool {
+    public function hasCustomRedirect(string $usertype): bool
+    {
         return isset($this->redirectRegistry[$usertype])
             && $this->redirectRegistry[$usertype] !== $this->defaultRoute;
     }

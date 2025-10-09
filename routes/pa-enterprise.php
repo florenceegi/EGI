@@ -108,64 +108,16 @@ Route::prefix('pa')
             ->name('heritage.show')
             ->where('egi', '[0-9]+'); // EGI ID must be numeric
 
-        
+
         Route::prefix('/acts')->group(function () {
             Route::get('/', [PaActController::class, 'index'])->name('acts.index');
             Route::get('/egis', [App\Http\Controllers\EgiController::class, 'index'])->name('acts.egis.index');
             Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('acts.upload');
             Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('acts.upload.post');
             Route::get('/{egi}', [PaActController::class, 'show'])->name('acts.show');
-            
         });
 
         /**
-         * N.A.T.A.N. AI DOCUMENT INTELLIGENCE
-         *
-         * Routes for AI-powered administrative acts analysis
-         *
-         * @version 1.0.0 (FlorenceEGI - N.A.T.A.N.)
-         * @date 2025-10-09
-         */
-        Route::prefix('/natan')->name('natan.')->group(function () {
-            
-            /**
-             * N.A.T.A.N. DASHBOARD
-             * 
-             * GET /pa/natan
-             * Features: Stats overview, recent acts, upload widget
-             */
-            Route::get('/', [App\Http\Controllers\PA\PANatanController::class, 'dashboard'])
-                ->name('dashboard');
-
-            /**
-             * N.A.T.A.N. UPLOAD PAGE
-             * 
-             * GET /pa/natan/upload
-             * Features: Drag&drop upload, processing queue
-             */
-            Route::get('/upload', [App\Http\Controllers\PA\PANatanController::class, 'upload'])
-                ->name('upload');
-
-            /**
-             * N.A.T.A.N. ACTS LIST
-             * 
-             * GET /pa/natan/acts
-             * Features: Full acts table, advanced filters, export
-             */
-            Route::get('/acts', [App\Http\Controllers\PA\PANatanController::class, 'acts'])
-                ->name('acts');
-
-            /**
-             * N.A.T.A.N. ACT DETAIL
-             * 
-             * GET /pa/natan/acts/{id}
-             * Features: Full metadata, JSON viewer, blockchain verification
-             */
-            Route::get('/acts/{id}', [App\Http\Controllers\PA\PANatanController::class, 'show'])
-                ->name('acts.show')
-                ->where('id', '[0-9]+');
-        });
-            /**
          * FUTURE ROUTES (FASE 2-3)
          *
          * Commented out - implement in POST-MVP phases:
