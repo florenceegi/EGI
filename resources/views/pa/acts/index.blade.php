@@ -350,10 +350,10 @@
                                 {{-- Protocol --}}
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <div class="text-sm font-medium text-[#1B365D]">
-                                        {{ $act->metadata['protocol_number'] ?? 'N/A' }}
+                                        {{ $act->pa_protocol_number ?? $act->jsonMetadata['protocol_number'] ?? 'N/A' }}
                                     </div>
                                     <div class="text-xs text-gray-500">
-                                        {{ isset($act->metadata['protocol_date']) ? \Carbon\Carbon::parse($act->metadata['protocol_date'])->format('d/m/Y') : '' }}
+                                        {{ $act->pa_protocol_date ? $act->pa_protocol_date->format('d/m/Y') : (isset($act->jsonMetadata['protocol_date']) ? \Carbon\Carbon::parse($act->jsonMetadata['protocol_date'])->format('d/m/Y') : '') }}
                                     </div>
                                 </td>
 
@@ -367,7 +367,7 @@
                                 {{-- Type --}}
                                 <td class="whitespace-nowrap px-6 py-4">
                                     @php
-                                        $docType = $act->metadata['doc_type'] ?? null;
+                                        $docType = $act->pa_act_type ?? $act->jsonMetadata['doc_type'] ?? null;
                                         $colors = [
                                             'delibera' => 'bg-blue-100 text-blue-800',
                                             'determina' => 'bg-green-100 text-green-800',
