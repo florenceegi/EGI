@@ -45,6 +45,11 @@ return [
         'mint_distribution_error' => 'Errore durante creazione distribuzioni pagamento mint. EgiBlockchain: :egi_blockchain_id, Buyer: :buyer_user_id, Error: :error',
         'mint_not_completed' => 'Tentativo di creare distribuzione per mint non completato. EgiBlockchain: :egi_blockchain_id, Status: :current_status',
         'invalid_payment_amount' => 'Importo pagamento non valido per mint distribution. EgiBlockchain: :egi_blockchain_id, Amount: :paid_amount',
+
+        // AREA 2.2.2 - EgiMintingService Integration Errors (Dev)
+        'egi_mint_with_payment_failed' => 'Mint EGI con distribuzione pagamento fallito. User: :user_id, EGI: :egi_id, Title: :egi_title, PaidAmount: :paid_amount, Error: :error_message',
+        'mint_distribution_partial_failure' => 'Mint riuscito ma distribuzione pagamento fallita. EgiBlockchain: :egi_blockchain_id, User: :user_id, PaidAmount: :paid_amount, Error: :error',
+        'mint_distribution_retry_failed' => 'Retry distribuzione pagamento fallito. EgiBlockchain: :egi_blockchain_id, EGI: :egi_id, Error: :error',
     ],
 
     'user' => [
@@ -84,6 +89,11 @@ return [
         'mint_distribution_error' => 'Errore durante la distribuzione del pagamento. Contatta l\'assistenza.',
         'mint_not_completed' => 'Il mint deve essere completato prima della distribuzione. Riprova dopo il completamento.',
         'invalid_payment_amount' => 'Importo del pagamento non valido. Contatta l\'assistenza.',
+
+        // AREA 2.2.2 - EgiMintingService Integration Errors (User)
+        'egi_mint_with_payment_failed' => 'Errore durante il mint e la distribuzione del pagamento. Il pagamento non è stato effettuato. Riprova o contatta l\'assistenza.',
+        'mint_distribution_partial_failure' => 'Il mint è riuscito ma la distribuzione del pagamento ha avuto problemi. Il team è stato notificato.',
+        'mint_distribution_retry_failed' => 'Impossibile ritentare la distribuzione del pagamento. Contatta l\'assistenza.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

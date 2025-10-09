@@ -5390,5 +5390,37 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // AREA 2.2.2 - EgiMintingService Integration Error Codes
+        'EGI_MINT_WITH_PAYMENT_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.egi_mint_with_payment_failed',
+            'user_message_key' => 'error-manager::errors_2.user.egi_mint_with_payment_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+        'MINT_DISTRIBUTION_PARTIAL_FAILURE' => [
+            'type' => 'warning',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_distribution_partial_failure',
+            'user_message_key' => 'error-manager::errors_2.user.mint_distribution_partial_failure',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+        'MINT_DISTRIBUTION_RETRY_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_distribution_retry_failed',
+            'user_message_key' => 'error-manager::errors_2.user.mint_distribution_retry_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];
