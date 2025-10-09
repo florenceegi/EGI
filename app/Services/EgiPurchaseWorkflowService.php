@@ -105,8 +105,10 @@ class EgiPurchaseWorkflowService {
                 // 5. Create blockchain record placeholder
                 $egiBlockchain = $this->createBlockchainPlaceholder($egi, $user, $paymentResult);
 
-                // 6. Mint EGI on blockchain
-                $mintedEgi = $this->mintEgiOnBlockchain($egi, $user, $egiBlockchain);
+                // 6. Mint EGI on blockchain (AREA 2.2.3: with payment distribution)
+                $mintResult = $this->mintEgiOnBlockchain($egi, $user, $egiBlockchain);
+                $mintedEgi = $mintResult['blockchain'];
+                $distributions = $mintResult['distributions'];
 
                 // 7. Generate certificate
                 $certificatePath = $this->generateCertificate($mintedEgi, $user);
@@ -129,7 +131,8 @@ class EgiPurchaseWorkflowService {
                         'blockchain_tx_id' => $mintedEgi->blockchain_tx_id,
                         'certificate_uuid' => $mintedEgi->certificate_uuid,
                         'certificate_path' => $certificatePath,
-                        'payment_provider' => $paymentService->getProviderName()
+                        'payment_provider' => $paymentService->getProviderName(),
+                        'distributions_count' => count($distributions) // AREA 2.2.3
                     ]
                 );
 
@@ -141,6 +144,7 @@ class EgiPurchaseWorkflowService {
                     'asa_id' => $mintedEgi->asa_id,
                     'blockchain_tx_id' => $mintedEgi->blockchain_tx_id,
                     'certificate_uuid' => $mintedEgi->certificate_uuid,
+                    'distributions_count' => count($distributions), // AREA 2.2.3
                     'log_category' => 'EGI_PURCHASE_WORKFLOW_SUCCESS'
                 ]);
 
@@ -149,6 +153,7 @@ class EgiPurchaseWorkflowService {
                     'egi' => $egi,
                     'payment_result' => $paymentResult,
                     'blockchain_record' => $mintedEgi,
+                    'distributions' => $distributions, // AREA 2.2.3
                     'certificate_path' => $certificatePath,
                     'verification_url' => url("/verify/{$mintedEgi->certificate_uuid}"),
                     'workflow_id' => $this->generateWorkflowId(),
@@ -207,8 +212,10 @@ class EgiPurchaseWorkflowService {
                 // 5. Create blockchain record with reservation link
                 $egiBlockchain = $this->createBlockchainWithReservation($egi, $user, $reservation, $paymentResult);
 
-                // 6. Mint EGI on blockchain
-                $mintedEgi = $this->mintEgiOnBlockchain($egi, $user, $egiBlockchain);
+                // 6. Mint EGI on blockchain (AREA 2.2.3: with payment distribution)
+                $mintResult = $this->mintEgiOnBlockchain($egi, $user, $egiBlockchain);
+                $mintedEgi = $mintResult['blockchain'];
+                $distributions = $mintResult['distributions'];
 
                 // 7. Generate certificate
                 $certificatePath = $this->generateCertificate($mintedEgi, $user);
@@ -236,7 +243,8 @@ class EgiPurchaseWorkflowService {
                         'blockchain_tx_id' => $mintedEgi->blockchain_tx_id,
                         'certificate_uuid' => $mintedEgi->certificate_uuid,
                         'certificate_path' => $certificatePath,
-                        'payment_provider' => $paymentService->getProviderName()
+                        'payment_provider' => $paymentService->getProviderName(),
+                        'distributions_count' => count($distributions) // AREA 2.2.3
                     ]
                 );
 
@@ -249,6 +257,7 @@ class EgiPurchaseWorkflowService {
                     'asa_id' => $mintedEgi->asa_id,
                     'blockchain_tx_id' => $mintedEgi->blockchain_tx_id,
                     'certificate_uuid' => $mintedEgi->certificate_uuid,
+                    'distributions_count' => count($distributions), // AREA 2.2.3
                     'log_category' => 'EGI_RESERVATION_PURCHASE_SUCCESS'
                 ]);
 
@@ -258,6 +267,7 @@ class EgiPurchaseWorkflowService {
                     'reservation' => $reservation->fresh(),
                     'payment_result' => $paymentResult,
                     'blockchain_record' => $mintedEgi,
+                    'distributions' => $distributions, // AREA 2.2.3
                     'certificate_path' => $certificatePath,
                     'verification_url' => url("/verify/{$mintedEgi->certificate_uuid}"),
                     'workflow_id' => $this->generateWorkflowId(),
@@ -433,26 +443,45 @@ class EgiPurchaseWorkflowService {
     }
 
     /**
-     * Mint EGI on blockchain through minting service
+     * Mint EGI on blockchain with automatic payment distribution (AREA 2.2.3)
+     * Integrates mintEgiWithPayment() from EgiMintingService for dual tracking
      *
      * @param Egi $egi EGI to mint
      * @param User $user User requesting mint
      * @param EgiBlockchain $egiBlockchain Blockchain record to update
-     * @return EgiBlockchain Updated blockchain record
+     * @return array ['blockchain' => EgiBlockchain, 'distributions' => array]
      * @throws \Exception Minting failed
      */
-    private function mintEgiOnBlockchain(Egi $egi, User $user, EgiBlockchain $egiBlockchain): EgiBlockchain {
+    private function mintEgiOnBlockchain(Egi $egi, User $user, EgiBlockchain $egiBlockchain): array {
         try {
             $egiBlockchain->update(['mint_status' => 'minting']);
 
-            $mintedEgi = $this->mintingService->mintEgi($egi, $user, [
+            // AREA 2.2.3: Use mintEgiWithPayment() for automatic payment distribution
+            $paymentData = [
+                'paid_amount' => $egiBlockchain->paid_amount,
+                'paid_currency' => $egiBlockchain->paid_currency ?? 'EUR',
+                'payment_method' => $egiBlockchain->payment_method ?? 'fiat'
+            ];
+
+            $metadata = [
                 'purchase_type' => $egiBlockchain->ownership_type,
                 'payment_reference' => $egiBlockchain->payment_reference,
                 'payment_amount' => $egiBlockchain->paid_amount,
                 'payment_currency' => $egiBlockchain->paid_currency
+            ];
+
+            // Call integrated mint + distribution service (AREA 2.2.2)
+            $mintResult = $this->mintingService->mintEgiWithPayment($egi, $user, $paymentData, $metadata);
+
+            $this->logger->info('EGI minted with payment distribution', [
+                'egi_id' => $egi->id,
+                'blockchain_record_id' => $mintResult['blockchain']->id,
+                'distributions_count' => count($mintResult['distributions']),
+                'payment_distributed' => $mintResult['payment_distributed'],
+                'log_category' => 'PURCHASE_WORKFLOW_MINT_DISTRIBUTION'
             ]);
 
-            return $mintedEgi;
+            return $mintResult;
         } catch (\Exception $e) {
             $egiBlockchain->update([
                 'mint_status' => 'failed',
