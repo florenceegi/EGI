@@ -73,7 +73,46 @@ php artisan migrate --force
 echo "✅ Database ready"
 
 echo ""
-echo "⚡ 4. STARTING QUEUE WORKER..."
+echo "⛓️  4. STARTING ALGOKIT MICROSERVICE..."
+echo "--------------------------------------"
+
+# Verifica se il microservice è già in esecuzione
+if pgrep -f "algokit-microservice/server.js" > /dev/null; then
+    echo "⚠️  AlgoKit microservice already running. Killing existing process..."
+    pkill -f "algokit-microservice/server.js"
+    sleep 2
+fi
+
+# Verifica se node_modules esistono
+if [ ! -d "algokit-microservice/node_modules" ]; then
+    echo "📦 Installing AlgoKit microservice dependencies..."
+    cd algokit-microservice
+    npm install
+    cd ..
+fi
+
+# Avvia AlgoKit microservice in background
+echo "Starting AlgoKit microservice on port 3000..."
+cd algokit-microservice
+nohup npm start > ../storage/logs/algokit-microservice.log 2>&1 &
+MICROSERVICE_PID=$!
+cd ..
+
+# Attendi che il microservice sia pronto
+echo "⏳ Waiting for microservice to be ready..."
+for i in {1..10}; do
+    if curl -s http://localhost:3000/health > /dev/null 2>&1; then
+        echo "✅ AlgoKit microservice started (PID: $MICROSERVICE_PID)"
+        break
+    fi
+    if [ $i -eq 10 ]; then
+        echo "⚠️  Warning: AlgoKit microservice may not be ready"
+    fi
+    sleep 1
+done
+
+echo ""
+echo "⚡ 5. STARTING QUEUE WORKER..."
 echo "-----------------------------"
 
 # Verifica se queue worker è già in esecuzione
@@ -91,17 +130,19 @@ QUEUE_PID=$!
 echo "✅ Queue worker started (PID: $QUEUE_PID)"
 
 echo ""
-echo "🌐 5. STARTING DEVELOPMENT SERVER..."
+echo "🌐 6. STARTING DEVELOPMENT SERVER..."
 echo "----------------------------------"
 
 # Se non usa Docker, avvia server di sviluppo
 if ! docker-compose ps | grep -q "app.*Up"; then
     echo "Docker not running, starting development server..."
     echo "🌍 Server will be available at: http://localhost:8000"
+    echo "⛓️  AlgoKit Microservice PID: $MICROSERVICE_PID"
     echo "📋 Queue worker PID: $QUEUE_PID"
     echo ""
     echo "🛑 To stop services:"
     echo "   - Press Ctrl+C to stop development server"
+    echo "   - Kill AlgoKit microservice: kill $MICROSERVICE_PID"
     echo "   - Kill queue worker: kill $QUEUE_PID"
     echo "   - Stop Docker: docker-compose down"
     echo ""
@@ -115,6 +156,7 @@ else
     echo "======================="
     echo "🌍 Application: http://localhost:8000"
     echo "📊 Database: MariaDB via Docker"
+    echo "⛓️  AlgoKit Microservice: http://localhost:3000 (PID: $MICROSERVICE_PID)"
     echo "🔄 Queue Worker: Running (PID: $QUEUE_PID)"
     echo "⛓️  Blockchain Queue: blockchain,default"
     echo ""
@@ -122,14 +164,18 @@ else
     echo "   - Queue status: php artisan queue:monitor"
     echo "   - Queue failed: php artisan queue:failed"
     echo "   - Queue restart: php artisan queue:restart"
+    echo "   - Microservice health: curl http://localhost:3000/health"
+    echo "   - Microservice logs: tail -f storage/logs/algokit-microservice.log"
     echo ""
     echo "🛑 TO STOP:"
+    echo "   - AlgoKit microservice: kill $MICROSERVICE_PID"
     echo "   - Queue worker: kill $QUEUE_PID"
     echo "   - Docker services: docker-compose down"
 fi
 
 echo ""
 echo "🔍 HEALTH CHECKS:"
+echo "   - AlgoKit microservice: curl http://localhost:3000/health"
 echo "   - Webhook health: curl http://localhost:8000/api/webhooks/health"
 echo "   - Application: curl http://localhost:8000/health"
 echo ""

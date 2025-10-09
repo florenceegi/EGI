@@ -17,7 +17,28 @@ echo "============================================="
 cd "$(dirname "$0")"
 
 echo ""
-echo "⚡ 1. STOPPING QUEUE WORKERS..."
+echo "⛓️  1. STOPPING ALGOKIT MICROSERVICE..."
+echo "--------------------------------------"
+
+# Ferma AlgoKit microservice
+if pgrep -f "algokit-microservice/server.js" > /dev/null; then
+    echo "Stopping AlgoKit microservice..."
+    pkill -f "algokit-microservice/server.js"
+    sleep 2
+
+    # Verifica se è stato fermato
+    if pgrep -f "algokit-microservice/server.js" > /dev/null; then
+        echo "⚠️  Force killing AlgoKit microservice..."
+        pkill -9 -f "algokit-microservice/server.js"
+    fi
+
+    echo "✅ AlgoKit microservice stopped"
+else
+    echo "ℹ️  AlgoKit microservice not running"
+fi
+
+echo ""
+echo "⚡ 2. STOPPING QUEUE WORKERS..."
 echo "------------------------------"
 
 # Ferma tutti i queue worker
@@ -38,7 +59,7 @@ else
 fi
 
 echo ""
-echo "🐳 2. STOPPING DOCKER SERVICES..."
+echo "🐳 3. STOPPING DOCKER SERVICES..."
 echo "---------------------------------"
 
 # Ferma servizi Docker
@@ -55,7 +76,7 @@ else
 fi
 
 echo ""
-echo "🧹 3. CLEANUP..."
+echo "🧹 4. CLEANUP..."
 echo "---------------"
 
 # Cleanup processi Laravel serve
@@ -71,17 +92,17 @@ if [ -f "storage/logs/laravel.log.lock" ]; then
 fi
 
 echo ""
-echo "📊 4. FINAL STATUS CHECK..."
+echo "📊 5. FINAL STATUS CHECK..."
 echo "-------------------------"
 
 # Verifica che tutto sia fermato
-RUNNING_PROCESSES=$(pgrep -f "artisan|php.*serve" | wc -l)
+RUNNING_PROCESSES=$(pgrep -f "artisan|php.*serve|algokit-microservice" | wc -l)
 
 if [ "$RUNNING_PROCESSES" -eq 0 ]; then
-    echo "✅ All Laravel processes stopped"
+    echo "✅ All processes stopped"
 else
-    echo "⚠️  Warning: $RUNNING_PROCESSES Laravel processes still running"
-    echo "Use 'ps aux | grep artisan' to check manually"
+    echo "⚠️  Warning: $RUNNING_PROCESSES processes still running"
+    echo "Use 'ps aux | grep -E \"artisan|algokit\"' to check manually"
 fi
 
 # Verifica Docker
