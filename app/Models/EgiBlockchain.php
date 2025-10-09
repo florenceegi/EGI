@@ -66,6 +66,13 @@ class EgiBlockchain extends Model {
         'merchant_psp_config',
         'crypto_payment_reference',
         'supports_crypto_payments',
+
+        // Phase 2 Area 5: Metadata fields
+        'metadata',
+        'creator_display_name',
+        'co_creator_display_name',
+        'metadata_ipfs_cid',
+        'metadata_last_updated_at',
     ];
 
     /**
@@ -76,6 +83,8 @@ class EgiBlockchain extends Model {
         'supports_crypto_payments' => 'boolean',
         'minted_at' => 'datetime',
         'merchant_psp_config' => 'array',
+        'metadata' => 'array',
+        'metadata_last_updated_at' => 'datetime',
     ];
 
     /**
@@ -265,4 +274,107 @@ class EgiBlockchain extends Model {
 
         return $baseUrl ? $baseUrl . $this->asa_id : null;
     }
+
+    // ===== PHASE 2 AREA 5: METADATA METHODS =====
+
+    /**
+     * Get metadata as EgiMetadataStructure object.
+     * 
+     * @return \App\DataTransferObjects\EgiMetadataStructure|null
+     */
+    public function getMetadataStructure(): ?\App\DataTransferObjects\EgiMetadataStructure {
+        if (empty($this->metadata)) {
+            return null;
+        }
+
+        return \App\DataTransferObjects\EgiMetadataStructure::fromArray($this->metadata);
+    }
+
+    /**
+     * Check if blockchain record has metadata.
+     * 
+     * @return bool
+     */
+    public function hasMetadata(): bool {
+        return !empty($this->metadata);
+    }
+
+    /**
+     * Check if metadata includes CoA reference.
+     * 
+     * @return bool
+     */
+    public function hasCoaReference(): bool {
+        return !empty($this->metadata['coa_reference'] ?? null);
+    }
+
+    /**
+     * Get standard traits from metadata.
+     * 
+     * @return array
+     */
+    public function getTraits(): array {
+        return $this->metadata['traits'] ?? [];
+    }
+
+    /**
+     * Get CoA traits from metadata.
+     * 
+     * @return array
+     */
+    public function getCoaTraits(): array {
+        return $this->metadata['coa_traits'] ?? [];
+    }
+
+    /**
+     * Get OpenSea-compatible attributes array.
+     * 
+     * @return array
+     */
+    public function getOpenSeaAttributes(): array {
+        return $this->metadata['attributes'] ?? [];
+    }
+
+    /**
+     * Get IPFS gateway URL for metadata.
+     * 
+     * @return string|null
+     */
+    public function getMetadataIpfsUrl(): ?string {
+        if (empty($this->metadata_ipfs_cid)) {
+            return null;
+        }
+
+        $gateway = config('ipfs.gateway_url', 'https://gateway.pinata.cloud');
+        return "{$gateway}/ipfs/{$this->metadata_ipfs_cid}";
+    }
+
+    /**
+     * Check if display names are frozen (immutable after mint).
+     * Display names cannot be changed after minting completes.
+     * 
+     * @return bool
+     */
+    public function areDisplayNamesFrozen(): bool {
+        return $this->isMinted();
+    }
+
+    /**
+     * Get creator display name (frozen at EGI creation).
+     * 
+     * @return string|null
+     */
+    public function getCreatorDisplayName(): ?string {
+        return $this->creator_display_name;
+    }
+
+    /**
+     * Get co-creator display name (frozen at mint time).
+     * 
+     * @return string|null
+     */
+    public function getCoCreatorDisplayName(): ?string {
+        return $this->co_creator_display_name;
+    }
 }
+
