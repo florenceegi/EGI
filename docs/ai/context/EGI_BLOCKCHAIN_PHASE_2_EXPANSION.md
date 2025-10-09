@@ -2,9 +2,18 @@
 
 **Versione:** 2.0.0  
 **Data:** 9 Ottobre 2025  
-**Stato:** 📋 PLANNING - Ready for Implementation  
+**Stato:** � IN PROGRESS - 22% completato (22/100 tasks) ✅  
 **Fase Precedente:** FASE 6 completata al 94% - Real Blockchain Mint Operativo  
 **Documento Base:** `EGI_BLOCKCHAIN_INTEGRATION_MASTER.md`
+
+**📊 Progress per Area:**
+
+-   ✅ Area 1 (Mint/Prenotazioni): 82% (14/17 tasks) 🟢 FUNZIONALE
+-   ✅ Area 2 (Payment Distributions): 64% (7/11 tasks) 🟡 PARZIALE
+-   ❌ Area 3 (IBAN User): 0% (0/16 tasks) 🔴 NOT STARTED
+-   ❌ Area 4 (IBAN Wallets): 0% (0/13 tasks) 🔴 NOT STARTED
+-   ❌ Area 5 (Metadata): 0% (0/18 tasks) 🔴 NOT STARTED
+-   ❌ Area 6 (IPFS): 0% (0/25 tasks) 🔴 NOT STARTED
 
 ---
 
@@ -65,51 +74,51 @@ Evoluzione del sistema blockchain EGI per supportare:
 
 #### **1.1 Business Logic - State Management**
 
--   [ ] **1.1.1** - Estendere model `Egi.php` con nuovi metodi
+-   [x] **1.1.1** - Estendere model `Egi.php` con nuovi metodi ✅
 
-    -   [ ] Method `canBeMinted(): bool` - Verifica se EGI può essere mintato
-    -   [ ] Method `canBeReserved(): bool` - Verifica se EGI può essere prenotato
-    -   [ ] Method `hasPendingReservation(): bool` - Check prenotazioni attive
-    -   [ ] Method `isReservedByUser(User $user): bool` - Check ownership prenotazione
-    -   [ ] Scope `availableForMint()` - Query builder helper
-    -   [ ] Scope `availableForReservation()` - Query builder helper
+    -   [x] Method `canBeMinted(): bool` - Verifica se EGI può essere mintato ✅
+    -   [x] Method `canBeReserved(): bool` - Verifica se EGI può essere prenotato ✅
+    -   [x] Method `hasPendingReservation(): bool` - Check prenotazioni attive ✅
+    -   [x] Method `isReservedByUser(User $user): bool` - Check ownership prenotazione ✅
+    -   [x] Scope `availableForMint()` - Query builder helper ✅
+    -   [x] Scope `availableForReservation()` - Query builder helper ✅
 
--   [ ] **1.1.2** - Creare service `EgiAvailabilityService.php`
+-   [x] **1.1.2** - Creare service `EgiAvailabilityService.php` ✅
 
-    -   [ ] Method `checkAvailability(Egi $egi, User $user): array`
+    -   [x] Method `checkAvailability(Egi $egi, User $user): array` ✅
         -   Return: `['can_mint' => bool, 'can_reserve' => bool, 'reason' => string]`
-    -   [ ] Method `getAvailableActions(Egi $egi, User $user): array`
+    -   [x] Method `getAvailableActions(Egi $egi, User $user): array` ✅
         -   Return: lista azioni disponibili per UI
-    -   [ ] Business rules:
+    -   [x] Business rules: ✅
         -   EGI mintato → nessuna azione disponibile
         -   EGI prenotato da me → solo mint
         -   EGI prenotato da altri → nessuna azione
         -   EGI libero → mint + prenotazione
 
--   [ ] **1.1.3** - Validation rules per dual path
-    -   [ ] `MintRequest` validation: verifica can_mint + permissions
-    -   [ ] `ReservationRequest` validation: verifica can_reserve + no conflicts
-    -   [ ] Error messages specifici per ogni scenario
-    -   [ ] Rate limiting separato per mint vs reservation
+-   [x] **1.1.3** - Validation rules per dual path ✅
+    -   [x] `MintRequest` validation: verifica can_mint + permissions ✅
+    -   [x] `ReservationRequest` validation: verifica can_reserve + no conflicts ✅
+    -   [x] Error messages specifici per ogni scenario ✅
+    -   [x] Rate limiting separato per mint vs reservation ✅
 
 #### **1.2 Frontend Components**
 
--   [ ] **1.2.1** - Modificare `egi-card.blade.php`
+-   [x] **1.2.1** - Modificare `egi-card.blade.php` ✅
 
-    -   [ ] Due bottoni contemporanei layout (flex/grid)
-    -   [ ] Bottone "Prenota" condizionale
+    -   [x] Due bottoni contemporanei layout (flex/grid) ✅
+    -   [x] Bottone "Prenota" condizionale ✅
         -   Visible se: `$egi->canBeReserved() && !Auth::user()->hasReservation($egi)`
         -   Style: Secondary button (outline)
         -   Icon: Calendar/Clock
-    -   [ ] Bottone "Minta Ora" condizionale
+    -   [x] Bottone "Minta Ora" condizionale ✅
         -   Visible se: `$egi->canBeMinted()`
         -   Style: Primary button (solid)
         -   Icon: Zap/Lightning
         -   Badge "Direct Mint" premium indicator
-    -   [ ] Stato "Prenotato da te" special styling
+    -   [x] Stato "Prenotato da te" special styling ✅
         -   Solo bottone "Completa Mint" visible
         -   Countdown timer se prenotazione ha scadenza
-    -   [ ] Translations: 6 lingue (IT, EN, ES, FR, DE, PT)
+    -   [x] Translations: 6 lingue (IT, EN, ES, FR, DE, PT) ✅
 
 -   [ ] **1.2.2** - Modificare `egi-card-enhanced.blade.php`
 
@@ -131,7 +140,7 @@ Evoluzione del sistema blockchain EGI per supportare:
 
 #### **1.3 Routes & Controllers**
 
--   [ ] **1.3.1** - Nuove routes in `web.php`
+-   [x] **1.3.1** - Nuove routes in `web.php` ✅
 
     ```php
     Route::middleware(['auth'])->group(function () {
@@ -147,13 +156,13 @@ Evoluzione del sistema blockchain EGI per supportare:
     });
     ```
 
--   [ ] **1.3.2** - Estendere `MintController.php`
-    -   [ ] Method `showDirectMint(Egi $egi)` - Form mint diretto
-    -   [ ] Method `processDirectMint(Request $request, Egi $egi)` - Process mint
-    -   [ ] Integration con `EgiAvailabilityService`
-    -   [ ] Authorization checks via Policy
-    -   [ ] GDPR audit logging
-    -   [ ] UEM error handling
+-   [x] **1.3.2** - Estendere `MintController.php` ✅
+    -   [x] Method `showDirectMint(Egi $egi)` - Form mint diretto ✅
+    -   [x] Method `processDirectMint(Request $request, Egi $egi)` - Process mint ✅
+    -   [x] Integration con `EgiAvailabilityService` ✅
+    -   [x] Authorization checks via Policy ✅
+    -   [x] GDPR audit logging ✅
+    -   [x] UEM error handling ✅
 
 #### **1.4 Testing**
 
@@ -179,7 +188,7 @@ Evoluzione del sistema blockchain EGI per supportare:
 
 #### **2.1 Database Schema**
 
--   [ ] **2.1.1** - Migration: Estendere `payment_distributions`
+-   [x] **2.1.1** - Migration: Estendere `payment_distributions` ✅
 
     ```sql
     ALTER TABLE payment_distributions ADD COLUMN:
@@ -190,30 +199,33 @@ Evoluzione del sistema blockchain EGI per supportare:
     - FOREIGN KEY (egi_blockchain_id) REFERENCES egi_blockchain(id) ON DELETE SET NULL
     ```
 
--   [ ] **2.1.2** - Verificare constraints esistenti
-    -   [ ] Check foreign keys a `reservations` (nullable?)
-    -   [ ] Verificare business rules existing
-    -   [ ] Backup schema prima di modifiche
+    **File:** `2025_10_09_105125_extend_payment_distributions_for_mint_tracking.php` ✅
+
+-   [x] **2.1.2** - Verificare constraints esistenti ✅
+    -   [x] Check foreign keys a `reservations` (nullable?) ✅
+    -   [x] Verificare business rules existing ✅
+    -   [x] Backup schema prima di modifiche ✅
+            **Migration:** `2025_10_09_110624_make_reservation_id_nullable_in_payment_distributions.php` ✅
 
 #### **2.2 Service Layer**
 
--   [ ] **2.2.1** - Estendere `PaymentDistributionService.php`
+-   [x] **2.2.1** - Estendere `PaymentDistributionService.php` ✅
 
-    -   [ ] Method `recordMintDistribution(EgiBlockchain $egiBlockchain, array $paymentData): void`
+    -   [x] Method `recordMintDistribution(EgiBlockchain $egiBlockchain, array $paymentData): void` ✅
         -   Input: blockchain record + payment details
         -   Logic: Split revenue secondo percentuali collection
         -   GDPR: Audit log completo
         -   UEM: Error handling
-    -   [ ] Method `getMintDistributions(Egi $egi): Collection`
-    -   [ ] Method `compareDbVsBlockchain(Egi $egi): array`
+    -   [x] Method `getMintDistributions(Egi $egi): Collection` ✅
+    -   [x] Method `compareDbVsBlockchain(Egi $egi): array` ✅
         -   Utility per verificare consistenza
 
--   [ ] **2.2.2** - Integration in `EgiMintingService.php`
+-   [x] **2.2.2** - Integration in `EgiMintingService.php` ✅
 
-    -   [ ] After successful mint → call `recordMintDistribution()`
-    -   [ ] Wrap in DB transaction con mint
-    -   [ ] Rollback strategy se distribution fails
-    -   [ ] Retry logic se blockchain OK ma DB fails
+    -   [x] After successful mint → call `recordMintDistribution()` ✅
+    -   [x] Wrap in DB transaction con mint ✅
+    -   [x] Rollback strategy se distribution fails ✅
+    -   [x] Retry logic se blockchain OK ma DB fails ✅
 
 -   [ ] **2.2.3** - Integration in `EgiPurchaseWorkflowService.php`
     -   [ ] Orchestrate payment → mint → distribution
