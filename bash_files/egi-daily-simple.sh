@@ -51,11 +51,12 @@ for commit in $EXCLUDE_COMMITS; do
     EXCLUDE_FILTER="$EXCLUDE_FILTER | grep -v $commit"
 done
 
-# Calcola statistiche escludendo commit di cleanup
+# Calcola statistiche escludendo commit di cleanup E file .history
 total_stats=$(git log --since="${DATE_FROM} 00:00:00" --until="${DATE_FROM} 23:59:59" \
                  --author="${AUTHOR_FILTER}" --pretty=format:"%H" | \
                  grep -v -E "(6756853)" | \
                  xargs -I {} git show {} --numstat --format="" 2>/dev/null | \
+                 grep -v "^[0-9-]*[[:space:]]*[0-9-]*[[:space:]]*\.history/" | \
                  awk '{added+=$1; removed+=$2} END {print added+0, removed+0}')
 
 read total_added total_removed <<< "$total_stats"

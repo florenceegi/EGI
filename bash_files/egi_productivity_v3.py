@@ -278,6 +278,12 @@ class EGICommitStatsExporterV3:
         for line in output.split('\n'):
             if line.strip():
                 parts = line.split('\t')
+                if len(parts) >= 3:
+                    # Skip .history folder files
+                    filepath = parts[2] if len(parts) > 2 else ''
+                    if filepath.startswith('.history/'):
+                        continue
+                
                 if len(parts) >= 2:
                     try:
                         added = int(parts[0]) if parts[0] != '-' else 0
@@ -320,6 +326,12 @@ class EGICommitStatsExporterV3:
         for line in output.split('\n'):
             if line.strip():
                 parts = line.split('\t')
+                if len(parts) >= 3:
+                    # Skip .history folder files
+                    filepath = parts[2] if len(parts) > 2 else ''
+                    if filepath.startswith('.history/'):
+                        continue
+                
                 if len(parts) >= 2:
                     try:
                         added = int(parts[0]) if parts[0] != '-' else 0
