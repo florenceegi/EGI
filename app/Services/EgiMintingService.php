@@ -207,9 +207,6 @@ class EgiMintingService {
             ]);
 
             return $egiBlockchain->fresh();
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Re-throw ValidationException without wrapping so we can see validation errors
-            throw $e;
         } catch (\Exception $e) {
             // 11. UEM: Error handling
             $this->errorManager->handle('EGI_MINTING_FAILED', [
