@@ -98,6 +98,7 @@ class MintController extends Controller {
                 'reservation_id' => 'required|integer|exists:reservations,id',
                 'payment_method' => 'required|string|in:stripe,paypal',
                 'buyer_wallet' => 'nullable|string|max:255', // Optional - user wallet for direct transfer
+                'co_creator_display_name' => 'nullable|string|min:2|max:100|regex:/^[a-zA-Z0-9\s.\'\-]+$/', // AREA 5.5.1
             ]);
 
             $egi = Egi::findOrFail($validated['egi_id']);
@@ -138,6 +139,8 @@ class MintController extends Controller {
                 'ownership_type' => $validated['buyer_wallet'] ? 'wallet' : 'treasury',
                 'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
                 'mint_status' => 'minting_queued',
+                // AREA 5.5.1: Store proposed co-creator name (will be frozen during mint)
+                'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
             ]);
 
             // Queue REAL blockchain mint job
@@ -323,6 +326,8 @@ class MintController extends Controller {
                 'ownership_type' => isset($validated['wallet_address']) ? 'wallet' : 'treasury',
                 'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
                 'mint_status' => 'minting_queued',
+                // AREA 5.5.1: Store proposed co-creator name (will be frozen during mint)
+                'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
             ]);
 
             // Queue REAL blockchain mint job

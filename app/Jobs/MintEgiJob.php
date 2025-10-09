@@ -76,12 +76,14 @@ class MintEgiJob implements ShouldQueue {
             ]);
 
             // 3. REAL BLOCKCHAIN MINT (not mock!)
+            // AREA 5.5.1: Pass proposed co-creator name to service
             $result = $mintingService->mintEgi(
                 $egiBlockchain->egi,
                 $egiBlockchain->buyer,
                 [
                     'payment_reference' => $egiBlockchain->payment_reference,
-                    'buyer_wallet' => $egiBlockchain->buyer_wallet
+                    'buyer_wallet' => $egiBlockchain->buyer_wallet,
+                    'co_creator_display_name' => $egiBlockchain->co_creator_display_name, // User-provided name (optional)
                 ]
             );
 

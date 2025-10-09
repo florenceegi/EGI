@@ -116,6 +116,15 @@ class MintDirectRequest extends FormRequest {
                 'max:255'
             ],
 
+            // AREA 5.5.1: Co-Creator Display Name (immutable after mint)
+            'co_creator_display_name' => [
+                'nullable',
+                'string',
+                'min:2',
+                'max:100',
+                'regex:/^[a-zA-Z0-9\s.\'\-]+$/', // Alphanumeric + spaces + . ' -
+            ],
+
             // Anti-CSRF protection (implicit via FormRequest)
         ];
     }
@@ -144,6 +153,11 @@ class MintDirectRequest extends FormRequest {
             'custom_metadata.max' => 'Massimo 10 campi metadata personalizzati',
             'custom_metadata.*.string' => 'Ogni campo metadata deve essere una stringa',
             'custom_metadata.*.max' => 'Ogni campo metadata massimo 255 caratteri',
+
+            // AREA 5.5.1: Co-Creator Display Name
+            'co_creator_display_name.min' => 'Il nome del co-creatore deve contenere almeno 2 caratteri',
+            'co_creator_display_name.max' => 'Il nome del co-creatore non può superare i 100 caratteri',
+            'co_creator_display_name.regex' => 'Il nome del co-creatore può contenere solo lettere, numeri, spazi e i caratteri . \' -',
         ];
     }
 

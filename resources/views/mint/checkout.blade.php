@@ -136,6 +136,44 @@
                                 </p>
                             </div>
 
+                            {{-- AREA 5.5.1: Co-Creator Display Name (IMMUTABLE AFTER MINT) --}}
+                            <div>
+                                <label for="co_creator_display_name" class="mb-2 block text-sm font-medium text-gray-700">
+                                    {{ __('mint.payment.co_creator_name_label') }}
+                                    <span class="text-xs text-gray-500">({{ __('mint.payment.optional') }})</span>
+                                </label>
+                                <input type="text" id="co_creator_display_name" name="co_creator_display_name"
+                                    value="{{ old('co_creator_display_name', Auth::user()->name) }}"
+                                    placeholder="{{ Auth::user()->name }}"
+                                    maxlength="100"
+                                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    pattern="[a-zA-Z0-9\s.\'\-]+"
+                                    title="{{ __('mint.payment.co_creator_name_pattern') }}">
+                                <div class="mt-1 flex items-start justify-between">
+                                    <p class="text-xs text-gray-500">
+                                        {{ __('mint.payment.co_creator_name_help') }}
+                                    </p>
+                                    <span id="char-counter" class="text-xs text-gray-400">
+                                        <span id="char-count">{{ strlen(Auth::user()->name) }}</span>/100
+                                    </span>
+                                </div>
+                                <div class="mt-2 rounded-md bg-amber-50 p-3 border border-amber-200">
+                                    <div class="flex">
+                                        <svg class="h-5 w-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <div class="ml-3">
+                                            <p class="text-xs font-medium text-amber-800">
+                                                {{ __('mint.payment.co_creator_name_warning') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @error('co_creator_display_name')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             {{-- Total --}}
                             <div class="border-t pt-4">
                                 <div class="flex items-center justify-between text-lg font-semibold">
@@ -202,6 +240,42 @@
     @push('scripts')
         <script>
             const form = document.getElementById('mint-form');
+
+            // AREA 5.5.1: Character counter for Co-Creator Display Name
+            const coCreatorNameInput = document.getElementById('co_creator_display_name');
+            const charCountSpan = document.getElementById('char-count');
+            
+            if (coCreatorNameInput && charCountSpan) {
+                coCreatorNameInput.addEventListener('input', function() {
+                    const length = this.value.length;
+                    charCountSpan.textContent = length;
+                    
+                    // Visual feedback quando si avvicina al limite
+                    const charCounter = document.getElementById('char-counter');
+                    if (length > 90) {
+                        charCounter.classList.add('text-red-600', 'font-semibold');
+                        charCounter.classList.remove('text-gray-400');
+                    } else if (length > 75) {
+                        charCounter.classList.add('text-amber-600', 'font-medium');
+                        charCounter.classList.remove('text-gray-400', 'text-red-600');
+                    } else {
+                        charCounter.classList.remove('text-red-600', 'text-amber-600', 'font-semibold', 'font-medium');
+                        charCounter.classList.add('text-gray-400');
+                    }
+                });
+
+                // Validazione pattern in tempo reale
+                coCreatorNameInput.addEventListener('blur', function() {
+                    const pattern = /^[a-zA-Z0-9\s.\'\-]+$/;
+                    if (this.value && !pattern.test(this.value)) {
+                        this.classList.add('border-red-500');
+                        this.setCustomValidity('{{ __('mint.payment.co_creator_name_invalid') }}');
+                    } else {
+                        this.classList.remove('border-red-500');
+                        this.setCustomValidity('');
+                    }
+                });
+            }
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();

@@ -56,6 +56,14 @@ return [
         'wallet_label' => 'Wallet Algorand (Opzionale)',
         'wallet_placeholder' => 'Inserisci il tuo indirizzo wallet Algorand',
         'wallet_help' => 'Se inserisci un wallet, l\'EGI verrà trasferito direttamente lì. Altrimenti sarà custodito nel Treasury della piattaforma.',
+        
+        // AREA 5.5.1: Co-Creator Display Name
+        'optional' => 'opzionale',
+        'co_creator_name_label' => 'Il tuo Nome come Co-Creatore',
+        'co_creator_name_help' => 'Questo nome apparirà permanentemente nei metadati dell\'EGI. Se lasciato vuoto, verrà utilizzato il nome del tuo profilo.',
+        'co_creator_name_warning' => '⚠️ ATTENZIONE: Questo nome diventerà permanente e immutabile dopo il mint. Verifica attentamente prima di procedere.',
+        'co_creator_name_pattern' => 'Solo lettere, numeri, spazi e caratteri . \' - sono ammessi',
+        'co_creator_name_invalid' => 'Il nome contiene caratteri non validi. Usa solo lettere, numeri, spazi e . \' -',
     ],
 
     // Buyer Info Section
