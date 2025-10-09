@@ -774,6 +774,144 @@ class Egi extends Model {
     }
 
     //--------------------------------------------------------------------------
+    // Phase 2: Dual Path Availability Methods (Mint vs Reservation)
+    //--------------------------------------------------------------------------
+
+    /**
+     * Check if this EGI can be minted directly.
+     * 
+     * Business rules:
+     * - EGI must be published (is_published = true OR status = 'published')
+     * - EGI must NOT already be minted (no blockchain record with status 'minted')
+     * - EGI must NOT be in draft status
+     *
+     * @return bool
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function canBeMinted(): bool {
+        // Check if EGI is published
+        $isPublished = $this->is_published || $this->status === 'published';
+        
+        if (!$isPublished) {
+            return false;
+        }
+
+        // Check if already minted
+        if ($this->isMinted()) {
+            return false;
+        }
+
+        // Check if in draft status
+        if ($this->status === 'draft') {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if this EGI can be reserved.
+     * 
+     * Business rules:
+     * - EGI must be published (is_published = true OR status = 'published')
+     * - EGI must NOT already be minted (reservation system only for non-minted)
+     * - EGI must NOT be in draft status
+     *
+     * @return bool
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function canBeReserved(): bool {
+        // Same rules as canBeMinted for now
+        // Both actions available on non-minted, published EGIs
+        return $this->canBeMinted();
+    }
+
+    /**
+     * Check if this EGI has any pending/active reservations.
+     * 
+     * A pending reservation is one that is:
+     * - status = 'active'
+     * - is_current = true
+     * - NOT superseded (superseded_by_id IS NULL)
+     *
+     * @return bool
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function hasPendingReservation(): bool {
+        return $this->reservations()
+            ->where('status', 'active')
+            ->where('is_current', true)
+            ->whereNull('superseded_by_id')
+            ->exists();
+    }
+
+    /**
+     * Check if a specific user has an active reservation for this EGI.
+     * 
+     * User has reservation if:
+     * - User has a reservation record
+     * - status = 'active'
+     * - is_current = true
+     * - NOT superseded
+     *
+     * @param User $user The user to check
+     * @return bool
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function isReservedByUser(User $user): bool {
+        return $this->reservations()
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->where('is_current', true)
+            ->whereNull('superseded_by_id')
+            ->exists();
+    }
+
+    /**
+     * Get the highest/winning reservation for this EGI.
+     * 
+     * Returns the reservation with sub_status = 'highest' if exists.
+     *
+     * @return Reservation|null
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function getWinningReservation(): ?Reservation {
+        return $this->reservations()
+            ->where('sub_status', 'highest')
+            ->where('status', 'active')
+            ->where('is_current', true)
+            ->first();
+    }
+
+    /**
+     * Get user's active reservation for this EGI.
+     * 
+     * @param User $user The user whose reservation to retrieve
+     * @return Reservation|null
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function getUserReservation(User $user): ?Reservation {
+        return $this->reservations()
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->where('is_current', true)
+            ->whereNull('superseded_by_id')
+            ->first();
+    }
+
+    //--------------------------------------------------------------------------
     // Blockchain Integration Scopes
     //--------------------------------------------------------------------------
 
@@ -829,6 +967,93 @@ class Egi extends Model {
     public function scopeByMintStatus($query, string $status) {
         return $query->whereHas('blockchain', function ($blockchainQuery) use ($status) {
             $blockchainQuery->where('mint_status', $status);
+        });
+    }
+
+    //--------------------------------------------------------------------------
+    // Phase 2: Dual Path Availability Scopes
+    //--------------------------------------------------------------------------
+
+    /**
+     * Scope to get EGIs available for direct minting.
+     * 
+     * Filters EGIs that:
+     * - Are published (is_published = true OR status = 'published')
+     * - Are NOT already minted
+     * - Are NOT in draft status
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function scopeAvailableForMint($query) {
+        return $query->where(function ($q) {
+            $q->where('is_published', true)
+              ->orWhere('status', 'published');
+        })
+        ->where('status', '!=', 'draft')
+        ->whereDoesntHave('blockchain', function ($blockchainQuery) {
+            $blockchainQuery->where('mint_status', 'minted');
+        });
+    }
+
+    /**
+     * Scope to get EGIs available for reservation.
+     * 
+     * Filters EGIs that:
+     * - Are published (is_published = true OR status = 'published')
+     * - Are NOT already minted
+     * - Are NOT in draft status
+     *
+     * Same criteria as availableForMint for now (dual path coexistence).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function scopeAvailableForReservation($query) {
+        // Alias to availableForMint for now
+        // Can be customized later if reservation rules differ
+        return $query->availableForMint();
+    }
+
+    /**
+     * Scope to get EGIs with active reservations.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function scopeWithActiveReservations($query) {
+        return $query->whereHas('reservations', function ($reservationQuery) {
+            $reservationQuery->where('status', 'active')
+                            ->where('is_current', true)
+                            ->whereNull('superseded_by_id');
+        });
+    }
+
+    /**
+     * Scope to get EGIs reserved by a specific user.
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param User $user The user to filter by
+     * @return \Illuminate\Database\Eloquent\Builder
+     * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+     * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
+     * @date 2025-10-09
+     */
+    public function scopeReservedByUser($query, User $user) {
+        return $query->whereHas('reservations', function ($reservationQuery) use ($user) {
+            $reservationQuery->where('user_id', $user->id)
+                            ->where('status', 'active')
+                            ->where('is_current', true)
+                            ->whereNull('superseded_by_id');
         });
     }
 
