@@ -215,7 +215,7 @@ class MintController extends Controller {
 
     /**
      * Show direct mint checkout form (Phase 2: dual path)
-     * 
+     *
      * Allows users to mint EGI directly without reservation (if available)
      *
      * @param int $id EGI ID
@@ -224,19 +224,19 @@ class MintController extends Controller {
     public function showDirectMint(int $id) {
         try {
             $egi = Egi::findOrFail($id);
-            
+
             // Check availability using service
             $availabilityService = app(\App\Services\EgiAvailabilityService::class);
             $availability = $availabilityService->checkAvailability($egi, Auth::user());
-            
+
             // Verify user can mint this EGI
             if (!$availability['can_mint']) {
                 $reason = $availability['mint_reason'] ?? 'not_available';
-                
+
                 return redirect()->route('egis.show', $egi->id)
                     ->withErrors(['error' => __("mint.errors.{$reason}", [], $reason)]);
             }
-            
+
             // GDPR audit log
             $this->auditService->logUserAction(
                 Auth::user(),
@@ -248,29 +248,28 @@ class MintController extends Controller {
                 ],
                 GdprActivityCategory::EGI_INTERACTION
             );
-            
+
             $this->logger->info('DIRECT_MINT_CHECKOUT_VIEWED', [
                 'user_id' => Auth::id(),
                 'egi_id' => $egi->id,
                 'availability' => $availability
             ]);
-            
+
             return view('mint.direct-checkout', compact('egi', 'availability'));
-            
         } catch (\Exception $e) {
             $this->errorManager->handle('DIRECT_MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),
                 'egi_id' => $id,
                 'error' => $e->getMessage()
             ], $e);
-            
+
             return redirect()->back()->withErrors(['error' => 'Errore nel caricamento checkout diretto']);
         }
     }
 
     /**
      * Process direct mint payment and initiate blockchain minting (Phase 2)
-     * 
+     *
      * Direct mint without reservation - immediate purchase flow
      *
      * @param int $id EGI ID
@@ -280,33 +279,33 @@ class MintController extends Controller {
     public function processDirectMint(int $id, \App\Http\Requests\MintDirectRequest $request): JsonResponse {
         try {
             $validated = $request->validated();
-            
+
             $egi = Egi::findOrFail($id);
-            
+
             // Double-check availability (prevent race conditions)
             $availabilityService = app(\App\Services\EgiAvailabilityService::class);
             $availability = $availabilityService->checkAvailability($egi, Auth::user());
-            
+
             if (!$availability['can_mint']) {
                 return response()->json([
                     'error' => 'EGI non più disponibile per mint diretto',
                     'reason' => $availability['mint_reason']
                 ], 400);
             }
-            
+
             // Check if EGI already minted (race condition protection)
             if ($egi->blockchain && $egi->blockchain->isMinted()) {
                 return response()->json(['error' => 'EGI già mintato'], 400);
             }
-            
+
             // MOCK Payment processing (V1 - FIAT only)
             $paymentAmount = $egi->price ?? 0;
             $paymentResult = $this->mockPaymentProcessing($validated['payment_method'], $paymentAmount);
-            
+
             if (!$paymentResult['success']) {
                 throw new \Exception('Pagamento fallito: ' . $paymentResult['error']);
             }
-            
+
             // Create blockchain record (NO reservation_id for direct mint)
             $blockchainRecord = EgiBlockchain::create([
                 'egi_id' => $egi->id,
@@ -322,17 +321,17 @@ class MintController extends Controller {
                 'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
                 'mint_status' => 'minting_queued',
             ]);
-            
+
             // Queue REAL blockchain mint job
             dispatch(new MintEgiJob($blockchainRecord->id));
-            
+
             $this->logger->info('DIRECT MINT job dispatched', [
                 'blockchain_record_id' => $blockchainRecord->id,
                 'egi_id' => $egi->id,
                 'user_id' => Auth::id(),
                 'direct_mint' => true
             ]);
-            
+
             // GDPR audit log
             $this->auditService->logUserAction(
                 Auth::user(),
@@ -345,7 +344,7 @@ class MintController extends Controller {
                 ],
                 GdprActivityCategory::BLOCKCHAIN_ACTIVITY
             );
-            
+
             $this->logger->info('[MintController] Direct mint initiated successfully', [
                 'user_id' => Auth::id(),
                 'egi_id' => $egi->id,
@@ -353,7 +352,7 @@ class MintController extends Controller {
                 'amount' => $paymentAmount,
                 'flow' => 'direct_mint'
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Mint diretto avviato con successo! Riceverai una notifica quando completato.',
@@ -364,10 +363,8 @@ class MintController extends Controller {
                     'flow_type' => 'direct_mint'
                 ]
             ]);
-            
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['error' => 'Dati non validi', 'details' => $e->errors()], 422);
-            
         } catch (\Exception $e) {
             $this->errorManager->handle('DIRECT_MINT_PROCESS_ERROR', [
                 'user_id' => Auth::id(),
@@ -375,7 +372,7 @@ class MintController extends Controller {
                 'payment_method' => $request->input('payment_method'),
                 'error' => $e->getMessage()
             ], $e);
-            
+
             return response()->json(['error' => 'Errore durante il mint diretto'], 500);
         }
     }
