@@ -372,10 +372,12 @@ read_file path/to/NomeClasse.php
 ✅ updateUserConsents(User $user, array $consents): array
 ```
 
-**AuditLogService v1.0** (verificato: 2025-10-01)
+**AuditLogService v1.0** (verificato: 2025-10-09)
 
 ```php
-✅ logActivity($user, $category, $description, $data)
+✅ logUserAction(User $user, string $action, array $context = [], GdprActivityCategory $category): UserActivity
+✅ logSecurityEvent(User $user, string $event, array $context = []): UserActivity
+✅ logGdprAction(User $user, string $action, array $context = []): UserActivity
 ```
 
 **ErrorManager v1.0** (verificato: 2025-10-01)
@@ -390,6 +392,7 @@ read_file path/to/NomeClasse.php
 ❌ hasConsentFor() // ConsentService - INVENTATO
 ❌ handleException() // ErrorManager - INVENTATO
 ❌ logError() // AuditLogService - INVENTATO
+❌ logActivity() // AuditLogService - INVENTATO (use logUserAction instead)
 ```
 
 **STEP 3: DIVIETI ASSOLUTI**
