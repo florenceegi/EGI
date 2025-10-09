@@ -27,3 +27,4 @@ class PANatanMenu extends MenuItem
         );
     }
 }
+
