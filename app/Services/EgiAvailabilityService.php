@@ -12,7 +12,19 @@ use App\Services\Gdpr\ConsentService;
 use App\Enums\Gdpr\GdprActivityCategory;
 
 /**
- * @Oracode Service: EGI Availability Checker - Dual Path Orchestration
+ * @Oracode Service: EGI Availability Check            $this->auditService->logActivity(
+                $user,
+                'egi_availability_checked',
+                [
+                    'egi_id' => $egi->id,
+                    'egi_title' => $egi->title,
+                    'can_mint' => $result['can_mint'],
+                    'can_reserve' => $result['can_reserve'],
+                    'available_actions' => $result['available_actions'],
+                    'recommended_action' => $result['recommended_action']
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );h Orchestration
  * 🎯 Purpose: Orchestrate business logic for dual-path EGI availability (Mint vs Reservation)
  * 🧱 Core Logic: Centralized availability checks, action determination, permission validation
  * 🛡️ Security: Permission-based access control, GDPR audit trail, MiCA-SAFE compliance
