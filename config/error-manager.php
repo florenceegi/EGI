@@ -5434,5 +5434,27 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // EgiMintingService Error Codes (P1 Compliance Fix)
+        'EGI_TRANSFER_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.egi_transfer_failed',
+            'user_message_key' => 'error-manager::errors_2.user.egi_transfer_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+        'EGI_MINTING_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.egi_minting_failed',
+            'user_message_key' => 'error-manager::errors_2.user.egi_minting_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
     ]
 ];

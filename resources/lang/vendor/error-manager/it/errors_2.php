@@ -53,6 +53,10 @@ return [
 
         // AREA 2.2.3 - EgiPurchaseWorkflowService Errors (Dev) - P1 Compliance Fix
         'certificate_generation_failed' => 'Generazione certificato blockchain fallita. User: :user_id, EgiBlockchain: :egi_blockchain_id, EGI: :egi_id, UUID: :certificate_uuid, Error: :error_message',
+
+        // EgiMintingService Errors (Dev) - P1 Compliance Fix
+        'egi_transfer_failed' => 'Trasferimento EGI ownership fallito. EGI: :egi_id, EgiBlockchain: :egi_blockchain_id, BuyerWallet: :buyer_wallet, BuyerUser: :buyer_user_id, Error: :error',
+        'egi_minting_failed' => 'Mint EGI su blockchain fallito. EGI: :egi_id, BlockchainRecord: :blockchain_record_id, Error: :error',
     ],
 
     'user' => [
@@ -100,6 +104,10 @@ return [
 
         // AREA 2.2.3 - EgiPurchaseWorkflowService Errors (User) - P1 Compliance Fix
         'certificate_generation_failed' => 'Errore durante la generazione del certificato. Il mint è stato completato correttamente. Contatta l\'assistenza per ricevere il certificato.',
+
+        // EgiMintingService Errors (User) - P1 Compliance Fix
+        'egi_transfer_failed' => 'Errore durante il trasferimento dell\'EGI al tuo wallet. Contatta l\'assistenza.',
+        'egi_minting_failed' => 'Errore durante il mint dell\'EGI sulla blockchain. Il pagamento non è stato effettuato. Riprova o contatta l\'assistenza.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

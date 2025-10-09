@@ -196,10 +196,14 @@ class EgiMintingService {
 
             return $transferTxId;
         } catch (\Exception $e) {
-            $this->logger->error('EGI_TRANSFER_FAILED', [
+            // UEM: Error handling (P1 compliance)
+            $this->errorManager->handle('EGI_TRANSFER_FAILED', [
                 'egi_id' => $egiBlockchain->egi_id,
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'buyer_wallet' => $buyerWallet,
+                'buyer_user_id' => $buyerUserId,
                 'error' => $e->getMessage()
-            ]);
+            ], $e);
             throw $e;
         }
     }
@@ -257,11 +261,13 @@ class EgiMintingService {
             ]);
         }
 
-        $this->logger->error('EGI_MINTING_FAILED', [
+        // UEM: Error handling (P1 compliance)
+        $this->errorManager->handle('EGI_MINTING_FAILED', [
             'egi_id' => $egi->id,
+            'blockchain_record_id' => $egi->egiBlockchain?->id,
             'error' => $error->getMessage(),
             'trace' => $error->getTraceAsString()
-        ]);
+        ], $error);
     }
 
     // ========================================================================
