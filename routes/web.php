@@ -95,6 +95,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/mint/process', [App\Http\Controllers\MintController::class, 'processMint'])
         ->name('mint.process');
+    
+    // Phase 2: Direct mint route (dual path: mint OR reserve)
+    Route::get('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'showDirectMint'])
+        ->name('egi.mint-direct');
+    
+    Route::post('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'processDirectMint'])
+        ->name('egi.mint-direct.process');
 });
 
 // Aggiungi questa route in web.php per debug
