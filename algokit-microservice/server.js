@@ -64,7 +64,9 @@ app.post("/mint-egi-token", async (req, res) => {
         const params = await algodClient.getTransactionParams().do();
 
         // Create ASA configuration
-        const asaNote = new Uint8Array(Buffer.from(`EGI-${egi_id}-${Date.now()}`));
+        const asaNote = new Uint8Array(
+            Buffer.from(`EGI-${egi_id}-${Date.now()}`)
+        );
         const asaName = `EGI-${metadata.title || "Unknown"}`.substring(0, 32);
         const unitName = `EGI${egi_id}`.substring(0, 8);
 

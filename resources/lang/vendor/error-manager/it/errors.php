@@ -153,6 +153,8 @@ return [
         'reservation_unauthorized_cancel' => 'Tentativo non autorizzato di annullare la prenotazione :id. Solo il proprietario può annullare.',
         'reservation_status_failed' => 'Impossibile recuperare lo stato della prenotazione per l\'EGI :egi_id. Errore: :error',
         'reservation_unknown_error' => 'Si è verificato un errore sconosciuto durante il processo di prenotazione. Errore: :error',
+        'certificate_generation_failed_post_mint' => 'Generazione certificato blockchain fallita DOPO mint completato per EGI blockchain ID :egi_blockchain_id. ASA ID: :asa_id. Errore: :error',
+        'blockchain_certificate_generation_failed' => 'Impossibile generare il certificato blockchain per EGI blockchain ID :egi_blockchain_id. Errore: :error',
 
         // Dev message for statistics system
         'statistics_calculation_failed' => 'Calcolo statistiche fallito per utente :user_id. Contesto: :error_context. Errore: :error_message',
@@ -587,6 +589,8 @@ return [
         'reservation_unauthorized_cancel' => 'Non hai il permesso per annullare questa prenotazione.',
         'reservation_status_failed' => 'Impossibile recuperare lo stato della prenotazione. Riprova più tardi.',
         'reservation_unknown_error' => 'Qualcosa è andato storto con la tua prenotazione. Il nostro team è stato informato.',
+        'certificate_generation_failed_post_mint' => 'Il mint è stato completato con successo, ma il certificato non è stato generato. Riceverai il certificato via email appena disponibile.',
+        'blockchain_certificate_generation_failed' => 'Non siamo riusciti a generare il certificato blockchain. Il nostro team è stato informato e risolveremo il problema al più presto.',
 
         // User messages for statistics system
         'statistics_calculation_failed' => 'Impossibile caricare le tue statistiche al momento. Il nostro team è stato notificato. Riprova più tardi.',

@@ -24,4 +24,5 @@ return [
     'draft' => 'Bozza',
     'browse_collection' => 'Sfoglia la collezione',
     'current_egi' => 'EGI corrente',
+    'back_to_home' => 'Torna alla Home',
 ];
