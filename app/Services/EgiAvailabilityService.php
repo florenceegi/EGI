@@ -228,6 +228,13 @@ class EgiAvailabilityService {
     private function checkMintAvailability(Egi $egi, User $user, array $context): array {
         // Check basic EGI mintability
         if (!$egi->canBeMinted()) {
+            $this->logger->warning('EGI_MINT_CHECK_FAILED_NOT_MINTABLE', [
+                'egi_id' => $egi->id,
+                'is_minted' => $egi->isMinted(),
+                'status' => $egi->status,
+                'is_published' => $egi->is_published
+            ]);
+            
             if ($egi->isMinted()) {
                 return ['can_mint' => false, 'reason' => 'already_minted'];
             }
@@ -239,15 +246,27 @@ class EgiAvailabilityService {
 
         // Check user has blockchain operations permission
         if (!$user->can('allow-blockchain-operations')) {
+            $this->logger->warning('EGI_MINT_CHECK_FAILED_PERMISSION', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id
+            ]);
             return ['can_mint' => false, 'reason' => 'missing_permission'];
         }
 
         // Check GDPR consent
         if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
+            $this->logger->warning('EGI_MINT_CHECK_FAILED_CONSENT', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id
+            ]);
             return ['can_mint' => false, 'reason' => 'missing_consent'];
         }
 
         // All checks passed
+        $this->logger->info('EGI_MINT_CHECK_PASSED', [
+            'egi_id' => $egi->id,
+            'user_id' => $user->id
+        ]);
         return ['can_mint' => true, 'reason' => null];
     }
 
@@ -262,6 +281,13 @@ class EgiAvailabilityService {
     private function checkReserveAvailability(Egi $egi, User $user, array $context): array {
         // Check basic EGI reservability
         if (!$egi->canBeReserved()) {
+            $this->logger->warning('EGI_RESERVE_CHECK_FAILED_NOT_RESERVABLE', [
+                'egi_id' => $egi->id,
+                'is_minted' => $egi->isMinted(),
+                'status' => $egi->status,
+                'is_published' => $egi->is_published
+            ]);
+            
             if ($egi->isMinted()) {
                 return ['can_reserve' => false, 'reason' => 'already_minted'];
             }
@@ -273,15 +299,27 @@ class EgiAvailabilityService {
 
         // User already has reservation → can only mint, not reserve again
         if ($context['is_reserved_by_user']) {
+            $this->logger->info('EGI_RESERVE_CHECK_ALREADY_RESERVED', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id
+            ]);
             return ['can_reserve' => false, 'reason' => 'user_already_reserved'];
         }
 
         // Check GDPR consent for reservation operations
         if (!$this->consentService->hasConsent($user, 'allow-reservation-operations')) {
+            $this->logger->warning('EGI_RESERVE_CHECK_FAILED_CONSENT', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id
+            ]);
             return ['can_reserve' => false, 'reason' => 'missing_consent'];
         }
 
         // All checks passed
+        $this->logger->info('EGI_RESERVE_CHECK_PASSED', [
+            'egi_id' => $egi->id,
+            'user_id' => $user->id
+        ]);
         return ['can_reserve' => true, 'reason' => null];
     }
 

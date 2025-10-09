@@ -53,6 +53,8 @@ return [
         'not_owned' => 'NON POSSEDUTO',
         'to_activate' => 'DA ATTIVARE',
         'activated' => 'ATTIVATO',
+        'reserved' => 'PRENOTATO',
+        'minted' => 'MINTATO',
     ],
 
     // Titoli
