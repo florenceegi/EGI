@@ -1,6 +1,6 @@
 /**
  * N.A.T.A.N. TypeScript Type Definitions
- * 
+ *
  * @package resources/ts/natan
  * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
  * @version 1.0.0 (FlorenceEGI - N.A.T.A.N.)
@@ -38,7 +38,7 @@ export interface EgiAct {
 /**
  * Processing status enum
  */
-export type ProcessingStatus = 'pending' | 'completed' | 'failed';
+export type ProcessingStatus = "pending" | "completed" | "failed";
 
 /**
  * Acts filter criteria
@@ -148,12 +148,12 @@ export interface ActProcessedEventDetail {
  * Custom event types
  */
 export interface NatanEvents {
-    'natan:upload-started': CustomEvent<UploadEventDetail>;
-    'natan:upload-completed': CustomEvent<UploadEventDetail>;
-    'natan:upload-failed': CustomEvent<UploadEventDetail>;
-    'natan:act-processed': CustomEvent<ActProcessedEventDetail>;
-    'natan:show-detail': CustomEvent<EgiAct>;
-    'natan:show-qr': CustomEvent<string>;
+    "natan:upload-started": CustomEvent<UploadEventDetail>;
+    "natan:upload-completed": CustomEvent<UploadEventDetail>;
+    "natan:upload-failed": CustomEvent<UploadEventDetail>;
+    "natan:act-processed": CustomEvent<ActProcessedEventDetail>;
+    "natan:show-detail": CustomEvent<EgiAct>;
+    "natan:show-qr": CustomEvent<string>;
 }
 
 /**
@@ -161,13 +161,13 @@ export interface NatanEvents {
  */
 export interface SortConfig {
     field: string;
-    direction: 'asc' | 'desc';
+    direction: "asc" | "desc";
 }
 
 /**
  * Toast notification type
  */
-export type ToastType = 'info' | 'success' | 'error' | 'warning';
+export type ToastType = "info" | "success" | "error" | "warning";
 
 /**
  * Toast notification options
@@ -176,6 +176,5 @@ export interface ToastOptions {
     message: string;
     type: ToastType;
     duration?: number;
-    position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+    position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
 }
-

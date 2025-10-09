@@ -546,11 +546,14 @@ class EgiPurchaseWorkflowService {
 
             return $certificatePath;
         } catch (\Exception $e) {
-            $this->logger->error('Blockchain certificate generation failed', [
+            // UEM: Error handling (P1 compliance)
+            $this->errorManager->handle('CERTIFICATE_GENERATION_FAILED', [
                 'user_id' => $user->id,
                 'egi_blockchain_id' => $egiBlockchain->id,
-                'error' => $e->getMessage()
-            ]);
+                'egi_id' => $egiBlockchain->egi_id,
+                'certificate_uuid' => $egiBlockchain->certificate_uuid,
+                'error_message' => $e->getMessage()
+            ], $e);
             throw $e;
         }
     }
@@ -645,6 +648,7 @@ class EgiPurchaseWorkflowService {
      * @param \Exception $exception Failure exception
      */
     private function handleWorkflowFailure(Egi $egi, User $user, string $paymentProvider, \Exception $exception): void {
+        // UEM handles error logging automatically (P1 compliance)
         $this->errorManager->handle('EGI_PURCHASE_WORKFLOW_FAILED', [
             'user_id' => $user->id,
             'egi_id' => $egi->id,
@@ -652,14 +656,6 @@ class EgiPurchaseWorkflowService {
             'error_message' => $exception->getMessage(),
             'error_trace' => $exception->getTraceAsString()
         ], $exception);
-
-        $this->logger->error('Direct EGI purchase workflow failed', [
-            'user_id' => $user->id,
-            'egi_id' => $egi->id,
-            'payment_provider' => $paymentProvider,
-            'error' => $exception->getMessage(),
-            'log_category' => 'EGI_PURCHASE_WORKFLOW_FAILURE'
-        ]);
     }
 
     /**
@@ -674,6 +670,7 @@ class EgiPurchaseWorkflowService {
         string $paymentProvider,
         \Exception $exception
     ): void {
+        // UEM handles error logging automatically (P1 compliance)
         $this->errorManager->handle('EGI_RESERVATION_PURCHASE_WORKFLOW_FAILED', [
             'user_id' => $reservation->user_id,
             'egi_id' => $reservation->egi_id,
@@ -682,15 +679,6 @@ class EgiPurchaseWorkflowService {
             'error_message' => $exception->getMessage(),
             'error_trace' => $exception->getTraceAsString()
         ], $exception);
-
-        $this->logger->error('Reservation-based EGI purchase workflow failed', [
-            'user_id' => $reservation->user_id,
-            'egi_id' => $reservation->egi_id,
-            'reservation_id' => $reservation->id,
-            'payment_provider' => $paymentProvider,
-            'error' => $exception->getMessage(),
-            'log_category' => 'EGI_RESERVATION_PURCHASE_WORKFLOW_FAILURE'
-        ]);
     }
 
     /**

@@ -1,6 +1,6 @@
 /**
  * N.A.T.A.N. Acts Table
- * 
+ *
  * @package resources/ts/natan
  * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
  * @version 1.0.0 (FlorenceEGI - N.A.T.A.N.)
@@ -8,12 +8,12 @@
  * @purpose Sortable, filterable table for EGI Acts with pagination
  */
 
-import type { EgiAct, ActsFilter, SortConfig, PaginationMeta } from './types';
-import { NatanApiClient } from './ApiClient';
+import type { EgiAct, ActsFilter, SortConfig, PaginationMeta } from "./types";
+import { NatanApiClient } from "./ApiClient";
 
 /**
  * Acts Table Manager
- * 
+ *
  * Handles acts table rendering, filtering, sorting, and pagination
  */
 export class ActsTable {
@@ -21,20 +21,21 @@ export class ActsTable {
     private api: NatanApiClient;
     private currentPage: number = 1;
     private filters: ActsFilter = {};
-    private sortConfig: SortConfig = { field: 'created_at', direction: 'desc' };
+    private sortConfig: SortConfig = { field: "created_at", direction: "desc" };
     private perPage: number = 20;
 
     /**
      * Constructor
-     * 
+     *
      * @param containerSelector CSS selector for table container
      * @param api NatanApiClient instance
      */
     constructor(containerSelector: string, api: NatanApiClient) {
-        const container = document.querySelector<HTMLElement>(containerSelector);
+        const container =
+            document.querySelector<HTMLElement>(containerSelector);
 
         if (!container) {
-            throw new Error('Table container not found');
+            throw new Error("Table container not found");
         }
 
         this.container = container;
@@ -50,7 +51,7 @@ export class ActsTable {
         await this.loadActs();
 
         // Listen for new acts processed
-        window.addEventListener('natan:act-processed', () => {
+        window.addEventListener("natan:act-processed", () => {
             this.refresh();
         });
     }
@@ -71,16 +72,18 @@ export class ActsTable {
             );
 
             this.render(response.data, response.meta);
-
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Errore caricamento atti';
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "Errore caricamento atti";
             this.showError(message);
         }
     }
 
     /**
      * Render table
-     * 
+     *
      * @param acts Acts array
      * @param meta Pagination metadata
      */
@@ -96,27 +99,27 @@ export class ActsTable {
                     <thead>
                         <tr>
                             <th data-sort="tipo_atto">
-                                Tipo Atto ${this.getSortIcon('tipo_atto')}
+                                Tipo Atto ${this.getSortIcon("tipo_atto")}
                             </th>
                             <th data-sort="numero_atto">
-                                Numero ${this.getSortIcon('numero_atto')}
+                                Numero ${this.getSortIcon("numero_atto")}
                             </th>
                             <th data-sort="data_atto">
-                                Data ${this.getSortIcon('data_atto')}
+                                Data ${this.getSortIcon("data_atto")}
                             </th>
                             <th>Oggetto</th>
                             <th>Direzione</th>
                             <th data-sort="importo">
-                                Importo ${this.getSortIcon('importo')}
+                                Importo ${this.getSortIcon("importo")}
                             </th>
                             <th data-sort="created_at">
-                                Processato ${this.getSortIcon('created_at')}
+                                Processato ${this.getSortIcon("created_at")}
                             </th>
                             <th>Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${acts.map(act => this.renderRow(act)).join('')}
+                        ${acts.map((act) => this.renderRow(act)).join("")}
                     </tbody>
                 </table>
             </div>
@@ -126,7 +129,9 @@ export class ActsTable {
 
         // Render pagination if exists
         if (meta) {
-            const paginationContainer = document.getElementById('paginationContainer');
+            const paginationContainer = document.getElementById(
+                "paginationContainer"
+            );
             if (paginationContainer) {
                 paginationContainer.innerHTML = this.renderPagination(meta);
             }
@@ -140,28 +145,32 @@ export class ActsTable {
 
     /**
      * Render single row
-     * 
+     *
      * @param act EgiAct object
      * @returns HTML string
      */
     private renderRow(act: EgiAct): string {
-        const dataAtto = new Date(act.data_atto).toLocaleDateString('it-IT');
-        const createdAt = new Date(act.created_at).toLocaleDateString('it-IT');
+        const dataAtto = new Date(act.data_atto).toLocaleDateString("it-IT");
+        const createdAt = new Date(act.created_at).toLocaleDateString("it-IT");
         const importo = act.importo
-            ? `€ ${parseFloat(String(act.importo)).toLocaleString('it-IT', { minimumFractionDigits: 2 })}`
-            : '-';
+            ? `€ ${parseFloat(String(act.importo)).toLocaleString("it-IT", {
+                  minimumFractionDigits: 2,
+              })}`
+            : "-";
 
         return `
             <tr data-act-id="${act.id}">
                 <td><strong>${this.escapeHtml(act.tipo_atto)}</strong></td>
-                <td>${act.numero_atto ? this.escapeHtml(act.numero_atto) : '-'}</td>
+                <td>${
+                    act.numero_atto ? this.escapeHtml(act.numero_atto) : "-"
+                }</td>
                 <td>${dataAtto}</td>
                 <td>
                     <div style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                         ${this.escapeHtml(act.oggetto)}
                     </div>
                 </td>
-                <td>${act.direzione ? this.escapeHtml(act.direzione) : '-'}</td>
+                <td>${act.direzione ? this.escapeHtml(act.direzione) : "-"}</td>
                 <td>${importo}</td>
                 <td style="font-size: 13px; color: #6B6B6B;">${createdAt}</td>
                 <td>
@@ -176,18 +185,18 @@ export class ActsTable {
 
     /**
      * Render pagination
-     * 
+     *
      * @param meta Pagination metadata
      * @returns HTML string
      */
     private renderPagination(meta: PaginationMeta): string {
         const { current_page, last_page } = meta;
 
-        let buttons = '';
+        let buttons = "";
 
         // Previous button
         buttons += `
-            <button class="page-btn" ${current_page === 1 ? 'disabled' : ''}
+            <button class="page-btn" ${current_page === 1 ? "disabled" : ""}
                 data-page="${current_page - 1}">
                 ‹ Precedente
             </button>
@@ -195,12 +204,16 @@ export class ActsTable {
 
         // Page numbers
         const range = 2;
-        for (let i = Math.max(1, current_page - range); i <= Math.min(last_page, current_page + range); i++) {
+        for (
+            let i = Math.max(1, current_page - range);
+            i <= Math.min(last_page, current_page + range);
+            i++
+        ) {
             const isActive = i === current_page;
             buttons += `
-                <button class="page-btn ${isActive ? 'active' : ''}"
+                <button class="page-btn ${isActive ? "active" : ""}"
                     data-page="${i}"
-                    ${isActive ? 'disabled' : ''}>
+                    ${isActive ? "disabled" : ""}>
                     ${i}
                 </button>
             `;
@@ -208,7 +221,9 @@ export class ActsTable {
 
         // Next button
         buttons += `
-            <button class="page-btn" ${current_page === last_page ? 'disabled' : ''}
+            <button class="page-btn" ${
+                current_page === last_page ? "disabled" : ""
+            }
                 data-page="${current_page + 1}">
                 Successiva ›
             </button>
@@ -222,68 +237,79 @@ export class ActsTable {
      */
     private attachEventListeners(): void {
         // Row click - navigate to detail
-        this.container.querySelectorAll<HTMLTableRowElement>('tr[data-act-id]').forEach(row => {
-            row.addEventListener('click', (e) => {
-                const target = e.target as HTMLElement;
-                if (target.tagName !== 'BUTTON') {
-                    const actId = row.dataset.actId;
-                    if (actId) {
-                        window.location.href = `/pa/natan/acts/${actId}`;
-                    }
-                }
-            });
-        });
-
-        // Action buttons
-        this.container.querySelectorAll<HTMLButtonElement>('button[data-action]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const action = btn.dataset.action;
-                const actId = btn.dataset.actId;
-
-                if (action === 'view' && actId) {
-                    window.location.href = `/pa/natan/acts/${actId}`;
-                }
-            });
-        });
-
-        // Sort headers
-        this.container.querySelectorAll<HTMLTableCellElement>('th[data-sort]').forEach(th => {
-            th.addEventListener('click', () => {
-                const sortField = th.dataset.sort;
-                if (sortField) {
-                    this.sortBy(sortField);
-                }
-            });
-        });
-
-        // Pagination buttons
-        const paginationContainer = document.getElementById('paginationContainer');
-        if (paginationContainer) {
-            paginationContainer.querySelectorAll<HTMLButtonElement>('button[data-page]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const page = btn.dataset.page;
-                    if (page) {
-                        this.goToPage(parseInt(page));
+        this.container
+            .querySelectorAll<HTMLTableRowElement>("tr[data-act-id]")
+            .forEach((row) => {
+                row.addEventListener("click", (e) => {
+                    const target = e.target as HTMLElement;
+                    if (target.tagName !== "BUTTON") {
+                        const actId = row.dataset.actId;
+                        if (actId) {
+                            window.location.href = `/pa/natan/acts/${actId}`;
+                        }
                     }
                 });
             });
+
+        // Action buttons
+        this.container
+            .querySelectorAll<HTMLButtonElement>("button[data-action]")
+            .forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const action = btn.dataset.action;
+                    const actId = btn.dataset.actId;
+
+                    if (action === "view" && actId) {
+                        window.location.href = `/pa/natan/acts/${actId}`;
+                    }
+                });
+            });
+
+        // Sort headers
+        this.container
+            .querySelectorAll<HTMLTableCellElement>("th[data-sort]")
+            .forEach((th) => {
+                th.addEventListener("click", () => {
+                    const sortField = th.dataset.sort;
+                    if (sortField) {
+                        this.sortBy(sortField);
+                    }
+                });
+            });
+
+        // Pagination buttons
+        const paginationContainer = document.getElementById(
+            "paginationContainer"
+        );
+        if (paginationContainer) {
+            paginationContainer
+                .querySelectorAll<HTMLButtonElement>("button[data-page]")
+                .forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        const page = btn.dataset.page;
+                        if (page) {
+                            this.goToPage(parseInt(page));
+                        }
+                    });
+                });
         }
     }
 
     /**
      * Sort by field
-     * 
+     *
      * @param field Field to sort by
      */
     private sortBy(field: string): void {
         if (this.sortConfig.field === field) {
             // Toggle direction
-            this.sortConfig.direction = this.sortConfig.direction === 'asc' ? 'desc' : 'asc';
+            this.sortConfig.direction =
+                this.sortConfig.direction === "asc" ? "desc" : "asc";
         } else {
             // New field, default to asc
             this.sortConfig.field = field;
-            this.sortConfig.direction = 'asc';
+            this.sortConfig.direction = "asc";
         }
 
         this.currentPage = 1;
@@ -292,7 +318,7 @@ export class ActsTable {
 
     /**
      * Go to page
-     * 
+     *
      * @param page Page number
      */
     private goToPage(page: number): void {
@@ -302,20 +328,23 @@ export class ActsTable {
 
     /**
      * Get sort icon for field
-     * 
+     *
      * @param field Field name
      * @returns HTML icon string
      */
     private getSortIcon(field: string): string {
-        if (this.sortConfig.field !== field) return '';
+        if (this.sortConfig.field !== field) return "";
 
-        const icon = this.sortConfig.direction === 'asc' ? 'arrow_upward' : 'arrow_downward';
+        const icon =
+            this.sortConfig.direction === "asc"
+                ? "arrow_upward"
+                : "arrow_downward";
         return `<span class="material-icons" style="font-size: 16px; vertical-align: middle;">${icon}</span>`;
     }
 
     /**
      * Apply filters
-     * 
+     *
      * @param filters Filter criteria
      */
     public applyFilters(filters: ActsFilter): void {
@@ -354,7 +383,7 @@ export class ActsTable {
 
     /**
      * Show error message
-     * 
+     *
      * @param message Error message
      */
     private showError(message: string): void {
@@ -362,7 +391,9 @@ export class ActsTable {
             <div style="padding: 60px; text-align: center; color: #C13120;">
                 <span class="material-icons" style="font-size: 64px; opacity: 0.3;">error</span>
                 <p style="margin-top: 16px; font-weight: 600;">Errore</p>
-                <p style="font-size: 14px; color: #6B6B6B; margin-top: 8px;">${this.escapeHtml(message)}</p>
+                <p style="font-size: 14px; color: #6B6B6B; margin-top: 8px;">${this.escapeHtml(
+                    message
+                )}</p>
                 <button onclick="window.location.reload()" 
                     style="margin-top: 16px; padding: 10px 20px; background: #1B365D; color: white; border-radius: 6px; font-weight: 600; cursor: pointer;">
                     Ricarica Pagina
@@ -384,9 +415,11 @@ export class ActsTable {
         `;
 
         // Clear pagination
-        const paginationContainer = document.getElementById('paginationContainer');
+        const paginationContainer = document.getElementById(
+            "paginationContainer"
+        );
         if (paginationContainer) {
-            paginationContainer.innerHTML = '';
+            paginationContainer.innerHTML = "";
         }
 
         this.updateResultsCount();
@@ -394,65 +427,69 @@ export class ActsTable {
 
     /**
      * Update results count display
-     * 
+     *
      * @param meta Pagination metadata
      */
     private updateResultsCount(meta?: PaginationMeta): void {
-        const resultsCount = document.getElementById('resultsCount');
+        const resultsCount = document.getElementById("resultsCount");
         if (resultsCount) {
-            resultsCount.textContent = meta ? `${meta.total} atti trovati` : '0 atti trovati';
+            resultsCount.textContent = meta
+                ? `${meta.total} atti trovati`
+                : "0 atti trovati";
         }
     }
 
     /**
      * Escape HTML to prevent XSS
-     * 
+     *
      * @param text Text to escape
      * @returns Escaped HTML string
      */
     private escapeHtml(text: string): string {
-        const div = document.createElement('div');
+        const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
     }
 
     /**
      * Format date for display
-     * 
+     *
      * @param dateString ISO date string
      * @returns Formatted date
      */
     private formatDate(dateString: string): string {
         const date = new Date(dateString);
-        return date.toLocaleDateString('it-IT', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
+        return date.toLocaleDateString("it-IT", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
         });
     }
 
     /**
      * Format currency
-     * 
+     *
      * @param amount Amount in EUR
      * @returns Formatted currency string
      */
     private formatCurrency(amount: number): string {
-        return new Intl.NumberFormat('it-IT', {
-            style: 'currency',
-            currency: 'EUR'
+        return new Intl.NumberFormat("it-IT", {
+            style: "currency",
+            currency: "EUR",
         }).format(amount);
     }
 }
 
 /**
  * Initialize acts table on page load
- * 
+ *
  * @param containerSelector Container CSS selector
  * @param api NatanApiClient instance
  * @returns ActsTable instance
  */
-export function initActsTable(containerSelector: string, api: NatanApiClient): ActsTable {
+export function initActsTable(
+    containerSelector: string,
+    api: NatanApiClient
+): ActsTable {
     return new ActsTable(containerSelector, api);
 }
-

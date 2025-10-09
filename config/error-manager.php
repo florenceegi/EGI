@@ -5422,5 +5422,17 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // AREA 2.2.3 - EgiPurchaseWorkflowService Error Codes (P1 Compliance Fix)
+        'CERTIFICATE_GENERATION_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.certificate_generation_failed',
+            'user_message_key' => 'error-manager::errors_2.user.certificate_generation_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];

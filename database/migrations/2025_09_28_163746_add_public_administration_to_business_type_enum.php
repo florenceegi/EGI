@@ -10,9 +10,9 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        // Modify the business_type ENUM to include 'public_administration'
+        // Modify the business_type ENUM to use approved values from BusinessType enum
         if (DB::getDriverName() === 'mysql') {
-            DB::statement("ALTER TABLE user_organization_data MODIFY COLUMN business_type ENUM('individual','sole_proprietorship','partnership','corporation','non_profit','public_administration','other')");
+            DB::statement("ALTER TABLE user_organization_data MODIFY COLUMN business_type ENUM('individual','sole_proprietorship','partnership','corporation','non_profit','pa_entity')");
         }
     }
 

@@ -1,6 +1,6 @@
 /**
  * N.A.T.A.N. API Client
- * 
+ *
  * @package resources/ts/natan
  * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
  * @version 1.0.0 (FlorenceEGI - N.A.T.A.N.)
@@ -16,12 +16,12 @@ import type {
     JobUploadResponse,
     JobStatusResponse,
     FilterOptions,
-    PaginationMeta
-} from './types';
+    PaginationMeta,
+} from "./types";
 
 /**
  * N.A.T.A.N. API Client
- * 
+ *
  * Handles all HTTP requests to N.A.T.A.N. endpoints with CSRF protection
  */
 export class NatanApiClient {
@@ -30,28 +30,30 @@ export class NatanApiClient {
 
     /**
      * Constructor
-     * 
+     *
      * @param baseUrl Base API URL (default: /api/natan)
      * @param token CSRF token (auto-detected from meta tag if not provided)
      */
-    constructor(baseUrl: string = '/api/natan', token: string = '') {
+    constructor(baseUrl: string = "/api/natan", token: string = "") {
         this.baseUrl = baseUrl;
         this.token = token || this.getTokenFromMeta();
     }
 
     /**
      * Get CSRF token from meta tag
-     * 
+     *
      * @returns CSRF token string
      */
     private getTokenFromMeta(): string {
-        const meta = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]');
-        return meta?.content || '';
+        const meta = document.querySelector<HTMLMetaElement>(
+            'meta[name="csrf-token"]'
+        );
+        return meta?.content || "";
     }
 
     /**
      * Generic fetch wrapper with authentication
-     * 
+     *
      * @param endpoint API endpoint (without base URL)
      * @param options Fetch options
      * @returns API response
@@ -64,13 +66,13 @@ export class NatanApiClient {
         const headers = new Headers(options.headers);
 
         if (this.token) {
-            headers.set('X-CSRF-TOKEN', this.token);
+            headers.set("X-CSRF-TOKEN", this.token);
         }
 
-        headers.set('Accept', 'application/json');
+        headers.set("Accept", "application/json");
 
         if (!options.body || !(options.body instanceof FormData)) {
-            headers.set('Content-Type', 'application/json');
+            headers.set("Content-Type", "application/json");
         }
 
         const response = await fetch(`${this.baseUrl}${endpoint}`, {
@@ -80,7 +82,7 @@ export class NatanApiClient {
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({
-                message: 'Network error'
+                message: "Network error",
             }));
             throw new Error(error.message || `HTTP ${response.status}`);
         }
@@ -90,28 +92,30 @@ export class NatanApiClient {
 
     /**
      * Upload document for AI analysis
-     * 
+     *
      * @param file File to upload
      * @returns Job upload response with job_id
      */
     async uploadDocument(file: File): Promise<JobUploadResponse> {
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append("file", file);
 
         const response = await fetch(`${this.baseUrl}/analyze`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'X-CSRF-TOKEN': this.token,
-                'Accept': 'application/json',
+                "X-CSRF-TOKEN": this.token,
+                Accept: "application/json",
             },
             body: formData,
         });
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({
-                message: 'Upload failed'
+                message: "Upload failed",
             }));
-            throw new Error(error.message || `Upload failed: ${response.status}`);
+            throw new Error(
+                error.message || `Upload failed: ${response.status}`
+            );
         }
 
         return response.json();
@@ -119,7 +123,7 @@ export class NatanApiClient {
 
     /**
      * Get paginated list of acts with filters
-     * 
+     *
      * @param filters Filter criteria
      * @param page Page number (default: 1)
      * @param perPage Results per page (default: 20)
@@ -131,8 +135,8 @@ export class NatanApiClient {
         filters: ActsFilter = {},
         page: number = 1,
         perPage: number = 20,
-        sort: string = 'created_at',
-        direction: 'asc' | 'desc' = 'desc'
+        sort: string = "created_at",
+        direction: "asc" | "desc" = "desc"
     ): Promise<ApiResponse<EgiAct[]>> {
         const params = new URLSearchParams({
             page: String(page),
@@ -141,7 +145,7 @@ export class NatanApiClient {
             direction,
             ...Object.fromEntries(
                 Object.entries(filters)
-                    .filter(([_, v]) => v !== undefined && v !== '')
+                    .filter(([_, v]) => v !== undefined && v !== "")
                     .map(([k, v]) => [k, String(v)])
             ),
         });
@@ -151,7 +155,7 @@ export class NatanApiClient {
 
     /**
      * Get single act by ID
-     * 
+     *
      * @param id Act ID
      * @returns Act detail
      */
@@ -161,19 +165,22 @@ export class NatanApiClient {
 
     /**
      * Search acts by full-text query
-     * 
+     *
      * @param query Search query (min 3 characters)
      * @param page Page number (default: 1)
      * @returns Search results
      */
-    async searchActs(query: string, page: number = 1): Promise<ApiResponse<EgiAct[]>> {
+    async searchActs(
+        query: string,
+        page: number = 1
+    ): Promise<ApiResponse<EgiAct[]>> {
         if (query.length < 3) {
-            throw new Error('Query must be at least 3 characters');
+            throw new Error("Query must be at least 3 characters");
         }
 
         const params = new URLSearchParams({
             q: query,
-            page: String(page)
+            page: String(page),
         });
 
         return this.fetch<EgiAct[]>(`/search?${params}`);
@@ -181,36 +188,36 @@ export class NatanApiClient {
 
     /**
      * Get statistics
-     * 
+     *
      * @returns Statistics data
      */
     async getStats(): Promise<ApiResponse<Stats>> {
-        return this.fetch<Stats>('/stats');
+        return this.fetch<Stats>("/stats");
     }
 
     /**
      * Get filter options for dropdowns
-     * 
+     *
      * @returns Available filter options
      */
     async getFilters(): Promise<ApiResponse<FilterOptions>> {
-        return this.fetch<FilterOptions>('/filters');
+        return this.fetch<FilterOptions>("/filters");
     }
 
     /**
      * Poll job status
-     * 
+     *
      * @param jobId Job UUID
      * @returns Job status
      */
     async getJobStatus(jobId: string): Promise<JobStatusResponse> {
         const response = await this.fetch<JobStatusResponse>(`/jobs/${jobId}`);
-        return response.data || response as any;
+        return response.data || (response as any);
     }
 
     /**
      * Refresh CSRF token
-     * 
+     *
      * Updates the token from meta tag (useful after token rotation)
      */
     refreshToken(): void {
@@ -225,7 +232,7 @@ let apiClientInstance: NatanApiClient | null = null;
 
 /**
  * Get or create API client singleton
- * 
+ *
  * @returns NatanApiClient instance
  */
 export function getNatanApiClient(): NatanApiClient {
@@ -239,4 +246,3 @@ export function getNatanApiClient(): NatanApiClient {
  * Export default instance for convenience
  */
 export default getNatanApiClient();
-

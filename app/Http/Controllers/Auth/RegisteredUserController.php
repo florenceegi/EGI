@@ -553,11 +553,11 @@ class RegisteredUserController extends Controller {
                 'status' => 'active',
             ]);
 
-            // Organization Data (only for enterprise and PA)
-            if (in_array($validated['user_type'], ['enterprise', 'pa_entity'])) {
+            // Organization Data (only for company and PA)
+            if (in_array($validated['user_type'], ['company', 'pa_entity'])) {
                 UserOrganizationData::create([
                     'user_id' => $user->id,
-                    'business_type' => $validated['user_type'] === 'pa_entity' ? 'public_administration' : 'enterprise',
+                    'business_type' => $validated['user_type'] === 'pa_entity' ? 'pa_entity' : 'corporation',
                     'is_seller_verified' => false,
                     'can_issue_invoices' => true, // PA può emettere fatture istituzionali
                 ]);

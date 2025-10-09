@@ -50,6 +50,9 @@ return [
         'egi_mint_with_payment_failed' => 'Mint EGI con distribuzione pagamento fallito. User: :user_id, EGI: :egi_id, Title: :egi_title, PaidAmount: :paid_amount, Error: :error_message',
         'mint_distribution_partial_failure' => 'Mint riuscito ma distribuzione pagamento fallita. EgiBlockchain: :egi_blockchain_id, User: :user_id, PaidAmount: :paid_amount, Error: :error',
         'mint_distribution_retry_failed' => 'Retry distribuzione pagamento fallito. EgiBlockchain: :egi_blockchain_id, EGI: :egi_id, Error: :error',
+
+        // AREA 2.2.3 - EgiPurchaseWorkflowService Errors (Dev) - P1 Compliance Fix
+        'certificate_generation_failed' => 'Generazione certificato blockchain fallita. User: :user_id, EgiBlockchain: :egi_blockchain_id, EGI: :egi_id, UUID: :certificate_uuid, Error: :error_message',
     ],
 
     'user' => [
@@ -94,6 +97,9 @@ return [
         'egi_mint_with_payment_failed' => 'Errore durante il mint e la distribuzione del pagamento. Il pagamento non è stato effettuato. Riprova o contatta l\'assistenza.',
         'mint_distribution_partial_failure' => 'Il mint è riuscito ma la distribuzione del pagamento ha avuto problemi. Il team è stato notificato.',
         'mint_distribution_retry_failed' => 'Impossibile ritentare la distribuzione del pagamento. Contatta l\'assistenza.',
+
+        // AREA 2.2.3 - EgiPurchaseWorkflowService Errors (User) - P1 Compliance Fix
+        'certificate_generation_failed' => 'Errore durante la generazione del certificato. Il mint è stato completato correttamente. Contatta l\'assistenza per ricevere il certificato.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

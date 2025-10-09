@@ -85,7 +85,7 @@ return new class extends Migration
             $table->string('org_vat_number')->nullable();
             $table->boolean('is_seller_verified')->default(false);
             $table->boolean('can_issue_invoices')->default(false);
-            $table->enum('business_type', ['individual', 'sole_proprietorship', 'partnership', 'corporation', 'non_profit', 'other'])->nullable();
+            $table->enum('business_type', ['individual', 'sole_proprietorship', 'partnership', 'corporation', 'non_profit', 'pa_entity'])->nullable();
             $table->timestamps();
             $table->unique('user_id');
             $table->index('org_vat_number');
