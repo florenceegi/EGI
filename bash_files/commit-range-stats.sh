@@ -290,19 +290,74 @@ for stat in "${daily_stats[@]}"; do
 done
 
 echo ""
-echo "💡 Suggerimenti:"
-echo "----------------"
-if [ $PRODUCTIVITY_PERCENT -lt 50 ]; then
-    echo "🎯 Cerca di essere più costante nei commit quotidiani"
-elif [ $PRODUCTIVITY_PERCENT -lt 80 ]; then
-    echo "👍 Buona costanza! Prova a ridurre i giorni senza commit"
+echo "📝 Statistiche righe di codice:"
+echo "--------------------------------"
+
+# Lista commit da escludere (grosse rimozioni tipo .history folder)
+EXCLUDE_COMMITS="6756853"
+
+# Calcola statistiche ESCLUDENDO commit di cleanup
+CODE_STATS=$(git log --since="$START_DATE 00:00:00" --until="$END_DATE 23:59:59" \
+             --pretty=format:"%H" | \
+             grep -v -E "(6756853)" | \
+             xargs -I {} git show {} --numstat --format="" 2>/dev/null | \
+             awk '{files++; added+=$1; removed+=$2} END {print files+0, added+0, removed+0}')
+
+read FILES_CHANGED INSERTIONS DELETIONS <<< "$CODE_STATS"
+NET_LINES=$((INSERTIONS - DELETIONS))
+
+if [ $TOTAL_COMMITS -gt 0 ]; then
+    echo "📁 File modificati: $FILES_CHANGED"
+    echo "➕ Righe aggiunte: $INSERTIONS"
+    echo "➖ Righe rimosse: $DELETIONS"
+
+    if [ $NET_LINES -ge 0 ]; then
+        echo "🚀 Righe nette: +$NET_LINES"
+    else
+        echo "📉 Righe nette: $NET_LINES"
+    fi
+
+    echo "ℹ️  Nota: Commit di cleanup massicci (es. .history) esclusi dalle statistiche"
 else
-    echo "🏆 Eccellente costanza! Continua così!"
+    echo "ℹ️  Nessun commit nel range specificato"
 fi
 
-if [ $AVERAGE != "N/A" ] && [ $(echo "$AVERAGE < 3" | bc -l 2>/dev/null || echo "0") -eq 1 ]; then
-    echo "⚡ Considera commit più frequenti e piccoli invece di pochi commit grandi"
+echo ""
+echo "💡 Suggerimenti Intelligenti:"
+echo "----------------------------"
+
+# Analisi pattern di lavoro
+COMMITS_PER_DAY=$(echo "scale=1; $TOTAL_COMMITS / $PRODUCTIVE_DAYS" | bc -l 2>/dev/null || echo "0")
+LINES_PER_COMMIT=$(echo "scale=0; $NET_LINES / $TOTAL_COMMITS" | bc -l 2>/dev/null || echo "0")
+
+# Valutazione costanza INTELLIGENTE (considera anche la produttività)
+if [ $NET_LINES -gt 20000 ]; then
+    # Se hai fatto +20k righe, sei un GENIO indipendentemente dai giorni
+    echo "🚀 PRODUTTIVITÀ ECCEZIONALE: +$NET_LINES righe in $PRODUCTIVE_DAYS giorni!"
+    echo "   💪 Concentrazione intensiva e risultati straordinari!"
+elif [ $NET_LINES -gt 10000 ]; then
+    # Se hai fatto +10k righe, sei molto produttivo
+    echo "💪 PRODUTTIVITÀ ELEVATA: +$NET_LINES righe in $PRODUCTIVE_DAYS giorni!"
+    echo "   ⚡ Ottima efficienza e focus!"
+elif [ $PRODUCTIVITY_PERCENT -lt 40 ]; then
+    # Solo se produttività bassa E costanza bassa
+    echo "📅 Costanza bassa ($PRODUCTIVITY_PERCENT%): considera sessioni più regolari"
+elif [ $PRODUCTIVITY_PERCENT -lt 70 ]; then
+    echo "📊 Costanza media ($PRODUCTIVITY_PERCENT%): buon equilibrio lavoro/riposo"
+elif [ $PRODUCTIVITY_PERCENT -lt 90 ]; then
+    echo "⭐ Ottima costanza ($PRODUCTIVITY_PERCENT%): ritmo sostenibile"
+else
+    echo "🔥 Costanza eccellente ($PRODUCTIVITY_PERCENT%): produttività massima!"
 fi
+
+# Valutazione dimensione commit
+if [ $(echo "$COMMITS_PER_DAY > 15" | bc -l 2>/dev/null || echo "0") -eq 1 ]; then
+    echo "📝 Molti commit/giorno ($COMMITS_PER_DAY): ottimo per tracciabilità!"
+elif [ $(echo "$COMMITS_PER_DAY < 3" | bc -l 2>/dev/null || echo "0") -eq 1 ] && [ $NET_LINES -gt 1000 ]; then
+    echo "⚡ Pochi commit/giorno ($COMMITS_PER_DAY): considera commit più frequenti"
+fi
+
+# Nessun suggerimento ridondante - già coperto sopra
 
 # Suggerimenti basati sui TAG
 if [ $TAGGED_COMMITS -gt 0 ]; then
