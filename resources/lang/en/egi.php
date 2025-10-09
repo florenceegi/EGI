@@ -99,6 +99,10 @@ return [
     'status' => [
         'not_for_sale' => '🚫 Not for Sale',
         'draft' => '⏳ Draft',
+        // Phase 2: Availability status
+        'login_required' => '🔐 Login Required',
+        'already_minted' => '✅ Already Minted',
+        'not_available' => '⚠️ Not Available',
     ],
 
     // Actions
@@ -110,6 +114,9 @@ return [
         'outbid' => 'Outbid to Activate',
         'view_history' => 'History',
         'reserve_egi' => 'Reserve :title',
+        // Phase 2: Dual path actions
+        'mint_now' => 'Mint Now',
+        'mint_direct' => 'Mint Instantly',
     ],
 
     // Reservation History System

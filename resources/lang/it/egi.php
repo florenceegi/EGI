@@ -99,6 +99,10 @@ return [
     'status' => [
         'not_for_sale' => '🚫 Non in Vendita',
         'draft' => '⏳ Bozza',
+        // Phase 2: Availability status
+        'login_required' => '🔐 Login Richiesto',
+        'already_minted' => '✅ Già Mintato',
+        'not_available' => '⚠️ Non Disponibile',
     ],
 
     // Azioni
@@ -110,6 +114,9 @@ return [
         'outbid' => 'Supera per Attivare',
         'view_history' => 'Cronologia',
         'reserve_egi' => 'Prenota :title',
+        // Phase 2: Dual path actions
+        'mint_now' => 'Minta Ora',
+        'mint_direct' => 'Minta Subito',
     ],
 
     // Sistema di Cronologia delle Prenotazioni

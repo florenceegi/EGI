@@ -99,6 +99,10 @@ return [
     'status' => [
         'not_for_sale' => '🚫 Nicht zu verkaufen',
         'draft' => '⏳ Entwurf',
+        // Phase 2: Availability status
+        'login_required' => '🔐 Anmeldung Erforderlich',
+        'already_minted' => '✅ Bereits Gemintet',
+        'not_available' => '⚠️ Nicht Verfügbar',
     ],
 
     // Aktionen
@@ -110,6 +114,9 @@ return [
         'outbid' => 'Überbieten zum Aktivieren',
         'view_history' => 'Verlauf',
         'reserve_egi' => ':title reservieren',
+        // Phase 2: Dual path actions
+        'mint_now' => 'Jetzt Minten',
+        'mint_direct' => 'Sofort Minten',
     ],
 
     // System für Reservierungsverlauf

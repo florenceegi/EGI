@@ -99,6 +99,10 @@ return [
     'status' => [
         'not_for_sale' => '🚫 No en Venta',
         'draft' => '⏳ Borrador',
+        // Phase 2: Availability status
+        'login_required' => '🔐 Inicio de Sesión Requerido',
+        'already_minted' => '✅ Ya Minteado',
+        'not_available' => '⚠️ No Disponible',
     ],
 
     // Acciones
@@ -110,6 +114,9 @@ return [
         'outbid' => 'Superar para Activar',
         'view_history' => 'Historial',
         'reserve_egi' => 'Reservar :title',
+        // Phase 2: Dual path actions
+        'mint_now' => 'Mintear Ahora',
+        'mint_direct' => 'Mintear Instantáneamente',
     ],
 
     // Sistema de Historial de Reservas
