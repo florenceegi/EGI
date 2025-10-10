@@ -158,10 +158,51 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
 @endonce
 
 {{-- 🧱 Card Container --}}
+@php
+    // 🎨 Design speciale per EGI mintati - ELEGANZA RINASCIMENTALE CERTIFICATA
+    // Background: Gradient viola brillante + border oro spesso + glow intenso
+    $mintedClasses = $isMinted 
+        ? 'bg-gradient-to-br from-[#4A1D96] via-[#8E44AD] to-[#B565D8] border-[#D4A574] shadow-[0_0_30px_rgba(212,165,116,0.6)] hover:shadow-[0_0_50px_rgba(212,165,116,0.9)]'
+        : 'bg-gray-900 border-purple-500/30 border-2 hover:border-purple-400 hover:shadow-2xl hover:shadow-purple-500/20';
+    
+    // Border thickness: mintato = 4px oro, normale = 2px purple
+    $mintedBorder = $isMinted ? 'border-[4px]' : 'border-2';
+@endphp
+
 <article
-    class="egi-card {{ $isHyper ? 'egi-card--hiper' : '' }} {{ $portfolioOutbid ? 'opacity-35 hover:opacity-70' : '' }} group relative w-full overflow-hidden rounded-2xl border-2 border-purple-500/30 bg-gray-900 transition-all duration-300 hover:border-purple-400 hover:shadow-2xl hover:shadow-purple-500/20"
-    data-egi-id="{{ $egi->id }}" data-hyper="{{ $isHyper ? '1' : '0' }}"
+    class="egi-card {{ $isHyper ? 'egi-card--hiper' : '' }} {{ $portfolioOutbid ? 'opacity-35 hover:opacity-70' : '' }} group relative w-full overflow-hidden rounded-2xl {{ $mintedClasses }} {{ $mintedBorder }} transition-all duration-500"
+    data-egi-id="{{ $egi->id }}" data-hyper="{{ $isHyper ? '1' : '0' }}" data-minted="{{ $isMinted ? '1' : '0' }}"
     style="{{ $isHyper ? '--energy:0.95; --foilHue:265; --edge:#9b5cf6; --accent:#a78bfa;' : '' }}">
+
+    {{-- 🎨 Pattern rinascimentale GOLD per EGI mintati - MOLTO PIÙ VISIBILE --}}
+    @if ($isMinted)
+        <div class="absolute inset-0 pointer-events-none opacity-15" aria-hidden="true">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="renaissance-pattern-{{ $egi->id }}" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                        {{-- Grandi cerchi oro --}}
+                        <circle cx="10" cy="10" r="3" fill="#D4A574" opacity="0.6"/>
+                        <circle cx="40" cy="40" r="3" fill="#D4A574" opacity="0.6"/>
+                        {{-- Piccoli cerchi decorativi --}}
+                        <circle cx="30" cy="10" r="1.5" fill="#F4D799" opacity="0.8"/>
+                        <circle cx="10" cy="40" r="1.5" fill="#F4D799" opacity="0.8"/>
+                        {{-- Curve rinascimentali --}}
+                        <path d="M 15 15 Q 25 10 35 15 T 55 15" stroke="#D4A574" fill="none" stroke-width="1" opacity="0.5"/>
+                        <path d="M 5 30 Q 15 25 25 30 T 45 30" stroke="#F4D799" fill="none" stroke-width="0.8" opacity="0.4"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#renaissance-pattern-{{ $egi->id }})"/>
+            </svg>
+        </div>
+        
+        {{-- Barra superiore GOLD accent per maggiore visibilità --}}
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#D4A574] to-transparent opacity-80 pointer-events-none" aria-hidden="true"></div>
+        
+        {{-- Effetto shimmer animato gold (eleganza certificato) --}}
+        <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+            <div class="absolute -inset-full bg-gradient-to-r from-transparent via-[#D4A574]/20 to-transparent animate-[shimmer_3s_ease-in-out_infinite] skew-x-12"></div>
+        </div>
+    @endif
 
     @if ($isHyper)
         <div class="egi-sparkles" aria-hidden="true"></div>
@@ -298,9 +339,8 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         <div class="owned-base">
                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                 @if ($badgeStatus === 'minted')
-                                    {{-- Icona "Mintato" (stella) --}}
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    {{-- Icona "Mintato" (blockchain link) --}}
+                                    <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
                                 @elseif($badgeStatus === 'reserved')
                                     {{-- Icona "Prenotato" (bookmark) --}}
                                     <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
@@ -321,9 +361,8 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         title="{{ $badgeLabel }}">
                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                             @if ($badgeStatus === 'minted')
-                                {{-- Icona "Mintato" (stella) --}}
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                {{-- Icona "Mintato" (blockchain link) --}}
+                                <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
                             @elseif($badgeStatus === 'reserved')
                                 {{-- Icona "Prenotato" (bookmark) --}}
                                 <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
@@ -388,9 +427,8 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                 title="{{ $badgeLabel }}">
                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     @if ($badgeStatus === 'minted')
-                        {{-- Icona "Mintato" (stella) --}}
-                        <path
-                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        {{-- Icona "Mintato" (blockchain link) --}}
+                        <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
                     @else
                         {{-- Icona "Prenotato" (bookmark) --}}
                         <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
@@ -843,7 +881,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                             d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
                     </svg>
                     @if (!$showButtons)
-                        {{ __('egi.status.price_not_set') ?? 'Prezzo non impostato' }}
+                        {{ __('egi.crud.price_not_set') }}
                     @elseif (!auth()->check())
                         {{ __('egi.status.login_required') ?? 'Login richiesto' }}
                     @elseif($egi->isMinted())

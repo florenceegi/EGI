@@ -101,6 +101,16 @@ export default {
                     content: "#7f1d1d", // Testo scuro
                 },
             },
+            // Animazioni custom per EGI cards
+            keyframes: {
+                shimmer: {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(100%)' },
+                },
+            },
+            animation: {
+                shimmer: 'shimmer 3s ease-in-out infinite',
+            },
             // Qui puoi aggiungere altre estensioni come spacing, borderRadius, ecc.
             // Esempio per bordi arrotondati rinascimentali (molto leggeri)
             // borderRadius: {

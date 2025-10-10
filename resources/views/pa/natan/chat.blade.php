@@ -29,9 +29,11 @@
                 <div class="mb-4 rounded-2xl bg-white shadow-xl">
 
                     {{-- Chat Header --}}
-                    <div class="rounded-t-2xl border-b border-gray-200 bg-gradient-to-r from-[#1B365D] to-[#2D5016] p-6">
+                    <div
+                        class="rounded-t-2xl border-b border-gray-200 bg-gradient-to-r from-[#1B365D] to-[#2D5016] p-6">
                         <div class="flex items-center gap-3">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                            <div
+                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                                 <span class="material-icons text-2xl text-white">smart_toy</span>
                             </div>
                             <div>
@@ -46,7 +48,8 @@
 
                         {{-- Welcome Message (will be hidden after first message) --}}
                         <div id="welcomeMessage" class="flex h-full flex-col items-center justify-center text-center">
-                            <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#1B365D] to-[#2D5016]">
+                            <div
+                                class="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#1B365D] to-[#2D5016]">
                                 <span class="material-icons text-4xl text-white">smart_toy</span>
                             </div>
                             <h3 class="mb-2 text-2xl font-bold text-[#1B365D]">Ciao! Sono N.A.T.A.N.</h3>
@@ -74,18 +77,18 @@
                     {{-- Input Area --}}
                     <div class="rounded-b-2xl border-t border-gray-200 bg-gray-50 p-4">
                         <form id="chatForm" class="flex gap-2">
-                            <input type="text" 
-                                   id="userInput" 
-                                   placeholder="Scrivi la tua domanda a N.A.T.A.N..."
-                                   class="flex-1 rounded-xl border-2 border-gray-200 px-4 py-3 focus:border-[#2D5016] focus:outline-none focus:ring-2 focus:ring-[#2D5016]/20 disabled:cursor-not-allowed disabled:bg-gray-100">
-                            <button type="submit" 
-                                    id="sendBtn"
-                                    class="flex items-center gap-2 rounded-xl bg-[#2D5016] px-6 py-3 font-medium text-white transition-all hover:bg-[#3D6026] disabled:cursor-not-allowed disabled:opacity-50">
+                            <input type="text" id="userInput" placeholder="Scrivi la tua domanda a N.A.T.A.N..."
+                                class="flex-1 rounded-xl border-2 border-gray-200 px-4 py-3 focus:border-[#2D5016] focus:outline-none focus:ring-2 focus:ring-[#2D5016]/20 disabled:cursor-not-allowed disabled:bg-gray-100">
+                            <button type="submit" id="sendBtn"
+                                class="flex items-center gap-2 rounded-xl bg-[#2D5016] px-6 py-3 font-medium text-white transition-all hover:bg-[#3D6026] disabled:cursor-not-allowed disabled:opacity-50">
                                 <span id="sendBtnText">Invia</span>
-                                <span id="sendBtnLoader" class="hidden flex items-center gap-2">
+                                <span id="sendBtnLoader" class="flex hidden items-center gap-2">
                                     <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
                                     </svg>
                                     <span>Invio...</span>
                                 </span>
@@ -102,7 +105,8 @@
                         <div class="flex-1 text-sm text-blue-800">
                             <p class="mb-1 font-medium">N.A.T.A.N. è alimentato da AI locale (Ollama Llama 3.1)</p>
                             <p class="text-xs text-blue-600">
-                                Tutti i dati rimangono sul tuo server. Nessuna informazione viene inviata a servizi esterni.
+                                Tutti i dati rimangono sul tuo server. Nessuna informazione viene inviata a servizi
+                                esterni.
                                 <strong>GDPR compliant</strong> per design.
                             </p>
                         </div>
@@ -116,7 +120,7 @@
         <script>
             /**
              * N.A.T.A.N. Chat - Vanilla JavaScript Implementation
-             * 
+             *
              * NO Alpine.js, NO Livewire, NO jQuery - Pure ES6+ JavaScript
              * Enterprise-grade, readable, debuggable
              */
@@ -230,9 +234,9 @@
                     messageDiv.className = message.role === 'user' ? 'flex justify-end' : 'flex justify-start';
 
                     const bubbleDiv = document.createElement('div');
-                    bubbleDiv.className = message.role === 'user'
-                        ? 'bg-[#2D5016] text-white rounded-2xl rounded-tr-sm max-w-md px-4 py-3 shadow-sm'
-                        : 'bg-gray-100 text-gray-900 rounded-2xl rounded-tl-sm max-w-2xl px-4 py-3 shadow-sm';
+                    bubbleDiv.className = message.role === 'user' ?
+                        'bg-[#2D5016] text-white rounded-2xl rounded-tr-sm max-w-md px-4 py-3 shadow-sm' :
+                        'bg-gray-100 text-gray-900 rounded-2xl rounded-tl-sm max-w-2xl px-4 py-3 shadow-sm';
 
                     // Message content
                     const contentDiv = document.createElement('div');
@@ -248,13 +252,13 @@
                             <p class="mb-2 text-xs font-semibold text-gray-600">Fonti:</p>
                             <div class="space-y-1">
                                 ${message.sources.map(source => `
-                                    <a href="${source.url}" target="_blank"
-                                       class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
-                                        <span class="font-medium">${source.protocol_number}</span>
-                                        <span class="text-gray-600"> - </span>
-                                        <span>${source.title}</span>
-                                    </a>
-                                `).join('')}
+                                            <a href="${source.url}" target="_blank"
+                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
+                                                <span class="font-medium">${source.protocol_number}</span>
+                                                <span class="text-gray-600"> - </span>
+                                                <span>${source.title}</span>
+                                            </a>
+                                        `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(sourcesDiv);
@@ -262,7 +266,8 @@
 
                     // Timestamp
                     const timestampDiv = document.createElement('div');
-                    timestampDiv.className = message.role === 'user' ? 'mt-2 text-xs text-white/60' : 'mt-2 text-xs text-gray-500';
+                    timestampDiv.className = message.role === 'user' ? 'mt-2 text-xs text-white/60' :
+                        'mt-2 text-xs text-gray-500';
                     timestampDiv.textContent = message.timestamp;
                     bubbleDiv.appendChild(timestampDiv);
 
@@ -311,13 +316,15 @@
                         if (data.success) {
                             this.addMessage('assistant', data.response, data.sources);
                         } else {
-                            this.addMessage('assistant', 'Mi dispiace, si è verificato un errore: ' + (data.message || 'Errore sconosciuto'));
+                            this.addMessage('assistant', 'Mi dispiace, si è verificato un errore: ' + (data.message ||
+                                'Errore sconosciuto'));
                         }
 
                     } catch (error) {
                         console.error('[N.A.T.A.N.] API Error:', error);
                         this.hideLoadingIndicator();
-                        this.addMessage('assistant', 'Mi dispiace, non riesco a connettermi al servizio AI. Riprova tra poco.');
+                        this.addMessage('assistant',
+                            'Mi dispiace, non riesco a connettermi al servizio AI. Riprova tra poco.');
                     } finally {
                         this.setLoading(false);
                     }
