@@ -209,6 +209,7 @@ class CollectionsController extends Controller {
             },
             'egis.user',
             'egis.owner',
+            'egis.blockchain', // CRITICAL: for isMinted() check in egi-card badges
             'likes'
         ])
             ->withCount([

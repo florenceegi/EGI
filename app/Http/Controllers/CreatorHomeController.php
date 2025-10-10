@@ -66,6 +66,7 @@ class CreatorHomeController extends Controller {
         // Nota: creator_id identifica CHI HA CREATO la collezione, non chi la possiede
         $egis = Egi::with([
             'collection',
+            'blockchain', // CRITICAL: for isMinted() check in egi-card badges
             'traits.category', // eager loading categoria per badge
             'reservations' => function ($q) {
                 $q->where('is_current', true); // Solo prenotazioni attive
@@ -161,7 +162,7 @@ class CreatorHomeController extends Controller {
         // Aggiungi flag per animazioni se i numeri sono grandi
         $stats['animate'] = max($stats) > 10;
 
-        $featuredEgis = Egi::with(['collection', 'traits.category'])
+        $featuredEgis = Egi::with(['collection', 'blockchain', 'traits.category'])
             ->where('is_published', true) // <-- Riga corretta
             ->whereHas('collection', function ($q) use ($creator) {
                 $q->where('creator_id', $creator->id)

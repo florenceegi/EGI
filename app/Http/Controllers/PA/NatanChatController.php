@@ -127,7 +127,6 @@ class NatanChatController extends Controller
                 'sources' => $result['sources'] ?? [],
                 'timestamp' => now()->toIso8601String()
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -135,7 +134,6 @@ class NatanChatController extends Controller
                 'message' => 'Dati non validi',
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
             $this->logger->error('[NatanChatController] Message processing failed', [
                 ...$logContext,
@@ -178,7 +176,6 @@ class NatanChatController extends Controller
                 'success' => true,
                 'suggestions' => $suggestions
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('[NatanChatController] Failed to get suggestions', [
                 'user_id' => auth()->id(),
@@ -196,4 +193,3 @@ class NatanChatController extends Controller
         }
     }
 }
-
