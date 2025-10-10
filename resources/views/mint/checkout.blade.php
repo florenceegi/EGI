@@ -53,7 +53,7 @@
                     </div>
 
                     {{-- Certificate of Authenticity (CoA) --}}
-                    @if($egi->certificateOfAuthenticity)
+                    @if($egi->coa && $egi->coa->status === 'valid')
                         <div class="p-6 rounded-lg bg-amber-50">
                             <div class="flex items-center mb-3">
                                 <svg class="w-6 h-6 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,32 +72,25 @@
 
                                 {{-- CoA Details --}}
                                 <div class="space-y-2 text-sm">
-                                    @if($egi->certificateOfAuthenticity->certificate_number)
+                                    @if($egi->coa->serial)
                                         <div class="flex justify-between">
                                             <span class="text-amber-700">{{ __('mint.coa.certificate_number') }}</span>
-                                            <span class="font-mono font-medium text-amber-900">{{ $egi->certificateOfAuthenticity->certificate_number }}</span>
+                                            <span class="font-mono font-medium text-amber-900">{{ $egi->coa->serial }}</span>
                                         </div>
                                     @endif
-                                    @if($egi->certificateOfAuthenticity->issuer)
+                                    @if($egi->coa->issuer_name)
                                         <div class="flex justify-between">
                                             <span class="text-amber-700">{{ __('mint.coa.issuer') }}</span>
-                                            <span class="font-medium text-amber-900">{{ Str::limit($egi->certificateOfAuthenticity->issuer, 30) }}</span>
+                                            <span class="font-medium text-amber-900">{{ Str::limit($egi->coa->issuer_name, 30) }}</span>
                                         </div>
                                     @endif
-                                    @if($egi->certificateOfAuthenticity->issued_date)
+                                    @if($egi->coa->issued_at)
                                         <div class="flex justify-between">
                                             <span class="text-amber-700">{{ __('mint.coa.issue_date') }}</span>
-                                            <span class="font-medium text-amber-900">{{ $egi->certificateOfAuthenticity->issued_date->format('d/m/Y') }}</span>
+                                            <span class="font-medium text-amber-900">{{ $egi->coa->issued_at->format('d/m/Y') }}</span>
                                         </div>
                                     @endif
-                                    @if($egi->certificateOfAuthenticity->authenticity_level)
-                                        <div class="flex justify-between">
-                                            <span class="text-amber-700">{{ __('mint.coa.authenticity_level') }}</span>
-                                            <span class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                                {{ ucfirst($egi->certificateOfAuthenticity->authenticity_level) }}
-                                            </span>
-                                        </div>
-                                    @endif
+                                    {{-- Note: authenticity_level does NOT exist in Coa model --}}
                                 </div>
 
                                 {{-- CoA Info Note --}}
