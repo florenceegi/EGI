@@ -206,6 +206,13 @@ class EgiMintingService {
                 'log_category' => 'EGI_MINTING_SUCCESS'
             ]);
 
+            // 11. CRITICAL: Sync egis.owner_id with buyer_user_id
+            // This ensures Policy checks and secondary market work correctly
+            // This covers ALL mint flows (Jobs, direct calls, etc.)
+            $egi->update([
+                'owner_id' => $egiBlockchain->buyer_user_id
+            ]);
+
             return $egiBlockchain->fresh();
         } catch (\Exception $e) {
             // 11. UEM: Error handling
