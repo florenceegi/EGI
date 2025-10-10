@@ -33,7 +33,7 @@ class OllamaService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
-        
+
         // Ollama running on localhost (WSL2)
         $this->baseUrl = config('services.ollama.base_url', 'http://localhost:11434');
         $this->model = config('services.ollama.model', 'llama3.1:8b');
@@ -114,7 +114,6 @@ class OllamaService
             ]);
 
             return $metadata;
-
         } catch (\Throwable $e) {
             $this->logger->error('[OllamaService] Metadata extraction failed', [
                 ...$logContext,
@@ -243,7 +242,7 @@ PROMPT;
 
         // Remove currency symbols and spaces
         $amount = preg_replace('/[€$\s]/', '', (string) $amount);
-        
+
         // Convert comma to dot
         $amount = str_replace(',', '.', $amount);
 
@@ -286,4 +285,3 @@ PROMPT;
         return [];
     }
 }
-

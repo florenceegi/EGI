@@ -62,7 +62,7 @@ class PdfParserService
 
             // Detect file type
             $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-            
+
             if ($extension === 'p7m') {
                 // P7M is a signed PDF, extract PDF first
                 $pdfContent = $this->extractPdfFromP7m($filePath);
@@ -79,7 +79,6 @@ class PdfParserService
             ]);
 
             return $text;
-
         } catch (\Throwable $e) {
             $this->logger->error('[PdfParserService] Text extraction failed', [
                 ...$logContext,
@@ -105,10 +104,10 @@ class PdfParserService
         try {
             $pdf = $this->pdfParser->parseFile($filePath);
             $text = $pdf->getText();
-            
+
             // Clean up extracted text
             $text = $this->cleanText($text);
-            
+
             return $text;
         } catch (\Exception $e) {
             throw new \Exception("PDF parsing failed: {$e->getMessage()}");
@@ -127,10 +126,10 @@ class PdfParserService
         try {
             $pdf = $this->pdfParser->parseContent($content);
             $text = $pdf->getText();
-            
+
             // Clean up extracted text
             $text = $this->cleanText($text);
-            
+
             return $text;
         } catch (\Exception $e) {
             throw new \Exception("PDF content parsing failed: {$e->getMessage()}");
@@ -185,7 +184,6 @@ class PdfParserService
             ]);
 
             return $pdfContent;
-
         } catch (\Exception $e) {
             // Clean up temp file on error
             @unlink($tempPdfPath);
@@ -203,19 +201,19 @@ class PdfParserService
     {
         // Remove null bytes
         $text = str_replace("\0", '', $text);
-        
+
         // Normalize line endings
         $text = str_replace(["\r\n", "\r"], "\n", $text);
-        
+
         // Remove excessive whitespace (but keep single spaces)
         $text = preg_replace('/[ \t]+/', ' ', $text);
-        
+
         // Remove excessive newlines (max 2 consecutive)
         $text = preg_replace('/\n{3,}/', "\n\n", $text);
-        
+
         // Trim
         $text = trim($text);
-        
+
         return $text;
     }
 
@@ -232,7 +230,7 @@ class PdfParserService
         }
 
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-        
+
         if (!in_array($extension, ['pdf', 'p7m'])) {
             return false;
         }
@@ -255,4 +253,3 @@ class PdfParserService
         return false;
     }
 }
-

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PA\PADashboardController;
 use App\Http\Controllers\PA\PAHeritageController;
+use App\Http\Controllers\PA\NatanChatController;
 use App\Http\Controllers\PaActs\PaActUploadController;
 use App\Http\Controllers\PaActs\PaActController;
 use App\Http\Controllers\PaActs\PaActPublicController;
@@ -115,6 +116,28 @@ Route::prefix('pa')
             Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('acts.upload');
             Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('acts.upload.post');
             Route::get('/{egi}', [PaActController::class, 'show'])->name('acts.show');
+        });
+
+        /**
+         * N.A.T.A.N. CHAT AI
+         *
+         * GET  /pa/natan/chat         → Chat interface
+         * POST /pa/natan/chat/message → Process message and return AI response
+         * GET  /pa/natan/chat/suggestions → Get suggested questions
+         *
+         * Features:
+         * - AI-powered conversational interface for PA acts
+         * - RAG (Retrieval Augmented Generation) for relevant context
+         * - Natural language queries about administrative acts
+         * - Summarization, analysis, strategic insights
+         *
+         * Authorization: auth + role:pa_entity
+         * GDPR: Local AI processing (Ollama), no external data transfer
+         */
+        Route::prefix('/natan')->name('natan.')->group(function () {
+            Route::get('/chat', [NatanChatController::class, 'index'])->name('chat');
+            Route::post('/chat/message', [NatanChatController::class, 'sendMessage'])->name('chat.message');
+            Route::get('/chat/suggestions', [NatanChatController::class, 'getSuggestions'])->name('chat.suggestions');
         });
 
         /**

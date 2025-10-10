@@ -316,7 +316,7 @@ class PaActUploadHandler
             // STEP 4.5: N.A.T.A.N. AI-powered metadata extraction (OPTIONAL)
             // If Ollama is available and user hasn't provided all metadata, use AI to extract
             $enableAiParsing = $request->input('enable_ai_parsing', '1') === '1'; // Enabled by default
-            
+
             if ($enableAiParsing && $this->shouldUseAiParsing($metadata)) {
                 $this->logger->info('[PaActUploadHandler] Starting N.A.T.A.N. AI metadata extraction', [
                     ...$logContext,
@@ -339,7 +339,6 @@ class PaActUploadHandler
                         'ai_extracted_fields' => array_keys($aiMetadata),
                         'final_metadata' => $metadata
                     ]);
-
                 } catch (\Exception $e) {
                     // AI parsing is non-blocking, log error and continue with user metadata
                     $this->logger->warning('[PaActUploadHandler] N.A.T.A.N. AI parsing failed (non-blocking)', [

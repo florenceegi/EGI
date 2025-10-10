@@ -173,7 +173,7 @@
 
         {{-- N.A.T.A.N. AI Analysis Widget --}}
         <div
-            class="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#1B365D] to-[#D4A574] p-6 text-white shadow-lg">
+            class="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#1B365D] to-[#D4A574] p-6 text-white shadow-lg transition-all hover:shadow-xl">
             <div class="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-white/10"></div>
             <div class="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-white/5"></div>
 
@@ -197,9 +197,17 @@
                     </div>
                 </div>
 
-                <div class="text-sm text-white/90">
+                <div class="mb-3 text-sm text-white/90">
                     Neuro-Analytical Text Analysis Network
                 </div>
+
+                {{-- Chat AI Button --}}
+                <a href="{{ route('pa.natan.chat') }}" 
+                   class="flex items-center justify-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white/30">
+                    <span class="material-icons text-lg">smart_toy</span>
+                    <span>Chatta con N.A.T.A.N.</span>
+                    <span class="material-icons text-sm">arrow_forward</span>
+                </a>
             </div>
         </div>
     </div>
