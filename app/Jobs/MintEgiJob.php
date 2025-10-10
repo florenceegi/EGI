@@ -77,6 +77,10 @@ class MintEgiJob implements ShouldQueue {
 
             // 3. REAL BLOCKCHAIN MINT (not mock!)
             // AREA 5.5.1: Pass proposed co-creator name to service
+            // NOTE: mintingService->mintEgi() already updates the record with ALL data:
+            // - metadata, creator_display_name, co_creator_display_name
+            // - asa_id, blockchain_tx_id, anchor_hash, mint_status='minted', minted_at
+            // So we don't need to update again here! Just get fresh instance.
             $result = $mintingService->mintEgi(
                 $egiBlockchain->egi,
                 $egiBlockchain->buyer,
@@ -87,15 +91,9 @@ class MintEgiJob implements ShouldQueue {
                 ]
             );
 
-            // 4. Update with REAL blockchain data
-            $egiBlockchain->update([
-                'mint_status' => 'minted',
-                'asa_id' => $result->asa_id,
-                'blockchain_tx_id' => $result->blockchain_tx_id,
-                'anchor_hash' => $result->anchor_hash,
-                'minted_at' => now(),
-                'mint_error' => null
-            ]);
+            // 4. Get fresh instance with updated data from service
+            // (service already updated: metadata, names, blockchain data, status)
+            $egiBlockchain = $result; // $result is already fresh() from service
 
             $logger->info('REAL blockchain minting completed successfully', [
                 'egi_blockchain_id' => $this->egiBlockchainId,
