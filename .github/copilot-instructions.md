@@ -899,3 +899,111 @@ public function getTopEgis(?int $limit = null): Collection
 "GDPR compliant, OOP puro, documentato OS2.0, AI-readable. Ma PRIMA: REGOLA ZERO. Se non so, CHIEDO. Zero deduzioni, zero assunzioni."
 
 **Ship it. 🚀**
+
+---
+
+# **🚫 FRONTEND LIBRARIES - STRICT RULES**
+
+## **BANNATE COMPLETAMENTE:**
+
+### **❌ Alpine.js - VIETATO**
+
+-   **Motivo:** Illeggibile, debugging impossibile, performance scadenti
+-   **Sostituisci con:** Vanilla JavaScript o TypeScript
+-   **Esempi vietati:** `x-data`, `x-model`, `x-show`, `@click`, `:class`
+
+### **❌ Livewire - VIETATO**
+
+-   **Motivo:** Over-engineering, troppa magia, non adatto a enterprise
+-   **Sostituisci con:** Controller REST + Vanilla JS fetch()
+
+### **❌ jQuery - DEPRECATO**
+
+-   **Motivo:** Legacy, non più mantenuto, performance scadenti
+-   **Sostituisci con:** Vanilla JS (querySelector, fetch, addEventListener)
+
+## **PERMESSE E RACCOMANDATE:**
+
+### **✅ Vanilla JavaScript (PREFERITO)**
+
+-   Modern ES6+ syntax
+-   Fetch API per chiamate HTTP
+-   DOM manipulation nativo
+-   Event listeners nativi
+-   **Esempio:**
+    ```javascript
+    document.getElementById("myBtn").addEventListener("click", async (e) => {
+        const res = await fetch("/api/endpoint", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data: "value" }),
+        });
+        const json = await res.json();
+        console.log(json);
+    });
+    ```
+
+### **✅ TypeScript (RACCOMANDATO per logiche complesse)**
+
+-   Type safety
+-   Better IDE support
+-   Compiled to modern JS
+-   Usato in `resources/ts/` folder
+
+### **✅ Librerie specifiche SOLO se necessarie:**
+
+-   **Chart.js** - Per grafici
+-   **axios** - Se fetch() non basta (raro)
+-   **DOMPurify** - Per sanitize HTML user-generated
+
+## **REGOLE DI SCRITTURA CODICE FRONTEND:**
+
+1. **NO x-data, x-model, x-show** → Usa vanilla JS
+2. **NO wire:click, wire:model** → Usa fetch() + REST API
+3. **NO $()** → Usa `document.querySelector()`
+4. **SÌ addEventListener()** → Event delegation quando serve
+5. **SÌ async/await** → Per chiamate API
+6. **SÌ template literals** → Per costruire HTML
+7. **SÌ classList.add/remove** → Per CSS dinamici
+
+## **ESEMPIO CORRETTO - Form Submit con Vanilla JS:**
+
+❌ **SBAGLIATO (Alpine.js):**
+
+```html
+<div x-data="{ message: '' }">
+    <input x-model="message" />
+    <button @click="sendMessage()">Send</button>
+</div>
+```
+
+✅ **CORRETTO (Vanilla JS):**
+
+```html
+<div id="chatForm">
+    <input type="text" id="messageInput" />
+    <button id="sendBtn">Send</button>
+</div>
+
+<script>
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+        const message = document.getElementById("messageInput").value;
+
+        const response = await fetch("/api/chat/message", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+            },
+            body: JSON.stringify({ message }),
+        });
+
+        const data = await response.json();
+        console.log(data);
+    });
+</script>
+```
+
+---
