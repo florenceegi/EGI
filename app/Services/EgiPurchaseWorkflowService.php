@@ -117,9 +117,8 @@ class EgiPurchaseWorkflowService {
                 $this->updateEgiOwnership($egi, $user, $mintedEgi);
 
                 // 9. Final audit trail
-                $this->auditService->logActivity(
+                $this->auditService->logUserAction(
                     $user,
-                    GdprActivityCategory::BLOCKCHAIN_PURCHASE,
                     'Direct EGI purchase completed successfully',
                     [
                         'egi_id' => $egi->id,
@@ -133,7 +132,8 @@ class EgiPurchaseWorkflowService {
                         'certificate_path' => $certificatePath,
                         'payment_provider' => $paymentService->getProviderName(),
                         'distributions_count' => count($distributions) // AREA 2.2.3
-                    ]
+                    ],
+                    GdprActivityCategory::BLOCKCHAIN_ACTIVITY
                 );
 
                 // 10. ULM: Log success
@@ -227,9 +227,8 @@ class EgiPurchaseWorkflowService {
                 $this->updateEgiOwnership($egi, $user, $mintedEgi);
 
                 // 10. Final audit trail
-                $this->auditService->logActivity(
+                $this->auditService->logUserAction(
                     $user,
-                    GdprActivityCategory::BLOCKCHAIN_PURCHASE,
                     'Reservation-based EGI purchase completed successfully',
                     [
                         'egi_id' => $egi->id,
@@ -245,7 +244,8 @@ class EgiPurchaseWorkflowService {
                         'certificate_path' => $certificatePath,
                         'payment_provider' => $paymentService->getProviderName(),
                         'distributions_count' => count($distributions) // AREA 2.2.3
-                    ]
+                    ],
+                    GdprActivityCategory::BLOCKCHAIN_ACTIVITY
                 );
 
                 // 11. ULM: Log success
@@ -373,9 +373,8 @@ class EgiPurchaseWorkflowService {
         }
 
         // Log successful payment
-        $this->auditService->logActivity(
+        $this->auditService->logUserAction(
             $user,
-            GdprActivityCategory::PAYMENT_PROCESSING,
             'EGI purchase payment processed successfully',
             [
                 'payment_id' => $paymentResult->paymentId,
@@ -383,7 +382,8 @@ class EgiPurchaseWorkflowService {
                 'currency' => $paymentResult->currency,
                 'provider' => $paymentService->getProviderName(),
                 'egi_id' => $paymentRequest->egiId
-            ]
+            ],
+            GdprActivityCategory::WALLET_MANAGEMENT
         );
 
         return $paymentResult;
@@ -610,9 +610,8 @@ class EgiPurchaseWorkflowService {
             'owner_id' => $egiBlockchain->buyer_user_id
         ]);
 
-        $this->auditService->logActivity(
+        $this->auditService->logUserAction(
             $user,
-            GdprActivityCategory::OWNERSHIP_TRANSFER,
             'EGI ownership transferred via blockchain purchase',
             [
                 'egi_id' => $egi->id,
@@ -622,7 +621,8 @@ class EgiPurchaseWorkflowService {
                 'blockchain_record_id' => $egiBlockchain->id,
                 'asa_id' => $egiBlockchain->asa_id,
                 'blockchain_tx_id' => $egiBlockchain->blockchain_tx_id
-            ]
+            ],
+            GdprActivityCategory::BLOCKCHAIN_ACTIVITY
         );
     }
 
@@ -638,16 +638,16 @@ class EgiPurchaseWorkflowService {
             'sub_status' => 'minted'
         ]);
 
-        $this->auditService->logActivity(
+        $this->auditService->logUserAction(
             $reservation->user,
-            GdprActivityCategory::RESERVATION_MANAGEMENT,
             'Reservation completed via blockchain purchase',
             [
                 'reservation_id' => $reservation->id,
                 'egi_id' => $reservation->egi_id,
                 'blockchain_record_id' => $egiBlockchain->id,
                 'asa_id' => $egiBlockchain->asa_id
-            ]
+            ],
+            GdprActivityCategory::PLATFORM_USAGE
         );
     }
 
