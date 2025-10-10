@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Ollama AI Service (N.A.T.A.N.)
+    |--------------------------------------------------------------------------
+    |
+    | Local LLM service for AI-powered document analysis.
+    | GDPR-COMPLIANT: All processing happens on-premise (localhost).
+    |
+    */
+    'ollama' => [
+        'base_url' => env('OLLAMA_BASE_URL', 'http://localhost:11434'),
+        'model' => env('OLLAMA_MODEL', 'llama3.1:8b'),
+        'timeout' => env('OLLAMA_TIMEOUT', 60), // seconds
+    ],
+
 ];

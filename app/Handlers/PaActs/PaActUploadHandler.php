@@ -4,6 +4,8 @@ namespace App\Handlers\PaActs;
 
 use App\Models\User;
 use App\Services\PaActs\PaActService;
+use App\Services\OllamaService;
+use App\Services\PdfParserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
@@ -231,6 +233,8 @@ class PaActUploadHandler
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected PaActService $paActService;
+    protected OllamaService $ollamaService;
+    protected PdfParserService $pdfParser;
 
     /**
      * Constructor - Dependency Injection
@@ -238,15 +242,21 @@ class PaActUploadHandler
      * @param UltraLogManager $logger
      * @param ErrorManagerInterface $errorManager
      * @param PaActService $paActService
+     * @param OllamaService $ollamaService
+     * @param PdfParserService $pdfParser
      */
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
-        PaActService $paActService
+        PaActService $paActService,
+        OllamaService $ollamaService,
+        PdfParserService $pdfParser
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->paActService = $paActService;
+        $this->ollamaService = $ollamaService;
+        $this->pdfParser = $pdfParser;
     }
 
     /**
@@ -302,6 +312,42 @@ class PaActUploadHandler
             $metadata = $this->validateMetadata($request);
             $logContext['protocol_number'] = $metadata['protocol_number'];
             $logContext['doc_type'] = $metadata['doc_type'];
+
+            // STEP 4.5: N.A.T.A.N. AI-powered metadata extraction (OPTIONAL)
+            // If Ollama is available and user hasn't provided all metadata, use AI to extract
+            $enableAiParsing = $request->input('enable_ai_parsing', '1') === '1'; // Enabled by default
+            
+            if ($enableAiParsing && $this->shouldUseAiParsing($metadata)) {
+                $this->logger->info('[PaActUploadHandler] Starting N.A.T.A.N. AI metadata extraction', [
+                    ...$logContext,
+                    'ollama_available' => $this->ollamaService->isAvailable()
+                ]);
+
+                try {
+                    // Extract text from PDF
+                    $filePath = $file->getRealPath();
+                    $documentText = $this->pdfParser->extractText($filePath);
+
+                    // Use AI to extract metadata
+                    $aiMetadata = $this->ollamaService->extractPaActMetadata($documentText);
+
+                    // Merge AI metadata with user-provided metadata (user data takes precedence)
+                    $metadata = $this->mergeAiMetadata($metadata, $aiMetadata);
+
+                    $this->logger->info('[PaActUploadHandler] N.A.T.A.N. AI extraction completed', [
+                        ...$logContext,
+                        'ai_extracted_fields' => array_keys($aiMetadata),
+                        'final_metadata' => $metadata
+                    ]);
+
+                } catch (\Exception $e) {
+                    // AI parsing is non-blocking, log error and continue with user metadata
+                    $this->logger->warning('[PaActUploadHandler] N.A.T.A.N. AI parsing failed (non-blocking)', [
+                        ...$logContext,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
 
             // STEP 5: Delegate to PaActService
             $this->logger->info('[PaActUploadHandler] Delegating to PaActService', $logContext);
@@ -399,6 +445,7 @@ class PaActUploadHandler
      */
     protected function authenticateUser(): User
     {
+        /** @var User|null $user */
         $user = auth()->user();
 
         if (!$user instanceof User) {
@@ -554,5 +601,55 @@ class PaActUploadHandler
             'UPLOAD_FAILED' => 'PA_ACT_UPLOAD_FAILED',
             default => 'PA_ACT_UPLOAD_FAILED'
         };
+    }
+
+    /**
+     * Determine if AI parsing should be used
+     *
+     * AI parsing is used if:
+     * - User hasn't provided protocol_number OR doc_type OR title
+     * - Ollama service is available
+     *
+     * @param array $metadata User-provided metadata
+     * @return bool
+     */
+    protected function shouldUseAiParsing(array $metadata): bool
+    {
+        // Check if Ollama is available
+        if (!$this->ollamaService->isAvailable()) {
+            $this->logger->info('[PaActUploadHandler] Ollama not available, skipping AI parsing');
+            return false;
+        }
+
+        // Check if metadata is incomplete (missing critical fields)
+        $hasProtocol = !empty($metadata['protocol_number']);
+        $hasDocType = !empty($metadata['doc_type']);
+        $hasTitle = !empty($metadata['title']);
+
+        // Use AI if ANY of these fields is missing
+        return !$hasProtocol || !$hasDocType || !$hasTitle;
+    }
+
+    /**
+     * Merge AI-extracted metadata with user-provided metadata
+     *
+     * User-provided data always takes precedence over AI-extracted data.
+     *
+     * @param array $userMetadata User-provided metadata
+     * @param array $aiMetadata AI-extracted metadata
+     * @return array Merged metadata
+     */
+    protected function mergeAiMetadata(array $userMetadata, array $aiMetadata): array
+    {
+        // For each field, use user value if present, otherwise use AI value
+        return [
+            'protocol_number' => $userMetadata['protocol_number'] ?? $aiMetadata['protocol_number'] ?? null,
+            'protocol_date' => $userMetadata['protocol_date'] ?? $aiMetadata['protocol_date'] ?? null,
+            'doc_type' => $userMetadata['doc_type'] ?? $aiMetadata['doc_type'] ?? null,
+            'title' => $userMetadata['title'] ?? $aiMetadata['object'] ?? null, // AI uses 'object' field
+            'description' => $userMetadata['description'] ?? $aiMetadata['object'] ?? null,
+            'amount' => $userMetadata['amount'] ?? $aiMetadata['amount'] ?? null,
+            '_ai_assisted' => true, // Flag to indicate AI was used
+        ];
     }
 }
