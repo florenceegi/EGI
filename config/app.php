@@ -276,6 +276,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | ID predefinito dell'associazione Frangette
+    |--------------------------------------------------------------------------
+     */
+    'frangette_id' => env('FRANGETTE_ID', 3),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Wallet addresses for platform roles
+    |--------------------------------------------------------------------------
+     */
+    'natan_wallet_address' => env('NATAN_WALLET_ADDRESS'),
+    'epp_wallet_address' => env('EPP_WALLET_ADDRESS'),
+    'frangette_wallet_address' => env('FRANGETTE_WALLET_ADDRESS'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application build version
     |--------------------------------------------------------------------------
      */

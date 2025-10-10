@@ -5,6 +5,7 @@ namespace Ultra\EgiModule\Services;
 use App\Models\Wallet;
 use App\Models\User;
 use App\Models\Collection;
+use App\Enums\Wallet\WalletRoleEnum;
 use Ultra\EgiModule\Contracts\WalletServiceInterface;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UltraLogManager\UltraLogManager;
@@ -100,19 +101,19 @@ class WalletService implements WalletServiceInterface {
     /**
      * 🚀 Attaches default wallets to a collection.
      *
-     * Creates three default wallets for each new collection:
-     * 1. Creator wallet - belongs to the collection owner
-     * 2. EPP wallet - belongs to the EPP user (system account)
-     * 3. Platform wallet - belongs to the Natan user (platform account)
+     * Creates four default wallets for each new collection:
+     * 1. Creator wallet - belongs to the collection owner (68% mint, 4.5% rebind)
+     * 2. EPP wallet - environmental impact partner (20% mint, 0.8% rebind)
+     * 3. Natan wallet - platform infrastructure (10% mint, 0.7% rebind)
+     * 4. Frangette wallet - ecosystem development (2% mint, 0.1% rebind)
      *
-     * Each wallet is configured with specific royalty values from application config.
+     * Royalty percentages are defined in WalletRoleEnum for type-safety and immutability.
      *
      * --- Logic ---
-     * 1. Retrieve system user IDs from configuration
-     * 2. Create creator wallet with appropriate royalty values
-     * 3. Create EPP wallet with appropriate royalty values
-     * 4. Create Platform (Natan) wallet with appropriate royalty values
-     * 5. Log successful operation or handle exceptions via UEM
+     * 1. Create CREATOR wallet with user-specific data (dynamic)
+     * 2. Create PLATFORM wallets (EPP, Natan, Frangette) from enum definitions
+     * 3. Validate total mint percentages sum to 100%
+     * 4. Log successful operation or handle exceptions via UEM
      * --- End Logic ---
      *
      * @param Collection $collection The collection to attach wallets to
@@ -121,12 +122,15 @@ class WalletService implements WalletServiceInterface {
      * @return void
      *
      * @throws Throwable When UEM handling results in thrown exception
+     * @throws \Exception If wallet percentages validation fails
      *
-     * @sideEffect Creates three new wallet records in the database
+     * @sideEffect Creates four new wallet records in the database
      * @sideEffect Logs the wallet creation operations via ULM
      *
      * @privacy-purpose Wallet creation for royalty management
      * @privacy-data Uses user IDs and wallet addresses
+     * 
+     * @see WalletRoleEnum For immutable tokenomics definitions
      */
     public function attachDefaultWalletsToCollection(Collection $collection, User $user): void {
         // Create context for logging and error handling
@@ -137,47 +141,42 @@ class WalletService implements WalletServiceInterface {
         ];
 
         try {
-            // Get system user IDs
-            $eppId = config('app.epp_id', 2);
-            $natanId = config('app.natan_id', 1);
-
-            // 1. Create creator wallet
+            // 1. Create CREATOR wallet (user-specific, dynamic)
             $creatorWallet = $this->createWallet(
                 $collection->id,
                 $user->id,
                 $user->wallet ?? null,
-                config('app.creator_royalty_mint', 100),
-                config('app.creator_royalty_rebind', 100),
-                'Creator'
+                WalletRoleEnum::CREATOR->getMintRoyalty(),
+                WalletRoleEnum::CREATOR->getRebindRoyalty(),
+                WalletRoleEnum::CREATOR->value
             );
 
-            // 2. Create EPP wallet
-            $eppWallet = $this->createWallet(
-                $collection->id,
-                $eppId,
-                config('app.epp_wallet_address'),
-                config('app.epp_royalty_mint', 0),
-                config('app.epp_royalty_rebind', 0),
-                'EPP'
+            // 2. Create PLATFORM wallets (EPP, Natan, Frangette - static system accounts)
+            $platformWallets = [];
+            foreach (WalletRoleEnum::platformRoles() as $role) {
+                $platformWallets[$role->value] = $this->createWallet(
+                    $collection->id,
+                    $role->getUserId(),
+                    $role->getWalletAddress(),
+                    $role->getMintRoyalty(),
+                    $role->getRebindRoyalty(),
+                    $role->value
+                );
+            }
 
-            );
+            // 3. Validate tokenomics totals
+            if (!WalletRoleEnum::validateMintTotal()) {
+                throw new \Exception('Wallet mint percentages do not sum to 100%');
+            }
 
-            // 3. Create Natan (platform) wallet
-            $natanWallet = $this->createWallet(
-                $collection->id,
-                $natanId,
-                config('app.natan_wallet_address'),
-                config('app.natan_royalty_mint', 0),
-                config('app.natan_royalty_rebind', 0),
-                'Natan'
-
-            );
-
-            // Log success with wallet IDs
+            // Log success with all wallet IDs
             $this->logger->info('All default wallets attached to collection', array_merge($context, [
                 'creator_wallet_id' => $creatorWallet->id ?? 'failed',
-                'epp_wallet_id' => $eppWallet->id ?? 'failed',
-                'natan_wallet_id' => $natanWallet->id ?? 'failed'
+                'epp_wallet_id' => $platformWallets['EPP']->id ?? 'failed',
+                'natan_wallet_id' => $platformWallets['Natan']->id ?? 'failed',
+                'frangette_wallet_id' => $platformWallets['Frangette']->id ?? 'failed',
+                'total_mint_percentage' => 100.0,
+                'total_rebind_percentage' => WalletRoleEnum::getTotalRebindPercentage()
             ]));
         } catch (Throwable $e) {
             // Log error with detailed context
