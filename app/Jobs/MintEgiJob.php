@@ -97,7 +97,9 @@ class MintEgiJob implements ShouldQueue {
 
             // 4.5. CRITICAL: Sync egis.owner_id with buyer_user_id
             // This ensures Policy checks and secondary market work correctly
-            $egiBlockchain->egi->update([
+            // IMPORTANT: Use fresh() to avoid stale relationship cache
+            $egi = \App\Models\Egi::find($egiBlockchain->egi_id);
+            $egi->update([
                 'owner_id' => $egiBlockchain->buyer_user_id
             ]);
 
@@ -105,7 +107,8 @@ class MintEgiJob implements ShouldQueue {
                 'egi_blockchain_id' => $this->egiBlockchainId,
                 'asa_id' => $result->asa_id,
                 'tx_id' => $result->blockchain_tx_id,
-                'owner_id_synced' => $egiBlockchain->buyer_user_id
+                'owner_id_synced' => $egiBlockchain->buyer_user_id,
+                'egi_owner_updated' => $egi->owner_id
             ]);
 
             // 5. Generate blockchain certificate (NUOVO)
