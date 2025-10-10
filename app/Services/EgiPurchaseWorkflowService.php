@@ -590,14 +590,25 @@ class EgiPurchaseWorkflowService {
     /**
      * Update EGI ownership after successful purchase
      *
+     * CRITICAL: Syncs egis.owner_id with egi_blockchain.buyer_user_id
+     * This ensures Policy checks (updatePrice, manageCoA) work correctly
+     *
      * @param Egi $egi EGI being purchased
      * @param User $user New owner
      * @param EgiBlockchain $egiBlockchain Blockchain record
+     * 
+     * @rationale egis.owner_id MUST match buyer_user_id after mint for:
+     *            - EgiPolicy::updatePrice() to allow owner price control
+     *            - Secondary market reservations to work
+     *            - Ownership display in UI to be accurate
      */
     private function updateEgiOwnership(Egi $egi, User $user, EgiBlockchain $egiBlockchain): void {
-        // Note: In EGI system, ownership is tracked through blockchain record
-        // EGI model doesn't have owner_id field updated for blockchain purchases
-        // This is intentional - blockchain record is source of truth for ownership
+        // CRITICAL: Sync owner_id with blockchain buyer_user_id
+        // Before: owner_id = creator (user_id)
+        // After:  owner_id = buyer (buyer_user_id)
+        $egi->update([
+            'owner_id' => $egiBlockchain->buyer_user_id
+        ]);
 
         $this->auditService->logActivity(
             $user,
@@ -606,7 +617,8 @@ class EgiPurchaseWorkflowService {
             [
                 'egi_id' => $egi->id,
                 'egi_title' => $egi->title,
-                'new_owner_id' => $user->id,
+                'previous_owner_id' => $egi->user_id, // Creator (immutable)
+                'new_owner_id' => $egiBlockchain->buyer_user_id, // New commercial owner
                 'blockchain_record_id' => $egiBlockchain->id,
                 'asa_id' => $egiBlockchain->asa_id,
                 'blockchain_tx_id' => $egiBlockchain->blockchain_tx_id

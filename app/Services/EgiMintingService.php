@@ -253,7 +253,7 @@ class EgiMintingService {
                 $user
             );
 
-            // Aggiorna ownership
+            // Aggiorna ownership nel record blockchain
             $egiBlockchain->update([
                 'ownership_type' => 'wallet',
                 'buyer_wallet' => $buyerWallet,
@@ -261,9 +261,18 @@ class EgiMintingService {
                 'blockchain_tx_id' => $transferTxId // Ultimo transaction ID
             ]);
 
+            // CRITICAL: Sync egis.owner_id with buyer_user_id
+            // This ensures Policy checks and secondary market work correctly
+            if ($buyerUserId) {
+                $egiBlockchain->egi->update([
+                    'owner_id' => $buyerUserId
+                ]);
+            }
+
             $this->logger->info('EGI_TRANSFER_SUCCESS', [
                 'egi_id' => $egiBlockchain->egi_id,
-                'transfer_tx_id' => $transferTxId
+                'transfer_tx_id' => $transferTxId,
+                'new_owner_id' => $buyerUserId
             ]);
 
             return $transferTxId;
