@@ -136,11 +136,17 @@ class ProcessEgiMintingJob implements ShouldQueue {
                 'job_completed_at' => now()
             ]);
 
+            // 6.5. CRITICAL: Sync egis.owner_id with buyer_user_id
+            // This ensures Policy checks and secondary market work correctly
+            $egi = \App\Models\Egi::find($egiBlockchain->egi_id);
+            $egi->update([
+                'owner_id' => $egiBlockchain->buyer_user_id
+            ]);
+
             // 7. GDPR: Audit trail
             if ($user) {
-                $auditService->logActivity(
+                $auditService->logUserAction(
                     $user,
-                    GdprActivityCategory::BLOCKCHAIN_OPERATION,
                     'EGI minting completed via async job',
                     [
                         'egi_id' => $egiBlockchain->egi_id,
@@ -148,7 +154,8 @@ class ProcessEgiMintingJob implements ShouldQueue {
                         'job_id' => $jobId,
                         'attempt' => $attempt,
                         'webhook_id' => $this->webhookId
-                    ]
+                    ],
+                    GdprActivityCategory::BLOCKCHAIN_ACTIVITY
                 );
             }
 
@@ -206,16 +213,16 @@ class ProcessEgiMintingJob implements ShouldQueue {
 
                 // GDPR: Audit trail for failure
                 if ($egiBlockchain->buyerUser) {
-                    $auditService->logActivity(
+                    $auditService->logUserAction(
                         $egiBlockchain->buyerUser,
-                        GdprActivityCategory::BLOCKCHAIN_OPERATION,
                         'EGI minting job failed',
                         [
                             'job_id' => $jobId,
                             'attempt' => $attempt,
                             'error' => $exception->getMessage(),
                             'will_retry' => $attempt < $this->tries
-                        ]
+                        ],
+                        GdprActivityCategory::BLOCKCHAIN_ACTIVITY
                     );
                 }
 
