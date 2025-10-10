@@ -128,8 +128,8 @@ class EgiMetadataStructure {
      */
     public function toOpenSeaFormat(string $name, string $description, string $externalUrl, ?string $fallbackImageUrl = null): array {
         // Use IPFS if available, otherwise fallback URL (until Area 6 IPFS integration)
-        $imageUrl = $this->ipfs_image_cid 
-            ? "ipfs://{$this->ipfs_image_cid}" 
+        $imageUrl = $this->ipfs_image_cid
+            ? "ipfs://{$this->ipfs_image_cid}"
             : ($fallbackImageUrl ?? 'https://florenceegi.it/images/egi-placeholder.png');
 
         return [

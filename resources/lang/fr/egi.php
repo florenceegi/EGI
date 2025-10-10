@@ -3,28 +3,6 @@
 return [
 
     /*
-    |---------------------------------------------------------------------    'status' => [
-        'not_for_sale' => '🚫 Non à Vendre',
-        'draft' => '⏳ Brouillon',
-        // Phase 2: Availability status
-        'login_required' => '🔐 Connexion Requise',
-        'already_minted' => '✅ Déjà Minté',
-        'not_available' => '⚠️ Non Disponible',
-    ],
-
-    // Actions
-    'actions' => [
-        'view' => 'Voir',
-        'view_details' => 'Voir les Détails de l'EGI',
-        'reserve' => 'Activer',
-        'reserved' => 'Réservé',
-        'outbid' => 'Surenchérir pour Activer',
-        'view_history' => 'Historique',
-        'reserve_egi' => 'Réserver :title',
-        // Phase 2: Dual path actions
-        'mint_now' => 'Minter Maintenant',
-        'mint_direct' => 'Minter Instantanément',
-    ], (Ecological Goods Invent) - Traductions en Français
     |--------------------------------------------------------------------------
     |
     | Traductions pour le système CRUD de EGI dans FlorenceEGI
