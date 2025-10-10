@@ -9,6 +9,7 @@
 ## 📊 TOKENOMICS DISTRIBUTION
 
 ### Primary Market (Mint) - 100%
+
 ```
 Creator:   68.0%  (User-specific, intellectual property owner)
 EPP:       20.0%  (Environmental impact partner)
@@ -19,6 +20,7 @@ TOTAL:    100.0%  ✅ VALIDATED
 ```
 
 ### Secondary Market (Rebind) - 6.1%
+
 ```
 Creator:   4.5%   (Droit de suite - Legge 633/1941 Art. 144)
 EPP:       0.8%   (Ongoing environmental monitoring)
@@ -33,11 +35,13 @@ TOTAL:     6.1%   ✅ VALIDATED
 ## 🏗️ ARCHITECTURE
 
 ### Enum Location
+
 ```
 app/Enums/Wallet/WalletRoleEnum.php
 ```
 
 ### Key Methods
+
 ```php
 // Get royalty percentages
 WalletRoleEnum::CREATOR->getMintRoyalty();     // 68.0
@@ -58,10 +62,11 @@ WalletRoleEnum::platformRoles();               // [EPP, Natan, Frangette]
 ## 🔧 USAGE IN CODE
 
 ### WalletService Example
+
 ```php
 use App\Enums\Wallet\WalletRoleEnum;
 
-public function attachDefaultWalletsToCollection(Collection $collection, User $user): void 
+public function attachDefaultWalletsToCollection(Collection $collection, User $user): void
 {
     // 1. Create CREATOR wallet (user-specific)
     $this->createWallet(
@@ -84,7 +89,7 @@ public function attachDefaultWalletsToCollection(Collection $collection, User $u
             $role->value                  // 'EPP', 'Natan', 'Frangette'
         );
     }
-    
+
     // 3. Validate
     if (!WalletRoleEnum::validateMintTotal()) {
         throw new \Exception('Invalid tokenomics');
@@ -97,6 +102,7 @@ public function attachDefaultWalletsToCollection(Collection $collection, User $u
 ## ⚙️ CONFIGURATION
 
 ### Required .env Variables
+
 ```bash
 NATAN_ID=1
 EPP_ID=2
@@ -108,6 +114,7 @@ FRANGETTE_WALLET_ADDRESS='QRTV3BZNWH6YJ5XPGU4FLSM7KC2EN9VBWQ6ZY3MNXT4PRS7GH5KWJY
 ```
 
 ### config/app.php Mappings
+
 ```php
 'natan_id' => env('NATAN_ID', 1),
 'epp_id' => env('EPP_ID', 2),
@@ -122,14 +129,14 @@ FRANGETTE_WALLET_ADDRESS='QRTV3BZNWH6YJ5XPGU4FLSM7KC2EN9VBWQ6ZY3MNXT4PRS7GH5KWJY
 
 ## ✅ ADVANTAGES vs OLD CONFIG SYSTEM
 
-| Aspect | Config (OLD) | Enum (NEW) |
-|--------|--------------|------------|
-| **Type Safety** | ❌ String/Float parsing | ✅ Native float types |
-| **Cache Issues** | ❌ config:cache problems | ✅ No cache needed |
-| **Validation** | ❌ Manual checks | ✅ Built-in validation |
-| **IDE Support** | ❌ No autocomplete | ✅ Full autocomplete |
-| **Corruption Risk** | ❌ File can be edited | ✅ Immutable constants |
-| **Testing** | ❌ Hard to mock | ✅ Easy to test |
+| Aspect              | Config (OLD)             | Enum (NEW)             |
+| ------------------- | ------------------------ | ---------------------- |
+| **Type Safety**     | ❌ String/Float parsing  | ✅ Native float types  |
+| **Cache Issues**    | ❌ config:cache problems | ✅ No cache needed     |
+| **Validation**      | ❌ Manual checks         | ✅ Built-in validation |
+| **IDE Support**     | ❌ No autocomplete       | ✅ Full autocomplete   |
+| **Corruption Risk** | ❌ File can be edited    | ✅ Immutable constants |
+| **Testing**         | ❌ Hard to mock          | ✅ Easy to test        |
 
 ---
 
@@ -146,6 +153,7 @@ echo 'Validation: ' . (WalletRoleEnum::validateMintTotal() ? '✅ PASS' : '❌ F
 ```
 
 **Expected Output:**
+
 ```
 Mint Total: 100%
 Rebind Total: 6.1%
@@ -157,20 +165,23 @@ Validation: ✅ PASS
 ## 📚 LEGISLATIVE COMPLIANCE
 
 **Legge 633/1941 Art. 144 (Droit de suite)**
-- Legal minimum: 0.25% - 4%
-- FlorenceEGI applies: 4.5% to Creator
-- **Rationale:** Higher than legal minimum, disclosed in T&C
-- **Target:** Support artists beyond minimum requirements
+
+-   Legal minimum: 0.25% - 4%
+-   FlorenceEGI applies: 4.5% to Creator
+-   **Rationale:** Higher than legal minimum, disclosed in T&C
+-   **Target:** Support artists beyond minimum requirements
 
 ---
 
 ## 🚨 IMPORTANT NOTES
 
 ### Creator vs Platform Roles
-- **Creator:** User-specific, dynamic (`$user->id`, `$user->wallet`)
-- **Platform:** Static system accounts (EPP ID=2, Natan ID=1, Frangette ID=3)
+
+-   **Creator:** User-specific, dynamic (`$user->id`, `$user->wallet`)
+-   **Platform:** Static system accounts (EPP ID=2, Natan ID=1, Frangette ID=3)
 
 ### Wallet Creation Flow
+
 ```
 1. Collection created (user registration OR manual via modal)
    ↓
@@ -184,6 +195,7 @@ Validation: ✅ PASS
 ```
 
 ### Source of Truth Timeline
+
 ```
 CREATION TIME:  WalletRoleEnum → percentages written to DB
 RUNTIME:        DB wallets table → PaymentDistributionService reads
@@ -194,6 +206,7 @@ RUNTIME:        DB wallets table → PaymentDistributionService reads
 ## 🔄 FUTURE CHANGES
 
 To modify tokenomics:
+
 1. Edit `app/Enums/Wallet/WalletRoleEnum.php`
 2. Update `getMintRoyalty()` and `getRebindRoyalty()` methods
 3. Run validation test
@@ -204,11 +217,11 @@ To modify tokenomics:
 
 ## 📝 TODO (if needed)
 
-- [ ] Data migration to add Frangette wallet to existing collections
-- [ ] Unit tests for WalletRoleEnum validation
-- [ ] Integration tests for wallet creation flow
-- [ ] Admin panel to view tokenomics distribution
-- [ ] PaymentDistribution service refactor to use enum (optional)
+-   [ ] Data migration to add Frangette wallet to existing collections
+-   [ ] Unit tests for WalletRoleEnum validation
+-   [ ] Integration tests for wallet creation flow
+-   [ ] Admin panel to view tokenomics distribution
+-   [ ] PaymentDistribution service refactor to use enum (optional)
 
 ---
 

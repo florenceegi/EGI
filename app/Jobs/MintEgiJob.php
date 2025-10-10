@@ -95,10 +95,17 @@ class MintEgiJob implements ShouldQueue {
             // (service already updated: metadata, names, blockchain data, status)
             $egiBlockchain = $result; // $result is already fresh() from service
 
+            // 4.5. CRITICAL: Sync egis.owner_id with buyer_user_id
+            // This ensures Policy checks and secondary market work correctly
+            $egiBlockchain->egi->update([
+                'owner_id' => $egiBlockchain->buyer_user_id
+            ]);
+
             $logger->info('REAL blockchain minting completed successfully', [
                 'egi_blockchain_id' => $this->egiBlockchainId,
                 'asa_id' => $result->asa_id,
-                'tx_id' => $result->blockchain_tx_id
+                'tx_id' => $result->blockchain_tx_id,
+                'owner_id_synced' => $egiBlockchain->buyer_user_id
             ]);
 
             // 5. Generate blockchain certificate (NUOVO)

@@ -95,14 +95,14 @@ return [
              * @env CREATOR_ROYALTY_MINT
              * @type float
              */
-            'mint_royalty'   => (float) env('CREATOR_ROYALTY_MINT', 50.0),
+            'mint_royalty'   => (float) env('CREATOR_ROYALTY_MINT', 70.0),
 
             /**
              * Default royalty percentage for the EGI creator on secondary market sales (Rebind).
              * @env CREATOR_ROYALTY_REBIND
              * @type float
              */
-            'rebind_royalty' => (float) env('CREATOR_ROYALTY_REBIND', 1.5),
+            'rebind_royalty' => (float) env('CREATOR_ROYALTY_REBIND', 4.5),
 
             /**
              * Indicates if the creator's wallet entry should be marked as anonymous. (Typically false)
@@ -120,7 +120,7 @@ return [
              * @env EPP_ROYALTY_MINT
              * @type float
              */
-            'mint_royalty'   => (float) env('EPP_ROYALTY_MINT', 25.0), // Corrected ENV key assumption
+            'mint_royalty'   => (float) env('EPP_ROYALTY_MINT', 20.0), // Corrected ENV key assumption
 
             /**
              * Default royalty percentage for the EPP on secondary market sales (Rebind).
@@ -149,14 +149,43 @@ return [
              * @env FRANGETTE_ROYALTY_MINT
              * @type float
              */
-            'mint_royalty'   => (float) env('FRANGETTE_ROYALTY_MINT', 15.0),
+            'mint_royalty'   => (float) env('FRANGETTE_ROYALTY_MINT', 10.0),
 
             /**
              * Default royalty percentage for the Platform (Natan) on secondary market sales (Rebind).
              * @env FRANGETTE_ROYALTY_REBIND
              * @type float
              */
-            'rebind_royalty' => (float) env('FRANGETTE_ROYALTY_REBIND', 0.2),
+            'rebind_royalty' => (float) env('FRANGETTE_ROYALTY_REBIND', 0.7),
+
+            /**
+             * Indicates if the Platform wallet entry should be marked as anonymous. (Confirm?)
+             * @type bool
+             */
+            'is_anonymous'   => true, // Defaulting to true, adjust if needed
+
+            /**
+             * Configuration key path to retrieve the Natan User ID from within this config file.
+             * @type string
+             */
+            'user_id_config_key' => 'egi.default_ids.natan_user_id',
+        ],
+
+         // --- Natan (Platform) Wallet Configuration ---
+        'Ass_Frangette' => [ // Assumes Natan represents the platform share (using FRANGETTE keys from ENV)
+            /**
+             * Default royalty percentage for the Platform (Natan) on the first sale (Mint).
+             * @env FRANGETTE_ROYALTY_MINT
+             * @type float
+             */
+            'mint_royalty'   => (float) env('FRANGETTE_ROYALTY_MINT', 1.0),
+
+            /**
+             * Default royalty percentage for the Platform (Natan) on secondary market sales (Rebind).
+             * @env FRANGETTE_ROYALTY_REBIND
+             * @type float
+             */
+            'rebind_royalty' => (float) env('FRANGETTE_ROYALTY_REBIND', 0.1),
 
             /**
              * Indicates if the Platform wallet entry should be marked as anonymous. (Confirm?)

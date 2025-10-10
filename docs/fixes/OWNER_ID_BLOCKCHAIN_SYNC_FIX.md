@@ -9,9 +9,11 @@
 ## 🚨 PROBLEMA IDENTIFICATO
 
 ### **Sintomo:**
+
 Dopo il mint di un EGI, il campo `egis.owner_id` rimaneva uguale a `egis.user_id` (creator) invece di essere aggiornato con il `buyer_user_id` della blockchain.
 
 ### **Impatto:**
+
 ```php
 // Scenario:
 1. Creator (user_id=10) crea EGI
@@ -38,12 +40,13 @@ Dopo il mint di un EGI, il campo `egis.owner_id` rimaneva uguale a `egis.user_id
 ### **EgiPurchaseWorkflowService::updateEgiOwnership()**
 
 **BEFORE (BUG):**
+
 ```php
 private function updateEgiOwnership(Egi $egi, User $user, EgiBlockchain $egiBlockchain): void {
     // Note: In EGI system, ownership is tracked through blockchain record
     // EGI model doesn't have owner_id field updated for blockchain purchases
     // This is intentional - blockchain record is source of truth for ownership
-    
+
     $this->auditService->logActivity(...);  // Solo audit, NO UPDATE!
 }
 ```
@@ -86,7 +89,7 @@ private function updateEgiOwnership(Egi $egi, User $user, EgiBlockchain $egiBloc
 ```php
 public function transferEgiOwnership(EgiBlockchain $egiBlockchain, string $buyerWallet, ?int $buyerUserId = null): string {
     // ...mint and transfer logic...
-    
+
     // Aggiorna ownership nel record blockchain
     $egiBlockchain->update([
         'ownership_type' => 'wallet',
@@ -102,7 +105,7 @@ public function transferEgiOwnership(EgiBlockchain $egiBlockchain, string $buyer
             'owner_id' => $buyerUserId
         ]);
     }
-    
+
     // ...
 }
 ```
@@ -151,6 +154,7 @@ egis.user_id = 10  ← IMMUTABLE (sempre il creator originale)
 ## 🎯 IMPATTI POSITIVI DEL FIX
 
 ### **1. Policy Checks Funzionanti:**
+
 ```php
 // EgiPolicy::updatePrice()
 public function updatePrice(User $user, Egi $egi): bool
@@ -158,7 +162,7 @@ public function updatePrice(User $user, Egi $egi): bool
     if (!$egi->isMinted()) {
         return $user->id === $egi->user_id; // Creator before mint
     }
-    
+
     // After mint: check blockchain first, fallback DB
     if ($egi->blockchain) {
         return $user->id === $egi->blockchain->buyer_user_id;
@@ -168,6 +172,7 @@ public function updatePrice(User $user, Egi $egi): bool
 ```
 
 ### **2. Secondary Market Abilitato:**
+
 ```php
 // Reservation logic
 if ($egi->owner_id !== $egi->user_id) {
@@ -184,6 +189,7 @@ if ($egi->owner_id !== $egi->user_id) {
 ```
 
 ### **3. UI Corretta:**
+
 ```blade
 {{-- egi-card.blade.php --}}
 @if($egi->owner_id !== $egi->user_id)
@@ -220,6 +226,7 @@ if (\$egi->blockchain) {
 ```
 
 ### **Expected Output (DOPO FIX):**
+
 ```
 EGI ID: 1
 Creator (user_id): 10
@@ -237,22 +244,22 @@ public function test_owner_id_syncs_with_buyer_user_id_after_mint()
 {
     $creator = User::factory()->create(); // ID 10
     $buyer = User::factory()->create();   // ID 25
-    
+
     $egi = Egi::factory()->create([
         'user_id' => $creator->id,
         'owner_id' => $creator->id  // Initially creator
     ]);
-    
+
     // Simulate mint purchase
     $egiBlockchain = EgiBlockchain::factory()->create([
         'egi_id' => $egi->id,
         'buyer_user_id' => $buyer->id,
         'mint_status' => 'minted'
     ]);
-    
+
     // Call the fixed method
     $service->updateEgiOwnership($egi, $buyer, $egiBlockchain);
-    
+
     // Assert sync
     $egi->refresh();
     $this->assertEquals($buyer->id, $egi->owner_id);
@@ -266,14 +273,15 @@ public function test_owner_id_syncs_with_buyer_user_id_after_mint()
 ## 📝 FILES MODIFICATI
 
 1. **app/Services/EgiPurchaseWorkflowService.php**
-   - Metodo: `updateEgiOwnership()`
-   - Aggiunto: `$egi->update(['owner_id' => $egiBlockchain->buyer_user_id])`
-   - Linee: 590-620
+
+    - Metodo: `updateEgiOwnership()`
+    - Aggiunto: `$egi->update(['owner_id' => $egiBlockchain->buyer_user_id])`
+    - Linee: 590-620
 
 2. **app/Services/EgiMintingService.php**
-   - Metodo: `transferEgiOwnership()`
-   - Aggiunto: `$egiBlockchain->egi->update(['owner_id' => $buyerUserId])`
-   - Linee: 230-280
+    - Metodo: `transferEgiOwnership()`
+    - Aggiunto: `$egiBlockchain->egi->update(['owner_id' => $buyerUserId])`
+    - Linee: 230-280
 
 ---
 
@@ -304,13 +312,13 @@ public function up()
 **Query di verifica:**
 
 ```sql
-SELECT 
+SELECT
     e.id,
     e.title,
     e.user_id AS creator_id,
     e.owner_id AS current_owner_id,
     eb.buyer_user_id AS blockchain_buyer_id,
-    CASE 
+    CASE
         WHEN e.owner_id = eb.buyer_user_id THEN '✅ OK'
         ELSE '❌ DESYNC'
     END AS sync_status
@@ -323,14 +331,14 @@ WHERE eb.mint_status = 'minted';
 
 ## 🚀 DEPLOYMENT CHECKLIST
 
-- [x] Fix applicato in EgiPurchaseWorkflowService
-- [x] Fix applicato in EgiMintingService
-- [x] Documentazione creata
-- [ ] Test unitario scritto
-- [ ] Migration dati per EGI esistenti (se necessario)
-- [ ] Test manuale su staging
-- [ ] Deploy in produzione
-- [ ] Verifica query sync_status
+-   [x] Fix applicato in EgiPurchaseWorkflowService
+-   [x] Fix applicato in EgiMintingService
+-   [x] Documentazione creata
+-   [ ] Test unitario scritto
+-   [ ] Migration dati per EGI esistenti (se necessario)
+-   [ ] Test manuale su staging
+-   [ ] Deploy in produzione
+-   [ ] Verifica query sync_status
 
 ---
 
