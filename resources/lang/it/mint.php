@@ -34,6 +34,17 @@ return [
         'royalty_value' => ':percentage% al creatore',
     ],
 
+    // Certificate of Authenticity (CoA) Section
+    'coa' => [
+        'title' => 'Certificato di Autenticità',
+        'certified' => 'Certificato Autentico',
+        'certificate_number' => 'Numero Certificato',
+        'issuer' => 'Emesso da',
+        'issue_date' => 'Data Emissione',
+        'authenticity_level' => 'Livello Autenticità',
+        'info_note' => 'Questo certificato verrà incluso nei metadati NFT e verificato sulla blockchain.',
+    ],
+
     // Payment Section
     'payment' => [
         'title' => 'Dettagli Pagamento',

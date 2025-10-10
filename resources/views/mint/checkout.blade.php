@@ -51,6 +51,67 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Certificate of Authenticity (CoA) --}}
+                    @if($egi->certificateOfAuthenticity)
+                        <div class="p-6 rounded-lg bg-amber-50">
+                            <div class="flex items-center mb-3">
+                                <svg class="w-6 h-6 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                <h3 class="text-lg font-semibold text-amber-900">{{ __('mint.coa.title') }}</h3>
+                            </div>
+                            <div class="space-y-3">
+                                {{-- CoA Status Badge --}}
+                                <div class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ __('mint.coa.certified') }}
+                                </div>
+
+                                {{-- CoA Details --}}
+                                <div class="space-y-2 text-sm">
+                                    @if($egi->certificateOfAuthenticity->certificate_number)
+                                        <div class="flex justify-between">
+                                            <span class="text-amber-700">{{ __('mint.coa.certificate_number') }}</span>
+                                            <span class="font-mono font-medium text-amber-900">{{ $egi->certificateOfAuthenticity->certificate_number }}</span>
+                                        </div>
+                                    @endif
+                                    @if($egi->certificateOfAuthenticity->issuer)
+                                        <div class="flex justify-between">
+                                            <span class="text-amber-700">{{ __('mint.coa.issuer') }}</span>
+                                            <span class="font-medium text-amber-900">{{ Str::limit($egi->certificateOfAuthenticity->issuer, 30) }}</span>
+                                        </div>
+                                    @endif
+                                    @if($egi->certificateOfAuthenticity->issued_date)
+                                        <div class="flex justify-between">
+                                            <span class="text-amber-700">{{ __('mint.coa.issue_date') }}</span>
+                                            <span class="font-medium text-amber-900">{{ $egi->certificateOfAuthenticity->issued_date->format('d/m/Y') }}</span>
+                                        </div>
+                                    @endif
+                                    @if($egi->certificateOfAuthenticity->authenticity_level)
+                                        <div class="flex justify-between">
+                                            <span class="text-amber-700">{{ __('mint.coa.authenticity_level') }}</span>
+                                            <span class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                {{ ucfirst($egi->certificateOfAuthenticity->authenticity_level) }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {{-- CoA Info Note --}}
+                                <div class="p-3 mt-3 border rounded-md border-amber-200 bg-amber-100">
+                                    <p class="text-xs text-amber-800">
+                                        <svg class="inline w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ __('mint.coa.info_note') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Checkout Form --}}
