@@ -98,6 +98,16 @@ class AlgorandService
     public function mintEgi(int $egiId, array $metadata, User $user): array
     {
         try {
+            // 🚨 DEBUG: Log Algorand service call IMMEDIATELY
+            $this->logger->emergency('🌊🌊🌊 ALGORAND SERVICE CALLED 🌊🌊🌊', [
+                'egi_id' => $egiId,
+                'user_id' => $user->id,
+                'pid' => getmypid(),
+                'xdebug_enabled' => extension_loaded('xdebug') ? 'YES' : 'NO',
+                'timestamp' => now()->format('H:i:s.u'),
+                'log_category' => 'ALGORAND_MINT_DEBUG'
+            ]);
+            
             // 1. ULM: Log start
             $this->logger->info('EGI minting initiated', [
                 'user_id' => $user->id,

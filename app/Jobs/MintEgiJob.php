@@ -59,6 +59,15 @@ class MintEgiJob implements ShouldQueue {
         \App\Services\CertificateGeneratorService $certificateService
     ): void {
         try {
+            // 🚨 DEBUG: Log IMMEDIATELY at start
+            $logger->emergency('🚨🚨🚨 MINT JOB HANDLE STARTED 🚨🚨🚨', [
+                'egi_blockchain_id' => $this->egiBlockchainId,
+                'pid' => getmypid(),
+                'xdebug_loaded' => extension_loaded('xdebug') ? 'YES ✅' : 'NO ❌',
+                'timestamp' => now()->format('H:i:s.u'),
+                'log_category' => 'MINT_JOB_DEBUG'
+            ]);
+
             // 1. Load blockchain record
             $egiBlockchain = EgiBlockchain::with(['egi', 'buyer'])
                 ->findOrFail($this->egiBlockchainId);
@@ -99,6 +108,7 @@ class MintEgiJob implements ShouldQueue {
             // This ensures Policy checks and secondary market work correctly
             // IMPORTANT: Use fresh() to avoid stale relationship cache
             $egi = \App\Models\Egi::find($egiBlockchain->egi_id);
+
             $egi->update([
                 'owner_id' => $egiBlockchain->buyer_user_id
             ]);

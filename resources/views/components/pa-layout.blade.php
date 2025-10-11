@@ -30,7 +30,7 @@
 
     <!-- Material Icons (filled) -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
+
     <!-- Material Symbols Outlined -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -244,7 +244,8 @@
         $collectionTerms = \App\Services\Terminology\CollectionTerminologyService::getTerminology(auth()->user());
         $currentRoute = Route::currentRouteName();
         $routeSegments = explode('.', $currentRoute);
-        $detectedContext = count($routeSegments) >= 2 ? $routeSegments[0] . '.' . $routeSegments[1] : $routeSegments[0] ?? 'unknown';
+        $detectedContext =
+            count($routeSegments) >= 2 ? $routeSegments[0] . '.' . $routeSegments[1] : $routeSegments[0] ?? 'unknown';
     @endphp
     <x-create-collection-modal :terminology="$collectionTerms" />
 

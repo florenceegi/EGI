@@ -82,6 +82,16 @@ class EgiMintingService {
      */
     public function mintEgi(Egi $egi, User $user, array $metadata = []): EgiBlockchain {
         try {
+            // 🚨 DEBUG: Log service call IMMEDIATELY
+            $this->logger->emergency('🔥🔥🔥 MINTING SERVICE CALLED 🔥🔥🔥', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'pid' => getmypid(),
+                'xdebug_enabled' => extension_loaded('xdebug') ? 'YES' : 'NO',
+                'timestamp' => now()->format('H:i:s.u'),
+                'log_category' => 'MINTING_SERVICE_DEBUG'
+            ]);
+
             // 1. ULM: Log start
             $this->logger->info('EGI minting process initiated', [
                 'user_id' => $user->id,
@@ -210,8 +220,24 @@ class EgiMintingService {
             // This ensures Policy checks and secondary market work correctly
             // This covers ALL mint flows (Jobs, direct calls, etc.)
             $freshBlockchain = $egiBlockchain->fresh();
+
+            $this->logger->info('🔍 DEBUG OWNER SYNC - PRIMA', [
+                'egi_id' => $egi->id,
+                'egi_owner_id_before' => $egi->owner_id,
+                'egi_user_id' => $egi->user_id,
+                'blockchain_buyer_user_id' => $freshBlockchain->buyer_user_id,
+                'will_set_owner_to' => $freshBlockchain->buyer_user_id
+            ]);
+
             $egi->update([
                 'owner_id' => $freshBlockchain->buyer_user_id
+            ]);
+
+            $egiAfter = Egi::find($egi->id);
+            $this->logger->info('🔍 DEBUG OWNER SYNC - DOPO', [
+                'egi_id' => $egi->id,
+                'egi_owner_id_after' => $egiAfter->owner_id,
+                'update_worked' => $egiAfter->owner_id == $freshBlockchain->buyer_user_id ? 'YES' : 'NO'
             ]);
 
             return $freshBlockchain;
