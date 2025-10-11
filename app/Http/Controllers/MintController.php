@@ -99,7 +99,7 @@ class MintController extends Controller {
                 'payment_method' => 'required|string|in:stripe,paypal',
                 'buyer_wallet' => 'nullable|string|max:255', // Optional - user wallet for direct transfer
                 'co_creator_display_name' => 'nullable|string|min:2|max:100|regex:/^[a-zA-Z0-9\s.\'\-]+$/', // AREA 5.5.1
-            ]);           
+            ]);
 
             $egi = Egi::findOrFail($validated['egi_id']);
             $reservation = Reservation::findOrFail($validated['reservation_id']);
@@ -143,11 +143,12 @@ class MintController extends Controller {
                 'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
             ]);
 
-            // Queue REAL blockchain mint job
+            // Queue REAL blockchain mint job (async with worker)
             dispatch(new MintEgiJob($blockchainRecord->id));
 
-            // TEMP FIX: Force sync owner_id immediately after dispatch
-            // This ensures owner_id is synced even if Job executes async
+            // CRITICAL FIX: Sync owner_id immediately in Controller
+            // This guarantees owner_id is correct even before Job processes
+            // Job will re-sync in EgiMintingService (redundant but safe)
             \App\Models\Egi::where('id', $egi->id)->update([
                 'owner_id' => Auth::id()
             ]);
@@ -339,11 +340,12 @@ class MintController extends Controller {
                 'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
             ]);
 
-            // Queue REAL blockchain mint job
+            // Queue REAL blockchain mint job (async with worker)
             dispatch(new MintEgiJob($blockchainRecord->id));
 
-            // TEMP FIX: Force sync owner_id immediately after dispatch
-            // This ensures owner_id is synced even if Job executes async
+            // CRITICAL FIX: Sync owner_id immediately in Controller
+            // This guarantees owner_id is correct even before Job processes
+            // Job will re-sync in EgiMintingService (redundant but safe)
             \App\Models\Egi::where('id', $egi->id)->update([
                 'owner_id' => Auth::id()
             ]);
