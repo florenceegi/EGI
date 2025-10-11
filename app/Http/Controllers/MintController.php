@@ -99,7 +99,7 @@ class MintController extends Controller {
                 'payment_method' => 'required|string|in:stripe,paypal',
                 'buyer_wallet' => 'nullable|string|max:255', // Optional - user wallet for direct transfer
                 'co_creator_display_name' => 'nullable|string|min:2|max:100|regex:/^[a-zA-Z0-9\s.\'\-]+$/', // AREA 5.5.1
-            ]);
+            ]);           
 
             $egi = Egi::findOrFail($validated['egi_id']);
             $reservation = Reservation::findOrFail($validated['reservation_id']);
@@ -146,10 +146,17 @@ class MintController extends Controller {
             // Queue REAL blockchain mint job
             dispatch(new MintEgiJob($blockchainRecord->id));
 
-            $this->logger->info('REAL blockchain mint job dispatched', [
+            // TEMP FIX: Force sync owner_id immediately after dispatch
+            // This ensures owner_id is synced even if Job executes async
+            \App\Models\Egi::where('id', $egi->id)->update([
+                'owner_id' => Auth::id()
+            ]);
+
+            $this->logger->info('REAL blockchain mint job dispatched + owner_id synced', [
                 'blockchain_record_id' => $blockchainRecord->id,
                 'egi_id' => $egi->id,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
+                'owner_id_set_to' => Auth::id()
             ]);
 
             // GDPR audit log - CORRETTO: metodo E costante verificati
@@ -288,6 +295,8 @@ class MintController extends Controller {
 
             $egi = Egi::findOrFail($id);
 
+            // dd($validated);
+
             // Double-check availability (prevent race conditions)
             $availabilityService = app(\App\Services\EgiAvailabilityService::class);
             $availability = $availabilityService->checkAvailability($egi, Auth::user());
@@ -333,10 +342,17 @@ class MintController extends Controller {
             // Queue REAL blockchain mint job
             dispatch(new MintEgiJob($blockchainRecord->id));
 
-            $this->logger->info('DIRECT MINT job dispatched', [
+            // TEMP FIX: Force sync owner_id immediately after dispatch
+            // This ensures owner_id is synced even if Job executes async
+            \App\Models\Egi::where('id', $egi->id)->update([
+                'owner_id' => Auth::id()
+            ]);
+
+            $this->logger->info('DIRECT MINT job dispatched + owner_id synced', [
                 'blockchain_record_id' => $blockchainRecord->id,
                 'egi_id' => $egi->id,
                 'user_id' => Auth::id(),
+                'owner_id_set_to' => Auth::id(),
                 'direct_mint' => true
             ]);
 
