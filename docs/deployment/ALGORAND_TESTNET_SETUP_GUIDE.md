@@ -1,4 +1,4 @@
-*# 🌐 Algorand TestNet Setup Guide
+\*# 🌐 Algorand TestNet Setup Guide
 
 **Obiettivo:** Configurare AlgoKit microservice per usare Algorand TestNet invece di Sandbox locale.
 
@@ -9,14 +9,15 @@
 ### **Opzione A: Via Browser (Raccomandato)**
 
 1. **Vai su Algorand TestNet Explorer:**
-   ```
-   https://testnet.algoexplorer.io/
-   ```
+
+    ```
+    https://testnet.algoexplorer.io/
+    ```
 
 2. **Crea nuovo wallet:**
-   - Clicca su "Create Account" (in alto a destra)
-   - Salva il **mnemonic** (25 parole) in un posto SICURO
-   - Copia l'**address** del wallet
+    - Clicca su "Create Account" (in alto a destra)
+    - Salva il **mnemonic** (25 parole) in un posto SICURO
+    - Copia l'**address** del wallet
 
 ### **Opzione B: Via AlgoSDK**
 
@@ -37,23 +38,27 @@ console.log("Mnemonic:", algosdk.secretKeyToMnemonic(account.sk));
 ## 💰 **STEP 2: Richiedere Fondi dal TestNet Faucet**
 
 1. **Vai al TestNet Faucet (Bank):**
-   ```
-   https://bank.testnet.algorand.network/
-   ```
+
+    ```
+    https://bank.testnet.algorand.network/
+    ```
 
 2. **Richiedi fondi:**
-   - Inserisci l'address del wallet creato
-   - Clicca "Dispense"
-   - Riceverai **10 ALGO** (gratis per testing)
+
+    - Inserisci l'address del wallet creato
+    - Clicca "Dispense"
+    - Riceverai **10 ALGO** (gratis per testing)
 
 3. **Verifica fondi ricevuti:**
-   ```
-   https://testnet.algoexplorer.io/address/TUO_ADDRESS
-   ```
-   
-   Dovresti vedere:
-   - Balance: ~10 ALGO
-   - Status: Active
+
+    ```
+    https://testnet.algoexplorer.io/address/TUO_ADDRESS
+    ```
+
+    Dovresti vedere:
+
+    - Balance: ~10 ALGO
+    - Status: Active
 
 ---
 
@@ -166,15 +171,16 @@ ALGOKIT_MICROSERVICE_URL=http://localhost:3000
 1. Vai su: `http://localhost:8004/egis/{id}/mint`
 2. Completa pagamento (mock)
 3. Monitora log:
-   ```bash
-   tail -f storage/logs/upload.log
-   ```
+
+    ```bash
+    tail -f storage/logs/upload.log
+    ```
 
 4. Verifica su TestNet Explorer:
-   ```
-   https://testnet.algoexplorer.io/tx/TX_ID
-   https://testnet.algoexplorer.io/asset/ASA_ID
-   ```
+    ```
+    https://testnet.algoexplorer.io/tx/TX_ID
+    https://testnet.algoexplorer.io/asset/ASA_ID
+    ```
 
 ---
 
@@ -256,16 +262,16 @@ npm start
 
 ## 📊 **COMPARAZIONE: Sandbox vs TestNet**
 
-| Feature | Sandbox (Local) | TestNet (Public) |
-|---------|----------------|------------------|
-| **Network** | Privato (Docker) | Pubblico (Algorand) |
-| **Costo** | Gratis | Gratis (faucet) |
-| **Velocità** | Istantaneo | ~4 secondi/block |
-| **Persistenza** | NO (reset Docker) | SÌ (blockchain pubblico) |
-| **Explorer** | Locale | https://testnet.algoexplorer.io |
-| **Fondi** | Illimitati | 10 ALGO dal faucet |
-| **Setup** | Docker richiesto | Solo internet |
-| **Production-like** | NO | SÌ (identico a MainNet) |
+| Feature             | Sandbox (Local)   | TestNet (Public)                |
+| ------------------- | ----------------- | ------------------------------- |
+| **Network**         | Privato (Docker)  | Pubblico (Algorand)             |
+| **Costo**           | Gratis            | Gratis (faucet)                 |
+| **Velocità**        | Istantaneo        | ~4 secondi/block                |
+| **Persistenza**     | NO (reset Docker) | SÌ (blockchain pubblico)        |
+| **Explorer**        | Locale            | https://testnet.algoexplorer.io |
+| **Fondi**           | Illimitati        | 10 ALGO dal faucet              |
+| **Setup**           | Docker richiesto  | Solo internet                   |
+| **Production-like** | NO                | SÌ (identico a MainNet)         |
 
 ---
 
@@ -307,10 +313,11 @@ cat algokit-microservice/.gitignore
 Per production (MainNet), NON mettere mnemonic in `.env`!
 
 **Opzioni sicure:**
-- AWS Secrets Manager
-- HashiCorp Vault
-- Azure Key Vault
-- Environment variables criptate su Forge
+
+-   AWS Secrets Manager
+-   HashiCorp Vault
+-   Azure Key Vault
+-   Environment variables criptate su Forge
 
 ---
 

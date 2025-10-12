@@ -31,7 +31,8 @@ if (NETWORK_MODE === "testnet") {
     console.log("🌐 MODE: MAINNET (Public API)");
 } else {
     // Sandbox configuration (Local Docker)
-    algodToken = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    algodToken =
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     algodServer = "http://localhost";
     algodPort = 4001;
     console.log("🌐 MODE: SANDBOX (Local Docker)");
@@ -55,8 +56,10 @@ console.log("📍 Treasury Address:", treasuryAccount.addr);
 app.get("/health", async (req, res) => {
     try {
         const status = await algodClient.status().do();
-        const accountInfo = await algodClient.accountInformation(treasuryAccount.addr).do();
-        
+        const accountInfo = await algodClient
+            .accountInformation(treasuryAccount.addr)
+            .do();
+
         res.json({
             status: "healthy",
             network: NETWORK_MODE,
@@ -101,7 +104,14 @@ app.post("/mint-egi-token", async (req, res) => {
         const asaNote = new Uint8Array(
             Buffer.from(`EGI-${egi_id}-${Date.now()}`)
         );
-        const asaName = `EGI-${metadata.title || "Unknown"}`.substring(0, 32);
+        // Fix: metadata.title might be array/object - extract string safely
+        const titleStr =
+            typeof metadata.title === "string"
+                ? metadata.title
+                : Array.isArray(metadata.title)
+                ? metadata.title[0]
+                : "Unknown";
+        const asaName = `EGI-${titleStr || "Unknown"}`.substring(0, 32);
         const unitName = `EGI${egi_id}`.substring(0, 8);
 
         // Create ASA transaction

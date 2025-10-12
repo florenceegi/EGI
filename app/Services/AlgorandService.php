@@ -173,7 +173,7 @@ class AlgorandService
             $this->errorManager->handle('BLOCKCHAIN_MINT_FAILED', [
                 'user_id' => $user->id,
                 'egi_id' => $egiId,
-                'metadata' => $metadata,
+                'metadata' => json_encode($metadata), // Serialize array to avoid "Array to string conversion"
                 'error_message' => $e->getMessage()
             ], $e);
 
@@ -545,7 +545,7 @@ class AlgorandService
         } catch (\Exception $e) {
             $this->errorManager->handle('BLOCKCHAIN_ANCHOR_FAILED', [
                 'doc_hash' => substr($documentHash, 0, 16) . '...',
-                'metadata' => $metadata,
+                'metadata' => json_encode($metadata), // Serialize array to avoid "Array to string conversion"
                 'error_message' => $e->getMessage()
             ], $e);
 

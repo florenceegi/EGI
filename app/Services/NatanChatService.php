@@ -20,7 +20,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - Context-aware: Maintains conversation history
  * - Multi-query: "Summarize act X", "Which acts about Y?", "Suggest Z"
  *
- * GDPR-COMPLIANT: 
+ * GDPR-COMPLIANT:
  * - Uses Anthropic Claude 3.5 Sonnet (EU DPA compliant)
  * - Processes ONLY public metadata (no PII, no signatures)
  * - Full audit trail of data sent to AI
@@ -87,7 +87,7 @@ class NatanChatService
         try {
             // STEP 1: Retrieve relevant acts using RAG system (auto-sanitized)
             $context = $this->rag->getContextForQuery($userQuery, $user, 10);
-            
+
             $logContext['acts_count'] = count($context['acts']);
             $logContext['context_summary_length'] = strlen($context['acts_summary']);
 
@@ -133,7 +133,6 @@ class NatanChatService
                 'sources' => $sources,
                 'relevant_acts_count' => count($context['acts']),
             ];
-
         } catch (\Throwable $e) {
             $this->logger->error('[NatanChatService] Query processing failed', [
                 ...$logContext,
@@ -179,4 +178,3 @@ class NatanChatService
         }
     }
 }
-

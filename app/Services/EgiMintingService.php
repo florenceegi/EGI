@@ -357,8 +357,13 @@ class EgiMintingService {
      * @return array Formatted metadata
      */
     private function prepareMetadata(Egi $egi, array $additionalMetadata = []): array {
+        // Fix: title might be JSON array - extract string safely
+        $titleStr = is_array($egi->title) 
+            ? ($egi->title['en'] ?? $egi->title['it'] ?? $egi->title[0] ?? 'EGI #' . $egi->id)
+            : ($egi->title ?? 'EGI #' . $egi->id);
+            
         return array_merge([
-            'title' => $egi->title,
+            'title' => $titleStr,
             'description' => $egi->description,
             'image_url' => $egi->image_url,
             'collection' => 'Florence EGI Marketplace',

@@ -100,7 +100,7 @@ class RagService
         $baseQuery = Egi::query()
             ->where('user_id', $user->id)
             ->whereNotNull('pa_protocol_number') // Solo atti PA
-            ->orderBy('pa_date', 'desc')
+            ->orderBy('pa_protocol_date', 'desc')
             ->orderBy('created_at', 'desc');
 
         // Ricerca per numero protocollo
@@ -121,7 +121,7 @@ class RagService
                 $this->logger->info('[RAG] Searching by document type', ['type' => $type]);
                 
                 return $baseQuery
-                    ->where('pa_type', 'like', "%{$type}%")
+                    ->where('pa_act_type', 'like', "%{$type}%")
                     ->limit($limit)
                     ->get();
             }
@@ -140,26 +140,17 @@ class RagService
                 ->get();
         }
 
-        // Ricerca per importo
-        if (preg_match('/(\d+(?:\.\d+)?)\s*(?:euro|€)/', $queryLower, $matches)) {
-            $amount = (float) $matches[1];
-            $this->logger->info('[RAG] Searching by amount', ['amount' => $amount]);
-            
-            return $baseQuery
-                ->where('pa_amount', '>=', $amount * 0.9) // ±10% tolerance
-                ->where('pa_amount', '<=', $amount * 1.1)
-                ->limit($limit)
-                ->get();
-        }
+        // Ricerca per importo (skip per ora, l'importo è in jsonMetadata)
+        // TODO: implementare ricerca per importo quando necessario
 
         // Ricerca per keyword nel titolo
         $keywords = $this->extractKeywords($query);
         if (!empty($keywords)) {
             $this->logger->info('[RAG] Searching by keywords', ['keywords' => $keywords]);
             
-            $titleSearch = $baseQuery;
+            $titleSearch = clone $baseQuery;
             foreach ($keywords as $keyword) {
-                $titleSearch->where('pa_title', 'like', "%{$keyword}%");
+                $titleSearch->where('title', 'like', "%{$keyword}%");
             }
             
             $results = $titleSearch->limit($limit)->get();
@@ -174,7 +165,7 @@ class RagService
             $this->logger->info('[RAG] Searching by year', ['year' => $year]);
             
             return $baseQuery
-                ->whereYear('pa_date', $year)
+                ->whereYear('pa_protocol_date', $year)
                 ->limit($limit)
                 ->get();
         }

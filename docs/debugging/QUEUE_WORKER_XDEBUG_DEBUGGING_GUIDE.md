@@ -22,6 +22,7 @@
 ## 🚨 **PROBLEMA RILEVATO**
 
 ### **Sintomi:**
+
 ```
 ❌ Breakpoints impostati in MintEgiJob::handle() mai raggiunta
 ❌ dd() statements nel Job completamente ignorati
@@ -31,12 +32,14 @@
 ```
 
 ### **Contesto:**
-- **File coinvolto:** `app/Jobs/MintEgiJob.php`
-- **Queue:** `blockchain` (dedicated queue con `onQueue('blockchain')`)
-- **Sistema:** Laravel 10.x con Redis queue backend
-- **IDE:** VS Code con PHP Debug (XDebug)
+
+-   **File coinvolto:** `app/Jobs/MintEgiJob.php`
+-   **Queue:** `blockchain` (dedicated queue con `onQueue('blockchain')`)
+-   **Sistema:** Laravel 10.x con Redis queue backend
+-   **IDE:** VS Code con PHP Debug (XDebug)
 
 ### **Cosa sembrava:**
+
 Il Job non veniva mai eseguito, sembrava che `MintEgiJob::handle()` fosse bypassato completamente dal sistema.
 
 ---
@@ -58,9 +61,9 @@ fabio 30283 php artisan queue:work redis --queue=blockchain --tries=3 --timeout=
 2. ✅ **Job serializzato:** Job inserito in Redis queue 'blockchain'
 3. ✅ **Worker prende il Job:** Worker processa il Job dalla queue
 4. ❌ **handle() eseguito MA senza debug:** Codice esegue correttamente ma:
-   - Breakpoints ignorati (no XDebug attached)
-   - dd() non stoppa l'esecuzione
-   - Log potrebbero finire in stream diverso (/dev/null)
+    - Breakpoints ignorati (no XDebug attached)
+    - dd() non stoppa l'esecuzione
+    - Log potrebbero finire in stream diverso (/dev/null)
 
 ### **Perché owner_id non si sincronizzava:**
 
@@ -93,6 +96,7 @@ php artisan queue:work redis --queue=blockchain --tries=3 --timeout=300 --sleep=
 ```
 
 **Verifica XDebug attivo:**
+
 ```bash
 # Nel Job, aggiungi log:
 $logger->info('XDebug status', [
@@ -106,6 +110,7 @@ $logger->info('XDebug status', [
 Implementato sync in **3 punti** per garantire consistenza:
 
 #### **A. Controller (immediato):**
+
 ```php
 // app/Http/Controllers/MintController.php (linee 347-350)
 dispatch(new MintEgiJob($blockchainRecord->id));
@@ -119,6 +124,7 @@ dispatch(new MintEgiJob($blockchainRecord->id));
 **Rationale:** Garantisce owner_id corretto ANCHE se Job fallisce o queue worker non funziona.
 
 #### **B. EgiMintingService (dopo blockchain mint):**
+
 ```php
 // app/Services/EgiMintingService.php (linee 211-229)
 $freshBlockchain = $egiBlockchain->fresh();
@@ -145,6 +151,7 @@ $this->logger->info('🔍 DEBUG OWNER SYNC - DOPO', [
 **Rationale:** Sincronizzazione "canonica" quando mint completa correttamente. Log dettagliati per debug.
 
 #### **C. MintEgiJob (dopo service call):**
+
 ```php
 // app/Jobs/MintEgiJob.php (linee 101-107)
 $egi = \App\Models\Egi::find($egiBlockchain->egi_id);
@@ -206,44 +213,48 @@ $this->logger->emergency('🌊🌊🌊 ALGORAND SERVICE CALLED 🌊🌊🌊', [
 ### **Prerequisiti:**
 
 1. **XDebug installato:**
-   ```bash
-   php -m | grep xdebug
-   # Output: xdebug
-   ```
+
+    ```bash
+    php -m | grep xdebug
+    # Output: xdebug
+    ```
 
 2. **php.ini configurato:**
-   ```ini
-   [XDebug]
-   zend_extension=xdebug.so
-   xdebug.mode=debug
-   xdebug.start_with_request=yes
-   xdebug.client_host=localhost
-   xdebug.client_port=9003
-   xdebug.log=/tmp/xdebug.log
-   ```
+
+    ```ini
+    [XDebug]
+    zend_extension=xdebug.so
+    xdebug.mode=debug
+    xdebug.start_with_request=yes
+    xdebug.client_host=localhost
+    xdebug.client_port=9003
+    xdebug.log=/tmp/xdebug.log
+    ```
 
 3. **VS Code launch.json:**
-   ```json
-   {
-       "name": "Listen for XDebug",
-       "type": "php",
-       "request": "launch",
-       "port": 9003,
-       "pathMappings": {
-           "/home/fabio/EGI": "${workspaceFolder}"
-       }
-   }
-   ```
+    ```json
+    {
+        "name": "Listen for XDebug",
+        "type": "php",
+        "request": "launch",
+        "port": 9003,
+        "pathMappings": {
+            "/home/fabio/EGI": "${workspaceFolder}"
+        }
+    }
+    ```
 
 ### **Procedura Completa:**
 
 #### **STEP 1: Verifica XDebug**
+
 ```bash
 php -i | grep xdebug
 php -r "var_dump(extension_loaded('xdebug'));"  # bool(true)
 ```
 
 #### **STEP 2: Stop Worker Vecchio**
+
 ```bash
 # Trova PID worker
 ps aux | grep "queue:work" | grep blockchain
@@ -256,6 +267,7 @@ ps aux | grep <PID>
 ```
 
 #### **STEP 3: Configure Environment**
+
 ```bash
 export XDEBUG_MODE=debug
 export XDEBUG_CONFIG="client_host=localhost client_port=9003"
@@ -266,6 +278,7 @@ echo $XDEBUG_CONFIG
 ```
 
 #### **STEP 4: Start Worker con XDebug**
+
 ```bash
 # Full command with all options
 php artisan queue:work redis \
@@ -281,18 +294,20 @@ ps aux | grep "queue:work.*blockchain"
 ```
 
 #### **STEP 5: Test Breakpoint**
+
 ```php
 // In MintEgiJob::handle(), aggiungi:
 public function handle(...) {
     \Log::info('🚨 BREAKPOINT TEST', ['pid' => getmypid()]);
     // ← METTI BREAKPOINT QUI
-    
+
     $egiBlockchain = EgiBlockchain::with(['egi', 'buyer'])
         ->findOrFail($this->egiBlockchainId);
 }
 ```
 
 #### **STEP 6: Trigger Job**
+
 ```bash
 # Dispatch test job via tinker
 php artisan tinker
@@ -300,6 +315,7 @@ php artisan tinker
 ```
 
 #### **STEP 7: Verifica Debug**
+
 ```
 ✅ VS Code si ferma al breakpoint
 ✅ Puoi ispezionare variabili ($egiBlockchain, $logger, etc.)
@@ -313,6 +329,7 @@ php artisan tinker
 **Prima di ogni sessione di debug Queue Jobs:**
 
 ### **1. Worker Status**
+
 ```bash
 # [ ] Worker attivo?
 ps aux | grep "queue:work"
@@ -325,6 +342,7 @@ ps aux | grep "queue:work" | awk '{print $2}' | xargs ps -o lstart= -p
 ```
 
 ### **2. XDebug Status**
+
 ```bash
 # [ ] XDebug caricato in PHP CLI?
 php -m | grep xdebug
@@ -339,6 +357,7 @@ echo $XDEBUG_CONFIG
 ```
 
 ### **3. VS Code Debugger**
+
 ```
 [ ] Launch configuration "Listen for XDebug" attiva?
 [ ] Breakpoints impostati nei file corretti?
@@ -347,6 +366,7 @@ echo $XDEBUG_CONFIG
 ```
 
 ### **4. Queue Configuration**
+
 ```bash
 # [ ] Redis queue funzionante?
 php artisan queue:monitor blockchain
@@ -366,6 +386,7 @@ php artisan queue:failed
 ### **Problema: Breakpoint non si ferma MAI**
 
 #### **Causa 1: Worker senza XDebug**
+
 ```bash
 # Verifica PID worker
 ps aux | grep "queue:work.*blockchain" | awk '{print $2}'
@@ -378,16 +399,18 @@ cat /proc/<PID>/environ | tr '\0' '\n' | grep XDEBUG
 ```
 
 #### **Causa 2: Path Mappings errati**
+
 ```json
 // launch.json - VERIFICA PATH
 {
     "pathMappings": {
-        "/home/fabio/EGI": "${workspaceFolder}"  // ← Deve corrispondere!
+        "/home/fabio/EGI": "${workspaceFolder}" // ← Deve corrispondere!
     }
 }
 ```
 
 #### **Causa 3: Porta sbagliata**
+
 ```bash
 # XDebug trying to connect to port?
 tail -f /tmp/xdebug.log
@@ -399,6 +422,7 @@ tail -f /tmp/xdebug.log
 ### **Problema: owner_id non si sincronizza**
 
 #### **Verifica 1: Cache Eloquent**
+
 ```php
 // ❌ SBAGLIATO
 $egi->owner_id = $buyer_id;
@@ -413,6 +437,7 @@ $egi->update(['owner_id' => $buyer_id]);
 ```
 
 #### **Verifica 2: Transazioni DB**
+
 ```php
 // Se in DB transaction, update potrebbe non essere committed
 DB::commit(); // Force commit
@@ -420,6 +445,7 @@ $egi = \App\Models\Egi::find($egi->id); // Re-query dopo commit
 ```
 
 #### **Verifica 3: Observer/Events**
+
 ```bash
 # Cerca Observer che potrebbero sovrascrivere owner_id
 grep -r "owner_id" app/Observers/
@@ -429,6 +455,7 @@ grep -r "saving\|saved" app/Observers/EgiObserver.php
 ### **Problema: Job esegue ma nessun log**
 
 #### **Causa: Log channel diverso**
+
 ```php
 // Verifica UltraLogManager channel
 $this->logger->info('Test'); // Dove finisce?
@@ -442,6 +469,7 @@ php artisan tinker
 ```
 
 #### **Soluzione: Multi-channel logging**
+
 ```php
 // Log sia su upload.log CHE console
 $this->logger->info('Message');
@@ -455,6 +483,7 @@ $this->logger->info('Message');
 ### **1. Worker Management**
 
 #### **Development:**
+
 ```bash
 # Usa --verbose per vedere Job processing
 php artisan queue:work --verbose
@@ -467,6 +496,7 @@ php artisan queue:restart
 ```
 
 #### **Production:**
+
 ```bash
 # Usa Supervisor per persistenza
 [program:laravel-worker-blockchain]
@@ -515,7 +545,7 @@ public function syncOwnership(Egi $egi, int $newOwnerId): void
 
     // 3. Verify AFTER
     $egiAfter = \App\Models\Egi::find($egi->id);
-    
+
     if ($egiAfter->owner_id !== $newOwnerId) {
         $this->logger->error('Owner sync FAILED!', [
             'expected' => $newOwnerId,
@@ -560,6 +590,7 @@ php artisan queue:failed --limit=5
 ## 🎯 **RISULTATO FINALE**
 
 ### **PRIMA (Broken):**
+
 ```
 ❌ Breakpoints ignorati
 ❌ owner_id non sincronizzato
@@ -568,6 +599,7 @@ php artisan queue:failed --limit=5
 ```
 
 ### **DOPO (Fixed):**
+
 ```
 ✅ Worker con XDebug attivo (PID 63532)
 ✅ Breakpoints funzionanti
@@ -577,6 +609,7 @@ php artisan queue:failed --limit=5
 ```
 
 ### **Verifica Success:**
+
 ```bash
 # Query last mint
 php artisan tinker --execute="
@@ -597,17 +630,17 @@ echo 'Match: ' . (\$egi->owner_id == \$mint->buyer_user_id ? 'YES ✅' : 'NO ❌
 
 ## 📚 **RIFERIMENTI**
 
-- **Laravel Queues:** https://laravel.com/docs/10.x/queues
-- **XDebug Documentation:** https://xdebug.org/docs/
-- **VS Code PHP Debug:** https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug
-- **UltraLogManager:** `vendor/ultra/ultra-log-manager/README.md`
-- **Eloquent Caching:** https://laravel.com/docs/10.x/eloquent#refreshing-models
+-   **Laravel Queues:** https://laravel.com/docs/10.x/queues
+-   **XDebug Documentation:** https://xdebug.org/docs/
+-   **VS Code PHP Debug:** https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug
+-   **UltraLogManager:** `vendor/ultra/ultra-log-manager/README.md`
+-   **Eloquent Caching:** https://laravel.com/docs/10.x/eloquent#refreshing-models
 
 ---
 
 ## 🔄 **CHANGELOG**
 
-- **2025-10-11:** v1.0.0 - Documento iniziale creato dopo risoluzione owner_id sync bug
+-   **2025-10-11:** v1.0.0 - Documento iniziale creato dopo risoluzione owner_id sync bug
 
 ---
 

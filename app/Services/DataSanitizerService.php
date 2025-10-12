@@ -71,12 +71,12 @@ class DataSanitizerService
         $publicData = [
             'id' => $act->id,
             'protocol_number' => $act->pa_protocol_number,
-            'date' => $act->pa_date?->format('Y-m-d'),
-            'type' => $act->pa_type,
-            'title' => $this->sanitizeTitle($act->pa_title),
-            'amount' => $act->pa_amount,
+            'date' => $act->pa_protocol_date?->format('Y-m-d'),
+            'type' => $act->pa_act_type,
+            'title' => $this->sanitizeTitle($act->title),
+            'amount' => $act->jsonMetadata['amount'] ?? null,
             'blockchain_anchored' => $act->pa_anchored,
-            'blockchain_txid' => $act->pa_algorand_txid,
+            'blockchain_txid' => $act->jsonMetadata['algorand_txid'] ?? null,
             'created_at' => $act->created_at?->format('Y-m-d H:i:s'),
         ];
 
@@ -160,14 +160,13 @@ class DataSanitizerService
         foreach ($acts as $index => $act) {
             $sanitized = $this->sanitizeAct($act);
             $summary .= sprintf(
-                "%d. [%s] %s - %s\n   Protocollo: %s | Data: %s | Importo: %s€\n   Blockchain: %s\n\n",
+                "%d. [%s] %s\n   Protocollo: %s | Data: %s | Importo: %s€\n   Blockchain: %s\n\n",
                 $index + 1,
                 $sanitized['type'] ?? 'N/D',
                 $sanitized['title'] ?? 'Senza titolo',
                 $sanitized['protocol_number'] ?? 'N/D',
-                $sanitized['protocol_number'] ?? 'N/D',
                 $sanitized['date'] ?? 'N/D',
-                $sanitized['amount'] ? number_format($sanitized['amount'], 2, ',', '.') : 'N/D',
+                $sanitized['amount'] ? number_format((float)$sanitized['amount'], 2, ',', '.') : 'N/D',
                 $sanitized['blockchain_anchored'] ? '✓ Certificato' : '✗ Non certificato'
             );
         }
@@ -186,11 +185,11 @@ class DataSanitizerService
         $stats = [
             'total_acts' => $acts->count(),
             'anchored_acts' => $acts->where('pa_anchored', true)->count(),
-            'by_type' => $acts->groupBy('pa_type')->map(fn($group) => $group->count())->toArray(),
-            'total_amount' => $acts->sum('pa_amount'),
+            'by_type' => $acts->groupBy('pa_act_type')->map(fn($group) => $group->count())->toArray(),
+            'total_amount' => $acts->sum(fn($act) => $act->jsonMetadata['amount'] ?? 0),
             'date_range' => [
-                'first' => $acts->min('pa_date')?->format('Y-m-d'),
-                'last' => $acts->max('pa_date')?->format('Y-m-d'),
+                'first' => $acts->min('pa_protocol_date')?->format('Y-m-d'),
+                'last' => $acts->max('pa_protocol_date')?->format('Y-m-d'),
             ],
         ];
 

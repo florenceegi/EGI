@@ -10,7 +10,7 @@ use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * Service per interazione con Anthropic Claude API
- * 
+ *
  * GDPR Compliance:
  * - Processa SOLO dati pubblici (metadati PA)
  * - Non invia MAI: firme digitali, nominativi, file_path, IP
@@ -60,7 +60,7 @@ class AnthropicService
 
     /**
      * Invia un messaggio a Claude e ottiene la risposta
-     * 
+     *
      * @param string $userMessage Il messaggio dell'utente
      * @param array $context Contesto aggiuntivo (metadati pubblici)
      * @param array $conversationHistory Storia della conversazione
@@ -185,7 +185,7 @@ PROMPT;
 
     /**
      * Estrae metadati da un atto PA usando Claude
-     * 
+     *
      * @param string $pdfText Il testo estratto dal PDF
      * @return array Metadati estratti
      */
@@ -240,7 +240,7 @@ PROMPT;
             // Estrai JSON dalla risposta (potrebbe contenere markdown)
             if (preg_match('/\{[\s\S]*\}/', $jsonText, $matches)) {
                 $metadata = json_decode($matches[0], true);
-                
+
                 if (json_last_error() === JSON_ERROR_NONE) {
                     $this->logger->info('[AnthropicService] Metadata successfully extracted', [
                         'metadata' => $metadata,
@@ -259,4 +259,3 @@ PROMPT;
         }
     }
 }
-
