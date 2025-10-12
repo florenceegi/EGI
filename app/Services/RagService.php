@@ -107,7 +107,7 @@ class RagService
         if (preg_match('/\b(\d{4,}\/\d{4}|\d{4,})\b/', $query, $matches)) {
             $protocolNumber = $matches[1];
             $this->logger->info('[RAG] Searching by protocol number', ['protocol' => $protocolNumber]);
-            
+
             return $baseQuery
                 ->where('pa_protocol_number', 'like', "%{$protocolNumber}%")
                 ->limit($limit)
@@ -119,7 +119,7 @@ class RagService
         foreach ($types as $type) {
             if (str_contains($queryLower, $type)) {
                 $this->logger->info('[RAG] Searching by document type', ['type' => $type]);
-                
+
                 return $baseQuery
                     ->where('pa_act_type', 'like', "%{$type}%")
                     ->limit($limit)
@@ -128,12 +128,14 @@ class RagService
         }
 
         // Ricerca per stato blockchain
-        if (str_contains($queryLower, 'blockchain') || 
+        if (
+            str_contains($queryLower, 'blockchain') ||
             str_contains($queryLower, 'certificat') ||
             str_contains($queryLower, 'tokenizzat') ||
-            str_contains($queryLower, 'anchorat')) {
+            str_contains($queryLower, 'anchorat')
+        ) {
             $this->logger->info('[RAG] Searching blockchain-anchored acts');
-            
+
             return $baseQuery
                 ->where('pa_anchored', true)
                 ->limit($limit)
@@ -147,12 +149,12 @@ class RagService
         $keywords = $this->extractKeywords($query);
         if (!empty($keywords)) {
             $this->logger->info('[RAG] Searching by keywords', ['keywords' => $keywords]);
-            
+
             $titleSearch = clone $baseQuery;
             foreach ($keywords as $keyword) {
                 $titleSearch->where('title', 'like', "%{$keyword}%");
             }
-            
+
             $results = $titleSearch->limit($limit)->get();
             if ($results->isNotEmpty()) {
                 return $results;
@@ -163,7 +165,7 @@ class RagService
         if (preg_match('/\b(20\d{2})\b/', $query, $matches)) {
             $year = $matches[1];
             $this->logger->info('[RAG] Searching by year', ['year' => $year]);
-            
+
             return $baseQuery
                 ->whereYear('pa_protocol_date', $year)
                 ->limit($limit)
@@ -182,18 +184,72 @@ class RagService
     {
         // Rimuovi stopwords comuni
         $stopwords = [
-            'il', 'lo', 'la', 'i', 'gli', 'le',
-            'un', 'uno', 'una',
-            'di', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra',
-            'a', 'e', 'o', 'ma', 'se', 'che', 'chi', 'cui',
-            'sono', 'è', 'sei', 'siamo', 'siete', 'hanno',
-            'ho', 'hai', 'ha', 'abbiamo', 'avete',
-            'mi', 'ti', 'ci', 'vi', 'si',
-            'mio', 'tuo', 'suo', 'nostro', 'vostro', 'loro',
-            'questo', 'quello', 'questi', 'quelli',
-            'quale', 'quali', 'quanto', 'quanti',
-            'quando', 'dove', 'come', 'perché',
-            'natan', 'mostra', 'trova', 'cerca', 'dimmi', 'quale', 'quali',
+            'il',
+            'lo',
+            'la',
+            'i',
+            'gli',
+            'le',
+            'un',
+            'uno',
+            'una',
+            'di',
+            'da',
+            'in',
+            'con',
+            'su',
+            'per',
+            'tra',
+            'fra',
+            'a',
+            'e',
+            'o',
+            'ma',
+            'se',
+            'che',
+            'chi',
+            'cui',
+            'sono',
+            'è',
+            'sei',
+            'siamo',
+            'siete',
+            'hanno',
+            'ho',
+            'hai',
+            'ha',
+            'abbiamo',
+            'avete',
+            'mi',
+            'ti',
+            'ci',
+            'vi',
+            'si',
+            'mio',
+            'tuo',
+            'suo',
+            'nostro',
+            'vostro',
+            'loro',
+            'questo',
+            'quello',
+            'questi',
+            'quelli',
+            'quale',
+            'quali',
+            'quanto',
+            'quanti',
+            'quando',
+            'dove',
+            'come',
+            'perché',
+            'natan',
+            'mostra',
+            'trova',
+            'cerca',
+            'dimmi',
+            'quale',
+            'quali',
         ];
 
         $words = preg_split('/\s+/', strtolower($query));
@@ -260,4 +316,3 @@ class RagService
         return array_slice($suggestions, 0, 6); // Max 6 suggerimenti
     }
 }
-

@@ -10,12 +10,12 @@ use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * Service per sanitizzazione dati prima dell'invio all'AI
- * 
+ *
  * GDPR DATA ISOLATION:
  * Questo servizio garantisce che SOLO i metadati pubblici vengano
  * estratti dagli atti PA e passati all'AI. Dati sensibili come
  * firme digitali, nominativi, file paths, IP vengono SEMPRE esclusi.
- * 
+ *
  * AUDIT TRAIL:
  * Ogni operazione di sanitizzazione è loggata per compliance GDPR.
  */
@@ -62,7 +62,7 @@ class DataSanitizerService
 
     /**
      * Sanitizza un singolo atto PA
-     * 
+     *
      * @param Egi $act L'atto PA da sanitizzare
      * @return array Dati pubblici sicuri per l'AI
      */
@@ -91,7 +91,7 @@ class DataSanitizerService
 
     /**
      * Sanitizza una collezione di atti PA
-     * 
+     *
      * @param Collection $acts Collezione di atti
      * @return array Array di atti sanitizzati
      */
@@ -110,7 +110,7 @@ class DataSanitizerService
 
     /**
      * Sanitizza il titolo dell'atto rimuovendo potenziali nominativi
-     * 
+     *
      * NOTE: Gli atti PA sono pubblici per natura (albo pretorio),
      * ma applichiamo comunque sanitizzazione conservativa.
      */
@@ -145,7 +145,7 @@ class DataSanitizerService
 
     /**
      * Crea un riassunto testuale degli atti per il contesto AI
-     * 
+     *
      * @param Collection $acts Collezione di atti
      * @return string Riassunto testuale
      */
@@ -156,7 +156,7 @@ class DataSanitizerService
         }
 
         $summary = "ATTI PA PRESENTI NEL SISTEMA:\n\n";
-        
+
         foreach ($acts as $index => $act) {
             $sanitized = $this->sanitizeAct($act);
             $summary .= sprintf(
@@ -176,7 +176,7 @@ class DataSanitizerService
 
     /**
      * Crea statistiche aggregate sicure per l'AI
-     * 
+     *
      * @param Collection $acts Collezione di atti
      * @return array Statistiche pubbliche
      */
@@ -202,7 +202,7 @@ class DataSanitizerService
 
     /**
      * Valida che un array di dati non contenga campi privati
-     * 
+     *
      * @param array $data Dati da validare
      * @return bool True se i dati sono sicuri
      * @throws \RuntimeException Se sono presenti campi privati
@@ -215,7 +215,7 @@ class DataSanitizerService
                     'field' => $privateField,
                     'data_keys' => array_keys($data),
                 ]);
-                
+
                 throw new \RuntimeException(
                     "GDPR VIOLATION: Private field '$privateField' detected in AI data payload"
                 );
@@ -225,4 +225,3 @@ class DataSanitizerService
         return true;
     }
 }
-

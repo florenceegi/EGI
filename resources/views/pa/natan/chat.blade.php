@@ -236,11 +236,12 @@
                     const bubbleDiv = document.createElement('div');
                     bubbleDiv.className = message.role === 'user' ?
                         'bg-[#2D5016] text-white rounded-2xl rounded-tr-sm max-w-md px-4 py-3 shadow-sm' :
-                        'bg-gray-100 text-gray-900 rounded-2xl rounded-tl-sm max-w-2xl px-4 py-3 shadow-sm';
+                        'bg-white rounded-2xl rounded-tl-sm max-w-2xl px-4 py-3 shadow-md border border-gray-200';
 
                     // Message content
                     const contentDiv = document.createElement('div');
                     contentDiv.className = 'prose prose-sm max-w-none';
+                    contentDiv.style.color = '#1B365D'; // Blu Algoritmo - massimo contrasto
                     contentDiv.innerHTML = this.formatMessage(message.content);
                     bubbleDiv.appendChild(contentDiv);
 
@@ -267,7 +268,7 @@
                     // Timestamp
                     const timestampDiv = document.createElement('div');
                     timestampDiv.className = message.role === 'user' ? 'mt-2 text-xs text-white/60' :
-                        'mt-2 text-xs text-gray-500';
+                        'mt-2 text-xs text-gray-600';
                     timestampDiv.textContent = message.timestamp;
                     bubbleDiv.appendChild(timestampDiv);
 
