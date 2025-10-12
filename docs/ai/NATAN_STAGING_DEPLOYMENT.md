@@ -8,7 +8,96 @@
 
 ## ✅ **PRE-REQUISITI (CRITICI)**
 
-### **1️⃣ API KEY ANTHROPIC**
+### **1️⃣ ALGOKIT MICROSERVICE (BLOCKCHAIN)**
+
+**N.A.T.A.N. dipende da AlgoKit per la tokenizzazione blockchain!**
+
+**Requisiti server:**
+
+-   Node.js >= 18.x
+-   npm >= 9.x
+-   Porta 3000 disponibile
+-   AlgoKit microservice in esecuzione
+
+**Files del microservice:**
+
+```
+algokit-microservice/
+├── server.js           (Node.js Express server)
+├── package.json        (dependencies)
+├── .env               (configurazione)
+└── README.md
+```
+
+**Environment variables necessarie:**
+
+```env
+# AlgoKit Microservice
+PORT=3000
+ALGORAND_NETWORK=testnet  # o mainnet per produzione
+TREASURY_MNEMONIC=<YOUR_TREASURY_MNEMONIC_HERE>
+```
+
+**Deploy AlgoKit su staging:**
+
+```bash
+# 1. SSH nel server
+ssh forge@13.48.57.194
+
+# 2. Vai nella directory app
+cd /home/forge/app.13.48.57.194.sslip.io
+
+# 3. Installa dipendenze Node.js
+cd algokit-microservice
+npm install
+
+# 4. Configura .env
+nano .env
+# Aggiungi:
+# PORT=3000
+# ALGORAND_NETWORK=testnet
+# TREASURY_MNEMONIC=<YOUR_25_WORD_MNEMONIC>
+
+# 5. Test avvio manuale
+node server.js
+# Dovresti vedere: "🚀 REAL BLOCKCHAIN MICROSERVICE STARTING..."
+# Ctrl+C per fermare
+
+# 6. Avvio con PM2 (process manager)
+npm install -g pm2
+pm2 start server.js --name algokit-egi
+pm2 save
+pm2 startup  # segui istruzioni per auto-start
+
+# 7. Verifica status
+pm2 status
+pm2 logs algokit-egi
+
+# 8. Test endpoint
+curl http://localhost:3000/health
+# Risposta attesa: {"status":"ok","network":"testnet","treasury":"..."}
+```
+
+**Verifiche post-deploy AlgoKit:**
+
+```bash
+# Test health check
+curl http://localhost:3000/health
+
+# Test mint asset (opzionale)
+curl -X POST http://localhost:3000/mint \
+  -H "Content-Type: application/json" \
+  -d '{"test": true}'
+
+# Test anchor document
+curl -X POST http://localhost:3000/anchor-document \
+  -H "Content-Type: application/json" \
+  -d '{"document_hash": "test123", "note": "Test", "metadata": {}}'
+```
+
+---
+
+### **2️⃣ API KEY ANTHROPIC**
 
 **Dove configurare:**
 
@@ -20,11 +109,13 @@ nano /path/to/.env
 **Variabile richiesta:**
 
 ```env
-ANTHROPIC_API_KEY=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
+ANTHROPIC_API_KEY=<YOUR_ANTHROPIC_API_KEY_HERE>
 ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
 ANTHROPIC_BASE_URL=https://api.anthropic.com
 ANTHROPIC_TIMEOUT=60
 ```
+
+**⚠️ IMPORTANTE**: Sostituisci `<YOUR_ANTHROPIC_API_KEY_HERE>` con la tua chiave reale ottenuta da https://console.anthropic.com/
 
 ⚠️ **NOTA SICUREZZA**:
 
@@ -72,21 +163,38 @@ routes/pa-enterprise.php (già esistente)
 
 ---
 
-### **3️⃣ DIPENDENZE PHP**
+### **3️⃣ DIPENDENZE**
 
-**Nessuna nuova dipendenza richiesta!** ✅
+**PHP:**
 
-Tutto usa:
-
+-   ✅ Nessuna nuova dipendenza richiesta
 -   Laravel HTTP Client (già presente)
 -   Illuminate Collections (core Laravel)
 -   Ultra packages (già installati)
 
+**Node.js (AlgoKit Microservice):**
+
+```json
+{
+    "express": "^4.18.2",
+    "algosdk": "^2.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+}
+```
+
+**Installazione:**
+
+```bash
+cd algokit-microservice
+npm install
+```
+
 ---
 
-## 🔧 **DEPLOYMENT STEPS**
+## 🔧 **DEPLOYMENT STEPS (COMPLETO)**
 
-### **OPZIONE A: Deploy via Git Pull (Forge)**
+### **STEP 1: Deploy AlgoKit Microservice**
 
 ```bash
 # 1. SSH nel server
@@ -95,26 +203,64 @@ ssh forge@13.48.57.194
 # 2. Vai nella directory app
 cd /home/forge/app.13.48.57.194.sslip.io
 
-# 3. Pull dei nuovi commit
+# 3. Pull codice (include algokit-microservice/)
 git pull origin main
 
-# 4. Config cache refresh
+# 4. Installa Node.js dependencies
+cd algokit-microservice
+npm install
+
+# 5. Configura AlgoKit .env
+nano .env
+# Aggiungi:
+# PORT=3000
+# ALGORAND_NETWORK=testnet
+# TREASURY_MNEMONIC=<YOUR_25_WORD_MNEMONIC>
+
+# 6. Avvia con PM2
+npm install -g pm2
+pm2 start server.js --name algokit-egi
+pm2 save
+pm2 startup
+
+# 7. Verifica AlgoKit attivo
+pm2 status
+curl http://localhost:3000/health
+# Risposta attesa: {"status":"ok","network":"testnet",...}
+```
+
+---
+
+### **STEP 2: Deploy Laravel App**
+
+```bash
+# 1. Torna alla root app
+cd /home/forge/app.13.48.57.194.sslip.io
+
+# 2. Config cache refresh
 php artisan config:clear
 php artisan cache:clear
 
-# 5. Aggiungi ANTHROPIC_API_KEY al .env
+# 3. Aggiungi variabili N.A.T.A.N. al .env Laravel
 nano .env
 # Aggiungi:
 # ANTHROPIC_API_KEY=sk-ant-api03-...
 # ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
+# ALGOKIT_BASE_URL=http://localhost:3000
 
-# 6. Test connessione Anthropic
-php artisan tinker
->>> $anthropic = app(\App\Services\AnthropicService::class);
->>> $anthropic->isAvailable();
->>> exit
+# 4. Test connessione Anthropic
+php artisan tinker --execute="
+\$anthropic = app(\App\Services\AnthropicService::class);
+echo \$anthropic->isAvailable() ? '✅ Anthropic OK' : '❌ Anthropic FAIL';
+"
 
-# 7. Restart PHP-FPM (se necessario)
+# 5. Test connessione AlgoKit
+php artisan tinker --execute="
+\$response = \Illuminate\Support\Facades\Http::get('http://localhost:3000/health');
+echo \$response->successful() ? '✅ AlgoKit OK' : '❌ AlgoKit FAIL';
+"
+
+# 6. Restart PHP-FPM (se necessario)
 # sudo systemctl restart php8.3-fpm
 ```
 
@@ -303,15 +449,44 @@ tail -f storage/logs/error_manager.log
 
 ## ✅ **DEPLOYMENT COMPLETE WHEN:**
 
--   [ ] API key configurata in `.env`
--   [ ] Git pull effettuato (ultimi 3 commit)
+### **AlgoKit Microservice:**
+
+-   [ ] Node.js dependencies installate (`npm install`)
+-   [ ] AlgoKit `.env` configurato (PORT, ALGORAND_NETWORK, TREASURY_MNEMONIC)
+-   [ ] PM2 avviato: `pm2 status` mostra `algokit-egi` online
+-   [ ] Health check OK: `curl http://localhost:3000/health`
+-   [ ] Test mint funziona (opzionale)
+-   [ ] Test anchor-document funziona
+
+### **Laravel App (N.A.T.A.N.):**
+
+-   [ ] Git pull effettuato (ultimi 4 commit)
+-   [ ] Anthropic API key configurata in `.env`
+-   [ ] ALGOKIT_BASE_URL configurato (http://localhost:3000)
 -   [ ] Config cache cleared
 -   [ ] Test Anthropic availability: ✅ OK
+-   [ ] Test AlgoKit connectivity: ✅ OK
 -   [ ] Chat UI accessibile su `/pa/natan/chat`
--   [ ] Query di test funziona
+-   [ ] Query di test AI funziona
+-   [ ] Upload atto PA + tokenizzazione funziona
 -   [ ] GDPR logging attivo
 -   [ ] Nessun campo privato nei log
+
+### **Integration Test (End-to-End):**
+
+-   [ ] Upload PDF atto PA
+-   [ ] Abilita "Certifica con N.A.T.A.N."
+-   [ ] Verifica job `TokenizePaActJob` in esecuzione
+-   [ ] Verifica transazione Algorand su explorer
+-   [ ] Chat N.A.T.A.N. risponde con atto caricato
 
 ---
 
 **Ready to deploy!** 🚀
+
+**Tempo stimato deployment:**
+
+-   AlgoKit setup: ~10 minuti
+-   Laravel app: ~5 minuti
+-   Testing: ~10 minuti
+-   **TOTALE: ~25 minuti**
