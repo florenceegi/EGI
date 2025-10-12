@@ -50,4 +50,21 @@ return [
         'timeout' => env('OLLAMA_TIMEOUT', 60), // seconds
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Anthropic AI Service (N.A.T.A.N.)
+    |--------------------------------------------------------------------------
+    |
+    | Cloud LLM service powered by Claude 3.5 Sonnet.
+    | GDPR-COMPLIANT: Processes ONLY public metadata (no PII, no signatures).
+    | DPA: Anthropic has Data Processing Agreement with EU customers.
+    |
+    */
+    'anthropic' => [
+        'api_key' => env('ANTHROPIC_API_KEY'),
+        'base_url' => env('ANTHROPIC_BASE_URL', 'https://api.anthropic.com'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-3-5-sonnet-20241022'),
+        'timeout' => env('ANTHROPIC_TIMEOUT', 60), // seconds
+    ],
+
 ];
