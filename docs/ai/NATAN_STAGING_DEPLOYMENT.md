@@ -11,12 +11,14 @@
 ### **1️⃣ API KEY ANTHROPIC**
 
 **Dove configurare:**
+
 ```bash
 # Sul server staging
 nano /path/to/.env
 ```
 
 **Variabile richiesta:**
+
 ```env
 ANTHROPIC_API_KEY=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
 ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
@@ -24,16 +26,18 @@ ANTHROPIC_BASE_URL=https://api.anthropic.com
 ANTHROPIC_TIMEOUT=60
 ```
 
-⚠️ **NOTA SICUREZZA**: 
-- NON committare la API KEY nel repository
-- Configurare tramite `.env` sul server
-- La key è già nel tuo `.env` locale
+⚠️ **NOTA SICUREZZA**:
+
+-   NON committare la API KEY nel repository
+-   Configurare tramite `.env` sul server
+-   La key è già nel tuo `.env` locale
 
 ---
 
 ### **2️⃣ FILES DA DEPLOYARE**
 
 **Nuovi servizi creati:**
+
 ```
 app/Services/AnthropicService.php      (9 KB)
 app/Services/DataSanitizerService.php  (7 KB)
@@ -42,22 +46,26 @@ app/Services/NatanChatService.php      (6 KB - refactored)
 ```
 
 **Configurazione:**
+
 ```
 config/services.php                    (aggiunta sezione anthropic)
 .env.example                           (aggiunte variabili ANTHROPIC_*)
 ```
 
 **Views:**
+
 ```
 resources/views/pa/natan/chat.blade.php (fix contrasto colori)
 ```
 
 **Controller:**
+
 ```
 app/Http/Controllers/PA/NatanChatController.php (già esistente)
 ```
 
 **Routes:**
+
 ```
 routes/pa-enterprise.php (già esistente)
 ```
@@ -69,9 +77,10 @@ routes/pa-enterprise.php (già esistente)
 **Nessuna nuova dipendenza richiesta!** ✅
 
 Tutto usa:
-- Laravel HTTP Client (già presente)
-- Illuminate Collections (core Laravel)
-- Ultra packages (già installati)
+
+-   Laravel HTTP Client (già presente)
+-   Illuminate Collections (core Laravel)
+-   Ultra packages (già installati)
 
 ---
 
@@ -153,6 +162,7 @@ tail -f storage/logs/laravel.log | grep "GDPR"
 ```
 
 Poi fai una query dalla chat e verifica che vedi log come:
+
 ```
 [NatanChatService][GDPR] Data sent to Anthropic AI
 - user_id: X
@@ -161,10 +171,11 @@ Poi fai una query dalla chat e verifica che vedi log come:
 ```
 
 **✅ VERIFICA**: Nei log NON devono comparire:
-- `digital_signature`
-- `file_path`
-- `ip_address`
-- `user_id` (come campo dati, solo come context)
+
+-   `digital_signature`
+-   `file_path`
+-   `ip_address`
+-   `user_id` (come campo dati, solo come context)
 
 ---
 
@@ -175,6 +186,7 @@ Poi fai una query dalla chat e verifica che vedi log come:
 **Causa**: Variabile `ANTHROPIC_API_KEY` mancante o vuota
 
 **Fix:**
+
 ```bash
 nano .env
 # Aggiungi: ANTHROPIC_API_KEY=sk-ant-...
@@ -188,6 +200,7 @@ php artisan config:clear
 **Causa**: Autoload non aggiornato
 
 **Fix:**
+
 ```bash
 composer dump-autoload
 php artisan cache:clear
@@ -200,6 +213,7 @@ php artisan cache:clear
 **Causa**: Query usano colonne sbagliate (già fixato)
 
 **Verifica fix applicato:**
+
 ```bash
 grep "pa_title" app/Services/RagService.php
 # Non deve restituire nulla
@@ -212,6 +226,7 @@ grep "pa_title" app/Services/RagService.php
 **Causa possibile**: Firewall blocca chiamate a `api.anthropic.com`
 
 **Fix:**
+
 ```bash
 # Test connettività
 curl -I https://api.anthropic.com
@@ -246,13 +261,15 @@ tail -f storage/logs/error_manager.log
 **Output**: $15.00 per 1M tokens
 
 **Stima query media:**
-- Input: ~1.000 token
-- Output: ~500 token
-- **Costo per query**: ~$0.011 (1 centesimo)
+
+-   Input: ~1.000 token
+-   Output: ~500 token
+-   **Costo per query**: ~$0.011 (1 centesimo)
 
 **Esempio mensile:**
-- 100 query/giorno × 30 giorni = 3.000 query/mese
-- **Costo stimato**: ~€30/mese
+
+-   100 query/giorno × 30 giorni = 3.000 query/mese
+-   **Costo stimato**: ~€30/mese
 
 ---
 
@@ -262,7 +279,7 @@ tail -f storage/logs/error_manager.log
 ✅ **Audit Trail**: Logging completo di ogni richiesta AI  
 ✅ **Data Isolation**: `DataSanitizerService` filtra PII  
 ✅ **Validation**: Check anti-GDPR violation  
-✅ **Transparency**: Fonti citate in ogni risposta  
+✅ **Transparency**: Fonti citate in ogni risposta
 
 **DPA Anthropic**: ✅ Disponibile su richiesta  
 **Data Residency**: ⚠️ US (Anthropic servers)  
@@ -278,24 +295,23 @@ tail -f storage/logs/error_manager.log
 2. Verifica API key configurata: `php artisan tinker` → `config('services.anthropic.api_key')`
 3. Test connessione: `curl https://api.anthropic.com`
 4. Contatta Fabio con:
-   - Messaggio errore esatto
-   - Log relevanti (ultimi 50 righe)
-   - Query che hai provato
+    - Messaggio errore esatto
+    - Log relevanti (ultimi 50 righe)
+    - Query che hai provato
 
 ---
 
 ## ✅ **DEPLOYMENT COMPLETE WHEN:**
 
-- [ ] API key configurata in `.env`
-- [ ] Git pull effettuato (ultimi 3 commit)
-- [ ] Config cache cleared
-- [ ] Test Anthropic availability: ✅ OK
-- [ ] Chat UI accessibile su `/pa/natan/chat`
-- [ ] Query di test funziona
-- [ ] GDPR logging attivo
-- [ ] Nessun campo privato nei log
+-   [ ] API key configurata in `.env`
+-   [ ] Git pull effettuato (ultimi 3 commit)
+-   [ ] Config cache cleared
+-   [ ] Test Anthropic availability: ✅ OK
+-   [ ] Chat UI accessibile su `/pa/natan/chat`
+-   [ ] Query di test funziona
+-   [ ] GDPR logging attivo
+-   [ ] Nessun campo privato nei log
 
 ---
 
 **Ready to deploy!** 🚀
-
