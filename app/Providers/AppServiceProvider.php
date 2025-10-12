@@ -12,7 +12,6 @@ use App\Models\Wallet;
 use App\Models\Collection;
 use App\Policies\ProfilePolicy;
 use App\Policies\TeamWalletPolicy as WalletPolicy;
-use App\Policies\CollectionPolicy;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\Channels\CustomDatabaseChannel;
 use App\Services\CollectionService;
@@ -46,7 +45,6 @@ class AppServiceProvider extends ServiceProvider {
     protected $policies = [
         User::class => ProfilePolicy::class,
         Wallet::class => WalletPolicy::class,
-        Collection::class => CollectionPolicy::class,
         // Egi::class => EgiPolicy::class,
     ];
 

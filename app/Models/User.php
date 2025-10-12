@@ -235,10 +235,22 @@ class User extends Authenticatable implements HasMedia {
         }
 
         $collection = $this->currentCollection;
+        
+        // Check role in collection_user pivot
+        $pivot = \DB::table('collection_user')
+            ->where('user_id', $this->id)
+            ->where('collection_id', $collection->id)
+            ->first();
+        
+        $canEdit = false;
+        if ($pivot) {
+            $canEdit = $pivot->is_owner || in_array($pivot->role, ['admin', 'editor']);
+        }
+        
         return [
             'current_collection_id' => $collection->id,
             'current_collection_name' => $collection->collection_name,
-            'can_edit_current_collection' => $this->can('manage_collection', $collection),
+            'can_edit_current_collection' => $canEdit,
         ];
     }
 

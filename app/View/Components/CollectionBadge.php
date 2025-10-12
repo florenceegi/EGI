@@ -75,7 +75,18 @@ class CollectionBadge extends Component {
 
                 // Verifica se l'utente può modificare la collection corrente
                 if ($this->collectionId && isset($user->currentCollection)) {
-                    $this->canEdit = $user->can('manage_collection', $user->currentCollection);
+                    $collection = $user->currentCollection;
+                    
+                    // Check role in collection_user pivot
+                    $pivot = \DB::table('collection_user')
+                        ->where('user_id', $user->id)
+                        ->where('collection_id', $collection->id)
+                        ->first();
+                    
+                    $this->canEdit = false;
+                    if ($pivot) {
+                        $this->canEdit = $pivot->is_owner || in_array($pivot->role, ['admin', 'editor']);
+                    }
                 } else {
                     $this->canEdit = false;
                 }
