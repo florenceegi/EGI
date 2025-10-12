@@ -54,6 +54,11 @@ return [
     'algorand' => [
         'network' => env('ALGORAND_NETWORK', 'sandbox'),
 
+        // Generic API URLs (fallback for services that don't use microservice)
+        'api_url' => env('ALGORAND_API_URL', 'https://testnet-api.algonode.cloud'),
+        'indexer_url' => env('ALGORAND_INDEXER_URL', 'https://testnet-idx.algonode.cloud'),
+        'api_key' => env('ALGORAND_API_KEY', ''),
+
         // Network configurations (used by microservice)
         'sandbox' => [
             'algod_url' => env('ALGOD_SANDBOX_URL', 'http://localhost:4001'),
