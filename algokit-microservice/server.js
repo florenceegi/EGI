@@ -10,37 +10,71 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Algorand Sandbox configuration
-const algodToken =
-    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-const algodServer = "http://localhost";
-const algodPort = 4001;
+// ========================================
+// DUAL MODE CONFIGURATION
+// ========================================
+const NETWORK_MODE = process.env.ALGORAND_NETWORK || "sandbox"; // sandbox | testnet | mainnet
+
+let algodToken, algodServer, algodPort;
+
+if (NETWORK_MODE === "testnet") {
+    // TestNet configuration (Public API)
+    algodToken = ""; // Public node doesn't require token
+    algodServer = "https://testnet-api.algonode.cloud";
+    algodPort = 443;
+    console.log("🌐 MODE: TESTNET (Public API)");
+} else if (NETWORK_MODE === "mainnet") {
+    // MainNet configuration (Public API)
+    algodToken = ""; // Public node doesn't require token
+    algodServer = "https://mainnet-api.algonode.cloud";
+    algodPort = 443;
+    console.log("🌐 MODE: MAINNET (Public API)");
+} else {
+    // Sandbox configuration (Local Docker)
+    algodToken = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    algodServer = "http://localhost";
+    algodPort = 4001;
+    console.log("🌐 MODE: SANDBOX (Local Docker)");
+}
 
 const algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
 
 // Treasury account - REAL generated mnemonic
+// IMPORTANT: In production, store mnemonic in secure vault (AWS Secrets Manager, HashiCorp Vault)
 const treasuryMnemonic =
+    process.env.TREASURY_MNEMONIC ||
     "misery earn nose palace make together enhance february parade agent oxygen farm ghost canoe forum robot cube office ball energy split annual buddy above absent";
 const treasuryAccount = algosdk.mnemonicToSecretKey(treasuryMnemonic);
 
 console.log("🚀 REAL BLOCKCHAIN MICROSERVICE STARTING...");
+console.log("📍 Network Mode:", NETWORK_MODE.toUpperCase());
+console.log("📍 Algod Server:", algodServer);
 console.log("📍 Treasury Address:", treasuryAccount.addr);
 
 // Health check endpoint
 app.get("/health", async (req, res) => {
     try {
         const status = await algodClient.status().do();
+        const accountInfo = await algodClient.accountInformation(treasuryAccount.addr).do();
+        
         res.json({
             status: "healthy",
-            network: "sandbox",
+            network: NETWORK_MODE,
             round: status["last-round"],
-            treasury: treasuryAccount.addr,
+            treasury: {
+                address: treasuryAccount.addr,
+                balance: accountInfo.amount / 1000000, // Convert microAlgos to Algos
+                assets: accountInfo.assets ? accountInfo.assets.length : 0,
+            },
+            algod_server: algodServer,
             mode: "REAL_BLOCKCHAIN",
         });
     } catch (error) {
         res.status(500).json({
             status: "unhealthy",
+            network: NETWORK_MODE,
             error: error.message,
+            algod_server: algodServer,
             mode: "REAL_BLOCKCHAIN",
         });
     }

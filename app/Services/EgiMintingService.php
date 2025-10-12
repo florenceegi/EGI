@@ -230,13 +230,17 @@ class EgiMintingService {
             ]);
 
             $egi->update([
-                'owner_id' => $freshBlockchain->buyer_user_id
+                'owner_id' => $freshBlockchain->buyer_user_id,
+                'token' => 'EGI',      // Register token type
+                'status' => 'minted'   // Update status to minted
             ]);
 
             $egiAfter = Egi::find($egi->id);
             $this->logger->info('🔍 DEBUG OWNER SYNC - DOPO', [
                 'egi_id' => $egi->id,
                 'egi_owner_id_after' => $egiAfter->owner_id,
+                'egi_token' => $egiAfter->token,
+                'egi_status' => $egiAfter->status,
                 'update_worked' => $egiAfter->owner_id == $freshBlockchain->buyer_user_id ? 'YES' : 'NO'
             ]);
 
