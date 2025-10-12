@@ -631,6 +631,28 @@ Evoluzione del sistema blockchain EGI per supportare:
     **Backend:** `MintController.php`, `MintDirectRequest.php`, `MintEgiJob.php`  
     **Commit:** d207b34
 
+-   [x] **5.4.2** - Token Registration dopo mint ✅
+
+    -   [x] Update `egi.token = 'EGI'` dopo mint success ✅
+    -   [x] Update `egi.status = 'minted'` dopo mint success ✅
+    -   [x] Sync `egi.owner_id = buyer_user_id` (triple safety) ✅
+    -   [x] Implementato in `EgiMintingService::mintEgi()` ✅
+    -   [x] Verificato su TestNet (ASA 747523691) ✅
+
+    **File:** `app/Services/EgiMintingService.php` (lines 233-237, 241-250)
+    **Commit:** f42b53e (2025-10-12)
+
+    **Implementation Details:**
+
+    -   After blockchain mint success, before return
+    -   Uses `$egi->update([...])` for atomic DB write
+    -   Token type: `'EGI'` (standard for marketplace)
+    -   Status: `'minted'` (prevents duplicate mints)
+    -   Owner sync: Ensures Policy and secondary market work correctly
+    -   Triple safety: Job + Service + Controller level checks
+    -   GDPR audit logged with all fields
+
+
     **Implementation Details:**
 
     -   Input field with `maxlength="100"` and pattern validation
