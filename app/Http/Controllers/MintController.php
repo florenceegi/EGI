@@ -319,8 +319,8 @@ class MintController extends Controller {
                 $this->errorManager->handle('DIRECT_MINT_NOT_AVAILABLE', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egi->id,
-                    'reason' => $reason,
-                    'availability' => $availability,
+                    // 'reason' => $reason,
+                    // 'availability' => $availability,
                 ]);
 
                 return redirect()->route('egis.show', $egi->id);

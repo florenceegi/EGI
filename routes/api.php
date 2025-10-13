@@ -13,11 +13,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-// === Mint Status API (Protected) ===
-Route::middleware(['auth:sanctum'])->prefix('mint')->group(function () {
-    Route::get('/status/{egiId}', [MintStatusController::class, 'getMintStatus'])
-        ->name('api.mint.status');
-});
+
 
 /*
 |--------------------------------------------------------------------------

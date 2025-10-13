@@ -425,6 +425,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('utilities', [App\Http\Controllers\UtilityController::class, 'store'])->name('utilities.store');
     Route::put('utilities/{utility}', [App\Http\Controllers\UtilityController::class, 'update'])->name('utilities.update');
     Route::delete('utilities/{utility}', [App\Http\Controllers\UtilityController::class, 'destroy'])->name('utilities.destroy');
+
+    // Mint status check (AJAX internal - session-based auth)
+    Route::get('mint/status/{egiId}', [App\Http\Controllers\Api\MintStatusController::class, 'getMintStatus'])
+        ->name('mint.status.check');
 });
 
 // EPP routes

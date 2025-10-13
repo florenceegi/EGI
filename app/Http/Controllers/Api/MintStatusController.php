@@ -18,8 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
-class MintStatusController extends Controller
-{
+class MintStatusController extends Controller {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
 
@@ -38,8 +37,7 @@ class MintStatusController extends Controller
      * @param int $egiId
      * @return JsonResponse
      */
-    public function getMintStatus(int $egiId): JsonResponse
-    {
+    public function getMintStatus(int $egiId): JsonResponse {
         try {
             $egi = Egi::findOrFail($egiId);
 
@@ -102,14 +100,12 @@ class MintStatusController extends Controller
             ]);
 
             return response()->json($response);
-
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             $this->errorManager->handle('MINT_STATUS_EGI_NOT_FOUND', [
                 'user_id' => Auth::id(),
                 'egi_id' => $egiId,
             ], $e);
             return response()->json(['error' => 'EGI not found'], 404);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_STATUS_CHECK_ERROR', [
                 'user_id' => Auth::id(),

@@ -5820,7 +5820,7 @@ return [
             'notify_slack' => true,
             'msg_to' => 'toast',
         ],
-        
+
         // === Mint Status API Errors ===
         'MINT_STATUS_UNAUTHORIZED' => [
             'type' => 'warning',
