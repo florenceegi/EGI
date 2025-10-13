@@ -303,7 +303,6 @@
                                     value="{{ old('co_creator_display_name', Auth::user()->name) }}"
                                     placeholder="{{ Auth::user()->name }}" maxlength="100"
                                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    pattern="[a-zA-Z0-9\s.\'\-]+"
                                     title="{{ __('mint.payment.co_creator_name_pattern') }}">
                                 <div class="mt-1 flex items-start justify-between">
                                     <p class="text-xs text-gray-500">
