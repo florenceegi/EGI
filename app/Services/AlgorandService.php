@@ -515,12 +515,17 @@ class AlgorandService {
         try {
             $response = $this->callMicroservice('GET', '/health');
 
+            // Microservice /health returns: { "status": "healthy", "network": "testnet", ... }
+            $isHealthy = isset($response['status']) && $response['status'] === 'healthy';
+
             return [
-                'success' => $response['success'],
-                'microservice' => $response['service'] ?? 'AlgoKit Microservice',
-                'version' => $response['version'] ?? 'Unknown',
-                'algorand' => $response['algorand'] ?? [],
-                'timestamp' => $response['timestamp'] ?? now()->toISOString()
+                'success' => $isHealthy,
+                'status' => $response['status'] ?? 'unknown',
+                'network' => $response['network'] ?? 'unknown',
+                'round' => $response['round'] ?? null,
+                'treasury' => $response['treasury'] ?? [],
+                'algod_server' => $response['algod_server'] ?? 'unknown',
+                'mode' => $response['mode'] ?? 'unknown',
             ];
         } catch (\Exception $e) {
             $this->errorManager->handle('NETWORK_STATUS_CHECK_FAILED', [
