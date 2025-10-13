@@ -487,13 +487,29 @@ class MintController extends Controller {
                 'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
             ]);
 
+            $this->logger->emergency('🚨 DIRECT MINT - BEFORE DISPATCH', [
+                'blockchain_record_id' => $blockchainRecord->id,
+                'egi_id' => $egi->id,
+                'user_id' => Auth::id()
+            ]);
+
             // Queue REAL blockchain mint job (async with worker)
             dispatch(new MintEgiJob($blockchainRecord->id));
+
+            $this->logger->emergency('🚨 DIRECT MINT - AFTER DISPATCH', [
+                'blockchain_record_id' => $blockchainRecord->id,
+                'egi_id' => $egi->id
+            ]);
 
             // CRITICAL FIX: Sync owner_id immediately in Controller
             // This guarantees owner_id is correct even before Job processes
             // Job will re-sync in EgiMintingService (redundant but safe)
             \App\Models\Egi::where('id', $egi->id)->update([
+                'owner_id' => Auth::id()
+            ]);
+
+            $this->logger->emergency('🚨 DIRECT MINT - AFTER OWNER UPDATE', [
+                'egi_id' => $egi->id,
                 'owner_id' => Auth::id()
             ]);
 

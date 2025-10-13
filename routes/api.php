@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\MintStatusController;
 use App\Http\Controllers\Notifications\Gdpr\GdprNotificationResponseController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Payment\PspWebhookController;
@@ -11,6 +12,12 @@ use App\Http\Controllers\Api\TraitsApiController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+// === Mint Status API (Protected) ===
+Route::middleware(['auth:sanctum'])->prefix('mint')->group(function () {
+    Route::get('/status/{egiId}', [MintStatusController::class, 'getMintStatus'])
+        ->name('api.mint.status');
+});
 
 /*
 |--------------------------------------------------------------------------

@@ -301,11 +301,12 @@
                                 </label>
                                 @php
                                     // Use nick_name if exists, otherwise full wallet (NOT abbreviated)
-                                    $defaultCoCreatorName = Auth::user()->nick_name ?? Auth::user()->wallet ?? '';
+                                    $defaultCoCreatorName = Auth::user()->nick_name ?? (Auth::user()->wallet ?? '');
                                 @endphp
                                 <input type="text" id="co_creator_display_name" name="co_creator_display_name"
                                     value="{{ old('co_creator_display_name', $defaultCoCreatorName) }}"
-                                    placeholder="{{ $defaultCoCreatorName ?: __('mint.payment.co_creator_name_placeholder') }}" maxlength="100"
+                                    placeholder="{{ $defaultCoCreatorName ?: __('mint.payment.co_creator_name_placeholder') }}"
+                                    maxlength="100"
                                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     title="{{ __('mint.payment.co_creator_name_pattern') }}">
                                 <div class="mt-1 flex items-start justify-between">
@@ -484,7 +485,157 @@
                     } else if (mintStatus === 'processing') {
                         // Mint still processing - show processing notification
                         showMintProcessingNotification();
+                        
+                        // Start polling for mint completion
+                        startMintStatusPolling();
                     }
+                }
+
+                /**
+                 * Enterprise-grade mint status polling
+                 * - AJAX polling without page reload
+                 * - Exponential backoff (5s → 10s → 15s)
+                 * - Automatic UI update on status change
+                 * - Error handling with UEM integration
+                 * - Max 10 minutes timeout
+                 */
+                function startMintStatusPolling() {
+                    const egiId = {{ $egi->id }};
+                    const apiUrl = `/api/mint/status/${egiId}`;
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    
+                    let pollCount = 0;
+                    let pollInterval = 5000; // Start with 5 seconds
+                    const maxPolls = 60; // 10 minutes max (adaptive interval)
+                    let currentPollTimeout = null;
+                    
+                    const pollStatus = async () => {
+                        pollCount++;
+                        
+                        // Timeout after max polls
+                        if (pollCount > maxPolls) {
+                            console.warn('[MINT POLL] Max polling time reached (10 minutes)');
+                            showPollingTimeoutNotification();
+                            return;
+                        }
+                        
+                        try {
+                            const response = await fetch(apiUrl, {
+                                method: 'GET',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                credentials: 'same-origin'
+                            });
+                            
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                            }
+                            
+                            const data = await response.json();
+                            
+                            console.log(`[MINT POLL ${pollCount}] Status:`, data.status);
+                            
+                            // Handle status changes
+                            if (data.status === 'minted') {
+                                // ✅ MINT COMPLETED
+                                console.log('[MINT POLL] ✅ Mint completed!', data);
+                                updateUIToMinted(data);
+                                return; // Stop polling
+                                
+                            } else if (data.status === 'failed') {
+                                // ❌ MINT FAILED
+                                console.error('[MINT POLL] ❌ Mint failed:', data.error);
+                                updateUIToFailed(data);
+                                return; // Stop polling
+                                
+                            } else if (data.status === 'minting_queued' || data.status === 'minting') {
+                                // ⏳ STILL PROCESSING - Continue polling with adaptive interval
+                                
+                                // Exponential backoff: 5s → 8s → 10s → 15s
+                                if (pollCount > 20) {
+                                    pollInterval = 15000; // 15s after 20 polls (~3 minutes)
+                                } else if (pollCount > 10) {
+                                    pollInterval = 10000; // 10s after 10 polls (~1.5 minutes)
+                                } else if (pollCount > 5) {
+                                    pollInterval = 8000; // 8s after 5 polls (~40 seconds)
+                                }
+                                
+                                currentPollTimeout = setTimeout(pollStatus, pollInterval);
+                            }
+                            
+                        } catch (error) {
+                            console.error('[MINT POLL] Error:', error);
+                            
+                            // Retry with longer interval on error
+                            if (pollCount < maxPolls) {
+                                currentPollTimeout = setTimeout(pollStatus, pollInterval * 2);
+                            } else {
+                                showPollingErrorNotification();
+                            }
+                        }
+                    };
+                    
+                    // Start polling
+                    pollStatus();
+                }
+                
+                /**
+                 * Update UI to show minted status (green badge + ASA)
+                 */
+                function updateUIToMinted(data) {
+                    // Remove processing badge
+                    const processingBadge = document.querySelector('.border-blue-200.bg-blue-50');
+                    if (processingBadge) {
+                        processingBadge.remove();
+                    }
+                    
+                    // Show success notification
+                    showMintSuccessNotification({
+                        asaId: data.asa_id,
+                        txId: data.tx_id,
+                        egiTitle: '{{ $egi->title }}'
+                    });
+                    
+                    // Reload page to show complete minted state
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000); // 2 seconds after notification
+                }
+                
+                /**
+                 * Update UI to show failed status (red badge)
+                 */
+                function updateUIToFailed(data) {
+                    // Remove processing badge
+                    const processingBadge = document.querySelector('.border-blue-200.bg-blue-50');
+                    if (processingBadge) {
+                        processingBadge.remove();
+                    }
+                    
+                    // Show error notification
+                    alert(`{{ __('mint.errors.mint_failed') }}\n\n${data.error || 'Unknown error'}`);
+                    
+                    // Reload page to show failed state
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }
+                
+                /**
+                 * Show timeout notification
+                 */
+                function showPollingTimeoutNotification() {
+                    alert('{{ __('mint.errors.polling_timeout') }}\n\nIl mint potrebbe richiedere più tempo del previsto. Ricarica la pagina tra qualche minuto per verificare lo stato.');
+                }
+                
+                /**
+                 * Show polling error notification
+                 */
+                function showPollingErrorNotification() {
+                    console.error('[MINT POLL] Too many errors, stopping');
                 }
             });
 
@@ -583,20 +734,20 @@
                             <h3 class="text-lg font-semibold text-green-900">{{ __('mint.notification.success_title') }}</h3>
                             <p class="mt-1 text-sm text-green-800">{{ __('mint.notification.success_message') }}</p>
                             ${data.asaId ? `
-                                        <div class="p-3 mt-3 border rounded-lg border-green-300 bg-green-50">
-                                            <div class="flex items-center justify-between mb-2 text-sm">
-                                                <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                                <span class="font-mono font-bold text-green-900">${data.asaId}</span>
-                                            </div>
-                                            <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
-                                               class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                </svg>
-                                                {{ __('mint.notification.view_blockchain') }}
-                                            </a>
-                                        </div>
-                                    ` : ''}
+                                                <div class="p-3 mt-3 border rounded-lg border-green-300 bg-green-50">
+                                                    <div class="flex items-center justify-between mb-2 text-sm">
+                                                        <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
+                                                        <span class="font-mono font-bold text-green-900">${data.asaId}</span>
+                                                    </div>
+                                                    <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
+                                                       class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                        </svg>
+                                                        {{ __('mint.notification.view_blockchain') }}
+                                                    </a>
+                                                </div>
+                                            ` : ''}
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-green-600 transition-colors hover:text-green-900">

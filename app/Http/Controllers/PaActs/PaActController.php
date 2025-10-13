@@ -252,8 +252,7 @@ class PaActController extends Controller
                     ->where(function ($q) {
                         $q->whereNull('pa_anchored')
                             ->orWhere('pa_anchored', false);
-                    })
-                    ->count(),
+                    })->count(),
                 'natan_analyzed' => Egi::whereHas('collection', fn($q) => $q->where('creator_id', $user->id))
                     ->where('pa_anchored', true) // Atti tokenizzati da N.A.T.A.N.
                     ->count()

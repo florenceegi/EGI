@@ -5820,6 +5820,38 @@ return [
             'notify_slack' => true,
             'msg_to' => 'toast',
         ],
+        
+        // === Mint Status API Errors ===
+        'MINT_STATUS_UNAUTHORIZED' => [
+            'type' => 'warning',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_status_unauthorized',
+            'user_message_key' => 'error-manager::errors_2.user.mint_status_unauthorized',
+            'http_status_code' => 403,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log',
+        ],
+        'MINT_STATUS_EGI_NOT_FOUND' => [
+            'type' => 'warning',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_status_egi_not_found',
+            'user_message_key' => 'error-manager::errors_2.user.mint_status_egi_not_found',
+            'http_status_code' => 404,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log',
+        ],
+        'MINT_STATUS_CHECK_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_status_check_error',
+            'user_message_key' => 'error-manager::errors_2.user.mint_status_check_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'log',
+        ],
 
     ]
 ];

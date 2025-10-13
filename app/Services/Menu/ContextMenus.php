@@ -174,6 +174,7 @@ class ContextMenus
                 break;
 
             case 'pa.acts':
+            case 'pa.natan.chat':
                 // PA Acts Tokenization Context (route: pa.acts.index, pa.acts.upload, pa.acts.show)
                 Log::channel('upload')->info('🔍 CONTEXT MENUS - PA ACTS CONTEXT', [
                     'context' => $context,
