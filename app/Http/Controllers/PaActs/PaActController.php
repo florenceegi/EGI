@@ -384,8 +384,8 @@ class PaActController extends Controller
             if ($metadata['anchor_txid']) {
                 $network = $egi->jsonMetadata['anchor_network'] ?? 'algorand-testnet';
                 $baseUrl = $network === 'algorand-mainnet'
-                    ? 'https://algoexplorer.io/tx/'
-                    : 'https://testnet.algoexplorer.io/tx/';
+                    ? 'https://explorer.perawallet.app/tx/'
+                    : 'https://testnet.explorer.perawallet.app/tx/';
                 $algorandExplorerUrl = $baseUrl . $metadata['anchor_txid'];
             }
 
@@ -537,7 +537,6 @@ class PaActController extends Controller
             ]);
 
             return redirect()->back()->with('success', 'Tokenizzazione forzata avviata. Il processo richiederà alcuni secondi.');
-
         } catch (\Exception $e) {
             $this->logger->error('[PaActController] Force tokenization failed', [
                 'user_id' => auth()->id(),

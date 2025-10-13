@@ -71,7 +71,6 @@ class QueueWorkerService
             ]);
 
             return $this->attemptWorkerAutoStart();
-
         } catch (\Exception $e) {
             $this->errorManager->handle('QUEUE_WORKER_CHECK_FAILED', [
                 'queue' => $this->queueName,
@@ -94,7 +93,7 @@ class QueueWorkerService
             $command = "ps aux | grep -E 'queue:(work|listen).*blockchain' | grep -v grep";
             $output = [];
             $returnVar = 0;
-            
+
             exec($command, $output, $returnVar);
 
             $isRunning = !empty($output);
@@ -106,7 +105,6 @@ class QueueWorkerService
             ]);
 
             return $isRunning;
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to check worker status', [
                 'queue' => $this->queueName,
@@ -131,7 +129,7 @@ class QueueWorkerService
 
             // Get base path
             $basePath = base_path();
-            
+
             // Start worker in background using nohup
             $command = sprintf(
                 'cd %s && nohup php artisan queue:work --queue=%s --tries=3 --timeout=60 > /dev/null 2>&1 &',
@@ -160,7 +158,6 @@ class QueueWorkerService
             ], new \Exception('Worker auto-start failed'));
 
             return false;
-
         } catch (\Exception $e) {
             $this->errorManager->handle('QUEUE_WORKER_AUTOSTART_EXCEPTION', [
                 'queue' => $this->queueName,
@@ -216,7 +213,6 @@ class QueueWorkerService
 
             // Start new worker
             return $this->attemptWorkerAutoStart();
-
         } catch (\Exception $e) {
             $this->errorManager->handle('QUEUE_WORKER_RESTART_FAILED', [
                 'queue' => $this->queueName,
@@ -227,4 +223,3 @@ class QueueWorkerService
         }
     }
 }
-

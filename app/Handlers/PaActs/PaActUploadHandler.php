@@ -375,15 +375,15 @@ class PaActUploadHandler
 
                 // Map service error to UEM error code
                 $errorCode = $this->mapServiceErrorToUem($result['error']);
-                
+
                 $this->logger->error('🔴 [PA-TOKENIZATION-HANDLER] Mapped to UEM error: ' . $errorCode);
-                
+
                 return $this->errorManager->handle($errorCode, [
                     ...$logContext,
                     'service_error' => $result['error']
                 ]);
             }
-            
+
             $this->logger->info('✅ [PA-TOKENIZATION-HANDLER] Upload successful!', [
                 'egi_id' => $result['egi_id'],
                 'public_code' => $result['public_code'] ?? 'N/A'

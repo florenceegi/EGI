@@ -389,7 +389,7 @@ class PaActPublicController extends Controller {
      * @return string|null Explorer URL
      * 
      * EXAMPLE:
-     * https://testnet.algoexplorer.io/tx/ALGO-TX-20250915143022-A1B2C3D4
+     * https://testnet.explorer.perawallet.app/tx/ALGO-TX-20250915143022-A1B2C3D4
      */
     protected function getAlgorandExplorerUrl(?string $txid): ?string {
         if (!$txid) {
@@ -397,7 +397,7 @@ class PaActPublicController extends Controller {
         }
 
         // Testnet explorer (production uses mainnet)
-        $baseUrl = config('services.algorand.explorer_url', 'https://testnet.algoexplorer.io');
+        $baseUrl = config('services.algorand.explorer_url', 'https://testnet.explorer.perawallet.app');
 
         return "{$baseUrl}/tx/{$txid}";
     }

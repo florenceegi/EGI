@@ -226,6 +226,11 @@ class AlgorandService
                 'log_category' => 'ALGORAND_MINT_DEBUG'
             ]);
 
+            // CRITICAL: Ensure microservice is running BEFORE minting
+            if (!$this->ensureMicroserviceRunning()) {
+                throw new \Exception('Microservice not available and auto-start failed');
+            }
+
             // 1. ULM: Log start
             $this->logger->info('EGI minting initiated', [
                 'user_id' => $user->id,
@@ -311,6 +316,11 @@ class AlgorandService
     public function transferEgiAsset(string $to, string $asaId, User $user, int $amount = 1): string
     {
         try {
+            // CRITICAL: Ensure microservice is running BEFORE transfer
+            if (!$this->ensureMicroserviceRunning()) {
+                throw new \Exception('Microservice not available and auto-start failed');
+            }
+
             // 1. ULM: Log start
             $this->logger->info('EGI transfer initiated', [
                 'user_id' => $user->id,
@@ -763,6 +773,11 @@ class AlgorandService
     public function anchorDocument(string $documentHash, array $metadata, User $user): array
     {
         try {
+            // CRITICAL: Ensure microservice is running BEFORE anchoring
+            if (!$this->ensureMicroserviceRunning()) {
+                throw new \Exception('Microservice not available and auto-start failed');
+            }
+
             // 1. ULM: Log start
             $this->logger->info('Document anchoring initiated', [
                 'user_id' => $user->id,
