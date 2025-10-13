@@ -348,44 +348,57 @@
                             </div>
 
                             {{-- Worker Status Progress Bar (hidden by default, shown during system check) --}}
-                            <div id="worker-progress-container" class="hidden mb-4 rounded-lg bg-blue-50 border border-blue-200 p-4">
-                                <div class="flex items-center mb-2">
-                                    <svg class="animate-spin h-5 w-5 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0a12 12 0 00-12 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            <div id="worker-progress-container"
+                                class="mb-4 hidden rounded-lg border border-blue-200 bg-blue-50 p-4">
+                                <div class="mb-2 flex items-center">
+                                    <svg class="mr-3 h-5 w-5 animate-spin text-blue-600" fill="none"
+                                        viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0a12 12 0 00-12 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
                                     </svg>
                                     <span id="worker-progress-message" class="text-sm font-medium text-blue-900">
-                                        Verifica disponibilità sistema...
+                                        {{ __('mint.worker.checking') }}
                                     </span>
                                 </div>
-                                
+
                                 {{-- Progress Steps --}}
-                                <div class="flex items-center justify-between mt-3 mb-2">
-                                    <div class="flex-1 flex items-center">
+                                <div class="mb-2 mt-3 flex items-center justify-between">
+                                    <div class="flex flex-1 items-center">
                                         <div id="step-1" class="flex items-center">
-                                            <div class="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</div>
-                                            <span class="ml-2 text-xs text-blue-900">Verifica</span>
+                                            <div
+                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                                                1</div>
+                                            <span class="ml-2 text-xs text-blue-900">{{ __('mint.worker.step_1') }}</span>
                                         </div>
                                     </div>
-                                    <div class="flex-1 h-0.5 bg-gray-300 mx-2" id="progress-line-1"></div>
-                                    <div class="flex-1 flex items-center">
+                                    <div class="mx-2 h-0.5 flex-1 bg-gray-300" id="progress-line-1"></div>
+                                    <div class="flex flex-1 items-center">
                                         <div id="step-2" class="flex items-center">
-                                            <div class="h-8 w-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-bold">2</div>
-                                            <span class="ml-2 text-xs text-gray-600">Avvio</span>
+                                            <div
+                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-xs font-bold text-gray-600">
+                                                2</div>
+                                            <span class="ml-2 text-xs text-gray-600">{{ __('mint.worker.step_2') }}</span>
                                         </div>
                                     </div>
-                                    <div class="flex-1 h-0.5 bg-gray-300 mx-2" id="progress-line-2"></div>
-                                    <div class="flex-1 flex items-center">
+                                    <div class="mx-2 h-0.5 flex-1 bg-gray-300" id="progress-line-2"></div>
+                                    <div class="flex flex-1 items-center">
                                         <div id="step-3" class="flex items-center">
-                                            <div class="h-8 w-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-bold">3</div>
-                                            <span class="ml-2 text-xs text-gray-600">Pronto</span>
+                                            <div
+                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-xs font-bold text-gray-600">
+                                                3</div>
+                                            <span class="ml-2 text-xs text-gray-600">{{ __('mint.worker.step_3') }}</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {{-- Progress Bar --}}
-                                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
-                                    <div id="worker-progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 33%"></div>
+                                <div class="mt-3 h-2 w-full rounded-full bg-gray-200">
+                                    <div id="worker-progress-bar"
+                                        class="h-2 rounded-full bg-blue-600 transition-all duration-500"
+                                        style="width: 33%"></div>
                                 </div>
                             </div>
 
@@ -508,6 +521,16 @@
              * Returns: Promise<boolean> - true if worker ready, false if unavailable
              */
             async function checkWorkerWithProgress() {
+                // Translations from PHP
+                const workerMessages = {
+                    checking: '{{ __('mint.worker.checking') }}',
+                    starting: '{{ __('mint.worker.starting') }}',
+                    finalizing: '{{ __('mint.worker.finalizing') }}',
+                    ready: '{{ __('mint.worker.ready') }}',
+                    unavailable: '{{ __('mint.worker.unavailable') }}'
+                };
+                
+
                 const progressContainer = document.getElementById('worker-progress-container');
                 const progressBar = document.getElementById('worker-progress-bar');
                 const progressMessage = document.getElementById('worker-progress-message');
@@ -516,53 +539,54 @@
                 const step3 = document.getElementById('step-3').querySelector('div');
                 const line1 = document.getElementById('progress-line-1');
                 const line2 = document.getElementById('progress-line-2');
-                
+
                 // Show progress container
                 progressContainer.classList.remove('hidden');
-                
+
                 const maxAttempts = 3;
                 const delayMs = 2000;
-                
+
                 for (let attempt = 1; attempt <= maxAttempts; attempt++) {
                     // Update progress based on attempt
                     const progress = (attempt / maxAttempts) * 100;
                     progressBar.style.width = `${progress}%`;
-                    
+
                     // Update step visual feedback
                     if (attempt === 1) {
-                        progressMessage.textContent = 'Verifica disponibilità sistema...';
+                        progressMessage.textContent = workerMessages.checking;
                         step1.classList.add('bg-blue-600', 'text-white');
                         step1.classList.remove('bg-gray-300', 'text-gray-600');
                     } else if (attempt === 2) {
-                        progressMessage.textContent = 'Avvio sistema di elaborazione...';
+                        progressMessage.textContent = workerMessages.starting;
                         line1.classList.add('bg-blue-600');
                         step2.classList.add('bg-blue-600', 'text-white');
                         step2.classList.remove('bg-gray-300', 'text-gray-600');
                     } else if (attempt === 3) {
-                        progressMessage.textContent = 'Preparazione finale...';
+                        progressMessage.textContent = workerMessages.finalizing;
                         line2.classList.add('bg-blue-600');
                         step3.classList.add('bg-blue-600', 'text-white');
                         step3.classList.remove('bg-gray-300', 'text-gray-600');
                     }
-                    
+
                     try {
                         const response = await fetch('/worker/status', {
                             method: 'GET',
                             headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content'),
                                 'Accept': 'application/json',
                                 'X-Requested-With': 'XMLHttpRequest'
                             }
                         });
-                        
+
                         const data = await response.json();
-                        
+
                         if (data.can_proceed) {
                             // Worker ready! ✅
-                            progressMessage.textContent = '✅ Sistema pronto!';
+                            progressMessage.textContent = workerMessages.ready;
                             progressBar.style.width = '100%';
                             progressBar.classList.add('bg-green-600');
-                            
+
                             // Mark all steps complete
                             [step1, step2, step3].forEach(step => {
                                 step.classList.add('bg-green-600', 'text-white');
@@ -571,36 +595,36 @@
                             [line1, line2].forEach(line => {
                                 line.classList.add('bg-green-600');
                             });
-                            
+
                             // Wait 500ms to show success, then hide
                             await new Promise(resolve => setTimeout(resolve, 500));
                             progressContainer.classList.add('hidden');
                             return true;
                         }
-                        
+
                         // Worker not ready, wait before retry
                         if (attempt < maxAttempts) {
                             await new Promise(resolve => setTimeout(resolve, delayMs));
                         }
-                        
+
                     } catch (error) {
                         console.error('Worker status check failed:', error);
-                        
+
                         if (attempt < maxAttempts) {
                             await new Promise(resolve => setTimeout(resolve, delayMs));
                         }
                     }
                 }
-                
+
                 // All attempts failed ❌
-                progressMessage.textContent = '❌ Sistema non disponibile';
+                progressMessage.textContent = workerMessages.unavailable;
                 progressBar.classList.add('bg-red-600');
                 progressBar.style.width = '100%';
-                
+
                 setTimeout(() => {
                     progressContainer.classList.add('hidden');
                 }, 2000);
-                
+
                 return false;
             }
 
@@ -758,21 +782,54 @@
                         processingBadge.remove();
                     }
 
-                    // Show error notification
-                    alert(`{{ __('mint.errors.mint_failed') }}\n\n${data.error || 'Unknown error'}`);
-
-                    // Reload page to show failed state
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // Show error notification with SweetAlert2
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '{{ __('mint.errors.mint_failed') }}',
+                            text: data.error || 'Si è verificato un errore durante il mint',
+                            confirmButtonText: 'Ricarica Pagina',
+                            confirmButtonColor: '#DC2626',
+                            allowOutsideClick: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        });
+                    } else {
+                        alert(`{{ __('mint.errors.mint_failed') }}\n\n${data.error || 'Unknown error'}`);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
                 }
 
                 /**
                  * Show timeout notification
                  */
                 function showPollingTimeoutNotification() {
-                    alert(
-                        '{{ __('mint.errors.polling_timeout') }}\n\nIl mint potrebbe richiedere più tempo del previsto. Ricarica la pagina tra qualche minuto per verificare lo stato.');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'info',
+                            title: '{{ __('mint.errors.polling_timeout') }}',
+                            html: 'Il mint potrebbe richiedere più tempo del previsto.<br><br>' +
+                                  '<strong>Cosa fare:</strong><br>' +
+                                  '• Ricarica la pagina tra 2-3 minuti<br>' +
+                                  '• Controlla lo stato del mint nella sezione "I Tuoi EGI"<br>' +
+                                  '• Se il problema persiste, contatta l\'assistenza',
+                            confirmButtonText: 'Ricarica Ora',
+                            showCancelButton: true,
+                            cancelButtonText: 'Chiudi',
+                            confirmButtonColor: '#3B82F6',
+                            cancelButtonColor: '#6B7280'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        });
+                    } else {
+                        alert('{{ __('mint.errors.polling_timeout') }}\n\nIl mint potrebbe richiedere più tempo del previsto. Ricarica la pagina tra qualche minuto per verificare lo stato.');
+                    }
                 }
 
                 /**
@@ -788,13 +845,31 @@
 
                 // STEP 1: Check worker availability with visual progress
                 const workerReady = await checkWorkerWithProgress();
-                
+
                 if (!workerReady) {
-                    alert('Il sistema di elaborazione non è disponibile. Riprova tra qualche minuto o contatta l\'assistenza.');
+                    // Show error with SweetAlert2
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '{{ __('mint.worker.error_title') }}',
+                            html: '{{ __('mint.worker.error_message') }}',
+                            confirmButtonText: '{{ __('mint.worker.error_button') }}',
+                            confirmButtonColor: '#DC2626',
+                            showClass: {
+                                popup: 'animate__animated animate__fadeIn'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOut'
+                            }
+                        });
+                    } else {
+                        // Fallback toast if SweetAlert2 not loaded
+                        console.error('Worker unavailable and SweetAlert2 not loaded');
+                    }
                     return;
                 }
 
-                // Show loading modal
+                // Show loading modal (EXISTING - kept as is)
                 document.getElementById('loading-modal').classList.remove('hidden');
 
                 try {
@@ -829,7 +904,19 @@
                 } catch (error) {
                     console.error('Mint error:', error);
                     document.getElementById('loading-modal').classList.add('hidden');
-                    alert('{{ __('mint.js.error_prefix') }}' + error.message);
+                    
+                    // Show error with SweetAlert2
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errore Durante il Mint',
+                            text: error.message || '{{ __('mint.js.default_error') }}',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#DC2626'
+                        });
+                    } else {
+                        alert('{{ __('mint.js.error_prefix') }}' + error.message);
+                    }
                 }
             });
 
@@ -886,20 +973,20 @@
                             <h3 class="text-lg font-semibold text-green-900">{{ __('mint.notification.success_title') }}</h3>
                             <p class="mt-1 text-sm text-green-800">{{ __('mint.notification.success_message') }}</p>
                             ${data.asaId ? `
-                                                        <div class="p-3 mt-3 border rounded-lg border-green-300 bg-green-50">
-                                                            <div class="flex items-center justify-between mb-2 text-sm">
-                                                                <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                                                <span class="font-mono font-bold text-green-900">${data.asaId}</span>
-                                                            </div>
-                                                            <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
-                                                               class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                </svg>
-                                                                {{ __('mint.notification.view_blockchain') }}
-                                                            </a>
-                                                        </div>
-                                                    ` : ''}
+                                                                        <div class="p-3 mt-3 border rounded-lg border-green-300 bg-green-50">
+                                                                            <div class="flex items-center justify-between mb-2 text-sm">
+                                                                                <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
+                                                                                <span class="font-mono font-bold text-green-900">${data.asaId}</span>
+                                                                            </div>
+                                                                            <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
+                                                                               class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
+                                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                </svg>
+                                                                                {{ __('mint.notification.view_blockchain') }}
+                                                                            </a>
+                                                                        </div>
+                                                                    ` : ''}
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-green-600 transition-colors hover:text-green-900">

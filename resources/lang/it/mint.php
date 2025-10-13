@@ -172,4 +172,19 @@ return [
         'asa_label' => 'Asset ID',
         'view_blockchain' => 'Visualizza sulla Blockchain',
     ],
+
+    // Worker Status Progress
+    'worker' => [
+        'checking' => 'Verifica disponibilità sistema...',
+        'starting' => 'Avvio sistema di elaborazione...',
+        'finalizing' => 'Preparazione finale...',
+        'ready' => '✅ Sistema pronto!',
+        'unavailable' => '❌ Sistema non disponibile',
+        'error_title' => 'Sistema Non Disponibile',
+        'error_message' => 'Il sistema di elaborazione non è al momento disponibile. Riprova tra qualche minuto o contatta l\'assistenza.',
+        'error_button' => 'Ho Capito',
+        'step_1' => 'Verifica',
+        'step_2' => 'Avvio',
+        'step_3' => 'Pronto',
+    ],
 ];

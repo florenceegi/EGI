@@ -15,13 +15,11 @@ use Illuminate\Http\JsonResponse;
 use App\Services\QueueWorkerService;
 use Ultra\UltraLogManager\UltraLogManager;
 
-class WorkerStatusController extends Controller
-{
+class WorkerStatusController extends Controller {
     protected QueueWorkerService $workerService;
     protected UltraLogManager $logger;
 
-    public function __construct(QueueWorkerService $workerService, UltraLogManager $logger)
-    {
+    public function __construct(QueueWorkerService $workerService, UltraLogManager $logger) {
         $this->middleware('auth');
         $this->workerService = $workerService;
         $this->logger = $logger;
@@ -32,8 +30,7 @@ class WorkerStatusController extends Controller
      *
      * @return JsonResponse
      */
-    public function getStatus(): JsonResponse
-    {
+    public function getStatus(): JsonResponse {
         try {
             $status = $this->workerService->getWorkerStatus();
 
@@ -62,7 +59,6 @@ class WorkerStatusController extends Controller
                     'queue' => $status['queue'],
                 ]
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Worker status check failed', [
                 'error' => $e->getMessage()
@@ -81,8 +77,7 @@ class WorkerStatusController extends Controller
      *
      * @return JsonResponse
      */
-    public function attemptStart(): JsonResponse
-    {
+    public function attemptStart(): JsonResponse {
         try {
             $this->logger->info('Manual worker start requested', [
                 'user_id' => auth()->id()
@@ -101,7 +96,6 @@ class WorkerStatusController extends Controller
                 'status' => 'failed',
                 'message' => 'Impossibile avviare il worker. Contattare l\'amministratore.'
             ], 503);
-
         } catch (\Exception $e) {
             $this->logger->error('Manual worker start failed', [
                 'error' => $e->getMessage(),
