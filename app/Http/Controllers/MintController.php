@@ -67,12 +67,38 @@ class MintController extends Controller {
                 return redirect()->back()->withErrors(['error' => 'La prenotazione non è più valida']);
             }
 
-            // Verify EGI is not already minted
-            if ($egi->blockchain && $egi->blockchain->isMinted()) {
-                return redirect()->back()->withErrors(['error' => 'Questo EGI è già stato mintato']);
+            // Check mint status (supports async minting)
+            $mintStatus = 'not_started'; // Default: no mint initiated
+            $blockchainData = null;
+
+            if ($egi->blockchain) {
+                $blockchain = $egi->blockchain;
+
+                if ($blockchain->isMinted()) {
+                    // Mint completed - show success badge
+                    $mintStatus = 'completed';
+                    $blockchainData = [
+                        'asa_id' => $blockchain->asa_id,
+                        'tx_id' => $blockchain->tx_id,
+                        'minted_at' => $blockchain->minted_at,
+                    ];
+                } elseif (in_array($blockchain->mint_status, ['minting_queued', 'minting'])) {
+                    // Mint in progress - show processing badge
+                    $mintStatus = 'processing';
+                    $blockchainData = [
+                        'status' => $blockchain->mint_status,
+                        'created_at' => $blockchain->created_at,
+                    ];
+                } elseif ($blockchain->mint_status === 'failed') {
+                    // Mint failed - show error (allow retry)
+                    $mintStatus = 'failed';
+                    $blockchainData = [
+                        'error' => $blockchain->mint_error_message ?? 'Errore sconosciuto',
+                    ];
+                }
             }
 
-            return view('mint.checkout', compact('egi', 'reservation'));
+            return view('mint.checkout', compact('egi', 'reservation', 'mintStatus', 'blockchainData'));
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),
@@ -269,7 +295,38 @@ class MintController extends Controller {
             // Direct mint = no reservation
             $reservation = null;
 
-            return view('mint.checkout', compact('egi', 'availability', 'reservation'));
+            // Check mint status (supports async minting)
+            $mintStatus = 'not_started'; // Default: no mint initiated
+            $blockchainData = null;
+
+            if ($egi->blockchain) {
+                $blockchain = $egi->blockchain;
+
+                if ($blockchain->isMinted()) {
+                    // Mint completed - show success badge
+                    $mintStatus = 'completed';
+                    $blockchainData = [
+                        'asa_id' => $blockchain->asa_id,
+                        'tx_id' => $blockchain->tx_id,
+                        'minted_at' => $blockchain->minted_at,
+                    ];
+                } elseif (in_array($blockchain->mint_status, ['minting_queued', 'minting'])) {
+                    // Mint in progress - show processing badge
+                    $mintStatus = 'processing';
+                    $blockchainData = [
+                        'status' => $blockchain->mint_status,
+                        'created_at' => $blockchain->created_at,
+                    ];
+                } elseif ($blockchain->mint_status === 'failed') {
+                    // Mint failed - show error (allow retry)
+                    $mintStatus = 'failed';
+                    $blockchainData = [
+                        'error' => $blockchain->mint_error_message ?? 'Errore sconosciuto',
+                    ];
+                }
+            }
+
+            return view('mint.checkout', compact('egi', 'availability', 'reservation', 'mintStatus', 'blockchainData'));
         } catch (\Exception $e) {
             $this->errorManager->handle('DIRECT_MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),

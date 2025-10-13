@@ -125,4 +125,51 @@ return [
         'mica_title' => '⚖️ MiCA Compliance',
         'mica_description' => 'Questo processo è completamente MiCA-SAFE. Paghiamo in FIAT tramite PSP autorizzati, mintiamo l\'NFT per tuo conto, e gestiamo solo la custodia temporanea se necessario.',
     ],
+
+    // Modal Messages
+    'modal' => [
+        'processing_title' => 'Elaborazione Mint in Corso',
+        'processing_message' => 'Stiamo creando il tuo NFT sulla blockchain Algorand. Questa operazione potrebbe richiedere alcuni istanti. Non chiudere questa finestra.',
+        'please_wait' => 'Attendere prego...',
+    ],
+
+    // JavaScript Messages
+    'js' => [
+        'default_error' => 'Si è verificato un errore durante il processo di mint. Riprova.',
+        'error_prefix' => 'Errore: ',
+        'success_title' => 'Mint Completato!',
+        'success_message' => 'Il tuo EGI è stato creato con successo sulla blockchain Algorand.',
+        'view_transaction' => 'Visualizza Transazione',
+    ],
+
+    // Status Messages (for already minted EGIs)
+    'status' => [
+        'already_minted' => 'EGI Già Mintato',
+        'minted_message' => 'Questo EGI è già stato creato sulla blockchain Algorand. Non è possibile eseguire un nuovo mint.',
+        'asa_id' => 'Asset ID (ASA)',
+        'transaction_id' => 'ID Transazione',
+        'view_on_explorer' => 'Visualizza su AlgoExplorer',
+        'already_minted_button' => 'Già Mintato',
+
+        // Processing status
+        'processing_title' => 'Mint in Elaborazione',
+        'processing_message' => 'Il tuo EGI è in fase di creazione sulla blockchain Algorand. Questo processo potrebbe richiedere alcuni minuti. Puoi chiudere questa pagina e tornare più tardi.',
+        'processing_button' => 'Elaborazione in Corso...',
+        'status_label' => 'Stato',
+        'queued' => 'In Coda',
+        'minting' => 'Creazione in Corso',
+        'estimated_time' => 'Tempo stimato: 5-10 minuti',
+
+        // Failed status
+        'failed_title' => 'Mint Fallito',
+        'failed_message' => 'Si è verificato un errore durante la creazione dell\'EGI sulla blockchain. Contatta l\'assistenza con il messaggio di errore seguente.',
+    ],
+
+    // Notification Messages
+    'notification' => [
+        'success_title' => '✅ NFT Creato con Successo!',
+        'success_message' => 'Il tuo EGI è stato mintato sulla blockchain Algorand ed è ora verificabile on-chain.',
+        'asa_label' => 'Asset ID',
+        'view_blockchain' => 'Visualizza sulla Blockchain',
+    ],
 ];
