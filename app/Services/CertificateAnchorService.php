@@ -22,7 +22,8 @@ use Illuminate\Support\Str;
  * @date 2025-10-07
  * @purpose Certificate anchoring and verification service
  */
-class CertificateAnchorService {
+class CertificateAnchorService
+{
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -61,7 +62,8 @@ class CertificateAnchorService {
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function createCertificateAnchor(string $certificateContent, User $user): array {
+    public function createCertificateAnchor(string $certificateContent, User $user): array
+    {
         try {
             // 1. ULM: Log start
             $this->logger->info('Certificate anchor process initiated', [
@@ -135,7 +137,8 @@ class CertificateAnchorService {
      * @param string $certificateContent Content da verificare
      * @return array Verification result
      */
-    public function verifyCertificate(string $anchorHash, string $certificateContent): array {
+    public function verifyCertificate(string $anchorHash, string $certificateContent): array
+    {
         $this->logger->info('CERTIFICATE_VERIFICATION_START', [
             'anchor_hash' => $anchorHash
         ]);
@@ -174,7 +177,8 @@ class CertificateAnchorService {
      * @param string $certificateUuid Certificate UUID
      * @return array QR code data
      */
-    public function generateQRCodeData(string $anchorHash, string $certificateUuid): array {
+    public function generateQRCodeData(string $anchorHash, string $certificateUuid): array
+    {
         $verificationUrl = $this->generateVerificationUrl($anchorHash);
 
         return [
@@ -192,7 +196,8 @@ class CertificateAnchorService {
      * @param string $content Certificate content
      * @return string Content hash
      */
-    private function generateContentHash(string $content): string {
+    private function generateContentHash(string $content): string
+    {
         $algorithm = config('algorand.anchoring.hash_algorithm', 'sha256');
         return hash($algorithm, $content);
     }
@@ -202,7 +207,8 @@ class CertificateAnchorService {
      * @param string $anchorHash Anchor hash
      * @return string Verification URL
      */
-    private function generateVerificationUrl(string $anchorHash): string {
+    private function generateVerificationUrl(string $anchorHash): string
+    {
         $template = config('algorand.anchoring.verification_url_template');
         return str_replace('{hash}', $anchorHash, $template);
     }
@@ -213,7 +219,8 @@ class CertificateAnchorService {
      * @param string $contentHash Content hash
      * @return bool Is valid
      */
-    private function verifyOnBlockchain(string $anchorHash, string $contentHash): bool {
+    private function verifyOnBlockchain(string $anchorHash, string $contentHash): bool
+    {
         // TODO: Implementare verifica reale su blockchain
         // Per ora restituisce true come placeholder
 

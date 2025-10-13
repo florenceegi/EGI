@@ -24,7 +24,8 @@ use Illuminate\Support\Facades\Cache;
  * @date 2025-10-07
  * @purpose Treasury wallet management for EGI marketplace
  */
-class TreasuryWalletService {
+class TreasuryWalletService
+{
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -70,7 +71,8 @@ class TreasuryWalletService {
      * @return array Treasury status information
      * @throws \Exception
      */
-    public function getTreasuryStatus(): array {
+    public function getTreasuryStatus(): array
+    {
         try {
             $this->logger->info('TREASURY_STATUS_CHECK', ['address' => $this->treasuryAddress]);
 
@@ -111,7 +113,8 @@ class TreasuryWalletService {
      * @return array Transfer result
      * @throws \Exception
      */
-    public function transferEgiToUser(string $toAddress, string $asaId, User $user, int $amount = 1): array {
+    public function transferEgiToUser(string $toAddress, string $asaId, User $user, int $amount = 1): array
+    {
         try {
             // 1. ULM: Log start
             $this->logger->info('TREASURY_TRANSFER_INITIATED', [
@@ -189,7 +192,8 @@ class TreasuryWalletService {
      * Get custody information for EGIs in treasury
      * @return array Custody statistics
      */
-    private function getEgiCustodyInfo(): array {
+    private function getEgiCustodyInfo(): array
+    {
         $custodyStats = EgiBlockchain::where('ownership_type', 'treasury')
             ->selectRaw('
                 COUNT(*) as total_egis,
@@ -211,7 +215,8 @@ class TreasuryWalletService {
      * Check treasury wallet health
      * @return array Health status
      */
-    private function checkTreasuryHealth(): array {
+    private function checkTreasuryHealth(): array
+    {
         $cacheKey = 'treasury_health_' . substr($this->treasuryAddress, 0, 8);
 
         return Cache::remember($cacheKey, 300, function () {
@@ -245,7 +250,8 @@ class TreasuryWalletService {
      * Get last treasury activity timestamp
      * @return string|null Last activity timestamp
      */
-    private function getLastTreasuryActivity(): ?string {
+    private function getLastTreasuryActivity(): ?string
+    {
         $lastActivity = EgiBlockchain::where('ownership_type', 'treasury')
             ->orderBy('updated_at', 'desc')
             ->first();
@@ -258,7 +264,8 @@ class TreasuryWalletService {
      * @param string $asaId ASA ID to check
      * @return bool Has asset
      */
-    private function treasuryHasAsset(string $asaId): bool {
+    private function treasuryHasAsset(string $asaId): bool
+    {
         return EgiBlockchain::where('asa_id', $asaId)
             ->where('ownership_type', 'treasury')
             ->where('mint_status', 'minted')
@@ -271,7 +278,8 @@ class TreasuryWalletService {
      * @param string $toAddress New owner address
      * @param User $user User who received transfer
      */
-    private function updateEgiBlockchainOwnership(string $asaId, string $toAddress, User $user): void {
+    private function updateEgiBlockchainOwnership(string $asaId, string $toAddress, User $user): void
+    {
         EgiBlockchain::where('asa_id', $asaId)->update([
             'ownership_type' => 'wallet',
             'buyer_wallet' => $toAddress,
@@ -285,7 +293,8 @@ class TreasuryWalletService {
      * @param string $address Address to validate
      * @return bool Is valid
      */
-    private function isValidAlgorandAddress(string $address): bool {
+    private function isValidAlgorandAddress(string $address): bool
+    {
         // Check length and character set (Algorand Base32)
         if (strlen($address) !== 58) {
             return false;
@@ -306,7 +315,8 @@ class TreasuryWalletService {
      * Get treasury address (read-only)
      * @return string Treasury address
      */
-    public function getTreasuryAddress(): string {
+    public function getTreasuryAddress(): string
+    {
         return $this->treasuryAddress;
     }
 
@@ -314,7 +324,8 @@ class TreasuryWalletService {
      * Process pending transfers (batch operation)
      * @return array Processing results
      */
-    public function processPendingTransfers(): array {
+    public function processPendingTransfers(): array
+    {
         try {
             $this->logger->info('TREASURY_BATCH_PROCESSING_START');
 
