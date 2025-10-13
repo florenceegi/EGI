@@ -86,6 +86,7 @@ return [
         'account_info_retrieval_failed' => 'Recupero info account Algorand fallito. Address: :address, Error: :error',
         'network_status_check_failed' => 'Verifica stato rete Algorand fallita. Error: :error',
         'treasury_status_check_failed' => 'Verifica stato treasury wallet fallita. Error: :error',
+        'mint_blocked_microservice_unavailable' => '🚨 MINT BLOCKED: Microservizio blockchain non disponibile. EGI: :egi_id, User: :user_id, Error: :error. Pagamento NON effettuato.',
     ],
 
     'user' => [
@@ -166,6 +167,7 @@ return [
         'account_info_retrieval_failed' => 'Impossibile recuperare le informazioni del wallet. Verifica l\'indirizzo e riprova.',
         'network_status_check_failed' => 'Impossibile verificare lo stato della rete blockchain. Riprova tra qualche istante.',
         'treasury_status_check_failed' => 'Impossibile verificare lo stato del treasury. Riprova o contatta l\'assistenza.',
+        'mint_blocked_microservice_unavailable' => 'Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l\'assistenza.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

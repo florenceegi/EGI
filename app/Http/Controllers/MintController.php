@@ -371,6 +371,31 @@ class MintController extends Controller {
                 return response()->json(['error' => 'EGI già mintato'], 400);
             }
 
+            // CRITICAL: Check microservice availability BEFORE processing payment
+            // This prevents charging the user if blockchain is unavailable
+            $algorandService = app(\App\Services\AlgorandService::class);
+            try {
+                $healthStatus = $algorandService->getNetworkStatus();
+                $this->logger->info('Microservice health check passed before mint', [
+                    'egi_id' => $egi->id,
+                    'user_id' => Auth::id(),
+                    'microservice_status' => 'healthy'
+                ]);
+            } catch (\Exception $e) {
+                // Microservice unavailable - abort BEFORE payment
+                // UEM handles logging, notifications, and UI messages
+                $this->errorManager->handle('MINT_BLOCKED_MICROSERVICE_UNAVAILABLE', [
+                    'egi_id' => $egi->id,
+                    'user_id' => Auth::id(),
+                    'error' => $e->getMessage()
+                ], $e);
+
+                // UEM già gestisce tutto - ritorno solo error generico
+                return response()->json([
+                    'error' => 'microservice_unavailable'
+                ], 503);
+            }
+
             // MOCK Payment processing (V1 - FIAT only)
             $paymentAmount = $egi->price ?? 0;
             $paymentResult = $this->mockPaymentProcessing($validated['payment_method'], $paymentAmount);

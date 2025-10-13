@@ -5679,6 +5679,16 @@ return [
             'notify_slack' => false,
             'msg_to' => 'toast',
         ],
+        'MINT_BLOCKED_MICROSERVICE_UNAVAILABLE' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_blocked_microservice_unavailable',
+            'user_message_key' => 'error-manager::errors_2.user.mint_blocked_microservice_unavailable',
+            'http_status_code' => 503,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
 
     ]
 ];

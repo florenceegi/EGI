@@ -110,7 +110,8 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @middleware auth, role:pa_entity
  * @route POST /pa/acts/upload (name: pa.acts.upload)
  */
-class PaActUploadController extends Controller {
+class PaActUploadController extends Controller
+{
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
 
@@ -136,7 +137,8 @@ class PaActUploadController extends Controller {
      * 
      * @return \Illuminate\View\View
      */
-    public function showUploadForm() {
+    public function showUploadForm()
+    {
         $user = auth()->user();
 
         $this->logger->info('[PaActUploadController] Showing upload form', [
@@ -194,7 +196,8 @@ class PaActUploadController extends Controller {
      *     ->name('pa.acts.upload');
      * ```
      */
-    public function handleUpload(Request $request, PaActUploadHandler $handler): JsonResponse {
+    public function handleUpload(Request $request, PaActUploadHandler $handler): JsonResponse
+    {
         $logContext = [
             'controller' => static::class,
             'method' => __FUNCTION__,
@@ -212,12 +215,12 @@ class PaActUploadController extends Controller {
 
             // Delegate to handler (contains all business logic)
             $result = $handler->handlePaActUpload($request);
-            
+
             $this->logger->info('🔵 [PA-TOKENIZATION-CONTROLLER] Handler response:', [
                 'status_code' => $result->getStatusCode(),
                 'content' => substr($result->getContent(), 0, 500)
             ]);
-            
+
             return $result;
         } catch (\Throwable $e) {
             $this->logger->error('[PaActUploadController] Upload failed', [
