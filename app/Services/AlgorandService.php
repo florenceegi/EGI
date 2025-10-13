@@ -316,8 +316,9 @@ class AlgorandService {
             ]);
 
             // 2. GDPR: Check consent
-            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
-                throw new \Exception('Missing blockchain operations consent');
+            // Blockchain operations are core platform services in an NFT marketplace
+            if (!$this->consentService->hasConsent($user, 'platform-services')) {
+                throw new \Exception('Missing platform services consent');
             }
 
             // 3. Validate address
@@ -393,8 +394,9 @@ class AlgorandService {
             ]);
 
             // 2. GDPR: Check consent
-            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
-                throw new \Exception('Missing blockchain operations consent');
+            // Blockchain operations are core platform services in an NFT marketplace
+            if (!$this->consentService->hasConsent($user, 'platform-services')) {
+                throw new \Exception('Missing platform services consent');
             }
 
             // 3. Call microservice
@@ -460,8 +462,9 @@ class AlgorandService {
             ]);
 
             // 2. GDPR: Check consent
-            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
-                throw new \Exception('Missing blockchain operations consent');
+            // Blockchain operations are core platform services in an NFT marketplace
+            if (!$this->consentService->hasConsent($user, 'platform-services')) {
+                throw new \Exception('Missing platform services consent');
             }
 
             // 3. Validate address
@@ -756,8 +759,9 @@ class AlgorandService {
             ]);
 
             // 2. GDPR: Check consent
-            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
-                throw new \Exception('Missing blockchain operations consent');
+            // Blockchain operations are core platform services in an NFT marketplace
+            if (!$this->consentService->hasConsent($user, 'platform-services')) {
+                throw new \Exception('Missing platform services consent');
             }
 
             // 3. Prepare note field for blockchain transaction

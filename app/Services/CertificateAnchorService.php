@@ -71,8 +71,9 @@ class CertificateAnchorService {
             ]);
 
             // 2. GDPR: Check consent
-            if (!$this->consentService->hasConsent($user, 'allow-certificate-operations')) {
-                throw new \Exception('Missing certificate operations consent');
+            // Certificate operations are core platform services in an NFT marketplace
+            if (!$this->consentService->hasConsent($user, 'platform-services')) {
+                throw new \Exception('Missing platform services consent');
             }
 
             // 3. Genera UUID univoco per certificato

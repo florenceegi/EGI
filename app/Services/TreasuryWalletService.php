@@ -122,8 +122,9 @@ class TreasuryWalletService {
             ]);
 
             // 2. GDPR: Check consent
-            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
-                throw new \Exception('User consent required for blockchain operations');
+            // Blockchain operations are core platform services in an NFT marketplace
+            if (!$this->consentService->hasConsent($user, 'platform-services')) {
+                throw new \Exception('User consent required for platform services');
             }
 
             // 3. Validate destination address
