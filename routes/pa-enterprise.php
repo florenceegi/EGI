@@ -115,6 +115,7 @@ Route::prefix('pa')
             Route::get('/egis', [App\Http\Controllers\EgiController::class, 'index'])->name('acts.egis.index');
             Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('acts.upload');
             Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('acts.upload.post');
+            Route::post('/{egi}/force-tokenize', [PaActController::class, 'forceTokenize'])->name('acts.force_tokenize');
             Route::get('/{egi}', [PaActController::class, 'show'])->name('acts.show');
         });
 

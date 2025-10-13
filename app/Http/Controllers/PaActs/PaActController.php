@@ -478,4 +478,74 @@ class PaActController extends Controller
 
         return $writer->writeString($data);
     }
+
+    /**
+     * Force tokenization for a PA act (manual retry)
+     *
+     * @param Egi $egi
+     * @return RedirectResponse
+     */
+    public function forceTokenize(Egi $egi): RedirectResponse
+    {
+        try {
+            $user = auth()->user();
+
+            $this->logger->info('[PaActController] Force tokenization requested', [
+                'user_id' => $user->id,
+                'egi_id' => $egi->id,
+                'pa_anchored' => $egi->pa_anchored
+            ]);
+
+            // Authorization check
+            if (!$this->canViewAct($user, $egi)) {
+                $this->logger->warning('[PaActController] Unauthorized tokenization attempt', [
+                    'user_id' => $user->id,
+                    'egi_id' => $egi->id
+                ]);
+
+                return redirect()->back()->with('error', __('pa_acts.errors.unauthorized'));
+            }
+
+            // Check if already anchored
+            if ($egi->pa_anchored) {
+                $this->logger->warning('[PaActController] Attempted to re-tokenize already anchored act', [
+                    'user_id' => $user->id,
+                    'egi_id' => $egi->id
+                ]);
+
+                return redirect()->back()->with('warning', 'Questo atto è già stato ancorato su blockchain.');
+            }
+
+            // Ensure queue worker is running before dispatching job
+            $queueWorkerService = app(\App\Services\QueueWorkerService::class);
+            if (!$queueWorkerService->ensureWorkerRunning()) {
+                $this->logger->error('[PaActController] Queue worker not available', [
+                    'user_id' => $user->id,
+                    'egi_id' => $egi->id
+                ]);
+
+                return redirect()->back()->with('error', 'Il servizio di tokenizzazione non è disponibile. Contattare l\'amministratore.');
+            }
+
+            // Dispatch tokenization job
+            \App\Jobs\TokenizePaActJob::dispatch($egi)
+                ->onQueue('blockchain');
+
+            $this->logger->info('[PaActController] Tokenization job dispatched', [
+                'user_id' => $user->id,
+                'egi_id' => $egi->id
+            ]);
+
+            return redirect()->back()->with('success', 'Tokenizzazione forzata avviata. Il processo richiederà alcuni secondi.');
+
+        } catch (\Exception $e) {
+            $this->logger->error('[PaActController] Force tokenization failed', [
+                'user_id' => auth()->id(),
+                'egi_id' => $egi->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()->with('error', 'Errore durante la tokenizzazione: ' . $e->getMessage());
+        }
+    }
 }

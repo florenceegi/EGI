@@ -248,7 +248,8 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @gdpr-compliant Minimal data processing, audit logging, CAD legal basis
  * @cad-compliant Implements CAD Art. 20-23 requirements
  */
-class PaActService {
+class PaActService
+{
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AlgorandService $algorandService;
@@ -320,7 +321,8 @@ class PaActService {
      * ]
      * ```
      */
-    public function uploadDocument(UploadedFile $file, array $metadata, User $user): array {
+    public function uploadDocument(UploadedFile $file, array $metadata, User $user): array
+    {
         try {
             $this->logger->info('[PaActService] Starting PA act upload', [
                 'user_id' => $user->id,
@@ -334,7 +336,7 @@ class PaActService {
                 'file' => $file->getClientOriginalName(),
                 'size' => $file->getSize()
             ]);
-            
+
             $signatureValidation = $this->signatureService->validatePdfSignature($file);
 
             $this->logger->info('🔐 [PA-TOKENIZATION] Signature validation result:', [
@@ -360,7 +362,7 @@ class PaActService {
                     'details' => $signatureValidation
                 ];
             }
-            
+
             $this->logger->info('✅ [PA-TOKENIZATION] Signature valid!', [
                 'signer' => $signatureValidation['signer_cn']
             ]);
@@ -517,7 +519,8 @@ class PaActService {
      * - Filename: hash-based (prevents collisions + directory traversal)
      * - Path: pa_acts/ (dedicated folder)
      */
-    protected function storeFile(UploadedFile $file, string $hash): string {
+    protected function storeFile(UploadedFile $file, string $hash): string
+    {
         $filename = $hash . '.pdf';
         $path = 'pa_acts/' . $filename;
 
@@ -543,7 +546,8 @@ class PaActService {
      * - Check database for collisions (retry if exists)
      * - Used in public URL: /verify/{public_code}
      */
-    protected function generatePublicCode(): string {
+    protected function generatePublicCode(): string
+    {
         do {
             $code = 'VER-' . strtoupper(Str::random(10));
             $exists = Egi::where('pa_public_code', $code)->exists();
@@ -560,7 +564,8 @@ class PaActService {
      *
      * USAGE: Public verification page (/verify/{public_code})
      */
-    public function getDocumentByPublicCode(string $publicCode): ?Egi {
+    public function getDocumentByPublicCode(string $publicCode): ?Egi
+    {
         return Egi::where('pa_public_code', $publicCode)->first();
     }
 
@@ -578,7 +583,8 @@ class PaActService {
      * 3. Update metadata with TXID + merkle proof
      * 4. Mark as anchored
      */
-    public function tokenizeDocument(Egi $egi): array {
+    public function tokenizeDocument(Egi $egi): array
+    {
         try {
             $docHash = $egi->jsonMetadata['doc_hash'] ?? null;
 
