@@ -704,11 +704,12 @@ class Egi extends Model {
 
     /**
      * Check if this EGI has been minted on blockchain.
+     * Uses the 'mint' field directly for performance.
      *
      * @return bool
      */
     public function isMinted(): bool {
-        return $this->blockchain()->exists() && $this->blockchain->isMinted();
+        return (bool) $this->mint;
     }
 
     /**
