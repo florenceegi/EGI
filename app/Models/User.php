@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use App\Traits\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
@@ -122,11 +121,6 @@ class User extends Authenticatable implements HasMedia {
     ];
 
     public function getIconStyleAttribute(): string {
-
-        Log::channel('florenceegi')->info('User:getIconStyleAttribute', [
-            'icon_style' => $this->attributes['icon_style'] ?? config('icons.styles.default'),
-        ]);
-
         // Ritorna l'icon_style dall'attributo o un valore di default
         return $this->attributes['icon_style'] ?? config('icons.styles.default');
     }
@@ -235,18 +229,28 @@ class User extends Authenticatable implements HasMedia {
         }
 
         $collection = $this->currentCollection;
-        
+
         // Check role in collection_user pivot
         $pivot = \DB::table('collection_user')
             ->where('user_id', $this->id)
             ->where('collection_id', $collection->id)
             ->first();
-        
+
         $canEdit = false;
         if ($pivot) {
-            $canEdit = $pivot->is_owner || in_array($pivot->role, ['admin', 'editor']);
+            if ($pivot->is_owner) {
+                $canEdit = true;
+            } else if ($pivot->role) {
+                try {
+                    $role = \Spatie\Permission\Models\Role::findByName($pivot->role, 'web');
+                    $canEdit = $role->hasPermissionTo('update_collection');
+                } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist $e) {
+                    // Role does not exist - user cannot edit
+                    $canEdit = false;
+                }
+            }
         }
-        
+
         return [
             'current_collection_id' => $collection->id,
             'current_collection_name' => $collection->collection_name,
@@ -366,11 +370,16 @@ class User extends Authenticatable implements HasMedia {
     }
 
     /**
-     * Get collections where user can edit (owner or editor role).
+     * Get collections where user can edit (owner or has update_collection permission).
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function editableCollections(): BelongsToMany {
+        // Get all roles that have update_collection permission
+        $editableRoles = \Spatie\Permission\Models\Role::whereHas('permissions', function ($query) {
+            $query->where('name', 'update_collection');
+        })->pluck('name')->toArray();
+
         return $this->belongsToMany(Collection::class, 'collection_user', 'user_id', 'collection_id')
             ->withPivot([
                 'role',
@@ -381,9 +390,9 @@ class User extends Authenticatable implements HasMedia {
                 'metadata'
             ])
             ->withTimestamps()
-            ->where(function ($query) {
+            ->where(function ($query) use ($editableRoles) {
                 $query->wherePivot('is_owner', true)
-                    ->orWhereIn('collection_user.role', ['admin', 'editor']);
+                    ->orWhereIn('collection_user.role', $editableRoles);
             })
             ->wherePivot('status', '!=', 'removed')
             ->wherePivotNull('removed_at');
@@ -435,8 +444,20 @@ class User extends Authenticatable implements HasMedia {
             return false;
         }
 
-        return $pivot->pivot->is_owner ||
-            in_array($pivot->pivot->role, ['admin', 'editor']);
+        if ($pivot->pivot->is_owner) {
+            return true;
+        }
+
+        if ($pivot->pivot->role) {
+            try {
+                $role = \Spatie\Permission\Models\Role::findByName($pivot->pivot->role, 'web');
+                return $role->hasPermissionTo('update_collection');
+            } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist $e) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -540,10 +561,6 @@ class User extends Authenticatable implements HasMedia {
         $id = session('current_collection_id')
             ?? $this->current_collection_id;
 
-        Log::channel('florenceegi')->info('User:currentCollection', [
-            'current_collection_id' => $id,
-        ]);
-
         return \App\Models\Collection::find($id);
     }
 
@@ -554,12 +571,21 @@ class User extends Authenticatable implements HasMedia {
             return true;
         }
 
-        // O ha un ruolo specifico nella pivot
+        // O ha un ruolo con permesso update_collection nella pivot
         $pivot = $this->collaborations()
             ->where('collection_id', $collection->id)
             ->first();
 
-        return $pivot && in_array($pivot->pivot->role, ['editor', 'admin']);
+        if ($pivot && $pivot->pivot->role) {
+            try {
+                $role = \Spatie\Permission\Models\Role::findByName($pivot->pivot->role, 'web');
+                return $role->hasPermissionTo('update_collection');
+            } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist $e) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     public function getRouteKeyName(): string {

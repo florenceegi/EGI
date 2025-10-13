@@ -76,16 +76,25 @@ class CollectionBadge extends Component {
                 // Verifica se l'utente può modificare la collection corrente
                 if ($this->collectionId && isset($user->currentCollection)) {
                     $collection = $user->currentCollection;
-                    
+
                     // Check role in collection_user pivot
                     $pivot = \DB::table('collection_user')
                         ->where('user_id', $user->id)
                         ->where('collection_id', $collection->id)
                         ->first();
-                    
+
                     $this->canEdit = false;
                     if ($pivot) {
-                        $this->canEdit = $pivot->is_owner || in_array($pivot->role, ['admin', 'editor']);
+                        if ($pivot->is_owner) {
+                            $this->canEdit = true;
+                        } else if ($pivot->role) {
+                            try {
+                                $role = \Spatie\Permission\Models\Role::findByName($pivot->role, 'web');
+                                $this->canEdit = $role->hasPermissionTo('update_collection');
+                            } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist $e) {
+                                $this->canEdit = false;
+                            }
+                        }
                     }
                 } else {
                     $this->canEdit = false;
