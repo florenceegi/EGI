@@ -315,7 +315,7 @@ class MintController extends Controller {
             // Verify user can mint this EGI
             if (!$availability['can_mint']) {
                 $reason = $availability['mint_reason'] ?? 'not_available';
-                
+
                 $this->errorManager->handle('DIRECT_MINT_NOT_AVAILABLE', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egi->id,

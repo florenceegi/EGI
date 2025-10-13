@@ -111,11 +111,11 @@ Route::prefix('pa')
 
 
         Route::prefix('/acts')->group(function () {
-            Route::get('/', [PaActController::class, 'index'])->name('pa.acts.index');
+            Route::get('/', [PaActController::class, 'index'])->name('acts.index');
             Route::get('/egis', [App\Http\Controllers\EgiController::class, 'index'])->name('acts.egis.index');
-            Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('pa.acts.upload');
-            Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('pa.acts.upload.post');
-            Route::get('/{egi}', [PaActController::class, 'show'])->name('pa.acts.show');
+            Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('acts.upload');
+            Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('acts.upload.post');
+            Route::get('/{egi}', [PaActController::class, 'show'])->name('acts.show');
         });
 
         /**
