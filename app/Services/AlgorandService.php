@@ -508,11 +508,16 @@ class AlgorandService {
 
     /**
      * Verifica stato microservice AlgoKit
+     * Uses callMicroservice() which handles auto-start internally
      * @return array Network status
      * @throws \Exception
      */
     public function getNetworkStatus(): array {
         try {
+            // callMicroservice() già gestisce:
+            // 1. ensureMicroserviceRunning() (health check + auto-start se offline)
+            // 2. Retry automatico dopo auto-start
+            // 3. UEM logging completo
             $response = $this->callMicroservice('GET', '/health');
 
             // Microservice /health returns: { "status": "healthy", "network": "testnet", ... }
@@ -528,6 +533,8 @@ class AlgorandService {
                 'mode' => $response['mode'] ?? 'unknown',
             ];
         } catch (\Exception $e) {
+            // Se arriviamo qui, microservice è VERAMENTE non disponibile
+            // (auto-start fallito o microservice non risponde dopo retry)
             $this->errorManager->handle('NETWORK_STATUS_CHECK_FAILED', [
                 'error' => $e->getMessage()
             ], $e);
