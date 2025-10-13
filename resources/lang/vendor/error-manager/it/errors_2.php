@@ -63,6 +63,29 @@ return [
         'analytics_revenue_breakdown_error' => 'Errore calcolo breakdown revenue. Collection: :collection_id, StartDate: :start_date, EndDate: :end_date, Error: :error',
         'analytics_wallet_performance_error' => 'Errore calcolo performance wallet. Collection: :collection_id, Filters: :filters, Error: :error',
         'analytics_mint_vs_reservation_error' => 'Errore calcolo ratio mint vs reservation. StartDate: :start_date, EndDate: :end_date, Error: :error',
+
+        // ========================================
+        // ALGORAND SERVICE - MICROSERVICE ERRORS (Dev)
+        // ========================================
+        'microservice_not_reachable' => '⚠️ CRITICAL: Microservizio AlgoKit non raggiungibile. URL: :url, Error: :error. Tentativo auto-start in corso.',
+        'microservice_not_found' => '🚨 BLOCKING: File server.js del microservizio non trovato. Path: :path. Deployment incompleto o file mancanti.',
+        'microservice_auto_start_attempt' => '🔄 AUTO-START INITIATED: Microservizio offline, tentativo avvio automatico. Command: :command, Path: :path, Timestamp: :timestamp',
+        'microservice_auto_started_success' => '⚠️⚠️⚠️ ALERT TEAM: Microservizio era OFFLINE ed è stato riavviato automaticamente! PID: :pid, URL: :url, Startup Time: :startup_time_seconds secondi. INVESTIGARE CAUSA ROOT.',
+        'microservice_health_check_failed' => 'Health check fallito dopo auto-start. PID: :pid, Error: :error. Processo avviato ma non risponde.',
+        'microservice_auto_start_failed' => '🚨 CRITICAL: Auto-start microservizio FALLITO. Command: :command, PID: :pid. Intervento manuale richiesto.',
+        'microservice_auto_start_error' => '🚨 EXCEPTION durante auto-start: :error. Trace: :trace',
+        'microservice_not_available' => '🛑 BLOCKING: Microservizio non disponibile dopo health check e auto-start. URL: :url, Endpoint: :endpoint, Method: :method. Operazioni blockchain impossibili.',
+        'microservice_call_retry_exhausted' => 'Tentativi di chiamata microservizio esauriti. Attempt: :attempt/:max_retries, URL: :url, Method: :method, Error: :error',
+
+        // ========================================
+        // ALGORAND SERVICE - BLOCKCHAIN OPERATIONS (Dev)
+        // ========================================
+        'blockchain_mint_failed' => 'Mint EGI su blockchain fallito. User: :user_id, EGI: :egi_id, Metadata: :metadata, Error: :error_message',
+        'blockchain_transfer_failed' => 'Trasferimento ASA EGI fallito. User: :user_id, To: :to_address, ASA: :asa_id, Amount: :amount, Error: :error_message',
+        'blockchain_anchor_failed' => 'Ancoraggio documento su blockchain fallito. DocHash: :doc_hash, Metadata: :metadata, Error: :error_message',
+        'account_info_retrieval_failed' => 'Recupero info account Algorand fallito. Address: :address, Error: :error',
+        'network_status_check_failed' => 'Verifica stato rete Algorand fallita. Error: :error',
+        'treasury_status_check_failed' => 'Verifica stato treasury wallet fallita. Error: :error',
     ],
 
     'user' => [
@@ -120,6 +143,29 @@ return [
         'analytics_revenue_breakdown_error' => 'Impossibile calcolare il breakdown dei ricavi. Riprova tra poco.',
         'analytics_wallet_performance_error' => 'Impossibile caricare le performance dei wallet. Riprova tra poco.',
         'analytics_mint_vs_reservation_error' => 'Impossibile calcolare il ratio mint vs reservation. Riprova tra poco.',
+
+        // ========================================
+        // ALGORAND SERVICE - MICROSERVICE ERRORS (User)
+        // ========================================
+        'microservice_not_reachable' => 'Servizio blockchain temporaneamente non disponibile. Stiamo tentando il ripristino automatico.',
+        'microservice_not_found' => 'Servizio blockchain non configurato correttamente. Contatta l\'assistenza tecnica.',
+        'microservice_auto_start_attempt' => 'Servizio blockchain in fase di avvio. Attendi qualche istante.',
+        'microservice_auto_started_success' => 'Servizio blockchain ripristinato automaticamente. Puoi procedere con la tua operazione.',
+        'microservice_health_check_failed' => 'Servizio blockchain non risponde. Riprova tra qualche minuto.',
+        'microservice_auto_start_failed' => 'Impossibile avviare il servizio blockchain. Contatta l\'assistenza tecnica.',
+        'microservice_auto_start_error' => 'Errore critico nel servizio blockchain. L\'assistenza è stata notificata.',
+        'microservice_not_available' => 'Servizio blockchain non disponibile. Riprova tra qualche minuto o contatta l\'assistenza.',
+        'microservice_call_retry_exhausted' => 'Il servizio blockchain non risponde dopo diversi tentativi. Riprova più tardi.',
+
+        // ========================================
+        // ALGORAND SERVICE - BLOCKCHAIN OPERATIONS (User)
+        // ========================================
+        'blockchain_mint_failed' => 'Errore durante la creazione del certificato blockchain. Il pagamento non è stato effettuato. Riprova o contatta l\'assistenza.',
+        'blockchain_transfer_failed' => 'Impossibile trasferire il certificato al tuo wallet. L\'assistenza è stata notificata.',
+        'blockchain_anchor_failed' => 'Errore durante l\'ancoraggio del documento su blockchain. Riprova o contatta l\'assistenza.',
+        'account_info_retrieval_failed' => 'Impossibile recuperare le informazioni del wallet. Verifica l\'indirizzo e riprova.',
+        'network_status_check_failed' => 'Impossibile verificare lo stato della rete blockchain. Riprova tra qualche istante.',
+        'treasury_status_check_failed' => 'Impossibile verificare lo stato del treasury. Riprova o contatta l\'assistenza.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

@@ -62,8 +62,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @queue blockchain
  * @timeout 300
  */
-class TokenizePaActJob implements ShouldQueue
-{
+class TokenizePaActJob implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -99,8 +98,7 @@ class TokenizePaActJob implements ShouldQueue
      *
      * @param Egi $egi The PA act to tokenize
      */
-    public function __construct(Egi $egi)
-    {
+    public function __construct(Egi $egi) {
         $this->egi = $egi;
         $this->onQueue('blockchain'); // Same queue as sandbox setup
     }
@@ -161,10 +159,11 @@ class TokenizePaActJob implements ShouldQueue
                 'metadata_keys' => array_keys($anchorMetadata)
             ]);
 
-            // 4. Anchor on Algorand blockchain via microservice
+            // 4. Anchor on Algorand blockchain via microservice (GDPR compliant)
             // CRITICAL: This uses REAL AlgorandService (App\Services\AlgorandService)
             // which calls AlgoKit microservice on port 3000
-            $anchorResult = $algorandService->anchorDocument($docHash, $anchorMetadata);
+            // Pass the EGI owner (PA user) for GDPR audit trail
+            $anchorResult = $algorandService->anchorDocument($docHash, $anchorMetadata, $this->egi->user);
 
             if (!$anchorResult['success']) {
                 throw new \Exception('Blockchain anchoring failed: ' . ($anchorResult['error'] ?? 'Unknown error'));
@@ -216,8 +215,7 @@ class TokenizePaActJob implements ShouldQueue
      * @param \Throwable $exception
      * @return void
      */
-    public function failed(\Throwable $exception): void
-    {
+    public function failed(\Throwable $exception): void {
         // Log permanent failure after all retries exhausted
         app(UltraLogManager::class)->critical('[TokenizePaActJob] Job failed permanently after retries', [
             'egi_id' => $this->egi->id,

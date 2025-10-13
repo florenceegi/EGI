@@ -376,15 +376,28 @@ class AlgorandService {
     }
 
     /**
-     * Crea anchor hash per certificato EGI
+     * Crea anchor hash per certificato EGI - GDPR COMPLIANT
      * @param string $certificateHash Hash del file certificato
+     * @param User $user User requesting anchor operation
      * @return string Anchor hash su blockchain
      * @throws \Exception
+     * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function createCertificateAnchor(string $certificateHash): string {
-        $this->logger->info('ALGORAND_ANCHOR_START', ['certificate_hash' => $certificateHash]);
-
+    public function createCertificateAnchor(string $certificateHash, User $user): string {
         try {
+            // 1. ULM: Log start
+            $this->logger->info('Certificate anchor initiated', [
+                'user_id' => $user->id,
+                'certificate_hash' => substr($certificateHash, 0, 16) . '...',
+                'log_category' => 'BLOCKCHAIN_ANCHOR_START'
+            ]);
+
+            // 2. GDPR: Check consent
+            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
+                throw new \Exception('Missing blockchain operations consent');
+            }
+
+            // 3. Call microservice
             $response = $this->callMicroservice('POST', '/create-anchor', [
                 'data_hash' => $certificateHash,
                 'anchor_type' => 'egi_certificate'
@@ -397,35 +410,98 @@ class AlgorandService {
             $anchorHash = $response['data']['anchor_hash'];
             $txId = $response['data']['txId'];
 
-            $this->logger->info('ALGORAND_ANCHOR_SUCCESS', compact('anchorHash', 'txId'));
+            // 4. GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'blockchain_certificate_anchored',
+                [
+                    'certificate_hash' => substr($certificateHash, 0, 16) . '...',
+                    'anchor_hash' => $anchorHash,
+                    'tx_id' => $txId
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );
+
+            // 5. ULM: Log success
+            $this->logger->info('Certificate anchor completed successfully', [
+                'user_id' => $user->id,
+                'anchor_hash' => $anchorHash,
+                'tx_id' => $txId,
+                'log_category' => 'BLOCKCHAIN_ANCHOR_SUCCESS'
+            ]);
+
             return $anchorHash;
         } catch (\Exception $e) {
-            $this->logger->error('ALGORAND_ANCHOR_FAILED', ['error' => $e->getMessage()]);
+            // 6. UEM: Error handling
+            $this->errorManager->handle('CERTIFICATE_ANCHOR_FAILED', [
+                'user_id' => $user->id,
+                'certificate_hash' => substr($certificateHash, 0, 16) . '...',
+                'error' => $e->getMessage()
+            ], $e);
             throw new \Exception("Fallimento creazione anchor hash: {$e->getMessage()}");
         }
     }
 
     /**
-     * Ottiene info account Algorand
+     * Ottiene info account Algorand - GDPR COMPLIANT
      * @param string $address Wallet address
+     * @param User $user User requesting account info
      * @return array Account info
      * @throws \Exception
+     * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function getAccountInfo(string $address): array {
+    public function getAccountInfo(string $address, User $user): array {
         try {
+            // 1. ULM: Log start
+            $this->logger->info('Account info retrieval initiated', [
+                'user_id' => $user->id,
+                'address' => $address,
+                'log_category' => 'BLOCKCHAIN_QUERY_START'
+            ]);
+
+            // 2. GDPR: Check consent
+            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
+                throw new \Exception('Missing blockchain operations consent');
+            }
+
+            // 3. Validate address
             if (!$this->isValidAlgorandAddress($address)) {
                 throw new \InvalidArgumentException('Address Algorand non valido');
             }
 
+            // 4. Call microservice
             $response = $this->callMicroservice('GET', "/account/{$address}");
 
             if (!$response['success']) {
                 throw new \Exception($response['error'] ?? 'Account info failed');
             }
 
+            // 5. GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'blockchain_account_queried',
+                [
+                    'address' => $address,
+                    'balance' => $response['data']['amount'] ?? null
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );
+
+            // 6. ULM: Log success
+            $this->logger->info('Account info retrieval completed', [
+                'user_id' => $user->id,
+                'address' => $address,
+                'log_category' => 'BLOCKCHAIN_QUERY_SUCCESS'
+            ]);
+
             return $response['data'];
         } catch (\Exception $e) {
-            $this->logger->error('ALGORAND_ACCOUNT_INFO_FAILED', ['error' => $e->getMessage()]);
+            // 7. UEM: Error handling
+            $this->errorManager->handle('ACCOUNT_INFO_RETRIEVAL_FAILED', [
+                'user_id' => $user->id,
+                'address' => $address,
+                'error' => $e->getMessage()
+            ], $e);
             throw new \Exception("Errore recupero info account: {$e->getMessage()}");
         }
     }
@@ -447,15 +523,18 @@ class AlgorandService {
                 'timestamp' => $response['timestamp'] ?? now()->toISOString()
             ];
         } catch (\Exception $e) {
-            $this->logger->error('NETWORK_STATUS_FAILED', ['error' => $e->getMessage()]);
+            $this->errorManager->handle('NETWORK_STATUS_CHECK_FAILED', [
+                'error' => $e->getMessage()
+            ], $e);
             throw new \Exception("Errore verifica stato rete: {$e->getMessage()}");
         }
     }
 
     /**
-     * Stato treasury wallet EGI
+     * Stato treasury wallet EGI (operazione interna - no GDPR)
      * @return array Treasury info
      * @throws \Exception
+     * @privacy-safe Internal operation, no user data involved
      */
     public function getTreasuryStatus(): array {
         try {
@@ -466,9 +545,11 @@ class AlgorandService {
                 throw new \Exception('Treasury address not available from microservice');
             }
 
-            return $this->getAccountInfo($treasuryAddress);
+            return $this->getAccountInfoInternal($treasuryAddress);
         } catch (\Exception $e) {
-            $this->logger->error('TREASURY_STATUS_FAILED', ['error' => $e->getMessage()]);
+            $this->errorManager->handle('TREASURY_STATUS_CHECK_FAILED', [
+                'error' => $e->getMessage()
+            ], $e);
             throw new \Exception("Errore stato treasury: {$e->getMessage()}");
         }
     }
@@ -476,6 +557,37 @@ class AlgorandService {
     // ========================================
     // PRIVATE HELPER METHODS
     // ========================================
+
+    /**
+     * Ottiene info account Algorand (uso interno - no GDPR)
+     * Per chiamate interne di sistema (es. treasury status)
+     * @param string $address Wallet address
+     * @return array Account info
+     * @throws \Exception
+     * @privacy-safe Internal operation, used for system accounts only
+     */
+    private function getAccountInfoInternal(string $address): array {
+        try {
+            if (!$this->isValidAlgorandAddress($address)) {
+                throw new \InvalidArgumentException('Address Algorand non valido');
+            }
+
+            $response = $this->callMicroservice('GET', "/account/{$address}");
+
+            if (!$response['success']) {
+                throw new \Exception($response['error'] ?? 'Account info failed');
+            }
+
+            return $response['data'];
+        } catch (\Exception $e) {
+            $this->errorManager->handle('ACCOUNT_INFO_RETRIEVAL_FAILED', [
+                'address' => $address,
+                'error' => $e->getMessage(),
+                'context' => 'internal_call'
+            ], $e);
+            throw new \Exception("Errore recupero info account: {$e->getMessage()}");
+        }
+    }
 
     /**
      * Effettua chiamata HTTP al microservice con retry logic
@@ -493,7 +605,7 @@ class AlgorandService {
                 'endpoint' => $endpoint,
                 'method' => $method
             ], new \Exception('Microservice not available after health check and auto-start attempt'));
-            
+
             throw new \Exception('Microservice not available');
         }
 
@@ -545,7 +657,7 @@ class AlgorandService {
                 return $responseData;
             } catch (\Exception $e) {
                 $lastException = $e;
-                
+
                 // Solo UEM per errori (non ULM warning!)
                 if ($attempt >= $this->apiRetries) {
                     // Last attempt - usa UEM
@@ -616,19 +728,27 @@ class AlgorandService {
      *
      * @param string $documentHash SHA-256 hash of the document
      * @param array $metadata Additional metadata (protocol_number, doc_type, etc.)
+     * @param User $user User requesting document anchoring (PA user)
      * @return array [success, txid, timestamp, block, network, hash, metadata]
      * @throws \Exception
      * @privacy-safe Only document hash (no PII) is anchored on blockchain
      */
-    public function anchorDocument(string $documentHash, array $metadata = []): array {
+    public function anchorDocument(string $documentHash, array $metadata, User $user): array {
         try {
+            // 1. ULM: Log start
             $this->logger->info('Document anchoring initiated', [
+                'user_id' => $user->id,
                 'doc_hash' => substr($documentHash, 0, 16) . '...',
                 'metadata_keys' => array_keys($metadata),
                 'log_category' => 'BLOCKCHAIN_ANCHOR_START'
             ]);
 
-            // Prepare note field for blockchain transaction
+            // 2. GDPR: Check consent
+            if (!$this->consentService->hasConsent($user, 'allow-blockchain-operations')) {
+                throw new \Exception('Missing blockchain operations consent');
+            }
+
+            // 3. Prepare note field for blockchain transaction
             // Note: Contains only hash + minimal metadata (GDPR-safe)
             $noteData = [
                 'type' => 'document_anchor',
@@ -637,7 +757,7 @@ class AlgorandService {
                 'timestamp' => now()->toIso8601String()
             ];
 
-            // Call microservice to anchor on blockchain
+            // 4. Call microservice to anchor on blockchain
             $response = $this->callMicroservice('POST', '/anchor-document', [
                 'document_hash' => $documentHash,
                 'note' => json_encode($noteData),
@@ -650,7 +770,22 @@ class AlgorandService {
 
             $data = $response['data'];
 
+            // 5. GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'blockchain_document_anchored',
+                [
+                    'doc_hash' => substr($documentHash, 0, 16) . '...',
+                    'tx_id' => $data['txid'] ?? null,
+                    'block' => $data['block'] ?? null,
+                    'protocol_number' => $metadata['protocol_number'] ?? null
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );
+
+            // 6. ULM: Log success
             $this->logger->info('Document anchoring completed successfully', [
+                'user_id' => $user->id,
                 'doc_hash' => substr($documentHash, 0, 16) . '...',
                 'txid' => $data['txid'] ?? null,
                 'block' => $data['block'] ?? null,
@@ -667,9 +802,11 @@ class AlgorandService {
                 'metadata' => $metadata
             ];
         } catch (\Exception $e) {
+            // 7. UEM: Error handling
             $this->errorManager->handle('BLOCKCHAIN_ANCHOR_FAILED', [
+                'user_id' => $user->id,
                 'doc_hash' => substr($documentHash, 0, 16) . '...',
-                'metadata' => json_encode($metadata), // Serialize array to avoid "Array to string conversion"
+                'metadata' => json_encode($metadata),
                 'error_message' => $e->getMessage()
             ], $e);
 

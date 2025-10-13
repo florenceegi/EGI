@@ -349,25 +349,45 @@ class PaActUploadHandler
             }
 
             // STEP 5: Delegate to PaActService
-            $this->logger->info('[PaActUploadHandler] Delegating to PaActService', $logContext);
+            $this->logger->info('🚀 [PA-TOKENIZATION-HANDLER] STEP 5: Calling PaActService->uploadDocument()', [
+                ...$logContext,
+                'file' => $file->getClientOriginalName(),
+                'metadata' => $metadata
+            ]);
 
             $result = $this->paActService->uploadDocument($file, $metadata, $user);
 
+            $this->logger->info('📊 [PA-TOKENIZATION-HANDLER] PaActService response:', [
+                ...$logContext,
+                'success' => $result['success'] ?? false,
+                'error' => $result['error'] ?? 'none',
+                'egi_id' => $result['egi_id'] ?? 'N/A'
+            ]);
+
             // STEP 6: Handle service result
             if (!$result['success']) {
-                $this->logger->error('[PaActUploadHandler] Service returned error', [
+                $this->logger->error('❌ [PA-TOKENIZATION-HANDLER] SERVICE ERROR!', [
                     ...$logContext,
-                    'error' => $result['error'],
-                    'message' => $result['message']
+                    'error_code' => $result['error'],
+                    'error_message' => $result['message'],
+                    'full_result' => $result
                 ]);
 
                 // Map service error to UEM error code
                 $errorCode = $this->mapServiceErrorToUem($result['error']);
+                
+                $this->logger->error('🔴 [PA-TOKENIZATION-HANDLER] Mapped to UEM error: ' . $errorCode);
+                
                 return $this->errorManager->handle($errorCode, [
                     ...$logContext,
                     'service_error' => $result['error']
                 ]);
             }
+            
+            $this->logger->info('✅ [PA-TOKENIZATION-HANDLER] Upload successful!', [
+                'egi_id' => $result['egi_id'],
+                'public_code' => $result['public_code'] ?? 'N/A'
+            ]);
 
             // STEP 7: Dispatch tokenization job if enabled
             $enableTokenization = $request->input('enable_tokenization', '0') === '1';

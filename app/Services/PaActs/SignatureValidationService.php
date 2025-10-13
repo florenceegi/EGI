@@ -470,10 +470,10 @@ class SignatureValidationService
             // FALLBACK: Se non troviamo il nome, cerca qualsiasi firma nel PDF
             if (!$signerName) {
                 $this->logger->warning('[SignatureValidationService] Signer name not found in Python output, searching PDF content...');
-                
+
                 // Leggi il PDF come testo e cerca pattern firma
                 $pdfContent = file_get_contents($filePath);
-                
+
                 // Cerca pattern comuni di firme in PDF
                 if (preg_match('/\/Name\s*\(([^)]+)\)/', $pdfContent, $matches)) {
                     $signerName = trim($matches[1]);

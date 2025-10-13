@@ -81,8 +81,8 @@ class CertificateAnchorService {
             // 4. Genera hash del contenuto
             $contentHash = $this->generateContentHash($certificateContent);
 
-            // 5. Crea anchor su blockchain (senza user per questo metodo)
-            $anchorHash = $this->algorandService->createCertificateAnchor($contentHash);
+            // 5. Crea anchor su blockchain con User per GDPR compliance
+            $anchorHash = $this->algorandService->createCertificateAnchor($contentHash, $user);
 
             // 6. Genera URL di verifica
             $verificationUrl = $this->generateVerificationUrl($anchorHash);
