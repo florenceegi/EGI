@@ -35,8 +35,7 @@ use App\Models\User;
  * @date 2025-10-07
  * @purpose Laravel HTTP client bridge to AlgoKit microservice for EGI
  */
-class AlgorandService
-{
+class AlgorandService {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -95,8 +94,7 @@ class AlgorandService
      * @return bool True se microservizio raggiungibile o avviato con successo
      * @throws \Exception Se microservizio non raggiungibile e non avviabile
      */
-    private function ensureMicroserviceRunning(): bool
-    {
+    private function ensureMicroserviceRunning(): bool {
         try {
             // Tentativo di health check
             $response = Http::timeout(5)->get($this->microserviceUrl . '/health');
@@ -127,8 +125,7 @@ class AlgorandService
      *
      * @return bool True se avvio riuscito, false altrimenti
      */
-    private function attemptMicroserviceAutoStart(): bool
-    {
+    private function attemptMicroserviceAutoStart(): bool {
         try {
             $microservicePath = base_path('algokit-microservice');
             $serverJs = $microservicePath . '/server.js';
@@ -213,8 +210,7 @@ class AlgorandService
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function mintEgi(int $egiId, array $metadata, User $user): array
-    {
+    public function mintEgi(int $egiId, array $metadata, User $user): array {
         try {
             // 🚨 DEBUG: Log Algorand service call IMMEDIATELY
             $this->logger->emergency('🌊🌊🌊 ALGORAND SERVICE CALLED 🌊🌊🌊', [
@@ -313,8 +309,7 @@ class AlgorandService
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function transferEgiAsset(string $to, string $asaId, User $user, int $amount = 1): string
-    {
+    public function transferEgiAsset(string $to, string $asaId, User $user, int $amount = 1): string {
         try {
             // CRITICAL: Ensure microservice is running BEFORE transfer
             if (!$this->ensureMicroserviceRunning()) {
@@ -399,8 +394,7 @@ class AlgorandService
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function createCertificateAnchor(string $certificateHash, User $user): string
-    {
+    public function createCertificateAnchor(string $certificateHash, User $user): string {
         try {
             // 1. ULM: Log start
             $this->logger->info('Certificate anchor initiated', [
@@ -468,8 +462,7 @@ class AlgorandService
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function getAccountInfo(string $address, User $user): array
-    {
+    public function getAccountInfo(string $address, User $user): array {
         try {
             // 1. ULM: Log start
             $this->logger->info('Account info retrieval initiated', [
@@ -532,8 +525,7 @@ class AlgorandService
      * @return array Network status
      * @throws \Exception
      */
-    public function getNetworkStatus(): array
-    {
+    public function getNetworkStatus(): array {
         try {
             // callMicroservice() già gestisce:
             // 1. ensureMicroserviceRunning() (health check + auto-start se offline)
@@ -569,8 +561,7 @@ class AlgorandService
      * @throws \Exception
      * @privacy-safe Internal operation, no user data involved
      */
-    public function getTreasuryStatus(): array
-    {
+    public function getTreasuryStatus(): array {
         try {
             $healthStatus = $this->getNetworkStatus();
             $treasuryAddress = $healthStatus['algorand']['treasury_address'] ?? null;
@@ -600,8 +591,7 @@ class AlgorandService
      * @throws \Exception
      * @privacy-safe Internal operation, used for system accounts only
      */
-    private function getAccountInfoInternal(string $address): array
-    {
+    private function getAccountInfoInternal(string $address): array {
         try {
             if (!$this->isValidAlgorandAddress($address)) {
                 throw new \InvalidArgumentException('Address Algorand non valido');
@@ -632,8 +622,7 @@ class AlgorandService
      * @return array Response data
      * @throws \Exception
      */
-    private function callMicroservice(string $method, string $endpoint, array $data = []): array
-    {
+    private function callMicroservice(string $method, string $endpoint, array $data = []): array {
         // CRITICAL: Verifica che il microservizio sia attivo PRIMA di ogni chiamata
         if (!$this->ensureMicroserviceRunning()) {
             $this->errorManager->handle('MICROSERVICE_NOT_AVAILABLE', [
@@ -724,8 +713,7 @@ class AlgorandService
      * @param array $metadata EGI data
      * @return array Formatted metadata
      */
-    private function buildEgiMetadata(int $egiId, array $metadata): array
-    {
+    private function buildEgiMetadata(int $egiId, array $metadata): array {
         $cfg = $this->asaConfig;
 
         return [
@@ -770,8 +758,7 @@ class AlgorandService
      * @throws \Exception
      * @privacy-safe Only document hash (no PII) is anchored on blockchain
      */
-    public function anchorDocument(string $documentHash, array $metadata, User $user): array
-    {
+    public function anchorDocument(string $documentHash, array $metadata, User $user): array {
         try {
             // CRITICAL: Ensure microservice is running BEFORE anchoring
             if (!$this->ensureMicroserviceRunning()) {
@@ -863,8 +850,7 @@ class AlgorandService
      * @param string $address Wallet address
      * @return bool Is valid
      */
-    private function isValidAlgorandAddress(string $address): bool
-    {
+    private function isValidAlgorandAddress(string $address): bool {
         // Basic validation - 58 characters, alphanumeric
         if (strlen($address) !== 58) {
             return false;

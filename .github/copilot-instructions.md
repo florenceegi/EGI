@@ -751,7 +751,7 @@ public function updateData(Request $request): RedirectResponse
 
 ```bash
 ./bash_files/commit-range-stats.sh
-python3 scripts/egi_productivity_v3.py
+python3 bash_files/egi_productivity_v3.py
 ```
 
 ### **Target:**
