@@ -86,6 +86,122 @@ class AlgorandService {
     }
 
     /**
+     * Health check del microservizio AlgoKit con auto-start se offline
+     *
+     * Verifica che il microservizio sia raggiungibile prima di tentare operazioni blockchain.
+     * Se il microservizio è offline, tenta di avviarlo automaticamente.
+     *
+     * @return bool True se microservizio raggiungibile o avviato con successo
+     * @throws \Exception Se microservizio non raggiungibile e non avviabile
+     */
+    private function ensureMicroserviceRunning(): bool {
+        try {
+            // Tentativo di health check
+            $response = Http::timeout(5)->get($this->microserviceUrl . '/health');
+
+            if ($response->successful()) {
+                $this->logger->debug('Microservice health check passed', [
+                    'url' => $this->microserviceUrl,
+                    'status' => 'healthy'
+                ]);
+                return true;
+            }
+        } catch (\Exception $e) {
+            // Microservizio non raggiungibile - USA UEM PER ALERT TEAM
+            $this->errorManager->handle('MICROSERVICE_NOT_REACHABLE', [
+                'url' => $this->microserviceUrl,
+                'error' => $e->getMessage()
+            ], $e);
+
+            // Tentativo di auto-start
+            return $this->attemptMicroserviceAutoStart();
+        }
+
+        return false;
+    }
+
+    /**
+     * Tenta di avviare automaticamente il microservizio AlgoKit
+     *
+     * @return bool True se avvio riuscito, false altrimenti
+     */
+    private function attemptMicroserviceAutoStart(): bool {
+        try {
+            $microservicePath = base_path('algokit-microservice');
+            $serverJs = $microservicePath . '/server.js';
+
+            // Verifica che il file esista
+            if (!file_exists($serverJs)) {
+                $this->errorManager->handle('MICROSERVICE_NOT_FOUND', [
+                    'path' => $serverJs
+                ], new \Exception('Microservice files missing'));
+                return false;
+            }
+
+            // Comando per avviare il microservizio in background
+            $command = sprintf(
+                'cd %s && node server.js > /dev/null 2>&1 & echo $!',
+                escapeshellarg($microservicePath)
+            );
+
+            $this->errorManager->handle('MICROSERVICE_AUTO_START_ATTEMPT', [
+                'command' => $command,
+                'path' => $microservicePath,
+                'timestamp' => now()->toDateTimeString()
+            ], new \Exception('Microservice auto-start initiated'));
+
+            // Esegue il comando e cattura il PID
+            $pid = exec($command);
+
+            if (!empty($pid) && is_numeric($pid)) {
+                // Attendere 2 secondi per permettere l'avvio
+                sleep(2);
+
+                // Verifica che il processo sia ancora attivo
+                $processCheck = exec("ps -p {$pid} -o pid=");
+
+                if (!empty($processCheck)) {
+                    // Verifica health check dopo avvio
+                    try {
+                        $response = Http::timeout(5)->get($this->microserviceUrl . '/health');
+
+                        if ($response->successful()) {
+                            // SUCCESS - USA UEM PER ALERT TEAM
+                            $this->errorManager->handle('MICROSERVICE_AUTO_STARTED_SUCCESS', [
+                                'pid' => $pid,
+                                'url' => $this->microserviceUrl,
+                                'startup_time_seconds' => 2
+                            ], new \Exception('Microservice was down and required auto-start'));
+
+                            return true;
+                        }
+                    } catch (\Exception $e) {
+                        // Health check failed after start - USA UEM
+                        $this->errorManager->handle('MICROSERVICE_HEALTH_CHECK_FAILED', [
+                            'pid' => $pid,
+                            'error' => $e->getMessage()
+                        ], $e);
+                    }
+                }
+            }
+
+            // Auto-start fallito
+            $this->errorManager->handle('MICROSERVICE_AUTO_START_FAILED', [
+                'command' => $command,
+                'pid' => $pid ?? 'none'
+            ], new \Exception('Microservice auto-start failed'));
+
+            return false;
+        } catch (\Exception $e) {
+            $this->errorManager->handle('MICROSERVICE_AUTO_START_ERROR', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], $e);
+            return false;
+        }
+    }
+
+    /**
      * Mint Algorand Standard Asset per EGI con metadata - GDPR COMPLIANT
      * @param int $egiId EGI ID dal database
      * @param array $metadata Metadata EGI
@@ -370,6 +486,17 @@ class AlgorandService {
      * @throws \Exception
      */
     private function callMicroservice(string $method, string $endpoint, array $data = []): array {
+        // CRITICAL: Verifica che il microservizio sia attivo PRIMA di ogni chiamata
+        if (!$this->ensureMicroserviceRunning()) {
+            $this->errorManager->handle('MICROSERVICE_NOT_AVAILABLE', [
+                'url' => $this->microserviceUrl,
+                'endpoint' => $endpoint,
+                'method' => $method
+            ], new \Exception('Microservice not available after health check and auto-start attempt'));
+            
+            throw new \Exception('Microservice not available');
+        }
+
         $url = $this->microserviceUrl . $endpoint;
         $attempt = 0;
         $lastException = null;
@@ -418,11 +545,18 @@ class AlgorandService {
                 return $responseData;
             } catch (\Exception $e) {
                 $lastException = $e;
-                $this->logger->warning('MICROSERVICE_CALL_FAILED', [
-                    'attempt' => $attempt,
-                    'error' => $e->getMessage(),
-                    'will_retry' => $attempt < $this->apiRetries
-                ]);
+                
+                // Solo UEM per errori (non ULM warning!)
+                if ($attempt >= $this->apiRetries) {
+                    // Last attempt - usa UEM
+                    $this->errorManager->handle('MICROSERVICE_CALL_RETRY_EXHAUSTED', [
+                        'attempt' => $attempt,
+                        'max_retries' => $this->apiRetries,
+                        'url' => $url,
+                        'method' => $method,
+                        'error' => $e->getMessage()
+                    ], $e);
+                }
 
                 if ($attempt < $this->apiRetries) {
                     usleep($this->apiRetryDelay * 1000); // Convert to microseconds

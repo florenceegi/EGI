@@ -8,9 +8,9 @@
 
 ## ✅ PRE-DEPLOYMENT (DA FARE IN LOCALE)
 
-- [x] Commit configurazione Algorand (`b0bbee5`)
-- [ ] Git push su `main`
-- [ ] Aspetta deploy automatico Forge (max 2 minuti)
+-   [x] Commit configurazione Algorand (`b0bbee5`)
+-   [ ] Git push su `main`
+-   [ ] Aspetta deploy automatico Forge (max 2 minuti)
 
 ---
 
@@ -30,14 +30,15 @@ bash deploy-staging-algorand.sh
 ```
 
 Lo script fa tutto automaticamente:
-- ✅ Backup .env esistente
-- ✅ Aggiunge variabili ALGORAND_API_URL
-- ✅ Configura microservice .env
-- ✅ Installa dipendenze npm
-- ✅ Avvia microservice
-- ✅ Clear config cache Laravel
-- ✅ Restart queue workers
-- ✅ Verifica configurazione
+
+-   ✅ Backup .env esistente
+-   ✅ Aggiunge variabili ALGORAND_API_URL
+-   ✅ Configura microservice .env
+-   ✅ Installa dipendenze npm
+-   ✅ Avvia microservice
+-   ✅ Clear config cache Laravel
+-   ✅ Restart queue workers
+-   ✅ Verifica configurazione
 
 **Tempo stimato:** 2-3 minuti
 
@@ -46,22 +47,26 @@ Lo script fa tutto automaticamente:
 ### **OPZIONE B: Manuale (se script fallisce)**
 
 #### **1. SSH nel server**
+
 ```bash
 ssh forge@13.48.57.194
 cd /home/forge/app.13.48.57.194.sslip.io
 ```
 
 #### **2. Backup .env**
+
 ```bash
 cp .env .env.backup.$(date +%Y%m%d_%H%M%S)
 ```
 
 #### **3. Aggiungi variabili al .env principale**
+
 ```bash
 nano .env
 ```
 
 Trova la sezione `ALGORAND_NETWORK=` e aggiungi sotto:
+
 ```properties
 # Algorand API URLs (AlgoNode - FREE)
 ALGORAND_API_URL=https://testnet-api.algonode.cloud
@@ -72,6 +77,7 @@ ALGORAND_API_KEY=
 Salva con `CTRL+X`, `Y`, `ENTER`
 
 #### **4. Configura microservice**
+
 ```bash
 cd algokit-microservice
 
@@ -86,6 +92,7 @@ EOF
 ```
 
 #### **5. Installa dipendenze e avvia microservice**
+
 ```bash
 npm install --production
 
@@ -102,6 +109,7 @@ curl http://localhost:3000/health
 ```
 
 #### **6. Clear config cache Laravel**
+
 ```bash
 cd /home/forge/app.13.48.57.194.sslip.io
 
@@ -111,6 +119,7 @@ php artisan queue:restart
 ```
 
 #### **7. Verifica configurazione**
+
 ```bash
 php artisan tinker --execute="dump(config('algorand.algorand.api_url'));"
 # Output atteso: "https://testnet-api.algonode.cloud"
@@ -126,45 +135,50 @@ php artisan tinker --execute="dump(config('algorand.algorand.indexer_url'));"
 **⚠️ IMPORTANTE:** Vai nel pannello Forge e modifica:
 
 ### **Worker "default"**
-- [ ] Connection: `database` (NON redis)
-- [ ] Queue: `default`
-- [ ] Timeout: `60`
-- [ ] Sleep: `3`
-- [ ] Tries: `3`
-- [ ] Max Jobs: `0` (unlimited)
-- [ ] Max Time: `0` (unlimited)
-- [ ] Memory: `128` MB
-- [ ] Backoff: `0`
+
+-   [ ] Connection: `database` (NON redis)
+-   [ ] Queue: `default`
+-   [ ] Timeout: `60`
+-   [ ] Sleep: `3`
+-   [ ] Tries: `3`
+-   [ ] Max Jobs: `0` (unlimited)
+-   [ ] Max Time: `0` (unlimited)
+-   [ ] Memory: `128` MB
+-   [ ] Backoff: `0`
 
 ### **Worker "blockchain"** (già configurato, verifica)
-- [x] Connection: `redis`
-- [x] Queue: `blockchain`
-- [x] Timeout: `300`
-- [x] Sleep: `3`
-- [x] Tries: `3`
+
+-   [x] Connection: `redis`
+-   [x] Queue: `blockchain`
+-   [x] Timeout: `300`
+-   [x] Sleep: `3`
+-   [x] Tries: `3`
 
 ---
 
 ## 🧪 TESTING POST-DEPLOYMENT
 
 ### **1. Verifica microservice**
+
 ```bash
 curl http://localhost:3000/health | jq
 ```
 
 Output atteso:
+
 ```json
 {
-  "status": "healthy",
-  "network": "testnet",
-  "treasury": {
-    "address": "TF67P6...",
-    "balance": 1
-  }
+    "status": "healthy",
+    "network": "testnet",
+    "treasury": {
+        "address": "TF67P6...",
+        "balance": 1
+    }
 }
 ```
 
 ### **2. Verifica Laravel config**
+
 ```bash
 php artisan tinker --execute="
 echo 'API URL: ' . config('algorand.algorand.api_url') . PHP_EOL;
@@ -174,6 +188,7 @@ echo 'Network: ' . config('algorand.algorand.network') . PHP_EOL;
 ```
 
 ### **3. Test mint dalla UI**
+
 1. Vai su: https://app.13.48.57.194.sslip.io/
 2. Login con user test
 3. Vai su EGI da mintare
@@ -181,12 +196,15 @@ echo 'Network: ' . config('algorand.algorand.network') . PHP_EOL;
 5. Attendi completamento (max 30 secondi)
 
 ### **4. Verifica su TestNet Explorer**
+
 Dopo mint riuscito, copia ASA ID e vai su:
+
 ```
 https://testnet.algoexplorer.io/asset/[ASA_ID]
 ```
 
 ### **5. Monitor logs in real-time**
+
 ```bash
 # Laravel logs
 tail -f /home/forge/app.13.48.57.194.sslip.io/storage/logs/laravel.log
@@ -205,6 +223,7 @@ tail -f /home/forge/app.13.48.57.194.sslip.io/storage/logs/error_manager.log
 ### **Problema: Microservice non risponde**
 
 **Diagnosi:**
+
 ```bash
 ps aux | grep "node server.js"
 curl http://localhost:3000/health
@@ -212,6 +231,7 @@ cat /home/forge/logs/algokit-microservice.log
 ```
 
 **Fix:**
+
 ```bash
 cd /home/forge/app.13.48.57.194.sslip.io/algokit-microservice
 pkill -f "node server.js"
@@ -221,6 +241,7 @@ nohup npm start > ~/logs/algokit-microservice.log 2>&1 &
 ### **Problema: Config non caricata**
 
 **Fix:**
+
 ```bash
 php artisan config:clear
 php artisan config:cache
@@ -231,12 +252,14 @@ php artisan queue:restart
 ### **Problema: Worker non processa jobs**
 
 **Diagnosi:**
+
 ```bash
 php artisan queue:monitor
 ps aux | grep "queue:work"
 ```
 
 **Fix via Forge:**
+
 1. Vai su "Queues" nel pannello
 2. Click "Restart" su worker "default"
 3. Verifica con `php artisan queue:monitor`
@@ -244,6 +267,7 @@ ps aux | grep "queue:work"
 ### **Problema: Mint fallisce con "API URL not configured"**
 
 **Fix:**
+
 ```bash
 # Verifica variabili ENV
 grep "ALGORAND_API_URL" .env
@@ -259,13 +283,13 @@ php artisan config:clear && php artisan config:cache
 
 ## 📊 SUCCESS CRITERIA
 
-- [ ] Script deployment completato senza errori
-- [ ] Microservice healthy (curl localhost:3000/health)
-- [ ] Laravel config caricata (api_url presente)
-- [ ] Worker "default" usa connection "database"
-- [ ] Test mint completato con successo
-- [ ] ASA visibile su testnet.algoexplorer.io
-- [ ] Logs puliti (no errori critici)
+-   [ ] Script deployment completato senza errori
+-   [ ] Microservice healthy (curl localhost:3000/health)
+-   [ ] Laravel config caricata (api_url presente)
+-   [ ] Worker "default" usa connection "database"
+-   [ ] Test mint completato con successo
+-   [ ] ASA visibile su testnet.algoexplorer.io
+-   [ ] Logs puliti (no errori critici)
 
 ---
 
@@ -274,19 +298,22 @@ php artisan config:clear && php artisan config:cache
 **Se problemi persistono:**
 
 1. Copia ultimi 50 righe log Laravel:
-   ```bash
-   tail -50 storage/logs/laravel.log
-   ```
+
+    ```bash
+    tail -50 storage/logs/laravel.log
+    ```
 
 2. Copia ultimi 50 righe log microservice:
-   ```bash
-   tail -50 ~/logs/algokit-microservice.log
-   ```
+
+    ```bash
+    tail -50 ~/logs/algokit-microservice.log
+    ```
 
 3. Copia config dump:
-   ```bash
-   php artisan tinker --execute="dump(config('algorand'));"
-   ```
+
+    ```bash
+    php artisan tinker --execute="dump(config('algorand'));"
+    ```
 
 4. Invia a Fabio per debug.
 
