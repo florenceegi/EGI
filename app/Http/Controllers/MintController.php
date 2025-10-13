@@ -51,7 +51,12 @@ class MintController extends Controller {
             $reservationId = $request->query('reservation_id');
 
             if (!$egiId || !$reservationId) {
-                return redirect()->back()->withErrors(['error' => 'Parametri mancanti']);
+                $this->errorManager->handle('MINT_CHECKOUT_MISSING_PARAMS', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egiId,
+                    'reservation_id' => $reservationId,
+                ]);
+                return redirect()->back();
             }
 
             $egi = Egi::findOrFail($egiId);
@@ -59,12 +64,26 @@ class MintController extends Controller {
 
             // Verify user is the winner of the reservation
             if ($reservation->user_id !== Auth::id()) {
-                return redirect()->back()->withErrors(['error' => 'Non sei il vincitore di questa prenotazione']);
+                $this->errorManager->handle('MINT_CHECKOUT_UNAUTHORIZED', [
+                    'user_id' => Auth::id(),
+                    'reservation_user_id' => $reservation->user_id,
+                    'egi_id' => $egiId,
+                    'reservation_id' => $reservationId,
+                ]);
+                return redirect()->back();
             }
 
             // Verify reservation is still highest and active
             if (!$reservation->is_current || $reservation->status !== 'active' || $reservation->superseded_by_id) {
-                return redirect()->back()->withErrors(['error' => 'La prenotazione non è più valida']);
+                $this->errorManager->handle('MINT_CHECKOUT_INVALID_RESERVATION', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egiId,
+                    'reservation_id' => $reservationId,
+                    'is_current' => $reservation->is_current,
+                    'status' => $reservation->status,
+                    'superseded_by_id' => $reservation->superseded_by_id,
+                ]);
+                return redirect()->back();
             }
 
             // Check mint status (supports async minting)
@@ -93,7 +112,7 @@ class MintController extends Controller {
                     // Mint failed - show error (allow retry)
                     $mintStatus = 'failed';
                     $blockchainData = [
-                        'error' => $blockchain->mint_error_message ?? 'Errore sconosciuto',
+                        'error' => $blockchain->mint_error_message,
                     ];
                 }
             }
@@ -107,7 +126,7 @@ class MintController extends Controller {
                 'error' => $e->getMessage()
             ], $e);
 
-            return redirect()->back()->withErrors(['error' => 'Errore nel caricamento checkout']);
+            return redirect()->back();
         }
     }
 
@@ -132,15 +151,33 @@ class MintController extends Controller {
 
             // Security checks
             if ($reservation->user_id !== Auth::id()) {
-                return response()->json(['error' => 'Non autorizzato'], 403);
+                $this->errorManager->handle('MINT_UNAUTHORIZED', [
+                    'user_id' => Auth::id(),
+                    'reservation_user_id' => $reservation->user_id,
+                    'egi_id' => $validated['egi_id'],
+                    'reservation_id' => $validated['reservation_id'],
+                ]);
+                return response()->json([], 403);
             }
 
             if (!$reservation->is_current || $reservation->status !== 'active') {
-                return response()->json(['error' => 'Prenotazione non più valida'], 400);
+                $this->errorManager->handle('MINT_INVALID_RESERVATION', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $validated['egi_id'],
+                    'reservation_id' => $validated['reservation_id'],
+                    'is_current' => $reservation->is_current,
+                    'status' => $reservation->status,
+                ]);
+                return response()->json([], 400);
             }
 
             if ($egi->blockchain && $egi->blockchain->isMinted()) {
-                return response()->json(['error' => 'EGI già mintato'], 400);
+                $this->errorManager->handle('MINT_ALREADY_MINTED', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $validated['egi_id'],
+                    'blockchain_id' => $egi->blockchain->id,
+                ]);
+                return response()->json([], 400);
             }
 
             // MOCK Payment processing (V1 - FIAT only)
@@ -148,7 +185,14 @@ class MintController extends Controller {
             $paymentResult = $this->mockPaymentProcessing($validated['payment_method'], $paymentAmount);
 
             if (!$paymentResult['success']) {
-                throw new \Exception('Pagamento fallito: ' . $paymentResult['error']);
+                $this->errorManager->handle('MINT_PAYMENT_FAILED', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $validated['egi_id'],
+                    'payment_method' => $validated['payment_method'],
+                    'amount' => $paymentAmount,
+                    'error' => $paymentResult['error'] ?? 'Unknown',
+                ]);
+                return response()->json([], 500);
             }
 
             // Create blockchain record
@@ -208,15 +252,17 @@ class MintController extends Controller {
 
             return response()->json([
                 'success' => true,
-                'message' => 'Mint avviato con successo! Riceverai una notifica quando completato.',
                 'data' => [
                     'blockchain_record_id' => $blockchainRecord->id,
                     'mint_status' => 'minting_queued',
-                    'estimated_completion' => '5-10 minuti'
                 ]
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => 'Dati non validi', 'details' => $e->errors()], 422);
+            $this->errorManager->handle('MINT_VALIDATION_ERROR', [
+                'user_id' => Auth::id(),
+                'errors' => $e->errors(),
+            ], $e);
+            return response()->json([], 422);
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_PROCESS_ERROR', [
                 'user_id' => Auth::id(),
@@ -226,7 +272,7 @@ class MintController extends Controller {
                 'error' => $e->getMessage()
             ], $e);
 
-            return response()->json(['error' => 'Errore durante il mint'], 500);
+            return response()->json([], 500);
         }
     }
 
@@ -269,9 +315,15 @@ class MintController extends Controller {
             // Verify user can mint this EGI
             if (!$availability['can_mint']) {
                 $reason = $availability['mint_reason'] ?? 'not_available';
+                
+                $this->errorManager->handle('DIRECT_MINT_NOT_AVAILABLE', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egi->id,
+                    'reason' => $reason,
+                    'availability' => $availability,
+                ]);
 
-                return redirect()->route('egis.show', $egi->id)
-                    ->withErrors(['error' => __("mint.errors.{$reason}", [], $reason)]);
+                return redirect()->route('egis.show', $egi->id);
             }
 
             // GDPR audit log
@@ -321,7 +373,7 @@ class MintController extends Controller {
                     // Mint failed - show error (allow retry)
                     $mintStatus = 'failed';
                     $blockchainData = [
-                        'error' => $blockchain->mint_error_message ?? 'Errore sconosciuto',
+                        'error' => $blockchain->mint_error_message,
                     ];
                 }
             }
@@ -334,7 +386,7 @@ class MintController extends Controller {
                 'error' => $e->getMessage()
             ], $e);
 
-            return redirect()->back()->withErrors(['error' => 'Errore nel caricamento checkout diretto']);
+            return redirect()->back();
         }
     }
 
@@ -360,15 +412,23 @@ class MintController extends Controller {
             $availability = $availabilityService->checkAvailability($egi, Auth::user());
 
             if (!$availability['can_mint']) {
-                return response()->json([
-                    'error' => 'EGI non più disponibile per mint diretto',
-                    'reason' => $availability['mint_reason']
-                ], 400);
+                $this->errorManager->handle('DIRECT_MINT_NOT_AVAILABLE_RACE', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $id,
+                    'reason' => $availability['mint_reason'],
+                    'availability' => $availability,
+                ]);
+                return response()->json([], 400);
             }
 
             // Check if EGI already minted (race condition protection)
             if ($egi->blockchain && $egi->blockchain->isMinted()) {
-                return response()->json(['error' => 'EGI già mintato'], 400);
+                $this->errorManager->handle('DIRECT_MINT_ALREADY_MINTED', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $id,
+                    'blockchain_id' => $egi->blockchain->id,
+                ]);
+                return response()->json([], 400);
             }
 
             // CRITICAL: Check microservice availability BEFORE processing payment
@@ -390,10 +450,8 @@ class MintController extends Controller {
                     'error' => $e->getMessage()
                 ], $e);
 
-                // UEM già gestisce tutto - ritorno solo error generico
-                return response()->json([
-                    'error' => 'microservice_unavailable'
-                ], 503);
+                // UEM già gestisce tutto - ritorno solo status code
+                return response()->json([], 503);
             }
 
             // MOCK Payment processing (V1 - FIAT only)
@@ -401,7 +459,14 @@ class MintController extends Controller {
             $paymentResult = $this->mockPaymentProcessing($validated['payment_method'], $paymentAmount);
 
             if (!$paymentResult['success']) {
-                throw new \Exception('Pagamento fallito: ' . $paymentResult['error']);
+                $this->errorManager->handle('DIRECT_MINT_PAYMENT_FAILED', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $id,
+                    'payment_method' => $validated['payment_method'],
+                    'amount' => $paymentAmount,
+                    'error' => $paymentResult['error'] ?? 'Unknown',
+                ]);
+                return response()->json([], 500);
             }
 
             // Create blockchain record (NO reservation_id for direct mint)
@@ -463,16 +528,18 @@ class MintController extends Controller {
 
             return response()->json([
                 'success' => true,
-                'message' => 'Mint diretto avviato con successo! Riceverai una notifica quando completato.',
                 'data' => [
                     'blockchain_record_id' => $blockchainRecord->id,
                     'mint_status' => 'minting_queued',
-                    'estimated_completion' => '5-10 minuti',
                     'flow_type' => 'direct_mint'
                 ]
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => 'Dati non validi', 'details' => $e->errors()], 422);
+            $this->errorManager->handle('DIRECT_MINT_VALIDATION_ERROR', [
+                'user_id' => Auth::id(),
+                'errors' => $e->errors(),
+            ], $e);
+            return response()->json([], 422);
         } catch (\Exception $e) {
             $this->errorManager->handle('DIRECT_MINT_PROCESS_ERROR', [
                 'user_id' => Auth::id(),
@@ -481,7 +548,7 @@ class MintController extends Controller {
                 'error' => $e->getMessage()
             ], $e);
 
-            return response()->json(['error' => 'Errore durante il mint diretto'], 500);
+            return response()->json([], 500);
         }
     }
 }

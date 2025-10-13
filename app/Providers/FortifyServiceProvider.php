@@ -19,28 +19,25 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Laravel\Fortify\Http\Responses\LogoutResponse;
 
-class FortifyServiceProvider extends ServiceProvider
-{
+class FortifyServiceProvider extends ServiceProvider {
     /**
      * Register any application services.
      */
-    public function register(): void
-    {
+    public function register(): void {
         //
     }
 
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
+    public function boot(): void {
         Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });
@@ -49,9 +46,17 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-        Fortify::redirects('login', function() {
-            // Sempre /home oppure logica dinamica
-            return Config::get('app.upload_redirect_to_url_after_login').'/home';
+        // ✅ Dynamic redirect using AuthRedirectService (usertype-based)
+        // pa_identity → pa.acts.index, creator → home, etc.
+        Fortify::redirects('login', function () {
+            $user = auth()->user();
+            if (!$user) {
+                return route('home'); // Fallback if no user (shouldn't happen)
+            }
+
+            // Use AuthRedirectService for usertype-based redirect
+            $authRedirectService = app(\App\Services\Auth\AuthRedirectService::class);
+            return route($authRedirectService->getRedirectRoute($user));
         });
 
         // Estendi il comportamento di login per gestire il wallet
@@ -105,6 +110,5 @@ class FortifyServiceProvider extends ServiceProvider
                 return $user;
             }
         });
-
     }
 }
