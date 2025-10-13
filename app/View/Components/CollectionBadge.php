@@ -225,7 +225,7 @@ class CollectionBadge extends Component {
         }
 
         if ($this->canEdit) {
-            return route('home.collections.edit', $this->collectionId);
+            return route('collections.edit', $this->collectionId);
         } else {
             return route('home.collections.show', $this->collectionId);
         }
