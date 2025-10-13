@@ -429,6 +429,12 @@ Route::middleware(['auth'])->group(function () {
     // Mint status check (AJAX internal - session-based auth)
     Route::get('mint/status/{egiId}', [App\Http\Controllers\Api\MintStatusController::class, 'getMintStatus'])
         ->name('mint.status.check');
+    
+    // Worker status check (AJAX for progress bar)
+    Route::get('worker/status', [App\Http\Controllers\Api\WorkerStatusController::class, 'getStatus'])
+        ->name('worker.status.check');
+    Route::post('worker/start', [App\Http\Controllers\Api\WorkerStatusController::class, 'attemptStart'])
+        ->name('worker.attempt.start');
 });
 
 // EPP routes

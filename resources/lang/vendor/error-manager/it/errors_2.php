@@ -101,6 +101,7 @@ return [
         'direct_mint_payment_failed' => 'Pagamento direct mint fallito. User: :user_id, EGI: :egi_id, Payment: :payment_method, Amount: :amount, Error: :error',
         'direct_mint_validation_error' => 'Errore validazione dati direct mint. User: :user_id, Errors: :errors',
         'mint_blocked_microservice_unavailable' => '🚨 MINT BLOCKED: Microservizio blockchain non disponibile. EGI: :egi_id, User: :user_id, Error: :error. Pagamento NON effettuato.',
+        'mint_blocked_worker_unavailable' => '🚨 MINT BLOCKED: Queue worker non disponibile. EGI: :egi_id, User: :user_id. Auto-start fallito.',
     ],
 
     'user' => [
@@ -196,6 +197,7 @@ return [
         'direct_mint_payment_failed' => 'Il pagamento non è andato a buon fine. Riprova o contatta l\'assistenza.',
         'direct_mint_validation_error' => 'I dati inseriti non sono validi. Controlla e riprova.',
         'mint_blocked_microservice_unavailable' => 'Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l\'assistenza.',
+        'mint_blocked_worker_unavailable' => 'Il sistema di elaborazione mint non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l\'assistenza.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

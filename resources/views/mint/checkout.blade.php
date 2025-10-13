@@ -347,6 +347,48 @@
                                 </div>
                             </div>
 
+                            {{-- Worker Status Progress Bar (hidden by default, shown during system check) --}}
+                            <div id="worker-progress-container" class="hidden mb-4 rounded-lg bg-blue-50 border border-blue-200 p-4">
+                                <div class="flex items-center mb-2">
+                                    <svg class="animate-spin h-5 w-5 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0a12 12 0 00-12 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span id="worker-progress-message" class="text-sm font-medium text-blue-900">
+                                        Verifica disponibilità sistema...
+                                    </span>
+                                </div>
+                                
+                                {{-- Progress Steps --}}
+                                <div class="flex items-center justify-between mt-3 mb-2">
+                                    <div class="flex-1 flex items-center">
+                                        <div id="step-1" class="flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</div>
+                                            <span class="ml-2 text-xs text-blue-900">Verifica</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 h-0.5 bg-gray-300 mx-2" id="progress-line-1"></div>
+                                    <div class="flex-1 flex items-center">
+                                        <div id="step-2" class="flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-bold">2</div>
+                                            <span class="ml-2 text-xs text-gray-600">Avvio</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 h-0.5 bg-gray-300 mx-2" id="progress-line-2"></div>
+                                    <div class="flex-1 flex items-center">
+                                        <div id="step-3" class="flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs font-bold">3</div>
+                                            <span class="ml-2 text-xs text-gray-600">Pronto</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Progress Bar --}}
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                                    <div id="worker-progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 33%"></div>
+                                </div>
+                            </div>
+
                             {{-- Submit Button --}}
                             <button type="submit" @if (in_array($mintStatus, ['processing', 'completed'])) disabled @endif
                                 class="@if (in_array($mintStatus, ['processing', 'completed'])) bg-gray-400 cursor-not-allowed opacity-60
@@ -459,6 +501,107 @@
                         this.setCustomValidity('');
                     }
                 });
+            }
+
+            /**
+             * Check worker availability with visual progress bar
+             * Returns: Promise<boolean> - true if worker ready, false if unavailable
+             */
+            async function checkWorkerWithProgress() {
+                const progressContainer = document.getElementById('worker-progress-container');
+                const progressBar = document.getElementById('worker-progress-bar');
+                const progressMessage = document.getElementById('worker-progress-message');
+                const step1 = document.getElementById('step-1').querySelector('div');
+                const step2 = document.getElementById('step-2').querySelector('div');
+                const step3 = document.getElementById('step-3').querySelector('div');
+                const line1 = document.getElementById('progress-line-1');
+                const line2 = document.getElementById('progress-line-2');
+                
+                // Show progress container
+                progressContainer.classList.remove('hidden');
+                
+                const maxAttempts = 3;
+                const delayMs = 2000;
+                
+                for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                    // Update progress based on attempt
+                    const progress = (attempt / maxAttempts) * 100;
+                    progressBar.style.width = `${progress}%`;
+                    
+                    // Update step visual feedback
+                    if (attempt === 1) {
+                        progressMessage.textContent = 'Verifica disponibilità sistema...';
+                        step1.classList.add('bg-blue-600', 'text-white');
+                        step1.classList.remove('bg-gray-300', 'text-gray-600');
+                    } else if (attempt === 2) {
+                        progressMessage.textContent = 'Avvio sistema di elaborazione...';
+                        line1.classList.add('bg-blue-600');
+                        step2.classList.add('bg-blue-600', 'text-white');
+                        step2.classList.remove('bg-gray-300', 'text-gray-600');
+                    } else if (attempt === 3) {
+                        progressMessage.textContent = 'Preparazione finale...';
+                        line2.classList.add('bg-blue-600');
+                        step3.classList.add('bg-blue-600', 'text-white');
+                        step3.classList.remove('bg-gray-300', 'text-gray-600');
+                    }
+                    
+                    try {
+                        const response = await fetch('/worker/status', {
+                            method: 'GET',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.can_proceed) {
+                            // Worker ready! ✅
+                            progressMessage.textContent = '✅ Sistema pronto!';
+                            progressBar.style.width = '100%';
+                            progressBar.classList.add('bg-green-600');
+                            
+                            // Mark all steps complete
+                            [step1, step2, step3].forEach(step => {
+                                step.classList.add('bg-green-600', 'text-white');
+                                step.classList.remove('bg-blue-600', 'bg-gray-300', 'text-gray-600');
+                            });
+                            [line1, line2].forEach(line => {
+                                line.classList.add('bg-green-600');
+                            });
+                            
+                            // Wait 500ms to show success, then hide
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                            progressContainer.classList.add('hidden');
+                            return true;
+                        }
+                        
+                        // Worker not ready, wait before retry
+                        if (attempt < maxAttempts) {
+                            await new Promise(resolve => setTimeout(resolve, delayMs));
+                        }
+                        
+                    } catch (error) {
+                        console.error('Worker status check failed:', error);
+                        
+                        if (attempt < maxAttempts) {
+                            await new Promise(resolve => setTimeout(resolve, delayMs));
+                        }
+                    }
+                }
+                
+                // All attempts failed ❌
+                progressMessage.textContent = '❌ Sistema non disponibile';
+                progressBar.classList.add('bg-red-600');
+                progressBar.style.width = '100%';
+                
+                setTimeout(() => {
+                    progressContainer.classList.add('hidden');
+                }, 2000);
+                
+                return false;
             }
 
             // Check for success parameter in URL on page load
@@ -642,6 +785,14 @@
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
+                // STEP 1: Check worker availability with visual progress
+                const workerReady = await checkWorkerWithProgress();
+                
+                if (!workerReady) {
+                    alert('Il sistema di elaborazione non è disponibile. Riprova tra qualche minuto o contatta l\'assistenza.');
+                    return;
+                }
 
                 // Show loading modal
                 document.getElementById('loading-modal').classList.remove('hidden');

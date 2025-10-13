@@ -213,6 +213,58 @@ class MintController extends Controller {
                 'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
             ]);
 
+            // CRITICAL: Ensure queue worker is running with intelligent retry
+            $queueWorkerService = app(\App\Services\QueueWorkerService::class);
+            $maxRetries = 3;
+            $retryDelay = 2; // seconds
+            $workerReady = false;
+
+            for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+                $this->logger->info("Worker availability check (processMint)", [
+                    'attempt' => $attempt,
+                    'max_retries' => $maxRetries,
+                    'egi_id' => $egi->id
+                ]);
+
+                if ($queueWorkerService->ensureWorkerRunning()) {
+                    $workerReady = true;
+                    $this->logger->info("Worker ready (processMint)", [
+                        'attempt' => $attempt,
+                        'egi_id' => $egi->id
+                    ]);
+                    break;
+                }
+
+                if ($attempt < $maxRetries) {
+                    $this->logger->warning("Worker not ready, retrying (processMint)", [
+                        'attempt' => $attempt,
+                        'retry_in' => $retryDelay,
+                        'egi_id' => $egi->id
+                    ]);
+                    sleep($retryDelay);
+                }
+            }
+
+            // Final check after all retries
+            if (!$workerReady) {
+                $this->logger->error("Worker unavailable after all retries (processMint)", [
+                    'attempts' => $maxRetries,
+                    'egi_id' => $egi->id,
+                    'user_id' => Auth::id()
+                ]);
+
+                $this->errorManager->handle('MINT_BLOCKED_WORKER_UNAVAILABLE', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egi->id,
+                    'attempts' => $maxRetries
+                ]);
+
+                return response()->json([
+                    'error' => 'worker_unavailable',
+                    'message' => 'Il sistema di elaborazione non è disponibile. Riprova tra qualche minuto.'
+                ], 503);
+            }
+
             // Queue REAL blockchain mint job (async with worker)
             dispatch(new MintEgiJob($blockchainRecord->id));
 
@@ -492,6 +544,58 @@ class MintController extends Controller {
                 'egi_id' => $egi->id,
                 'user_id' => Auth::id()
             ]);
+
+            // CRITICAL: Ensure queue worker is running with intelligent retry
+            $queueWorkerService = app(\App\Services\QueueWorkerService::class);
+            $maxRetries = 3;
+            $retryDelay = 2; // seconds
+            $workerReady = false;
+
+            for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+                $this->logger->info("Worker availability check (processDirectMint)", [
+                    'attempt' => $attempt,
+                    'max_retries' => $maxRetries,
+                    'egi_id' => $egi->id
+                ]);
+
+                if ($queueWorkerService->ensureWorkerRunning()) {
+                    $workerReady = true;
+                    $this->logger->info("Worker ready (processDirectMint)", [
+                        'attempt' => $attempt,
+                        'egi_id' => $egi->id
+                    ]);
+                    break;
+                }
+
+                if ($attempt < $maxRetries) {
+                    $this->logger->warning("Worker not ready, retrying (processDirectMint)", [
+                        'attempt' => $attempt,
+                        'retry_in' => $retryDelay,
+                        'egi_id' => $egi->id
+                    ]);
+                    sleep($retryDelay);
+                }
+            }
+
+            // Final check after all retries
+            if (!$workerReady) {
+                $this->logger->error("Worker unavailable after all retries (processDirectMint)", [
+                    'attempts' => $maxRetries,
+                    'egi_id' => $egi->id,
+                    'user_id' => Auth::id()
+                ]);
+
+                $this->errorManager->handle('MINT_BLOCKED_WORKER_UNAVAILABLE', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egi->id,
+                    'attempts' => $maxRetries
+                ]);
+
+                return response()->json([
+                    'error' => 'worker_unavailable',
+                    'message' => 'Il sistema di elaborazione non è disponibile. Riprova tra qualche minuto.'
+                ], 503);
+            }
 
             // Queue REAL blockchain mint job (async with worker)
             dispatch(new MintEgiJob($blockchainRecord->id));
