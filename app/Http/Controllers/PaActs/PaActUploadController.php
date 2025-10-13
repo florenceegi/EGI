@@ -203,10 +203,22 @@ class PaActUploadController extends Controller {
         ];
 
         try {
-            $this->logger->info('[PaActUploadController] Received PA act upload request', $logContext);
+            $this->logger->info('🔵 [PA-TOKENIZATION-CONTROLLER] ========== START UPLOAD ==========', $logContext);
+            $this->logger->info('🔵 [PA-TOKENIZATION-CONTROLLER] Request data:', [
+                'has_file' => $request->hasFile('file'),
+                'file_name' => $request->hasFile('file') ? $request->file('file')->getClientOriginalName() : 'NO FILE',
+                'metadata' => $request->except(['file', '_token'])
+            ]);
 
             // Delegate to handler (contains all business logic)
-            return $handler->handlePaActUpload($request);
+            $result = $handler->handlePaActUpload($request);
+            
+            $this->logger->info('🔵 [PA-TOKENIZATION-CONTROLLER] Handler response:', [
+                'status_code' => $result->getStatusCode(),
+                'content' => substr($result->getContent(), 0, 500)
+            ]);
+            
+            return $result;
         } catch (\Throwable $e) {
             $this->logger->error('[PaActUploadController] Upload failed', [
                 ...$logContext,
