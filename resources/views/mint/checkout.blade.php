@@ -299,9 +299,13 @@
                                     {{ __('mint.payment.co_creator_name_label') }}
                                     <span class="text-xs text-gray-500">({{ __('mint.payment.optional') }})</span>
                                 </label>
+                                @php
+                                    // Use nick_name if exists, otherwise full wallet (NOT abbreviated)
+                                    $defaultCoCreatorName = Auth::user()->nick_name ?? Auth::user()->wallet ?? '';
+                                @endphp
                                 <input type="text" id="co_creator_display_name" name="co_creator_display_name"
-                                    value="{{ old('co_creator_display_name', Auth::user()->name) }}"
-                                    placeholder="{{ Auth::user()->name }}" maxlength="100"
+                                    value="{{ old('co_creator_display_name', $defaultCoCreatorName) }}"
+                                    placeholder="{{ $defaultCoCreatorName ?: __('mint.payment.co_creator_name_placeholder') }}" maxlength="100"
                                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     title="{{ __('mint.payment.co_creator_name_pattern') }}">
                                 <div class="mt-1 flex items-start justify-between">
@@ -309,7 +313,7 @@
                                         {{ __('mint.payment.co_creator_name_help') }}
                                     </p>
                                     <span id="char-counter" class="text-xs text-gray-400">
-                                        <span id="char-count">{{ strlen(Auth::user()->name) }}</span>/100
+                                        <span id="char-count">{{ strlen($defaultCoCreatorName) }}</span>/100
                                     </span>
                                 </div>
                                 <div class="mt-2 rounded-md border border-amber-200 bg-amber-50 p-3">
