@@ -105,7 +105,7 @@ return [
         // Metadata standards compliance
         'metadata_standard' => 'ARC-3', // Algorand NFT standard
         'external_url_template' => env('ASA_EXTERNAL_URL', 'https://florenceegi.it/egis/{id}'),
-        
+
         // Certificate specific attributes
         'certificate_attributes' => [
             'issuer' => 'Florence EGI Foundation',
@@ -124,11 +124,11 @@ return [
         'queue_name' => env('ALGORAND_QUEUE_NAME', 'algorand_minting'),
         'retry_attempts' => env('ALGORAND_RETRY_ATTEMPTS', 3),
         'retry_delay' => env('ALGORAND_RETRY_DELAY', 60), // seconds
-        
+
         // Status configurations
         'statuses' => [
             'unminted' => 'unminted',
-            'minting_queued' => 'minting_queued', 
+            'minting_queued' => 'minting_queued',
             'minting' => 'minting',
             'minted' => 'minted',
             'failed' => 'failed',
@@ -155,12 +155,12 @@ return [
         // MiCA-SAFE compliance: Only FIAT payments
         'supported_currencies' => ['EUR', 'USD'],
         'default_currency' => env('EGI_DEFAULT_CURRENCY', 'EUR'),
-        
+
         // Mock payment settings (V1)
         'mock_mode' => env('EGI_MOCK_PAYMENTS', true),
         'mock_success_rate' => env('EGI_MOCK_SUCCESS_RATE', 0.95),
         'mock_processing_delay' => env('EGI_MOCK_DELAY', 2), // seconds
-        
+
         // Real PSP settings (V2) 
         'stripe_enabled' => env('STRIPE_ENABLED', false),
         'paypal_enabled' => env('PAYPAL_ENABLED', false),
@@ -175,11 +175,11 @@ return [
         'wallet_custody' => false, // NO wallet custody for clients
         'kyc_required' => env('EGI_KYC_REQUIRED', false),
         'gdpr_compliance' => true,
-        
+
         // Audit trail
         'audit_enabled' => env('EGI_AUDIT_ENABLED', true),
         'audit_retention_days' => env('EGI_AUDIT_RETENTION', 2555), // 7 years
-        
+
         // Rate limiting
         'rate_limit_minting' => env('EGI_RATE_LIMIT_MINTING', 100), // per hour
         'rate_limit_transfers' => env('EGI_RATE_LIMIT_TRANSFERS', 50), // per hour
