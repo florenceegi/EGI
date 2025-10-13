@@ -232,7 +232,9 @@ class EgiMintingService {
             $egi->update([
                 'owner_id' => $freshBlockchain->buyer_user_id,
                 'token' => 'EGI',      // Register token type
-                'status' => 'minted'   // Update status to minted
+                'status' => 'minted',  // Update status to minted
+                'token_EGI' => $algorandResult['asaId'], // Store ASA ID from Algorand
+                'mint' => true         // Mark as minted
             ]);
 
             $egiAfter = Egi::find($egi->id);
@@ -240,6 +242,8 @@ class EgiMintingService {
                 'egi_id' => $egi->id,
                 'egi_owner_id_after' => $egiAfter->owner_id,
                 'egi_token' => $egiAfter->token,
+                'egi_token_EGI' => $egiAfter->token_EGI,
+                'egi_mint' => $egiAfter->mint,
                 'egi_status' => $egiAfter->status,
                 'update_worked' => $egiAfter->owner_id == $freshBlockchain->buyer_user_id ? 'YES' : 'NO'
             ]);
