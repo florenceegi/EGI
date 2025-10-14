@@ -231,7 +231,7 @@
                             <dd class="mt-1 text-gray-700">Il certificato digitale che unisce valore estetico, traccia <a href="#glossary-blockchain" class="glossary-link">blockchain</a> immutabile e contributo ambientale tramite <a href="#glossary-epp" class="glossary-link">EPP</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-epp" class="text-xl font-bold text-emerald-700">EPP (Environmental Positive Projects)</dt>
+                            <dt id="glossary-epp" class="text-xl font-bold text-emerald-700">EPP (Environmental Protection Projects)</dt>
                             <dd class="mt-1 text-gray-700">Progetti ambientali verificati integrati nativamente. Ogni transazione destina automaticamente una quota a questi progetti.</dd>
                         </div>
                         <div>
@@ -624,7 +624,7 @@
                 parent: 'economia',
                 intro: 'Ogni atto economico diventa atto rigenerativo attraverso gli EPP integrati.',
                 content: `<div class="p-6 mb-6 text-center rounded-lg bg-green-50">
-                    <h3 class="mb-3 text-2xl font-bold text-green-700"><a href="#glossary-epp" class="glossary-link">EPP</a> - Environmental Positive Projects</h3>
+                    <h3 class="mb-3 text-2xl font-bold text-green-700"><a href="#glossary-epp" class="glossary-link">EPP</a> - Environmental Protection Projects</h3>
                     <p class="text-lg text-gray-700">Progetti ambientali verificati integrati nativamente nel sistema</p>
                 </div>
                 <div class="grid gap-6 md:grid-cols-2">
