@@ -868,10 +868,11 @@
                     if (!response.ok) {
                         // Clone response to read body multiple times if needed
                         const responseClone = response.clone();
-                        
+
                         // Try to parse JSON error response first
                         try {
                             const errorData = await response.json();
+                            console.log('Error response JSON:', errorData);
 
                             // If we have a user-friendly message from server, use it
                             if (errorData.message) {
@@ -884,16 +885,25 @@
                             }
 
                             // Fallback generic message
-                            throw new Error(`HTTP ${response.status}`);
+                            throw new Error(`{{ __('mint.errors.mint_failed') }}`);
                         } catch (jsonError) {
+                            console.error('JSON parsing error:', jsonError);
+
                             // If JSON parsing fails, use cloned response for text
                             try {
                                 const errorText = await responseClone.text();
-                                console.error('Server response:', errorText);
-                                throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+                                console.error('Server response text:', errorText);
+
+                                // Try to show readable error
+                                if (errorText.length > 0 && errorText.length < 200) {
+                                    throw new Error(errorText);
+                                } else {
+                                    throw new Error(`{{ __('mint.errors.mint_failed') }}`);
+                                }
                             } catch (textError) {
+                                console.error('Text parsing error:', textError);
                                 // Ultimate fallback
-                                throw new Error(`HTTP ${response.status}: Server error`);
+                                throw new Error(`{{ __('mint.errors.mint_failed') }}`);
                             }
                         }
                     }
@@ -980,20 +990,20 @@
                             <h3 class="text-lg font-semibold text-green-900">{{ __('mint.notification.success_title') }}</h3>
                             <p class="mt-1 text-sm text-green-800">{{ __('mint.notification.success_message') }}</p>
                             ${data.asaId ? `
-                                                                                                        <div class="p-3 mt-3 border rounded-lg border-green-300 bg-green-50">
-                                                                                                            <div class="flex items-center justify-between mb-2 text-sm">
-                                                                                                                <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                                                                                                <span class="font-mono font-bold text-green-900">${data.asaId}</span>
-                                                                                                            </div>
-                                                                                                            <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
-                                                                                                               class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                                                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                                                                </svg>
-                                                                                                                {{ __('mint.notification.view_blockchain') }}
-                                                                                                            </a>
-                                                                                                        </div>
-                                                                                                    ` : ''}
+                            <div class="p-3 mt-3 border rounded-lg border-green-300 bg-green-50">
+                                <div class="flex items-center justify-between mb-2 text-sm">
+                                    <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
+                                    <span class="font-mono font-bold text-green-900">${data.asaId}</span>
+                                </div>
+                                <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
+                                    class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    {{ __('mint.notification.view_blockchain') }}
+                                </a>
+                            </div>
+                        ` : ''}
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-green-600 transition-colors hover:text-green-900">
