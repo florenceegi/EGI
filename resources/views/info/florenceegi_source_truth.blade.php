@@ -207,148 +207,204 @@
 <body class="antialiased">
     <div class="min-h-screen">
         <header class="sticky top-0 z-50 bg-white shadow-sm">
-            <div class="px-4 py-6 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 py-6 text-center sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold text-emerald-800">🌍 FlorenceEGI - Fonte di Verità</h1>
-                <p class="mt-2 text-gray-600 text-md">Sistema Unico e Integrale: dove arte, tecnologia e rigenerazione convergono</p>
+                <p class="text-md mt-2 text-gray-600">Sistema Unico e Integrale: dove arte, tecnologia e rigenerazione
+                    convergono</p>
             </div>
         </header>
 
-        <main class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="p-6 mb-8 bg-white shadow-lg rounded-2xl">
-                <h2 class="mb-4 text-xl font-bold text-center text-gray-800">Esplora il Sistema FlorenceEGI</h2>
+        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <div class="mb-8 rounded-2xl bg-white p-6 shadow-lg">
+                <h2 class="mb-4 text-center text-xl font-bold text-gray-800">Esplora il Sistema FlorenceEGI</h2>
                 <nav id="main-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4">
                 </nav>
             </div>
 
             <div id="content-container"></div>
 
-            <section id="glossario" class="mt-16 fade-in">
-                <h2 class="pt-12 mb-10 text-4xl font-bold text-center border-t border-gray-200 text-emerald-800">Glossario</h2>
-                <div class="p-8 bg-white shadow-lg rounded-2xl">
+            <section id="glossario" class="fade-in mt-16">
+                <h2 class="mb-10 border-t border-gray-200 pt-12 text-center text-4xl font-bold text-emerald-800">
+                    Glossario</h2>
+                <div class="rounded-2xl bg-white p-8 shadow-lg">
                     <dl class="space-y-8">
                         <div>
                             <dt id="glossary-egi" class="text-xl font-bold text-emerald-700">EGI (Eco Goods Invent)</dt>
-                            <dd class="mt-1 text-gray-700">Il certificato digitale che unisce valore estetico, traccia <a href="#glossary-blockchain" class="glossary-link">blockchain</a> immutabile e contributo ambientale tramite <a href="#glossary-epp" class="glossary-link">EPP</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Il certificato digitale che unisce valore estetico, traccia
+                                <a href="#glossary-blockchain" class="glossary-link">blockchain</a> immutabile e
+                                contributo ambientale tramite <a href="#glossary-epp" class="glossary-link">EPP</a>.
+                            </dd>
                         </div>
                         <div>
-                            <dt id="glossary-epp" class="text-xl font-bold text-emerald-700">EPP (Environmental Protection Projects)</dt>
-                            <dd class="mt-1 text-gray-700">Progetti ambientali verificati integrati nativamente. Ogni transazione destina automaticamente una quota a questi progetti.</dd>
+                            <dt id="glossary-epp" class="text-xl font-bold text-emerald-700">EPP (Environmental
+                                Protection Projects)</dt>
+                            <dd class="mt-1 text-gray-700">Progetti ambientali verificati integrati nativamente. Ogni
+                                transazione destina automaticamente una quota a questi progetti.</dd>
                         </div>
                         <div>
                             <dt id="glossary-co-creatore" class="text-xl font-bold text-emerald-700">Co-Creatore</dt>
-                            <dd class="mt-1 text-gray-700">Chi contribuisce alla nascita di un'opera tramite il <a href="#glossary-minting" class="glossary-link">minting</a>. Diventa parte indelebile dell'identità dell'<a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Chi contribuisce alla nascita di un'opera tramite il <a
+                                    href="#glossary-minting" class="glossary-link">minting</a>. Diventa parte indelebile
+                                dell'identità dell'<a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
                         </div>
                         <div>
                             <dt id="glossary-collector" class="text-xl font-bold text-emerald-700">Collector</dt>
-                            <dd class="mt-1 text-gray-700">Il custode del valore che tramanda l'opera, acquisendo e preservando <a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Il custode del valore che tramanda l'opera, acquisendo e
+                                preservando <a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
                         </div>
                         <div>
                             <dt id="glossary-algorand" class="text-xl font-bold text-emerald-700">Algorand</dt>
-                            <dd class="mt-1 text-gray-700"><a href="#glossary-blockchain" class="glossary-link">Blockchain</a> sostenibile e <a href="#glossary-carbon-negative" class="glossary-link">carbon-negative</a> basata su <a href="#glossary-proof-of-stake" class="glossary-link">Proof-of-Stake</a>.</dd>
+                            <dd class="mt-1 text-gray-700"><a href="#glossary-blockchain"
+                                    class="glossary-link">Blockchain</a> sostenibile e <a
+                                    href="#glossary-carbon-negative" class="glossary-link">carbon-negative</a> basata su
+                                <a href="#glossary-proof-of-stake" class="glossary-link">Proof-of-Stake</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-coa" class="text-xl font-bold text-emerald-700">CoA (Certificate of Authenticity)</dt>
-                            <dd class="mt-1 text-gray-700">Certificato di autenticità verificato collegato a ogni <a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
+                            <dt id="glossary-coa" class="text-xl font-bold text-emerald-700">CoA (Certificate of
+                                Authenticity)</dt>
+                            <dd class="mt-1 text-gray-700">Certificato di autenticità verificato collegato a ogni <a
+                                    href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
                         </div>
                         <div>
                             <dt id="glossary-qr-nfc" class="text-xl font-bold text-emerald-700">QR/NFC</dt>
-                            <dd class="mt-1 text-gray-700">Tecnologie unidirezionali che collegano il bene fisico al certificato digitale per verifica pubblica immediata.</dd>
+                            <dd class="mt-1 text-gray-700">Tecnologie unidirezionali che collegano il bene fisico al
+                                certificato digitale per verifica pubblica immediata.</dd>
                         </div>
                         <div>
                             <dt id="glossary-gdpr" class="text-xl font-bold text-emerald-700">GDPR</dt>
-                            <dd class="mt-1 text-gray-700">Regolamento Generale sulla Protezione dei Dati europeo. FlorenceEGI è GDPR-by-design tramite <a href="#glossary-ulm" class="glossary-link">ULM</a>, <a href="#glossary-auditlogservice" class="glossary-link">AuditLogService</a> e <a href="#glossary-consentservice" class="glossary-link">ConsentService</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Regolamento Generale sulla Protezione dei Dati europeo.
+                                FlorenceEGI è GDPR-by-design tramite <a href="#glossary-ulm"
+                                    class="glossary-link">ULM</a>, <a href="#glossary-auditlogservice"
+                                    class="glossary-link">AuditLogService</a> e <a href="#glossary-consentservice"
+                                    class="glossary-link">ConsentService</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-mica" class="text-xl font-bold text-emerald-700">MiCA (Markets in Crypto-Assets)</dt>
-                            <dd class="mt-1 text-gray-700">Regolamento europeo sui mercati di cripto-attività. FlorenceEGI è <a href="#glossary-mica-safe" class="glossary-link">MiCA-safe</a>.</dd>
+                            <dt id="glossary-mica" class="text-xl font-bold text-emerald-700">MiCA (Markets in
+                                Crypto-Assets)</dt>
+                            <dd class="mt-1 text-gray-700">Regolamento europeo sui mercati di cripto-attività.
+                                FlorenceEGI è <a href="#glossary-mica-safe" class="glossary-link">MiCA-safe</a>.</dd>
                         </div>
                         <div>
                             <dt id="glossary-ulm" class="text-xl font-bold text-emerald-700">ULM (UltraLogManager)</dt>
-                            <dd class="mt-1 text-gray-700">Sistema di registrazione eventi per garantire auditabilità completa e conformità <a href="#glossary-gdpr" class="glossary-link">GDPR</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Sistema di registrazione eventi per garantire auditabilità
+                                completa e conformità <a href="#glossary-gdpr" class="glossary-link">GDPR</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-auditlogservice" class="text-xl font-bold text-emerald-700">AuditLogService</dt>
-                            <dd class="mt-1 text-gray-700">Servizio per la creazione di <a href="#glossary-audit-trail" class="glossary-link">audit trail</a> verificabili.</dd>
+                            <dt id="glossary-auditlogservice" class="text-xl font-bold text-emerald-700">AuditLogService
+                            </dt>
+                            <dd class="mt-1 text-gray-700">Servizio per la creazione di <a href="#glossary-audit-trail"
+                                    class="glossary-link">audit trail</a> verificabili.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-consentservice" class="text-xl font-bold text-emerald-700">ConsentService</dt>
-                            <dd class="mt-1 text-gray-700">Servizio per la gestione e il versioning dei consensi utente secondo <a href="#glossary-gdpr" class="glossary-link">GDPR</a>.</dd>
+                            <dt id="glossary-consentservice" class="text-xl font-bold text-emerald-700">ConsentService
+                            </dt>
+                            <dd class="mt-1 text-gray-700">Servizio per la gestione e il versioning dei consensi utente
+                                secondo <a href="#glossary-gdpr" class="glossary-link">GDPR</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-psp" class="text-xl font-bold text-emerald-700">PSP (Payment Service Provider)</dt>
-                            <dd class="mt-1 text-gray-700">Fornitore di servizi di pagamento autorizzato (es. Stripe, Adyen) che gestisce pagamenti FIAT.</dd>
+                            <dt id="glossary-psp" class="text-xl font-bold text-emerald-700">PSP (Payment Service
+                                Provider)</dt>
+                            <dd class="mt-1 text-gray-700">Fornitore di servizi di pagamento autorizzato (es. Stripe,
+                                Adyen) che gestisce pagamenti FIAT.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-governance-duale" class="text-xl font-bold text-emerald-700">Governance Duale</dt>
-                            <dd class="mt-1 text-gray-700">Struttura basata su FlorenceEGI SRL (motore operativo) e Associazione Frangette APS (custode dei valori).</dd>
+                            <dt id="glossary-governance-duale" class="text-xl font-bold text-emerald-700">Governance
+                                Duale</dt>
+                            <dd class="mt-1 text-gray-700">Struttura basata su FlorenceEGI SRL (motore operativo) e
+                                Associazione Frangette APS (custode dei valori).</dd>
                         </div>
                         <div>
-                            <dt id="glossary-fee-dinamiche" class="text-xl font-bold text-emerald-700">Fee Dinamiche</dt>
-                            <dd class="mt-1 text-gray-700">Sistema di commissioni che si riducono al crescere della community, creando economia rigenerativa.</dd>
+                            <dt id="glossary-fee-dinamiche" class="text-xl font-bold text-emerald-700">Fee Dinamiche
+                            </dt>
+                            <dd class="mt-1 text-gray-700">Sistema di commissioni che si riducono al crescere della
+                                community, creando economia rigenerativa.</dd>
                         </div>
                         <div>
                             <dt id="glossary-equilibrium" class="text-xl font-bold text-emerald-700">Equilibrium</dt>
-                            <dd class="mt-1 text-gray-700">Token che alimenta il sistema di premi, ranking e interazioni etiche.</dd>
+                            <dd class="mt-1 text-gray-700">Token che alimenta il sistema di premi, ranking e
+                                interazioni etiche.</dd>
                         </div>
                         <div>
                             <dt id="glossary-egili" class="text-xl font-bold text-emerald-700">Egili</dt>
-                            <dd class="mt-1 text-gray-700">Micro-unità del token <a href="#glossary-equilibrium" class="glossary-link">Equilibrium</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Micro-unità del token <a href="#glossary-equilibrium"
+                                    class="glossary-link">Equilibrium</a>.</dd>
                         </div>
                         <div>
                             <dt id="glossary-mecenate" class="text-xl font-bold text-emerald-700">Mecenate</dt>
-                            <dd class="mt-1 text-gray-700">Chi sostiene un artista o collezione, diventando attivatore di valore culturale con profilo verificato.</dd>
+                            <dd class="mt-1 text-gray-700">Chi sostiene un artista o collezione, diventando attivatore
+                                di valore culturale con profilo verificato.</dd>
                         </div>
                         <div>
                             <dt id="glossary-curatore" class="text-xl font-bold text-emerald-700">Curatore</dt>
-                            <dd class="mt-1 text-gray-700">Professionista che seleziona e valorizza opere. FlorenceEGI permette una carriera come curatore digitale.</dd>
+                            <dd class="mt-1 text-gray-700">Professionista che seleziona e valorizza opere. FlorenceEGI
+                                permette una carriera come curatore digitale.</dd>
                         </div>
                         <div>
                             <dt id="glossary-natan" class="text-xl font-bold text-emerald-700">N.A.T.A.N.</dt>
-                            <dd class="mt-1 text-gray-700">Neural Assistant for Technical Art Navigation - IA etica che agisce come consulente personale per Creator e Collector.</dd>
+                            <dd class="mt-1 text-gray-700">Neural Assistant for Technical Art Navigation - IA etica che
+                                agisce come consulente personale per Creator e Collector.</dd>
                         </div>
                         <div>
                             <dt id="glossary-oracode" class="text-xl font-bold text-emerald-700">Oracode System</dt>
-                            <dd class="mt-1 text-gray-700">Paradigma che fonde ingegneria e simbolismo. La grammatica della verità tecnologica di FlorenceEGI.</dd>
+                            <dd class="mt-1 text-gray-700">Paradigma che fonde ingegneria e simbolismo. La grammatica
+                                della verità tecnologica di FlorenceEGI.</dd>
                         </div>
                         <div>
                             <dt id="glossary-blockchain" class="text-xl font-bold text-emerald-700">Blockchain</dt>
-                            <dd class="mt-1 text-gray-700">Registro digitale distribuito, immutabile e trasparente che garantisce autenticità degli <a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
+                            <dd class="mt-1 text-gray-700">Registro digitale distribuito, immutabile e trasparente che
+                                garantisce autenticità degli <a href="#glossary-egi" class="glossary-link">EGI</a>.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-hash" class="text-xl font-bold text-emerald-700">Hash Crittografico</dt>
-                            <dd class="mt-1 text-gray-700">Sequenza unica generata da algoritmo che garantisce integrità di file o documento.</dd>
+                            <dd class="mt-1 text-gray-700">Sequenza unica generata da algoritmo che garantisce
+                                integrità di file o documento.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-proof-of-stake" class="text-xl font-bold text-emerald-700">Proof-of-Stake</dt>
-                            <dd class="mt-1 text-gray-700">Meccanismo di consenso <a href="#glossary-blockchain" class="glossary-link">blockchain</a> usato da <a href="#glossary-algorand" class="glossary-link">Algorand</a>, più efficiente e sostenibile.</dd>
+                            <dt id="glossary-proof-of-stake" class="text-xl font-bold text-emerald-700">Proof-of-Stake
+                            </dt>
+                            <dd class="mt-1 text-gray-700">Meccanismo di consenso <a href="#glossary-blockchain"
+                                    class="glossary-link">blockchain</a> usato da <a href="#glossary-algorand"
+                                    class="glossary-link">Algorand</a>, più efficiente e sostenibile.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-carbon-negative" class="text-xl font-bold text-emerald-700">Carbon-Negative</dt>
-                            <dd class="mt-1 text-gray-700">Tecnologia che assorbe più CO2 di quanto ne produce. <a href="#glossary-algorand" class="glossary-link">Algorand</a> è carbon-negative.</dd>
+                            <dt id="glossary-carbon-negative" class="text-xl font-bold text-emerald-700">
+                                Carbon-Negative</dt>
+                            <dd class="mt-1 text-gray-700">Tecnologia che assorbe più CO2 di quanto ne produce. <a
+                                    href="#glossary-algorand" class="glossary-link">Algorand</a> è carbon-negative.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-minting" class="text-xl font-bold text-emerald-700">Minting</dt>
-                            <dd class="mt-1 text-gray-700">Atto di creare un nuovo <a href="#glossary-egi" class="glossary-link">EGI</a> sulla <a href="#glossary-blockchain" class="glossary-link">blockchain</a>, registrandolo per la prima volta.</dd>
+                            <dd class="mt-1 text-gray-700">Atto di creare un nuovo <a href="#glossary-egi"
+                                    class="glossary-link">EGI</a> sulla <a href="#glossary-blockchain"
+                                    class="glossary-link">blockchain</a>, registrandolo per la prima volta.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-seo-oriented" class="text-xl font-bold text-emerald-700">SEO-Oriented</dt>
-                            <dd class="mt-1 text-gray-700">Ottimizzato per motori di ricerca. <a href="#glossary-natan" class="glossary-link">N.A.T.A.N.</a> suggerisce descrizioni SEO-oriented.</dd>
+                            <dt id="glossary-seo-oriented" class="text-xl font-bold text-emerald-700">SEO-Oriented
+                            </dt>
+                            <dd class="mt-1 text-gray-700">Ottimizzato per motori di ricerca. <a
+                                    href="#glossary-natan" class="glossary-link">N.A.T.A.N.</a> suggerisce descrizioni
+                                SEO-oriented.</dd>
                         </div>
                         <div>
                             <dt id="glossary-mica-safe" class="text-xl font-bold text-emerald-700">MiCA-safe</dt>
-                            <dd class="mt-1 text-gray-700">Conforme al regolamento <a href="#glossary-mica" class="glossary-link">MiCA</a>. FlorenceEGI non gestisce fondi crypto per terzi.</dd>
+                            <dd class="mt-1 text-gray-700">Conforme al regolamento <a href="#glossary-mica"
+                                    class="glossary-link">MiCA</a>. FlorenceEGI non gestisce fondi crypto per terzi.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-audit-trail" class="text-xl font-bold text-emerald-700">Audit Trail</dt>
-                            <dd class="mt-1 text-gray-700">Registrazione cronologica completa e immutabile di tutte le operazioni per verifiche e tracciabilità.</dd>
+                            <dd class="mt-1 text-gray-700">Registrazione cronologica completa e immutabile di tutte le
+                                operazioni per verifiche e tracciabilità.</dd>
                         </div>
                     </dl>
                 </div>
             </section>
         </main>
 
-        <footer class="mt-16 text-white bg-gray-900">
-            <div class="container px-6 py-12 mx-auto max-w-7xl">
+        <footer class="mt-16 bg-gray-900 text-white">
+            <div class="container mx-auto max-w-7xl px-6 py-12">
                 <p class="text-center text-gray-500">&copy; 2025 Florence EGI | Tutti i diritti riservati.</p>
             </div>
         </footer>
@@ -869,7 +925,8 @@
             // Create Home Button
             const homeButton = document.createElement('a');
             homeButton.href = '/';
-            homeButton.className = 'inline-flex items-center gap-2 px-5 py-3 font-medium text-white transition-all duration-200 ease-in-out transform bg-emerald-600 rounded-xl hover:bg-emerald-700 hover:scale-105 hover:shadow-lg nav-item';
+            homeButton.className =
+                'inline-flex items-center gap-2 px-5 py-3 font-medium text-white transition-all duration-200 ease-in-out transform bg-emerald-600 rounded-xl hover:bg-emerald-700 hover:scale-105 hover:shadow-lg nav-item';
             homeButton.innerHTML = '<span class="text-xl material-icons">home</span><span>Home</span>';
             mainNav.appendChild(homeButton);
 
@@ -880,8 +937,10 @@
                 menuParent.className = 'menu-parent';
 
                 const menuButton = document.createElement('button');
-                menuButton.className = 'nav-item px-4 py-2 sm:px-5 sm:py-2.5 text-sm sm:text-base font-semibold text-gray-700 bg-gray-100 rounded-full hover:bg-emerald-600 hover:text-white hover:shadow-md';
-                menuButton.innerHTML = `<span class="submenu-trigger">${menu.icon} ${menu.title} <span class="text-sm material-icons">expand_more</span></span>`;
+                menuButton.className =
+                    'nav-item px-4 py-2 sm:px-5 sm:py-2.5 text-sm sm:text-base font-semibold text-gray-700 bg-gray-100 rounded-full hover:bg-emerald-600 hover:text-white hover:shadow-md';
+                menuButton.innerHTML =
+                    `<span class="submenu-trigger">${menu.icon} ${menu.title} <span class="text-sm material-icons">expand_more</span></span>`;
 
                 const submenu = document.createElement('div');
                 submenu.className = 'submenu';
@@ -949,7 +1008,9 @@
                 chartInstances.coCreation = new Chart(ctx.getContext('2d'), {
                     type: 'doughnut',
                     data: {
-                        labels: ['Artista (Sorgente)', 'Co-Creatore (Causa Efficiente)', 'Collector (Custode)'],
+                        labels: ['Artista (Sorgente)', 'Co-Creatore (Causa Efficiente)',
+                            'Collector (Custode)'
+                        ],
                         datasets: [{
                             data: [33, 34, 33],
                             backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6'],
@@ -961,7 +1022,15 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'bottom', labels: { padding: 15, font: { size: 12 } } }
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
                         }
                     }
                 });
@@ -987,10 +1056,14 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { display: false }
+                            legend: {
+                                display: false
+                            }
                         },
                         scales: {
-                            y: { display: false }
+                            y: {
+                                display: false
+                            }
                         }
                     }
                 });
@@ -1003,7 +1076,9 @@
                 chartInstances.economy = new Chart(ctx.getContext('2d'), {
                     type: 'pie',
                     data: {
-                        labels: ['Economico (Fee/Royalties)', 'Reputazionale (Tracciabilità)', 'Ambientale (EPP)'],
+                        labels: ['Economico (Fee/Royalties)', 'Reputazionale (Tracciabilità)',
+                            'Ambientale (EPP)'
+                        ],
                         datasets: [{
                             data: [33, 34, 33],
                             backgroundColor: ['#10b981', '#3b82f6', '#22c55e'],
@@ -1015,7 +1090,15 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'bottom', labels: { padding: 15, font: { size: 12 } } }
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
                         }
                     }
                 });
@@ -1058,10 +1141,14 @@
                 if (previousSection) {
                     showSection(previousSection);
                     setTimeout(() => {
-                        window.scrollTo({ top: previousScrollPosition, behavior: 'smooth' });
+                        window.scrollTo({
+                            top: previousScrollPosition,
+                            behavior: 'smooth'
+                        });
                     }, 100);
                     backButton.classList.remove('show');
-                    history.pushState('', document.title, window.location.pathname + window.location.search);
+                    history.pushState('', document.title, window.location.pathname + window.location
+                    .search);
                 }
             });
 

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Egi;
 use App\Services\EgiAvailabilityService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @Oracode Request: Direct Mint Validation
@@ -117,12 +118,13 @@ class MintDirectRequest extends FormRequest {
             ],
 
             // AREA 5.5.1: Co-Creator Display Name (immutable after mint)
+            // Può essere nickname O wallet address se nickname non disponibile
             'co_creator_display_name' => [
                 'nullable',
                 'string',
                 'min:2',
                 'max:100',
-                'regex:/^[a-zA-Z0-9\s.\'\-]+$/', // Alphanumeric + spaces + . ' -
+                // 'regex:/^[a-zA-Z0-9\s.\'\-]+$/', // TEMPORANEAMENTE DISABILITATO PER DEBUG
             ],
 
             // Anti-CSRF protection (implicit via FormRequest)

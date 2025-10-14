@@ -461,10 +461,10 @@ Se stai per aggiungere ->take() o ->limit() in StatisticsService:
 
 **UEM (ErrorManager) e ULM (UltraLogManager) sono SISTEMI DIVERSI:**
 
-| Sistema | Scopo | Quando usarlo |
-|---------|-------|---------------|
+| Sistema | Scopo                                                                                                  | Quando usarlo                                                                     |
+| ------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
 | **UEM** | **Gestione errori strutturata** con codici, messaggi user/dev, HTTP status, blocking level, alert team | Errori applicativi, business logic failures, situazioni che richiedono attenzione |
-| **ULM** | **Logging generico** per debug, trace, monitoring | Debug flows, performance tracking, trace normale |
+| **ULM** | **Logging generico** per debug, trace, monitoring                                                      | Debug flows, performance tracking, trace normale                                  |
 
 ### **CHECKPOINT OBBLIGATORIO PRIMA DI TOCCARE errorManager->handle():**
 
@@ -489,23 +489,23 @@ Se stai per aggiungere ->take() o ->limit() in StatisticsService:
 public function riskyOperation() {
     // ULM: Trace inizio operazione
     $this->logger->debug('Starting risky operation', ['context' => '...']);
-    
+
     try {
         // ... business logic ...
-        
+
         // ULM: Trace successo
         $this->logger->info('Operation completed successfully');
-        
+
     } catch (\Exception $e) {
         // UEM: Gestione errore strutturato (ALERT TEAM)
         $this->errorManager->handle('OPERATION_FAILED', [
             'context' => '...',
             'user_id' => Auth::id()
         ], $e);
-        
+
         // ULM: Trace tentativo recovery
         $this->logger->info('Attempting recovery');
-        
+
         // Recovery logic...
     }
 }
@@ -527,6 +527,7 @@ public function riskyOperation() {
 **Task: "Aggiungi debug/logging per capire cosa succede"**
 
 **AZIONE CORRETTA:**
+
 1. LEGGI codice esistente
 2. IDENTIFICA dove c'è già UEM
 3. AGGIUNGI ULM per trace PRIMA/DOPO UEM
@@ -584,17 +585,19 @@ AZIONI IMMEDIATE:
 ### **RATIONALE:**
 
 **UEM non è "solo un logger più complesso":**
-- ✅ Invia notifiche al team (toast, email, Slack)
-- ✅ Gestisce messaggi separati user/dev
-- ✅ Ritorna HTTP status code appropriati
-- ✅ Definisce blocking level (not/semi-blocking/blocking)
-- ✅ Struttura errori per monitoring/alerting
+
+-   ✅ Invia notifiche al team (toast, email, Slack)
+-   ✅ Gestisce messaggi separati user/dev
+-   ✅ Ritorna HTTP status code appropriati
+-   ✅ Definisce blocking level (not/semi-blocking/blocking)
+-   ✅ Struttura errori per monitoring/alerting
 
 **Se sostituisci UEM con ULM:**
-- ❌ Team non riceve alert su errori critici
-- ❌ Utenti vedono errori tecnici invece di messaggi user-friendly
-- ❌ Perdi tracking strutturato errori
-- ❌ Monitoring/alerting smette di funzionare
+
+-   ❌ Team non riceve alert su errori critici
+-   ❌ Utenti vedono errori tecnici invece di messaggi user-friendly
+-   ❌ Perdi tracking strutturato errori
+-   ❌ Monitoring/alerting smette di funzionare
 
 **Questa regola è P0-BLOCKING: violarla significa rompere error handling enterprise-grade.**
 

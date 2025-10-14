@@ -17,6 +17,7 @@ use App\Jobs\MintEgiJob;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
@@ -33,7 +34,7 @@ class MintController extends Controller {
         ErrorManagerInterface $errorManager,
         AuditLogService $auditService
     ) {
-        $this->middleware('auth');
+        // $this->middleware('auth');
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
@@ -310,7 +311,9 @@ class MintController extends Controller {
             }
 
             // Queue REAL blockchain mint job (async with worker)
-            dispatch(new MintEgiJob($blockchainRecord->id));
+            // 🔧 XDEBUG MODE: dispatch commented, using dispatchSync
+            // dispatch(new MintEgiJob($blockchainRecord->id));
+            \App\Jobs\MintEgiJob::dispatchSync($blockchainRecord->id);
 
             // CRITICAL FIX: Sync owner_id immediately in Controller
             // This guarantees owner_id is correct even before Job processes
@@ -685,7 +688,9 @@ class MintController extends Controller {
             }
 
             // Queue REAL blockchain mint job (async with worker)
-            dispatch(new MintEgiJob($blockchainRecord->id));
+            // 🔧 XDEBUG MODE: dispatch commented, using dispatchSync
+            // dispatch(new MintEgiJob($blockchainRecord->id));
+            \App\Jobs\MintEgiJob::dispatchSync($blockchainRecord->id);
 
             $this->logger->emergency('🚨 DIRECT MINT - AFTER DISPATCH', [
                 'blockchain_record_id' => $blockchainRecord->id,
