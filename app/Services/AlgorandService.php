@@ -551,7 +551,7 @@ class AlgorandService {
             }
 
             // 3. Get account info (includes balance)
-            $accountInfo = $this->getAccountInfo($user, $treasuryAddress);
+            $accountInfo = $this->getAccountInfo($treasuryAddress, $user);
             
             $currentBalance = $accountInfo['amount'] ?? 0; // in microAlgos
             
