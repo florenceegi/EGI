@@ -250,7 +250,7 @@ class EgiMintingService {
 
             return $freshBlockchain;
         } catch (\Exception $e) {
-            // 11. UEM: Error handling
+            // 11. UEM: Error handling (codes specifici già gestiti in AlgorandService)
             $this->errorManager->handle('EGI_MINTING_FAILED', [
                 'user_id' => $user->id,
                 'egi_id' => $egi->id,
@@ -258,7 +258,7 @@ class EgiMintingService {
                 'error_message' => $e->getMessage()
             ], $e);
 
-            throw new \Exception("EGI minting failed: {$e->getMessage()}");
+            throw $e; // Propaga eccezione (già gestita da UEM)
         }
     }
 

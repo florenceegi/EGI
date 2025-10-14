@@ -288,17 +288,60 @@ class AlgorandService {
                 'treasury_address' => $data['treasury_address'] ?? null
             ];
         } catch (\Exception $e) {
-            // 7. UEM: Error handling
-            $this->errorManager->handle('BLOCKCHAIN_MINT_FAILED', [
+            // 7. Pattern matching per UEM error codes specifici
+            $errorMessage = $e->getMessage();
+            $errorCode = 'BLOCKCHAIN_MINT_FAILED'; // default fallback
+            $contextData = [
                 'user_id' => $user->id,
                 'egi_id' => $egiId,
-                'metadata' => json_encode($metadata), // Serialize array to avoid "Array to string conversion"
-                'error_message' => $e->getMessage()
-            ], $e);
+                'metadata' => json_encode($metadata),
+                'error_message' => $errorMessage
+            ];
 
-            throw new \Exception("Fallimento creazione EGI token ASA: {$e->getMessage()}");
+            // Analizza errore tecnico per determinare UEM code appropriato
+            if (preg_match('/balance (\d+) below min (\d+)/', $errorMessage, $matches)) {
+                $errorCode = 'BLOCKCHAIN_INSUFFICIENT_TREASURY_FUNDS';
+                $contextData['current_balance'] = $matches[1];
+                $contextData['required_balance'] = $matches[2];
+                $contextData['current_algo'] = (int)$matches[1] / 1_000_000;
+                $contextData['required_algo'] = (int)$matches[2] / 1_000_000;
+            } 
+            elseif (preg_match('/account ([A-Z0-9]+) does not exist/i', $errorMessage, $matches)) {
+                $errorCode = 'BLOCKCHAIN_ACCOUNT_NOT_FOUND';
+                $contextData['account'] = $matches[1];
+            }
+            elseif (preg_match('/asset (\d+) missing from ([A-Z0-9]+)/i', $errorMessage, $matches)) {
+                $errorCode = 'BLOCKCHAIN_ASSET_OPTIN_REQUIRED';
+                $contextData['asset_id'] = $matches[1];
+                $contextData['account'] = $matches[2];
+            }
+            elseif (preg_match('/network request error|timeout|connection refused/i', $errorMessage)) {
+                $errorCode = 'BLOCKCHAIN_NETWORK_ERROR';
+            }
+            elseif (preg_match('/TransactionPool\.Remember/i', $errorMessage)) {
+                $errorCode = 'BLOCKCHAIN_TRANSACTION_POOL_ERROR';
+            }
+
+            // 8. UEM: Error handling con code specifico
+            $this->errorManager->handle($errorCode, $contextData, $e);
+
+            // 9. Recupera messaggio user-friendly da UEM e throw nuova exception
+            $userMessage = __("error-manager::errors_2.user.{$this->getUemMessageKey($errorCode)}");
+            throw new \Exception($userMessage);
         }
     }
+
+    /**
+     * Helper: Converte UEM error code in translation key
+     * @param string $errorCode UEM error code
+     * @return string Translation key (snake_case)
+     */
+    private function getUemMessageKey(string $errorCode): string
+    {
+        // Converti da BLOCKCHAIN_INSUFFICIENT_TREASURY_FUNDS a blockchain_insufficient_treasury_funds
+        return strtolower($errorCode);
+    }
+
     /**
      * Trasferisce ASA EGI al wallet acquirente - GDPR COMPLIANT
      * @param string $to Wallet address destinazione

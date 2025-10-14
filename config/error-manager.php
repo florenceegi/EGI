@@ -5933,5 +5933,57 @@ return [
             'msg_to' => 'log',
         ],
 
+        // === Blockchain-Specific Errors (User-Friendly UEM) ===
+        'BLOCKCHAIN_INSUFFICIENT_TREASURY_FUNDS' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.blockchain_insufficient_treasury_funds',
+            'user_message_key' => 'error-manager::errors_2.user.blockchain_insufficient_treasury_funds',
+            'http_status_code' => 503,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+        'BLOCKCHAIN_ACCOUNT_NOT_FOUND' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.blockchain_account_not_found',
+            'user_message_key' => 'error-manager::errors_2.user.blockchain_account_not_found',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'BLOCKCHAIN_ASSET_OPTIN_REQUIRED' => [
+            'type' => 'warning',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.blockchain_asset_optin_required',
+            'user_message_key' => 'error-manager::errors_2.user.blockchain_asset_optin_required',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'BLOCKCHAIN_NETWORK_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.blockchain_network_error',
+            'user_message_key' => 'error-manager::errors_2.user.blockchain_network_error',
+            'http_status_code' => 503,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'BLOCKCHAIN_TRANSACTION_POOL_ERROR' => [
+            'type' => 'warning',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.blockchain_transaction_pool_error',
+            'user_message_key' => 'error-manager::errors_2.user.blockchain_transaction_pool_error',
+            'http_status_code' => 503,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];

@@ -229,6 +229,38 @@ class ProcessEgiMintingJob implements ShouldQueue {
                 // Send failure notification if final attempt
                 if ($attempt >= $this->tries) {
                     $this->sendFailureNotification($egiBlockchain, $exception, $logger);
+                    
+                    // ROLLBACK: Ripristina stato EGI originale
+                    if ($egiBlockchain->egi) {
+                        $logger->warning('Rolling back EGI fields to pre-mint state', [
+                            'egi_id' => $egiBlockchain->egi_id,
+                            'current_status' => $egiBlockchain->egi->status,
+                            'current_mint' => $egiBlockchain->egi->mint,
+                            'current_owner_id' => $egiBlockchain->egi->owner_id
+                        ]);
+
+                        $egiBlockchain->egi->update([
+                            'owner_id' => $egiBlockchain->egi->user_id, // Ripristina owner originale (creator)
+                            'token' => null,           // Reset token
+                            'status' => 'published',   // Torna a published
+                            'token_EGI' => null,       // Reset ASA ID
+                            'mint' => false            // Reset flag mint
+                        ]);
+                    }
+                    
+                    // CLEANUP: Elimina record orphan dopo fallimento definitivo
+                    // Rationale: Senza rollback automatico, record failed inquinano DB
+                    // Log prima di eliminare per audit trail
+                    $logger->warning('Deleting orphan EgiBlockchain record after final failure', [
+                        'egi_blockchain_id' => $egiBlockchain->id,
+                        'egi_id' => $egiBlockchain->egi_id,
+                        'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                        'mint_status' => $egiBlockchain->mint_status,
+                        'mint_error' => $egiBlockchain->mint_error,
+                        'attempts' => $attempt
+                    ]);
+                    
+                    $egiBlockchain->delete();
                 }
             }
 
