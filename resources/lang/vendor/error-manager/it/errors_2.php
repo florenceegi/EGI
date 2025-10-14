@@ -102,6 +102,11 @@ return [
         'direct_mint_validation_error' => 'Errore validazione dati direct mint. User: :user_id, Errors: :errors',
         'mint_blocked_microservice_unavailable' => '🚨 MINT BLOCKED: Microservizio blockchain non disponibile. EGI: :egi_id, User: :user_id, Error: :error. Pagamento NON effettuato.',
         'mint_blocked_worker_unavailable' => '🚨 MINT BLOCKED: Queue worker non disponibile. EGI: :egi_id, User: :user_id. Auto-start fallito.',
+        'worker_status_check_failed' => 'Errore verifica stato queue worker. Error: :error, Trace: :trace',
+        'worker_manual_start_failed' => '🚨 Tentativo manuale avvio worker fallito. User: :user_id, Error: :error',
+        'queue_worker_check_failed' => 'Errore controllo queue worker. Queue: :queue, Error: :error',
+        'queue_worker_autostart_failed' => '🚨 CRITICAL: Auto-start queue worker FALLITO. Queue: :queue, Reason: :reason. Sistema non può elaborare mint!',
+        'queue_worker_autostart_exception' => '🚨 CRITICAL: Exception durante auto-start worker. Queue: :queue, Error: :error. Sistema compromesso!',
     ],
 
     'user' => [
@@ -198,6 +203,11 @@ return [
         'direct_mint_validation_error' => 'I dati inseriti non sono validi. Controlla e riprova.',
         'mint_blocked_microservice_unavailable' => 'Il servizio di certificazione blockchain non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l\'assistenza.',
         'mint_blocked_worker_unavailable' => 'Il sistema di elaborazione mint non è al momento disponibile. Il tuo pagamento NON è stato effettuato. Riprova tra qualche minuto o contatta l\'assistenza.',
+        'worker_status_check_failed' => 'Impossibile verificare lo stato del sistema. Riprova tra qualche secondo.',
+        'worker_manual_start_failed' => 'Impossibile avviare il sistema. Contatta l\'assistenza tecnica.',
+        'queue_worker_check_failed' => 'Errore nella verifica del sistema di elaborazione. Riprova tra qualche secondo.',
+        'queue_worker_autostart_failed' => 'Impossibile avviare automaticamente il sistema di elaborazione. Contatta l\'assistenza tecnica.',
+        'queue_worker_autostart_exception' => 'Errore critico nel sistema di elaborazione. Contatta immediatamente l\'assistenza tecnica.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

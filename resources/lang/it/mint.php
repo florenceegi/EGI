@@ -111,6 +111,15 @@ return [
         'mint_failed' => 'Mint fallito. Contatta l\'assistenza.',
         'invalid_wallet' => 'Indirizzo wallet non valido.',
         'blockchain_error' => 'Errore della blockchain. Riprova più tardi.',
+        'polling_timeout' => 'Timeout Elaborazione',
+        'polling_timeout_message' => 'Il mint potrebbe richiedere più tempo del previsto.',
+        'polling_timeout_instructions' => 'Ricarica la pagina tra 2-3 minuti<br>• Controlla lo stato del mint nella sezione "I Tuoi EGI"<br>• Se il problema persiste, contatta l\'assistenza',
+        'polling_reload_now' => 'Ricarica Ora',
+        'polling_close' => 'Chiudi',
+        'mint_error_generic' => 'Si è verificato un errore durante il mint',
+        'reload_page' => 'Ricarica Pagina',
+        'unknown_error' => 'Errore sconosciuto',
+        'submit_error_title' => 'Errore Durante il Mint',
     ],
 
     // Validation
@@ -140,6 +149,7 @@ return [
         'success_title' => 'Mint Completato!',
         'success_message' => 'Il tuo EGI è stato creato con successo sulla blockchain Algorand.',
         'view_transaction' => 'Visualizza Transazione',
+        'ok_button' => 'OK',
     ],
 
     // Status Messages (for already minted EGIs)
@@ -171,6 +181,9 @@ return [
         'success_message' => 'Il tuo EGI è stato mintato sulla blockchain Algorand ed è ora verificabile on-chain.',
         'asa_label' => 'Asset ID',
         'view_blockchain' => 'Visualizza sulla Blockchain',
+        'processing_title' => '⏳ Mint in Elaborazione',
+        'processing_message' => 'Il tuo EGI è in fase di creazione sulla blockchain Algorand. Riceverai una notifica quando sarà completato (5-10 minuti).',
+        'processing_note' => 'Puoi chiudere questa pagina e tornare più tardi. Lo stato sarà aggiornato automaticamente.',
     ],
 
     // Worker Status Progress
@@ -186,5 +199,13 @@ return [
         'step_1' => 'Verifica',
         'step_2' => 'Avvio',
         'step_3' => 'Pronto',
+        // API response messages
+        'api_ready' => 'Sistema pronto per elaborare il mint',
+        'api_starting' => 'Avvio sistema di elaborazione in corso...',
+        'api_checking' => 'Verifica disponibilità sistema...',
+        'api_error' => 'Impossibile verificare lo stato del sistema',
+        'api_start_success' => 'Worker avviato con successo',
+        'api_start_failed' => 'Impossibile avviare il worker. Contattare l\'amministratore.',
+        'api_start_error' => 'Errore durante avvio worker',
     ],
 ];

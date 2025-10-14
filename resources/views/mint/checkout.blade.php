@@ -371,7 +371,8 @@
                                             <div
                                                 class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
                                                 1</div>
-                                            <span class="ml-2 text-xs text-blue-900">{{ __('mint.worker.step_1') }}</span>
+                                            <span
+                                                class="ml-2 text-xs text-blue-900">{{ __('mint.worker.step_1') }}</span>
                                         </div>
                                     </div>
                                     <div class="mx-2 h-0.5 flex-1 bg-gray-300" id="progress-line-1"></div>
@@ -380,7 +381,8 @@
                                             <div
                                                 class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-xs font-bold text-gray-600">
                                                 2</div>
-                                            <span class="ml-2 text-xs text-gray-600">{{ __('mint.worker.step_2') }}</span>
+                                            <span
+                                                class="ml-2 text-xs text-gray-600">{{ __('mint.worker.step_2') }}</span>
                                         </div>
                                     </div>
                                     <div class="mx-2 h-0.5 flex-1 bg-gray-300" id="progress-line-2"></div>
@@ -389,7 +391,8 @@
                                             <div
                                                 class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-xs font-bold text-gray-600">
                                                 3</div>
-                                            <span class="ml-2 text-xs text-gray-600">{{ __('mint.worker.step_3') }}</span>
+                                            <span
+                                                class="ml-2 text-xs text-gray-600">{{ __('mint.worker.step_3') }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -529,7 +532,7 @@
                     ready: '{{ __('mint.worker.ready') }}',
                     unavailable: '{{ __('mint.worker.unavailable') }}'
                 };
-                
+
 
                 const progressContainer = document.getElementById('worker-progress-container');
                 const progressBar = document.getElementById('worker-progress-bar');
@@ -787,8 +790,8 @@
                         Swal.fire({
                             icon: 'error',
                             title: '{{ __('mint.errors.mint_failed') }}',
-                            text: data.error || 'Si è verificato un errore durante il mint',
-                            confirmButtonText: 'Ricarica Pagina',
+                            text: data.error || '{{ __('mint.errors.mint_error_generic') }}',
+                            confirmButtonText: '{{ __('mint.errors.reload_page') }}',
                             confirmButtonColor: '#DC2626',
                             allowOutsideClick: false
                         }).then((result) => {
@@ -797,7 +800,7 @@
                             }
                         });
                     } else {
-                        alert(`{{ __('mint.errors.mint_failed') }}\n\n${data.error || 'Unknown error'}`);
+                        console.error('Mint failed:', data.error || '{{ __('mint.errors.unknown_error') }}');
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
@@ -812,14 +815,12 @@
                         Swal.fire({
                             icon: 'info',
                             title: '{{ __('mint.errors.polling_timeout') }}',
-                            html: 'Il mint potrebbe richiedere più tempo del previsto.<br><br>' +
-                                  '<strong>Cosa fare:</strong><br>' +
-                                  '• Ricarica la pagina tra 2-3 minuti<br>' +
-                                  '• Controlla lo stato del mint nella sezione "I Tuoi EGI"<br>' +
-                                  '• Se il problema persiste, contatta l\'assistenza',
-                            confirmButtonText: 'Ricarica Ora',
+                            html: '{{ __('mint.errors.polling_timeout_message') }}<br><br>' +
+                                '<strong>Cosa fare:</strong><br>' +
+                                '• {{ __('mint.errors.polling_timeout_instructions') }}',
+                            confirmButtonText: '{{ __('mint.errors.polling_reload_now') }}',
                             showCancelButton: true,
-                            cancelButtonText: 'Chiudi',
+                            cancelButtonText: '{{ __('mint.errors.polling_close') }}',
                             confirmButtonColor: '#3B82F6',
                             cancelButtonColor: '#6B7280'
                         }).then((result) => {
@@ -828,7 +829,8 @@
                             }
                         });
                     } else {
-                        alert('{{ __('mint.errors.polling_timeout') }}\n\nIl mint potrebbe richiedere più tempo del previsto. Ricarica la pagina tra qualche minuto per verificare lo stato.');
+                        console.error('{{ __('mint.errors.polling_timeout') }}:',
+                            '{{ __('mint.errors.polling_timeout_message') }}');
                     }
                 }
 
@@ -843,33 +845,11 @@
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                // STEP 1: Check worker availability with visual progress
-                const workerReady = await checkWorkerWithProgress();
+                // STEP 1: Show progress bar (INFORMATIVE ONLY - backend handles auto-start)
+                // Fire and forget - don't block submission
+                checkWorkerWithProgress();
 
-                if (!workerReady) {
-                    // Show error with SweetAlert2
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            title: '{{ __('mint.worker.error_title') }}',
-                            html: '{{ __('mint.worker.error_message') }}',
-                            confirmButtonText: '{{ __('mint.worker.error_button') }}',
-                            confirmButtonColor: '#DC2626',
-                            showClass: {
-                                popup: 'animate__animated animate__fadeIn'
-                            },
-                            hideClass: {
-                                popup: 'animate__animated animate__fadeOut'
-                            }
-                        });
-                    } else {
-                        // Fallback toast if SweetAlert2 not loaded
-                        console.error('Worker unavailable and SweetAlert2 not loaded');
-                    }
-                    return;
-                }
-
-                // Show loading modal (EXISTING - kept as is)
+                // Show loading modal immediately
                 document.getElementById('loading-modal').classList.remove('hidden');
 
                 try {
@@ -904,18 +884,18 @@
                 } catch (error) {
                     console.error('Mint error:', error);
                     document.getElementById('loading-modal').classList.add('hidden');
-                    
+
                     // Show error with SweetAlert2
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Errore Durante il Mint',
+                            title: '{{ __('mint.errors.submit_error_title') }}',
                             text: error.message || '{{ __('mint.js.default_error') }}',
-                            confirmButtonText: 'OK',
+                            confirmButtonText: '{{ __('mint.js.ok_button') }}',
                             confirmButtonColor: '#DC2626'
                         });
                     } else {
-                        alert('{{ __('mint.js.error_prefix') }}' + error.message);
+                        console.error('{{ __('mint.js.error_prefix') }}', error.message);
                     }
                 }
             });
@@ -934,9 +914,9 @@
                             </svg>
                         </div>
                         <div class="ml-4 flex-1">
-                            <h3 class="text-lg font-semibold text-blue-900">⏳ Mint in Elaborazione</h3>
-                            <p class="mt-1 text-sm text-blue-800">Il tuo EGI è in fase di creazione sulla blockchain Algorand. Riceverai una notifica quando sarà completato (5-10 minuti).</p>
-                            <p class="mt-2 text-xs text-blue-600">Puoi chiudere questa pagina e tornare più tardi. Lo stato sarà aggiornato automaticamente.</p>
+                            <h3 class="text-lg font-semibold text-blue-900">{{ __('mint.notification.processing_title') }}</h3>
+                            <p class="mt-1 text-sm text-blue-800">{{ __('mint.notification.processing_message') }}</p>
+                            <p class="mt-2 text-xs text-blue-600">{{ __('mint.notification.processing_note') }}</p>
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-blue-600 transition-colors hover:text-blue-900">
@@ -973,20 +953,20 @@
                             <h3 class="text-lg font-semibold text-green-900">{{ __('mint.notification.success_title') }}</h3>
                             <p class="mt-1 text-sm text-green-800">{{ __('mint.notification.success_message') }}</p>
                             ${data.asaId ? `
-                                                                        <div class="p-3 mt-3 border rounded-lg border-green-300 bg-green-50">
-                                                                            <div class="flex items-center justify-between mb-2 text-sm">
-                                                                                <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                                                                <span class="font-mono font-bold text-green-900">${data.asaId}</span>
-                                                                            </div>
-                                                                            <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
-                                                                               class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                                </svg>
-                                                                                {{ __('mint.notification.view_blockchain') }}
-                                                                            </a>
-                                                                        </div>
-                                                                    ` : ''}
+                                                                                        <div class="p-3 mt-3 border rounded-lg border-green-300 bg-green-50">
+                                                                                            <div class="flex items-center justify-between mb-2 text-sm">
+                                                                                                <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
+                                                                                                <span class="font-mono font-bold text-green-900">${data.asaId}</span>
+                                                                                            </div>
+                                                                                            <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
+                                                                                               class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
+                                                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                                </svg>
+                                                                                                {{ __('mint.notification.view_blockchain') }}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    ` : ''}
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-green-600 transition-colors hover:text-green-900">

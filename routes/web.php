@@ -420,6 +420,10 @@ Route::prefix('traits')->group(function () {
         ->middleware('auth');
 });
 
+// Worker status check (AJAX for progress bar - PUBLIC endpoint for status monitoring)
+Route::get('worker/status', [App\Http\Controllers\Api\WorkerStatusController::class, 'getStatus'])
+    ->name('worker.status.check');
+
 // Utility management routes
 Route::middleware(['auth'])->group(function () {
     Route::post('utilities', [App\Http\Controllers\UtilityController::class, 'store'])->name('utilities.store');
@@ -430,9 +434,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('mint/status/{egiId}', [App\Http\Controllers\Api\MintStatusController::class, 'getMintStatus'])
         ->name('mint.status.check');
 
-    // Worker status check (AJAX for progress bar)
-    Route::get('worker/status', [App\Http\Controllers\Api\WorkerStatusController::class, 'getStatus'])
-        ->name('worker.status.check');
+    // Worker start (admin only - requires auth)
     Route::post('worker/start', [App\Http\Controllers\Api\WorkerStatusController::class, 'attemptStart'])
         ->name('worker.attempt.start');
 });

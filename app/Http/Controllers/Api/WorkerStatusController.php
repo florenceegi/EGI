@@ -14,15 +14,23 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Services\QueueWorkerService;
 use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 class WorkerStatusController extends Controller {
     protected QueueWorkerService $workerService;
     protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
 
-    public function __construct(QueueWorkerService $workerService, UltraLogManager $logger) {
-        $this->middleware('auth');
+    public function __construct(
+        QueueWorkerService $workerService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        // NO auth middleware - getStatus() is public for frontend progress bar
+        // attemptStart() requires auth and is protected by route middleware
         $this->workerService = $workerService;
         $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
 
     /**
@@ -37,15 +45,15 @@ class WorkerStatusController extends Controller {
             // Determine user-friendly status
             if ($status['is_running'] && $status['process_count'] > 0) {
                 $userStatus = 'ready';
-                $message = 'Sistema pronto per elaborare il mint';
+                $message = __('mint.worker.api_ready');
                 $canProceed = true;
             } elseif (!$status['is_running']) {
                 $userStatus = 'starting';
-                $message = 'Avvio sistema di elaborazione in corso...';
+                $message = __('mint.worker.api_starting');
                 $canProceed = false;
             } else {
                 $userStatus = 'checking';
-                $message = 'Verifica disponibilità sistema...';
+                $message = __('mint.worker.api_checking');
                 $canProceed = false;
             }
 
@@ -60,13 +68,14 @@ class WorkerStatusController extends Controller {
                 ]
             ]);
         } catch (\Exception $e) {
-            $this->logger->error('Worker status check failed', [
-                'error' => $e->getMessage()
-            ]);
+            $this->errorManager->handle('WORKER_STATUS_CHECK_FAILED', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], $e);
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'Impossibile verificare lo stato del sistema',
+                'message' => __('mint.worker.api_error'),
                 'can_proceed' => false,
             ], 500);
         }
@@ -88,23 +97,24 @@ class WorkerStatusController extends Controller {
             if ($success) {
                 return response()->json([
                     'status' => 'started',
-                    'message' => 'Worker avviato con successo'
+                    'message' => __('mint.worker.api_start_success')
                 ]);
             }
 
             return response()->json([
                 'status' => 'failed',
-                'message' => 'Impossibile avviare il worker. Contattare l\'amministratore.'
+                'message' => __('mint.worker.api_start_failed')
             ], 503);
         } catch (\Exception $e) {
-            $this->logger->error('Manual worker start failed', [
+            $this->errorManager->handle('WORKER_MANUAL_START_FAILED', [
                 'error' => $e->getMessage(),
-                'user_id' => auth()->id()
-            ]);
+                'user_id' => auth()->id(),
+                'trace' => $e->getTraceAsString()
+            ], $e);
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'Errore durante avvio worker'
+                'message' => __('mint.worker.api_start_error')
             ], 500);
         }
     }
