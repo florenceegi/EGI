@@ -455,7 +455,152 @@ Se stai per aggiungere ->take() o ->limit() in StatisticsService:
 
 ---
 
-## **📏 META-REGOLA: VISIBILITY PRINCIPLE**
+## **� REGOLA UEM-FIRST - ERROR HANDLING SACRO**
+
+### **DIVIETO ASSOLUTO: MAI SOSTITUIRE UEM CON ULM**
+
+**UEM (ErrorManager) e ULM (UltraLogManager) sono SISTEMI DIVERSI:**
+
+| Sistema | Scopo | Quando usarlo |
+|---------|-------|---------------|
+| **UEM** | **Gestione errori strutturata** con codici, messaggi user/dev, HTTP status, blocking level, alert team | Errori applicativi, business logic failures, situazioni che richiedono attenzione |
+| **ULM** | **Logging generico** per debug, trace, monitoring | Debug flows, performance tracking, trace normale |
+
+### **CHECKPOINT OBBLIGATORIO PRIMA DI TOCCARE errorManager->handle():**
+
+```
+[ ] L'utente ha ESPLICITAMENTE chiesto di rimuovere UEM?
+    └─ SE NO → 🛑 STOP - NON TOCCARE UEM
+
+[ ] Esiste un commento che spiega perché si usa UEM?
+    └─ SE SÌ → 🛑 STOP - RISPETTA LA SCELTA ARCHITETTONICA
+
+[ ] Il codice gestisce errori applicativi/business logic?
+    └─ SE SÌ → 🛑 STOP - UEM È LA SCELTA CORRETTA
+
+[ ] Mi hanno chiesto di "aggiungere debug/logging"?
+    └─ SE SÌ → AGGIUNGI ULM, NON SOSTITUIRE UEM
+```
+
+### **PATTERN CORRETTO - UEM + ULM COESISTONO:**
+
+```php
+// ✅ CORRETTO - UEM e ULM insieme
+public function riskyOperation() {
+    // ULM: Trace inizio operazione
+    $this->logger->debug('Starting risky operation', ['context' => '...']);
+    
+    try {
+        // ... business logic ...
+        
+        // ULM: Trace successo
+        $this->logger->info('Operation completed successfully');
+        
+    } catch (\Exception $e) {
+        // UEM: Gestione errore strutturato (ALERT TEAM)
+        $this->errorManager->handle('OPERATION_FAILED', [
+            'context' => '...',
+            'user_id' => Auth::id()
+        ], $e);
+        
+        // ULM: Trace tentativo recovery
+        $this->logger->info('Attempting recovery');
+        
+        // Recovery logic...
+    }
+}
+
+// ❌ SBAGLIATO - ULM al posto di UEM
+public function riskyOperation() {
+    try {
+        // ... business logic ...
+    } catch (\Exception $e) {
+        // ❌ ERRORE: ULM non allerta nessuno, solo log silenzioso
+        $this->logger->error('Operation failed', ['error' => $e->getMessage()]);
+        // Team non riceve notifica, utente non riceve messaggio user-friendly
+    }
+}
+```
+
+### **QUANDO AGGIUNGERE DEBUG:**
+
+**Task: "Aggiungi debug/logging per capire cosa succede"**
+
+**AZIONE CORRETTA:**
+1. LEGGI codice esistente
+2. IDENTIFICA dove c'è già UEM
+3. AGGIUNGI ULM per trace PRIMA/DOPO UEM
+4. **NON TOCCARE** le chiamate UEM esistenti
+
+**Esempio pratico:**
+
+```php
+// CODICE ORIGINALE (utente ha già implementato)
+try {
+    $response = Http::get($url);
+} catch (\Exception $e) {
+    $this->errorManager->handle('API_ERROR', [...], $e); // UEM esistente
+    return false;
+}
+
+// ✅ AGGIUNGERE DEBUG CORRETTO
+$this->logger->debug('Calling external API', ['url' => $url]); // ULM AGGIUNTO
+try {
+    $response = Http::get($url);
+    $this->logger->info('API call successful'); // ULM AGGIUNTO
+} catch (\Exception $e) {
+    $this->logger->error('API call failed', ['error' => $e->getMessage()]); // ULM AGGIUNTO
+    $this->errorManager->handle('API_ERROR', [...], $e); // UEM INTATTO
+    return false;
+}
+
+// ❌ DEBUG SBAGLIATO (sostituire UEM)
+$this->logger->debug('Calling external API', ['url' => $url]);
+try {
+    $response = Http::get($url);
+} catch (\Exception $e) {
+    $this->logger->error('API_ERROR', [...], $e); // ❌ SBAGLIATO: hai sostituito UEM!
+    return false;
+}
+```
+
+### **SE VIOLO QUESTA REGOLA:**
+
+```
+🛑 VIOLAZIONE UEM-FIRST RILEVATA!
+
+File: [path]
+Linea: [number]
+Violazione: Ho sostituito errorManager->handle() con logger->error()
+
+AZIONI IMMEDIATE:
+1. 🛑 STOP immediatamente
+2. 📝 Dichiaro violazione all'utente
+3. 🔄 REVERT completo alla versione con UEM
+4. ✅ Propongo soluzione che AGGIUNGE ULM SENZA toccare UEM
+5. ⏳ Aspetto conferma esplicita prima di procedere
+```
+
+### **RATIONALE:**
+
+**UEM non è "solo un logger più complesso":**
+- ✅ Invia notifiche al team (toast, email, Slack)
+- ✅ Gestisce messaggi separati user/dev
+- ✅ Ritorna HTTP status code appropriati
+- ✅ Definisce blocking level (not/semi-blocking/blocking)
+- ✅ Struttura errori per monitoring/alerting
+
+**Se sostituisci UEM con ULM:**
+- ❌ Team non riceve alert su errori critici
+- ❌ Utenti vedono errori tecnici invece di messaggi user-friendly
+- ❌ Perdi tracking strutturato errori
+- ❌ Monitoring/alerting smette di funzionare
+
+**Questa regola è P0-BLOCKING: violarla significa rompere error handling enterprise-grade.**
+
+---
+
+## **�📏 META-REGOLA: VISIBILITY PRINCIPLE**
 
 **Qualsiasi operazione che LIMITA dati deve essere:**
 

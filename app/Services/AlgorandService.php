@@ -95,11 +95,17 @@ class AlgorandService {
      * @throws \Exception Se microservizio non raggiungibile e non avviabile
      */
     private function ensureMicroserviceRunning(): bool {
+        // ULM: Trace health check start
+        $this->logger->debug('Microservice health check starting', [
+            'url' => $this->microserviceUrl
+        ]);
+
         try {
             // Tentativo di health check
             $response = Http::timeout(5)->get($this->microserviceUrl . '/health');
 
             if ($response->successful()) {
+                // ULM: Trace health check success
                 $this->logger->debug('Microservice health check passed', [
                     'url' => $this->microserviceUrl,
                     'status' => 'healthy'
@@ -107,11 +113,23 @@ class AlgorandService {
                 return true;
             }
         } catch (\Exception $e) {
-            // Microservizio non raggiungibile - USA UEM PER ALERT TEAM
+            // ULM: Trace health check failure
+            $this->logger->warning('Microservice health check failed', [
+                'url' => $this->microserviceUrl,
+                'error' => $e->getMessage(),
+                'exception_class' => get_class($e)
+            ]);
+
+            // UEM: Gestione errore strutturato (ALERT TEAM)
             $this->errorManager->handle('MICROSERVICE_NOT_REACHABLE', [
                 'url' => $this->microserviceUrl,
                 'error' => $e->getMessage()
             ], $e);
+
+            // ULM: Trace auto-start attempt
+            $this->logger->info('Attempting microservice auto-start', [
+                'timestamp' => now()->toDateTimeString()
+            ]);
 
             // Tentativo di auto-start
             return $this->attemptMicroserviceAutoStart();
@@ -138,61 +156,98 @@ class AlgorandService {
                 return false;
             }
 
-            // Comando per avviare il microservizio in background
+            // FIXED: Usa shell_exec con output completo per debug
             $command = sprintf(
-                'cd %s && node server.js > /dev/null 2>&1 & echo $!',
+                'cd %s && node server.js > /tmp/algokit-autostart.log 2>&1 & echo $!',
                 escapeshellarg($microservicePath)
             );
 
-            $this->errorManager->handle('MICROSERVICE_AUTO_START_ATTEMPT', [
+            // ULM: Trace auto-start command
+            $this->logger->info('Microservice auto-start command prepared', [
                 'command' => $command,
                 'path' => $microservicePath,
                 'timestamp' => now()->toDateTimeString()
-            ], new \Exception('Microservice auto-start initiated'));
+            ]);
 
             // Esegue il comando e cattura il PID
-            $pid = exec($command);
+            $output = shell_exec($command);
+            $pid = trim($output);
+
+            // ULM: Trace PID capture
+            $this->logger->debug('Microservice auto-start PID captured', [
+                'pid' => $pid,
+                'is_numeric' => is_numeric($pid)
+            ]);
 
             if (!empty($pid) && is_numeric($pid)) {
-                // Attendere 2 secondi per permettere l'avvio
-                sleep(2);
+                // Attendere 3 secondi per permettere l'avvio (aumentato da 2)
+                sleep(3);
 
                 // Verifica che il processo sia ancora attivo
-                $processCheck = exec("ps -p {$pid} -o pid=");
+                $processCheck = trim(shell_exec("ps -p {$pid} -o pid= 2>/dev/null"));
+
+                // ULM: Trace process verification
+                $this->logger->debug('Microservice process verification', [
+                    'pid' => $pid,
+                    'process_check' => $processCheck,
+                    'is_running' => !empty($processCheck)
+                ]);
 
                 if (!empty($processCheck)) {
-                    // Verifica health check dopo avvio
-                    try {
-                        $response = Http::timeout(5)->get($this->microserviceUrl . '/health');
+                    // Verifica health check dopo avvio con retry
+                    for ($i = 0; $i < 3; $i++) {
+                        try {
+                            $response = Http::timeout(5)->get($this->microserviceUrl . '/health');
 
-                        if ($response->successful()) {
-                            // SUCCESS - USA UEM PER ALERT TEAM
-                            $this->errorManager->handle('MICROSERVICE_AUTO_STARTED_SUCCESS', [
-                                'pid' => $pid,
-                                'url' => $this->microserviceUrl,
-                                'startup_time_seconds' => 2
-                            ], new \Exception('Microservice was down and required auto-start'));
+                            if ($response->successful()) {
+                                // UEM: SUCCESS - ALERT TEAM
+                                $this->errorManager->handle('MICROSERVICE_AUTO_STARTED_SUCCESS', [
+                                    'pid' => $pid,
+                                    'url' => $this->microserviceUrl,
+                                    'startup_time_seconds' => 3,
+                                    'health_check_attempts' => $i + 1
+                                ], new \Exception('Microservice was down and required auto-start'));
 
-                            return true;
+                                return true;
+                            }
+                        } catch (\Exception $e) {
+                            if ($i < 2) {
+                                sleep(1); // Attendi 1 secondo prima di ritentare
+                            } else {
+                                // UEM: Health check failed after start
+                                $this->errorManager->handle('MICROSERVICE_HEALTH_CHECK_FAILED', [
+                                    'pid' => $pid,
+                                    'error' => $e->getMessage(),
+                                    'attempts' => $i + 1
+                                ], $e);
+                            }
                         }
-                    } catch (\Exception $e) {
-                        // Health check failed after start - USA UEM
-                        $this->errorManager->handle('MICROSERVICE_HEALTH_CHECK_FAILED', [
-                            'pid' => $pid,
-                            'error' => $e->getMessage()
-                        ], $e);
                     }
+                } else {
+                    // ULM: Trace process death
+                    $this->logger->error('Microservice process died immediately', [
+                        'pid' => $pid,
+                        'log_file' => '/tmp/algokit-autostart.log'
+                    ]);
                 }
+            } else {
+                // ULM: Trace invalid PID
+                $this->logger->error('Microservice invalid PID received', [
+                    'pid' => $pid,
+                    'output' => $output
+                ]);
             }
 
-            // Auto-start fallito
+            // UEM: Auto-start fallito
             $this->errorManager->handle('MICROSERVICE_AUTO_START_FAILED', [
                 'command' => $command,
-                'pid' => $pid ?? 'none'
+                'pid' => $pid ?? 'none',
+                'log_file' => '/tmp/algokit-autostart.log'
             ], new \Exception('Microservice auto-start failed'));
 
             return false;
         } catch (\Exception $e) {
+            // UEM: Auto-start error
             $this->errorManager->handle('MICROSERVICE_AUTO_START_ERROR', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()

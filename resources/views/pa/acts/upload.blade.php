@@ -243,7 +243,8 @@
 
             {{-- Checkbox Tokenization --}}
             <div class="mb-6">
-                <label class="flex cursor-pointer items-start space-x-3 rounded-lg border-2 border-[#2D5016] bg-white p-4 transition-all hover:shadow-md">
+                <label
+                    class="flex cursor-pointer items-start space-x-3 rounded-lg border-2 border-[#2D5016] bg-white p-4 transition-all hover:shadow-md">
                     <input type="checkbox" id="enable_tokenization" name="enable_tokenization" value="1"
                         checked
                         class="mt-1 h-5 w-5 cursor-pointer rounded border-gray-300 text-[#2D5016] transition-all focus:ring-2 focus:ring-[#2D5016] focus:ring-offset-2" />
@@ -252,7 +253,8 @@
                             Abilita Tokenizzazione su Blockchain Algorand
                         </span>
                         <p class="mt-2 text-sm text-gray-600">
-                            L'hash del documento verrà ancorato su blockchain Algorand tramite il nostro microservizio AlgoKit.
+                            L'hash del documento verrà ancorato su blockchain Algorand tramite il nostro microservizio
+                            AlgoKit.
                             Questo garantisce l'immutabilità e la verificabilità del documento nel tempo.
                         </p>
                     </div>
@@ -424,7 +426,9 @@
                                 body: formData,
                                 headers: {
                                     'X-Requested-With': 'XMLHttpRequest',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || formData.get('_token')
+                                    'X-CSRF-TOKEN': document.querySelector(
+                                        'meta[name="csrf-token"]')?.content || formData.get(
+                                        '_token')
                                 }
                             });
 
@@ -449,11 +453,11 @@
                                             <p class="text-sm mt-2"><strong>Protocollo:</strong> ${data.data.protocol_number}</p>
                                             <p class="text-sm mt-2"><strong>Status:</strong> <span class="text-yellow-600">In attesa di ancoraggio</span></p>
                                             ${data.data.natan_analysis ? `
-                                                                    <div class="mt-3 pt-3 border-t border-blue-200">
-                                                                        <p class="text-xs text-[#1B365D] font-medium">🤖 N.A.T.A.N. Analysis</p>
-                                                                        <p class="text-xs text-gray-600">Analisi AI completata con successo</p>
-                                                                    </div>
-                                                                    ` : ''}
+                                                                            <div class="mt-3 pt-3 border-t border-blue-200">
+                                                                                <p class="text-xs text-[#1B365D] font-medium">🤖 N.A.T.A.N. Analysis</p>
+                                                                                <p class="text-xs text-gray-600">Analisi AI completata con successo</p>
+                                                                            </div>
+                                                                            ` : ''}
                                         </div>
                                     </div>
                                 `,
