@@ -166,13 +166,60 @@ class MintEgiJob implements ShouldQueue {
 
     /**
      * Handle job failure after all retries
+     * CRITICAL: Rollback EGI state + cleanup orphan records
      */
     public function failed(\Throwable $exception): void {
+        $logger = app(\Ultra\UltraLogManager\UltraLogManager::class);
+        
         $egiBlockchain = EgiBlockchain::find($this->egiBlockchainId);
+        
         if ($egiBlockchain) {
+            // Update final error status
             $egiBlockchain->update([
                 'mint_status' => 'failed',
                 'mint_error' => 'Job failed after ' . $this->tries . ' attempts: ' . $exception->getMessage()
+            ]);
+
+            // ROLLBACK: Ripristina stato EGI originale
+            if ($egiBlockchain->egi) {
+                $logger->warning('Rolling back EGI fields to pre-mint state after final failure', [
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'egi_id' => $egiBlockchain->egi_id,
+                    'current_status' => $egiBlockchain->egi->status,
+                    'current_mint' => $egiBlockchain->egi->mint,
+                    'current_owner_id' => $egiBlockchain->egi->owner_id,
+                    'will_restore_to_user_id' => $egiBlockchain->egi->user_id
+                ]);
+
+                $egiBlockchain->egi->update([
+                    'owner_id' => $egiBlockchain->egi->user_id, // Ripristina owner originale (creator)
+                    'token' => null,           // Reset token
+                    'status' => 'published',   // Torna a published
+                    'token_EGI' => null,       // Reset ASA ID
+                    'mint' => false            // Reset flag mint
+                ]);
+
+                $logger->info('EGI fields rolled back successfully', [
+                    'egi_id' => $egiBlockchain->egi_id,
+                    'restored_owner_id' => $egiBlockchain->egi->user_id,
+                    'restored_status' => 'published'
+                ]);
+            }
+
+            // CLEANUP: Elimina record orphan dopo fallimento definitivo
+            $logger->warning('Deleting orphan EgiBlockchain record after final failure', [
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'egi_id' => $egiBlockchain->egi_id,
+                'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                'mint_status' => $egiBlockchain->mint_status,
+                'mint_error' => $egiBlockchain->mint_error,
+                'attempts' => $this->tries
+            ]);
+
+            $egiBlockchain->delete();
+
+            $logger->info('Orphan EgiBlockchain record deleted', [
+                'egi_blockchain_id' => $this->egiBlockchainId
             ]);
         }
     }
