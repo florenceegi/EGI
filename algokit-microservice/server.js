@@ -256,6 +256,59 @@ app.post("/anchor-document", async (req, res) => {
     }
 });
 
+// Get account information endpoint
+app.get("/account/:address", async (req, res) => {
+    try {
+        const { address } = req.params;
+
+        if (!address || address.length !== 58) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid Algorand address (must be 58 characters)",
+            });
+        }
+
+        console.log(`📊 ACCOUNT INFO REQUEST: ${address}`);
+
+        // Get account information from Algorand network
+        const accountInfo = await algodClient
+            .accountInformation(address)
+            .do();
+
+        console.log(`✅ ACCOUNT INFO RETRIEVED: ${address}`, {
+            balance: accountInfo.amount,
+            assets: accountInfo.assets ? accountInfo.assets.length : 0,
+        });
+
+        res.json({
+            success: true,
+            data: {
+                address: accountInfo.address,
+                amount: accountInfo.amount, // microAlgos
+                assets: accountInfo.assets || [],
+                created_assets: accountInfo["created-assets"] || [],
+                min_balance: accountInfo["min-balance"],
+                status: accountInfo.status,
+            },
+        });
+    } catch (error) {
+        console.error(`❌ ACCOUNT INFO FAILED: ${req.params.address}`, error);
+
+        // Handle account not found (404) vs other errors (500)
+        if (error.message && error.message.includes("account does not exist")) {
+            return res.status(404).json({
+                success: false,
+                error: `Account ${req.params.address} does not exist on ${NETWORK_MODE}`,
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`🔥 REAL BLOCKCHAIN MICROSERVICE running on port ${PORT}`);

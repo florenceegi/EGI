@@ -170,9 +170,9 @@ class MintEgiJob implements ShouldQueue {
      */
     public function failed(\Throwable $exception): void {
         $logger = app(\Ultra\UltraLogManager\UltraLogManager::class);
-        
+
         $egiBlockchain = EgiBlockchain::find($this->egiBlockchainId);
-        
+
         if ($egiBlockchain) {
             // Update final error status
             $egiBlockchain->update([
