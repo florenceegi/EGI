@@ -204,7 +204,7 @@ class MintController extends Controller {
 
                     return response()->json([
                         'error' => 'insufficient_funds',
-                        'message' => 'Fondi insufficienti nel sistema. Il pagamento NON è stato effettuato. Contatta l\'assistenza.'
+                        'message' => __('mint.errors.insufficient_treasury_funds')
                     ], 503);
                 }
 
@@ -573,7 +573,7 @@ class MintController extends Controller {
 
                     return response()->json([
                         'error' => 'insufficient_funds',
-                        'message' => 'Fondi insufficienti nel sistema. Il pagamento NON è stato effettuato. Contatta l\'assistenza.'
+                        'message' => __('mint.errors.insufficient_treasury_funds')
                     ], 503);
                 }
 

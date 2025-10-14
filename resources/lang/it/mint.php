@@ -111,6 +111,11 @@ return [
         'mint_failed' => 'Mint fallito. Contatta l\'assistenza.',
         'invalid_wallet' => 'Indirizzo wallet non valido.',
         'blockchain_error' => 'Errore della blockchain. Riprova più tardi.',
+        'insufficient_treasury_funds' => "⚠️ Servizio temporaneamente non disponibile.\n\n" .
+                                         "Il sistema non dispone al momento dei fondi necessari per completare il mint.\n\n" .
+                                         "✅ Il tuo pagamento NON è stato addebitato.\n" .
+                                         "✅ Il team tecnico è stato allertato automaticamente.\n\n" .
+                                         "Riprova tra qualche minuto o contatta l'assistenza.",
         'polling_timeout' => 'Timeout Elaborazione',
         'polling_timeout_message' => 'Il mint potrebbe richiedere più tempo del previsto.',
         'polling_timeout_instructions' => 'Ricarica la pagina tra 2-3 minuti<br>• Controlla lo stato del mint nella sezione "I Tuoi EGI"<br>• Se il problema persiste, contatta l\'assistenza',

@@ -866,9 +866,25 @@
                     });
 
                     if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Server response:', errorText);
-                        throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+                        // Try to parse JSON error response first
+                        try {
+                            const errorData = await response.json();
+                            
+                            // If we have a user-friendly message from server, use it
+                            if (errorData.message) {
+                                throw new Error(errorData.message);
+                            }
+                            
+                            // Otherwise use error code
+                            if (errorData.error) {
+                                throw new Error(errorData.error);
+                            }
+                        } catch (jsonError) {
+                            // If JSON parsing fails, fallback to text
+                            const errorText = await response.text();
+                            console.error('Server response:', errorText);
+                            throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+                        }
                     }
 
                     const result = await response.json();
