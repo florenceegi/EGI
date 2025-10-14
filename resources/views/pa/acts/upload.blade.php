@@ -161,7 +161,7 @@
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-[#1B365D]">3. N.A.T.A.N. - Analisi Intelligente</h2>
-                    <p class="text-sm text-gray-600">Neuro-Analytical Text Analysis Network per l'Intelligenza
+                    <p class="text-sm text-gray-600">Nodo di Analisi e Tracciamento Atti Notarizzati per l'Intelligenza
                         Documentale</p>
                 </div>
             </div>

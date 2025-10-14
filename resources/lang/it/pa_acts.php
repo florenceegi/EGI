@@ -2,18 +2,18 @@
 
 /**
  * Italian translations for N.A.T.A.N. Intelligence System
- * 
+ *
  * @package Resources\Lang\IT
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - N.A.T.A.N. AI Document Intelligence)
  * @date 2025-10-04
- * @purpose Localizzazione italiana per sistema N.A.T.A.N. - Neuro-Analytical Text Analysis Network
+ * @purpose Localizzazione italiana per sistema N.A.T.A.N. - Nodo di Analisi e Tracciamento Atti Notarizzati
  */
 
 return [
     // Page titles
     'title' => 'N.A.T.A.N. Intelligence Center',
-    'page_title' => 'N.A.T.A.N. - Neuro-Analytical Text Analysis Network',
+    'page_title' => 'N.A.T.A.N. - Nodo di Analisi e Tracciamento Atti Notarizzati',
     'dashboard_title' => 'N.A.T.A.N. AI Dashboard',
 
     // Actions
@@ -192,7 +192,7 @@ return [
     // Index page
     'index' => [
         'page_title' => 'N.A.T.A.N. Intelligence Center',
-        'title' => 'N.A.T.A.N. - Neuro-Analytical Text Analysis Network',
+        'title' => 'N.A.T.A.N. - Nodo di Analisi e Tracciamento Atti Notarizzati',
         'subtitle' => 'Intelligenza Artificiale per l\'analisi e certificazione blockchain degli atti amministrativi',
         'upload_new_act' => 'Carica Nuovo Atto',
 

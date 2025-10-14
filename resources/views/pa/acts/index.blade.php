@@ -198,7 +198,7 @@
                 </div>
 
                 <div class="mb-3 text-sm text-white/90">
-                    Neuro-Analytical Text Analysis Network
+                    Nodo di Analisi e Tracciamento Atti Notarizzati
                 </div>
 
                 {{-- Chat AI Button --}}

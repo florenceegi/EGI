@@ -2,7 +2,7 @@
 
 /**
  * English translations for PA Acts Tokenization System
- * 
+ *
  * @package Resources\Lang\EN
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - PA Acts Tokenization)
@@ -12,9 +12,9 @@
 
 return [
     // Page titles
-    'title' => 'Tokenized Acts',
+    'title' => 'N.A.T.A.N. Intelligence Center',
     'page_title' => 'Administrative Acts Management',
-    'dashboard_title' => 'Acts Dashboard',
+    'dashboard_title' => 'N.A.T.A.N. AI Dashboard',
 
     // Actions
     'upload_act' => 'Upload Act',
