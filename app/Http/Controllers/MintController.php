@@ -184,7 +184,7 @@ class MintController extends Controller {
             $algorandService = app(\App\Services\AlgorandService::class);
             try {
                 $fundsCheck = $algorandService->checkTreasuryFunds(Auth::user());
-                
+
                 if (!$fundsCheck['has_sufficient_funds']) {
                     $this->logger->error('Mint blocked - insufficient treasury funds', [
                         'user_id' => Auth::id(),
@@ -193,7 +193,7 @@ class MintController extends Controller {
                         'required_algo' => $fundsCheck['required_algo'],
                         'treasury_address' => $fundsCheck['treasury_address']
                     ]);
-                    
+
                     $this->errorManager->handle('MINT_BLOCKED_INSUFFICIENT_FUNDS', [
                         'user_id' => Auth::id(),
                         'egi_id' => $validated['egi_id'],
@@ -201,26 +201,25 @@ class MintController extends Controller {
                         'required_algo' => $fundsCheck['required_algo'],
                         'treasury_address' => $fundsCheck['treasury_address']
                     ]);
-                    
+
                     return response()->json([
                         'error' => 'insufficient_funds',
                         'message' => 'Fondi insufficienti nel sistema. Il pagamento NON è stato effettuato. Contatta l\'assistenza.'
                     ], 503);
                 }
-                
+
                 $this->logger->info('Treasury funds check passed', [
                     'user_id' => Auth::id(),
                     'egi_id' => $validated['egi_id'],
                     'balance_algo' => $fundsCheck['balance_algo']
                 ]);
-                
             } catch (\Exception $e) {
                 $this->logger->error('Treasury funds check failed', [
                     'user_id' => Auth::id(),
                     'egi_id' => $validated['egi_id'],
                     'error' => $e->getMessage()
                 ]);
-                
+
                 // Se il check fallisce, procediamo comunque (fail-open per non bloccare completamente)
                 // ma logghiamo l'errore per monitoring
             }
@@ -554,7 +553,7 @@ class MintController extends Controller {
             // CRITICAL: Check treasury funds BEFORE payment processing
             try {
                 $fundsCheck = $algorandService->checkTreasuryFunds(Auth::user());
-                
+
                 if (!$fundsCheck['has_sufficient_funds']) {
                     $this->logger->error('Direct mint blocked - insufficient treasury funds', [
                         'user_id' => Auth::id(),
@@ -563,7 +562,7 @@ class MintController extends Controller {
                         'required_algo' => $fundsCheck['required_algo'],
                         'treasury_address' => $fundsCheck['treasury_address']
                     ]);
-                    
+
                     $this->errorManager->handle('MINT_BLOCKED_INSUFFICIENT_FUNDS', [
                         'user_id' => Auth::id(),
                         'egi_id' => $egi->id,
@@ -571,26 +570,25 @@ class MintController extends Controller {
                         'required_algo' => $fundsCheck['required_algo'],
                         'treasury_address' => $fundsCheck['treasury_address']
                     ]);
-                    
+
                     return response()->json([
                         'error' => 'insufficient_funds',
                         'message' => 'Fondi insufficienti nel sistema. Il pagamento NON è stato effettuato. Contatta l\'assistenza.'
                     ], 503);
                 }
-                
+
                 $this->logger->info('Treasury funds check passed (direct mint)', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egi->id,
                     'balance_algo' => $fundsCheck['balance_algo']
                 ]);
-                
             } catch (\Exception $e) {
                 $this->logger->error('Treasury funds check failed (direct mint)', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egi->id,
                     'error' => $e->getMessage()
                 ]);
-                
+
                 // Se il check fallisce, procediamo comunque (fail-open per non bloccare completamente)
                 // ma logghiamo l'errore per monitoring
             }

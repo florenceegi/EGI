@@ -229,7 +229,7 @@ class ProcessEgiMintingJob implements ShouldQueue {
                 // Send failure notification if final attempt
                 if ($attempt >= $this->tries) {
                     $this->sendFailureNotification($egiBlockchain, $exception, $logger);
-                    
+
                     // ROLLBACK: Ripristina stato EGI originale
                     if ($egiBlockchain->egi) {
                         $logger->warning('Rolling back EGI fields to pre-mint state', [
@@ -247,7 +247,7 @@ class ProcessEgiMintingJob implements ShouldQueue {
                             'mint' => false            // Reset flag mint
                         ]);
                     }
-                    
+
                     // CLEANUP: Elimina record orphan dopo fallimento definitivo
                     // Rationale: Senza rollback automatico, record failed inquinano DB
                     // Log prima di eliminare per audit trail
@@ -259,7 +259,7 @@ class ProcessEgiMintingJob implements ShouldQueue {
                         'mint_error' => $egiBlockchain->mint_error,
                         'attempts' => $attempt
                     ]);
-                    
+
                     $egiBlockchain->delete();
                 }
             }

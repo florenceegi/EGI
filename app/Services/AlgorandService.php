@@ -305,20 +305,16 @@ class AlgorandService {
                 $contextData['required_balance'] = $matches[2];
                 $contextData['current_algo'] = (int)$matches[1] / 1_000_000;
                 $contextData['required_algo'] = (int)$matches[2] / 1_000_000;
-            } 
-            elseif (preg_match('/account ([A-Z0-9]+) does not exist/i', $errorMessage, $matches)) {
+            } elseif (preg_match('/account ([A-Z0-9]+) does not exist/i', $errorMessage, $matches)) {
                 $errorCode = 'BLOCKCHAIN_ACCOUNT_NOT_FOUND';
                 $contextData['account'] = $matches[1];
-            }
-            elseif (preg_match('/asset (\d+) missing from ([A-Z0-9]+)/i', $errorMessage, $matches)) {
+            } elseif (preg_match('/asset (\d+) missing from ([A-Z0-9]+)/i', $errorMessage, $matches)) {
                 $errorCode = 'BLOCKCHAIN_ASSET_OPTIN_REQUIRED';
                 $contextData['asset_id'] = $matches[1];
                 $contextData['account'] = $matches[2];
-            }
-            elseif (preg_match('/network request error|timeout|connection refused/i', $errorMessage)) {
+            } elseif (preg_match('/network request error|timeout|connection refused/i', $errorMessage)) {
                 $errorCode = 'BLOCKCHAIN_NETWORK_ERROR';
-            }
-            elseif (preg_match('/TransactionPool\.Remember/i', $errorMessage)) {
+            } elseif (preg_match('/TransactionPool\.Remember/i', $errorMessage)) {
                 $errorCode = 'BLOCKCHAIN_TRANSACTION_POOL_ERROR';
             }
 
@@ -336,8 +332,7 @@ class AlgorandService {
      * @param string $errorCode UEM error code
      * @return string Translation key (snake_case)
      */
-    private function getUemMessageKey(string $errorCode): string
-    {
+    private function getUemMessageKey(string $errorCode): string {
         // Converti da BLOCKCHAIN_INSUFFICIENT_TREASURY_FUNDS a blockchain_insufficient_treasury_funds
         return strtolower($errorCode);
     }
@@ -564,21 +559,20 @@ class AlgorandService {
 
     /**
      * Check if treasury wallet has sufficient funds for minting operation
-     * 
+     *
      * CALCOLO COSTI MINT:
      * - Asset Creation (ASA): 0.001 ALGO (1000 microAlgos) SEMPRE richiesto
      * - Transaction Fee: 0.001 ALGO (1000 microAlgos) per transazione
      * - Minimum Balance: 0.1 ALGO (100000 microAlgos) account reserve
      * - Safety Buffer: 0.01 ALGO (10000 microAlgos) extra per sicurezza
-     * 
+     *
      * TOTALE MINIMO: ~0.112 ALGO per mint sicuro
-     * 
+     *
      * @param User $user User requesting the check
      * @return array ['has_sufficient_funds' => bool, 'current_balance' => int, 'required_balance' => int, 'balance_algo' => float]
      * @throws \Exception
      */
-    public function checkTreasuryFunds(User $user): array
-    {
+    public function checkTreasuryFunds(User $user): array {
         try {
             // 1. ULM: Log start
             $this->logger->info('Treasury funds check initiated', [
@@ -588,26 +582,26 @@ class AlgorandService {
 
             // 2. Get treasury address from config
             $treasuryAddress = config('algorand.algorand.treasury_address');
-            
+
             if (empty($treasuryAddress) || $treasuryAddress === 'TREASURY_PENDING') {
                 throw new \Exception('Treasury address not configured');
             }
 
             // 3. Get account info (includes balance)
             $accountInfo = $this->getAccountInfo($treasuryAddress, $user);
-            
+
             $currentBalance = $accountInfo['amount'] ?? 0; // in microAlgos
-            
+
             // 4. Calculate required balance for mint operation
             $asaCreationCost = 1000;      // 0.001 ALGO - asset creation fee
             $transactionFee = 1000;       // 0.001 ALGO - transaction fee
             $minAccountBalance = 100000;  // 0.1 ALGO - account minimum
             $safetyBuffer = 10000;        // 0.01 ALGO - safety margin
-            
+
             $requiredBalance = $asaCreationCost + $transactionFee + $minAccountBalance + $safetyBuffer; // 112000 microAlgos = 0.112 ALGO
-            
+
             $hasSufficientFunds = $currentBalance >= $requiredBalance;
-            
+
             // 5. Log result
             $this->logger->info('Treasury funds check completed', [
                 'user_id' => $user->id,
@@ -628,14 +622,13 @@ class AlgorandService {
                 'required_algo' => $requiredBalance / 1000000,
                 'treasury_address' => $treasuryAddress
             ];
-            
         } catch (\Exception $e) {
             // 6. UEM: Error handling
             $this->errorManager->handle('TREASURY_FUNDS_CHECK_FAILED', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage()
             ], $e);
-            
+
             throw new \Exception("Errore verifica fondi treasury: {$e->getMessage()}");
         }
     }
@@ -822,10 +815,9 @@ class AlgorandService {
             }
         }
 
-        throw new \Exception(
-            "Microservice call failed after {$this->apiRetries} attempts. Last error: " .
-                ($lastException ? $lastException->getMessage() : 'Unknown error')
-        );
+        // CRITICAL: Rilancia l'eccezione ORIGINALE senza wrapping
+        // Questo permette al catch block di createAsset() di fare pattern matching corretto
+        throw $lastException;
     }
 
     /**

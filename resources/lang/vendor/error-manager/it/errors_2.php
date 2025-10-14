@@ -109,7 +109,7 @@ return [
         'queue_worker_autostart_exception' => '🚨 CRITICAL: Exception durante auto-start worker. Queue: :queue, Error: :error. Sistema compromesso!',
         'treasury_funds_check_failed' => 'Errore verifica fondi treasury wallet. User: :user_id, Error: :error',
         'mint_blocked_insufficient_funds' => '🚨 MINT BLOCKED: Fondi insufficienti nel treasury wallet! Balance: :balance_algo ALGO, Required: :required_algo ALGO. EGI: :egi_id, User: :user_id. FONDI NECESSARI URGENTEMENTE!',
-        
+
         // Blockchain-Specific Errors (Dev Messages)
         'blockchain_insufficient_treasury_funds' => '🚨 BLOCKCHAIN ERROR: Treasury balance insufficiente durante mint! Current: :current_balance microALGO (:current_algo ALGO), Required: :required_balance microALGO (:required_algo ALGO). User: :user_id, EGI: :egi_id. REFILL TREASURY URGENTE!',
         'blockchain_account_not_found' => 'BLOCKCHAIN ERROR: Account non trovato sulla blockchain Algorand. Account: :account, User: :user_id, EGI: :egi_id. Verifica config treasury address.',
@@ -219,7 +219,7 @@ return [
         'queue_worker_autostart_exception' => 'Errore critico nel sistema di elaborazione. Contatta immediatamente l\'assistenza tecnica.',
         'treasury_funds_check_failed' => 'Impossibile verificare la disponibilità del sistema. Riprova tra qualche secondo.',
         'mint_blocked_insufficient_funds' => 'Il sistema non ha fondi sufficienti per completare il mint. Contatta immediatamente l\'assistenza tecnica. Il tuo pagamento NON è stato effettuato.',
-        
+
         // Blockchain-Specific Errors (User Messages - PA-Grade)
         'blockchain_insufficient_treasury_funds' => 'Il sistema non dispone di fondi sufficienti per completare il mint. Il team tecnico è stato allertato automaticamente. Il tuo pagamento NON è stato addebitato.',
         'blockchain_account_not_found' => 'L\'indirizzo wallet specificato non è valido o non esiste sulla blockchain Algorand. Verifica l\'indirizzo e riprova.',
