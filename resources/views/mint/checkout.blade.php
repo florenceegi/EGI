@@ -866,46 +866,39 @@
                     });
 
                     if (!response.ok) {
-                        // Clone response to read body multiple times if needed
-                        const responseClone = response.clone();
-
-                        // Try to parse JSON error response first
+                        // Extract error message from response
+                        let errorMessage = `{{ __('mint.errors.mint_failed') }}`;
+                        
                         try {
                             const errorData = await response.json();
                             console.log('Error response JSON:', errorData);
 
-                            // If we have a user-friendly message from server, use it
+                            // Extract user-friendly message from server
                             if (errorData.message) {
-                                throw new Error(errorData.message);
+                                errorMessage = errorData.message;
+                            } else if (errorData.error) {
+                                errorMessage = errorData.error;
                             }
-
-                            // Otherwise use error code
-                            if (errorData.error) {
-                                throw new Error(errorData.error);
-                            }
-
-                            // Fallback generic message
-                            throw new Error(`{{ __('mint.errors.mint_failed') }}`);
                         } catch (jsonError) {
-                            console.error('JSON parsing error:', jsonError);
-
-                            // If JSON parsing fails, use cloned response for text
+                            // JSON parsing failed, try text
+                            console.error('Failed to parse JSON, trying text:', jsonError);
+                            
                             try {
-                                const errorText = await responseClone.text();
+                                const errorText = await response.clone().text();
                                 console.error('Server response text:', errorText);
-
-                                // Try to show readable error
-                                if (errorText.length > 0 && errorText.length < 200) {
-                                    throw new Error(errorText);
-                                } else {
-                                    throw new Error(`{{ __('mint.errors.mint_failed') }}`);
+                                
+                                // If text is short and readable, use it
+                                if (errorText && errorText.length > 0 && errorText.length < 200) {
+                                    errorMessage = errorText;
                                 }
                             } catch (textError) {
-                                console.error('Text parsing error:', textError);
-                                // Ultimate fallback
-                                throw new Error(`{{ __('mint.errors.mint_failed') }}`);
+                                console.error('Failed to parse text:', textError);
+                                // Keep fallback message
                             }
                         }
+
+                        // Throw error with extracted message
+                        throw new Error(errorMessage);
                     }
 
                     const result = await response.json();
