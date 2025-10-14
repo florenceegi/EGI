@@ -155,6 +155,70 @@
                 transform: translateY(0);
             }
         }
+
+        /* Collapsible Section Styles */
+        details.collapsible-section {
+            margin-top: 1.5rem;
+            border: 2px solid #D4A574;
+            border-radius: 0.75rem;
+            background-color: #fdfcfb;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+
+        details.collapsible-section:hover {
+            box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);
+        }
+
+        details.collapsible-section summary {
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #1B365D 0%, #2D5016 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 1.125rem;
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        details.collapsible-section summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details.collapsible-section summary::before {
+            content: '▶';
+            font-size: 0.875rem;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        details.collapsible-section[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        details.collapsible-section summary:hover {
+            background: linear-gradient(135deg, #2D5016 0%, #1B365D 100%);
+        }
+
+        details.collapsible-section .collapsible-content {
+            padding: 1.5rem;
+            animation: fadeInContent 0.3s ease-in-out;
+        }
+
+        @keyframes fadeInContent {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
@@ -446,6 +510,16 @@
                                 gestire moneta elettronica e fornire servizi di pagamento nell'Unione Europea.</dd>
                         </div>
                         <div>
+                            <dt id="glossary-gdpr" class="text-xl font-bold text-emerald-700">GDPR (General Data
+                                Protection Regulation)</dt>
+                            <dd class="mt-1 text-gray-700">Regolamento europeo (UE) 2016/679 sulla protezione dei dati
+                                personali e sulla privacy. Stabilisce obblighi rigorosi per la raccolta, il trattamento,
+                                la conservazione e la cancellazione dei dati personali, garantendo diritti fondamentali
+                                agli utenti come il diritto all'oblio e la portabilità dei dati. FlorenceEGI è
+                                pienamente conforme al GDPR nella gestione delle chiavi private e dei dati degli utenti.
+                            </dd>
+                        </div>
+                        <div>
                             <dt id="glossary-mica" class="text-xl font-bold text-emerald-700">MiCA (Markets in
                                 Crypto-Assets Regulation)</dt>
                             <dd class="mt-1 text-gray-700">Regolamento europeo che disciplina i mercati di
@@ -640,7 +714,8 @@
                     '<p class="text-gray-700">Il nostro sistema è progettato per tutti. Chi non conosce il mondo crypto usa la moneta <a href="#glossary-fiat" class="glossary-link">FIAT</a> e i metodi di pagamento tradizionali. Chi possiede un <a href="#glossary-wallet" class="glossary-link">wallet</a> può ricevere il certificato digitale <a href="#glossary-egi" class="glossary-link">EGI</a> direttamente lì. Chi vuole accettare pagamenti in criptovalute può farlo tramite <a href="#glossary-partner-autorizzato" class="glossary-link">partner esterni autorizzati</a>, senza imporre alcuna complessità agli altri utenti.</p>' +
                     '</div>' +
                     '<div class="space-y-8">' +
-                    '<div class="p-6 border rounded-lg bg-gray-50"><h3 class="mb-4 text-2xl font-bold text-gray-800">Livello 1 — Nessun wallet (100% tradizionale)</h3><p class="mb-6 text-gray-600">L\'esperienza d\'uso è identica a un normale e-commerce. Zero cripto, zero complessità.</p><div class="grid gap-6 md:grid-cols-2"><div><h4 class="mb-2 text-lg font-semibold text-emerald-800">Per il Cliente</h4><ul class="space-y-2 text-gray-700 list-disc list-inside"><li>Paga in euro (<a href="#glossary-fiat" class="glossary-link">FIAT</a>) su pagina sicura del <a href="#glossary-psp" class="glossary-link">PSP</a>.</li><li>Riceve l\'<a href="#glossary-egi" class="glossary-link">EGI</a>: la piattaforma esegue <a href="#glossary-mint" class="glossary-link">mint</a> e <a href="#glossary-transfer" class="glossary-link">transfer</a> e salva l\'<a href="#glossary-anchor-hash" class="glossary-link">anchor hash</a>.</li><li>Verifica pubblica con QR.</li></ul></div><div><h4 class="mb-2 text-lg font-semibold text-emerald-800">Per il Merchant</h4><ul class="space-y-2 text-gray-700 list-disc list-inside"><li>Riceve denaro in <a href="#glossary-fiat" class="glossary-link">FIAT</a> dal <a href="#glossary-psp" class="glossary-link">PSP</a> (<a href="#glossary-payout" class="glossary-link">payout</a>).</li><li>Vede l\'<a href="#glossary-egi" class="glossary-link">EGI</a> emesso e i report.</li><li><a href="#glossary-royalties" class="glossary-link">Royalties</a> e ripartizioni sono gestite dal <a href="#glossary-psp" class="glossary-link">PSP</a> (<a href="#glossary-off-chain" class="glossary-link">off-chain</a>).</li></ul></div></div></div>' +
+                    '<div class="p-6 border rounded-lg bg-gray-50"><h3 class="mb-4 text-2xl font-bold text-gray-800">Livello 1 — Nessun wallet (100% tradizionale)</h3><p class="mb-6 text-gray-600">L\'esperienza d\'uso è identica a un normale e-commerce. Zero cripto, zero complessità.</p><div class="grid gap-6 md:grid-cols-2"><div><h4 class="mb-2 text-lg font-semibold text-emerald-800">Per il Cliente</h4><ul class="space-y-2 text-gray-700 list-disc list-inside"><li>Paga in euro (<a href="#glossary-fiat" class="glossary-link">FIAT</a>) su pagina sicura del <a href="#glossary-psp" class="glossary-link">PSP</a>.</li><li>Riceve l\'<a href="#glossary-egi" class="glossary-link">EGI</a>: la piattaforma esegue <a href="#glossary-mint" class="glossary-link">mint</a> e <a href="#glossary-transfer" class="glossary-link">transfer</a> e salva l\'<a href="#glossary-anchor-hash" class="glossary-link">anchor hash</a>.</li><li>Verifica pubblica con QR.</li></ul></div><div><h4 class="mb-2 text-lg font-semibold text-emerald-800">Per il Merchant</h4><ul class="space-y-2 text-gray-700 list-disc list-inside"><li>Riceve denaro in <a href="#glossary-fiat" class="glossary-link">FIAT</a> dal <a href="#glossary-psp" class="glossary-link">PSP</a> (<a href="#glossary-payout" class="glossary-link">payout</a>).</li><li>Vede l\'<a href="#glossary-egi" class="glossary-link">EGI</a> emesso e i report.</li><li><a href="#glossary-royalties" class="glossary-link">Royalties</a> e ripartizioni sono gestite dal <a href="#glossary-psp" class="glossary-link">PSP</a> (<a href="#glossary-off-chain" class="glossary-link">off-chain</a>).</li></ul></div></div>' +
+                    '<details class="collapsible-section"><summary><span class="material-icons text-xl">account_balance_wallet</span> Wallet Auto-Generato per Utenti FIAT (Custodia Tecnica Limitata)</summary><div class="collapsible-content"><p class="mb-4 text-gray-700">Per gli utenti che acquistano in valuta <a href="#glossary-fiat" class="glossary-link">FIAT</a> e non possiedono competenze blockchain, FlorenceEGI genera automaticamente un <a href="#glossary-wallet" class="glossary-link">wallet</a> dedicato su Algorand.</p><div class="space-y-3 text-gray-700"><ul class="space-y-2 list-disc list-inside"><li>Il <a href="#glossary-wallet" class="glossary-link">wallet</a> è creato al momento della registrazione o del primo acquisto.</li><li>Contiene esclusivamente NFT unici (<a href="#glossary-egi" class="glossary-link">EGI</a>), senza alcun token fungibile o criptovaluta.</li><li>Le chiavi private sono cifrate con algoritmo AES-256 a livello server e archiviate in modo sicuro nel database conforme <a href="#glossary-gdpr" class="glossary-link">GDPR</a>.</li><li>L\'utente può in qualunque momento accedere alla propria area personale, scaricare la frase segreta per importarla in Pera Wallet o in altro client compatibile e richiederne la cancellazione definitiva dai sistemi FlorenceEGI.</li><li>Finché non effettua questa operazione, il <a href="#glossary-wallet" class="glossary-link">wallet</a> rimane invisibile e inattivo per l\'utente.</li><li>Il <a href="#glossary-wallet" class="glossary-link">wallet</a> <strong>non è utilizzabile</strong> per detenere o trasferire ALGO, stablecoin o altri asset di valore monetario.</li></ul></div><div class="p-4 mt-6 border-l-4 border-blue-600 rounded-lg bg-blue-50"><h5 class="mb-2 font-semibold text-blue-900">Conformità Normativa <a href="#glossary-mica-safe" class="glossary-link">MiCA-safe</a></h5><p class="text-sm text-blue-800">FlorenceEGI <strong>non esegue operazioni di cambio</strong>, <strong>non custodisce fondi</strong>, né intermedia transazioni tra utenti. Questa gestione costituisce <strong>custodia tecnica limitata di asset digitali non finanziari</strong> e non configura attività di CASP (Crypto-Asset Service Provider) ai sensi del Regolamento <a href="#glossary-mica" class="glossary-link">MiCA</a>. La piattaforma opera quindi <strong>fuori dal perimetro MiCA</strong>, soggetta esclusivamente agli obblighi di sicurezza informatica e protezione dei dati personali previsti dal <a href="#glossary-gdpr" class="glossary-link">GDPR</a>.</p></div></div></details></div>' +
                     '<div class="p-6 border rounded-lg bg-gray-50"><h3 class="mb-4 text-2xl font-bold text-gray-800">Livello 2 — Ho un wallet, pago in FIAT</h3><p class="mb-6 text-gray-600">Gli utenti più esperti possono usare il proprio wallet per ricevere il certificato, senza imporre la cripto come pagamento.</p><div class="grid gap-6 md:grid-cols-2"><div><h4 class="mb-2 text-lg font-semibold text-emerald-800">Per il Cliente</h4><ul class="space-y-2 text-gray-700 list-disc list-inside"><li>Paga sempre in <a href="#glossary-fiat" class="glossary-link">FIAT</a>.</li><li>Sceglie dove ricevere l\'<a href="#glossary-egi" class="glossary-link">EGI</a>: nel <a href="#glossary-wallet" class="glossary-link">wallet</a> personale (<a href="#glossary-non-custodial" class="glossary-link">non-custodial</a>) o in uno <a href="#glossary-custodial" class="glossary-link">custodial</a> della piattaforma.</li></ul></div><div><h4 class="mb-2 text-lg font-semibold text-emerald-800">Per il Merchant</h4><ul class="space-y-2 text-gray-700 list-disc list-inside"><li>Incassa sempre in <a href="#glossary-fiat" class="glossary-link">FIAT</a>.</li><li>L\'<a href="#glossary-egi" class="glossary-link">EGI</a> viene trasferito con tracciabilità <a href="#glossary-on-chain" class="glossary-link">on-chain</a>.</li></ul></div></div></div>' +
                     '<div class="p-6 border rounded-lg bg-gray-50"><h3 class="mb-4 text-2xl font-bold text-gray-800">Livello 3 — Accetto pagamenti Crypto (opzionale)</h3><p class="mb-6 text-gray-600">Questo livello è facoltativo e gestito da partner esterni per mantenere la piattaforma <a href="#glossary-mica-safe" class="glossary-link">MiCA-safe</a>.</p><div class="grid gap-6 md:grid-cols-2"><div><h4 class="mb-2 text-lg font-semibold text-emerald-800">Per il Merchant</h4><ul class="space-y-2 text-gray-700 list-disc list-inside"><li>Si affida a un <a href="#glossary-partner-autorizzato" class="glossary-link">Partner autorizzato (CASP/EMI)</a>.</li><li>I clienti pagano sul checkout del Partner.</li><li>Il <a href="#glossary-settlement" class="glossary-link">settlement</a> è gestito dal Partner.</li></ul></div><div><h4 class="mb-2 text-lg font-semibold text-emerald-800">Per il Cliente</h4><ul class="space-y-2 text-gray-700 list-disc list-inside"><li>Paga in crypto sul checkout del Partner.</li><li>Riceve l\'<a href="#glossary-egi" class="glossary-link">EGI</a> come sempre.</li></ul></div></div></div>' +
                     '</div>' +
