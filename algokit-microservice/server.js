@@ -271,9 +271,7 @@ app.get("/account/:address", async (req, res) => {
         console.log(`📊 ACCOUNT INFO REQUEST: ${address}`);
 
         // Get account information from Algorand network
-        const accountInfo = await algodClient
-            .accountInformation(address)
-            .do();
+        const accountInfo = await algodClient.accountInformation(address).do();
 
         console.log(`✅ ACCOUNT INFO RETRIEVED: ${address}`, {
             balance: accountInfo.amount,
