@@ -5880,6 +5880,26 @@ return [
             'notify_slack' => true,
             'msg_to' => 'toast',
         ],
+        'TREASURY_FUNDS_CHECK_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.treasury_funds_check_failed',
+            'user_message_key' => 'error-manager::errors_2.user.treasury_funds_check_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log',
+        ],
+        'MINT_BLOCKED_INSUFFICIENT_FUNDS' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_blocked_insufficient_funds',
+            'user_message_key' => 'error-manager::errors_2.user.mint_blocked_insufficient_funds',
+            'http_status_code' => 503,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
 
         // === Mint Status API Errors ===
         'MINT_STATUS_UNAUTHORIZED' => [

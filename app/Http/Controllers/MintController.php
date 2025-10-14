@@ -180,6 +180,51 @@ class MintController extends Controller {
                 return response()->json([], 400);
             }
 
+            // CRITICAL: Check treasury funds BEFORE payment processing
+            $algorandService = app(\App\Services\AlgorandService::class);
+            try {
+                $fundsCheck = $algorandService->checkTreasuryFunds(Auth::user());
+                
+                if (!$fundsCheck['has_sufficient_funds']) {
+                    $this->logger->error('Mint blocked - insufficient treasury funds', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $validated['egi_id'],
+                        'balance_algo' => $fundsCheck['balance_algo'],
+                        'required_algo' => $fundsCheck['required_algo'],
+                        'treasury_address' => $fundsCheck['treasury_address']
+                    ]);
+                    
+                    $this->errorManager->handle('MINT_BLOCKED_INSUFFICIENT_FUNDS', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $validated['egi_id'],
+                        'balance_algo' => $fundsCheck['balance_algo'],
+                        'required_algo' => $fundsCheck['required_algo'],
+                        'treasury_address' => $fundsCheck['treasury_address']
+                    ]);
+                    
+                    return response()->json([
+                        'error' => 'insufficient_funds',
+                        'message' => 'Fondi insufficienti nel sistema. Il pagamento NON è stato effettuato. Contatta l\'assistenza.'
+                    ], 503);
+                }
+                
+                $this->logger->info('Treasury funds check passed', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $validated['egi_id'],
+                    'balance_algo' => $fundsCheck['balance_algo']
+                ]);
+                
+            } catch (\Exception $e) {
+                $this->logger->error('Treasury funds check failed', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $validated['egi_id'],
+                    'error' => $e->getMessage()
+                ]);
+                
+                // Se il check fallisce, procediamo comunque (fail-open per non bloccare completamente)
+                // ma logghiamo l'errore per monitoring
+            }
+
             // MOCK Payment processing (V1 - FIAT only)
             $paymentAmount = $reservation->offer_amount_fiat ?? $reservation->amount_eur;
             $paymentResult = $this->mockPaymentProcessing($validated['payment_method'], $paymentAmount);
@@ -504,6 +549,50 @@ class MintController extends Controller {
 
                 // UEM già gestisce tutto - ritorno solo status code
                 return response()->json([], 503);
+            }
+
+            // CRITICAL: Check treasury funds BEFORE payment processing
+            try {
+                $fundsCheck = $algorandService->checkTreasuryFunds(Auth::user());
+                
+                if (!$fundsCheck['has_sufficient_funds']) {
+                    $this->logger->error('Direct mint blocked - insufficient treasury funds', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                        'balance_algo' => $fundsCheck['balance_algo'],
+                        'required_algo' => $fundsCheck['required_algo'],
+                        'treasury_address' => $fundsCheck['treasury_address']
+                    ]);
+                    
+                    $this->errorManager->handle('MINT_BLOCKED_INSUFFICIENT_FUNDS', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                        'balance_algo' => $fundsCheck['balance_algo'],
+                        'required_algo' => $fundsCheck['required_algo'],
+                        'treasury_address' => $fundsCheck['treasury_address']
+                    ]);
+                    
+                    return response()->json([
+                        'error' => 'insufficient_funds',
+                        'message' => 'Fondi insufficienti nel sistema. Il pagamento NON è stato effettuato. Contatta l\'assistenza.'
+                    ], 503);
+                }
+                
+                $this->logger->info('Treasury funds check passed (direct mint)', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egi->id,
+                    'balance_algo' => $fundsCheck['balance_algo']
+                ]);
+                
+            } catch (\Exception $e) {
+                $this->logger->error('Treasury funds check failed (direct mint)', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egi->id,
+                    'error' => $e->getMessage()
+                ]);
+                
+                // Se il check fallisce, procediamo comunque (fail-open per non bloccare completamente)
+                // ma logghiamo l'errore per monitoring
             }
 
             // MOCK Payment processing (V1 - FIAT only)

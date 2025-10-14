@@ -107,6 +107,8 @@ return [
         'queue_worker_check_failed' => 'Errore controllo queue worker. Queue: :queue, Error: :error',
         'queue_worker_autostart_failed' => '🚨 CRITICAL: Auto-start queue worker FALLITO. Queue: :queue, Reason: :reason. Sistema non può elaborare mint!',
         'queue_worker_autostart_exception' => '🚨 CRITICAL: Exception durante auto-start worker. Queue: :queue, Error: :error. Sistema compromesso!',
+        'treasury_funds_check_failed' => 'Errore verifica fondi treasury wallet. User: :user_id, Error: :error',
+        'mint_blocked_insufficient_funds' => '🚨 MINT BLOCKED: Fondi insufficienti nel treasury wallet! Balance: :balance_algo ALGO, Required: :required_algo ALGO. EGI: :egi_id, User: :user_id. FONDI NECESSARI URGENTEMENTE!',
     ],
 
     'user' => [
@@ -208,6 +210,8 @@ return [
         'queue_worker_check_failed' => 'Errore nella verifica del sistema di elaborazione. Riprova tra qualche secondo.',
         'queue_worker_autostart_failed' => 'Impossibile avviare automaticamente il sistema di elaborazione. Contatta l\'assistenza tecnica.',
         'queue_worker_autostart_exception' => 'Errore critico nel sistema di elaborazione. Contatta immediatamente l\'assistenza tecnica.',
+        'treasury_funds_check_failed' => 'Impossibile verificare la disponibilità del sistema. Riprova tra qualche secondo.',
+        'mint_blocked_insufficient_funds' => 'Il sistema non ha fondi sufficienti per completare il mint. Contatta immediatamente l\'assistenza tecnica. Il tuo pagamento NON è stato effettuato.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

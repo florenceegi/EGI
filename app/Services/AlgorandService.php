@@ -520,6 +520,84 @@ class AlgorandService {
     }
 
     /**
+     * Check if treasury wallet has sufficient funds for minting operation
+     * 
+     * CALCOLO COSTI MINT:
+     * - Asset Creation (ASA): 0.001 ALGO (1000 microAlgos) SEMPRE richiesto
+     * - Transaction Fee: 0.001 ALGO (1000 microAlgos) per transazione
+     * - Minimum Balance: 0.1 ALGO (100000 microAlgos) account reserve
+     * - Safety Buffer: 0.01 ALGO (10000 microAlgos) extra per sicurezza
+     * 
+     * TOTALE MINIMO: ~0.112 ALGO per mint sicuro
+     * 
+     * @param User $user User requesting the check
+     * @return array ['has_sufficient_funds' => bool, 'current_balance' => int, 'required_balance' => int, 'balance_algo' => float]
+     * @throws \Exception
+     */
+    public function checkTreasuryFunds(User $user): array
+    {
+        try {
+            // 1. ULM: Log start
+            $this->logger->info('Treasury funds check initiated', [
+                'user_id' => $user->id,
+                'log_category' => 'BLOCKCHAIN_FUNDS_CHECK'
+            ]);
+
+            // 2. Get treasury address from config
+            $treasuryAddress = config('algorand.algorand.treasury_address');
+            
+            if (empty($treasuryAddress) || $treasuryAddress === 'TREASURY_PENDING') {
+                throw new \Exception('Treasury address not configured');
+            }
+
+            // 3. Get account info (includes balance)
+            $accountInfo = $this->getAccountInfo($user, $treasuryAddress);
+            
+            $currentBalance = $accountInfo['amount'] ?? 0; // in microAlgos
+            
+            // 4. Calculate required balance for mint operation
+            $asaCreationCost = 1000;      // 0.001 ALGO - asset creation fee
+            $transactionFee = 1000;       // 0.001 ALGO - transaction fee
+            $minAccountBalance = 100000;  // 0.1 ALGO - account minimum
+            $safetyBuffer = 10000;        // 0.01 ALGO - safety margin
+            
+            $requiredBalance = $asaCreationCost + $transactionFee + $minAccountBalance + $safetyBuffer; // 112000 microAlgos = 0.112 ALGO
+            
+            $hasSufficientFunds = $currentBalance >= $requiredBalance;
+            
+            // 5. Log result
+            $this->logger->info('Treasury funds check completed', [
+                'user_id' => $user->id,
+                'treasury_address' => $treasuryAddress,
+                'current_balance_microalgos' => $currentBalance,
+                'current_balance_algo' => $currentBalance / 1000000,
+                'required_balance_microalgos' => $requiredBalance,
+                'required_balance_algo' => $requiredBalance / 1000000,
+                'has_sufficient_funds' => $hasSufficientFunds,
+                'log_category' => 'BLOCKCHAIN_FUNDS_CHECK_SUCCESS'
+            ]);
+
+            return [
+                'has_sufficient_funds' => $hasSufficientFunds,
+                'current_balance' => $currentBalance,
+                'required_balance' => $requiredBalance,
+                'balance_algo' => $currentBalance / 1000000,
+                'required_algo' => $requiredBalance / 1000000,
+                'treasury_address' => $treasuryAddress
+            ];
+            
+        } catch (\Exception $e) {
+            // 6. UEM: Error handling
+            $this->errorManager->handle('TREASURY_FUNDS_CHECK_FAILED', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ], $e);
+            
+            throw new \Exception("Errore verifica fondi treasury: {$e->getMessage()}");
+        }
+    }
+
+    /**
      * Verifica stato microservice AlgoKit
      * Uses callMicroservice() which handles auto-start internally
      * @return array Network status
