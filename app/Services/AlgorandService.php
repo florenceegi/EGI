@@ -587,18 +587,26 @@ class AlgorandService {
                 throw new \Exception('Treasury address not configured');
             }
 
-            // 3. Get account info (includes balance)
+            // 3. Get account info (includes balance AND assets count)
             $accountInfo = $this->getAccountInfo($treasuryAddress, $user);
 
             $currentBalance = $accountInfo['amount'] ?? 0; // in microAlgos
+            $assetsCount = isset($accountInfo['assets']) ? count($accountInfo['assets']) : 0;
 
             // 4. Calculate required balance for mint operation
-            $asaCreationCost = 1000;      // 0.001 ALGO - asset creation fee
-            $transactionFee = 1000;       // 0.001 ALGO - transaction fee
-            $minAccountBalance = 100000;  // 0.1 ALGO - account minimum
-            $safetyBuffer = 10000;        // 0.01 ALGO - safety margin
+            // CRITICAL: Algorand minimum balance formula: 100,000 + (num_assets × 100,000) microAlgos
+            // Example: 9 assets = 100,000 + (9 × 100,000) = 1,000,000 microAlgos (1 ALGO)
+            $baseMinBalance = 100000;       // 0.1 ALGO - account base minimum
+            $assetMinBalance = $assetsCount * 100000; // 0.1 ALGO per asset
+            $algorandMinBalance = $baseMinBalance + $assetMinBalance;
 
-            $requiredBalance = $asaCreationCost + $transactionFee + $minAccountBalance + $safetyBuffer; // 112000 microAlgos = 0.112 ALGO
+            $asaCreationCost = 1000;        // 0.001 ALGO - new asset creation fee
+            $transactionFee = 1000;         // 0.001 ALGO - transaction fee
+            $newAssetMinBalance = 100000;   // 0.1 ALGO - minimum for NEW asset
+            $safetyBuffer = 50000;          // 0.05 ALGO - safety margin (increased)
+
+            // Total required: current min + new asset cost + new asset min + fees + buffer
+            $requiredBalance = $algorandMinBalance + $asaCreationCost + $transactionFee + $newAssetMinBalance + $safetyBuffer;
 
             $hasSufficientFunds = $currentBalance >= $requiredBalance;
 
@@ -608,9 +616,13 @@ class AlgorandService {
                 'treasury_address' => $treasuryAddress,
                 'current_balance_microalgos' => $currentBalance,
                 'current_balance_algo' => $currentBalance / 1000000,
+                'assets_count' => $assetsCount,
+                'algorand_min_balance' => $algorandMinBalance,
                 'required_balance_microalgos' => $requiredBalance,
                 'required_balance_algo' => $requiredBalance / 1000000,
                 'has_sufficient_funds' => $hasSufficientFunds,
+                'deficit_microalgos' => $hasSufficientFunds ? 0 : ($requiredBalance - $currentBalance),
+                'deficit_algo' => $hasSufficientFunds ? 0 : (($requiredBalance - $currentBalance) / 1000000),
                 'log_category' => 'BLOCKCHAIN_FUNDS_CHECK_SUCCESS'
             ]);
 
@@ -620,7 +632,11 @@ class AlgorandService {
                 'required_balance' => $requiredBalance,
                 'balance_algo' => $currentBalance / 1000000,
                 'required_algo' => $requiredBalance / 1000000,
-                'treasury_address' => $treasuryAddress
+                'treasury_address' => $treasuryAddress,
+                'assets_count' => $assetsCount,
+                'algorand_min_balance' => $algorandMinBalance,
+                'deficit_microalgos' => $hasSufficientFunds ? 0 : ($requiredBalance - $currentBalance),
+                'deficit_algo' => $hasSufficientFunds ? 0 : (($requiredBalance - $currentBalance) / 1000000)
             ];
         } catch (\Exception $e) {
             // 6. UEM: Error handling
