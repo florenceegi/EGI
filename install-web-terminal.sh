@@ -1,18 +1,18 @@
 #!/bin/bash
 
 ################################################################################
-# INSTALL WEB TERMINAL ON STAGING SERVER
+# START ALGOKIT MICROSERVICE ON STAGING
 ################################################################################
-# Purpose: Install WeTTY (Web-based terminal) accessible via browser
+# Purpose: Start AlgoKit microservice manually (no sudo required)
 # Author: Padmin D. Curtis (AI Partner OS3.0)
 # Date: 2025-10-14
-# Usage: Copia questo script sul server e eseguilo
+# Usage: bash install-web-terminal.sh (from Forge Commands)
 ################################################################################
 
 set -e
 
 echo "════════════════════════════════════════════════════════════════"
-echo "  🖥️  INSTALLAZIONE WEB TERMINAL (WeTTY)"
+echo "  � AVVIO ALGOKIT MICROSERVICE"
 echo "════════════════════════════════════════════════════════════════"
 echo ""
 
@@ -24,128 +24,112 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Configuration
-WETTY_PORT=3030
-WETTY_USER="forge"
+APP_DIR="/home/forge/app.13.48.57.194.sslip.io"
+MICROSERVICE_DIR="$APP_DIR/algokit-microservice"
+LOG_FILE="/tmp/algokit-staging.log"
 
 ################################################################################
-# STEP 1: Install Node.js (if not present)
+# STEP 1: Check if microservice directory exists
 ################################################################################
 
-echo -e "${BLUE}[1/5]${NC} Verifico Node.js..."
+echo -e "${BLUE}[1/4]${NC} Verifico directory microservice..."
 
-if ! command -v node &> /dev/null; then
-    echo -e "${YELLOW}⚠️  Node.js non trovato, installo...${NC}"
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-    sudo apt-get install -y nodejs
+if [ ! -d "$MICROSERVICE_DIR" ]; then
+    echo -e "${RED}❌ Directory $MICROSERVICE_DIR non trovata${NC}"
+    echo -e "${YELLOW}💡 Devi prima fare git pull per scaricare il microservice${NC}"
+    exit 1
+fi
+
+cd "$MICROSERVICE_DIR"
+echo -e "${GREEN}✅ Directory trovata: $MICROSERVICE_DIR${NC}"
+echo ""
+
+################################################################################
+# STEP 2: Check if already running
+################################################################################
+
+echo -e "${BLUE}[2/4]${NC} Verifico se già in esecuzione..."
+
+if ps aux | grep -v grep | grep "node server.js" > /dev/null; then
+    echo -e "${YELLOW}⚠️  Microservice già in esecuzione!${NC}"
+    echo ""
+    echo -e "${BLUE}Processi attivi:${NC}"
+    ps aux | grep -v grep | grep "node server.js"
+    echo ""
+    echo -e "${YELLOW}Per fermarlo: kill \$(pgrep -f 'node server.js')${NC}"
+    exit 0
+fi
+
+echo -e "${GREEN}✅ Nessun processo in esecuzione${NC}"
+echo ""
+
+################################################################################
+# STEP 3: Install dependencies if needed
+################################################################################
+
+echo -e "${BLUE}[3/4]${NC} Verifico dipendenze npm..."
+
+if [ ! -d "node_modules" ]; then
+    echo -e "${YELLOW}⚠️  node_modules mancante, installo...${NC}"
+    npm install
+    echo -e "${GREEN}✅ Dipendenze installate${NC}"
 else
-    echo -e "${GREEN}✅ Node.js già installato: $(node -v)${NC}"
+    echo -e "${GREEN}✅ Dipendenze già presenti${NC}"
 fi
 
 echo ""
 
 ################################################################################
-# STEP 2: Install WeTTY globally
+# STEP 4: Start microservice in background
 ################################################################################
 
-echo -e "${BLUE}[2/5]${NC} Installo WeTTY..."
+echo -e "${BLUE}[4/4]${NC} Avvio microservice..."
 
-sudo npm install -g wetty
+# Start in background
+nohup node server.js > "$LOG_FILE" 2>&1 &
+PID=$!
 
-echo -e "${GREEN}✅ WeTTY installato${NC}"
-echo ""
+# Wait 3 seconds for startup
+sleep 3
 
-################################################################################
-# STEP 3: Create systemd service for WeTTY
-################################################################################
-
-echo -e "${BLUE}[3/5]${NC} Creo servizio systemd..."
-
-sudo tee /etc/systemd/system/wetty.service > /dev/null <<EOF
-[Unit]
-Description=WeTTY Web Terminal
-After=network.target
-
-[Service]
-Type=simple
-User=$WETTY_USER
-ExecStart=/usr/bin/wetty --port $WETTY_PORT --host 0.0.0.0 --base /terminal
-Restart=always
-RestartSec=10
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-echo -e "${GREEN}✅ Servizio systemd creato${NC}"
-echo ""
-
-################################################################################
-# STEP 4: Start and enable WeTTY service
-################################################################################
-
-echo -e "${BLUE}[4/5]${NC} Avvio servizio WeTTY..."
-
-sudo systemctl daemon-reload
-sudo systemctl enable wetty
-sudo systemctl start wetty
-
-echo -e "${GREEN}✅ Servizio WeTTY avviato${NC}"
-echo ""
-
-################################################################################
-# STEP 5: Configure Nginx reverse proxy (optional)
-################################################################################
-
-echo -e "${BLUE}[5/5]${NC} Configurazione Nginx..."
-
-NGINX_CONF="/etc/nginx/sites-available/staging.florenceegi.com"
-
-if [ -f "$NGINX_CONF" ]; then
-    echo -e "${YELLOW}⚠️  Aggiungi questa configurazione al tuo Nginx:${NC}"
+# Check if still running
+if ps -p $PID > /dev/null; then
+    echo -e "${GREEN}✅ Microservice avviato con successo!${NC}"
     echo ""
-    echo "location /terminal {"
-    echo "    proxy_pass http://127.0.0.1:$WETTY_PORT;"
-    echo "    proxy_http_version 1.1;"
-    echo "    proxy_set_header Upgrade \$http_upgrade;"
-    echo "    proxy_set_header Connection \"upgrade\";"
-    echo "    proxy_set_header Host \$host;"
-    echo "    proxy_set_header X-Real-IP \$remote_addr;"
-    echo "    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;"
-    echo "    proxy_set_header X-Forwarded-Proto \$scheme;"
-    echo "}"
+    echo -e "${BLUE}📋 INFO:${NC}"
+    echo -e "   PID: $PID"
+    echo -e "   Log: $LOG_FILE"
+    echo -e "   Port: 3000"
     echo ""
-    echo "Poi esegui: sudo systemctl reload nginx"
+    
+    # Test health endpoint
+    echo -e "${BLUE}[TEST]${NC} Verifico health endpoint..."
+    sleep 2
+    
+    if curl -s http://localhost:3000/health > /dev/null; then
+        echo -e "${GREEN}✅ Health check OK!${NC}"
+        echo ""
+        echo -e "${GREEN}════════════════════════════════════════════════════════════════${NC}"
+        echo -e "${GREEN}  ✅ MICROSERVICE ATTIVO E FUNZIONANTE${NC}"
+        echo -e "${GREEN}════════════════════════════════════════════════════════════════${NC}"
+    else
+        echo -e "${RED}❌ Health check fallito${NC}"
+        echo -e "${YELLOW}Controlla il log: cat $LOG_FILE${NC}"
+    fi
 else
-    echo -e "${YELLOW}⚠️  Nginx config non trovata, accedi direttamente via: http://[SERVER-IP]:$WETTY_PORT${NC}"
+    echo -e "${RED}❌ Microservice crashato all'avvio${NC}"
+    echo ""
+    echo -e "${BLUE}Ultimi log:${NC}"
+    tail -20 "$LOG_FILE"
+    exit 1
 fi
 
-echo ""
-
-################################################################################
-# DONE
-################################################################################
-
-echo -e "${GREEN}════════════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}  ✅ INSTALLAZIONE COMPLETATA!${NC}"
-echo -e "${GREEN}════════════════════════════════════════════════════════════════${NC}"
-echo ""
-echo -e "${BLUE}📋 COME ACCEDERE:${NC}"
-echo ""
-echo -e "1. ${YELLOW}Via browser diretto:${NC}"
-echo -e "   http://13.48.57.194:$WETTY_PORT"
-echo ""
-echo -e "2. ${YELLOW}Via dominio (dopo config Nginx):${NC}"
-echo -e "   https://staging.florenceegi.com/terminal"
-echo ""
-echo -e "${BLUE}🔒 SICUREZZA:${NC}"
-echo -e "   Usa credenziali SSH del server per il login"
 echo ""
 echo -e "${BLUE}🛠️  COMANDI UTILI:${NC}"
-echo -e "   ${YELLOW}sudo systemctl status wetty${NC}  - Verifica stato"
-echo -e "   ${YELLOW}sudo systemctl stop wetty${NC}    - Ferma servizio"
-echo -e "   ${YELLOW}sudo systemctl start wetty${NC}   - Avvia servizio"
-echo -e "   ${YELLOW}sudo journalctl -u wetty -f${NC}  - Log in tempo reale"
+echo -e "   ${YELLOW}ps aux | grep 'node server.js'${NC}     - Verifica processo"
+echo -e "   ${YELLOW}kill $PID${NC}                          - Ferma microservice"
+echo -e "   ${YELLOW}cat $LOG_FILE${NC}                      - Vedi log completo"
+echo -e "   ${YELLOW}tail -f $LOG_FILE${NC}                  - Segui log in tempo reale"
+echo -e "   ${YELLOW}curl http://localhost:3000/health${NC}  - Test health"
 echo ""
 
