@@ -184,7 +184,7 @@ class TokenizePaActJob implements ShouldQueue
                 throw new \Exception('Blockchain anchoring failed: ' . ($anchorResult['error'] ?? 'Unknown error'));
             }
 
-            // 5. Update Egi record with blockchain data
+            // 5. Update Egi record with blockchain data + standard EGI fields
             $updatedMetadata = $metadata;
             $updatedMetadata['anchor_txid'] = $anchorResult['txid'];
             $updatedMetadata['anchored_at'] = now()->toIso8601String();
@@ -192,19 +192,36 @@ class TokenizePaActJob implements ShouldQueue
             $updatedMetadata['anchor_network'] = $anchorResult['network'] ?? 'algorand-testnet';
 
             $this->egi->update([
+                // PA-specific fields
                 'pa_anchored' => true,
                 'pa_anchored_at' => now(),
-                'jsonMetadata' => $updatedMetadata,
                 'pa_tokenization_status' => 'completed',
-                'pa_tokenization_error' => null // Clear any previous error
+                'pa_tokenization_error' => null, // Clear any previous error
+                
+                // Standard EGI fields (consistency with Merchant flow)
+                'mint' => true,                  // Mark as minted/tokenized
+                'status' => 'published',         // PA acts are always published
+                'token' => 'PA_ACT',            // Token type identifier
+                'token_EGI' => $anchorResult['txid'], // Store TXID as token reference
+                
+                // Metadata
+                'jsonMetadata' => $updatedMetadata
             ]);
+
+            // Refresh model to get updated values
+            $this->egi->refresh();
 
             $logger->info('[TokenizePaActJob] Tokenization completed successfully', [
                 'egi_id' => $this->egi->id,
                 'txid' => $anchorResult['txid'],
                 'block' => $anchorResult['block'] ?? null,
                 'pa_anchored_at' => $this->egi->pa_anchored_at,
-                'total_attempts' => $this->egi->pa_tokenization_attempts
+                'total_attempts' => $this->egi->pa_tokenization_attempts,
+                // Standard EGI fields verification
+                'mint' => $this->egi->mint,
+                'status' => $this->egi->status,
+                'token' => $this->egi->token,
+                'token_EGI' => $this->egi->token_EGI
             ]);
         } catch (\Exception $e) {
             // Sanitize error message (remove sensitive data for GDPR)

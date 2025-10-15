@@ -70,6 +70,7 @@ return [
     // Creatore
     'creator' => [
         'created_by' => '👨‍🎨 Creato da:',
+        'co_creator' => '🤝 Co-Creatore:',
     ],
 
     // Prezzi
@@ -91,6 +92,7 @@ return [
         'weak_bidder' => 'Codice FEGI',
         'activator' => 'Co-Creatore',
         'activated_by' => 'Attivato da',
+        'reserved_by' => '📝 Prenotato da:',
     ],
 
     // Nota sulla Valuta Originale
