@@ -121,6 +121,41 @@ class MintEgiJob implements ShouldQueue {
                 'egi_owner_updated' => $egi->owner_id
             ]);
 
+            // 4.8. PAYMENT DISTRIBUTIONS: Create after successful mint (AREA 2.2.2)
+            if ($egiBlockchain->paid_amount && $egiBlockchain->paid_amount > 0) {
+                try {
+                    $distributionService = app(\App\Services\PaymentDistributionService::class);
+                    $distributions = $distributionService->recordMintDistribution(
+                        $egiBlockchain->fresh(),
+                        [
+                            'paid_amount' => $egiBlockchain->paid_amount,
+                            'paid_currency' => $egiBlockchain->paid_currency ?? 'EUR',
+                            'payment_method' => $egiBlockchain->payment_method ?? 'fiat',
+                        ]
+                    );
+
+                    $logger->info('Payment distributions created successfully', [
+                        'egi_blockchain_id' => $this->egiBlockchainId,
+                        'distributions_count' => count($distributions),
+                        'total_distributed' => array_sum(array_column($distributions, 'amount_eur')),
+                        'log_category' => 'MINT_DISTRIBUTION_SUCCESS'
+                    ]);
+                } catch (\Exception $distException) {
+                    // Log warning but don't fail the mint (distributions can be created later)
+                    $logger->warning('Payment distribution creation failed, mint successful', [
+                        'egi_blockchain_id' => $this->egiBlockchainId,
+                        'error' => $distException->getMessage(),
+                        'log_category' => 'MINT_DISTRIBUTION_WARNING'
+                    ]);
+
+                    $errorManager->handle('MINT_DISTRIBUTION_FAILED', [
+                        'egi_blockchain_id' => $this->egiBlockchainId,
+                        'asa_id' => $result->asa_id,
+                        'error' => $distException->getMessage()
+                    ], $distException);
+                }
+            }
+
             // 5. Generate blockchain certificate (NUOVO)
             try {
                 $certificatePath = $certificateService->generateBlockchainCertificate($egiBlockchain->fresh());
