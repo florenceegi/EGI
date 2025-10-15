@@ -48,21 +48,21 @@ echo -e "${BLUE}[2/4]${NC} Verifico Gotty..."
 
 if [ ! -f "$GOTTY_BIN" ]; then
     echo -e "${YELLOW}⚠️  Gotty non trovato, scarico...${NC}"
-    
+
     cd "$INSTALL_DIR"
-    
+
     # Download Gotty (Linux AMD64)
     wget -q https://github.com/yudai/gotty/releases/download/v${GOTTY_VERSION}/gotty_linux_amd64.tar.gz
-    
+
     # Extract
     tar -xzf gotty_linux_amd64.tar.gz
-    
+
     # Make executable
     chmod +x gotty
-    
+
     # Cleanup
     rm gotty_linux_amd64.tar.gz
-    
+
     echo -e "${GREEN}✅ Gotty scaricato e installato${NC}"
 else
     echo -e "${GREEN}✅ Gotty già presente${NC}"
