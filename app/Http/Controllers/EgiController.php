@@ -245,7 +245,6 @@ class EgiController extends Controller {
             ]);
 
             return view($view, compact('egi', 'collections'));
-        
         } catch (\Exception $e) {
             return $this->errorManager->handle('EGI_EDIT_FORM_ERROR', [
                 'egi_id' => $egi->id,
