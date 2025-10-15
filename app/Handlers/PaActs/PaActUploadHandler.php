@@ -399,21 +399,22 @@ class PaActUploadHandler
                     'egi_id' => $result['egi_id']
                 ]);
 
-                // Ensure queue worker is running before dispatching
+                // Ensure PA queue worker is running before dispatching
                 $queueWorkerService = app(\App\Services\QueueWorkerService::class);
-                if (!$queueWorkerService->ensureWorkerRunning()) {
-                    $this->logger->error('[PaActUploadHandler] Queue worker not available, tokenization will be delayed', [
+                if (!$queueWorkerService->ensureWorkerRunning('pa_blockchain')) {
+                    $this->logger->error('[PaActUploadHandler] PA queue worker not available, tokenization will be delayed', [
                         ...$logContext,
-                        'egi_id' => $result['egi_id']
+                        'egi_id' => $result['egi_id'],
+                        'queue' => 'pa_blockchain'
                     ]);
                 }
 
-                // Dispatch asynchronous tokenization job
-                \App\Jobs\TokenizePaActJob::dispatch($result['egi'])->onQueue('blockchain');
+                // Dispatch asynchronous tokenization job on dedicated PA queue
+                \App\Jobs\TokenizePaActJob::dispatch($result['egi'])->onQueue('pa_blockchain');
 
                 $this->logger->info('[PaActUploadHandler] Tokenization job dispatched successfully', [
                     ...$logContext,
-                    'queue' => 'blockchain'
+                    'queue' => 'pa_blockchain'
                 ]);
             } else {
                 $this->logger->info('[PaActUploadHandler] Tokenization skipped (disabled by user)', $logContext);

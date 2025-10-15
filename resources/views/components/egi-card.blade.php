@@ -856,8 +856,8 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
         <div class="mt-3">
             @if ($showButtons && count($availableActions) > 0)
                 {{-- ✅ SCENARIO 1: User has reservation → Show MINT button (complete purchase) - VIOLA --}}
-                @if ($isReservedByUser && $canMint)
-                    <a href="{{ route('mint.checkout', ['egi_id' => $egi->id]) }}"
+                @if ($isReservedByUser && $canMint && $userReservation)
+                    <a href="{{ route('mint.checkout', ['egi_id' => $egi->id, 'reservation_id' => $userReservation->id]) }}"
                         class="mint-button flex w-full transform items-center justify-center rounded-b-lg rounded-t-none bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -899,7 +899,8 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
-                        {{ __('egi.actions.mint_now') }} · €{{ number_format($displayPriceForAction, 2, ',', '.') }}
+                        {{ __('egi.actions.mint_direct') }} ·
+                        €{{ number_format($displayPriceForAction, 2, ',', '.') }}
                     </a>
 
                     {{-- ✅ SCENARIO 4: Only RESERVE available (already reserved by others or user can only reserve) - ARANCIONE --}}

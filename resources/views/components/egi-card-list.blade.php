@@ -347,35 +347,124 @@ $showBadge = $showBadge ?? $showOwnershipBadge;
         </div>
     </div>
 
-    {{-- 🔥 Pulsante Prenota/Rilancia in fondo alla card --}}
+    {{-- � PHASE 2: DUAL PATH BUTTONS (Mint Direct OR Reserve) --}}
     @if(!$isCreator)
-    <div class="mt-3">
-        @if($egi->price && $egi->price > 0)
-        <button type="button" class="reserve-button w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white
-                {{ $hasCurrentReservation ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700' : 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700' }}
-                rounded-t-none rounded-b-lg transition-all transform hover:scale-[1.01]" data-egi-id="{{ $egi->id }}">
-            @if($hasCurrentReservation)
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-            {{ __('egi.actions.outbid') ?? 'Rilancia' }}
+        @php
+            // Use EgiAvailabilityService for comprehensive availability check
+            $availabilityService = app(\App\Services\EgiAvailabilityService::class);
+            $availability = $availabilityService->checkAvailability($egi, auth()->user());
+
+            $canMint = $availability['can_mint'];
+            $canReserve = $availability['can_reserve'];
+            $isReservedByUser = $availability['is_reserved_by_user'];
+            $recommendedAction = $availability['recommended_action'];
+            $availableActions = $availability['available_actions'];
+
+            // Get user reservation if exists
+            $userReservation = null;
+            if (auth()->check() && $egi->reservations) {
+                $userReservation = $egi->reservations
+                    ->where('user_id', auth()->id())
+                    ->where('is_current', true)
+                    ->where('status', 'active')
+                    ->first();
+            }
+
+            // Price for display
+            $displayPriceForAction = $egi->price ?? 0;
+
+            // 🚨 CRITICAL: Hide buttons if price is zero (EGI not available)
+            $showButtons = $displayPriceForAction > 0;
+        @endphp
+
+        <div class="mt-3">
+            @if ($showButtons && count($availableActions) > 0)
+                {{-- ✅ SCENARIO 1: User has reservation → Show MINT button (complete purchase) - VIOLA --}}
+                @if ($isReservedByUser && $canMint && $userReservation)
+                    <a href="{{ route('mint.checkout', ['egi_id' => $egi->id, 'reservation_id' => $userReservation->id]) }}"
+                        class="mint-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m-3-6h6" />
+                        </svg>
+                        {{ __('egi.actions.mint_now') }} · €{{ number_format($displayPriceForAction, 2, ',', '.') }}
+                    </a>
+
+                    {{-- ✅ SCENARIO 2: Both MINT and RESERVE available (dual path) → Show both buttons --}}
+                @elseif($canMint && $canReserve)
+                    <div class="grid grid-cols-2 gap-2">
+                        {{-- Reserve Button (left) - ARANCIONE --}}
+                        <button type="button"
+                            class="reserve-button flex transform items-center justify-center rounded-lg bg-gradient-to-r from-[#E67E22] to-[#d35400] px-3 py-2 text-xs font-medium text-white transition-all hover:scale-[1.02] hover:from-[#d35400] hover:to-[#ba4a00]"
+                            data-egi-id="{{ $egi->id }}">
+                            <svg class="mr-1.5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            {{ __('egi.actions.reserve') }}
+                        </button>
+
+                        {{-- Mint Direct Button (right, emphasized) - VIOLA --}}
+                        <a href="{{ route('egi.mint-direct', $egi->id) }}"
+                            class="mint-direct-button flex transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-3 py-2 text-xs font-bold text-white shadow-md transition-all hover:scale-[1.02] hover:from-[#7d3c98] hover:to-[#8e44ad]">
+                            <svg class="mr-1.5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            {{ __('egi.actions.mint_direct') }}
+                        </a>
+                    </div>
+
+                    {{-- ✅ SCENARIO 3: Only MINT available (no reservation possible) - VIOLA --}}
+                @elseif($canMint && !$canReserve)
+                    <a href="{{ route('egi.mint-direct', $egi->id) }}"
+                        class="mint-direct-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        {{ __('egi.actions.mint_direct') }} · €{{ number_format($displayPriceForAction, 2, ',', '.') }}
+                    </a>
+
+                    {{-- ✅ SCENARIO 4: Only RESERVE available (already reserved by others or user can only reserve) - ARANCIONE --}}
+                @elseif(!$canMint && $canReserve)
+                    <button type="button"
+                        class="reserve-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#E67E22] to-[#d35400] px-4 py-2 text-sm font-medium text-white transition-all hover:scale-[1.01] hover:from-[#d35400] hover:to-[#ba4a00]"
+                        data-egi-id="{{ $egi->id }}">
+                        @if ($hasCurrentReservation)
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            {{ __('egi.actions.outbid') }}
+                        @else
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            {{ __('egi.actions.reserve') }}
+                        @endif
+                    </button>
+                @endif
             @else
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            {{ __('egi.actions.reserve') ?? 'Prenota' }}
+                {{-- ❌ No actions available (or price = 0) --}}
+                <div
+                    class="flex w-full items-center justify-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500">
+                    <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                    @if (!$showButtons)
+                        {{ __('egi.crud.price_not_set') }}
+                    @elseif (!auth()->check())
+                        {{ __('egi.status.login_required') ?? 'Login richiesto' }}
+                    @elseif($egi->isMinted())
+                        {{ __('egi.status.already_minted') ?? 'Già mintato' }}
+                    @else
+                        {{ __('egi.status.not_available') ?? 'Non disponibile' }}
+                    @endif
+                </div>
             @endif
-        </button>
-        @else
-        <div
-            class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-t-none rounded-b-lg">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
-            </svg>
-            {{ __('egi.status.not_for_sale') ?? 'Non in vendita' }}
         </div>
-        @endif
-    </div>
     @endif
 </article>

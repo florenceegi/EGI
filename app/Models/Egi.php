@@ -79,7 +79,8 @@ use Illuminate\Database\Eloquent\SoftDeletes; // Importa SoftDeletes
  *
  * @method static \Database\Factories\EgiFactory factory($count = null, $state = [])
  */
-class Egi extends Model {
+class Egi extends Model
+{
     use HasFactory;
     use SoftDeletes; // Enable soft deletes
 
@@ -184,7 +185,8 @@ class Egi extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function traits(): HasMany {
+    public function traits(): HasMany
+    {
         return $this->hasMany(EgiTrait::class, 'egi_id')->orderBy('sort_order');
     }
 
@@ -193,7 +195,8 @@ class Egi extends Model {
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getTraitsByCategoryAttribute() {
+    public function getTraitsByCategoryAttribute()
+    {
         return $this->traits->groupBy('category_id');
     }
 
@@ -202,7 +205,8 @@ class Egi extends Model {
      *
      * @return bool
      */
-    public function hasRareTraits(): bool {
+    public function hasRareTraits(): bool
+    {
         return $this->traits->contains(function ($trait) {
             return $trait->isRare();
         });
@@ -213,7 +217,8 @@ class Egi extends Model {
      *
      * @return BelongsTo
      */
-    public function collection(): BelongsTo {
+    public function collection(): BelongsTo
+    {
         return $this->belongsTo(Collection::class, 'collection_id');
     }
 
@@ -222,7 +227,8 @@ class Egi extends Model {
      *
      * @return BelongsTo
      */
-    public function user(): BelongsTo {
+    public function user(): BelongsTo
+    {
         // Assuming 'user_id' is the foreign key linking to the user who uploaded/created the record
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -232,7 +238,8 @@ class Egi extends Model {
      *
      * @return BelongsTo
      */
-    public function owner(): BelongsTo {
+    public function owner(): BelongsTo
+    {
         // Assuming 'owner_id' is the foreign key linking to the current owner user
         return $this->belongsTo(User::class, 'owner_id');
     }
@@ -243,7 +250,8 @@ class Egi extends Model {
      *
      * @return HasMany
      */
-    public function audits(): HasMany {
+    public function audits(): HasMany
+    {
         return $this->hasMany(EgiAudit::class, 'egi_id');
     }
 
@@ -256,7 +264,8 @@ class Egi extends Model {
      *
      * @return HasMany
      */
-    public function coas(): HasMany {
+    public function coas(): HasMany
+    {
         return $this->hasMany(Coa::class, 'egi_id')->orderBy('issued_at', 'desc');
     }
 
@@ -265,7 +274,8 @@ class Egi extends Model {
      *
      * @return HasOne
      */
-    public function activeCoa(): HasOne {
+    public function activeCoa(): HasOne
+    {
         return $this->hasOne(Coa::class, 'egi_id')->where('status', 'valid')->latest('issued_at');
     }
 
@@ -274,7 +284,8 @@ class Egi extends Model {
      *
      * @return HasOne
      */
-    public function coa(): HasOne {
+    public function coa(): HasOne
+    {
         return $this->activeCoa();
     }
 
@@ -283,7 +294,8 @@ class Egi extends Model {
      *
      * @return HasMany
      */
-    public function traitsVersions(): HasMany {
+    public function traitsVersions(): HasMany
+    {
         return $this->hasMany(EgiTraitsVersion::class, 'egi_id')->orderBy('version', 'desc');
     }
 
@@ -292,7 +304,8 @@ class Egi extends Model {
      *
      * @return HasOne
      */
-    public function coaTraits(): HasOne {
+    public function coaTraits(): HasOne
+    {
         return $this->hasOne(EgiCoaTrait::class, 'egi_id');
     }
 
@@ -301,7 +314,8 @@ class Egi extends Model {
      *
      * @return HasOne
      */
-    public function blockchain(): HasOne {
+    public function blockchain(): HasOne
+    {
         return $this->hasOne(EgiBlockchain::class, 'egi_id');
     }
 
@@ -316,7 +330,8 @@ class Egi extends Model {
      *
      * @return MorphMany
      */
-    public function likes(): MorphMany {
+    public function likes(): MorphMany
+    {
         return $this->morphMany(Like::class, 'likeable');
     }
 
@@ -326,7 +341,8 @@ class Egi extends Model {
      * @param User|null $user
      * @return bool
      */
-    public function isLikedBy(?User $user = null): bool {
+    public function isLikedBy(?User $user = null): bool
+    {
         if (!$user) {
             $user = auth()->user();
         }
@@ -345,7 +361,8 @@ class Egi extends Model {
      *
      * @return int
      */
-    public function getLikesCountAttribute(): int {
+    public function getLikesCountAttribute(): int
+    {
         return $this->likes()->count();
     }
 
@@ -354,7 +371,8 @@ class Egi extends Model {
      *
      * @return bool
      */
-    public function getIsLikedAttribute(): bool {
+    public function getIsLikedAttribute(): bool
+    {
         return $this->isLikedBy();
     }
 
@@ -363,7 +381,8 @@ class Egi extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function reservations(): HasMany {
+    public function reservations(): HasMany
+    {
         return $this->hasMany(Reservation::class, 'egi_id', 'id');
     }
 
@@ -373,7 +392,8 @@ class Egi extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function reservationCertificates() {
+    public function reservationCertificates()
+    {
         return $this->hasMany(EgiReservationCertificate::class, 'egi_id')
             ->orderByRaw("CASE
                         WHEN reservation_type = 'strong' THEN 0
@@ -391,7 +411,8 @@ class Egi extends Model {
      * Restituisce il trait di categoria primario (se presente).
      * Per definizione di business ce n'è al massimo uno; se più di uno, prende il primo.
      */
-    public function getCategoryTraitAttribute() {
+    public function getCategoryTraitAttribute()
+    {
         // Garantiamo che category e traitType siano caricati (permette fallback se slug category mancante)
         if (!$this->relationLoaded('traits')) {
             $this->load(['traits.category', 'traits.traitType']);
@@ -415,7 +436,8 @@ class Egi extends Model {
     /**
      * Nome categoria (display_value > value > default config)
      */
-    public function getCategoryNameAttribute(): string {
+    public function getCategoryNameAttribute(): string
+    {
         $trait = $this->category_trait;
         $raw = $trait ? ($trait->display_value ?: $trait->value) : null;
         // Restituiamo sempre la versione LOCALIZZATA da trait_elements.values
@@ -426,7 +448,8 @@ class Egi extends Model {
     /**
      * Classi CSS Tailwind per il badge della categoria.
      */
-    public function getCategoryBadgeClassesAttribute(): string {
+    public function getCategoryBadgeClassesAttribute(): string
+    {
         $trait = $this->category_trait;
         $raw = $trait ? ($trait->display_value ?: $trait->value) : null;
         [$canonical, $_localized] = $this->resolveCategoryCanonicalAndLocalized($raw);
@@ -439,7 +462,8 @@ class Egi extends Model {
      * Debug helper: restituisce array grezzo delle informazioni categoria per troubleshooting.
      * NON usare in produzione (solo log / tinker).
      */
-    public function getCategoryDebugAttribute(): array {
+    public function getCategoryDebugAttribute(): array
+    {
         $trait = $this->category_trait;
         if (!$trait) {
             return [
@@ -472,7 +496,8 @@ class Egi extends Model {
      * @param string|null $raw Valore grezzo del trait (display_value o value)
      * @return array [canonicalEnglish, localizedLabel]
      */
-    private function resolveCategoryCanonicalAndLocalized(?string $raw): array {
+    private function resolveCategoryCanonicalAndLocalized(?string $raw): array
+    {
         $defaultCanonical = config('egi_category_badges.default', 'Art');
         $translations = trans('trait_elements.values'); // english => italian
         if (!is_array($translations)) {
@@ -510,7 +535,8 @@ class Egi extends Model {
      * Debug helper (non usato in produzione direttamente): restituisce contesto categoria grezzo.
      * Utile per capire perché cade nel fallback.
      */
-    public function getCategoryDebugContextAttribute(): array {
+    public function getCategoryDebugContextAttribute(): array
+    {
         $rawTrait = $this->category_trait; // Tratto filtrato
         $all = $this->relationLoaded('traits') ? $this->traits->map(function ($t) {
             return [
@@ -540,7 +566,8 @@ class Egi extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function utility() {
+    public function utility()
+    {
         return $this->hasOne(Utility::class);
     }
 
@@ -551,7 +578,8 @@ class Egi extends Model {
      *
      * @return string|null
      */
-    public function getMainImageUrlAttribute(): ?string {
+    public function getMainImageUrlAttribute(): ?string
+    {
         if (!$this->collection_id || !$this->user_id || !$this->key_file || !$this->extension) {
             return null;
         }
@@ -592,7 +620,8 @@ class Egi extends Model {
      *
      * @return string|null
      */
-    public function getThumbnailImageUrlAttribute(): ?string {
+    public function getThumbnailImageUrlAttribute(): ?string
+    {
         if (!$this->collection_id || !$this->user_id || !$this->key_file) {
             return null;
         }
@@ -617,7 +646,8 @@ class Egi extends Model {
      *
      * @return string|null
      */
-    public function getAvatarImageUrlAttribute(): ?string {
+    public function getAvatarImageUrlAttribute(): ?string
+    {
         if (!$this->collection_id || !$this->user_id || !$this->key_file) {
             return null;
         }
@@ -642,7 +672,8 @@ class Egi extends Model {
      *
      * @return string|null
      */
-    public function getOriginalImageUrlAttribute(): ?string {
+    public function getOriginalImageUrlAttribute(): ?string
+    {
         if (!$this->collection_id || !$this->user_id || !$this->key_file) {
             return null;
         }
@@ -668,14 +699,16 @@ class Egi extends Model {
     /**
      * Check if this EGI has any valid CoA
      */
-    public function hasValidCoa(): bool {
+    public function hasValidCoa(): bool
+    {
         return $this->coas()->where('status', 'valid')->exists();
     }
 
     /**
      * Get the latest valid CoA
      */
-    public function getLatestValidCoa(): ?Coa {
+    public function getLatestValidCoa(): ?Coa
+    {
         return $this->activeCoa;
     }
 
@@ -683,21 +716,24 @@ class Egi extends Model {
      * Check if this EGI can have a new CoA issued
      * (business rule: only one valid CoA at a time)
      */
-    public function canIssueNewCoa(): bool {
+    public function canIssueNewCoa(): bool
+    {
         return !$this->hasValidCoa();
     }
 
     /**
      * Get CoA count for this EGI
      */
-    public function getCoaCount(): int {
+    public function getCoaCount(): int
+    {
         return $this->coas()->count();
     }
 
     /**
      * Get valid CoA count for this EGI
      */
-    public function getValidCoaCount(): int {
+    public function getValidCoaCount(): int
+    {
         return $this->coas()->where('status', 'valid')->count();
     }
 
@@ -711,7 +747,8 @@ class Egi extends Model {
      *
      * @return bool
      */
-    public function isMinted(): bool {
+    public function isMinted(): bool
+    {
         return (bool) $this->mint;
     }
 
@@ -720,7 +757,8 @@ class Egi extends Model {
      *
      * @return bool
      */
-    public function hasCertificate(): bool {
+    public function hasCertificate(): bool
+    {
         return $this->blockchain()->exists() && $this->blockchain->hasCertificate();
     }
 
@@ -729,7 +767,8 @@ class Egi extends Model {
      *
      * @return string|null
      */
-    public function getVerificationUrl(): ?string {
+    public function getVerificationUrl(): ?string
+    {
         if (!$this->blockchain()->exists()) {
             return null;
         }
@@ -742,7 +781,8 @@ class Egi extends Model {
      *
      * @return bool
      */
-    public function hasBlockchainData(): bool {
+    public function hasBlockchainData(): bool
+    {
         return $this->blockchain()->exists();
     }
 
@@ -751,7 +791,8 @@ class Egi extends Model {
      *
      * @return string
      */
-    public function getBlockchainStatusLabel(): string {
+    public function getBlockchainStatusLabel(): string
+    {
         if (!$this->hasBlockchainData()) {
             return 'Non Blockchain';
         }
@@ -765,7 +806,8 @@ class Egi extends Model {
      * @param User|null $user
      * @return bool
      */
-    public function isOwnedByUser(?User $user = null): bool {
+    public function isOwnedByUser(?User $user = null): bool
+    {
         if (!$user) {
             $user = auth()->user();
         }
@@ -794,7 +836,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function canBeMinted(): bool {
+    public function canBeMinted(): bool
+    {
         // Check if EGI is published
         $isPublished = $this->is_published || $this->status === 'published';
 
@@ -828,7 +871,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function canBeReserved(): bool {
+    public function canBeReserved(): bool
+    {
         // Same rules as canBeMinted for now
         // Both actions available on non-minted, published EGIs
         return $this->canBeMinted();
@@ -847,7 +891,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function hasPendingReservation(): bool {
+    public function hasPendingReservation(): bool
+    {
         return $this->reservations()
             ->where('status', 'active')
             ->where('is_current', true)
@@ -870,7 +915,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function isReservedByUser(User $user): bool {
+    public function isReservedByUser(User $user): bool
+    {
         return $this->reservations()
             ->where('user_id', $user->id)
             ->where('status', 'active')
@@ -889,7 +935,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function getWinningReservation(): ?Reservation {
+    public function getWinningReservation(): ?Reservation
+    {
         return $this->reservations()
             ->where('sub_status', 'highest')
             ->where('status', 'active')
@@ -906,7 +953,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function getUserReservation(User $user): ?Reservation {
+    public function getUserReservation(User $user): ?Reservation
+    {
         return $this->reservations()
             ->where('user_id', $user->id)
             ->where('status', 'active')
@@ -925,7 +973,8 @@ class Egi extends Model {
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeWithBlockchain($query) {
+    public function scopeWithBlockchain($query)
+    {
         return $query->with('blockchain');
     }
 
@@ -935,7 +984,8 @@ class Egi extends Model {
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeMintedOnly($query) {
+    public function scopeMintedOnly($query)
+    {
         return $query->whereHas('blockchain', function ($blockchainQuery) {
             $blockchainQuery->where('mint_status', 'minted');
         });
@@ -947,7 +997,8 @@ class Egi extends Model {
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeHasBlockchain($query) {
+    public function scopeHasBlockchain($query)
+    {
         return $query->whereHas('blockchain');
     }
 
@@ -957,7 +1008,8 @@ class Egi extends Model {
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeWithoutBlockchain($query) {
+    public function scopeWithoutBlockchain($query)
+    {
         return $query->whereDoesntHave('blockchain');
     }
 
@@ -968,7 +1020,8 @@ class Egi extends Model {
      * @param string $status
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeByMintStatus($query, string $status) {
+    public function scopeByMintStatus($query, string $status)
+    {
         return $query->whereHas('blockchain', function ($blockchainQuery) use ($status) {
             $blockchainQuery->where('mint_status', $status);
         });
@@ -992,7 +1045,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function scopeAvailableForMint($query) {
+    public function scopeAvailableForMint($query)
+    {
         return $query->where(function ($q) {
             $q->where('is_published', true)
                 ->orWhere('status', 'published');
@@ -1019,7 +1073,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function scopeAvailableForReservation($query) {
+    public function scopeAvailableForReservation($query)
+    {
         // Alias to availableForMint for now
         // Can be customized later if reservation rules differ
         return $query->availableForMint();
@@ -1034,7 +1089,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function scopeWithActiveReservations($query) {
+    public function scopeWithActiveReservations($query)
+    {
         return $query->whereHas('reservations', function ($reservationQuery) {
             $reservationQuery->where('status', 'active')
                 ->where('is_current', true)
@@ -1052,7 +1108,8 @@ class Egi extends Model {
      * @version 1.0.0 (FlorenceEGI - Phase 2 Expansion)
      * @date 2025-10-09
      */
-    public function scopeReservedByUser($query, User $user) {
+    public function scopeReservedByUser($query, User $user)
+    {
         return $query->whereHas('reservations', function ($reservationQuery) use ($user) {
             $reservationQuery->where('user_id', $user->id)
                 ->where('status', 'active')
