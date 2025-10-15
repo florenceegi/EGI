@@ -82,10 +82,10 @@ class QueueWorkerService
             ]);
 
             $result = $this->attemptWorkerAutoStart();
-            
+
             // Restore original queue name
             $this->queueName = $originalQueue;
-            
+
             return $result;
         } catch (\Exception $e) {
             $this->errorManager->handle('QUEUE_WORKER_CHECK_FAILED', [
