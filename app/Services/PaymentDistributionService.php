@@ -216,6 +216,7 @@ class PaymentDistributionService {
             $userType = $this->determineUserType($wallet);
 
             $distributions[] = [
+                'egi_id' => $reservation->egi_id, // Direct EGI reference
                 'reservation_id' => $reservation->id,
                 'collection_id' => $reservation->egi->collection_id,
                 'user_id' => $wallet->user_id,
@@ -592,6 +593,7 @@ class PaymentDistributionService {
 
             $distributions[] = [
                 'source_type' => 'mint', // NEW: Phase 2 source type
+                'egi_id' => $egiBlockchain->egi_id, // Direct EGI reference
                 'reservation_id' => null, // NULL for mint-based distributions (minter ≠ last reserver)
                 'egi_blockchain_id' => $egiBlockchain->id, // NEW: Link to blockchain record
                 'blockchain_tx_id' => $egiBlockchain->algorand_tx_id, // NEW: Algorand TXID
