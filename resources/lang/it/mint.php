@@ -19,6 +19,7 @@ return [
     'egi_preview' => [
         'title' => 'Anteprima EGI',
         'creator_by' => 'Creato da :name',
+        'click_to_view' => 'Clicca per visualizzare la pagina completa dell\'EGI',
     ],
 
     // Blockchain Info Section
@@ -212,5 +213,22 @@ return [
         'api_start_success' => 'Worker avviato con successo',
         'api_start_failed' => 'Impossibile avviare il worker. Contattare l\'amministratore.',
         'api_start_error' => 'Errore durante avvio worker',
+    ],
+
+    // Utility Section
+    'utility' => [
+        'title' => 'Utility Inclusa',
+        'type' => 'Tipo',
+        'description' => 'Descrizione',
+        'gallery' => 'Galleria Immagini',
+    ],
+
+    // Traits Section
+    'traits' => [
+        'title' => 'Tratti e Attributi',
+        'attributes' => 'attributi',
+        'has_image' => 'Questo tratto ha un\'immagine associata',
+        'unknown' => 'Sconosciuto',
+        'collection' => 'nella collezione',
     ],
 ];

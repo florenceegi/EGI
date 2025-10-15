@@ -317,6 +317,16 @@ class TraitsApiController extends Controller {
                 ]);
             }
 
+            // 🔒 BLOCKCHAIN IMMUTABILITY: Check if EGI is minted (BLOCKING)
+            if ($egi->token_EGI) {
+                return $this->errorManager->handle('TRAITS_EGI_MINTED', [
+                    'user_id' => $user->id,
+                    'egi_id' => $egiId,
+                    'token_egi' => $egi->token_EGI,
+                    'action' => 'save_traits'
+                ]);
+            }
+
             // Check if EGI is published (cannot modify)
             if ($egi->is_published) {
                 return $this->errorManager->handle('TRAITS_EGI_PUBLISHED', [

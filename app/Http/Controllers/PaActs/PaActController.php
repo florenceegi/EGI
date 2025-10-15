@@ -379,14 +379,14 @@ class PaActController extends Controller
                 }
             }
 
-            // Algorand explorer URL (if transaction exists)
+            // Algorand explorer URL (use blockchain_txid from EGI model)
             $algorandExplorerUrl = null;
-            if ($metadata['anchor_txid']) {
+            if ($egi->blockchain_txid) {
                 $network = $egi->jsonMetadata['anchor_network'] ?? 'algorand-testnet';
                 $baseUrl = $network === 'algorand-mainnet'
                     ? 'https://explorer.perawallet.app/tx/'
                     : 'https://testnet.explorer.perawallet.app/tx/';
-                $algorandExplorerUrl = $baseUrl . $metadata['anchor_txid'];
+                $algorandExplorerUrl = $baseUrl . $egi->blockchain_txid;
             }
 
             return view('pa.acts.show', [

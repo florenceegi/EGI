@@ -60,7 +60,12 @@ class MintController extends Controller {
                 return redirect()->back();
             }
 
-            $egi = Egi::findOrFail($egiId);
+            $egi = Egi::with([
+                'utility.media',
+                'traits.category',
+                'traits.traitType',
+                'traits.media'
+            ])->findOrFail($egiId);
             $reservation = Reservation::findOrFail($reservationId);
 
             // Verify user is the winner of the reservation

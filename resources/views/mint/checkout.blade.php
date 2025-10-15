@@ -1,7 +1,7 @@
 {{-- resources/views/mint/checkout.blade.php --}}
 <x-platform-layout :title="__('mint.page_title', ['title' => $egi->title])">
     <div class="container mx-auto px-4 py-8">
-        <div class="mx-auto max-w-4xl">
+        <div class="mx-auto max-w-7xl">
             {{-- Header --}}
             <div class="mb-8">
                 <h1 class="mb-2 text-3xl font-bold text-gray-900">
@@ -12,17 +12,19 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                {{-- EGI Preview --}}
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                {{-- COLUMN 1: EGI Preview + Blockchain Info --}}
                 <div class="space-y-6">
                     <div class="rounded-lg bg-white p-6 shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.egi_preview.title') }}</h2>
 
-                        {{-- EGI Card Preview --}}
-                        <div class="mb-4 aspect-square overflow-hidden rounded-lg">
+                        {{-- EGI Card Preview with clickable image --}}
+                        <a href="{{ route('egis.show', ['egi' => $egi->id]) }}" target="_blank"
+                            class="mb-4 block aspect-square overflow-hidden rounded-lg transition-all hover:opacity-90 hover:shadow-xl"
+                            title="{{ __('mint.egi_preview.click_to_view') }}">
                             <img src="{{ $egi->main_image_url }}" alt="{{ $egi->title }}"
                                 class="h-full w-full object-cover">
-                        </div>
+                        </a>
 
                         <h3 class="text-lg font-semibold text-gray-900">{{ $egi->title }}</h3>
                         <p class="mb-2 text-sm text-gray-600">
@@ -35,7 +37,8 @@
 
                     {{-- Blockchain Info --}}
                     <div class="rounded-lg bg-blue-50 p-6">
-                        <h3 class="mb-3 text-lg font-semibold text-blue-900">{{ __('mint.blockchain_info.title') }}</h3>
+                        <h3 class="mb-3 text-lg font-semibold text-blue-900">{{ __('mint.blockchain_info.title') }}
+                        </h3>
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between">
                                 <span class="text-blue-700">{{ __('mint.blockchain_info.network') }}</span>
@@ -51,7 +54,10 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
+                {{-- COLUMN 2: CoA + Utility + Traits --}}
+                <div class="space-y-6">
                     {{-- Certificate of Authenticity (CoA) --}}
                     @if ($egi->coa && $egi->coa->status === 'valid')
                         <div class="rounded-lg bg-amber-50 p-6">
@@ -115,9 +121,170 @@
                             </div>
                         </div>
                     @endif
+
+                    {{-- Utility Section --}}
+                    @if ($egi->utility)
+                        <div class="rounded-lg bg-gradient-to-br from-violet-50 to-purple-50 p-6 shadow-md">
+                            <div class="mb-4 flex items-center">
+                                <svg class="mr-2 h-6 w-6 text-purple-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                                <h3 class="text-lg font-semibold text-purple-900">{{ __('mint.utility.title') }}</h3>
+                            </div>
+
+                            <div class="mb-4 space-y-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="font-medium text-purple-700">{{ __('mint.utility.type') }}</span>
+                                    <span
+                                        class="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-800">
+                                        {{ __('utility.types.' . $egi->utility->type . '.label') }}
+                                    </span>
+                                </div>
+                                <div class="text-sm">
+                                    <span
+                                        class="font-medium text-purple-700">{{ __('mint.utility.description') }}</span>
+                                    <p class="mt-1 text-purple-900">{{ Str::limit($egi->utility->description, 200) }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {{-- Utility Images Gallery --}}
+                            @if ($egi->utility->getMedia('utility_gallery')->count() > 0)
+                                <div class="mt-4">
+                                    <h4 class="mb-2 text-sm font-semibold text-purple-800">
+                                        {{ __('mint.utility.gallery') }}</h4>
+                                    <div class="flex gap-2 overflow-x-auto pb-2" style="scrollbar-width: thin;">
+                                        @foreach ($egi->utility->getMedia('utility_gallery') as $index => $media)
+                                            <div
+                                                class="h-20 w-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 border-purple-200 transition-all hover:scale-105 hover:border-purple-400">
+                                                <img src="{{ $media->getUrl('thumb') }}"
+                                                    alt="{{ $egi->utility->title }} - Image {{ $index + 1 }}"
+                                                    class="h-full w-full object-cover"
+                                                    onclick="window.open('{{ $media->getUrl('large') }}', '_blank')"
+                                                    loading="lazy">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    {{-- Traits Section --}}
+                    @if ($egi->traits && $egi->traits->count() > 0)
+                        <div class="rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-md">
+                            <div class="mb-4 flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <svg class="mr-2 h-6 w-6 text-indigo-600" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                    </svg>
+                                    <h3 class="text-lg font-semibold text-indigo-900">{{ __('mint.traits.title') }}
+                                    </h3>
+                                </div>
+                                <span
+                                    class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-800">
+                                    {{ $egi->traits->count() }} {{ __('mint.traits.attributes') }}
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                                @foreach ($egi->traits as $trait)
+                                    @php
+                                        $category = $trait->category;
+                                        $categoryColor = $category ? $category->color : '#6366f1';
+                                        $categoryIcon = $category ? $category->icon : '🏷️';
+                                    @endphp
+                                    <div
+                                        class="relative rounded-lg border border-indigo-200 bg-white p-3 shadow-sm transition-all hover:shadow-md">
+                                        {{-- Category Badge --}}
+                                        <div class="mb-2 flex items-center justify-between">
+                                            <span
+                                                class="inline-flex h-6 w-6 items-center justify-center rounded-full text-xs"
+                                                style="background-color: {{ $categoryColor }}20; color: {{ $categoryColor }};">
+                                                {{ $categoryIcon }}
+                                            </span>
+                                            @if ($trait->getFirstMedia('trait_images'))
+                                                <span
+                                                    class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-[10px]"
+                                                    title="{{ __('mint.traits.has_image') }}">
+                                                    📷
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        {{-- Trait Type --}}
+                                        <div
+                                            class="mb-1 text-[10px] font-medium uppercase tracking-wide text-indigo-600">
+                                            @if ($trait->traitType)
+                                                {{ __('trait_elements.types.' . $trait->traitType->name, [], null) ?: $trait->traitType->name }}
+                                            @else
+                                                {{ __('mint.traits.unknown') }}
+                                            @endif
+                                        </div>
+
+                                        {{-- Trait Value --}}
+                                        <div class="text-sm font-semibold text-gray-900">
+                                            {{ $trait->display_value ?? $trait->value }}
+                                            @if ($trait->traitType && $trait->traitType->unit)
+                                                <span
+                                                    class="text-xs text-gray-500">{{ $trait->traitType->unit }}</span>
+                                            @endif
+                                        </div>
+
+                                        {{-- Rarity Bar --}}
+                                        @if (isset($trait->rarity_percentage) && $trait->rarity_percentage)
+                                            @php
+                                                // Rarity calculation (inverted: lower % = more rare)
+                                                if ($trait->rarity_percentage <= 5) {
+                                                    $rarityClass = 'mythic';
+                                                    $rarityColor = '#ff00ff';
+                                                    $barWidth = 90;
+                                                } elseif ($trait->rarity_percentage <= 10) {
+                                                    $rarityClass = 'legendary';
+                                                    $rarityColor = '#ffd700';
+                                                    $barWidth = 75;
+                                                } elseif ($trait->rarity_percentage <= 20) {
+                                                    $rarityClass = 'epic';
+                                                    $rarityColor = '#9333ea';
+                                                    $barWidth = 60;
+                                                } elseif ($trait->rarity_percentage <= 40) {
+                                                    $rarityClass = 'rare';
+                                                    $rarityColor = '#3b82f6';
+                                                    $barWidth = 45;
+                                                } elseif ($trait->rarity_percentage <= 70) {
+                                                    $rarityClass = 'uncommon';
+                                                    $rarityColor = '#10b981';
+                                                    $barWidth = 30;
+                                                } else {
+                                                    $rarityClass = 'common';
+                                                    $rarityColor = '#6b7280';
+                                                    $barWidth = 15;
+                                                }
+                                            @endphp
+                                            <div class="mt-2">
+                                                <div class="h-1 w-full overflow-hidden rounded-full bg-gray-200">
+                                                    <div class="h-full rounded-full transition-all"
+                                                        style="width: {{ $barWidth }}%; background-color: {{ $rarityColor }};">
+                                                    </div>
+                                                </div>
+                                                <div class="mt-1 text-[9px] text-gray-500">
+                                                    {{ $trait->rarity_percentage }}%
+                                                    {{ __('mint.traits.collection') }}
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
-                {{-- Checkout Form --}}
+                {{-- COLUMN 3: Checkout Form + MiCA Compliance --}}
                 <div class="space-y-6">
                     <div class="rounded-lg bg-white p-6 shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.payment.title') }}</h2>
@@ -943,7 +1110,7 @@
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0a12 12 0 00-12 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                         </div>
-                        <div class="ml-4 flex-1">
+                        <div class="flex-1 ml-4">
                             <h3 class="text-lg font-semibold text-blue-900">{{ __('mint.notification.processing_title') }}</h3>
                             <p class="mt-1 text-sm text-blue-800">{{ __('mint.notification.processing_message') }}</p>
                             <p class="mt-2 text-xs text-blue-600">{{ __('mint.notification.processing_note') }}</p>
@@ -979,24 +1146,24 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <div class="ml-4 flex-1">
+                        <div class="flex-1 ml-4">
                             <h3 class="text-lg font-semibold text-green-900">{{ __('mint.notification.success_title') }}</h3>
                             <p class="mt-1 text-sm text-green-800">{{ __('mint.notification.success_message') }}</p>
                             ${data.asaId ? `
-                                    <div class="p-3 mt-3 border rounded-lg border-green-300 bg-green-50">
-                                        <div class="flex items-center justify-between mb-2 text-sm">
-                                            <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                            <span class="font-mono font-bold text-green-900">${data.asaId}</span>
-                                        </div>
-                                        <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
-                                            class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
-                                            {{ __('mint.notification.view_blockchain') }}
-                                        </a>
-                                    </div>
-                                ` : ''}
+                                                            <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
+                                                                <div class="flex items-center justify-between mb-2 text-sm">
+                                                                    <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
+                                                                    <span class="font-mono font-bold text-green-900">${data.asaId}</span>
+                                                                </div>
+                                                                <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
+                                                                    class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
+                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                    </svg>
+                                                                    {{ __('mint.notification.view_blockchain') }}
+                                                                </a>
+                                                            </div>
+                                                        ` : ''}
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-green-600 transition-colors hover:text-green-900">

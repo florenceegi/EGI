@@ -112,6 +112,16 @@ class UtilityController extends Controller {
                 abort(403, 'Unauthorized action.');
             }
 
+            // 🔒 BLOCKCHAIN IMMUTABILITY: Check if EGI is minted (BLOCKING)
+            if ($egi->token_EGI) {
+                return $this->errorManager->handle('UTILITY_EGI_MINTED', [
+                    'user_id' => auth()->id(),
+                    'egi_id' => $egi->id,
+                    'token_egi' => $egi->token_EGI,
+                    'action' => 'create_utility'
+                ]);
+            }
+
             // Verifica che la collection non sia ancora pubblicata
             // Temporaneamente commentato per permettere il testing
             /*if ($egi->collection->status === 'published') {
@@ -251,6 +261,17 @@ class UtilityController extends Controller {
                     ]);
                 }
                 abort(403, 'Unauthorized action.');
+            }
+
+            // 🔒 BLOCKCHAIN IMMUTABILITY: Check if EGI is minted (BLOCKING)
+            if ($utility->egi->token_EGI) {
+                return $this->errorManager->handle('UTILITY_EGI_MINTED', [
+                    'user_id' => auth()->id(),
+                    'egi_id' => $utility->egi->id,
+                    'token_egi' => $utility->egi->token_EGI,
+                    'utility_id' => $utility->id,
+                    'action' => 'update_utility'
+                ]);
             }
 
             // Verifica che la collection non sia ancora pubblicata

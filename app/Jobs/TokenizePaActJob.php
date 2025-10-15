@@ -198,10 +198,13 @@ class TokenizePaActJob implements ShouldQueue
                 'pa_tokenization_status' => 'completed',
                 'pa_tokenization_error' => null, // Clear any previous error
 
+                // Blockchain fields (neutral - used by PA + Creator)
+                'blockchain_txid' => $anchorResult['txid'], // Transaction ID (for explorer /tx/{txid})
+                'token_EGI' => null,             // ASA ID (NULL for PA, only for NFT minting)
+
                 // Standard EGI fields (consistency with Merchant flow)
                 'mint' => 1,                     // Mark as minted/tokenized (boolean stored as tinyint)
                 'status' => 'minted',            // Status minted (not published)
-                'token_EGI' => $anchorResult['txid'], // Store TXID as token reference
 
                 // Metadata
                 'jsonMetadata' => $updatedMetadata
@@ -212,14 +215,14 @@ class TokenizePaActJob implements ShouldQueue
 
             $logger->info('[TokenizePaActJob] Tokenization completed successfully', [
                 'egi_id' => $this->egi->id,
-                'txid' => $anchorResult['txid'],
+                'blockchain_txid' => $this->egi->blockchain_txid,
                 'block' => $anchorResult['block'] ?? null,
                 'pa_anchored_at' => $this->egi->pa_anchored_at,
                 'total_attempts' => $this->egi->pa_tokenization_attempts,
                 // Standard EGI fields verification
                 'mint' => $this->egi->mint ? 'YES' : 'NO',
                 'status' => $this->egi->status,
-                'token_EGI' => $this->egi->token_EGI,
+                'token_EGI' => $this->egi->token_EGI ?? 'NULL (PA uses blockchain_txid)',
                 'pa_tokenization_status' => $this->egi->pa_tokenization_status
             ]);
         } catch (\Exception $e) {

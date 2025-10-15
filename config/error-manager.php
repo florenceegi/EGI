@@ -1060,6 +1060,28 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        'TRAITS_EGI_MINTED' => [
+            'type' => 'validation',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.traits_egi_minted',
+            'user_message_key' => 'error-manager::errors.user.traits_egi_minted',
+            'http_status_code' => 403,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'UTILITY_EGI_MINTED' => [
+            'type' => 'validation',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.utility_egi_minted',
+            'user_message_key' => 'error-manager::errors.user.utility_egi_minted',
+            'http_status_code' => 403,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
         'TRAITS_NO_DATA_PROVIDED' => [
             'type' => 'validation',
             'blocking' => 'blocking',
