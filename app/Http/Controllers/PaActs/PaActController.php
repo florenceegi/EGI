@@ -550,4 +550,52 @@ class PaActController extends Controller
             return redirect()->back()->with('error', 'Errore durante la tokenizzazione: ' . $e->getMessage());
         }
     }
+
+    /**
+     * PA Statistics Dashboard
+     *
+     * @param Request $request
+     * @return View
+     */
+    public function statistics(Request $request): View
+    {
+        try {
+            $user = auth()->user();
+
+            $this->logger->info('[PaActController] Loading statistics dashboard', [
+                'user_id' => $user->id
+            ]);
+
+            // Get comprehensive statistics
+            $stats = $this->statsService->getDashboardStats($user);
+
+            // Get document type distribution for charts
+            $docTypeDistribution = $this->statsService->getDocumentTypeDistribution($user);
+
+            // Get monthly trends (last 12 months)
+            $monthlyTrends = $this->statsService->getMonthlyTrends($user, 12);
+
+            // Get acts requiring attention
+            $attentionNeeded = $this->statsService->getActsRequiringAttention($user);
+
+            // Get recent failed acts (for debugging/retry)
+            $recentFailed = $this->statsService->getRecentFailedActs($user, 10);
+
+            return view('pa.statistics', [
+                'stats' => $stats,
+                'docTypeDistribution' => $docTypeDistribution,
+                'monthlyTrends' => $monthlyTrends,
+                'attentionNeeded' => $attentionNeeded,
+                'recentFailed' => $recentFailed
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('[PaActController] Error loading statistics', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->route('pa.acts.index')
+                ->with('error', 'Errore nel caricamento delle statistiche. Riprova più tardi.');
+        }
+    }
 }

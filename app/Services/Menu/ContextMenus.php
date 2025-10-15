@@ -37,6 +37,7 @@ use App\Services\Menu\Items\PAHeritageMenu;
 use App\Services\Menu\Items\PACoAMenu;
 use App\Services\Menu\Items\PAInspectorsMenu;
 use App\Services\Menu\Items\PAActsMenu;
+use App\Services\Menu\Items\PAStatisticsMenu;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -244,6 +245,7 @@ class ContextMenus
                 $paMainMenu = new MenuGroup(__('menu.pa_management'), 'pa-building', [
                     new PAHeritageMenu(),
                     new PAActsMenu(),
+                    new PAStatisticsMenu(),
                     new PACoAMenu(),
                     new PAInspectorsMenu(),
                 ]);
