@@ -520,15 +520,15 @@ class PaymentDistributionService {
      * @throws \Exception
      */
     private function validateMintForDistribution(\App\Models\EgiBlockchain $egiBlockchain, array $paymentData): void {
-        // Check if mint is completed
-        if ($egiBlockchain->status !== 'minted') {
+        // Check if mint is completed (use mint_status, NOT status - field doesn't exist)
+        if ($egiBlockchain->mint_status !== 'minted') {
             $this->errorManager->handle('MINT_NOT_COMPLETED', [
                 'egi_blockchain_id' => $egiBlockchain->id,
-                'current_status' => $egiBlockchain->status,
+                'current_mint_status' => $egiBlockchain->mint_status,
                 'buyer_user_id' => $egiBlockchain->buyer_user_id,
                 'timestamp' => now()->toIso8601String()
             ]);
-            throw new \Exception("Mint {$egiBlockchain->id} is not completed (status: {$egiBlockchain->status})");
+            throw new \Exception("Mint {$egiBlockchain->id} is not completed (mint_status: {$egiBlockchain->mint_status})");
         }
 
         // Validate payment amount

@@ -451,7 +451,7 @@ class EgiMintingService
                             'paid_amount' => $paymentData['paid_amount'],
                             'paid_currency' => $paymentData['paid_currency'] ?? 'EUR',
                             'payment_method' => $paymentData['payment_method'] ?? 'fiat',
-                            'status' => 'minted' // Confirm final status
+                            'mint_status' => 'minted' // ✅ FIX: Use mint_status, NOT status (field doesn't exist)
                         ]);
 
                         // Create payment distributions
