@@ -71,11 +71,47 @@
 
 ## 🟡 PRIORITÀ MEDIA
 
-### 💰 CRUD Price Management
+### 💰 Payment Distributions - Dual Source Statistics
 
--   [ ] **Owner** deve poter modificare prezzo (già implementato base in CRUD panel)
--   [ ] **Creator** deve poter modificare prezzo (già implementato base in CRUD panel)
--   [ ] Testare flusso completo: Owner modifica price → salvataggio → verifica
+**CONTEXT:** `payment_distributions` già popolata da 2 fonti:
+
+-   `source_type = 'reservation'` → prenotazioni (forecast revenue)
+-   `source_type = 'mint'` → acquisti reali blockchain-certified
+
+**PROBLEMA:** Statistiche attuali NON distinguono tra forecast (reservation) e revenue reale (mint).
+
+**TASK: Implementare Analytics Dual Source**
+
+-   [x] **FIX CRITICO**: `calculateMintDistributions()` scriveva `distribution_status = PENDING` invece di `CONFIRMED` ✅
+    -   Rationale: Mint = pagamento già completato e certificato blockchain
+    -   Commit: `[FIX] PaymentDistributionService - Set CONFIRMED status for mint distributions`
+-   [ ] **StatisticsService - Separation Logic**:
+    -   [ ] Method: `getReservationDistributionStats()` → Filter `source_type = 'reservation'`
+    -   [ ] Method: `getMintDistributionStats()` → Filter `source_type = 'mint'`
+    -   [ ] Method: `getCombinedDistributionStats()` → Aggregate entrambe le fonti
+    -   [ ] Refactor metodi esistenti che usano `PaymentDistribution`:
+        -   Aggiungere parametro `$sourceType = null` (default: tutti)
+        -   Rispettare filtro quando specificato
+-   [ ] **PaymentDistribution Model - Scopes**:
+    -   [ ] Scope: `scopeReservationSource()` → `where('source_type', 'reservation')`
+    -   [ ] Scope: `scopeMintSource()` → `where('source_type', 'mint')`
+    -   [ ] Update static statistics methods per usare scopes
+-   [ ] **Dashboard Admin - Dual Source Views**:
+    -   [ ] Sezione "Revenue Analytics" con 3 tabs:
+        -   Tab 1: "Reservation Revenue" (forecast pre-mint)
+        -   Tab 2: "Mint Revenue" (blockchain certified)
+        -   Tab 3: "Combined Overview" (aggregato totale)
+    -   [ ] Grafici comparativi:
+        -   Line chart: Reservation vs Mint revenue over time
+        -   Conversion rate: Reservations → Mint completion %
+        -   Average mint price vs average reservation price
+-   [ ] **Testing**:
+    -   [ ] Unit test: Dual source statistics methods
+    -   [ ] Integration test: Dashboard rendering con dati mixed
+    -   [ ] Verify: Existing reservation stats unchanged
+-   [ ] **Documentation**:
+    -   [ ] Update `docs/statistics-catalog.md` con dual source queries
+    -   [ ] Comment inline PERCHÉ separare reservation vs mint stats
 
 ### 🏷️ Sistema Asta (ex Prenotazione)
 
@@ -177,13 +213,13 @@
 
 ## 📊 PROGRESS SUMMARY
 
-**Completati**: 23 task ✅  
+**Completati**: 24 task ✅  
 **Priorità Alta**: 0 task - **FASE COMPLETATA** 🎉
-**Priorità Media**: 8 task  
+**Priorità Media**: 19 task (1 fix critico ✅, 18 da fare)
 **Priorità Bassa**: 7 task  
 **Blockchain Avanzato**: 12 task
 
-**Totale**: 23/47 task completati (48.9%) - **QUASI A METÀ!**
+**Totale**: 24/59 task completati (40.7%)
 
 ---
 

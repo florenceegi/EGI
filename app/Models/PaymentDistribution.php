@@ -48,7 +48,10 @@ class PaymentDistribution extends Model {
      * @var array<string>
      */
     protected $fillable = [
+        'source_type',           // Phase 2: mint/reservation/transfer tracking
         'reservation_id',
+        'egi_blockchain_id',     // Phase 2: Link to blockchain record (mint tracking)
+        'blockchain_tx_id',      // Phase 2: Algorand transaction ID (mint tracking)
         'collection_id',
         'user_id',
         'user_type',
