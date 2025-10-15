@@ -19,10 +19,9 @@ class PAStatisticsMenu extends MenuItem
     {
         parent::__construct(
             translationKey: 'menu.pa_statistics',
-            route: 'pa.statistics',
+            route: 'pa.acts.statistics',
             icon: 'bar_chart',
             permission: 'access_pa_dashboard'
         );
     }
 }
-
