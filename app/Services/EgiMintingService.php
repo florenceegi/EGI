@@ -28,8 +28,7 @@ use Illuminate\Support\Facades\DB;
  * @date 2025-10-07
  * @purpose EGI blockchain minting orchestration service
  */
-class EgiMintingService
-{
+class EgiMintingService {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -81,8 +80,7 @@ class EgiMintingService
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function mintEgi(Egi $egi, User $user, array $metadata = []): EgiBlockchain
-    {
+    public function mintEgi(Egi $egi, User $user, array $metadata = []): EgiBlockchain {
         try {
             // 🚨 DEBUG: Log service call IMMEDIATELY
             $this->logger->emergency('🔥🔥🔥 MINTING SERVICE CALLED 🔥🔥🔥', [
@@ -274,8 +272,7 @@ class EgiMintingService
      * @return string Transfer transaction ID
      * @throws \Exception
      */
-    public function transferEgiOwnership(EgiBlockchain $egiBlockchain, string $buyerWallet, ?int $buyerUserId = null): string
-    {
+    public function transferEgiOwnership(EgiBlockchain $egiBlockchain, string $buyerWallet, ?int $buyerUserId = null): string {
         $this->logger->info('EGI_TRANSFER_START', [
             'egi_id' => $egiBlockchain->egi_id,
             'buyer_wallet' => $buyerWallet,
@@ -344,8 +341,7 @@ class EgiMintingService
      * @return EgiBlockchain
      * @privacy-safe Includes user tracking for GDPR compliance
      */
-    private function createOrUpdateBlockchainRecord(Egi $egi, string $status, User $user): EgiBlockchain
-    {
+    private function createOrUpdateBlockchainRecord(Egi $egi, string $status, User $user): EgiBlockchain {
         return EgiBlockchain::updateOrCreate(
             ['egi_id' => $egi->id],
             [
@@ -366,8 +362,7 @@ class EgiMintingService
      * @param array $additionalMetadata Extra metadata
      * @return array Formatted metadata
      */
-    private function prepareMetadata(Egi $egi, array $additionalMetadata = []): array
-    {
+    private function prepareMetadata(Egi $egi, array $additionalMetadata = []): array {
         // Fix: title might be JSON array - extract string safely
         $titleStr = is_array($egi->title)
             ? ($egi->title['en'] ?? $egi->title['it'] ?? $egi->title[0] ?? 'EGI #' . $egi->id)
@@ -387,8 +382,7 @@ class EgiMintingService
      * @param Egi $egi EGI instance
      * @param \Exception $error Error occurred
      */
-    private function handleMintingError(Egi $egi, \Exception $error): void
-    {
+    private function handleMintingError(Egi $egi, \Exception $error): void {
         // Aggiorna stato errore
         if ($egi->egiBlockchain) {
             $egi->egiBlockchain->update([
@@ -423,8 +417,7 @@ class EgiMintingService
      * @throws \Exception
      * @privacy-safe Full GDPR compliance with consent check and audit trail
      */
-    public function mintEgiWithPayment(Egi $egi, User $user, array $paymentData, array $metadata = []): array
-    {
+    public function mintEgiWithPayment(Egi $egi, User $user, array $paymentData, array $metadata = []): array {
         try {
             // 1. ULM: Log start
             $this->logger->info('EGI minting with payment distribution initiated', [
@@ -550,8 +543,7 @@ class EgiMintingService
      * @return array Created distributions
      * @throws \Exception
      */
-    public function retryPaymentDistribution(EgiBlockchain $egiBlockchain, array $paymentData): array
-    {
+    public function retryPaymentDistribution(EgiBlockchain $egiBlockchain, array $paymentData): array {
         try {
             $this->logger->info('Retrying payment distribution for existing mint', [
                 'egi_blockchain_id' => $egiBlockchain->id,
