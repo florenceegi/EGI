@@ -112,7 +112,7 @@ Route::prefix('pa')
 
         Route::prefix('/acts')->group(function () {
             Route::get('/', [PaActController::class, 'index'])->name('acts.index');
-            Route::get('/statistics', [PaActController::class, 'statistics'])->name('statistics'); // PA Statistics Dashboard
+            Route::get('/statistics', [PaActController::class, 'statistics'])->name('acts.statistics'); // PA Statistics Dashboard
             Route::get('/egis', [App\Http\Controllers\EgiController::class, 'index'])->name('acts.egis.index');
             Route::get('/upload', [PaActUploadController::class, 'showUploadForm'])->name('acts.upload');
             Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('acts.upload.post');
