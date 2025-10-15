@@ -397,5 +397,43 @@ return [
             'step3' => 'Verifica che i dati mostrati (protocollo, titolo, ente) corrispondano al documento',
             'step4' => 'Controlla lo stato della firma digitale e dell\'ancoraggio blockchain'
         ]
+    ],
+
+    // Statistics Page
+    'statistics' => [
+        'page_title' => 'Statistiche N.A.T.A.N.',
+        'page_subtitle' => 'Dashboard analitica per atti amministrativi',
+        
+        // Messages
+        'require_attention' => '⚠️ Richiedono attenzione',
+        'completed_of_total' => ':completed completati su :total totali',
+        'from_upload_to_anchor' => 'Dal caricamento all\'ancoraggio',
+        'already_anchored' => ':count già ancorati',
+        'no_data' => 'Nessun dato disponibile',
+        
+        // Chart titles
+        'doc_type_distribution' => 'Distribuzione per Tipo Documento',
+        'monthly_trends' => 'Trend Ultimi 6 Mesi',
+        'uploaded_anchored' => ':uploaded caricati / :anchored ancorati',
+        'legend_uploaded' => 'Caricati',
+        'legend_anchored' => 'Ancorati',
+        
+        // Failed acts table
+        'failed_acts_title' => 'Atti con Errori di Tokenizzazione (:count)',
+        'table' => [
+            'protocol' => 'Protocollo',
+            'type' => 'Tipo',
+            'attempts' => 'Tentativi',
+            'error' => 'Errore',
+            'actions' => 'Azioni',
+            'view_details' => 'Dettagli →'
+        ],
+        
+        // Info footer
+        'info_title' => 'Informazioni Statistiche',
+        'info_realtime' => 'Le statistiche vengono calcolate in tempo reale dal database',
+        'info_success_rate' => 'Il tasso di successo include solo gli atti completati con successo',
+        'info_avg_time' => 'Il tempo medio è calcolato dal caricamento all\'ancoraggio blockchain',
+        'info_retry' => 'Gli atti falliti possono essere ritentati dalla pagina di dettaglio'
     ]
 ];
