@@ -1082,6 +1082,17 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        'EGI_METADATA_IMMUTABLE' => [
+            'type' => 'validation',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.egi_metadata_immutable',
+            'user_message_key' => 'error-manager::errors.user.egi_metadata_immutable',
+            'http_status_code' => 403,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
         'TRAITS_NO_DATA_PROVIDED' => [
             'type' => 'validation',
             'blocking' => 'blocking',
