@@ -612,11 +612,36 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         </div>
                     </div>
 
-                    {{-- Show who has highest reservation --}}
-                    @if ($highestReservation && $highestReservation->user)
+                    {{-- Show Co-Creator (if minted) or Reservation (if not minted) --}}
+                    @if ($isMinted && $egi->blockchain && $egi->blockchain->buyer)
+                        {{-- MINTED: Show Co-Creator from blockchain --}}
+                        @php
+                            $coCreatorDisplay = formatActivatorDisplay($egi->blockchain->buyer);
+                        @endphp
+                        <div class="flex items-center gap-2 border-t border-purple-500/20 pt-2">
+                            <div class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-purple-600">
+                                @if ($coCreatorDisplay && $coCreatorDisplay['avatar'])
+                                    <img src="{{ $coCreatorDisplay['avatar'] }}"
+                                        alt="{{ $coCreatorDisplay['name'] }}"
+                                        class="h-4 w-4 rounded-full border border-white/20 object-cover">
+                                @else
+                                    <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                @endif
+                            </div>
+                            <span class="truncate text-xs text-purple-200">
+                                {{ __('egi.creator.co_creator') }}
+                                <span class="font-semibold" data-activator-name>{{ $coCreatorDisplay['name'] }}</span>
+                            </span>
+                        </div>
+                    @elseif ($highestReservation && $highestReservation->user && !$isMinted)
+                        {{-- NOT MINTED: Show Reservation --}}
                         @php
                             $isWeakReservation = $highestReservation->type === 'weak';
-                            $activatorDisplay = !$isWeakReservation
+                            $reservationDisplay = !$isWeakReservation
                                 ? formatActivatorDisplay($highestReservation->user)
                                 : null;
                         @endphp
@@ -632,9 +657,9 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                                     </svg>
                                 @else
                                     {{-- Strong reservation: usa sempre l'avatar dal backend --}}
-                                    @if ($activatorDisplay && $activatorDisplay['avatar'])
-                                        <img src="{{ $activatorDisplay['avatar'] }}"
-                                            alt="{{ $activatorDisplay['name'] }}"
+                                    @if ($reservationDisplay && $reservationDisplay['avatar'])
+                                        <img src="{{ $reservationDisplay['avatar'] }}"
+                                            alt="{{ $reservationDisplay['name'] }}"
                                             class="h-4 w-4 rounded-full border border-white/20 object-cover">
                                     @else
                                         {{-- Fallback solo se non c'è avatar dal backend (caso molto raro) --}}
@@ -653,9 +678,9 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                                     <span class="font-semibold"
                                         data-activator-name>{{ $highestReservation->fegi_code ?? 'FG#******' }}</span>
                                 @else
-                                    {{ __('egi.reservation.activator') }}:
+                                    {{ __('egi.reservation.reserved_by') }}
                                     <span class="font-semibold"
-                                        data-activator-name>{{ $activatorDisplay['name'] }}</span>
+                                        data-activator-name>{{ $reservationDisplay['name'] }}</span>
                                 @endif
                             </span>
                         </div>

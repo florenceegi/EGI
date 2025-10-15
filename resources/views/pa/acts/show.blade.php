@@ -1,16 +1,16 @@
 {{--
 /**
  * PA Acts Show View
- * 
+ *
  * ============================================================================
  * CONTESTO - DETTAGLIO ATTO PA TOKENIZZATO
  * ============================================================================
- * 
+ *
  * View per il dettaglio di un atto PA tokenizzato su blockchain.
- * 
+ *
  * TARGET USER: PA entities (autenticate, role:pa_entity)
  * ACCESS: Authenticated only, ownership or collection admin
- * 
+ *
  * PURPOSE:
  * - Visualizzazione completa metadati atto
  * - Info firma QES/PAdES (signer, certificate, timestamp)
@@ -18,82 +18,82 @@
  * - QR code per verifica pubblica
  * - URL verifica pubblica (share)
  * - Download PDF (se autorizzato)
- * 
+ *
  * ============================================================================
  * SECTIONS
  * ============================================================================
- * 
+ *
  * 1. HEADER:
  *    - Protocol number + Doc type badge
  *    - Anchor status (✅ Ancorato / ⏳ In attesa)
  *    - Back to list button
- * 
+ *
  * 2. METADATA SECTION:
  *    - Protocol info (number, date)
  *    - Title + Description
  *    - Upload timestamp
- * 
+ *
  * 3. SIGNATURE SECTION:
  *    - Signer info (nome, org, ruolo)
  *    - Certificate info (issuer, serial, validity)
  *    - Signature timestamp
  *    - Validation status badge
- * 
+ *
  * 4. BLOCKCHAIN SECTION:
  *    - Anchor status badge
  *    - Transaction ID (TXID) + Algorand Explorer link
  *    - Merkle root hash
  *    - Anchor timestamp
  *    - Document hash SHA-256
- * 
+ *
  * 5. VERIFICATION SECTION:
  *    - Public code display + copy button
  *    - QR code image
  *    - Public verification URL + copy button
- * 
+ *
  * 6. ACTIONS:
  *    - Download PDF (if authorized)
  *    - Edit metadata (if authorized)
  *    - Delete (with confirmation, if authorized)
- * 
+ *
  * ============================================================================
  * PA BRAND DESIGN
  * ============================================================================
- * 
+ *
  * COLORS:
  * - Primary: #1B365D (Blu Algoritmo)
  * - Accent: #D4A574 (Oro Fiorentino)
  * - Success: #2D5016 (Verde Rinascita - firma valida, ancorato)
  * - Warning: #E67E22 (Arancio Energia - pending)
- * 
+ *
  * LAYOUT:
  * - Cards con ombre eleganti
  * - Spazi bianchi generosi
  * - Sezioni ben separate
- * 
+ *
  * ICONS:
  * - Heroicons outline per consistenza
  * - Badge per status (firma, ancoraggio)
- * 
+ *
  * ============================================================================
  * ACCESSIBILITY
  * ============================================================================
- * 
+ *
  * WCAG 2.1 AA:
  * - Headings hierarchy: h1 → h2 → h3
  * - ARIA labels: All buttons, links, badges
  * - Keyboard navigation: Tab order logical
  * - Screen reader: Descriptive text for QR code
  * - Contrast: All text meets 4.5:1 minimum
- * 
+ *
  * ============================================================================
- * 
+ *
  * @package Resources\Views\Pa\Acts
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - PA Acts Tokenization)
  * @date 2025-10-04
  * @purpose PA act detail view with blockchain data
- * 
+ *
  * @architecture View Layer (PA brand)
  * @dependencies PaActController::show(), SimpleSoftwareIO/simple-qrcode
  * @accessibility WCAG 2.1 AA compliant
@@ -308,174 +308,178 @@
                     {{ __('pa_acts.show.blockchain.title') }}
                 </div>
             </h2>
-    @else
-        {{-- Not anchored yet - show status-specific UI --}}
-        @php
-            $status = $egi->pa_tokenization_status ?? 'pending';
-            $error = $egi->pa_tokenization_error;
-            $attempts = $egi->pa_tokenization_attempts ?? 0;
-        @endphp
+        @else
+            {{-- Not anchored yet - show status-specific UI --}}
+            @php
+                $status = $egi->pa_tokenization_status ?? 'pending';
+                $error = $egi->pa_tokenization_error;
+                $attempts = $egi->pa_tokenization_attempts ?? 0;
+            @endphp
 
-        @if ($status === 'failed' && $error)
-            {{-- FAILED STATE - Show error with retry button --}}
-            <div class="mb-6 rounded-xl border-2 border-red-300 bg-red-50 p-8 shadow-sm">
-                <div class="mb-6 flex items-center justify-between">
-                    <h2 class="flex items-center text-xl font-semibold text-red-700">
-                        <svg class="mr-2 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {{ __('pa_acts.show.tokenization.failed_title') }}
-                    </h2>
-                    <form action="{{ route('pa.acts.force_tokenize', $egi) }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit"
-                            class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-all hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                            <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            @if ($status === 'failed' && $error)
+                {{-- FAILED STATE - Show error with retry button --}}
+                <div class="mb-6 rounded-xl border-2 border-red-300 bg-red-50 p-8 shadow-sm">
+                    <div class="mb-6 flex items-center justify-between">
+                        <h2 class="flex items-center text-xl font-semibold text-red-700">
+                            <svg class="mr-2 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            {{ __('pa_acts.show.tokenization.retry_button') }}
-                        </button>
-                    </form>
-                </div>
-                
-                <div class="rounded-lg border-2 border-red-200 bg-white p-4">
-                    <p class="mb-3 flex items-center font-semibold text-red-700">
-                        <svg class="mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        {{ __('pa_acts.show.tokenization.error_label') }}
-                    </p>
-                    <p class="mb-3 rounded bg-red-50 p-3 font-mono text-sm text-red-800">
-                        {{ $error }}
-                    </p>
-                    <div class="flex items-center justify-between border-t border-red-200 pt-3 text-sm text-gray-600">
-                        <span>{{ __('pa_acts.show.tokenization.attempts_label') }}: <strong>{{ $attempts }}</strong></span>
-                        <span class="text-xs text-gray-500">{{ __('pa_acts.show.tokenization.failed_help') }}</span>
+                            {{ __('pa_acts.show.tokenization.failed_title') }}
+                        </h2>
+                        <form action="{{ route('pa.acts.force_tokenize', $egi) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit"
+                                class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-all hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                {{ __('pa_acts.show.tokenization.retry_button') }}
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="rounded-lg border-2 border-red-200 bg-white p-4">
+                        <p class="mb-3 flex items-center font-semibold text-red-700">
+                            <svg class="mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            {{ __('pa_acts.show.tokenization.error_label') }}
+                        </p>
+                        <p class="mb-3 rounded bg-red-50 p-3 font-mono text-sm text-red-800">
+                            {{ $error }}
+                        </p>
+                        <div
+                            class="flex items-center justify-between border-t border-red-200 pt-3 text-sm text-gray-600">
+                            <span>{{ __('pa_acts.show.tokenization.attempts_label') }}:
+                                <strong>{{ $attempts }}</strong></span>
+                            <span
+                                class="text-xs text-gray-500">{{ __('pa_acts.show.tokenization.failed_help') }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-        @elseif ($status === 'processing')
-            {{-- PROCESSING STATE - Show spinner --}}
-            <div class="mb-6 rounded-xl border border-blue-300 bg-blue-50 p-8 shadow-sm">
-                <h2 class="mb-6 flex items-center text-xl font-semibold text-[#1B365D]">
-                    <svg class="mr-2 h-6 w-6 animate-spin text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    {{ __('pa_acts.show.tokenization.processing_title') }}
-                </h2>
-                <div class="rounded-lg bg-white p-4">
-                    <p class="flex items-center text-blue-700">
-                        <svg class="mr-2 h-5 w-5 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        <span class="font-semibold">{{ __('pa_acts.show.tokenization.processing_message') }}</span>
-                    </p>
-                    <p class="mt-2 text-sm text-gray-600">
-                        {{ __('pa_acts.show.tokenization.processing_help') }}
-                    </p>
-                </div>
-            </div>
-
-        @else
-            {{-- PENDING STATE - Default waiting state --}}
-            <div class="mb-6 rounded-xl border border-orange-200 bg-orange-50 p-8 shadow-sm">
-                <div class="mb-6 flex items-center justify-between">
-                    <h2 class="flex items-center text-xl font-semibold text-[#1B365D]">
-                        <svg class="mr-2 h-6 w-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            @elseif ($status === 'processing')
+                {{-- PROCESSING STATE - Show spinner --}}
+                <div class="mb-6 rounded-xl border border-blue-300 bg-blue-50 p-8 shadow-sm">
+                    <h2 class="mb-6 flex items-center text-xl font-semibold text-[#1B365D]">
+                        <svg class="mr-2 h-6 w-6 animate-spin text-blue-500" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
-                        {{ __('pa_acts.show.tokenization.pending_title') }}
+                        {{ __('pa_acts.show.tokenization.processing_title') }}
                     </h2>
-                    <form action="{{ route('pa.acts.force_tokenize', $egi) }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit"
-                            class="inline-flex items-center rounded-lg bg-[#D4A574] px-4 py-2 font-semibold text-white transition-all hover:bg-[#C39563] focus:outline-none focus:ring-2 focus:ring-[#D4A574]">
+                    <div class="rounded-lg bg-white p-4">
+                        <p class="flex items-center text-blue-700">
+                            <svg class="mr-2 h-5 w-5 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <span
+                                class="font-semibold">{{ __('pa_acts.show.tokenization.processing_message') }}</span>
+                        </p>
+                        <p class="mt-2 text-sm text-gray-600">
+                            {{ __('pa_acts.show.tokenization.processing_help') }}
+                        </p>
+                    </div>
+                </div>
+            @else
+                {{-- PENDING STATE - Default waiting state --}}
+                <div class="mb-6 rounded-xl border border-orange-200 bg-orange-50 p-8 shadow-sm">
+                    <div class="mb-6 flex items-center justify-between">
+                        <h2 class="flex items-center text-xl font-semibold text-[#1B365D]">
+                            <svg class="mr-2 h-6 w-6 text-orange-500" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ __('pa_acts.show.tokenization.pending_title') }}
+                        </h2>
+                        <form action="{{ route('pa.acts.force_tokenize', $egi) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit"
+                                class="inline-flex items-center rounded-lg bg-[#D4A574] px-4 py-2 font-semibold text-white transition-all hover:bg-[#C39563] focus:outline-none focus:ring-2 focus:ring-[#D4A574]">
+                                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                {{ __('pa_acts.show.tokenization.force_button') }}
+                            </button>
+                        </form>
+                    </div>
+                    <div class="rounded-lg bg-white p-4">
+                        <p class="flex items-center text-orange-700">
                             <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            {{ __('pa_acts.show.tokenization.force_button') }}
-                        </button>
-                    </form>
-                </div>
-                <div class="rounded-lg bg-white p-4">
-                    <p class="flex items-center text-orange-700">
-                        <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span class="font-semibold">{{ __('pa_acts.show.tokenization.pending_message') }}</span>
-                    </p>
-                    <p class="mt-2 text-sm text-gray-600">
-                        {{ __('pa_acts.show.tokenization.pending_help') }}
-                    </p>
-                    @if ($attempts > 0)
-                        <p class="mt-2 text-xs text-gray-500">
-                            {{ __('pa_acts.show.tokenization.attempts_label') }}: {{ $attempts }}
+                            <span class="font-semibold">{{ __('pa_acts.show.tokenization.pending_message') }}</span>
                         </p>
-                    @endif
+                        <p class="mt-2 text-sm text-gray-600">
+                            {{ __('pa_acts.show.tokenization.pending_help') }}
+                        </p>
+                        @if ($attempts > 0)
+                            <p class="mt-2 text-xs text-gray-500">
+                                {{ __('pa_acts.show.tokenization.attempts_label') }}: {{ $attempts }}
+                            </p>
+                        @endif
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endif
     @endif
 
     @if ($metadata['anchored'] ?? false)
 
-            <div class="space-y-4">
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-600">
-                        {{ __('pa_acts.show.blockchain.txid') }}
-                    </label>
-                    <div class="flex items-center space-x-2">
-                        <p class="break-all font-mono text-sm text-gray-900">
-                            {{ $metadata['anchor_txid'] ?? 'N/A' }}</p>
-                        @if ($algorand_explorer_url)
-                            <a href="{{ $algorand_explorer_url }}" target="_blank"
-                                class="inline-flex items-center rounded-lg bg-[#1B365D] px-3 py-1 text-xs text-white transition-colors hover:bg-[#0F2544]"
-                                aria-label="{{ __('pa_acts.show.blockchain.view_explorer') }}">
-                                <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                {{ __('pa_acts.show.blockchain.explorer') }}
-                            </a>
-                        @endif
-                    </div>
-                </div>
-
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-600">
-                        {{ __('pa_acts.show.blockchain.merkle_root') }}
-                    </label>
-                    <p class="break-all font-mono text-sm text-gray-900">{{ $metadata['anchor_root'] ?? 'N/A' }}
-                    </p>
-                </div>
-
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-600">
-                        {{ __('pa_acts.show.blockchain.document_hash') }}
-                    </label>
-                    <p class="break-all font-mono text-sm text-gray-900">{{ $metadata['doc_hash'] ?? 'N/A' }}</p>
-                </div>
-
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-600">
-                        {{ __('pa_acts.show.blockchain.anchored_at') }}
-                    </label>
-                    <p class="text-gray-900">
-                        {{ isset($metadata['anchored_at']) ? \Carbon\Carbon::parse($metadata['anchored_at'])->format('d/m/Y H:i:s') : 'N/A' }}
-                    </p>
+        <div class="space-y-4">
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-600">
+                    {{ __('pa_acts.show.blockchain.txid') }}
+                </label>
+                <div class="flex items-center space-x-2">
+                    <p class="break-all font-mono text-sm text-gray-900">
+                        {{ $metadata['anchor_txid'] ?? 'N/A' }}</p>
+                    @if ($algorand_explorer_url)
+                        <a href="{{ $algorand_explorer_url }}" target="_blank"
+                            class="inline-flex items-center rounded-lg bg-[#1B365D] px-3 py-1 text-xs text-white transition-colors hover:bg-[#0F2544]"
+                            aria-label="{{ __('pa_acts.show.blockchain.view_explorer') }}">
+                            <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            {{ __('pa_acts.show.blockchain.explorer') }}
+                        </a>
+                    @endif
                 </div>
             </div>
+
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-600">
+                    {{ __('pa_acts.show.blockchain.merkle_root') }}
+                </label>
+                <p class="break-all font-mono text-sm text-gray-900">{{ $metadata['anchor_root'] ?? 'N/A' }}
+                </p>
+            </div>
+
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-600">
+                    {{ __('pa_acts.show.blockchain.document_hash') }}
+                </label>
+                <p class="break-all font-mono text-sm text-gray-900">{{ $metadata['doc_hash'] ?? 'N/A' }}</p>
+            </div>
+
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-600">
+                    {{ __('pa_acts.show.blockchain.anchored_at') }}
+                </label>
+                <p class="text-gray-900">
+                    {{ isset($metadata['anchored_at']) ? \Carbon\Carbon::parse($metadata['anchored_at'])->format('d/m/Y H:i:s') : 'N/A' }}
+                </p>
+            </div>
+        </div>
         </div>
     @else
         <div class="mb-6 rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
