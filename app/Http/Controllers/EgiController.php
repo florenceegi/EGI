@@ -407,11 +407,34 @@ class EgiController extends Controller {
                 return $this->errorManager->handle('EGI_VALIDATION_FAILED', [
                     'user_id' => $user->id,
                     'egi_id' => $egi->id,
-                    'validation_errors' => $validator->errors()->toArray()
+                    'validation_errors' => json_encode($validator->errors()->toArray())
                 ]);
             }
 
             $validated = $validator->validated();
+
+            // 🔒 BLOCKCHAIN IMMUTABILITY: Check if EGI is minted (BLOCKING)
+            if ($egi->token_EGI) {
+                // Se EGI è mintato, SOLO price può essere modificato
+                $allowedFields = ['price'];
+                $attemptedFields = array_keys($validated);
+                $blockedFields = array_diff($attemptedFields, $allowedFields);
+
+                if (!empty($blockedFields)) {
+                    return $this->errorManager->handle('EGI_METADATA_IMMUTABLE', [
+                        'user_id' => $user->id,
+                        'egi_id' => $egi->id,
+                        'token_egi' => $egi->token_EGI,
+                        'attempted_fields' => $attemptedFields,
+                        'blocked_fields' => $blockedFields,
+                        'allowed_fields' => $allowedFields
+                    ]);
+                }
+
+                // Se arriva qui, sta modificando SOLO price → permesso
+                // Rimuovi comunque altri campi per sicurezza
+                $validated = array_intersect_key($validated, array_flip($allowedFields));
+            }
 
             // Store original data for audit
             $originalData = [
