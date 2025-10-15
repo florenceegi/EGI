@@ -11,69 +11,69 @@ use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * PA Act Public Verification Controller
- * 
+ *
  * ============================================================================
  * CONTESTO - VERIFICA PUBBLICA ATTI PA
  * ============================================================================
- * 
+ *
  * Controller per la verifica pubblica degli atti PA tokenizzati su blockchain.
- * 
+ *
  * TARGET USER: Pubblico (cittadini, aziende, altre PA)
  * ACCESS: Pubblico, no autenticazione richiesta
- * 
+ *
  * PURPOSE:
  * - Trust-minimized verification: Chiunque può verificare autenticità atto
  * - Transparency: Dati pubblici visibili (protocol, signer, hash, blockchain)
  * - No download PDF: Privacy PA (documento consultabile solo internamente)
- * 
+ *
  * ============================================================================
  * ROUTE
  * ============================================================================
- * 
+ *
  * GET /verify/{public_code}
  * - Name: verify.act
  * - Middleware: web (no auth)
  * - View: pa/acts/verify.blade.php
  * - Purpose: Pagina verifica pubblica atto PA
- * 
+ *
  * EXAMPLE URL:
  * https://florenceegi.it/verify/VER-ABC123XYZ
- * 
+ *
  * ============================================================================
  * WORKFLOW VERIFICA
  * ============================================================================
- * 
+ *
  * INPUT:
  * - public_code: Codice verifica univoco (es. VER-ABC123XYZ)
- * 
+ *
  * STEP 1: RECUPERA ATTO DA DB
  * - Query: Egi::where('metadata->public_code', $publicCode)->first()
  * - 404 se non trovato
- * 
+ *
  * STEP 2: ESTRAI DATI PUBBLICI
  * - Protocol number + date
  * - Doc type (delibera, determina, etc.)
  * - Title (no description - privacy)
  * - Signer info (nome, org, ruolo da certificato)
  * - Document hash SHA-256
- * 
+ *
  * STEP 3: VERIFICA BLOCKCHAIN
  * - Merkle proof presente?
  * - Verifica Merkle proof con MerkleTreeService
  * - Blockchain TXID + link Algorand Explorer
  * - Anchor timestamp
- * 
+ *
  * STEP 4: DISPLAY RESULT
  * - ✅ Documento autentico (se Merkle proof valido)
  * - ⏳ In attesa di ancoraggio (se non ancora ancorato)
  * - ❌ Verifica fallita (se Merkle proof invalido - rare)
- * 
+ *
  * ============================================================================
  * ESEMPIO OUTPUT VERIFICA
  * ============================================================================
- * 
+ *
  * SCENARIO 1: Documento ancorato e verificato
- * 
+ *
  * Display:
  * - ✅ DOCUMENTO VERIFICATO SU BLOCKCHAIN
  * - Protocol: 12345/2025 del 15/09/2025
@@ -87,9 +87,9 @@ use Ultra\UltraLogManager\UltraLogManager;
  * - Transaction ID: ALGO-TX-20250915143022-A1B2C3D4
  * - Link: [Vedi su Algorand Explorer]
  * - Ancorato il: 15/09/2025 14:35:00
- * 
+ *
  * SCENARIO 2: Documento in attesa di ancoraggio
- * 
+ *
  * Display:
  * - ⏳ DOCUMENTO IN ATTESA DI TOKENIZZAZIONE
  * - Protocol: 12345/2025 del 15/09/2025
@@ -99,18 +99,18 @@ use Ultra\UltraLogManager\UltraLogManager;
  * - Firmatario: Dario Nardella (Sindaco)
  * - Hash documento: a3f7d9e2c1b8f4a65e3b8c9d7f2a1b4c...
  * - Status: Il documento sarà ancorato su blockchain nel prossimo batch (entro 24h)
- * 
+ *
  * SCENARIO 3: Codice non trovato
- * 
+ *
  * Display:
  * - ❌ CODICE VERIFICA NON VALIDO
  * - Il codice di verifica inserito non corrisponde a nessun atto tokenizzato
  * - Verifica di aver copiato correttamente il codice dal QR code o documento
- * 
+ *
  * ============================================================================
  * DATI PUBBLICI vs PRIVATI
  * ============================================================================
- * 
+ *
  * PUBBLICI (visibili su /verify):
  * ✅ Protocol number + date
  * ✅ Doc type (delibera, determina, etc.)
@@ -121,69 +121,70 @@ use Ultra\UltraLogManager\UltraLogManager;
  * ✅ Document hash SHA-256
  * ✅ Blockchain TXID + anchor timestamp
  * ✅ Merkle proof verification result
- * 
+ *
  * PRIVATI (non visibili):
  * ❌ Description (contenuto dettagliato)
  * ❌ PDF file (download riservato PA)
  * ❌ Internal notes
  * ❌ Collection details
  * ❌ User emails/PII
- * 
+ *
  * ============================================================================
  * SICUREZZA E PRIVACY
  * ============================================================================
- * 
+ *
  * RATE LIMITING:
  * - Suggerito: throttle:60,1 (60 verifiche/minuto per IP)
  * - Previene abuse/scraping
- * 
+ *
  * NO AUTHENTICATION:
  * - Endpoint pubblico, chiunque può verificare
  * - Dati mostrati sono già pubblici per definizione (atti PA)
- * 
+ *
  * NO PII EXPOSURE:
  * - Dati firmatario da certificato pubblico (già nel PDF firmato)
  * - No email PA interne
  * - No user accounts info
- * 
+ *
  * GDPR COMPLIANCE:
  * - Base legale: Art. 6.1.e eIDAS (obblighi legali PA)
  * - Dati minimali: Solo necessari per verifica
  * - Retention: Permanente (obblighi PA conservazione)
  * - No cookies di tracking su pagina verifica
- * 
+ *
  * ============================================================================
  * INTEGRAZIONE QR CODE
  * ============================================================================
- * 
+ *
  * QR code contiene URL verifica:
  * - URL: https://florenceegi.it/verify/VER-ABC123XYZ
  * - Stampabile su documento cartaceo
  * - Scansione smartphone → Browser apre pagina verifica
  * - Citizen-friendly: No app required, solo camera
- * 
+ *
  * ============================================================================
- * 
+ *
  * @package App\Http\Controllers\PaActs
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - PA Acts Tokenization)
  * @date 2025-10-04
  * @purpose Public verification controller for PA acts authenticity
- * 
+ *
  * @architecture Controller Layer (Public views)
  * @dependencies PaActService, MerkleTreeService, UltraLogManager
  * @middleware web (public, no auth)
  * @route GET /verify/{public_code} (name: verify.act)
  * @privacy Public data only, GDPR compliant
  */
-class PaActPublicController extends Controller {
+class PaActPublicController extends Controller
+{
     protected UltraLogManager $logger;
     protected PaActService $paActService;
     protected MerkleTreeService $merkleService;
 
     /**
      * Constructor - Dependency Injection
-     * 
+     *
      * @param UltraLogManager $logger
      * @param PaActService $paActService
      * @param MerkleTreeService $merkleService
@@ -202,20 +203,21 @@ class PaActPublicController extends Controller {
 
     /**
      * Display public verification page
-     * 
+     *
      * @param string $publicCode Public verification code (VER-XXXXXXXXXX)
      * @return View
-     * 
+     *
      * WORKFLOW:
      * 1. Find document by public code
      * 2. Extract public metadata
      * 3. Verify Merkle proof (if anchored)
      * 4. Return view with verification result
-     * 
+     *
      * EXAMPLE URL:
      * /verify/VER-ABC123XYZ
      */
-    public function verify(string $publicCode): View {
+    public function verify(string $publicCode): View
+    {
         try {
             $this->logger->info('[PaActPublicController] Public verification request', [
                 'public_code' => $publicCode,
@@ -275,10 +277,10 @@ class PaActPublicController extends Controller {
 
     /**
      * Extract public metadata from EGI
-     * 
+     *
      * @param Egi $egi
      * @return array Public metadata only
-     * 
+     *
      * PUBLIC DATA:
      * - Protocol number + date
      * - Doc type
@@ -287,7 +289,8 @@ class PaActPublicController extends Controller {
      * - Signer info (from certificate)
      * - Hash + blockchain data
      */
-    protected function extractPublicMetadata($egi): array {
+    protected function extractPublicMetadata($egi): array
+    {
         $metadata = $egi->metadata ?? [];
         $signature = $metadata['signature_validation'] ?? [];
 
@@ -321,10 +324,10 @@ class PaActPublicController extends Controller {
 
     /**
      * Verify Merkle proof
-     * 
+     *
      * @param Egi $egi
      * @return array Verification result
-     * 
+     *
      * RETURN:
      * [
      *   'verified' => bool,
@@ -332,7 +335,8 @@ class PaActPublicController extends Controller {
      *   'message' => 'Verification success message'
      * ]
      */
-    protected function verifyMerkleProof($egi): array {
+    protected function verifyMerkleProof($egi): array
+    {
         $metadata = $egi->metadata ?? [];
 
         // Not anchored yet
@@ -384,16 +388,17 @@ class PaActPublicController extends Controller {
 
     /**
      * Get Algorand Explorer URL for transaction
-     * 
+     *
      * @param string|null $txid Transaction ID (from blockchain_txid field)
      * @return string|null Explorer URL
-     * 
+     *
      * EXAMPLE:
      * https://testnet.explorer.perawallet.app/tx/XAVPCR7P32FWTQL6DXOG44KD47HGTGD6XURLYVH7MDEQEBTFD32A
-     * 
+     *
      * NOTE: Uses blockchain_txid (transaction ID), not token_EGI (ASA ID)
      */
-    protected function getAlgorandExplorerUrl(?string $txid): ?string {
+    protected function getAlgorandExplorerUrl(?string $txid): ?string
+    {
         if (!$txid) {
             return null;
         }
