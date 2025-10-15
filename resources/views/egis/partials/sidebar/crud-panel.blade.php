@@ -36,6 +36,31 @@
                 </button>
             </div>
 
+            {{-- 🔒 BLOCKCHAIN IMMUTABILITY WARNING --}}
+            @if($egi->token_EGI)
+            <div class="p-4 mb-4 border rounded-lg border-amber-500/30 bg-amber-500/10">
+                <div class="flex items-start space-x-3">
+                    <svg class="flex-shrink-0 w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <h4 class="font-semibold text-amber-300">🔒 {{ __('egi.crud.blockchain_warning_title') }}</h4>
+                        <p class="mt-1 text-sm text-amber-200/80">
+                            {!! __('egi.crud.blockchain_warning_message', ['asa_id' => $egi->token_EGI]) !!}
+                        </p>
+                        <a href="https://testnet.explorer.perawallet.app/asset/{{ $egi->token_EGI }}" 
+                           target="_blank"
+                           class="inline-flex items-center mt-2 text-xs font-medium transition-colors text-amber-300 hover:text-amber-200">
+                            {{ __('egi.crud.blockchain_verify_link') }}
+                            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- Edit Form --}}
             <form id="egi-edit-form" action="{{ route('egis.update', $egi->id) }}" method="POST"
                 class="space-y-4" style="display: none;">
@@ -43,28 +68,51 @@
                 @method('PUT')
 
                 {{-- Title Field --}}
-                <div>
+                <div class="{{ $egi->token_EGI ? 'opacity-50 pointer-events-none' : '' }}">
                     <label for="title" class="block mb-2 text-sm font-medium text-emerald-300">
                         {{ __('egi.crud.title') }}
+                        @if($egi->token_EGI)
+                        <svg class="inline w-4 h-4 ml-1 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                        </svg>
+                        @endif
                     </label>
                     <input type="text" id="title" name="title"
                         value="{{ old('title', $egi->title) }}"
-                        class="w-full px-3 py-2 text-white placeholder-gray-400 border rounded-lg bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        {{ $egi->token_EGI ? 'disabled readonly' : '' }}
+                        class="w-full px-3 py-2 text-white placeholder-gray-400 border rounded-lg {{ $egi->token_EGI ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }}"
                         placeholder="{{ __('egi.crud.title_placeholder') }}" maxlength="60"
-                        required>
-                    <div class="mt-1 text-xs text-gray-400">{{ __('egi.crud.title_hint') }}</div>
+                        {{ $egi->token_EGI ? '' : 'required' }}>
+                    <div class="mt-1 text-xs {{ $egi->token_EGI ? 'text-amber-400' : 'text-gray-400' }}">
+                        @if($egi->token_EGI)
+                        🔒 {{ __('egi.crud.field_immutable_hint') }}
+                        @else
+                        {{ __('egi.crud.title_hint') }}
+                        @endif
+                    </div>
                 </div>
 
                 {{-- Description Field --}}
-                <div>
+                <div class="{{ $egi->token_EGI ? 'opacity-50 pointer-events-none' : '' }}">
                     <label for="description"
                         class="block mb-2 text-sm font-medium text-emerald-300">
                         {{ __('egi.crud.description') }}
+                        @if($egi->token_EGI)
+                        <svg class="inline w-4 h-4 ml-1 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                        </svg>
+                        @endif
                     </label>
                     <textarea id="description" name="description" rows="4"
-                        class="w-full px-3 py-2 text-white placeholder-gray-400 border rounded-lg resize-none bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        {{ $egi->token_EGI ? 'disabled readonly' : '' }}
+                        class="w-full px-3 py-2 text-white placeholder-gray-400 border rounded-lg resize-none {{ $egi->token_EGI ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }}"
                         placeholder="{{ __('egi.crud.description_placeholder') }}">{{ old('description', $egi->description) }}</textarea>
-                    <div class="mt-1 text-xs text-gray-400">{{ __('egi.crud.description_hint') }}
+                    <div class="mt-1 text-xs {{ $egi->token_EGI ? 'text-amber-400' : 'text-gray-400' }}">
+                        @if($egi->token_EGI)
+                        🔒 {{ __('egi.crud.field_immutable_hint') }}
+                        @else
+                        {{ __('egi.crud.description_hint') }}
+                        @endif
                     </div>
                 </div>
 
@@ -113,30 +161,53 @@
                 </div>
 
                 {{-- Creation Date Field --}}
-                <div>
+                <div class="{{ $egi->token_EGI ? 'opacity-50 pointer-events-none' : '' }}">
                     <label for="creation_date"
                         class="block mb-2 text-sm font-medium text-emerald-300">
                         {{ __('egi.crud.creation_date') }}
+                        @if($egi->token_EGI)
+                        <svg class="inline w-4 h-4 ml-1 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                        </svg>
+                        @endif
                     </label>
                     <input type="date" id="creation_date" name="creation_date"
                         value="{{ old('creation_date', $egi->creation_date?->format('Y-m-d')) }}"
-                        class="w-full px-3 py-2 text-white border rounded-lg bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                    <div class="mt-1 text-xs text-gray-400">{{ __('egi.crud.creation_date_hint') }}
+                        {{ $egi->token_EGI ? 'disabled readonly' : '' }}
+                        class="w-full px-3 py-2 text-white border rounded-lg {{ $egi->token_EGI ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }}">
+                    <div class="mt-1 text-xs {{ $egi->token_EGI ? 'text-amber-400' : 'text-gray-400' }}">
+                        @if($egi->token_EGI)
+                        🔒 {{ __('egi.crud.field_immutable_hint') }}
+                        @else
+                        {{ __('egi.crud.creation_date_hint') }}
+                        @endif
                     </div>
                 </div>
 
                 {{-- Published Toggle --}}
-                <div>
+                <div class="{{ $egi->token_EGI ? 'opacity-50 pointer-events-none' : '' }}">
                     <label class="flex items-center">
                         <input type="hidden" name="is_published" value="0">
-                        <input type="checkbox" id="is_published" name="is_published" value="1" {{
-                            old('is_published', $egi->is_published) ? 'checked' : '' }}
-                        class="w-4 h-4 rounded text-emerald-600 bg-black/30 border-emerald-700/50 focus:ring-emerald-500 focus:ring-2">
+                        <input type="checkbox" id="is_published" name="is_published" value="1" 
+                            {{ old('is_published', $egi->is_published) ? 'checked' : '' }}
+                            {{ $egi->token_EGI ? 'disabled' : '' }}
+                            class="w-4 h-4 rounded text-emerald-600 {{ $egi->token_EGI ? 'bg-black/10 border-gray-600 cursor-not-allowed' : 'bg-black/30 border-emerald-700/50 focus:ring-emerald-500 focus:ring-2' }}">
                         <span class="ml-3 text-sm font-medium text-emerald-300">
                             {{ __('egi.crud.is_published') }}
+                            @if($egi->token_EGI)
+                            <svg class="inline w-4 h-4 ml-1 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                            </svg>
+                            @endif
                         </span>
                     </label>
-                    <div class="mt-1 text-xs text-gray-400 ml-7">{{ __('egi.crud.is_published_hint')}}</div>
+                    <div class="mt-1 text-xs ml-7 {{ $egi->token_EGI ? 'text-amber-400' : 'text-gray-400' }}">
+                        @if($egi->token_EGI)
+                        🔒 {{ __('egi.crud.field_immutable_hint') }}
+                        @else
+                        {{ __('egi.crud.is_published_hint')}}
+                        @endif
+                    </div>
                 </div>
 
                 {{-- Action Buttons --}}
