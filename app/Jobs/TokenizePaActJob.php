@@ -197,13 +197,12 @@ class TokenizePaActJob implements ShouldQueue
                 'pa_anchored_at' => now(),
                 'pa_tokenization_status' => 'completed',
                 'pa_tokenization_error' => null, // Clear any previous error
-                
+
                 // Standard EGI fields (consistency with Merchant flow)
-                'mint' => true,                  // Mark as minted/tokenized
-                'status' => 'published',         // PA acts are always published
-                'token' => 'PA_ACT',            // Token type identifier
+                'mint' => 1,                     // Mark as minted/tokenized (boolean stored as tinyint)
+                'status' => 'minted',            // Status minted (not published)
                 'token_EGI' => $anchorResult['txid'], // Store TXID as token reference
-                
+
                 // Metadata
                 'jsonMetadata' => $updatedMetadata
             ]);
@@ -218,10 +217,10 @@ class TokenizePaActJob implements ShouldQueue
                 'pa_anchored_at' => $this->egi->pa_anchored_at,
                 'total_attempts' => $this->egi->pa_tokenization_attempts,
                 // Standard EGI fields verification
-                'mint' => $this->egi->mint,
+                'mint' => $this->egi->mint ? 'YES' : 'NO',
                 'status' => $this->egi->status,
-                'token' => $this->egi->token,
-                'token_EGI' => $this->egi->token_EGI
+                'token_EGI' => $this->egi->token_EGI,
+                'pa_tokenization_status' => $this->egi->pa_tokenization_status
             ]);
         } catch (\Exception $e) {
             // Sanitize error message (remove sensitive data for GDPR)

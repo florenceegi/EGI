@@ -202,7 +202,16 @@ class HomeController extends Controller {
             ->whereHas('user', function ($query) {
                 $query->where('usertype', 'creator');
             })
-            ->with(['collection', 'user'])
+            ->with([
+                'collection',
+                'user',
+                'blockchain.buyer', // 🤝 Co-Creator data
+                'reservations' => function ($query) {
+                    $query->where('sub_status', 'highest')
+                        ->where('status', 'active')
+                        ->with('user');
+                }
+            ])
             ->latest() // Più veloce di inRandomOrder()
             ->take(5)
             ->get();
@@ -275,7 +284,16 @@ class HomeController extends Controller {
             ->whereHas('user', function ($query) {
                 $query->where('usertype', 'creator');
             })
-            ->with(['collection', 'user'])
+            ->with([
+                'collection',
+                'user',
+                'blockchain.buyer', // 🤝 Co-Creator data
+                'reservations' => function ($query) {
+                    $query->where('sub_status', 'highest')
+                        ->where('status', 'active')
+                        ->with('user');
+                }
+            ])
             ->latest()
             ->take(20)
             ->get();
@@ -383,7 +401,16 @@ class HomeController extends Controller {
             ->whereHas('user', function ($query) {
                 $query->where('usertype', 'creator');
             })
-            ->with(['collection', 'user'])
+            ->with([
+                'collection',
+                'user',
+                'blockchain.buyer', // 🤝 Co-Creator data
+                'reservations' => function ($query) {
+                    $query->where('sub_status', 'highest')
+                        ->where('status', 'active')
+                        ->with('user');
+                }
+            ])
             ->get();
     }
 }
