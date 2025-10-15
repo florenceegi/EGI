@@ -181,7 +181,7 @@
                     <p class="mt-2 text-3xl font-bold text-red-600">
                         {{ $stats['failed'] ?? 0 }}
                     </p>
-                    @if(($stats['failed'] ?? 0) > 0)
+                    @if (($stats['failed'] ?? 0) > 0)
                         <p class="mt-1 text-xs text-red-500">
                             ⚠️ Richiedono attenzione
                         </p>
@@ -210,7 +210,8 @@
                 </p>
             </div>
             <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                <div class="h-full bg-green-600 transition-all" style="width: {{ $stats['success_rate'] ?? 0 }}%"></div>
+                <div class="h-full bg-green-600 transition-all" style="width: {{ $stats['success_rate'] ?? 0 }}%">
+                </div>
             </div>
         </div>
 
@@ -221,7 +222,7 @@
                     {{ __('pa_acts.index.stats.avg_time') }}
                 </p>
                 <p class="mt-2 text-3xl font-bold text-blue-600">
-                    @if(isset($stats['avg_tokenization_time']) && $stats['avg_tokenization_time'])
+                    @if (isset($stats['avg_tokenization_time']) && $stats['avg_tokenization_time'])
                         {{ number_format($stats['avg_tokenization_time'], 0) }}s
                     @else
                         --
@@ -281,8 +282,8 @@
                 </div>
 
                 {{-- Chat AI Button --}}
-                <a href="{{ route('pa.natan.chat') }}" 
-                   class="flex items-center justify-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white/30">
+                <a href="{{ route('pa.natan.chat') }}"
+                    class="flex items-center justify-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white/30">
                     <span class="material-icons text-lg">smart_toy</span>
                     <span>Chatta con N.A.T.A.N.</span>
                     <span class="material-icons text-sm">arrow_forward</span>
