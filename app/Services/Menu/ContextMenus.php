@@ -195,6 +195,8 @@ class ContextMenus
                         icon: 'pa-acts-upload',
                         permission: 'access_pa_dashboard'
                     ),
+
+                    new PAStatisticsMenu()
                 ]);
                 $menus[] = $paActsMenu;
 

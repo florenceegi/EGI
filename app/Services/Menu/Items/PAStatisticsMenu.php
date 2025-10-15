@@ -21,7 +21,7 @@ class PAStatisticsMenu extends MenuItem
             translationKey: 'menu.pa_statistics',
             route: 'pa.acts.statistics',
             icon: 'bar_chart',
-            permission: 'access_pa_dashboard'
+            permission: 'manage_institutional_collections'
         );
     }
 }
