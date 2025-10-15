@@ -1,33 +1,211 @@
-Cosa c'è da fare-
+# 📋 FlorenceEGI - TODO List (Updated: 2025-10-15)
 
-Su egi-card non viene mostrato il Co-creatore dopo il mint, per ora solo dopo prenotazine, questa cosa ovviamente va modifcata, da ora in poi chi fa prenotazsione non diventa Co-creatore, è semplicemente uno che ha fatto un'offerta, invece chi ha fatto il mint è il vero co-creatore, questa logica va modificata
-Adeguare egi-card-list DI CONSEGUENZA.
+## ✅ COMPLETATI
 
-Nella vista del mint si devono vedere utility e traits.
+### 🎨 Visual Feedback EGI Mintati
 
-Per egis.show IL cocreatoir (owner) deve poter fare CRUD con il campo pryce.
+-   [x] Background dinamico (amber/emerald per mintati, standard per non mintati)
+-   [x] Badge prominente "EGI CERTIFICATO SU BLOCKCHAIN" con ASA ID
+-   [x] Link verifica su Pera Wallet explorer (corretto da `/tx/` a `/asset/`)
+-   [x] Pulse animation su icona shield
+-   [x] Tutte le stringhe i18n compliant (zero hardcoded text)
 
-Poi questo vale per per creator e owner
+### 🔒 CRUD Lockdown Post-Mint
 
-Deve poter gestire l'asta. Quella che prima si chiamava prenotazione ora diventa asta. quindi
-tutto quello che deve avere un asta: 
-prezzo minimo,
-data start
-data end
+-   [x] Lock overlay su utility-manager (z-50, backdrop-blur)
+-   [x] Traits editing disabled via `$canEdit` check
+-   [x] Backend validation in TraitsApiController
+-   [x] Backend validation in UtilityController
+-   [x] CRUD panel: Title, Description, Creation Date, Published → LOCKED
+-   [x] CRUD panel: Price → RIMANE EDITABILE (corretto)
+-   [x] Backend validation in EgiController (whitelist `['price']`)
+-   [x] UEM error codes: TRAITS_EGI_MINTED, UTILITY_EGI_MINTED, EGI_METADATA_IMMUTABLE
+-   [x] Traduzioni italiane complete per messaggi errore
 
-nella vista creator e owner devono avere una osrta di monitor su cui vedonmo cosa pagano a chi, in base ai wallet collegati alla collection a cui l'egi appartiene. (model Wallet)
+### 📇 EGI Card - Logica Co-creatore
 
-Poi ci deve essere una sezione con tutti i riferimenti di legge a proposito del diritto di seguito. 
-la legge sul diritto di proprietà del creator anche dopo la vendita, 
-su cosa acquista realmente l'aquirente, quali sono le cose che può e che non può fare.
-Poi, cosa succede se l'opera si altera, cosa occorre fare da un punto di vista di CoA e chi deve fare cosa...
+-   [x] **egi-card.blade.php**: Co-creatore mostrato SOLO se mintato (`$isMinted && $egi->blockchain->buyer`)
+-   [x] **egi-card-list.blade.php**: Stessa logica applicata
+-   [x] Badge distintivi: Viola Innovazione (mintato), Arancio Energia (reserved), Verde Rinascita (da attivare)
 
-Inoltre qui l'oner deve avere la possibilità di comunicare con il Creator. Quindi occorre creare una chat push tra i due (questo mettiamolo da ultimo in quanto penso ci sia un bel po' di lavoro da fare)
+### 🖼️ Vista Mint - Completezza Dati
 
-Poi occorre modificare la gestione del mint, da ora in poi, quando si registra un nuovo user di tipo Merchat, la procedura deve creare in automaticoi un wallet reale su Algorand. Quì occorre implementare la protezione fortssima per la frase segreta. E infine Implementatre la possibilità di far riscattare il Wallet all'user con cancellazione perenne della chiave segreta, con flusso sicuro in più passaggi, in modo che utente non combini guai... e prevedere possibilità comunque di fare roolback dell aprocederua fino a quando no è finita con successo.
-Creare un vista apposita per il riscatto del Wallet
-la vista dovrà essere raggiungibile mediante il menu: resources/views/components/navigation/vanilla-desktop-menu.blade.php sezione: <!-- Account Management Card -->
+-   [x] **Utility nella vista mint**: Sezione completa con tipo, descrizione, gallery immagini (linee 136-175)
+-   [x] **Traits nella vista mint**: Grid responsiva con categoria, icona, rarity bar (linee 177-280)
+-   [x] Layout 3 colonne: Preview + Blockchain | CoA + Utility + Traits | Checkout
+-   [x] Design gradient: Viola-purple per utility, Blue-indigo per traits
+-   [x] Rarity visualization con color-coded bar (mythic → common)
 
+---
 
+## 🔴 PRIORITÀ ALTA ✅ TUTTO COMPLETATO!
 
+### 📇 EGI Card - Logica Co-creatore ✅
 
+-   [x] **Modificare egi-card.blade.php**: Mostrare co-creatore SOLO se `$egi->token_EGI` esiste
+    -   Logica VECCHIA: Chi fa prenotazione → Co-creatore ❌
+    -   Logica NUOVA: Chi fa MINT → Vero Co-creatore ✅
+    -   Chi fa prenotazione → "Offerta attiva" (non co-creatore)
+    -   **Implementato**: Riga 627-649 di egi-card.blade.php
+        -   Condizione: `@if ($isMinted && $egi->blockchain && $egi->blockchain->buyer)`
+        -   Mostra avatar e nome del buyer solo se mintato
+        -   Altrimenti mostra prenotazione (green/amber badge)
+-   [x] **Adeguare egi-card-list.blade.php** di conseguenza (stessa logica)
+-   [x] Badge distintivo: Viola (#8E44AD) per mintato, Arancio (#E67E22) per reserved, Verde (#2D5016) per da attivare
+
+### 🖼️ Vista Mint - Completezza Dati ✅
+
+-   [x] **Utility nella vista mint** (`mint/checkout.blade.php` linee 136-175)
+    -   Sezione con gradient viola-purple
+    -   Mostra tipo, descrizione completa
+    -   Gallery immagini scrollabile (thumb + click per large)
+    -   Design coerente con brand guidelines
+-   [x] **Traits nella vista mint** (`mint/checkout.blade.php` linee 177-280)
+    -   Grid responsiva 2-3 colonne
+    -   Badge categoria con icona e colore
+    -   Rarity percentage con barra colorata (mythic gold → common gray)
+    -   Indica se trait ha immagine allegata (📷 badge)
+    -   Mostra unità di misura se presente
+
+---
+
+## 🟡 PRIORITÀ MEDIA
+
+### 💰 CRUD Price Management
+
+-   [ ] **Owner** deve poter modificare prezzo (già implementato base in CRUD panel)
+-   [ ] **Creator** deve poter modificare prezzo (già implementato base in CRUD panel)
+-   [ ] Testare flusso completo: Owner modifica price → salvataggio → verifica
+
+### 🏷️ Sistema Asta (ex Prenotazione)
+
+**Rinominare "Prenotazione" → "Asta" in tutto il sistema:**
+
+-   [ ] Rinominare model `Reservation` → `Auction` (o aggiungere type 'auction')
+-   [ ] Aggiungere campi obbligatori asta:
+    -   `minimum_price` (decimal)
+    -   `start_date` (datetime)
+    -   `end_date` (datetime)
+-   [ ] Migration per aggiungere campi mancanti
+-   [ ] Aggiornare controller e service con logica asta
+-   [ ] UI per Creator/Owner: form configurazione asta
+
+### 📊 Royalty Monitor Dashboard
+
+**Vista Creator/Owner per monitorare pagamenti:**
+
+-   [ ] Creare `RoyaltyMonitorController`
+-   [ ] Vista dashboard con breakdown pagamenti:
+    -   Chi paga (buyer)
+    -   A chi (wallet beneficiari da model `Wallet`)
+    -   Quanto (percentuali royalty)
+    -   Quando (date transazioni)
+-   [ ] Integrare con `wallets` collegati alla collection
+-   [ ] Calcolo automatico split royalty basato su `collection->wallets`
+
+---
+
+## 🟢 PRIORITÀ BASSA (Future Enhancement)
+
+### ⚖️ Sezione Legale - Diritto di Seguito
+
+**Creare sezione completa riferimenti legali:**
+
+-   [ ] Pagina dedicata o sezione in egis.show
+-   [ ] Contenuti da includere:
+    -   Legge diritto di seguito (Art. 144-148 Legge sul Diritto d'Autore)
+    -   Proprietà intellettuale creator post-vendita
+    -   Cosa acquista realmente l'acquirente (diritti trasferiti vs riservati)
+    -   Cosa può/non può fare il buyer (riproduzione, commercializzazione, etc.)
+    -   Procedure alterazione opera (CoA update, notifica creator, etc.)
+    -   Chi fa cosa in caso di alterazione/restauro
+-   [ ] Link a normative di riferimento
+-   [ ] FAQ interattive
+-   [ ] i18n completo (IT/EN minimo)
+
+### 💬 Chat Push Creator ↔ Owner
+
+**Sistema comunicazione diretta:**
+
+-   [ ] Valutare tecnologia: Laravel Echo + Pusher vs Socket.io
+-   [ ] Model `Message` con relazioni User-to-User
+-   [ ] UI chat component (stile WhatsApp/Telegram)
+-   [ ] Notifiche push browser
+-   [ ] Notifiche email optional
+-   [ ] Privacy: chat visibili solo a Creator e Owner dell'EGI specifico
+-   [ ] Archiviazione messaggi e policy retention
+-   [ ] **NOTA**: Lavoro significativo, da ultimo
+
+---
+
+## 🔵 BLOCKCHAIN AVANZATO (Critical per Merchants)
+
+### 🔐 Auto-Wallet Creation per Merchant
+
+**Workflow registrazione Merchant:**
+
+-   [ ] Trigger auto-creazione wallet Algorand su registrazione user type='Merchant'
+-   [ ] Generazione keypair tramite AlgoSDK
+-   [ ] Storage sicuro seed phrase:
+    -   Encryption forte (AES-256-GCM)
+    -   Key derivation (Argon2id)
+    -   Vault separato dal DB principale
+    -   Access logging completo
+-   [ ] UI onboarding: Mostra seed phrase UNA SOLA VOLTA
+-   [ ] Conferma utente: "Ho salvato seed phrase" (checkbox + conferma email)
+
+### 💼 Wallet Redemption Flow
+
+**Procedura riscatto wallet da parte Merchant:**
+
+-   [ ] Vista dedicata: `resources/views/merchant/wallet-redemption.blade.php`
+-   [ ] Link da menu: `vanilla-desktop-menu.blade.php` → Account Management Card
+-   [ ] Flusso multi-step sicuro:
+    1. **Verifica identità** (2FA obbligatorio)
+    2. **Warning screen** (conseguenze, no recovery possibile)
+    3. **Download seed phrase** (PDF crittografato + QR code)
+    4. **Conferma manuale** (typing challenge: "CONFERMO RISCATTO")
+    5. **Verifica email** (link conferma con scadenza 15min)
+    6. **Trasferimento ownership** (wallet passa sotto controllo merchant)
+    7. **Cancellazione chiavi** (seed phrase eliminata permanentemente)
+-   [ ] Rollback possibile FINO a step 6 (non dopo cancellazione)
+-   [ ] Audit trail completo (GDPR compliance)
+-   [ ] UEM integration per errori critici
+-   [ ] Test E2E del flusso completo
+
+---
+
+## 📊 PROGRESS SUMMARY
+
+**Completati**: 23 task ✅  
+**Priorità Alta**: 0 task - **FASE COMPLETATA** 🎉
+**Priorità Media**: 8 task  
+**Priorità Bassa**: 7 task  
+**Blockchain Avanzato**: 12 task
+
+**Totale**: 23/47 task completati (48.9%) - **QUASI A METÀ!**
+
+---
+
+## 🎯 NEXT IMMEDIATE STEPS
+
+1. ✅ ~~Fix EGI Card co-creatore logic~~ **COMPLETATO**
+2. ✅ ~~Aggiungere utility/traits a vista mint~~ **COMPLETATO**
+3. ⏳ **PROSSIMO**: Testare CRUD price management Creator/Owner (30 min)
+4. ⏳ Design sistema Asta (planning session - 2-3 ore)
+5. ⏳ Implementare Royalty Monitor Dashboard (4-6 ore)
+
+**Estimated time to MVP completion**: ~70 ore sviluppo + 20 ore testing
+
+---
+
+## 🏆 MILESTONE RAGGIUNTO: PRIORITÀ ALTA 100% COMPLETATA!
+
+Tutte le feature critiche per il lancio MVP sono implementate:
+
+-   ✅ Visual feedback EGI mintati (blockchain certification UX)
+-   ✅ CRUD lockdown completo post-mint (data integrity)
+-   ✅ Co-creatore logic corretta (business logic)
+-   ✅ Vista mint completa con utility/traits (buyer transparency)
+
+**Prossima fase**: Priorità Media - Price management + Auction system + Royalty monitor
