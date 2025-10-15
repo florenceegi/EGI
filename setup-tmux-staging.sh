@@ -21,11 +21,11 @@ tmux has-session -t staging 2>/dev/null
 if [ $? != 0 ]; then
     echo "✅ Creating new tmux session 'staging'"
     tmux new-session -d -s staging
-    
+
     # Set some useful tmux options
     tmux set-option -t staging -g history-limit 10000
     tmux set-option -t staging -g mouse on
-    
+
     echo ""
     echo "✅ Tmux session 'staging' created!"
 else
