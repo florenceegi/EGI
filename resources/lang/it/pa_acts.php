@@ -200,7 +200,11 @@ return [
         'stats' => [
             'total' => 'Totale Atti',
             'anchored' => 'Ancorati su Blockchain',
-            'pending' => 'In Attesa di Ancoraggio'
+            'pending' => 'In Attesa di Ancoraggio',
+            'failed' => 'Tokenizzazione Fallita',
+            'success_rate' => 'Tasso di Successo',
+            'avg_time' => 'Tempo Medio Ancoraggio',
+            'this_month' => 'Questo Mese'
         ],
 
         // Filters

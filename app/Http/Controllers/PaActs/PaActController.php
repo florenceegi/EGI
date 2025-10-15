@@ -5,6 +5,7 @@ namespace App\Http\Controllers\PaActs;
 use App\Http\Controllers\Controller;
 use App\Models\Egi;
 use App\Services\PaActs\PaActService;
+use App\Services\PaActs\PaActStatisticsService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -145,6 +146,7 @@ class PaActController extends Controller
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected PaActService $paActService;
+    protected PaActStatisticsService $statsService;
 
     /**
      * Constructor - Dependency Injection
@@ -152,15 +154,18 @@ class PaActController extends Controller
      * @param UltraLogManager $logger
      * @param ErrorManagerInterface $errorManager
      * @param PaActService $paActService
+     * @param PaActStatisticsService $statsService
      */
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
-        PaActService $paActService
+        PaActService $paActService,
+        PaActStatisticsService $statsService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->paActService = $paActService;
+        $this->statsService = $statsService;
 
         // Middleware applicato in routes/web.php
         // $this->middleware(['auth', 'role:pa_entity']);
@@ -239,24 +244,8 @@ class PaActController extends Controller
             // Paginate
             $acts = $query->paginate(15)->withQueryString();
 
-            // Stats
-            $stats = [
-                'total' => Egi::whereHas('collection', fn($q) => $q->where('creator_id', $user->id))
-                    ->whereNotNull('pa_protocol_number')
-                    ->count(),
-                'anchored' => Egi::whereHas('collection', fn($q) => $q->where('creator_id', $user->id))
-                    ->where('pa_anchored', true)
-                    ->count(),
-                'pending' => Egi::whereHas('collection', fn($q) => $q->where('creator_id', $user->id))
-                    ->whereNotNull('pa_protocol_number')
-                    ->where(function ($q) {
-                        $q->whereNull('pa_anchored')
-                            ->orWhere('pa_anchored', false);
-                    })->count(),
-                'natan_analyzed' => Egi::whereHas('collection', fn($q) => $q->where('creator_id', $user->id))
-                    ->where('pa_anchored', true) // Atti tokenizzati da N.A.T.A.N.
-                    ->count()
-            ];
+            // Stats - Use dedicated statistics service
+            $stats = $this->statsService->getDashboardStats($user);
 
             return view('pa.acts.index', [
                 'acts' => $acts,
