@@ -35,7 +35,8 @@ use Illuminate\Database\Eloquent\SoftDeletes; // Importa SoftDeletes
  * @property int $id Primary key.
  * @property int $collection_id Foreign key to the 'collections' table.
  * @property int|null $key_file Typically stores the EGI ID itself for image path construction (MVP Q1). Nullable. Indexed.
- * @property string|null $token_EGI Blockchain token identifier (Post-MVP). Nullable.
+ * @property string|null $token_EGI Algorand ASA ID (Asset ID) for NFT minting (Creator/Merchant). NULL for PA acts. Nullable.
+ * @property string|null $blockchain_txid Algorand transaction ID (TXID) for blockchain operations. Used by PA for anchoring, Creator for audit trail. Nullable. Indexed.
  * @property array|null $jsonMetadata JSON field for additional metadata (Post-MVP). Nullable. Cast to array.
  * @property int|null $user_id Foreign key to the 'users' table (who uploaded/created). Nullable. Indexed.
  * @property int|null $auction_id Foreign key for auction relationship (Future). Nullable. Indexed.
@@ -123,6 +124,7 @@ class Egi extends Model
         'pa_public_code',       // PA Acts: Public verification code (VER-XXXXXXXXXX)
         'pa_anchored',          // PA Acts: Blockchain anchored flag
         'pa_anchored_at',       // PA Acts: Blockchain anchored timestamp
+        'blockchain_txid',      // Blockchain transaction ID (PA anchoring, Creator audit)
         'pa_tokenization_error',    // PA Acts: Last tokenization error message
         'pa_tokenization_attempts', // PA Acts: Number of tokenization attempts
         'pa_tokenization_status',   // PA Acts: Tokenization status (pending/processing/completed/failed)

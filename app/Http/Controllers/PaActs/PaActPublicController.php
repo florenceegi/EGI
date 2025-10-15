@@ -385,11 +385,13 @@ class PaActPublicController extends Controller {
     /**
      * Get Algorand Explorer URL for transaction
      * 
-     * @param string|null $txid Transaction ID
+     * @param string|null $txid Transaction ID (from blockchain_txid field)
      * @return string|null Explorer URL
      * 
      * EXAMPLE:
-     * https://testnet.explorer.perawallet.app/tx/ALGO-TX-20250915143022-A1B2C3D4
+     * https://testnet.explorer.perawallet.app/tx/XAVPCR7P32FWTQL6DXOG44KD47HGTGD6XURLYVH7MDEQEBTFD32A
+     * 
+     * NOTE: Uses blockchain_txid (transaction ID), not token_EGI (ASA ID)
      */
     protected function getAlgorandExplorerUrl(?string $txid): ?string {
         if (!$txid) {
