@@ -555,9 +555,9 @@ class PaActController extends Controller
      * PA Statistics Dashboard
      *
      * @param Request $request
-     * @return View
+     * @return View|RedirectResponse
      */
-    public function statistics(Request $request): View
+    public function statistics(Request $request): View|RedirectResponse
     {
         try {
             $user = auth()->user();
