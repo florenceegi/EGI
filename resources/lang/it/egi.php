@@ -223,6 +223,12 @@ return [
         // Messaggi Generali
         'no_changes_detected' => 'Nessuna modifica rilevata.',
         'unsaved_changes_warning' => 'Hai modifiche non salvate. Sei sicuro di voler uscire?',
+
+        // Blockchain Immutability Messages
+        'blockchain_warning_title' => 'EGI Certificato su Blockchain',
+        'blockchain_warning_message' => 'Questo EGI è stato mintato (ASA #:asa_id). Puoi modificare solo il prezzo per dinamiche di mercato. Titolo, descrizione e metadati sono immutabili.',
+        'blockchain_verify_link' => 'Verifica su Blockchain',
+        'field_immutable_hint' => 'Immutabile (certificato blockchain)',
     ],
 
     /*
