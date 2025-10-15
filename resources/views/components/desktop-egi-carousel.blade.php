@@ -8,162 +8,266 @@
 --}}
 
 @props([
-'egis' => collect()
+    'egis' => collect(),
+    'id' => null,
 ])
 
-@if($egis->count() > 0)
-<section class="hidden py-8 bg-gradient-to-br from-gray-900 via-gray-800 to-black lg:block">
-    <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+@php
+    // Generate unique ID for multiple carousels on same page
+    $carouselId = $id ?? 'carousel-' . uniqid();
+@endphp
 
-        {{-- Header --}}
-        <div class="mb-8 text-center">
-            <h2 class="mb-3 text-2xl font-bold text-white md:text-3xl">
-                🎨 <span class="text-transparent bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text">
-                    {{ __('egi.desktop_carousel.title') }}
-                </span>
-            </h2>
-            <p class="max-w-2xl mx-auto text-gray-300">
-                {{ __('egi.desktop_carousel.subtitle') }}
-            </p>
-        </div>
+@if ($egis->count() > 0)
+    <section class="hidden py-8 bg-gradient-to-br from-gray-900 via-gray-800 to-black lg:block">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
 
-        {{-- Carousel Container --}}
-        <div class="relative">
-            {{-- Navigation Buttons --}}
-            <button id="desktop-prev-btn"
-                class="absolute left-0 z-10 flex items-center justify-center w-10 h-10 text-white transition-all duration-300 -translate-x-4 -translate-y-1/2 bg-gray-800 border border-gray-600 rounded-full shadow-lg top-1/2 hover:bg-gray-700 group hover:border-gray-400"
-                aria-label="{{ __('egi.desktop_carousel.navigation.previous') }}">
-                <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-            </button>
+            {{-- Header --}}
+            <div class="mb-8 text-center">
+                <h2 class="mb-3 text-2xl font-bold text-white md:text-3xl">
+                    🎨 <span class="text-transparent bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text">
+                        {{ __('egi.desktop_carousel.title') }}
+                    </span>
+                </h2>
+                <p class="max-w-2xl mx-auto text-gray-300">
+                    {{ __('egi.desktop_carousel.subtitle') }}
+                </p>
+            </div>
 
-            <button id="desktop-next-btn"
-                class="absolute right-0 z-10 flex items-center justify-center w-10 h-10 text-white transition-all duration-300 translate-x-4 -translate-y-1/2 bg-gray-800 border border-gray-600 rounded-full shadow-lg top-1/2 hover:bg-gray-700 group hover:border-gray-400"
-                aria-label="{{ __('egi.desktop_carousel.navigation.next') }}">
-                <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
+            {{-- Carousel Container --}}
+            <div class="relative">
+                {{-- Navigation Buttons --}}
+                <button id="prev-btn-{{ $carouselId }}"
+                    class="absolute left-0 z-10 flex items-center justify-center w-10 h-10 text-white transition-all duration-300 -translate-x-4 -translate-y-1/2 bg-gray-800 border border-gray-600 rounded-full shadow-lg group top-1/2 hover:border-gray-400 hover:bg-gray-700"
+                    aria-label="{{ __('egi.desktop_carousel.navigation.previous') }}">
+                    <svg class="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
 
-            {{-- Carousel Track --}}
-            <div class="flex pb-4 space-x-4 overflow-x-auto scroll-smooth snap-x snap-mandatory" id="desktop-egi-carousel-track">
-                @foreach($egis as $egi)
-                <div class="flex-shrink-0 snap-start" style="width: 280px;">
-                    <x-egi-card :egi="$egi" :showPurchasePrice="true" />
+                <button id="next-btn-{{ $carouselId }}"
+                    class="absolute right-0 z-10 flex items-center justify-center w-10 h-10 text-white transition-all duration-300 translate-x-4 -translate-y-1/2 bg-gray-800 border border-gray-600 rounded-full shadow-lg group top-1/2 hover:border-gray-400 hover:bg-gray-700"
+                    aria-label="{{ __('egi.desktop_carousel.navigation.next') }}">
+                    <svg class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                {{-- Carousel Track --}}
+                <div class="flex pb-4 space-x-4 overflow-x-auto snap-x snap-mandatory scroll-smooth"
+                    id="track-{{ $carouselId }}">
+                    @foreach ($egis as $egi)
+                        <div class="flex-shrink-0 snap-start" style="width: 280px;">
+                            <x-egi-card :egi="$egi" :showPurchasePrice="true" />
+                        </div>
+                    @endforeach
                 </div>
-                @endforeach
+            </div>
+
+            {{-- Indicators --}}
+            <div class="flex justify-center mt-6 space-x-2">
+                @for ($i = 0; $i < min(5, ceil($egis->count() / 4)); $i++)
+                    <button
+                        class="carousel-indicator-{{ $carouselId }} h-2 w-2 rounded-full bg-gray-600 transition-colors duration-300 hover:bg-purple-500"
+                        data-slide="{{ $i }}"
+                        aria-label="{{ __('egi.desktop_carousel.navigation.slide', ['number' => $i + 1]) }}">
+                    </button>
+                @endfor
             </div>
         </div>
+    </section>
 
-        {{-- Indicators --}}
-        <div class="flex justify-center mt-6 space-x-2">
-            @for($i = 0; $i < min(5, ceil($egis->count() / 4)); $i++)
-                <button
-                    class="w-2 h-2 transition-colors duration-300 bg-gray-600 rounded-full hover:bg-purple-500 desktop-carousel-indicator"
-                    data-slide="{{ $i }}"
-                    aria-label="{{ __('egi.desktop_carousel.navigation.slide', ['number' => $i + 1]) }}">
-                </button>
-                @endfor
-        </div>
-    </div>
-</section>
+    {{-- Desktop Carousel JavaScript --}}
+    <script>
+        (function() {
+            const carouselId = '{{ $carouselId }}';
+            console.log('🎠 Desktop Carousel Init:', carouselId);
 
-{{-- Desktop Carousel JavaScript --}}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const carousel = document.getElementById('desktop-egi-carousel-track');
-    const prevBtn = document.getElementById('desktop-prev-btn');
-    const nextBtn = document.getElementById('desktop-next-btn');
-    const indicators = document.querySelectorAll('.desktop-carousel-indicator');
+            const carousel = document.getElementById('track-' + carouselId);
+            const prevBtn = document.getElementById('prev-btn-' + carouselId);
+            const nextBtn = document.getElementById('next-btn-' + carouselId);
+            const indicators = document.querySelectorAll('.carousel-indicator-' + carouselId);
 
-    if (carousel && prevBtn && nextBtn) {
-        const cardWidth = 296; // 280px + 16px gap
-        let currentPosition = 0;
-        let isScrolling = false;
-
-        function updateCarousel() {
-            carousel.scrollTo({
-                left: currentPosition,
-                behavior: 'smooth'
+            console.log('🎠 Elements found:', {
+                carousel: !!carousel,
+                prevBtn: !!prevBtn,
+                nextBtn: !!nextBtn,
+                indicators: indicators.length
             });
 
-            // Update indicators
-            const totalCards = {{ $egis->count() }};
-            const visibleCards = Math.floor(carousel.offsetWidth / cardWidth);
-            const currentSlide = Math.floor(currentPosition / cardWidth);
+            if (carousel && prevBtn && nextBtn) {
+                console.log('🎠 Carousel dimensions:', {
+                    scrollWidth: carousel.scrollWidth,
+                    clientWidth: carousel.clientWidth,
+                    scrollLeft: carousel.scrollLeft,
+                    maxScroll: carousel.scrollWidth - carousel.clientWidth
+                });
 
-            indicators.forEach((indicator, index) => {
-                indicator.classList.toggle('bg-purple-500', index === currentSlide);
-                indicator.classList.toggle('bg-gray-600', index !== currentSlide);
-            });
+                const cardWidth = 296; // 280px + 16px gap
+                let isScrolling = false;
 
-            // Update button states
-            const maxScroll = Math.max(0, (totalCards - visibleCards) * cardWidth);
-            prevBtn.style.opacity = currentPosition > 0 ? '1' : '0.5';
-            nextBtn.style.opacity = currentPosition < maxScroll ? '1' : '0.5';
+                // Update UI based on current scroll position
+                function updateUI() {
+                    const currentScroll = carousel.scrollLeft;
+                    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+
+                    // Update indicators
+                    const currentSlide = Math.round(currentScroll / cardWidth);
+                    indicators.forEach((indicator, index) => {
+                        if (index === currentSlide) {
+                            indicator.classList.add('bg-purple-500', 'scale-125');
+                            indicator.classList.remove('bg-gray-600');
+                        } else {
+                            indicator.classList.remove('bg-purple-500', 'scale-125');
+                            indicator.classList.add('bg-gray-600');
+                        }
+                    });
+
+                    // Update button states
+                    prevBtn.style.opacity = currentScroll > 10 ? '1' : '0.5';
+                    prevBtn.style.cursor = currentScroll > 10 ? 'pointer' : 'not-allowed';
+                    nextBtn.style.opacity = currentScroll < maxScroll - 10 ? '1' : '0.5';
+                    nextBtn.style.cursor = currentScroll < maxScroll - 10 ? 'pointer' : 'not-allowed';
+                }
+
+                // Listen to scroll events (for mouse/touch scrolling)
+                carousel.addEventListener('scroll', function() {
+                    console.log('🎠 Scroll event:', carousel.scrollLeft);
+                    if (!isScrolling) {
+                        updateUI();
+                    }
+                });
+
+                // Previous button
+                prevBtn.addEventListener('click', function(e) {
+                    console.log('🎠 Prev button clicked');
+                    e.preventDefault();
+
+                    const currentScroll = carousel.scrollLeft;
+                    console.log('🎠 Current scroll:', currentScroll);
+
+                    if (isScrolling || currentScroll <= 10) {
+                        console.log('🎠 Blocked:', {
+                            isScrolling,
+                            atStart: currentScroll <= 10
+                        });
+                        return;
+                    }
+
+                    isScrolling = true;
+                    const newPosition = Math.max(0, currentScroll - cardWidth);
+                    console.log('🎠 Scrolling to:', newPosition);
+
+                    carousel.scrollTo({
+                        left: newPosition,
+                        behavior: 'smooth'
+                    });
+
+                    setTimeout(() => {
+                        isScrolling = false;
+                        updateUI();
+                        console.log('🎠 Scroll complete, new position:', carousel.scrollLeft);
+                    }, 400);
+                });
+
+                // Next button
+                nextBtn.addEventListener('click', function(e) {
+                    console.log('🎠 Next button clicked');
+                    e.preventDefault();
+
+                    const currentScroll = carousel.scrollLeft;
+                    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+                    console.log('🎠 Current scroll:', currentScroll, 'Max:', maxScroll);
+
+                    if (isScrolling || currentScroll >= maxScroll - 10) {
+                        console.log('🎠 Blocked:', {
+                            isScrolling,
+                            atEnd: currentScroll >= maxScroll - 10
+                        });
+                        return;
+                    }
+
+                    isScrolling = true;
+                    const newPosition = Math.min(maxScroll, currentScroll + cardWidth);
+                    console.log('🎠 Scrolling to:', newPosition);
+
+                    carousel.scrollTo({
+                        left: newPosition,
+                        behavior: 'smooth'
+                    });
+
+                    setTimeout(() => {
+                        isScrolling = false;
+                        updateUI();
+                        console.log('🎠 Scroll complete, new position:', carousel.scrollLeft);
+                    }, 400);
+                });
+
+                // Indicator clicks
+                indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        if (isScrolling) return;
+
+                        isScrolling = true;
+                        const targetPosition = index * cardWidth;
+                        carousel.scrollTo({
+                            left: targetPosition,
+                            behavior: 'smooth'
+                        });
+
+                        setTimeout(() => {
+                            isScrolling = false;
+                            updateUI();
+                        }, 400);
+                    });
+                });
+
+                // Initialize
+                updateUI();
+
+                // Handle window resize
+                window.addEventListener('resize', function() {
+                    updateUI();
+                });
+            }
+        })();
+    </script>
+
+    {{-- Custom Styles --}}
+    <style>
+        #track-{{ $carouselId }} {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+            scroll-behavior: smooth;
+            cursor: grab;
         }
 
-        prevBtn.addEventListener('click', function() {
-            if (isScrolling) return;
-            isScrolling = true;
-            currentPosition = Math.max(0, currentPosition - cardWidth);
-            updateCarousel();
-            setTimeout(() => isScrolling = false, 300);
-        });
+        #track-{{ $carouselId }}::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
 
-        nextBtn.addEventListener('click', function() {
-            if (isScrolling) return;
-            isScrolling = true;
-            const totalCards = {{ $egis->count() }};
-            const visibleCards = Math.floor(carousel.offsetWidth / cardWidth);
-            const maxScroll = Math.max(0, (totalCards - visibleCards) * cardWidth);
-            currentPosition = Math.min(maxScroll, currentPosition + cardWidth);
-            updateCarousel();
-            setTimeout(() => isScrolling = false, 300);
-        });
+        #track-{{ $carouselId }}:active {
+            cursor: grabbing;
+        }
 
-        // Indicator clicks
-        indicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', function() {
-                if (isScrolling) return;
-                isScrolling = true;
-                currentPosition = index * cardWidth;
-                updateCarousel();
-                setTimeout(() => isScrolling = false, 300);
-            });
-        });
+        .carousel-indicator-{{ $carouselId }} {
+            transition: all 0.3s ease;
+        }
 
-        // Initialize
-        updateCarousel();
+        .carousel-indicator-{{ $carouselId }}:hover {
+            transform: scale(1.3);
+        }
 
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            updateCarousel();
-        });
-    }
-});
-</script>
-
-{{-- Custom Styles --}}
-<style>
-    .scrollbar-hide {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-
-    .scrollbar-hide::-webkit-scrollbar {
-        display: none;
-    }
-
-    .desktop-carousel-indicator {
-        transition: all 0.3s ease;
-    }
-
-    .desktop-carousel-indicator:hover {
-        transform: scale(1.2);
-    }
-</style>
+        /* Smooth scroll for desktop */
+        @media (prefers-reduced-motion: no-preference) {
+            #desktop-egi-carousel-track {
+                scroll-behavior: smooth;
+            }
+        }
+    </style>
 @endif

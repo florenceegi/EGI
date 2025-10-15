@@ -30,7 +30,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * 5. Log ULM + ErrorManager per audit trail
  *
  * QUEUE:
- * - Queue: 'blockchain' (stessa queue del sandbox già configurata)
+ * - Queue: 'pa_blockchain' (dedicata PA, separata da merchant 'blockchain')
  * - Timeout: 300 secondi (5 min)
  * - Tries: 3 (retry automatico se fallisce)
  * - Backoff: 60 secondi tra retry
@@ -59,7 +59,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  *
  * @architecture Job Layer (Queue Worker)
  * @dependencies AlgorandService, UltraLogManager, ErrorManager
- * @queue blockchain
+ * @queue pa_blockchain
  * @timeout 300
  */
 class TokenizePaActJob implements ShouldQueue
@@ -102,7 +102,7 @@ class TokenizePaActJob implements ShouldQueue
     public function __construct(Egi $egi)
     {
         $this->egi = $egi;
-        $this->onQueue('blockchain'); // Same queue as sandbox setup
+        $this->onQueue('pa_blockchain'); // Dedicated PA queue (separate from merchant 'blockchain')
     }
 
     /**

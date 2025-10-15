@@ -528,24 +528,26 @@ class PaActController extends Controller
                 'previous_attempts' => $egi->pa_tokenization_attempts
             ]);
 
-            // Ensure queue worker is running before dispatching job
+            // Ensure PA queue worker is running before dispatching job
             $queueWorkerService = app(\App\Services\QueueWorkerService::class);
-            if (!$queueWorkerService->ensureWorkerRunning()) {
-                $this->logger->error('[PaActController] Queue worker not available', [
+            if (!$queueWorkerService->ensureWorkerRunning('pa_blockchain')) {
+                $this->logger->error('[PaActController] PA queue worker not available', [
                     'user_id' => $user->id,
-                    'egi_id' => $egi->id
+                    'egi_id' => $egi->id,
+                    'queue' => 'pa_blockchain'
                 ]);
 
                 return redirect()->back()->with('error', 'Il servizio di tokenizzazione non è disponibile. Contattare l\'amministratore.');
             }
 
-            // Dispatch tokenization job
+            // Dispatch tokenization job on dedicated PA queue
             \App\Jobs\TokenizePaActJob::dispatch($egi)
-                ->onQueue('blockchain');
+                ->onQueue('pa_blockchain');
 
             $this->logger->info('[PaActController] Tokenization job dispatched', [
                 'user_id' => $user->id,
-                'egi_id' => $egi->id
+                'egi_id' => $egi->id,
+                'queue' => 'pa_blockchain'
             ]);
 
             return redirect()->back()->with('success', 'Tokenizzazione forzata avviata. Il processo richiederà alcuni secondi.');
