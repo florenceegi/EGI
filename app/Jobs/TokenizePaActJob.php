@@ -62,7 +62,8 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @queue blockchain
  * @timeout 300
  */
-class TokenizePaActJob implements ShouldQueue {
+class TokenizePaActJob implements ShouldQueue
+{
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -98,7 +99,8 @@ class TokenizePaActJob implements ShouldQueue {
      *
      * @param Egi $egi The PA act to tokenize
      */
-    public function __construct(Egi $egi) {
+    public function __construct(Egi $egi)
+    {
         $this->egi = $egi;
         $this->onQueue('blockchain'); // Same queue as sandbox setup
     }
@@ -119,10 +121,17 @@ class TokenizePaActJob implements ShouldQueue {
         ErrorManagerInterface $errorManager
     ): void {
         try {
+            // 0. Update status to 'processing' and increment attempts
+            $this->egi->increment('pa_tokenization_attempts');
+            $this->egi->update([
+                'pa_tokenization_status' => 'processing'
+            ]);
+
             $logger->info('[TokenizePaActJob] Starting tokenization', [
                 'egi_id' => $this->egi->id,
                 'pa_protocol_number' => $this->egi->pa_protocol_number,
-                'job_id' => $this->job->getJobId()
+                'job_id' => $this->job->getJobId(),
+                'attempt' => $this->egi->pa_tokenization_attempts
             ]);
 
             // 1. Validate: Check if already anchored
@@ -130,6 +139,12 @@ class TokenizePaActJob implements ShouldQueue {
                 $logger->warning('[TokenizePaActJob] Act already anchored, skipping', [
                     'egi_id' => $this->egi->id,
                     'pa_anchored_at' => $this->egi->pa_anchored_at
+                ]);
+
+                // Reset to completed status
+                $this->egi->update([
+                    'pa_tokenization_status' => 'completed',
+                    'pa_tokenization_error' => null
                 ]);
                 return;
             }
@@ -179,29 +194,43 @@ class TokenizePaActJob implements ShouldQueue {
             $this->egi->update([
                 'pa_anchored' => true,
                 'pa_anchored_at' => now(),
-                'jsonMetadata' => $updatedMetadata
+                'jsonMetadata' => $updatedMetadata,
+                'pa_tokenization_status' => 'completed',
+                'pa_tokenization_error' => null // Clear any previous error
             ]);
 
             $logger->info('[TokenizePaActJob] Tokenization completed successfully', [
                 'egi_id' => $this->egi->id,
                 'txid' => $anchorResult['txid'],
                 'block' => $anchorResult['block'] ?? null,
-                'pa_anchored_at' => $this->egi->pa_anchored_at
+                'pa_anchored_at' => $this->egi->pa_anchored_at,
+                'total_attempts' => $this->egi->pa_tokenization_attempts
             ]);
         } catch (\Exception $e) {
+            // Sanitize error message (remove sensitive data for GDPR)
+            $sanitizedError = $this->sanitizeErrorMessage($e->getMessage());
+
+            // Update EGI with error details
+            $this->egi->update([
+                'pa_tokenization_status' => 'failed',
+                'pa_tokenization_error' => $sanitizedError
+            ]);
+
             $logger->error('[TokenizePaActJob] Tokenization failed', [
                 'egi_id' => $this->egi->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'error' => $sanitizedError,
+                'attempt' => $this->egi->pa_tokenization_attempts,
+                'will_retry' => $this->attempts() < $this->tries
             ]);
 
             // Use ErrorManager for structured error handling
             $errorManager->handle('PA_ACT_TOKENIZATION_FAILED', [
                 'egi_id' => $this->egi->id,
                 'pa_protocol_number' => $this->egi->pa_protocol_number,
-                'error_message' => $e->getMessage(),
+                'error_message' => $sanitizedError,
                 'job_id' => $this->job->getJobId(),
-                'attempt' => $this->attempts()
+                'attempt' => $this->attempts(),
+                'max_tries' => $this->tries
             ], $e);
 
             // Re-throw to trigger retry mechanism
@@ -210,18 +239,61 @@ class TokenizePaActJob implements ShouldQueue {
     }
 
     /**
-     * Handle a job failure
+     * Sanitize error message for GDPR compliance
      *
-     * @param \Throwable $exception
-     * @return void
+     * Removes sensitive data like file paths, API keys, wallet addresses
+     *
+     * @param string $message Raw error message
+     * @return string Sanitized error message safe for storage
+     * @privacy-safe Removes PII and sensitive system information
      */
-    public function failed(\Throwable $exception): void {
+    private function sanitizeErrorMessage(string $message): string
+    {
+        // Remove file paths
+        $message = preg_replace('/\/[^\s]+/', '[PATH]', $message);
+
+        // Remove potential API keys (alphanumeric strings > 20 chars)
+        $message = preg_replace('/[a-zA-Z0-9]{20,}/', '[KEY]', $message);
+
+        // Remove wallet addresses (Algorand format)
+        $message = preg_replace('/[A-Z2-7]{58}/', '[WALLET]', $message);
+
+        // Truncate if too long (max 500 chars for UI display)
+        if (strlen($message) > 500) {
+            $message = substr($message, 0, 497) . '...';
+        }
+
+        return $message;
+    }
+
+    /**
+     * Handle a job failure after all retries exhausted
+     *
+     * Updates EGI with permanent failure status and sanitized error message.
+     * Logs critical error for admin monitoring.
+     *
+     * @param \Throwable $exception Exception that caused the failure
+     * @return void
+     * @privacy-safe Error message sanitized before storage
+     */
+    public function failed(\Throwable $exception): void
+    {
+        // Sanitize error for GDPR compliance
+        $sanitizedError = $this->sanitizeErrorMessage($exception->getMessage());
+
+        // Update EGI with permanent failure status
+        $this->egi->update([
+            'pa_tokenization_status' => 'failed',
+            'pa_tokenization_error' => $sanitizedError
+        ]);
+
         // Log permanent failure after all retries exhausted
         app(UltraLogManager::class)->critical('[TokenizePaActJob] Job failed permanently after retries', [
             'egi_id' => $this->egi->id,
             'pa_protocol_number' => $this->egi->pa_protocol_number,
-            'exception' => $exception->getMessage(),
-            'attempts' => $this->attempts()
+            'exception' => $sanitizedError,
+            'total_attempts' => $this->egi->pa_tokenization_attempts,
+            'max_tries' => $this->tries
         ]);
 
         // Optional: Send notification to admin or PA user

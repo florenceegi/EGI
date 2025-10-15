@@ -304,6 +304,37 @@ return [
             'copy_url' => 'Copia URL',
             'copied' => 'Copiato negli appunti!',
             'open_public_page' => 'Apri Pagina Pubblica'
+        ],
+
+        // Tokenization section (error tracking)
+        'tokenization' => [
+            // Status titles
+            'pending_title' => 'Ancoraggio Blockchain',
+            'processing_title' => 'Tokenizzazione in Corso',
+            'failed_title' => 'Tokenizzazione Fallita',
+            
+            // Status messages
+            'pending_message' => 'In attesa di ancoraggio su blockchain Algorand',
+            'processing_message' => 'Ancoraggio su blockchain in corso...',
+            
+            // Help texts
+            'pending_help' => 'L\'atto è stato caricato correttamente e la firma digitale è stata validata. L\'ancoraggio su blockchain avverrà nei prossimi minuti. Se l\'ancoraggio non avviene automaticamente, puoi forzarlo manualmente con il pulsante sopra.',
+            'processing_help' => 'Il sistema sta ancorandoil documento su blockchain Algorand. Questa operazione richiede solitamente 30-60 secondi. La pagina si aggiornerà automaticamente al completamento.',
+            'failed_help' => 'Clicca "Riprova" per tentare nuovamente l\'ancoraggio',
+            
+            // Buttons
+            'force_button' => 'Forza Tokenizzazione',
+            'retry_button' => 'Riprova Tokenizzazione',
+            
+            // Error display
+            'error_label' => 'Dettaglio Errore',
+            'attempts_label' => 'Tentativi effettuati',
+            
+            // Status labels (for badges/pills)
+            'status_pending' => 'In Attesa',
+            'status_processing' => 'In Elaborazione',
+            'status_completed' => 'Completato',
+            'status_failed' => 'Fallito'
         ]
     ],
 

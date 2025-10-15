@@ -516,6 +516,18 @@ class PaActController extends Controller
                 return redirect()->back()->with('warning', 'Questo atto è già stato ancorato su blockchain.');
             }
 
+            // Reset error state before retry (important for failed tokenizations)
+            $egi->update([
+                'pa_tokenization_status' => 'pending',
+                'pa_tokenization_error' => null
+            ]);
+
+            $this->logger->info('[PaActController] Error state reset for retry', [
+                'user_id' => $user->id,
+                'egi_id' => $egi->id,
+                'previous_attempts' => $egi->pa_tokenization_attempts
+            ]);
+
             // Ensure queue worker is running before dispatching job
             $queueWorkerService = app(\App\Services\QueueWorkerService::class);
             if (!$queueWorkerService->ensureWorkerRunning()) {
