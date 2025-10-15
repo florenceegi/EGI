@@ -592,7 +592,7 @@ class PaymentDistributionService {
 
             $distributions[] = [
                 'source_type' => 'mint', // NEW: Phase 2 source type
-                'reservation_id' => null, // NULL for mint-based distributions
+                'reservation_id' => null, // NULL for mint-based distributions (minter ≠ last reserver)
                 'egi_blockchain_id' => $egiBlockchain->id, // NEW: Link to blockchain record
                 'blockchain_tx_id' => $egiBlockchain->algorand_tx_id, // NEW: Algorand TXID
                 'collection_id' => $egiBlockchain->egi->collection_id,
@@ -602,7 +602,7 @@ class PaymentDistributionService {
                 'amount_eur' => $amount,
                 'exchange_rate' => 1.0, // TODO: Implement multi-currency exchange rates
                 'is_epp' => $this->isEppWallet($wallet),
-                'distribution_status' => DistributionStatusEnum::PENDING,
+                'distribution_status' => DistributionStatusEnum::CONFIRMED, // ✅ MINT = payment already confirmed on blockchain
                 'metadata' => [
                     'wallet_id' => $wallet->id,
                     'wallet_address' => $wallet->wallet,
