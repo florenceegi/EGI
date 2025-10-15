@@ -83,7 +83,18 @@ class EgiService {
     public function index(User $user, Request $request, int $perPage = 15): LengthAwarePaginator {
         try {
             // Base query with relationships
-            $query = Egi::with(['collection', 'coa', 'user', 'owner']);
+            $query = Egi::with([
+                'collection',
+                'coa',
+                'user',
+                'owner',
+                'blockchain.buyer', // 🤝 Co-Creator data
+                'reservations' => function ($query) {
+                    $query->where('sub_status', 'highest')
+                        ->where('status', 'active')
+                        ->with('user');
+                }
+            ]);
 
             // Apply role-based filters
             $this->applyRoleFilters($query, $user);

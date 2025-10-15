@@ -254,12 +254,22 @@ class CollectorHomeController extends Controller {
      */
     public function showCollection(int $id, int $collection): View {
         $collector = User::findOrFail($id);
-        $collection = Collection::with(['creator', 'egis' => function ($query) use ($collector) {
-            $query->whereHas('reservations', function ($subQuery) use ($collector) {
-                $subQuery->where('user_id', $collector->id)
-                    ->whereIn('status', ['active', 'completed']);
-            })->where('is_published', true);
-        }])->findOrFail($collection);
+        $collection = Collection::with([
+            'creator',
+            'egis' => function ($query) use ($collector) {
+                $query->whereHas('reservations', function ($subQuery) use ($collector) {
+                    $subQuery->where('user_id', $collector->id)
+                        ->whereIn('status', ['active', 'completed']);
+                })->where('is_published', true);
+            },
+            'egis.user',
+            'egis.blockchain.buyer', // 🤝 Co-Creator data
+            'egis.reservations' => function ($query) {
+                $query->where('sub_status', 'highest')
+                    ->where('status', 'active')
+                    ->with('user');
+            }
+        ])->findOrFail($collection);
 
         // Check if collector has purchased any EGIs from this collection
         if ($collection->egis->isEmpty()) {

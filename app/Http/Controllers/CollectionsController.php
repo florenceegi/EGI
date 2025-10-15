@@ -209,7 +209,12 @@ class CollectionsController extends Controller {
             },
             'egis.user',
             'egis.owner',
-            'egis.blockchain', // CRITICAL: for isMinted() check in egi-card badges
+            'egis.blockchain.buyer', // 🤝 Co-Creator data (buyer relationship)
+            'egis.reservations' => function ($query) {
+                $query->where('sub_status', 'highest')
+                    ->where('status', 'active')
+                    ->with('user');
+            },
             'likes'
         ])
             ->withCount([

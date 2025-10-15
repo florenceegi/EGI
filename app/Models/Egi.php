@@ -122,6 +122,9 @@ class Egi extends Model {
         'pa_public_code',       // PA Acts: Public verification code (VER-XXXXXXXXXX)
         'pa_anchored',          // PA Acts: Blockchain anchored flag
         'pa_anchored_at',       // PA Acts: Blockchain anchored timestamp
+        'pa_tokenization_error',    // PA Acts: Last tokenization error message
+        'pa_tokenization_attempts', // PA Acts: Number of tokenization attempts
+        'pa_tokenization_status',   // PA Acts: Tokenization status (pending/processing/completed/failed)
         'bind',
         'paired',
         'price',

@@ -49,9 +49,9 @@
             </button>
 
             {{-- Carousel Track --}}
-            <div class="flex pb-4 space-x-4 overflow-x-auto scrollbar-hide" id="desktop-egi-carousel-track">
+            <div class="flex pb-4 space-x-4 overflow-x-auto scroll-smooth snap-x snap-mandatory" id="desktop-egi-carousel-track">
                 @foreach($egis as $egi)
-                <div class="flex-shrink-0" style="width: 280px;">
+                <div class="flex-shrink-0 snap-start" style="width: 280px;">
                     <x-egi-card :egi="$egi" :showPurchasePrice="true" />
                 </div>
                 @endforeach

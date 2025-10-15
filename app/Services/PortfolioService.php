@@ -50,10 +50,13 @@ class PortfolioService {
         })
             ->with([
                 'collection',
+                'user', // Creator
+                'blockchain.buyer', // 🤝 Co-Creator data
                 // Carica tutte le prenotazioni dell'utente per l'EGI (per determinare stato)
                 'reservations' => function ($query) use ($collector) {
                     $query->where('user_id', $collector->id)
-                        ->orderByDesc('created_at');
+                        ->orderByDesc('created_at')
+                        ->with('user');
                 },
             ])
             ->get();
