@@ -49,6 +49,7 @@ class PaymentDistribution extends Model {
      */
     protected $fillable = [
         'source_type',           // Phase 2: mint/reservation/transfer tracking
+        'egi_id',                // Direct EGI reference (always set)
         'reservation_id',
         'egi_blockchain_id',     // Phase 2: Link to blockchain record (mint tracking)
         'blockchain_tx_id',      // Phase 2: Algorand transaction ID (mint tracking)
@@ -80,6 +81,14 @@ class PaymentDistribution extends Model {
     ];
 
     // ===== RELATIONSHIPS =====
+
+    /**
+     * Get the EGI that owns this distribution (direct reference)
+     * @return BelongsTo
+     */
+    public function egi(): BelongsTo {
+        return $this->belongsTo(Egi::class);
+    }
 
     /**
      * Get the reservation that owns this distribution
