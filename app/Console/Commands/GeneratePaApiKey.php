@@ -72,7 +72,7 @@ class GeneratePaApiKey extends Command
 
         // 1. Find user
         $this->info("Looking up user: $email");
-        
+
         $user = User::where('email', $email)->first();
 
         if (!$user) {
@@ -94,7 +94,7 @@ class GeneratePaApiKey extends Command
             $this->warn("⚠️  API key already exists for this user!");
             $this->info("Generated at: " . $user->natan_api_key_generated_at);
             $this->info("Last used: " . ($user->natan_api_key_last_used_at ?? 'Never'));
-            
+
             if (!$this->confirm('Do you want to regenerate? (existing key will be revoked)')) {
                 $this->info("Operation cancelled.");
                 return self::SUCCESS;
@@ -103,7 +103,7 @@ class GeneratePaApiKey extends Command
 
         // 4. Generate secure API key
         $this->info("Generating API key...");
-        
+
         $plainKey = $this->generateSecureKey();
         $encryptedKey = Crypt::encryptString($plainKey);
 
@@ -126,7 +126,7 @@ class GeneratePaApiKey extends Command
         $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         $this->info("✅ API Key generated successfully!");
         $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        
+
         $this->table(
             ['Field', 'Value'],
             [
@@ -178,8 +178,7 @@ class GeneratePaApiKey extends Command
     {
         $randomBytes = random_bytes(30); // 30 bytes = 60 hex chars
         $randomHex = bin2hex($randomBytes);
-        
+
         return 'sk_pa_' . $randomHex;
     }
 }
-

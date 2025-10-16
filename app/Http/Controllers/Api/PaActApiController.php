@@ -51,7 +51,7 @@ class PaActApiController extends Controller
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
-        
+
         // Apply NATAN agent authentication middleware
         $this->middleware('natan.agent');
     }
@@ -159,7 +159,6 @@ class PaActApiController extends Controller
                 'job_id' => $job->id,
                 'file_hash' => $validated['file_hash'],
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('NATAN_API_JOB_CREATE_FAILED', [
                 'user_id' => $user->id,
@@ -226,7 +225,6 @@ class PaActApiController extends Controller
                 'job_id' => $job->id,
                 'verification_code' => $egi->pa_public_code,
             ], 201);
-
         } catch (\Exception $e) {
             // Mark job as failed
             $job->update([
@@ -340,4 +338,3 @@ class PaActApiController extends Controller
         ], 200);
     }
 }
-

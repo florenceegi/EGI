@@ -29,13 +29,13 @@ return new class extends Migration
             // PA batch agent fields
             $table->text('pa_file_path')->nullable()->after('pa_public_code')
                 ->comment('Original file path on PA server (reference only)');
-            
+
             $table->boolean('pa_signature_valid')->nullable()->after('pa_file_path')
                 ->comment('Digital signature validation result');
-            
+
             $table->date('pa_signature_date')->nullable()->after('pa_signature_valid')
                 ->comment('Digital signature timestamp');
-            
+
             $table->unsignedBigInteger('file_size')->nullable()->after('file_hash')
                 ->comment('File size in bytes');
         });
@@ -53,4 +53,3 @@ return new class extends Migration
         });
     }
 };
-
