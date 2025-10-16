@@ -768,4 +768,74 @@ class MintController extends Controller {
             return response()->json([], 500);
         }
     }
+
+    /**
+     * Check mint status for polling (AJAX endpoint)
+     *
+     * @param int $egiId
+     * @return JsonResponse
+     *
+     * @purpose Called by frontend polling to check if mint is complete
+     * @returns JSON with status: minting_queued|minting|minted|failed + blockchain data if minted
+     */
+    public function checkMintStatus(int $egiId): JsonResponse
+    {
+        try {
+            $user = Auth::user();
+
+            // Load EGI with blockchain record
+            $egi = Egi::with('egiBlockchain')->findOrFail($egiId);
+
+            // Verify authorization - user must be the buyer or creator
+            if (!$egi->egiBlockchain || 
+                ($egi->egiBlockchain->buyer_user_id !== $user->id && $egi->creator_id !== $user->id)) {
+                return response()->json([
+                    'status' => 'unauthorized'
+                ], 403);
+            }
+
+            $blockchain = $egi->egiBlockchain;
+            $status = $blockchain->mint_status;
+
+            $this->logger->debug('Mint status check', [
+                'egi_id' => $egiId,
+                'user_id' => $user->id,
+                'mint_status' => $status,
+                'asa_id' => $blockchain->asa_id
+            ]);
+
+            // Build response based on status
+            $response = [
+                'status' => $status,
+                'egi_id' => $egiId
+            ];
+
+            // If minted, include blockchain data
+            if ($status === 'minted') {
+                $response['asa_id'] = $blockchain->asa_id;
+                $response['tx_id'] = $blockchain->blockchain_tx_id;
+                $response['buyer_wallet'] = $blockchain->buyer_wallet;
+                $response['minted_at'] = $blockchain->minted_at?->format('d/m/Y H:i:s');
+            }
+
+            // If failed, include error
+            if ($status === 'failed') {
+                $response['error'] = $blockchain->mint_error ?? 'Unknown error';
+            }
+
+            return response()->json($response);
+
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to check mint status', [
+                'egi_id' => $egiId,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to check mint status'
+            ], 500);
+        }
+    }
 }
