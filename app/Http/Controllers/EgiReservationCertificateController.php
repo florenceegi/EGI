@@ -23,8 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @date 2025-05-16
  * @seo-purpose Provides public certificate verification pages
  */
-class EgiReservationCertificateController extends Controller
-{
+class EgiReservationCertificateController extends Controller {
     /**
      * @var UltraLogManager
      */
@@ -59,8 +58,7 @@ class EgiReservationCertificateController extends Controller
      * @seo-purpose Display certificate details with proper metadata
      * @schema-type Certificate
      */
-    public function show(Request $request, string $uuid)
-    {
+    public function show(Request $request, string $uuid) {
         try {
             // Carica il certificato con EGI e le sue prenotazioni ordinate
             $certificate = EgiReservationCertificate::where('certificate_uuid', $uuid)
@@ -93,7 +91,6 @@ class EgiReservationCertificateController extends Controller
                     'title' => $certificate->egi->title ?? __('certificate.unknown_egi')
                 ])
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to display certificate', [
                 'certificate_uuid' => $uuid,
@@ -112,8 +109,7 @@ class EgiReservationCertificateController extends Controller
      * @param string $uuid The certificate UUID
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
      */
-    public function download(Request $request, string $uuid)
-    {
+    public function download(Request $request, string $uuid) {
         try {
             $certificate = EgiReservationCertificate::where('certificate_uuid', $uuid)->firstOrFail();
 
@@ -143,7 +139,6 @@ class EgiReservationCertificateController extends Controller
                     'Content-Disposition' => 'attachment; filename="Certificate_' . $certificate->certificate_uuid . '.pdf"'
                 ]
             );
-
         } catch (\Exception $e) {
             $this->logger->error('Certificate PDF download failed', [
                 'certificate_uuid' => $uuid,
@@ -166,8 +161,7 @@ class EgiReservationCertificateController extends Controller
      * @seo-purpose Public verification page for certificates
      * @schema-type VerificationService
      */
-    public function verify(Request $request, string $uuid)
-    {
+    public function verify(Request $request, string $uuid) {
         try {
             $certificate = EgiReservationCertificate::where('certificate_uuid', $uuid)
                 ->with(['egi', 'egi.collection', 'reservation'])
@@ -204,7 +198,6 @@ class EgiReservationCertificateController extends Controller
                     'uuid' => $certificate->certificate_uuid
                 ])
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Certificate verification failed', [
                 'certificate_uuid' => $uuid,
@@ -224,8 +217,7 @@ class EgiReservationCertificateController extends Controller
      * @param int $egiId The EGI ID
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function listByEgi(Request $request, int $egiId)
-    {
+    public function listByEgi(Request $request, int $egiId) {
         try {
             // Only show certificates for active reservations
             $certificates = EgiReservationCertificate::where('egi_id', $egiId)
@@ -242,7 +234,6 @@ class EgiReservationCertificateController extends Controller
                 'title' => __('certificate.list_by_egi_title', ['egi_id' => $egiId]),
                 'metaDescription' => __('certificate.list_by_egi_meta_description', ['egi_id' => $egiId])
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to list certificates by EGI', [
                 'egi_id' => $egiId,
@@ -263,8 +254,7 @@ class EgiReservationCertificateController extends Controller
      *
      * @privacy-safe Only shows user's own certificates
      */
-    public function listByUser(Request $request)
-    {
+    public function listByUser(Request $request) {
         $user = $request->user();
 
         if (!$user) {
@@ -284,7 +274,6 @@ class EgiReservationCertificateController extends Controller
                 'title' => __('certificate.user_certificates_title'),
                 'metaDescription' => __('certificate.user_certificates_meta_description')
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to list user certificates', [
                 'user_id' => $user->id,
@@ -307,8 +296,7 @@ class EgiReservationCertificateController extends Controller
      * @purpose Called after successful mint to generate certificate + payment breakdown
      * @returns JSON with certificate_url, payment_breakdown[], blockchain_data
      */
-    public function generatePostMintCertificate(Request $request, int $egiId)
-    {
+    public function generatePostMintCertificate(Request $request, int $egiId) {
         try {
             $user = $request->user();
 
@@ -386,7 +374,6 @@ class EgiReservationCertificateController extends Controller
                     'blockchain_data' => $blockchainData,
                 ]
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to generate post-mint certificate', [
                 'egi_id' => $egiId,

@@ -231,4 +231,39 @@ return [
         'unknown' => 'Sconosciuto',
         'collection' => 'nella collezione',
     ],
+
+    // Post-Mint Success Section
+    'post_mint' => [
+        'generating_certificate' => 'Generazione certificato in corso...',
+        'please_wait' => 'Attendere prego, stiamo preparando il tuo certificato di autenticità blockchain.',
+        'congratulations' => 'Complimenti! 🎉',
+        'success_message' => 'Hai acquistato con successo questo EGI. Il certificato di proprietà è pronto.',
+        'partial_success_title' => 'Mint completato ⚠️',
+        'partial_success_message' => 'L\'EGI è stato mintato con successo, ma la generazione del certificato ha riscontrato un problema.',
+        'certificate_generation_failed' => 'Non è stato possibile generare automaticamente il certificato.',
+        'contact_support' => 'Contatta l\'assistenza con il codice dell\'EGI per ricevere il certificato manualmente.',
+
+        // Certificate section
+        'certificate_title' => 'Certificato di Proprietà Blockchain',
+        'certificate_description' => 'Il tuo certificato digitale ufficiale con i dati blockchain verificati.',
+        'download_certificate' => 'Scarica Certificato PDF',
+        'view_certificate' => 'Visualizza Certificato',
+
+        // Payment breakdown
+        'payment_breakdown' => 'Riepilogo Distribuzione Pagamento',
+        'recipient' => 'Destinatario',
+        'role' => 'Ruolo',
+        'amount' => 'Importo',
+
+        // Blockchain info
+        'blockchain_info' => 'Informazioni Blockchain',
+        'asa_id' => 'ASA ID',
+        'tx_id' => 'Transaction ID',
+        'minted_at' => 'Mintato il',
+        'view_pera_explorer' => 'Visualizza su Pera Explorer',
+
+        // Action buttons
+        'view_egi' => 'Visualizza il tuo EGI',
+        'my_certificates' => 'I miei Certificati',
+    ],
 ];

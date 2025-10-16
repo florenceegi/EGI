@@ -64,5 +64,21 @@ return [
     'no_certificates' => 'Nessun certificato trovato.',
     'success_message' => 'Prenotazione completata con successo! Ecco il tuo certificato.',
     'created_just_now' => 'Creato ora',
-    'qr_code_alt' => 'Codice QR per la verifica del certificato'
+    'qr_code_alt' => 'Codice QR per la verifica del certificato',
+
+    // Payment distribution roles
+    'roles' => [
+        'creator' => 'Creatore',
+        'co_creator' => 'Co-Creatore',
+        'collection_owner' => 'Proprietario Collezione',
+        'platform' => 'Piattaforma',
+        'royalty' => 'Royalty',
+        'reseller' => 'Rivenditore',
+    ],
+
+    // Post-mint messages
+    'unauthorized_access' => 'Non sei autorizzato ad accedere a questo certificato.',
+    'egi_not_minted' => 'L\'EGI non è ancora stato mintato.',
+    'generation_failed' => 'Generazione del certificato non riuscita. Riprova più tardi.',
+    'unknown_recipient' => 'Destinatario Sconosciuto',
 ];
