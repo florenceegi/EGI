@@ -246,6 +246,7 @@ return [
         // Certificate section
         'certificate_title' => 'Certificato di Proprietà Blockchain',
         'certificate_description' => 'Il tuo certificato digitale ufficiale con i dati blockchain verificati.',
+        'certificate_blockchain' => 'Certificato Blockchain',
         'download_certificate' => 'Scarica Certificato PDF',
         'view_certificate' => 'Visualizza Certificato',
 

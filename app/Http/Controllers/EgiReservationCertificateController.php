@@ -301,10 +301,10 @@ class EgiReservationCertificateController extends Controller {
             $user = $request->user();
 
             // Load EGI with blockchain record
-            $egi = \App\Models\Egi::with('egiBlockchain')->findOrFail($egiId);
+            $egi = \App\Models\Egi::with('blockchain')->findOrFail($egiId);
 
             // Verify authorization - user must be the buyer
-            if (!$egi->egiBlockchain || $egi->egiBlockchain->buyer_user_id !== $user->id) {
+            if (!$egi->blockchain || $egi->blockchain->buyer_user_id !== $user->id) {
                 return response()->json([
                     'success' => false,
                     'message' => __('certificate.unauthorized_access')
@@ -312,7 +312,7 @@ class EgiReservationCertificateController extends Controller {
             }
 
             // Verify EGI is minted
-            if ($egi->egiBlockchain->mint_status !== 'minted') {
+            if ($egi->blockchain->mint_status !== 'minted') {
                 return response()->json([
                     'success' => false,
                     'message' => __('certificate.egi_not_minted')
@@ -322,13 +322,13 @@ class EgiReservationCertificateController extends Controller {
             $this->logger->info('Generating post-mint certificate', [
                 'egi_id' => $egiId,
                 'user_id' => $user->id,
-                'asa_id' => $egi->egiBlockchain->asa_id
+                'asa_id' => $egi->blockchain->asa_id
             ]);
 
             // Generate blockchain certificate
             $certificate = $this->certificateGenerator->generateBlockchainCertificate(
                 $egi,
-                $egi->egiBlockchain
+                $egi->blockchain
             );
 
             // Query payment breakdown (amounts > 0 only)
@@ -351,11 +351,11 @@ class EgiReservationCertificateController extends Controller {
 
             // Blockchain data for display
             $blockchainData = [
-                'asa_id' => $egi->egiBlockchain->asa_id,
-                'tx_id' => $egi->egiBlockchain->blockchain_tx_id,
-                'buyer_wallet' => $egi->egiBlockchain->buyer_wallet,
-                'minted_at' => $egi->egiBlockchain->minted_at->format('d/m/Y H:i:s'),
-                'pera_explorer_url' => 'https://explorer.perawallet.app/asset/' . $egi->egiBlockchain->asa_id,
+                'asa_id' => $egi->blockchain->asa_id,
+                'tx_id' => $egi->blockchain->blockchain_tx_id,
+                'buyer_wallet' => $egi->blockchain->buyer_wallet,
+                'minted_at' => $egi->blockchain->minted_at->format('d/m/Y H:i:s'),
+                'pera_explorer_url' => 'https://explorer.perawallet.app/asset/' . $egi->blockchain->asa_id,
             ];
 
             $this->logger->info('Post-mint certificate generated successfully', [
