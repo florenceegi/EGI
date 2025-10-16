@@ -76,7 +76,7 @@ class ShowPaApiKey extends Command
         // 4. Confirmation
         $this->newLine();
         $this->warn("⚠️  You are about to display the API key in plaintext.");
-        
+
         if (!$this->confirm('Continue?', false)) {
             $this->info("Operation cancelled.");
             return self::SUCCESS;
@@ -85,7 +85,7 @@ class ShowPaApiKey extends Command
         // 5. Decrypt and display
         try {
             $plainKey = Crypt::decryptString($user->natan_api_key);
-            
+
             $this->newLine();
             $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
             $this->line("API Key (plaintext):");
@@ -93,11 +93,10 @@ class ShowPaApiKey extends Command
             $this->info($plainKey);
             $this->line('');
             $this->line('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-            
+
             $this->newLine();
             $this->comment("Add this to agent config.json:");
             $this->line('"api_key": "' . $plainKey . '"');
-            
         } catch (\Exception $e) {
             $this->error("❌ Failed to decrypt API key: " . $e->getMessage());
             return self::FAILURE;
@@ -106,4 +105,3 @@ class ShowPaApiKey extends Command
         return self::SUCCESS;
     }
 }
-
