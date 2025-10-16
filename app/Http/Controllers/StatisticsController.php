@@ -138,13 +138,29 @@ class StatisticsController extends Controller {
 
             $this->logger->info('Statistics JSON data request initiated', [
                 'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
                 'force_refresh' => $forceRefresh,
                 'period' => $period,
                 'log_category' => 'STATS_API_REQUEST'
             ]);
 
             $statisticsService = new StatisticsService($user, $this->logger);
-            $stats = $statisticsService->getComprehensiveStats($forceRefresh, $period);
+            
+            // DEBUG: Log user collection IDs
+            $reflection = new \ReflectionClass($statisticsService);
+            $property = $reflection->getProperty('userCollectionIds');
+            $property->setAccessible(true);
+            $userCollectionIds = $property->getValue($statisticsService);
+            
+            $this->logger->info('StatisticsService initialized', [
+                'user_id' => $user->id,
+                'collection_ids' => $userCollectionIds,
+                'collection_count' => count($userCollectionIds),
+                'log_category' => 'STATS_SERVICE_DEBUG'
+            ]);
+            
+            $stats = $statisticsService->getComprehensiveStats($forceRefresh);
 
             $this->logger->info('Statistics JSON data calculation completed successfully', [
                 'user_id' => $user->id,
