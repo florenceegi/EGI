@@ -71,7 +71,57 @@
 
 ## 🟡 PRIORITÀ MEDIA
 
-### 💰 Payment Distributions - Dual Source Statistics ✅ **COMPLETATO 2025-10-16**
+### � CoA Blockchain Certificate + Post-Mint Payment Breakdown ✅ **COMPLETATO 2025-10-16**
+
+**CONTEXT:** Post-mint UX deve mostrare certificato blockchain + breakdown pagamenti senza reload pagina.
+
+**IMPLEMENTAZIONE COMPLETA:**
+
+-   [x] **Database Schema** (`egi_reservation_certificates` table):
+    -   Rinominata colonna `blockchain_algorand_id` → `egi_blockchain_id` (naming convention)
+    -   Foreign key constraint a `egi_blockchain` table con cascade delete
+    -   Performance indexes su `certificate_type` e composite `(egi_id, certificate_type)`
+    -   Migration: `2025_10_16_095951_add_blockchain_support_to_egi_reservation_certificates.php`
+-   [x] **Model** (`EgiReservationCertificate`):
+    -   Relationship `egiBlockchain()` aggiunta per certificati mint
+    -   Scopes: `blockchainType()` e `reservationType()` per filtrare certificate_type
+    -   Fillable fields aggiornati: `certificate_type`, `egi_blockchain_id`
+-   [x] **Service** (`CertificateGeneratorService`):
+    -   Method `generateBlockchainCertificate(Egi, EgiBlockchain)` → Crea certificato PDF + record DB
+    -   Dual storage: record in `egi_reservation_certificates` + path in `egi_blockchain`
+    -   PDF include: ASA ID, TX hash, wallet buyer, timestamp, QR code verifica
+-   [x] **Controller** (`EgiReservationCertificateController`):
+    -   Endpoint `generatePostMintCertificate(Request, int $egiId)` → AJAX endpoint
+    -   Authorization: solo buyer può generare certificato (check `buyer_user_id`)
+    -   Query payment_distributions WHERE `source_type='mint'` AND `amount_eur > 0`
+    -   Return JSON: `certificate_url`, `payment_breakdown[]`, `blockchain_data`
+-   [x] **Routes** (`web.php`):
+    -   Route: `POST /mint/{egiId}/certificate/generate` (auth required)
+-   [x] **Frontend** (`mint/checkout.blade.php`):
+    -   ❌ Rimosso `window.location.reload()` dopo mint success
+    -   ✅ Implementata SPA-style post-mint UI con 3 stati: loading → success → partial success
+    -   Function `updateUIToMinted()` → Async call a certificate generation endpoint
+    -   Function `showPostMintLoading()` → Spinner durante generazione
+    -   Function `showPostMintSuccess(data)` → UI completa con:
+        -   Celebration message con icona check verde
+        -   Blockchain info card (ASA ID, TX hash, Pera Explorer link)
+        -   Payment breakdown table (solo importi > 0 EUR)
+        -   Certificate download section con thumbnail
+        -   CTA buttons: "Visualizza EGI" + "Visualizza Certificato"
+    -   Function `showPostMintPartialSuccess(data)` → Fallback se certificato fallisce
+-   [x] **i18n** (`mint.php` + `certificate.php`):
+    -   Sezione `post_mint` con 20+ chiavi (congratulations, loading, success, fallback)
+    -   Sezione `roles` per payment distributions (creator, co_creator, platform, royalty)
+    -   Messaggi errore: unauthorized, generation_failed, not_minted
+
+**COMMITS:**
+
+-   `[FEAT] Backend certificati blockchain post-mint + payment breakdown` (1a3eab7)
+-   `[FEAT] Frontend + i18n certificati blockchain post-mint completato` (d3aa281)
+
+---
+
+### �💰 Payment Distributions - Dual Source Statistics ✅ **COMPLETATO 2025-10-16**
 
 **CONTEXT:** `payment_distributions` già popolata da 2 fonti:
 
@@ -244,13 +294,13 @@
 1. ✅ ~~Fix EGI Card co-creatore logic~~ **COMPLETATO**
 2. ✅ ~~Aggiungere utility/traits a vista mint~~ **COMPLETATO**
 3. ✅ ~~Dual Source Statistics Dashboard~~ **COMPLETATO 2025-10-16**
-4. ⏳ **PROSSIMO**: Sistema Asta (rinominare Prenotazione → Asta, aggiungere campi obbligatori)
-5. ⏳ Royalty Monitor Dashboard (vista breakdown pagamenti per Creator/Owner)
-6. ⏳ Controllare permessi PA (non deve creare EGI)
-7. ⏳ Weak → Strong authentication per messa in vendita
-8. ⏳ Implementare auto-mint EGI
-9. ⏳ Controllare funzione ricerca
-10. ⏳ CoA minting + vista breakdown pagamenti in checkout mint
+4. ✅ ~~CoA minting + vista breakdown pagamenti in checkout mint~~ **COMPLETATO 2025-10-16**
+5. ⏳ **PROSSIMO**: Sistema Asta (rinominare Prenotazione → Asta, aggiungere campi obbligatori)
+6. ⏳ Royalty Monitor Dashboard (vista breakdown pagamenti per Creator/Owner)
+7. ⏳ Controllare permessi PA (non deve creare EGI)
+8. ⏳ Weak → Strong authentication per messa in vendita
+9. ⏳ Implementare auto-mint EGI
+10. ⏳ Controllare funzione ricerca
 
 **Estimated time to MVP completion**: ~50 ore sviluppo + 15 ore testing (ridotto dopo completamento statistics)
 
