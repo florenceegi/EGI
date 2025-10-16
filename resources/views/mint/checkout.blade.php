@@ -1,6 +1,6 @@
 {{-- resources/views/mint/checkout.blade.php --}}
 <x-platform-layout :title="__('mint.page_title', ['title' => $egi->title])">
-    <div class="container px-4 py-8 mx-auto">
+    <div class="container mx-auto px-4 py-8">
         <div class="mx-auto max-w-7xl">
             {{-- Header --}}
             <div class="mb-8">
@@ -15,15 +15,15 @@
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 {{-- COLUMN 1: EGI Preview + Blockchain Info --}}
                 <div class="space-y-6">
-                    <div class="p-6 bg-white rounded-lg shadow-lg">
+                    <div class="rounded-lg bg-white p-6 shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.egi_preview.title') }}</h2>
 
                         {{-- EGI Card Preview with clickable image --}}
                         <a href="{{ route('egis.show', ['egi' => $egi->id]) }}" target="_blank"
-                            class="block mb-4 overflow-hidden transition-all rounded-lg aspect-square hover:opacity-90 hover:shadow-xl"
+                            class="mb-4 block aspect-square overflow-hidden rounded-lg transition-all hover:opacity-90 hover:shadow-xl"
                             title="{{ __('mint.egi_preview.click_to_view') }}">
                             <img src="{{ $egi->main_image_url }}" alt="{{ $egi->title }}"
-                                class="object-cover w-full h-full">
+                                class="h-full w-full object-cover">
                         </a>
 
                         <h3 class="text-lg font-semibold text-gray-900">{{ $egi->title }}</h3>
@@ -36,7 +36,7 @@
                     </div>
 
                     {{-- Blockchain Info --}}
-                    <div class="p-6 rounded-lg bg-blue-50">
+                    <div class="rounded-lg bg-blue-50 p-6">
                         <h3 class="mb-3 text-lg font-semibold text-blue-900">{{ __('mint.blockchain_info.title') }}
                         </h3>
                         <div class="space-y-2 text-sm">
@@ -60,9 +60,9 @@
                 <div class="space-y-6">
                     {{-- Certificate of Authenticity (CoA) --}}
                     @if ($egi->coa && $egi->coa->status === 'valid')
-                        <div class="p-6 rounded-lg bg-amber-50">
-                            <div class="flex items-center mb-3">
-                                <svg class="w-6 h-6 mr-2 text-amber-600" fill="none" stroke="currentColor"
+                        <div class="rounded-lg bg-amber-50 p-6">
+                            <div class="mb-3 flex items-center">
+                                <svg class="mr-2 h-6 w-6 text-amber-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -72,8 +72,8 @@
                             <div class="space-y-3">
                                 {{-- CoA Status Badge --}}
                                 <div
-                                    class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+                                    <svg class="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                             clip-rule="evenodd" />
@@ -108,9 +108,9 @@
                                 </div>
 
                                 {{-- CoA Info Note --}}
-                                <div class="p-3 mt-3 border rounded-md border-amber-200 bg-amber-100">
+                                <div class="mt-3 rounded-md border border-amber-200 bg-amber-100 p-3">
                                     <p class="text-xs text-amber-800">
-                                        <svg class="inline w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="mr-1 inline h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
                                                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                                 clip-rule="evenodd" />
@@ -124,9 +124,9 @@
 
                     {{-- Utility Section --}}
                     @if ($egi->utility)
-                        <div class="p-6 rounded-lg shadow-md bg-gradient-to-br from-violet-50 to-purple-50">
-                            <div class="flex items-center mb-4">
-                                <svg class="w-6 h-6 mr-2 text-purple-600" fill="none" stroke="currentColor"
+                        <div class="rounded-lg bg-gradient-to-br from-violet-50 to-purple-50 p-6 shadow-md">
+                            <div class="mb-4 flex items-center">
+                                <svg class="mr-2 h-6 w-6 text-purple-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -138,7 +138,7 @@
                                 <div class="flex items-center justify-between text-sm">
                                     <span class="font-medium text-purple-700">{{ __('mint.utility.type') }}</span>
                                     <span
-                                        class="px-3 py-1 text-xs font-semibold text-purple-800 bg-purple-100 rounded-full">
+                                        class="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-800">
                                         {{ __('utility.types.' . $egi->utility->type . '.label') }}
                                     </span>
                                 </div>
@@ -155,13 +155,13 @@
                                 <div class="mt-4">
                                     <h4 class="mb-2 text-sm font-semibold text-purple-800">
                                         {{ __('mint.utility.gallery') }}</h4>
-                                    <div class="flex gap-2 pb-2 overflow-x-auto" style="scrollbar-width: thin;">
+                                    <div class="flex gap-2 overflow-x-auto pb-2" style="scrollbar-width: thin;">
                                         @foreach ($egi->utility->getMedia('utility_gallery') as $index => $media)
                                             <div
-                                                class="flex-shrink-0 w-20 h-20 overflow-hidden transition-all border-2 border-purple-200 rounded-lg cursor-pointer hover:scale-105 hover:border-purple-400">
+                                                class="h-20 w-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 border-purple-200 transition-all hover:scale-105 hover:border-purple-400">
                                                 <img src="{{ $media->getUrl('thumb') }}"
                                                     alt="{{ $egi->utility->title }} - Image {{ $index + 1 }}"
-                                                    class="object-cover w-full h-full"
+                                                    class="h-full w-full object-cover"
                                                     onclick="window.open('{{ $media->getUrl('large') }}', '_blank')"
                                                     loading="lazy">
                                             </div>
@@ -174,10 +174,10 @@
 
                     {{-- Traits Section --}}
                     @if ($egi->traits && $egi->traits->count() > 0)
-                        <div class="p-6 rounded-lg shadow-md bg-gradient-to-br from-blue-50 to-indigo-50">
-                            <div class="flex items-center justify-between mb-4">
+                        <div class="rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-md">
+                            <div class="mb-4 flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor"
+                                    <svg class="mr-2 h-6 w-6 text-indigo-600" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -186,7 +186,7 @@
                                     </h3>
                                 </div>
                                 <span
-                                    class="px-3 py-1 text-xs font-semibold text-indigo-800 bg-indigo-100 rounded-full">
+                                    class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-800">
                                     {{ $egi->traits->count() }} {{ __('mint.traits.attributes') }}
                                 </span>
                             </div>
@@ -199,11 +199,11 @@
                                         $categoryIcon = $category ? $category->icon : '🏷️';
                                     @endphp
                                     <div
-                                        class="relative p-3 transition-all bg-white border border-indigo-200 rounded-lg shadow-sm hover:shadow-md">
+                                        class="relative rounded-lg border border-indigo-200 bg-white p-3 shadow-sm transition-all hover:shadow-md">
                                         {{-- Category Badge --}}
-                                        <div class="flex items-center justify-between mb-2">
+                                        <div class="mb-2 flex items-center justify-between">
                                             <span
-                                                class="inline-flex items-center justify-center w-6 h-6 text-xs rounded-full"
+                                                class="inline-flex h-6 w-6 items-center justify-center rounded-full text-xs"
                                                 style="background-color: {{ $categoryColor }}20; color: {{ $categoryColor }};">
                                                 {{ $categoryIcon }}
                                             </span>
@@ -266,8 +266,8 @@
                                                 }
                                             @endphp
                                             <div class="mt-2">
-                                                <div class="w-full h-1 overflow-hidden bg-gray-200 rounded-full">
-                                                    <div class="h-full transition-all rounded-full"
+                                                <div class="h-1 w-full overflow-hidden rounded-full bg-gray-200">
+                                                    <div class="h-full rounded-full transition-all"
                                                         style="width: {{ $barWidth }}%; background-color: {{ $rarityColor }};">
                                                     </div>
                                                 </div>
@@ -286,15 +286,15 @@
 
                 {{-- COLUMN 3: Checkout Form + MiCA Compliance --}}
                 <div class="space-y-6">
-                    <div class="p-6 bg-white rounded-lg shadow-lg">
+                    <div class="rounded-lg bg-white p-6 shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.payment.title') }}</h2>
 
                         {{-- Mint Status Badges --}}
                         @if ($mintStatus === 'completed')
                             {{-- COMPLETED: Green Badge with ASA ID --}}
-                            <div class="p-6 mb-6 border-2 border-green-200 rounded-lg bg-green-50">
-                                <div class="flex items-center mb-3">
-                                    <svg class="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor"
+                            <div class="mb-6 rounded-lg border-2 border-green-200 bg-green-50 p-6">
+                                <div class="mb-3 flex items-center">
+                                    <svg class="mr-2 h-6 w-6 text-green-600" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -303,7 +303,7 @@
                                         {{ __('mint.status.already_minted') }}</h3>
                                 </div>
                                 <p class="mb-4 text-sm text-green-800">{{ __('mint.status.minted_message') }}</p>
-                                <div class="p-4 space-y-3 bg-green-100 border border-green-300 rounded-lg">
+                                <div class="space-y-3 rounded-lg border border-green-300 bg-green-100 p-4">
                                     <div class="flex items-center justify-between text-sm">
                                         <span class="font-medium text-green-700">{{ __('mint.status.asa_id') }}</span>
                                         <span
@@ -317,11 +317,11 @@
                                                 class="font-mono text-xs font-semibold text-green-900">{{ Str::limit($blockchainData['tx_id'], 20) }}</span>
                                         </div>
                                     @endif
-                                    <div class="pt-3 mt-3 border-t border-green-300">
+                                    <div class="mt-3 border-t border-green-300 pt-3">
                                         <a href="https://testnet.algoexplorer.io/asset/{{ $blockchainData['asa_id'] ?? $egi->token_EGI }}"
                                             target="_blank"
                                             class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                            <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -333,9 +333,9 @@
                             </div>
                         @elseif($mintStatus === 'processing')
                             {{-- PROCESSING: Blue Badge with spinner --}}
-                            <div class="p-6 mb-6 border-2 border-blue-200 rounded-lg bg-blue-50">
-                                <div class="flex items-center mb-3">
-                                    <svg class="w-6 h-6 mr-2 text-blue-600 animate-spin" fill="none"
+                            <div class="mb-6 rounded-lg border-2 border-blue-200 bg-blue-50 p-6">
+                                <div class="mb-3 flex items-center">
+                                    <svg class="mr-2 h-6 w-6 animate-spin text-blue-600" fill="none"
                                         viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10"
                                             stroke="currentColor" stroke-width="4"></circle>
@@ -347,7 +347,7 @@
                                         {{ __('mint.status.processing_title') }}</h3>
                                 </div>
                                 <p class="mb-4 text-sm text-blue-800">{{ __('mint.status.processing_message') }}</p>
-                                <div class="p-4 bg-blue-100 border border-blue-300 rounded-lg">
+                                <div class="rounded-lg border border-blue-300 bg-blue-100 p-4">
                                     <div class="flex items-center justify-between text-sm">
                                         <span
                                             class="font-medium text-blue-700">{{ __('mint.status.status_label') }}</span>
@@ -362,9 +362,9 @@
                             </div>
                         @elseif($mintStatus === 'failed')
                             {{-- FAILED: Red Badge with error --}}
-                            <div class="p-6 mb-6 border-2 border-red-200 rounded-lg bg-red-50">
-                                <div class="flex items-center mb-3">
-                                    <svg class="w-6 h-6 mr-2 text-red-600" fill="none" stroke="currentColor"
+                            <div class="mb-6 rounded-lg border-2 border-red-200 bg-red-50 p-6">
+                                <div class="mb-3 flex items-center">
+                                    <svg class="mr-2 h-6 w-6 text-red-600" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -373,7 +373,7 @@
                                         {{ __('mint.status.failed_title') }}</h3>
                                 </div>
                                 <p class="mb-4 text-sm text-red-800">{{ __('mint.status.failed_message') }}</p>
-                                <div class="p-4 bg-red-100 border border-red-300 rounded-lg">
+                                <div class="rounded-lg border border-red-300 bg-red-100 p-4">
                                     <p class="font-mono text-xs text-red-700">
                                         {{ $blockchainData['error'] ?? 'Errore sconosciuto' }}</p>
                                 </div>
@@ -382,7 +382,7 @@
 
                         {{-- Reservation Summary (if minting after reservation) --}}
                         @if ($reservation)
-                            <div class="p-4 mb-6 rounded-lg bg-green-50">
+                            <div class="mb-6 rounded-lg bg-green-50 p-4">
                                 <h3 class="mb-2 font-semibold text-green-900">
                                     {{ __('mint.payment.winning_reservation') }}
                                 </h3>
@@ -401,7 +401,7 @@
                             </div>
                         @else
                             {{-- Direct Mint Price --}}
-                            <div class="p-4 mb-6 rounded-lg bg-blue-50">
+                            <div class="mb-6 rounded-lg bg-blue-50 p-4">
                                 <h3 class="mb-2 font-semibold text-blue-900">
                                     {{ __('mint.payment.direct_mint_price') }}
                                 </h3>
@@ -427,19 +427,19 @@
 
                             {{-- Payment Method --}}
                             <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">
+                                <label class="mb-2 block text-sm font-medium text-gray-700">
                                     {{ __('mint.payment.payment_method_label') }}
                                 </label>
                                 <div class="space-y-2">
                                     <label class="flex items-center">
                                         <input type="radio" name="payment_method" value="stripe" checked
-                                            class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
                                         <span
                                             class="ml-2 text-sm text-gray-900">{{ __('mint.payment.credit_card') }}</span>
                                     </label>
                                     <label class="flex items-center">
                                         <input type="radio" name="payment_method" value="paypal"
-                                            class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                            class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
                                         <span
                                             class="ml-2 text-sm text-gray-900">{{ __('mint.payment.paypal') }}</span>
                                     </label>
@@ -448,12 +448,12 @@
 
                             {{-- Optional Wallet Address --}}
                             <div>
-                                <label for="buyer_wallet" class="block mb-2 text-sm font-medium text-gray-700">
+                                <label for="buyer_wallet" class="mb-2 block text-sm font-medium text-gray-700">
                                     {{ __('mint.payment.wallet_label') }}
                                 </label>
                                 <input type="text" id="buyer_wallet" name="buyer_wallet"
                                     placeholder="{{ __('mint.payment.wallet_placeholder') }}"
-                                    class="w-full px-3 py-2 font-mono text-sm border border-gray-300 rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    class="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <p class="mt-1 text-xs text-gray-500">
                                     {{ __('mint.payment.wallet_help') }}
                                 </p>
@@ -462,7 +462,7 @@
                             {{-- AREA 5.5.1: Co-Creator Display Name (IMMUTABLE AFTER MINT) --}}
                             <div>
                                 <label for="co_creator_display_name"
-                                    class="block mb-2 text-sm font-medium text-gray-700">
+                                    class="mb-2 block text-sm font-medium text-gray-700">
                                     {{ __('mint.payment.co_creator_name_label') }}
                                     <span class="text-xs text-gray-500">({{ __('mint.payment.optional') }})</span>
                                 </label>
@@ -474,9 +474,9 @@
                                     value="{{ old('co_creator_display_name', $defaultCoCreatorName) }}"
                                     placeholder="{{ $defaultCoCreatorName ?: __('mint.payment.co_creator_name_placeholder') }}"
                                     maxlength="100"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     title="{{ __('mint.payment.co_creator_name_pattern') }}">
-                                <div class="flex items-start justify-between mt-1">
+                                <div class="mt-1 flex items-start justify-between">
                                     <p class="text-xs text-gray-500">
                                         {{ __('mint.payment.co_creator_name_help') }}
                                     </p>
@@ -484,9 +484,9 @@
                                         <span id="char-count">{{ strlen($defaultCoCreatorName) }}</span>/100
                                     </span>
                                 </div>
-                                <div class="p-3 mt-2 border rounded-md border-amber-200 bg-amber-50">
+                                <div class="mt-2 rounded-md border border-amber-200 bg-amber-50 p-3">
                                     <div class="flex">
-                                        <svg class="flex-shrink-0 w-5 h-5 text-amber-500" fill="currentColor"
+                                        <svg class="h-5 w-5 flex-shrink-0 text-amber-500" fill="currentColor"
                                             viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
                                                 d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -505,7 +505,7 @@
                             </div>
 
                             {{-- Total --}}
-                            <div class="pt-4 border-t">
+                            <div class="border-t pt-4">
                                 <div class="flex items-center justify-between text-lg font-semibold">
                                     <span>{{ __('mint.payment.total_label') }}</span>
                                     <span class="text-green-600">
@@ -516,9 +516,9 @@
 
                             {{-- Worker Status Progress Bar (hidden by default, shown during system check) --}}
                             <div id="worker-progress-container"
-                                class="hidden p-4 mb-4 border border-blue-200 rounded-lg bg-blue-50">
-                                <div class="flex items-center mb-2">
-                                    <svg class="w-5 h-5 mr-3 text-blue-600 animate-spin" fill="none"
+                                class="mb-4 hidden rounded-lg border border-blue-200 bg-blue-50 p-4">
+                                <div class="mb-2 flex items-center">
+                                    <svg class="mr-3 h-5 w-5 animate-spin text-blue-600" fill="none"
                                         viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10"
                                             stroke="currentColor" stroke-width="4"></circle>
@@ -532,31 +532,31 @@
                                 </div>
 
                                 {{-- Progress Steps --}}
-                                <div class="flex items-center justify-between mt-3 mb-2">
-                                    <div class="flex items-center flex-1">
+                                <div class="mb-2 mt-3 flex items-center justify-between">
+                                    <div class="flex flex-1 items-center">
                                         <div id="step-1" class="flex items-center">
                                             <div
-                                                class="flex items-center justify-center w-8 h-8 text-xs font-bold text-white bg-blue-600 rounded-full">
+                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
                                                 1</div>
                                             <span
                                                 class="ml-2 text-xs text-blue-900">{{ __('mint.worker.step_1') }}</span>
                                         </div>
                                     </div>
                                     <div class="mx-2 h-0.5 flex-1 bg-gray-300" id="progress-line-1"></div>
-                                    <div class="flex items-center flex-1">
+                                    <div class="flex flex-1 items-center">
                                         <div id="step-2" class="flex items-center">
                                             <div
-                                                class="flex items-center justify-center w-8 h-8 text-xs font-bold text-gray-600 bg-gray-300 rounded-full">
+                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-xs font-bold text-gray-600">
                                                 2</div>
                                             <span
                                                 class="ml-2 text-xs text-gray-600">{{ __('mint.worker.step_2') }}</span>
                                         </div>
                                     </div>
                                     <div class="mx-2 h-0.5 flex-1 bg-gray-300" id="progress-line-2"></div>
-                                    <div class="flex items-center flex-1">
+                                    <div class="flex flex-1 items-center">
                                         <div id="step-3" class="flex items-center">
                                             <div
-                                                class="flex items-center justify-center w-8 h-8 text-xs font-bold text-gray-600 bg-gray-300 rounded-full">
+                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-xs font-bold text-gray-600">
                                                 3</div>
                                             <span
                                                 class="ml-2 text-xs text-gray-600">{{ __('mint.worker.step_3') }}</span>
@@ -565,9 +565,9 @@
                                 </div>
 
                                 {{-- Progress Bar --}}
-                                <div class="w-full h-2 mt-3 bg-gray-200 rounded-full">
+                                <div class="mt-3 h-2 w-full rounded-full bg-gray-200">
                                     <div id="worker-progress-bar"
-                                        class="h-2 transition-all duration-500 bg-blue-600 rounded-full"
+                                        class="h-2 rounded-full bg-blue-600 transition-all duration-500"
                                         style="width: 33%"></div>
                                 </div>
                             </div>
@@ -579,14 +579,14 @@
                                     bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-[1.02] hover:from-green-600 hover:to-emerald-700 focus:ring-green-500 @endif w-full transform rounded-lg px-4 py-3 font-medium text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2">
                                 <span class="flex items-center justify-center">
                                     @if ($mintStatus === 'completed')
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                        <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7" />
                                         </svg>
                                         {{ __('mint.status.already_minted_button') }}
                                     @elseif($mintStatus === 'processing')
-                                        <svg class="w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <svg class="mr-2 h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10"
                                                 stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor"
@@ -595,7 +595,7 @@
                                         </svg>
                                         {{ __('mint.status.processing_button') }}
                                     @else
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                        <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -608,7 +608,7 @@
                     </div>
 
                     {{-- Info MiCA Compliance --}}
-                    <div class="p-4 rounded-lg bg-yellow-50">
+                    <div class="rounded-lg bg-yellow-50 p-4">
                         <h3 class="mb-2 font-semibold text-yellow-900">{{ __('mint.compliance.mica_title') }}</h3>
                         <p class="text-sm text-yellow-800">
                             {{ __('mint.compliance.mica_description') }}
@@ -622,12 +622,12 @@
     {{-- Loading Modal --}}
     {{-- Loading Modal --}}
     <div id="loading-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50"></div>
-            <div class="relative w-full max-w-md p-6 transition-all transform bg-white rounded-lg shadow-xl">
+        <div class="flex min-h-screen items-center justify-center p-4">
+            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+            <div class="relative w-full max-w-md transform rounded-lg bg-white p-6 shadow-xl transition-all">
                 <div class="text-center">
-                    <div class="flex items-center justify-center w-12 h-12 mx-auto bg-blue-100 rounded-full">
-                        <svg class="w-6 h-6 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                        <svg class="h-6 w-6 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                 stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor"
@@ -1097,10 +1097,10 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        // Redirect with success parameter
+                        // Redirect with success parameter to trigger polling on page load
                         const currentUrl = new URL(window.location.href);
                         currentUrl.searchParams.set('success', '1');
-                        window.location.href = result.redirect || currentUrl.toString();
+                        window.location.href = currentUrl.toString();
                     } else {
                         throw new Error(result.message || result.error || '{{ __('mint.js.default_error') }}');
                     }
@@ -1176,20 +1176,20 @@
                             <h3 class="text-lg font-semibold text-green-900">{{ __('mint.notification.success_title') }}</h3>
                             <p class="mt-1 text-sm text-green-800">{{ __('mint.notification.success_message') }}</p>
                             ${data.asaId ? `
-                                                                    <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
-                                                                        <div class="flex items-center justify-between mb-2 text-sm">
-                                                                            <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                                                            <span class="font-mono font-bold text-green-900">${data.asaId}</span>
-                                                                        </div>
-                                                                        <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
-                                                                            class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                            </svg>
-                                                                            {{ __('mint.notification.view_blockchain') }}
-                                                                        </a>
-                                                                    </div>
-                                                                ` : ''}
+                                                                            <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
+                                                                                <div class="flex items-center justify-between mb-2 text-sm">
+                                                                                    <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
+                                                                                    <span class="font-mono font-bold text-green-900">${data.asaId}</span>
+                                                                                </div>
+                                                                                <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
+                                                                                    class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
+                                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                    </svg>
+                                                                                    {{ __('mint.notification.view_blockchain') }}
+                                                                                </a>
+                                                                            </div>
+                                                                        ` : ''}
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-green-600 transition-colors hover:text-green-900">
@@ -1214,29 +1214,28 @@
              * Show loading state while generating certificate
              */
             function showPostMintLoading() {
-                // Hide checkout form
-                const checkoutColumn = document.querySelector('[class*="bg-white rounded-lg shadow-sm"]');
-                if (checkoutColumn) {
-                    checkoutColumn.style.display = 'none';
+                // Hide checkout form (find by ID for specificity)
+                const checkoutForm = document.getElementById('mint-form');
+                if (checkoutForm) {
+                    checkoutForm.style.display = 'none';
                 }
 
-                // Show loading UI
-                const loadingHtml = `
-                    <div id="post-mint-loading" class="p-6 bg-white rounded-lg shadow-sm">
-                        <div class="flex flex-col items-center justify-center py-12 text-center">
-                            <svg class="w-16 h-16 mb-4 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <h3 class="mb-2 text-xl font-semibold text-gray-900">{{ __('mint.post_mint.generating_certificate') }}</h3>
-                            <p class="text-gray-600">{{ __('mint.post_mint.please_wait') }}</p>
+                // Show loading UI in the third column container
+                const thirdColumn = document.querySelector('.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
+                if (thirdColumn) {
+                    const loadingHtml = `
+                        <div id="post-mint-loading" class="p-6 bg-white rounded-lg shadow-sm">
+                            <div class="flex flex-col items-center justify-center py-12 text-center">
+                                <svg class="w-16 h-16 mb-4 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <h3 class="mb-2 text-xl font-semibold text-gray-900">{{ __('mint.post_mint.generating_certificate') }}</h3>
+                                <p class="text-gray-600">{{ __('mint.post_mint.please_wait') }}</p>
+                            </div>
                         </div>
-                    </div>
-                `;
-
-                const checkoutColumnParent = checkoutColumn?.parentElement;
-                if (checkoutColumnParent) {
-                    checkoutColumnParent.insertAdjacentHTML('beforeend', loadingHtml);
+                    `;
+                    thirdColumn.insertAdjacentHTML('beforeend', loadingHtml);
                 }
             }
 
@@ -1263,12 +1262,12 @@
                                 </thead>
                                 <tbody>
                                     ${data.payment_breakdown.map(dist => `
-                                        <tr class="border-b border-gray-200">
-                                            <td class="py-2 font-medium text-gray-900">${dist.recipient}</td>
-                                            <td class="py-2 text-gray-700">${dist.role}</td>
-                                            <td class="py-2 font-semibold text-right text-gray-900">&euro; ${dist.amount_eur}</td>
-                                        </tr>
-                                    `).join('')}
+                                                <tr class="border-b border-gray-200">
+                                                    <td class="py-2 font-medium text-gray-900">${dist.recipient}</td>
+                                                    <td class="py-2 text-gray-700">${dist.role}</td>
+                                                    <td class="py-2 font-semibold text-right text-gray-900">&euro; ${dist.amount_eur}</td>
+                                                </tr>
+                                            `).join('')}
                                 </tbody>
                             </table>
                         </div>
@@ -1340,10 +1339,10 @@
                     </div>
                 `;
 
-                const checkoutColumn = document.querySelector('[class*="bg-white rounded-lg shadow-sm"]');
-                const checkoutColumnParent = checkoutColumn?.parentElement;
-                if (checkoutColumnParent) {
-                    checkoutColumnParent.insertAdjacentHTML('beforeend', successHtml);
+                // Insert in the third column container
+                const thirdColumn = document.querySelector('.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
+                if (thirdColumn) {
+                    thirdColumn.insertAdjacentHTML('beforeend', successHtml);
                 }
             }
 
@@ -1383,10 +1382,10 @@
                     </div>
                 `;
 
-                const checkoutColumn = document.querySelector('[class*="bg-white rounded-lg shadow-sm"]');
-                const checkoutColumnParent = checkoutColumn?.parentElement;
-                if (checkoutColumnParent) {
-                    checkoutColumnParent.insertAdjacentHTML('beforeend', successHtml);
+                // Insert in the third column container
+                const thirdColumn = document.querySelector('.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
+                if (thirdColumn) {
+                    thirdColumn.insertAdjacentHTML('beforeend', successHtml);
                 }
             }
         </script>
