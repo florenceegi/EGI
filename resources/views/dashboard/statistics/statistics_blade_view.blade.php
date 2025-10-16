@@ -102,34 +102,29 @@
                     <div class="flex space-x-2 rounded-xl bg-gray-800 bg-opacity-50 p-2 backdrop-blur-sm">
                         <button
                             class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
-                            data-tab="mints"
-                            role="tab"
-                            aria-selected="true"
-                            aria-controls="mints-panel">
+                            data-tab="mints" role="tab" aria-selected="true" aria-controls="mints-panel">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span>{{ __('statistics.mints_tab') }}</span>
                         </button>
                         <button
                             class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
-                            data-tab="reservations"
-                            role="tab"
-                            aria-selected="false"
+                            data-tab="reservations" role="tab" aria-selected="false"
                             aria-controls="reservations-panel">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
                             <span>{{ __('statistics.reservations_tab') }}</span>
                         </button>
                         <button
                             class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
-                            data-tab="comparison"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="comparison-panel">
+                            data-tab="comparison" role="tab" aria-selected="false" aria-controls="comparison-panel">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
                             <span>{{ __('statistics.comparison_tab') }}</span>
                         </button>
@@ -142,12 +137,14 @@
                 </div>
 
                 {{-- Reservations Tab Panel --}}
-                <div id="reservations-panel" class="stats-tab-panel hidden" role="tabpanel" aria-labelledby="reservations-tab">
+                <div id="reservations-panel" class="stats-tab-panel hidden" role="tabpanel"
+                    aria-labelledby="reservations-tab">
                     @include('dashboard.statistics.partials.reservations-statistics')
                 </div>
 
                 {{-- Comparison Tab Panel --}}
-                <div id="comparison-panel" class="stats-tab-panel hidden" role="tabpanel" aria-labelledby="comparison-tab">
+                <div id="comparison-panel" class="stats-tab-panel hidden" role="tabpanel"
+                    aria-labelledby="comparison-tab">
                     @include('dashboard.statistics.partials.comparison-statistics')
                 </div>
 
@@ -260,7 +257,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let statisticsData = null;
-        let currentTab = 'mints';
+        // Restore last active tab from localStorage or default to 'mints'
+        let currentTab = localStorage.getItem('stats_active_tab') || 'mints';
 
         // Get period from URL parameter or use default
         const urlParams = new URLSearchParams(window.location.search);
@@ -278,6 +276,9 @@
 
         // Set active button based on current period
         updateActiveTimeFilter();
+
+        // Restore active tab (must be done before loadStatistics)
+        switchStatsTab(currentTab);
 
         // Load statistics on page load
         loadStatistics();
@@ -316,6 +317,9 @@
          */
         function switchStatsTab(tabName) {
             currentTab = tabName;
+
+            // Save active tab to localStorage for persistence
+            localStorage.setItem('stats_active_tab', tabName);
 
             // Update tab buttons
             statsTabButtons.forEach(btn => {
@@ -377,6 +381,9 @@
 
                 if (result.success) {
                     statisticsData = result.data;
+                    console.log('Statistics data loaded:', statisticsData);
+                    console.log('Reservations data:', statisticsData.reservations);
+                    console.log('Amounts data:', statisticsData.amounts);
                     renderStatistics(statisticsData);
                     updateLastUpdated(statisticsData.generated_at);
                     showContent();
@@ -416,8 +423,9 @@
 
             // Update KPI cards
             document.getElementById('mint-total-mints').textContent = mints.total_mints || 0;
-            document.getElementById('mint-total-revenue').textContent = formatCurrency(mints.total_revenue_eur || 0);
-            
+            document.getElementById('mint-total-revenue').textContent = formatCurrency(mints
+                .total_revenue_eur || 0);
+
             const avgPrice = mints.total_mints > 0 ? mints.total_revenue_eur / mints.total_mints : 0;
             document.getElementById('mint-avg-price').textContent = formatCurrency(avgPrice);
             document.getElementById('mint-collections-count').textContent = mints.by_collection?.length || 0;
@@ -441,7 +449,8 @@
                     </div>
                 `).join('');
             } else {
-                byCollectionContainer.innerHTML = '<div class="text-center text-gray-400">{{ __('statistics.no_mint_data') }}</div>';
+                byCollectionContainer.innerHTML =
+                    '<div class="text-center text-gray-400">{{ __('statistics.no_mint_data') }}</div>';
             }
 
             // Render by user type
@@ -468,7 +477,8 @@
                     `;
                 }).join('');
             } else {
-                byUserTypeContainer.innerHTML = '<div class="text-center text-gray-400">{{ __('statistics.no_mint_data') }}</div>';
+                byUserTypeContainer.innerHTML =
+                    '<div class="text-center text-gray-400">{{ __('statistics.no_mint_data') }}</div>';
             }
         }
 
@@ -476,13 +486,34 @@
          * Render Reservation Statistics Tab
          */
         function renderReservationStatistics(reservations, amounts, eppPotential) {
-            if (!reservations) return;
+            console.log('renderReservationStatistics called', {
+                reservations,
+                amounts,
+                eppPotential
+            });
+
+            if (!reservations) {
+                console.error('No reservations data provided');
+                return;
+            }
 
             // Update KPI cards
-            document.getElementById('reservation-total').textContent = reservations.total || 0;
-            document.getElementById('reservation-forecast').textContent = formatCurrency(amounts?.total_eur || 0);
-            document.getElementById('reservation-strong').textContent = reservations.strong || 0;
-            document.getElementById('reservation-weak').textContent = reservations.weak || 0;
+            const totalElement = document.getElementById('reservation-total');
+            const forecastElement = document.getElementById('reservation-forecast');
+            const strongElement = document.getElementById('reservation-strong');
+            const weakElement = document.getElementById('reservation-weak');
+
+            if (totalElement) totalElement.textContent = reservations.total || 0;
+            if (forecastElement) forecastElement.textContent = formatCurrency(amounts?.total_eur || 0);
+            if (strongElement) strongElement.textContent = reservations.strong || 0;
+            if (weakElement) weakElement.textContent = reservations.weak || 0;
+
+            console.log('Reservation KPIs updated:', {
+                total: reservations.total,
+                forecast: amounts?.total_eur,
+                strong: reservations.strong,
+                weak: reservations.weak
+            });
 
             // Render by collection
             const byCollectionContainer = document.getElementById('reservation-by-collection-container');
@@ -502,7 +533,8 @@
                     </div>
                 `).join('');
             } else {
-                byCollectionContainer.innerHTML = '<div class="text-center text-gray-400">{{ __('statistics.no_reservations') }}</div>';
+                byCollectionContainer.innerHTML =
+                    '<div class="text-center text-gray-400">{{ __('statistics.no_reservations') }}</div>';
             }
 
             // Render EPP potential
@@ -520,7 +552,8 @@
                     </div>
                 `).join('');
             } else {
-                eppContainer.innerHTML = '<div class="text-center text-gray-400">{{ __('statistics.no_epp_data') }}</div>';
+                eppContainer.innerHTML =
+                    '<div class="text-center text-gray-400">{{ __('statistics.no_epp_data') }}</div>';
             }
         }
 
@@ -531,18 +564,21 @@
             if (!comparison) return;
 
             // Update KPI cards
-            document.getElementById('comparison-conversion-rate').textContent = comparison.conversion_rate + '%';
-            document.getElementById('comparison-forecast').textContent = formatCurrency(comparison.forecast_vs_reality?.forecast_eur || 0);
-            document.getElementById('comparison-reality').textContent = formatCurrency(comparison.forecast_vs_reality?.reality_eur || 0);
-            
+            document.getElementById('comparison-conversion-rate').textContent = comparison.conversion_rate +
+                '%';
+            document.getElementById('comparison-forecast').textContent = formatCurrency(comparison
+                .forecast_vs_reality?.forecast_eur || 0);
+            document.getElementById('comparison-reality').textContent = formatCurrency(comparison
+                .forecast_vs_reality?.reality_eur || 0);
+
             const deltaEur = comparison.forecast_vs_reality?.delta_eur || 0;
             const deltaPercentage = comparison.forecast_vs_reality?.delta_percentage || 0;
             const deltaElement = document.getElementById('comparison-delta');
             const deltaPercentageElement = document.getElementById('comparison-delta-percentage');
-            
+
             deltaElement.textContent = formatCurrency(Math.abs(deltaEur));
             deltaPercentageElement.textContent = Math.abs(deltaPercentage) + '%';
-            
+
             // Color based on delta (positive = green, negative = red)
             if (deltaEur >= 0) {
                 deltaElement.classList.remove('text-red-400');
@@ -556,7 +592,8 @@
             const tableBody = document.querySelector('#comparison-by-collection-table tbody');
             if (comparison.by_collection && comparison.by_collection.length > 0) {
                 tableBody.innerHTML = comparison.by_collection.map(collection => {
-                    const deltaClass = collection.delta_eur >= 0 ? 'text-verde-rinascita' : 'text-red-400';
+                    const deltaClass = collection.delta_eur >= 0 ? 'text-verde-rinascita' :
+                        'text-red-400';
                     return `
                         <tr class="hover:bg-gray-700 hover:bg-opacity-30">
                             <td class="px-4 py-3 font-medium text-white">${escapeHtml(collection.collection_name)}</td>

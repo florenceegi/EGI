@@ -250,7 +250,7 @@ Route::prefix('pa/acts')->name('api.pa.acts.')->middleware(['natan.agent', 'thro
     // Submit PA act metadata (no file upload, metadata-only)
     Route::post('/metadata', [App\Http\Controllers\Api\PaActApiController::class, 'storeMetadata'])
         ->name('metadata.store');
-    
+
     // Get job processing status
     Route::get('/jobs/{jobId}/status', [App\Http\Controllers\Api\PaActApiController::class, 'getJobStatus'])
         ->name('jobs.status');
