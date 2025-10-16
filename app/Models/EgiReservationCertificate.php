@@ -44,7 +44,9 @@ class EgiReservationCertificate extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'certificate_type',
         'reservation_id',
+        'egi_blockchain_id',
         'egi_id',
         'user_id',
         'wallet_address',
@@ -116,6 +118,38 @@ class EgiReservationCertificate extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the blockchain record associated with the mint certificate.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function egiBlockchain()
+    {
+        return $this->belongsTo(EgiBlockchain::class, 'egi_blockchain_id');
+    }
+
+    /**
+     * Scope a query to only include blockchain (mint) certificates.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeBlockchainType($query)
+    {
+        return $query->where('certificate_type', 'mint');
+    }
+
+    /**
+     * Scope a query to only include reservation certificates.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeReservationType($query)
+    {
+        return $query->where('certificate_type', 'reservation');
     }
 
     /**

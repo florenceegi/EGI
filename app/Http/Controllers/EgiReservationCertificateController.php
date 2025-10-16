@@ -296,4 +296,109 @@ class EgiReservationCertificateController extends Controller
                 ->with('error', __('certificate.list_failed'));
         }
     }
+
+    /**
+     * Generate post-mint blockchain certificate and payment breakdown
+     *
+     * @param Request $request The HTTP request
+     * @param int $egiId The EGI ID that was just minted
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @purpose Called after successful mint to generate certificate + payment breakdown
+     * @returns JSON with certificate_url, payment_breakdown[], blockchain_data
+     */
+    public function generatePostMintCertificate(Request $request, int $egiId)
+    {
+        try {
+            $user = $request->user();
+
+            // Load EGI with blockchain record
+            $egi = \App\Models\Egi::with('egiBlockchain')->findOrFail($egiId);
+
+            // Verify authorization - user must be the buyer
+            if (!$egi->egiBlockchain || $egi->egiBlockchain->buyer_user_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('certificate.unauthorized_access')
+                ], 403);
+            }
+
+            // Verify EGI is minted
+            if ($egi->egiBlockchain->mint_status !== 'minted') {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('certificate.egi_not_minted')
+                ], 400);
+            }
+
+            $this->logger->info('Generating post-mint certificate', [
+                'egi_id' => $egiId,
+                'user_id' => $user->id,
+                'asa_id' => $egi->egiBlockchain->asa_id
+            ]);
+
+            // Generate blockchain certificate
+            $certificate = $this->certificateGenerator->generateBlockchainCertificate(
+                $egi,
+                $egi->egiBlockchain
+            );
+
+            // Query payment breakdown (amounts > 0 only)
+            $distributions = \App\Models\PaymentDistribution::where('egi_id', $egi->id)
+                ->where('source_type', 'mint')
+                ->where('distribution_status', 'CONFIRMED')
+                ->where('amount_eur', '>', 0)
+                ->with('user:id,name') // Only load user id and name
+                ->get();
+
+            // Format payment breakdown for frontend
+            $paymentBreakdown = $distributions->map(function ($dist) {
+                return [
+                    'recipient' => $dist->user->name ?? __('certificate.unknown_recipient'),
+                    'role' => __('certificate.roles.' . $dist->recipient_role),
+                    'amount_eur' => number_format($dist->amount_eur, 2, ',', '.'),
+                    'percentage' => $dist->percentage,
+                ];
+            })->toArray();
+
+            // Blockchain data for display
+            $blockchainData = [
+                'asa_id' => $egi->egiBlockchain->asa_id,
+                'tx_id' => $egi->egiBlockchain->blockchain_tx_id,
+                'buyer_wallet' => $egi->egiBlockchain->buyer_wallet,
+                'minted_at' => $egi->egiBlockchain->minted_at->format('d/m/Y H:i:s'),
+                'pera_explorer_url' => 'https://explorer.perawallet.app/asset/' . $egi->egiBlockchain->asa_id,
+            ];
+
+            $this->logger->info('Post-mint certificate generated successfully', [
+                'egi_id' => $egiId,
+                'certificate_uuid' => $certificate->certificate_uuid,
+                'payment_distributions_count' => count($paymentBreakdown)
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'certificate_url' => $certificate->getPdfUrl(),
+                    'certificate_uuid' => $certificate->certificate_uuid,
+                    'public_url' => route('egi-certificates.show', $certificate->certificate_uuid),
+                    'payment_breakdown' => $paymentBreakdown,
+                    'blockchain_data' => $blockchainData,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to generate post-mint certificate', [
+                'egi_id' => $egiId,
+                'user_id' => $request->user()?->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => __('certificate.generation_failed')
+            ], 500);
+        }
+    }
 }
