@@ -47,7 +47,7 @@ return new class extends Migration {
         });
 
         // Rename column back using raw SQL
-        DB::statement('ALTER TABLE egi_reservation_certificates 
+        DB::statement('ALTER TABLE egi_reservation_certificates
             CHANGE COLUMN egi_blockchain_id blockchain_algorand_id BIGINT UNSIGNED NULL');
     }
 };
