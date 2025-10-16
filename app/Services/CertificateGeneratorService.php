@@ -300,15 +300,44 @@ class CertificateGeneratorService {
      *
      * @privacy-safe Minimal PII in certificate, GDPR compliant
      */
-    public function generateBlockchainCertificate(\App\Models\EgiBlockchain $egiBlockchain): string {
+    /**
+     * Generate post-mint blockchain certificate and create record
+     *
+     * @param \App\Models\Egi $egi The minted EGI
+     * @param \App\Models\EgiBlockchain $egiBlockchain The blockchain record
+     * @return EgiReservationCertificate The generated certificate model
+     * @throws \Exception If certificate generation fails
+     *
+     * @purpose Creates blockchain certificate after successful mint
+     */
+    public function generateBlockchainCertificate(\App\Models\Egi $egi, \App\Models\EgiBlockchain $egiBlockchain): EgiReservationCertificate {
         try {
             // Validate blockchain record has required data
             if (!$egiBlockchain->asa_id || !$egiBlockchain->blockchain_tx_id) {
                 throw new \Exception('Blockchain record missing required data (asa_id or blockchain_tx_id)');
             }
 
+            // Generate certificate UUID
+            $certificateUuid = (string) Str::uuid();
+
+            // Create certificate record in egi_reservation_certificates table
+            $certificate = EgiReservationCertificate::create([
+                'certificate_type' => 'mint',
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'egi_id' => $egi->id,
+                'user_id' => $egiBlockchain->buyer_user_id,
+                'wallet_address' => $egiBlockchain->buyer_wallet ?? 'Treasury Custody',
+                'reservation_type' => 'strong', // Mint is always strong ownership
+                'offer_amount_fiat' => $egiBlockchain->paid_amount,
+                'offer_amount_algo' => 0, // Not used for mint certificates
+                'certificate_uuid' => $certificateUuid,
+                'signature_hash' => hash('sha256', $certificateUuid . '|' . $egiBlockchain->asa_id . '|' . $egiBlockchain->blockchain_tx_id),
+                'is_superseded' => false,
+                'is_current_highest' => true,
+            ]);
+
             // Generate certificate path
-            $certificateFileName = "egi_blockchain_certificate_{$egiBlockchain->certificate_uuid}.pdf";
+            $certificateFileName = "egi_blockchain_certificate_{$certificate->certificate_uuid}.pdf";
             $certificatePath = "certificates/blockchain/{$certificateFileName}";
 
             // Get buyer information
@@ -317,9 +346,9 @@ class CertificateGeneratorService {
 
             // Prepare certificate data
             $certificateData = [
-                'certificate_uuid' => $egiBlockchain->certificate_uuid,
-                'egi_id' => $egiBlockchain->egi_id,
-                'egi_title' => $egiBlockchain->egi->title ?? 'Unknown EGI',
+                'certificate_uuid' => $certificate->certificate_uuid,
+                'egi_id' => $egi->id,
+                'egi_title' => $egi->title ?? 'Unknown EGI',
                 'buyer_name' => $buyerName,
                 'buyer_wallet' => $egiBlockchain->buyer_wallet ?? 'Treasury Custody',
                 'asa_id' => $egiBlockchain->asa_id,
@@ -328,7 +357,7 @@ class CertificateGeneratorService {
                 'purchase_currency' => $egiBlockchain->paid_currency ?? 'EUR',
                 'minted_at' => $egiBlockchain->minted_at ? $egiBlockchain->minted_at->toDateTimeString() : now()->toDateTimeString(),
                 'ownership_type' => $egiBlockchain->ownership_type,
-                'verification_url' => url("/verify/{$egiBlockchain->certificate_uuid}")
+                'verification_url' => route('egi-certificates.show', $certificate->certificate_uuid)
             ];
 
             // Generate PDF content
@@ -337,20 +366,26 @@ class CertificateGeneratorService {
             // Store certificate file
             Storage::put($certificatePath, $pdfContent);
 
-            // Update blockchain record with certificate path and verification URL
+            // Update certificate with PDF path and public URL
+            $certificate->update([
+                'pdf_path' => $certificatePath,
+                'public_url' => route('egi-certificates.show', $certificate->certificate_uuid)
+            ]);
+
+            // Update blockchain record with certificate reference
             $egiBlockchain->update([
                 'certificate_path' => $certificatePath,
-                'verification_url' => url("/verify/{$egiBlockchain->certificate_uuid}")
+                'verification_url' => route('egi-certificates.show', $certificate->certificate_uuid)
             ]);
 
             $this->logger->info('Blockchain certificate generated successfully', [
                 'egi_blockchain_id' => $egiBlockchain->id,
-                'egi_id' => $egiBlockchain->egi_id,
-                'certificate_path' => $certificatePath,
-                'certificate_uuid' => $egiBlockchain->certificate_uuid
+                'egi_id' => $egi->id,
+                'certificate_uuid' => $certificate->certificate_uuid,
+                'certificate_path' => $certificatePath
             ]);
 
-            return $certificatePath;
+            return $certificate;
         } catch (\Exception $e) {
             $this->logger->error('Failed to generate blockchain certificate', [
                 'error' => $e->getMessage(),

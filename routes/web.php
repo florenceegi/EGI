@@ -868,6 +868,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     // User certificates
     Route::get('/my-certificates', [EgiReservationCertificateController::class, 'listByUser'])
         ->name('my-certificates');
+
+    // Post-mint certificate generation (AJAX endpoint)
+    Route::post('/mint/{egiId}/certificate/generate', [EgiReservationCertificateController::class, 'generatePostMintCertificate'])
+        ->name('mint.certificate.generate');
 });
 
 
