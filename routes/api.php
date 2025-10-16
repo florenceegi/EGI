@@ -233,3 +233,25 @@ Route::prefix('webhooks')->name('api.webhooks.')->group(function () {
     Route::get('/health', [PspWebhookController::class, 'health'])
         ->name('health');
 });
+
+/*
+|--------------------------------------------------------------------------
+| N.A.T.A.N. Agent API Routes (Bearer Token Authentication)
+|--------------------------------------------------------------------------
+|
+| API endpoints for NATAN agent metadata submission.
+| Authentication: Bearer token (natan.agent middleware)
+| Rate limiting: 100 requests per minute per PA entity
+|
+| Security: API key validation, role check (pa_entity), audit logging
+*/
+
+Route::prefix('pa/acts')->name('api.pa.acts.')->middleware(['natan.agent', 'throttle:100,1'])->group(function () {
+    // Submit PA act metadata (no file upload, metadata-only)
+    Route::post('/metadata', [App\Http\Controllers\Api\PaActApiController::class, 'storeMetadata'])
+        ->name('metadata.store');
+    
+    // Get job processing status
+    Route::get('/jobs/{jobId}/status', [App\Http\Controllers\Api\PaActApiController::class, 'getJobStatus'])
+        ->name('jobs.status');
+});
