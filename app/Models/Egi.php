@@ -122,6 +122,9 @@ class Egi extends Model
         'pa_protocol_number',   // PA Acts: Protocol number (e.g., 12345/2025)
         'pa_protocol_date',     // PA Acts: Protocol date
         'pa_public_code',       // PA Acts: Public verification code (VER-XXXXXXXXXX)
+        'pa_file_path',         // PA Acts: Original file path on PA server (reference only)
+        'pa_signature_valid',   // PA Acts: Digital signature validation result
+        'pa_signature_date',    // PA Acts: Digital signature timestamp
         'pa_anchored',          // PA Acts: Blockchain anchored flag
         'pa_anchored_at',       // PA Acts: Blockchain anchored timestamp
         'blockchain_txid',      // Blockchain transaction ID (PA anchoring, Creator audit)
