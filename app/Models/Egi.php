@@ -144,6 +144,7 @@ class Egi extends Model
         'rebind',
         'file_crypt',
         'file_hash',
+        'file_size',
         'file_IPFS',
         'file_mime',
         'status',

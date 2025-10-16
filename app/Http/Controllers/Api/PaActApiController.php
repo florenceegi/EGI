@@ -147,11 +147,14 @@ class PaActApiController extends Controller
                 'file_hash' => $validated['file_hash'],
                 'file_size' => $validated['file_size'],
                 'status' => 'pending',
-                'agent_metadata' => array_merge($validated['metadata'] ?? [], [
-                    'signature_valid' => $validated['signature_valid'],
-                    'signature_date' => $validated['signature_date'] ?? null,
-                    'signature_subject' => $validated['signature_subject'] ?? null,
-                ]),
+                'agent_metadata' => array_merge(
+                    is_array($validated['metadata'] ?? null) ? $validated['metadata'] : [],
+                    [
+                        'signature_valid' => $validated['signature_valid'],
+                        'signature_date' => $validated['signature_date'] ?? null,
+                        'signature_subject' => $validated['signature_subject'] ?? null,
+                    ]
+                ),
             ]);
 
             $this->logger->info('NATAN_API_JOB_CREATED', [
