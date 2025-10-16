@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AuthenticateNatanAgent;
 use App\Http\Middleware\CheckCollectionPermission;
 use App\Http\Middleware\CheckPendingWallet;
 use App\Http\Middleware\CreatorNicknameRedirect;
@@ -42,6 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission'   => RoleOrPermissionMiddleware::class,
             'check.pending.wallet' => CheckPendingWallet::class,
             'creator.nickname'     => CreatorNicknameRedirect::class,
+            'natan.agent'          => AuthenticateNatanAgent::class,
         ]);
 
         $middleware->web(replace: [
