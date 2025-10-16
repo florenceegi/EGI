@@ -10,7 +10,37 @@
                 <p class="text-gray-600">
                     {{ __('mint.header_description') }}
                 </p>
+
+                {{-- DEBUG PANEL - Mostra log salvati in localStorage --}}
+                <div id="debug-panel" class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg" style="display: none;">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-sm font-bold text-yellow-900">🐛 DEBUG LOG (ultimo mint)</h3>
+                        <button onclick="document.getElementById('debug-panel').style.display='none'" class="text-yellow-600 hover:text-yellow-900">✖</button>
+                    </div>
+                    <pre id="debug-content" class="text-xs bg-white p-2 rounded overflow-auto max-h-40"></pre>
+                </div>
             </div>
+
+            <script>
+                // Mostra debug panel se ci sono log salvati
+                const debugStep = localStorage.getItem('mint_debug_step');
+                if (debugStep) {
+                    const debugPanel = document.getElementById('debug-panel');
+                    const debugContent = document.getElementById('debug-content');
+                    
+                    const debugInfo = {
+                        step: localStorage.getItem('mint_debug_step'),
+                        data: localStorage.getItem('mint_debug_data'),
+                        response_status: localStorage.getItem('mint_debug_response_status'),
+                        result: localStorage.getItem('mint_debug_result'),
+                        error: localStorage.getItem('mint_debug_error'),
+                        exception: localStorage.getItem('mint_debug_exception')
+                    };
+                    
+                    debugContent.textContent = JSON.stringify(debugInfo, null, 2);
+                    debugPanel.style.display = 'block';
+                }
+            </script>
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 {{-- COLUMN 1: EGI Preview + Blockchain Info --}}
@@ -923,6 +953,10 @@
                  * Update UI to show minted status (generate certificate + show success state)
                  */
                 async function updateUIToMinted(data) {
+                    console.log('[MINT] 🎉 updateUIToMinted called with data:', data);
+                    localStorage.setItem('mint_debug_step', 'updateUIToMinted_called');
+                    localStorage.setItem('mint_debug_data', JSON.stringify(data));
+
                     // Remove processing badge
                     const processingBadge = document.querySelector('.border-blue-200.bg-blue-50');
                     if (processingBadge) {
@@ -936,10 +970,16 @@
                         egiTitle: '{{ $egi->title }}'
                     });
 
+                    console.log('[MINT] 📋 Showing post-mint loading state');
+                    localStorage.setItem('mint_debug_step', 'showing_loading');
+
                     // Show loading state
                     showPostMintLoading();
 
                     try {
+                        console.log('[MINT] 📞 Calling certificate generation endpoint');
+                        localStorage.setItem('mint_debug_step', 'calling_certificate_endpoint');
+
                         // Call endpoint to generate certificate + payment breakdown
                         const response = await fetch(`/mint/{{ $egi->id }}/certificate/generate`, {
                             method: 'POST',
@@ -950,19 +990,30 @@
                             }
                         });
 
+                        console.log('[MINT] 📨 Certificate endpoint response status:', response.status);
+                        localStorage.setItem('mint_debug_step', 'certificate_response_received');
+                        localStorage.setItem('mint_debug_response_status', response.status);
+
                         const result = await response.json();
+                        console.log('[MINT] 📦 Certificate endpoint result:', result);
+                        localStorage.setItem('mint_debug_result', JSON.stringify(result));
 
                         if (result.success) {
+                            console.log('[MINT] ✅ Certificate generated successfully, showing success UI');
+                            localStorage.setItem('mint_debug_step', 'showing_success_ui');
                             // Show post-mint success UI with certificate + payment breakdown
                             showPostMintSuccess(result.data);
                         } else {
-                            // Certificate generation failed, but mint succeeded - show partial success
-                            console.error('Certificate generation failed:', result.message);
+                            console.error('[MINT] ⚠️ Certificate generation failed:', result.message);
+                            localStorage.setItem('mint_debug_step', 'certificate_failed');
+                            localStorage.setItem('mint_debug_error', result.message);
                             showPostMintPartialSuccess(data);
                         }
 
                     } catch (error) {
-                        console.error('Failed to generate certificate:', error);
+                        console.error('[MINT] ❌ Failed to generate certificate:', error);
+                        localStorage.setItem('mint_debug_step', 'exception_caught');
+                        localStorage.setItem('mint_debug_exception', error.message);
                         // Certificate generation failed, but mint succeeded - show partial success
                         showPostMintPartialSuccess(data);
                     }
@@ -1176,20 +1227,20 @@
                             <h3 class="text-lg font-semibold text-green-900">{{ __('mint.notification.success_title') }}</h3>
                             <p class="mt-1 text-sm text-green-800">{{ __('mint.notification.success_message') }}</p>
                             ${data.asaId ? `
-                                                                            <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
-                                                                                <div class="flex items-center justify-between mb-2 text-sm">
-                                                                                    <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                                                                    <span class="font-mono font-bold text-green-900">${data.asaId}</span>
-                                                                                </div>
-                                                                                <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
-                                                                                    class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                                    </svg>
-                                                                                    {{ __('mint.notification.view_blockchain') }}
-                                                                                </a>
-                                                                            </div>
-                                                                        ` : ''}
+                                                                                    <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
+                                                                                        <div class="flex items-center justify-between mb-2 text-sm">
+                                                                                            <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
+                                                                                            <span class="font-mono font-bold text-green-900">${data.asaId}</span>
+                                                                                        </div>
+                                                                                        <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
+                                                                                            class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
+                                                                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                            </svg>
+                                                                                            {{ __('mint.notification.view_blockchain') }}
+                                                                                        </a>
+                                                                                    </div>
+                                                                                ` : ''}
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-green-600 transition-colors hover:text-green-900">
@@ -1262,12 +1313,12 @@
                                 </thead>
                                 <tbody>
                                     ${data.payment_breakdown.map(dist => `
-                                                <tr class="border-b border-gray-200">
-                                                    <td class="py-2 font-medium text-gray-900">${dist.recipient}</td>
-                                                    <td class="py-2 text-gray-700">${dist.role}</td>
-                                                    <td class="py-2 font-semibold text-right text-gray-900">&euro; ${dist.amount_eur}</td>
-                                                </tr>
-                                            `).join('')}
+                                                        <tr class="border-b border-gray-200">
+                                                            <td class="py-2 font-medium text-gray-900">${dist.recipient}</td>
+                                                            <td class="py-2 text-gray-700">${dist.role}</td>
+                                                            <td class="py-2 font-semibold text-right text-gray-900">&euro; ${dist.amount_eur}</td>
+                                                        </tr>
+                                                    `).join('')}
                                 </tbody>
                             </table>
                         </div>

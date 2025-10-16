@@ -38,6 +38,7 @@ use App\Services\Menu\Items\PACoAMenu;
 use App\Services\Menu\Items\PAInspectorsMenu;
 use App\Services\Menu\Items\PAActsMenu;
 use App\Services\Menu\Items\PAStatisticsMenu;
+use App\Services\Menu\Items\PABatchProcessorMenu;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -248,6 +249,7 @@ class ContextMenus
                     new PAHeritageMenu(),
                     new PAActsMenu(),
                     new PAStatisticsMenu(),
+                    new PABatchProcessorMenu(),
                     new PACoAMenu(),
                     new PAInspectorsMenu(),
                 ]);
