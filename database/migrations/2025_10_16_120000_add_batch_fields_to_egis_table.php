@@ -38,6 +38,9 @@ return new class extends Migration
 
             $table->unsignedBigInteger('file_size')->nullable()->after('file_hash')
                 ->comment('File size in bytes');
+
+            $table->longText('extracted_text')->nullable()->after('jsonMetadata')
+                ->comment('Full extracted text from PA act (for AI processing)');
         });
     }
 
@@ -49,7 +52,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('egis', function (Blueprint $table) {
-            $table->dropColumn(['pa_file_path', 'pa_signature_valid', 'pa_signature_date', 'file_size']);
+            $table->dropColumn(['pa_file_path', 'pa_signature_valid', 'pa_signature_date', 'file_size', 'extracted_text']);
         });
     }
 };
