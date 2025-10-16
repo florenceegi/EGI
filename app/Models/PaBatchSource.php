@@ -220,4 +220,3 @@ class PaBatchSource extends Model
         return round(($this->stats_failed / $this->stats_total) * 100, 2);
     }
 }
-

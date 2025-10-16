@@ -17,6 +17,35 @@ return [
     'period_year' => 'Year',
     'period_all' => 'All Time',
 
+    // Phase 2: Dual Source Tabs
+    'tabs_navigation' => 'Statistics Navigation',
+    'mints_tab' => 'Mints (Actual Revenue)',
+    'reservations_tab' => 'Reservations (Forecast)',
+    'comparison_tab' => 'Comparison',
+
+    // Phase 2: Mint Statistics
+    'mint_statistics' => 'Mint Statistics',
+    'total_mints' => 'Total Mints',
+    'total_revenue' => 'Total Revenue',
+    'total_revenue_eur' => 'Total Revenue (EUR)',
+    'avg_mint_price' => 'Average Mint Price',
+    'mints_count' => 'Mints Count',
+    'mint_revenue_by_collection' => 'Mint Revenue by Collection',
+    'mint_revenue_by_user_type' => 'Revenue by User Type',
+    'no_mint_data' => 'No completed mints yet',
+
+    // Phase 2: Dual Source Comparison
+    'conversion_rate' => 'Conversion Rate',
+    'conversion_rate_description' => 'Percentage of reservations converted to mints',
+    'forecast_vs_reality' => 'Forecast vs Reality',
+    'forecast_eur' => 'Forecast (EUR)',
+    'reality_eur' => 'Reality (EUR)',
+    'delta_eur' => 'Delta (EUR)',
+    'delta_percentage' => 'Delta %',
+    'comparison_by_collection' => 'Comparison by Collection',
+    'reservations_count' => 'Reservations',
+    'mints_count_short' => 'Mints',
+
     // KPI Labels
     'total_likes' => 'Total Likes',
     'total_reservations' => 'Total Reservations',

@@ -28,11 +28,11 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             // API key for NATAN agent authentication (encrypted, only for PA entities)
             $table->text('natan_api_key')->nullable()->after('remember_token');
-            
+
             // API key metadata
             $table->timestamp('natan_api_key_generated_at')->nullable()->after('natan_api_key');
             $table->timestamp('natan_api_key_last_used_at')->nullable()->after('natan_api_key_generated_at');
-            
+
             // Index for performance
             $table->index('natan_api_key_last_used_at');
         });
@@ -51,4 +51,3 @@ return new class extends Migration
         });
     }
 };
-

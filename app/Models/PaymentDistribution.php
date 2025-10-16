@@ -117,6 +117,33 @@ class PaymentDistribution extends Model {
     // ===== SCOPES FOR ANALYTICS =====
 
     /**
+     * Scope for reservation-based distributions
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeReservationSource(Builder $query): Builder {
+        return $query->where('source_type', 'reservation');
+    }
+
+    /**
+     * Scope for mint-based distributions (Phase 2)
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeMintSource(Builder $query): Builder {
+        return $query->where('source_type', 'mint');
+    }
+
+    /**
+     * Scope for confirmed distributions (payment completed)
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeConfirmed(Builder $query): Builder {
+        return $query->where('distribution_status', DistributionStatusEnum::CONFIRMED);
+    }
+
+    /**
      * Scope for specific user type
      * @param Builder $query
      * @param UserTypeEnum $userType

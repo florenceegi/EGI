@@ -27,28 +27,28 @@ return new class extends Migration
     {
         Schema::create('pa_batch_jobs', function (Blueprint $table) {
             $table->id();
-            
+
             // Relationships
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->onDelete('cascade')
                 ->comment('PA entity user who owns this job');
-            
+
             $table->foreignId('source_id')
                 ->constrained('pa_batch_sources')
                 ->onDelete('cascade');
-            
+
             $table->foreignId('egi_id')
                 ->nullable()
                 ->constrained('egis')
                 ->onDelete('set null');
-            
+
             // File identification (privacy-safe)
             $table->string('file_name', 255); // Just filename, no path
             $table->text('file_path')->nullable(); // PA-side path (for reference)
             $table->char('file_hash', 64)->unique(); // SHA256
             $table->unsignedBigInteger('file_size'); // Bytes
-            
+
             // Processing status
             $table->enum('status', [
                 'pending',
@@ -57,25 +57,25 @@ return new class extends Migration
                 'failed',
                 'duplicate'
             ])->default('pending');
-            
+
             // Retry logic
             $table->unsignedTinyInteger('attempts')->default(0);
             $table->unsignedTinyInteger('max_attempts')->default(3);
-            
+
             // Error tracking (GDPR-sanitized)
             $table->text('last_error')->nullable();
             $table->string('error_code', 50)->nullable(); // Coded error (no PII)
-            
+
             // Timing
             $table->timestamp('processing_started_at')->nullable();
             $table->timestamp('processing_completed_at')->nullable();
             $table->unsignedInteger('processing_duration_seconds')->nullable(); // Cache
-            
+
             // Metadata (JSON from agent)
             $table->json('agent_metadata')->nullable();
-            
+
             $table->timestamps();
-            
+
             // Indexes for performance
             $table->index(['source_id', 'status']);
             $table->index(['user_id', 'status']);
@@ -95,4 +95,3 @@ return new class extends Migration
         Schema::dropIfExists('pa_batch_jobs');
     }
 };
-
