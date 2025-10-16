@@ -778,8 +778,7 @@ class MintController extends Controller {
      * @purpose Called by frontend polling to check if mint is complete
      * @returns JSON with status: minting_queued|minting|minted|failed + blockchain data if minted
      */
-    public function checkMintStatus(int $egiId): JsonResponse
-    {
+    public function checkMintStatus(int $egiId): JsonResponse {
         try {
             $user = Auth::user();
 
@@ -787,8 +786,10 @@ class MintController extends Controller {
             $egi = Egi::with('egiBlockchain')->findOrFail($egiId);
 
             // Verify authorization - user must be the buyer or creator
-            if (!$egi->egiBlockchain || 
-                ($egi->egiBlockchain->buyer_user_id !== $user->id && $egi->creator_id !== $user->id)) {
+            if (
+                !$egi->egiBlockchain ||
+                ($egi->egiBlockchain->buyer_user_id !== $user->id && $egi->creator_id !== $user->id)
+            ) {
                 return response()->json([
                     'status' => 'unauthorized'
                 ], 403);
@@ -824,7 +825,6 @@ class MintController extends Controller {
             }
 
             return response()->json($response);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to check mint status', [
                 'egi_id' => $egiId,
