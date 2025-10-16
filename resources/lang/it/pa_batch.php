@@ -50,4 +50,3 @@ return [
         'completed_at' => 'Completato',
     ],
 ];
-
