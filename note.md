@@ -245,3 +245,17 @@ Tutte le feature critiche per il lancio MVP sono implementate:
 -   ✅ Vista mint completa con utility/traits (buyer transparency)
 
 **Prossima fase**: Priorità Media - Price management + Auction system + Royalty monitor
+
+controllare permessi pa. non deve creare egi.
+weak per mettere in vendita deve autenticarsi strong.
+migrazione da weak a strong.
+
+si deve poter automintare un egi.
+
+controllare funzione di ricerca
+
+il CoA lo devo mintare? 
+sulla vista del mint occorre visualizzare certificato di proprietà. denaro speso. epp a cui si è contribuito e in che misura. denaro inviato a piattaforma,creator,feangette.
+
+
+
