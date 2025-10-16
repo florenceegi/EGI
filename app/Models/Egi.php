@@ -105,6 +105,7 @@ class Egi extends Model
         'key_file',
         'token_EGI',
         'jsonMetadata',
+        'extracted_text', // PA Acts: Full text extracted from PDF/P7M (for AI processing)
         'user_id', // User performing the action (e.g., upload)
         'auction_id',
         'owner_id', // Current owner
