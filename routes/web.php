@@ -96,6 +96,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/mint/process', [App\Http\Controllers\MintController::class, 'processMint'])
         ->name('mint.process');
 
+    // Mint status polling endpoint (AJAX)
+    Route::get('/mint/status/{egiId}', [App\Http\Controllers\MintController::class, 'checkMintStatus'])
+        ->name('mint.status');
+
     // Phase 2: Direct mint route (dual path: mint OR reserve)
     Route::get('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'showDirectMint'])
         ->name('egi.mint-direct');

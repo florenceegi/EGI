@@ -6,6 +6,7 @@ use App\Http\Controllers\PA\NatanChatController;
 use App\Http\Controllers\PaActs\PaActUploadController;
 use App\Http\Controllers\PaActs\PaActController;
 use App\Http\Controllers\PaActs\PaActPublicController;
+use App\Http\Controllers\PaActs\PaBatchSourceController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -118,6 +119,28 @@ Route::prefix('pa')
             Route::post('/upload', [PaActUploadController::class, 'handleUpload'])->name('acts.upload.post');
             Route::post('/{egi}/force-tokenize', [PaActController::class, 'forceTokenize'])->name('acts.force_tokenize');
             Route::get('/{egi}', [PaActController::class, 'show'])->name('acts.show');
+        });
+
+        /**
+         * BATCH PROCESSING MANAGEMENT
+         *
+         * Routes for managing batch sources (monitored directories)
+         * and viewing processing jobs status
+         *
+         * Features:
+         * - CRUD operations for batch sources
+         * - Job monitoring and status tracking
+         * - Toggle source active/paused status
+         */
+        Route::prefix('/batch')->name('batch.')->group(function () {
+            Route::get('/', [PaBatchSourceController::class, 'index'])->name('index');
+            Route::get('/create', [PaBatchSourceController::class, 'create'])->name('create');
+            Route::post('/', [PaBatchSourceController::class, 'store'])->name('store');
+            Route::get('/{id}', [PaBatchSourceController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [PaBatchSourceController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [PaBatchSourceController::class, 'update'])->name('update');
+            Route::delete('/{id}', [PaBatchSourceController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/toggle-status', [PaBatchSourceController::class, 'toggleStatus'])->name('toggle_status');
         });
 
         /**
