@@ -83,7 +83,7 @@ class AuthenticateNatanAgent
         foreach ($users as $user) {
             try {
                 $decryptedKey = Crypt::decryptString($user->natan_api_key);
-                
+
                 if (hash_equals($decryptedKey, $token)) {
                     $authenticatedUser = $user;
                     break;
@@ -146,4 +146,3 @@ class AuthenticateNatanAgent
         return $next($request);
     }
 }
-
