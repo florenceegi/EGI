@@ -104,36 +104,29 @@ class PaActApiController extends Controller
 
         $validated = $validator->validated();
 
-        // 3. Check duplicate (by hash)
+        // 3. Check duplicate (by hash in EGI or existing PaBatchJob)
         $existingEgi = Egi::where('file_hash', $validated['file_hash'])
             ->where('owner_id', $user->id)
             ->first();
 
-        if ($existingEgi) {
+        $existingJob = PaBatchJob::where('file_hash', $validated['file_hash'])
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($existingEgi || $existingJob) {
             $this->logger->info('NATAN_API_DUPLICATE_DETECTED', [
                 'user_id' => $user->id,
                 'file_hash' => $validated['file_hash'],
-                'existing_egi_id' => $existingEgi->id,
-            ]);
-
-            // Create job as duplicate
-            PaBatchJob::create([
-                'user_id' => $user->id,
-                'source_id' => 1, // TODO: Get from request or default
-                'egi_id' => $existingEgi->id,
-                'file_name' => $validated['file_name'],
-                'file_path' => $validated['file_path'] ?? null,
-                'file_hash' => $validated['file_hash'],
-                'file_size' => $validated['file_size'],
-                'status' => 'duplicate',
-                'agent_metadata' => $validated['metadata'] ?? null,
+                'existing_egi_id' => $existingEgi->id ?? null,
+                'existing_job_id' => $existingJob->id ?? null,
             ]);
 
             return response()->json([
                 'status' => 'duplicate',
                 'message' => __('pa_batch.api.duplicate'),
-                'egi_id' => $existingEgi->id,
-                'verification_code' => $existingEgi->pa_public_code,
+                'egi_id' => $existingEgi->id ?? null,
+                'job_id' => $existingJob->id ?? null,
+                'verification_code' => $existingEgi->pa_public_code ?? null,
             ], 200);
         }
 
@@ -163,6 +156,14 @@ class PaActApiController extends Controller
                 'file_hash' => $validated['file_hash'],
             ]);
         } catch (\Exception $e) {
+            \Log::error('NATAN_API_JOB_CREATE_FAILED DETAIL', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             $this->logger->error('NATAN_API_JOB_CREATE_FAILED', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
@@ -171,6 +172,7 @@ class PaActApiController extends Controller
             return response()->json([
                 'error' => 'Internal error',
                 'message' => __('pa_batch.api.job_create_failed'),
+                'debug' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
 
@@ -184,8 +186,8 @@ class PaActApiController extends Controller
                 'collection_id' => 1, // Default collection (PA acts don't use collections)
                 'owner_id' => $user->id,
                 'user_id' => $user->id,
-                'title' => $docInfo['title'] ?? $validated['file_name'],
-                'description' => $docInfo['description'] ?? null,
+                'title' => \Str::limit($docInfo['title'] ?? $validated['file_name'], 60, ''),
+                'description' => \Str::limit($docInfo['description'] ?? '', 255, '...'),
                 'file_hash' => $validated['file_hash'],
                 'file_size' => $validated['file_size'],
                 'pa_file_path' => $validated['file_path'] ?? null,
@@ -197,6 +199,7 @@ class PaActApiController extends Controller
                 'pa_public_code' => $this->generateVerificationCode(),
                 'status' => 'published',
                 'is_published' => true,
+                'extracted_text' => $validated['extracted_text'], // Store full text for AI
                 'jsonMetadata' => [
                     'pa_act' => [
                         'extracted_text' => substr($validated['extracted_text'], 0, 5000), // Limit for storage
