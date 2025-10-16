@@ -97,8 +97,62 @@
 
             {{-- Statistics Content --}}
             <div id="statistics-content" class="hidden">
-                {{-- Portfolio Statistics Section - I COMPONENTI ESISTENTI SPOSTATI DAL PORTFOLIO --}}
+                {{-- Phase 2: Dual Source Navigation Tabs --}}
                 <div class="mb-8">
+                    <div class="flex space-x-2 rounded-xl bg-gray-800 bg-opacity-50 p-2 backdrop-blur-sm">
+                        <button
+                            class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
+                            data-tab="mints"
+                            role="tab"
+                            aria-selected="true"
+                            aria-controls="mints-panel">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>{{ __('statistics.mints_tab') }}</span>
+                        </button>
+                        <button
+                            class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
+                            data-tab="reservations"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="reservations-panel">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <span>{{ __('statistics.reservations_tab') }}</span>
+                        </button>
+                        <button
+                            class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
+                            data-tab="comparison"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="comparison-panel">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                            <span>{{ __('statistics.comparison_tab') }}</span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Mints Tab Panel --}}
+                <div id="mints-panel" class="stats-tab-panel" role="tabpanel" aria-labelledby="mints-tab">
+                    @include('dashboard.statistics.partials.mints-statistics')
+                </div>
+
+                {{-- Reservations Tab Panel --}}
+                <div id="reservations-panel" class="stats-tab-panel hidden" role="tabpanel" aria-labelledby="reservations-tab">
+                    @include('dashboard.statistics.partials.reservations-statistics')
+                </div>
+
+                {{-- Comparison Tab Panel --}}
+                <div id="comparison-panel" class="stats-tab-panel hidden" role="tabpanel" aria-labelledby="comparison-tab">
+                    @include('dashboard.statistics.partials.comparison-statistics')
+                </div>
+
+                {{-- Portfolio Statistics Section - I COMPONENTI ESISTENTI SPOSTATI DAL PORTFOLIO --}}
+                <div class="mb-8 mt-12">
                     <h2 class="mb-6 flex items-center text-2xl font-bold text-white">
                         <svg class="text-oro-fiorentino mr-3 h-8 w-8" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -177,11 +231,36 @@
         background-color: rgb(79, 70, 229);
         border-color: rgb(79, 70, 229);
     }
+
+    /* Stats Tab Buttons Styling */
+    .stats-tab-btn {
+        background-color: rgba(75, 85, 99, 0.3);
+        border: 1px solid rgba(156, 163, 175, 0.2);
+        color: rgb(209, 213, 219);
+    }
+
+    .stats-tab-btn:hover {
+        background-color: rgba(212, 165, 116, 0.2);
+        border-color: rgba(212, 165, 116, 0.3);
+        color: white;
+    }
+
+    .stats-tab-btn[aria-selected="true"] {
+        background: linear-gradient(135deg, #D4A574 0%, #B8936A 100%);
+        border-color: #D4A574;
+        color: white;
+        box-shadow: 0 4px 14px 0 rgba(212, 165, 116, 0.4);
+    }
+
+    .stats-tab-btn[aria-selected="true"]:hover {
+        background: linear-gradient(135deg, #C09563 0%, #A88259 100%);
+    }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let statisticsData = null;
+        let currentTab = 'mints';
 
         // Get period from URL parameter or use default
         const urlParams = new URLSearchParams(window.location.search);
@@ -195,12 +274,21 @@
         const refreshButton = document.getElementById('refresh-stats');
         const lastUpdated = document.getElementById('last-updated');
         const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
+        const statsTabButtons = document.querySelectorAll('.stats-tab-btn');
 
         // Set active button based on current period
         updateActiveTimeFilter();
 
         // Load statistics on page load
         loadStatistics();
+
+        // Stats tab handlers (Mints/Reservations/Comparison)
+        statsTabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                switchStatsTab(tabName);
+            });
+        });
 
         // Time filter button handlers
         timeFilterButtons.forEach(button => {
@@ -222,6 +310,25 @@
         refreshButton?.addEventListener('click', function() {
             loadStatistics(true);
         });
+
+        /**
+         * Switch between stats tabs
+         */
+        function switchStatsTab(tabName) {
+            currentTab = tabName;
+
+            // Update tab buttons
+            statsTabButtons.forEach(btn => {
+                const isActive = btn.getAttribute('data-tab') === tabName;
+                btn.setAttribute('aria-selected', isActive);
+            });
+
+            // Update tab panels
+            document.querySelectorAll('.stats-tab-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            document.getElementById(`${tabName}-panel`)?.classList.remove('hidden');
+        }
 
         /**
          * Update active time filter button
@@ -289,8 +396,211 @@
          * Render statistics data to UI
          */
         function renderStatistics(data) {
+            // Render Mint Statistics
+            renderMintStatistics(data.mints);
+
+            // Render Reservation Statistics
+            renderReservationStatistics(data.reservations, data.amounts, data.epp_potential);
+
+            // Render Comparison Statistics
+            renderComparisonStatistics(data.dual_source_comparison);
+
             // Portfolio statistics are handled by Laravel components
-            // No client-side rendering needed
+        }
+
+        /**
+         * Render Mint Statistics Tab
+         */
+        function renderMintStatistics(mints) {
+            if (!mints) return;
+
+            // Update KPI cards
+            document.getElementById('mint-total-mints').textContent = mints.total_mints || 0;
+            document.getElementById('mint-total-revenue').textContent = formatCurrency(mints.total_revenue_eur || 0);
+            
+            const avgPrice = mints.total_mints > 0 ? mints.total_revenue_eur / mints.total_mints : 0;
+            document.getElementById('mint-avg-price').textContent = formatCurrency(avgPrice);
+            document.getElementById('mint-collections-count').textContent = mints.by_collection?.length || 0;
+
+            // Render by collection
+            const byCollectionContainer = document.getElementById('mint-by-collection-container');
+            if (mints.by_collection && mints.by_collection.length > 0) {
+                byCollectionContainer.innerHTML = mints.by_collection.map(collection => `
+                    <div class="flex items-center justify-between rounded-lg bg-black bg-opacity-20 p-4">
+                        <div class="flex-1">
+                            <h4 class="font-medium text-white">${escapeHtml(collection.collection_name)}</h4>
+                            <div class="mt-1 flex items-center space-x-4 text-sm text-gray-400">
+                                <span>${collection.mints_count} mints</span>
+                                <span>•</span>
+                                <span>Avg: ${formatCurrency(collection.avg_price_eur)}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-verde-rinascita">${formatCurrency(collection.revenue_eur)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                byCollectionContainer.innerHTML = '<div class="text-center text-gray-400">{{ __('statistics.no_mint_data') }}</div>';
+            }
+
+            // Render by user type
+            const byUserTypeContainer = document.getElementById('mint-by-user-type-container');
+            if (mints.by_user_type && mints.by_user_type.length > 0) {
+                byUserTypeContainer.innerHTML = mints.by_user_type.map(userType => {
+                    const colorClass = getUserTypeColor(userType.user_type);
+                    return `
+                        <div class="flex items-center justify-between rounded-lg bg-black bg-opacity-20 p-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full ${colorClass}">
+                                    <span class="text-sm font-bold uppercase text-white">${userType.user_type.substring(0, 2)}</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-white">${escapeHtml(userType.user_type)}</h4>
+                                    <div class="text-sm text-gray-400">${userType.distributions_count} distributions</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xl font-bold text-white">${formatCurrency(userType.amount_eur)}</div>
+                                <div class="text-sm text-gray-400">${userType.percentage_of_total}%</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                byUserTypeContainer.innerHTML = '<div class="text-center text-gray-400">{{ __('statistics.no_mint_data') }}</div>';
+            }
+        }
+
+        /**
+         * Render Reservation Statistics Tab
+         */
+        function renderReservationStatistics(reservations, amounts, eppPotential) {
+            if (!reservations) return;
+
+            // Update KPI cards
+            document.getElementById('reservation-total').textContent = reservations.total || 0;
+            document.getElementById('reservation-forecast').textContent = formatCurrency(amounts?.total_eur || 0);
+            document.getElementById('reservation-strong').textContent = reservations.strong || 0;
+            document.getElementById('reservation-weak').textContent = reservations.weak || 0;
+
+            // Render by collection
+            const byCollectionContainer = document.getElementById('reservation-by-collection-container');
+            if (reservations.by_collection && reservations.by_collection.length > 0) {
+                byCollectionContainer.innerHTML = reservations.by_collection.map(collection => `
+                    <div class="flex items-center justify-between rounded-lg bg-black bg-opacity-20 p-4">
+                        <div class="flex-1">
+                            <h4 class="font-medium text-white">${escapeHtml(collection.collection_name)}</h4>
+                            <div class="mt-1 flex items-center space-x-4 text-sm text-gray-400">
+                                <span>${collection.total_reservations} reservations</span>
+                                <span>•</span>
+                                <span>${collection.strong_reservations} strong</span>
+                                <span>•</span>
+                                <span>${collection.weak_reservations} weak</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                byCollectionContainer.innerHTML = '<div class="text-center text-gray-400">{{ __('statistics.no_reservations') }}</div>';
+            }
+
+            // Render EPP potential
+            const eppContainer = document.getElementById('reservation-epp-container');
+            if (eppPotential?.by_collection && eppPotential.by_collection.length > 0) {
+                eppContainer.innerHTML = eppPotential.by_collection.map(collection => `
+                    <div class="flex items-center justify-between rounded-lg bg-black bg-opacity-20 p-4">
+                        <div class="flex-1">
+                            <h4 class="font-medium text-white">${escapeHtml(collection.collection_name)}</h4>
+                            <div class="mt-1 text-sm text-gray-400">EPP ${collection.epp_percentage}%</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-verde-rinascita">${formatCurrency(collection.epp_quota)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                eppContainer.innerHTML = '<div class="text-center text-gray-400">{{ __('statistics.no_epp_data') }}</div>';
+            }
+        }
+
+        /**
+         * Render Comparison Statistics Tab
+         */
+        function renderComparisonStatistics(comparison) {
+            if (!comparison) return;
+
+            // Update KPI cards
+            document.getElementById('comparison-conversion-rate').textContent = comparison.conversion_rate + '%';
+            document.getElementById('comparison-forecast').textContent = formatCurrency(comparison.forecast_vs_reality?.forecast_eur || 0);
+            document.getElementById('comparison-reality').textContent = formatCurrency(comparison.forecast_vs_reality?.reality_eur || 0);
+            
+            const deltaEur = comparison.forecast_vs_reality?.delta_eur || 0;
+            const deltaPercentage = comparison.forecast_vs_reality?.delta_percentage || 0;
+            const deltaElement = document.getElementById('comparison-delta');
+            const deltaPercentageElement = document.getElementById('comparison-delta-percentage');
+            
+            deltaElement.textContent = formatCurrency(Math.abs(deltaEur));
+            deltaPercentageElement.textContent = Math.abs(deltaPercentage) + '%';
+            
+            // Color based on delta (positive = green, negative = red)
+            if (deltaEur >= 0) {
+                deltaElement.classList.remove('text-red-400');
+                deltaElement.classList.add('text-verde-rinascita');
+            } else {
+                deltaElement.classList.remove('text-verde-rinascita');
+                deltaElement.classList.add('text-red-400');
+            }
+
+            // Render by collection table
+            const tableBody = document.querySelector('#comparison-by-collection-table tbody');
+            if (comparison.by_collection && comparison.by_collection.length > 0) {
+                tableBody.innerHTML = comparison.by_collection.map(collection => {
+                    const deltaClass = collection.delta_eur >= 0 ? 'text-verde-rinascita' : 'text-red-400';
+                    return `
+                        <tr class="hover:bg-gray-700 hover:bg-opacity-30">
+                            <td class="px-4 py-3 font-medium text-white">${escapeHtml(collection.collection_name)}</td>
+                            <td class="px-4 py-3 text-right">${collection.reservations_count}</td>
+                            <td class="px-4 py-3 text-right">${collection.mints_count}</td>
+                            <td class="px-4 py-3 text-right">${formatCurrency(collection.forecast_eur)}</td>
+                            <td class="px-4 py-3 text-right">${formatCurrency(collection.reality_eur)}</td>
+                            <td class="px-4 py-3 text-right ${deltaClass}">${formatCurrency(collection.delta_eur)}</td>
+                            <td class="px-4 py-3 text-right ${deltaClass}">${collection.delta_percentage}%</td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-400">
+                            {{ __('statistics.no_data') }}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        /**
+         * Get color class for user type
+         */
+        function getUserTypeColor(userType) {
+            const colors = {
+                'creator': 'bg-gradient-to-r from-oro-fiorentino to-orange-600',
+                'epp': 'bg-gradient-to-r from-verde-rinascita to-green-700',
+                'collector': 'bg-gradient-to-r from-blu-algoritmo to-blue-700',
+                'commissioner': 'bg-gradient-to-r from-viola-innovazione to-purple-700',
+            };
+            return colors[userType.toLowerCase()] || 'bg-gradient-to-r from-gray-500 to-gray-600';
+        }
+
+        /**
+         * Format currency
+         */
+        function formatCurrency(value) {
+            return '€' + parseFloat(value).toLocaleString('it-IT', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         }
 
         // Utility functions

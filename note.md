@@ -254,8 +254,5 @@ si deve poter automintare un egi.
 
 controllare funzione di ricerca
 
-il CoA lo devo mintare? 
+il CoA lo devo mintare?
 sulla vista del mint occorre visualizzare certificato di proprietà. denaro speso. epp a cui si è contribuito e in che misura. denaro inviato a piattaforma,creator,feangette.
-
-
-

@@ -170,12 +170,18 @@ class StatisticsService {
         $amountStats = $this->getAmountStatistics($reservationsStats['valid_reservations_for_amount']);
         $eppPotentialStats = $this->getEppPotentialStatistics($reservationsStats['valid_reservations_for_amount']);
         $portfolioStats = $this->getPortfolioStatistics(); // Nuove statistiche portfolio
+        $mintStats = $this->getMintStatistics(); // Phase 2: Mint-based statistics
+        $comparisonStats = $this->getDualSourceComparison(
+            $reservationsStats['valid_reservations_for_amount'],
+            $mintStats['valid_mints_for_comparison']
+        ); // Phase 2: Compare forecast vs reality
 
         $summary = $this->buildSummaryKPIs(
             $likesStats,
             $reservationsStats,
             $amountStats,
-            $eppPotentialStats
+            $eppPotentialStats,
+            $mintStats
         );
 
         return [
@@ -184,6 +190,8 @@ class StatisticsService {
             'amounts' => $amountStats,
             'epp_potential' => $eppPotentialStats,
             'portfolio' => $portfolioStats, // Aggiunte le statistiche del portfolio
+            'mints' => $mintStats, // Phase 2: Mint statistics
+            'dual_source_comparison' => $comparisonStats, // Phase 2: Forecast vs Reality
             'summary' => $summary,
         ];
     }
@@ -467,14 +475,183 @@ class StatisticsService {
     }
 
     /**
+     * 🎯 Calculates mint-based statistics from payment_distributions (Phase 2)
+     * Filters only CONFIRMED distributions with source_type='mint'
+     * to show real revenue vs reservation forecast
+     *
+     * @return array Mint statistics
+     *
+     * @signature: getMintStatistics(): array
+     * @context: Part of comprehensive statistics calculation
+     * @log: STATS_MINT_CALC - Mint statistics calculation details
+     * @privacy-safe: Aggregates financial data for user's collections only
+     * @data-input: payment_distributions table filtered by user collections
+     * @data-output: Array with total_mints, total_revenue_eur, by_collection, by_user_type
+     */
+    private function getMintStatistics(): array {
+        if (empty($this->userCollectionIds)) {
+            $this->logger->info('User has no collections, returning empty mint stats.', [
+                'user_id' => $this->user->id,
+                'log_category' => 'STATS_MINT_NO_COLLECTIONS'
+            ]);
+            return [
+                'total_mints' => 0,
+                'total_revenue_eur' => 0.0,
+                'by_collection' => [],
+                'by_user_type' => [],
+                'valid_mints_for_comparison' => collect([]),
+            ];
+        }
+
+        // Query payment_distributions with source_type='mint' and CONFIRMED status
+        $mintDistributions = \App\Models\PaymentDistribution::mintSource()
+            ->confirmed()
+            ->whereIn('collection_id', $this->userCollectionIds)
+            ->with(['egi', 'collection', 'user'])
+            ->get();
+
+        $this->logger->info('Mint distributions fetched', [
+            'user_id' => $this->user->id,
+            'distributions_count' => $mintDistributions->count(),
+            'collection_ids' => $this->userCollectionIds,
+            'log_category' => 'STATS_MINT_CALC'
+        ]);
+
+        // Total mints (distinct EGI IDs)
+        $totalMints = $mintDistributions->pluck('egi_id')->unique()->count();
+
+        // Total revenue (sum of all distribution amounts)
+        $totalRevenueEur = $mintDistributions->sum('amount_eur');
+
+        // By Collection
+        $byCollection = $mintDistributions->groupBy('collection_id')->map(function ($distributions, $collectionId) {
+            $collectionName = $distributions->first()->collection->collection_name ?? 'Unknown';
+            $mintsCount = $distributions->pluck('egi_id')->unique()->count();
+            $revenueEur = $distributions->sum('amount_eur');
+
+            return [
+                'collection_id' => $collectionId,
+                'collection_name' => $collectionName,
+                'mints_count' => $mintsCount,
+                'revenue_eur' => (float) $revenueEur,
+                'avg_price_eur' => $mintsCount > 0 ? (float) round($revenueEur / $mintsCount, 2) : 0.0,
+            ];
+        })->values()->all();
+
+        // By User Type (creator, epp, collector, etc.)
+        $byUserType = $mintDistributions->groupBy('user_type')->map(function ($distributions, $userType) use ($totalRevenueEur) {
+            $amountEur = $distributions->sum('amount_eur');
+            $percentageOfTotal = $totalRevenueEur > 0 ? ($amountEur / $totalRevenueEur) * 100 : 0;
+
+            return [
+                'user_type' => $userType->value ?? $userType,
+                'amount_eur' => (float) $amountEur,
+                'percentage_of_total' => (float) round($percentageOfTotal, 2),
+                'distributions_count' => $distributions->count(),
+            ];
+        })->values()->all();
+
+        return [
+            'total_mints' => $totalMints,
+            'total_revenue_eur' => (float) $totalRevenueEur,
+            'by_collection' => $byCollection,
+            'by_user_type' => $byUserType,
+            'valid_mints_for_comparison' => $mintDistributions, // For dual source comparison
+        ];
+    }
+
+    /**
+     * 🎯 Compares reservation forecast with mint reality (Phase 2)
+     * Shows delta between expected revenue (reservations) and actual revenue (mints)
+     *
+     * @param SupportCollection $validReservations Collection of valid reservation objects
+     * @param SupportCollection $validMints Collection of mint distribution objects
+     * @return array Comparison statistics
+     *
+     * @signature: getDualSourceComparison(SupportCollection $validReservations, SupportCollection $validMints): array
+     * @context: Part of comprehensive statistics calculation
+     * @log: STATS_DUAL_COMPARISON - Dual source comparison calculation
+     * @privacy-safe: Aggregates financial data for user's collections only
+     * @data-input: Valid reservations and mint distributions
+     * @data-output: Array with conversion_rate, forecast_vs_reality, by_collection
+     */
+    private function getDualSourceComparison(SupportCollection $validReservations, SupportCollection $validMints): array {
+        // Total amounts
+        $forecastEur = $validReservations->sum('offer_amount_fiat');
+        $realityEur = $validMints->sum('amount_eur');
+        $deltaEur = $realityEur - $forecastEur;
+        $deltaPercentage = $forecastEur > 0 ? ($deltaEur / $forecastEur) * 100 : 0;
+
+        // Conversion rate (mints / reservations)
+        $totalReservations = $validReservations->pluck('egi_id')->unique()->count();
+        $totalMints = $validMints->pluck('egi_id')->unique()->count();
+        $conversionRate = $totalReservations > 0 ? ($totalMints / $totalReservations) * 100 : 0;
+
+        // By Collection comparison
+        $reservationsByCollection = $validReservations->groupBy('collection.id');
+        $mintsByCollection = $validMints->groupBy('collection_id');
+
+        $byCollection = [];
+        $allCollectionIds = $reservationsByCollection->keys()->merge($mintsByCollection->keys())->unique();
+
+        foreach ($allCollectionIds as $collectionId) {
+            $reservations = $reservationsByCollection->get($collectionId, collect([]));
+            $mints = $mintsByCollection->get($collectionId, collect([]));
+
+            $forecastEurColl = $reservations->sum('offer_amount_fiat');
+            $realityEurColl = $mints->sum('amount_eur');
+            $deltaEurColl = $realityEurColl - $forecastEurColl;
+
+            $collectionName = 'Unknown';
+            if ($reservations->isNotEmpty()) {
+                $collectionName = $reservations->first()->collection->collection_name ?? 'Unknown';
+            } elseif ($mints->isNotEmpty()) {
+                $collectionName = $mints->first()->collection->collection_name ?? 'Unknown';
+            }
+
+            $byCollection[] = [
+                'collection_id' => $collectionId,
+                'collection_name' => $collectionName,
+                'forecast_eur' => (float) $forecastEurColl,
+                'reality_eur' => (float) $realityEurColl,
+                'delta_eur' => (float) $deltaEurColl,
+                'delta_percentage' => $forecastEurColl > 0 ? (float) round(($deltaEurColl / $forecastEurColl) * 100, 2) : 0.0,
+                'reservations_count' => $reservations->pluck('egi_id')->unique()->count(),
+                'mints_count' => $mints->pluck('egi_id')->unique()->count(),
+            ];
+        }
+
+        $this->logger->info('Dual source comparison calculated', [
+            'user_id' => $this->user->id,
+            'forecast_eur' => $forecastEur,
+            'reality_eur' => $realityEur,
+            'delta_eur' => $deltaEur,
+            'conversion_rate' => $conversionRate,
+            'log_category' => 'STATS_DUAL_COMPARISON'
+        ]);
+
+        return [
+            'conversion_rate' => (float) round($conversionRate, 2),
+            'forecast_vs_reality' => [
+                'forecast_eur' => (float) $forecastEur,
+                'reality_eur' => (float) $realityEur,
+                'delta_eur' => (float) $deltaEur,
+                'delta_percentage' => (float) round($deltaPercentage, 2),
+            ],
+            'by_collection' => $byCollection,
+        ];
+    }
+
+    /**
      * 🎯 Builds the summary KPIs section from individual statistics components.
      * @param array $likesStats
      * @param array $reservationsStats
      * @param array $amountStats
      * @param array $eppPotentialStats
+     * @param array $mintStats Phase 2: Mint statistics
      * @return array Summary KPIs.
      *
-     * @signature: buildSummaryKPIs(array $likesStats, array $reservationsStats, array $amountStats, array $eppPotentialStats): array
+     * @signature: buildSummaryKPIs(array $likesStats, array $reservationsStats, array $amountStats, array $eppPotentialStats, array $mintStats): array
      * @context: Helper method called internally.
      * @privacy-safe: Uses aggregated data.
      */
@@ -482,7 +659,8 @@ class StatisticsService {
         array $likesStats,
         array $reservationsStats,
         array $amountStats,
-        array $eppPotentialStats
+        array $eppPotentialStats,
+        array $mintStats = []
     ): array {
         return [
             'total_likes' => $likesStats['total'] ?? 0,
@@ -491,7 +669,27 @@ class StatisticsService {
             'epp_quota' => $eppPotentialStats['total_quota_eur'] ?? 0.0,
             'strong_reservations' => $reservationsStats['strong'] ?? 0,
             'collections_count' => count($this->userCollectionIds),
+            // Phase 2: Mint KPIs
+            'total_mints' => $mintStats['total_mints'] ?? 0,
+            'total_revenue_eur' => $mintStats['total_revenue_eur'] ?? 0.0,
+            'conversion_rate' => $this->calculateConversionRate(
+                $reservationsStats['total'] ?? 0,
+                $mintStats['total_mints'] ?? 0
+            ),
         ];
+    }
+
+    /**
+     * 🎯 Calculate conversion rate from reservations to mints
+     * @param int $totalReservations
+     * @param int $totalMints
+     * @return float Conversion rate percentage
+     */
+    private function calculateConversionRate(int $totalReservations, int $totalMints): float {
+        if ($totalReservations === 0) {
+            return 0.0;
+        }
+        return (float) round(($totalMints / $totalReservations) * 100, 2);
     }
 
     /**
