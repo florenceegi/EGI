@@ -228,4 +228,3 @@ class PaBatchSourceController extends Controller
             ->with('success', __('pa_batch.sources.status_updated'));
     }
 }
-
