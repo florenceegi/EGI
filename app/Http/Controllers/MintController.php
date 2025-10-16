@@ -408,7 +408,7 @@ class MintController extends Controller {
      * @param int $id EGI ID
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function showDirectMint(int $id) {
+    public function showDirectMint(int $id, Request $request) {
         try {
             $egi = Egi::findOrFail($id);
 
@@ -416,8 +416,11 @@ class MintController extends Controller {
             $availabilityService = app(\App\Services\EgiAvailabilityService::class);
             $availability = $availabilityService->checkAvailability($egi, Auth::user());
 
-            // Verify user can mint this EGI
-            if (!$availability['can_mint']) {
+            // If success=1 parameter present, skip availability check (coming from mint polling)
+            $isPollingCallback = $request->has('success');
+
+            // Verify user can mint this EGI (skip if coming from mint success callback)
+            if (!$isPollingCallback && !$availability['can_mint']) {
                 $reason = $availability['mint_reason'] ?? 'not_available';
 
                 $this->errorManager->handle('DIRECT_MINT_NOT_AVAILABLE', [
