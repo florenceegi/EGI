@@ -22,6 +22,8 @@ return [
     'mints_tab' => 'Mint (Revenue Reale)',
     'reservations_tab' => 'Prenotazioni (Forecast)',
     'comparison_tab' => 'Confronto',
+    'force_refresh' => 'Aggiorna Dati',
+    'force_refresh_tooltip' => 'Bypassa cache e ricarica dati freschi dal database',
 
     // Phase 2: Mint Statistics
     'mint_statistics' => 'Statistiche Mint',
