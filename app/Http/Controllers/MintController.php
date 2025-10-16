@@ -104,8 +104,8 @@ class MintController extends Controller {
                     $mintStatus = 'completed';
                     $blockchainData = [
                         'asa_id' => $blockchain->asa_id,
-                        'tx_id' => $blockchain->tx_id,
-                        'minted_at' => $blockchain->minted_at,
+                        'tx_id' => $blockchain->blockchain_tx_id,
+                        'minted_at' => $blockchain->minted_at?->format('d/m/Y H:i:s'),
                     ];
                 } elseif (in_array($blockchain->mint_status, ['minting_queued', 'minting'])) {
                     // Mint in progress - show processing badge
@@ -412,15 +412,21 @@ class MintController extends Controller {
         try {
             $egi = Egi::findOrFail($id);
 
+            // Check if user already minted this EGI (allow viewing post-mint)
+            $alreadyMintedByUser = $egi->blockchain
+                && $egi->blockchain->buyer_user_id === Auth::id()
+                && $egi->blockchain->isMinted();
+
             // Check availability using service
             $availabilityService = app(\App\Services\EgiAvailabilityService::class);
             $availability = $availabilityService->checkAvailability($egi, Auth::user());
 
-            // If success=1 parameter present, skip availability check (coming from mint polling)
+            // If success=1 parameter present OR user already minted, skip availability check
             $isPollingCallback = $request->has('success');
+            $canViewPostMint = $isPollingCallback || $alreadyMintedByUser;
 
-            // Verify user can mint this EGI (skip if coming from mint success callback)
-            if (!$isPollingCallback && !$availability['can_mint']) {
+            // Verify user can mint this EGI (skip if coming from mint success callback OR already minted by user)
+            if (!$canViewPostMint && !$availability['can_mint']) {
                 $reason = $availability['mint_reason'] ?? 'not_available';
 
                 $this->errorManager->handle('DIRECT_MINT_NOT_AVAILABLE', [
@@ -466,8 +472,8 @@ class MintController extends Controller {
                     $mintStatus = 'completed';
                     $blockchainData = [
                         'asa_id' => $blockchain->asa_id,
-                        'tx_id' => $blockchain->tx_id,
-                        'minted_at' => $blockchain->minted_at,
+                        'tx_id' => $blockchain->blockchain_tx_id,
+                        'minted_at' => $blockchain->minted_at?->format('d/m/Y H:i:s'),
                     ];
                 } elseif (in_array($blockchain->mint_status, ['minting_queued', 'minting'])) {
                     // Mint in progress - show processing badge

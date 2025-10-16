@@ -94,7 +94,7 @@ Route::middleware('auth')->group(function () {
         ->name('mint.checkout');
 
     // Alternative route with EGI ID in URL (redirects to correct route)
-    Route::get('/mint/{egiId}/checkout', function($egiId) {
+    Route::get('/mint/{egiId}/checkout', function ($egiId) {
         return redirect()->route('mint.checkout', ['egi_id' => $egiId]);
     })->name('mint.checkout.alt');
 
