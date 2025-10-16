@@ -93,6 +93,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/mint/checkout', [App\Http\Controllers\MintController::class, 'showCheckout'])
         ->name('mint.checkout');
 
+    // Alternative route with EGI ID in URL (redirects to correct route)
+    Route::get('/mint/{egiId}/checkout', function($egiId) {
+        return redirect()->route('mint.checkout', ['egi_id' => $egiId]);
+    })->name('mint.checkout.alt');
+
     Route::post('/mint/process', [App\Http\Controllers\MintController::class, 'processMint'])
         ->name('mint.process');
 
