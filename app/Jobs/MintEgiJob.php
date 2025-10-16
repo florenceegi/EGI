@@ -158,12 +158,12 @@ class MintEgiJob implements ShouldQueue {
 
             // 5. Generate blockchain certificate (NUOVO)
             try {
-                $certificatePath = $certificateService->generateBlockchainCertificate($egiBlockchain->fresh());
+                $certificate = $certificateService->generateBlockchainCertificate($egi, $egiBlockchain->fresh());
 
                 $logger->info('Blockchain certificate generated', [
                     'egi_blockchain_id' => $this->egiBlockchainId,
-                    'certificate_path' => $certificatePath,
-                    'certificate_uuid' => $egiBlockchain->certificate_uuid
+                    'certificate_uuid' => $certificate->certificate_uuid,
+                    'certificate_path' => $certificate->pdf_path
                 ]);
             } catch (\Exception $certException) {
                 // Certificate generation failure is NOT blocking - mint already completed
