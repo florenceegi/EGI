@@ -178,6 +178,7 @@ class PaActApiController extends Controller
 
             // Create EGI record
             $egi = Egi::create([
+                'collection_id' => 1, // Default collection (PA acts don't use collections)
                 'owner_id' => $user->id,
                 'user_id' => $user->id,
                 'title' => $docInfo['title'] ?? $validated['file_name'],

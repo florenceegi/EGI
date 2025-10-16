@@ -76,6 +76,9 @@ class User extends Authenticatable implements HasMedia {
         'personal_secret',
         'is_weak_auth',
         'icon_style',
+        'natan_api_key',
+        'natan_api_key_generated_at',
+        'natan_api_key_last_used_at',
     ];
 
     protected $casts = [

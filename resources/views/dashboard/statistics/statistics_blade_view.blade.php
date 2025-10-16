@@ -97,36 +97,49 @@
 
             {{-- Statistics Content --}}
             <div id="statistics-content" class="hidden">
-                {{-- Phase 2: Dual Source Navigation Tabs --}}
+                {{-- Phase 2: Dual Source Navigation Tabs with Force Refresh --}}
                 <div class="mb-8">
-                    <div class="flex space-x-2 rounded-xl bg-gray-800 bg-opacity-50 p-2 backdrop-blur-sm">
-                        <button
-                            class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
-                            data-tab="mints" role="tab" aria-selected="true" aria-controls="mints-panel">
+                    <div class="mb-4 flex items-center justify-between">
+                        <div class="flex flex-1 space-x-2 rounded-xl bg-gray-800 bg-opacity-50 p-2 backdrop-blur-sm">
+                            <button
+                                class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
+                                data-tab="mints" role="tab" aria-selected="true" aria-controls="mints-panel">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{{ __('statistics.mints_tab') }}</span>
+                            </button>
+                            <button
+                                class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
+                                data-tab="reservations" role="tab" aria-selected="false"
+                                aria-controls="reservations-panel">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                <span>{{ __('statistics.reservations_tab') }}</span>
+                            </button>
+                            <button
+                                class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
+                                data-tab="comparison" role="tab" aria-selected="false" aria-controls="comparison-panel">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                <span>{{ __('statistics.comparison_tab') }}</span>
+                            </button>
+                        </div>
+
+                        {{-- Force Refresh Button --}}
+                        <button id="force-refresh-btn"
+                            class="ml-4 flex items-center space-x-2 rounded-lg border border-oro-fiorentino bg-gray-800 bg-opacity-50 px-4 py-3 text-sm font-medium text-oro-fiorentino backdrop-blur-sm transition-all duration-200 hover:bg-oro-fiorentino hover:text-gray-900"
+                            title="{{ __('statistics.force_refresh_tooltip') }}">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                            <span>{{ __('statistics.mints_tab') }}</span>
-                        </button>
-                        <button
-                            class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
-                            data-tab="reservations" role="tab" aria-selected="false"
-                            aria-controls="reservations-panel">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                            <span>{{ __('statistics.reservations_tab') }}</span>
-                        </button>
-                        <button
-                            class="stats-tab-btn flex flex-1 items-center justify-center space-x-2 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
-                            data-tab="comparison" role="tab" aria-selected="false" aria-controls="comparison-panel">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                            <span>{{ __('statistics.comparison_tab') }}</span>
+                            <span>{{ __('statistics.force_refresh') }}</span>
                         </button>
                     </div>
                 </div>
@@ -270,6 +283,7 @@
         const errorMessage = document.getElementById('error-message');
         const statisticsContent = document.getElementById('statistics-content');
         const refreshButton = document.getElementById('refresh-stats');
+        const forceRefreshButton = document.getElementById('force-refresh-btn');
         const lastUpdated = document.getElementById('last-updated');
         const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
         const statsTabButtons = document.querySelectorAll('.stats-tab-btn');
@@ -310,6 +324,23 @@
         // Refresh button handler
         refreshButton?.addEventListener('click', function() {
             loadStatistics(true);
+        });
+
+        // Force refresh button handler
+        forceRefreshButton?.addEventListener('click', function() {
+            // Visual feedback: disable button + loading state
+            forceRefreshButton.disabled = true;
+            forceRefreshButton.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            const originalText = forceRefreshButton.querySelector('span').textContent;
+            forceRefreshButton.querySelector('span').textContent = '{{ __("statistics.loading") }}...';
+
+            // Force refresh with cache bypass
+            loadStatistics(true).finally(() => {
+                forceRefreshButton.disabled = false;
+                forceRefreshButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                forceRefreshButton.querySelector('span').textContent = originalText;
+            });
         });
 
         /**
@@ -381,9 +412,6 @@
 
                 if (result.success) {
                     statisticsData = result.data;
-                    console.log('Statistics data loaded:', statisticsData);
-                    console.log('Reservations data:', statisticsData.reservations);
-                    console.log('Amounts data:', statisticsData.amounts);
                     renderStatistics(statisticsData);
                     updateLastUpdated(statisticsData.generated_at);
                     showContent();
@@ -486,12 +514,6 @@
          * Render Reservation Statistics Tab
          */
         function renderReservationStatistics(reservations, amounts, eppPotential) {
-            console.log('renderReservationStatistics called', {
-                reservations,
-                amounts,
-                eppPotential
-            });
-
             if (!reservations) {
                 console.error('No reservations data provided');
                 return;
@@ -507,13 +529,6 @@
             if (forecastElement) forecastElement.textContent = formatCurrency(amounts?.total_eur || 0);
             if (strongElement) strongElement.textContent = reservations.strong || 0;
             if (weakElement) weakElement.textContent = reservations.weak || 0;
-
-            console.log('Reservation KPIs updated:', {
-                total: reservations.total,
-                forecast: amounts?.total_eur,
-                strong: reservations.strong,
-                weak: reservations.weak
-            });
 
             // Render by collection
             const byCollectionContainer = document.getElementById('reservation-by-collection-container');
