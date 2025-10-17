@@ -40,6 +40,50 @@
     <meta name="twitter:description" content="{{ __('info_egi.page_description') }}">
     <meta name="twitter:site" content="@FlorenceEGI">
 
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "{{ __('info_egi.page_title') }}",
+        "description": "{{ __('info_egi.page_description') }}",
+        "author": {
+            "@type": "Organization",
+            "@id": "https://florence-egi.com/#organization",
+            "name": "FlorenceEGI"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "FlorenceEGI",
+            "url": "https://florence-egi.com",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ asset('images/logo-florence-egi.png') }}"
+            }
+        },
+        "about": {
+            "@type": "Thing",
+            "name": "Ecological Goods Invent",
+            "description": "Certificati digitali blockchain che garantiscono sostenibilità ambientale"
+        },
+        "inLanguage": "{{ app()->getLocale() }}",
+        "url": "{{ url()->current() }}",
+        "datePublished": "2025-09-29",
+        "dateModified": "{{ now()->toIso8601String() }}",
+        "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://florence-egi.com/#website",
+            "name": "FlorenceEGI"
+        },
+        "mainEntity": {
+            "@type": "DefinedTerm",
+            "name": "EGI - Ecological Goods Invent",
+            "description": "Certificati digitali blockchain per sostenibilità ambientale",
+            "inDefinedTermSet": "FlorenceEGI Ecosystem"
+        }
+    }
+    </script>
+
     <!-- Google Fonts - Brand Guidelines -->
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap"

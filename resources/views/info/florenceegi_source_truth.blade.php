@@ -5,6 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlorenceEGI - Fonte di Verità</title>
+    <meta name="description"
+        content="Documentazione tecnica completa FlorenceEGI. Architettura sistema, specifiche tecniche, standard e best practices. Single Source of Truth per sviluppatori.">
+    <meta name="keywords"
+        content="FlorenceEGI,Documentation,Source of Truth,Technical,Architecture,Blockchain,API,Standards">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="author" content="FlorenceEGI">
+    <meta name="language" content="it">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph Protocol -->
+    <meta property="og:title" content="FlorenceEGI - Fonte di Verità Tecnica">
+    <meta property="og:description" content="Documentazione completa architettura e specifiche tecniche.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="FlorenceEGI">
+    <meta property="og:locale" content="it_IT">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="FlorenceEGI - Fonte di Verità">
+    <meta name="twitter:description" content="Documentazione tecnica completa sistema.">
+    <meta name="twitter:site" content="@FlorenceEGI">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "FlorenceEGI - Fonte di Verità Tecnica",
+        "description": "Single Source of Truth per architettura e specifiche tecniche",
+        "author": {
+            "@type": "Organization",
+            "name": "FlorenceEGI",
+            "url": "https://florence-egi.com"
+        },
+        "url": "{{ url()->current() }}",
+        "inLanguage": "it",
+        "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://florence-egi.com/#website"
+        }
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -257,7 +301,8 @@
                             <dd class="mt-1 text-gray-700"><a href="#glossary-blockchain"
                                     class="glossary-link">Blockchain</a> sostenibile e <a
                                     href="#glossary-carbon-negative" class="glossary-link">carbon-negative</a> basata su
-                                <a href="#glossary-proof-of-stake" class="glossary-link">Proof-of-Stake</a>.</dd>
+                                <a href="#glossary-proof-of-stake" class="glossary-link">Proof-of-Stake</a>.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-coa" class="text-xl font-bold text-emerald-700">CoA (Certificate of
@@ -285,15 +330,18 @@
                                 FlorenceEGI è <a href="#glossary-mica-safe" class="glossary-link">MiCA-safe</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-ulm" class="text-xl font-bold text-emerald-700">ULM (UltraLogManager)</dt>
+                            <dt id="glossary-ulm" class="text-xl font-bold text-emerald-700">ULM (UltraLogManager)
+                            </dt>
                             <dd class="mt-1 text-gray-700">Sistema di registrazione eventi per garantire auditabilità
                                 completa e conformità <a href="#glossary-gdpr" class="glossary-link">GDPR</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-auditlogservice" class="text-xl font-bold text-emerald-700">AuditLogService
+                            <dt id="glossary-auditlogservice" class="text-xl font-bold text-emerald-700">
+                                AuditLogService
                             </dt>
-                            <dd class="mt-1 text-gray-700">Servizio per la creazione di <a href="#glossary-audit-trail"
-                                    class="glossary-link">audit trail</a> verificabili.</dd>
+                            <dd class="mt-1 text-gray-700">Servizio per la creazione di <a
+                                    href="#glossary-audit-trail" class="glossary-link">audit trail</a> verificabili.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-consentservice" class="text-xl font-bold text-emerald-700">ConsentService
@@ -1148,7 +1196,7 @@
                     }, 100);
                     backButton.classList.remove('show');
                     history.pushState('', document.title, window.location.pathname + window.location
-                    .search);
+                        .search);
                 }
             });
 
