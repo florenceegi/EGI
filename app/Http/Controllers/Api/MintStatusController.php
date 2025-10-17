@@ -79,7 +79,7 @@ class MintStatusController extends Controller {
                 $response['asa_id'] = $blockchain->asa_id;
                 $response['tx_id'] = $blockchain->blockchain_tx_id;
                 $response['minted_at'] = $blockchain->minted_at?->toIso8601String();
-                $response['explorer_url'] = "https://testnet.algoexplorer.io/asset/{$blockchain->asa_id}";
+                $response['explorer_url'] = "https://testnet.explorer.perawallet.app/asset/{$blockchain->asa_id}";
             }
 
             // Add error if failed

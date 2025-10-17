@@ -63,13 +63,13 @@ return [
         'sandbox' => [
             'algod_url' => env('ALGOD_SANDBOX_URL', 'http://localhost:4001'),
             'indexer_url' => env('INDEXER_SANDBOX_URL', 'http://localhost:8980'),
-            'explorer_url' => env('EXPLORER_SANDBOX_URL', 'https://testnet.algoexplorer.io'),
+            'explorer_url' => env('EXPLORER_SANDBOX_URL', 'https://testnet.explorer.perawallet.app'),
         ],
 
         'testnet' => [
             'algod_url' => env('ALGOD_TESTNET_URL', 'https://testnet-api.algonode.cloud'),
             'indexer_url' => env('INDEXER_TESTNET_URL', 'https://testnet-idx.algonode.cloud'),
-            'explorer_url' => env('EXPLORER_TESTNET_URL', 'https://testnet.algoexplorer.io'),
+            'explorer_url' => env('EXPLORER_TESTNET_URL', 'https://testnet.explorer.perawallet.app'),
         ],
 
         'mainnet' => [
