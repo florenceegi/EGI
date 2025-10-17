@@ -329,7 +329,7 @@
                     {{-- Post-mint success UI will be injected here by JavaScript --}}
                     <div id="post-mint-container"></div>
 
-                    <div id="mint-form" class="p-6 bg-white rounded-lg shadow-lg">
+                    <div id="mint-form-container" class="p-6 bg-white rounded-lg shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.payment.title') }}</h2>
 
                         {{-- Mint Status Badges --}}
@@ -1338,10 +1338,10 @@
              * Show loading state while generating certificate
              */
             function showPostMintLoading() {
-                // Hide checkout form (find by ID for specificity)
-                const checkoutForm = document.getElementById('mint-form');
-                if (checkoutForm) {
-                    checkoutForm.style.display = 'none';
+                // Hide checkout form container (find by ID for specificity)
+                const checkoutFormContainer = document.getElementById('mint-form-container');
+                if (checkoutFormContainer) {
+                    checkoutFormContainer.style.display = 'none';
                 }
 
                 // Show loading UI in the post-mint container
