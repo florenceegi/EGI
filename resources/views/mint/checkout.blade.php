@@ -1360,7 +1360,7 @@
                 // Build payment breakdown table HTML
                 let paymentBreakdownHtml = '';
                 if (data.payment_breakdown && data.payment_breakdown.length > 0) {
-                    console.log('[MINT DEBUG] 💰 Building payment breakdown table with', data.payment_breakdown.length, 'entries');
+                    console.log('[MINT DEBUG] 💰 Building payment breakdown table with ' + data.payment_breakdown.length + ' entries');
                     paymentBreakdownHtml = `
                         <div class="p-4 mb-6 border border-gray-200 rounded-lg bg-gray-50">
                             <h4 class="mb-3 text-sm font-semibold text-gray-700">{{ __('mint.post_mint.payment_breakdown') }}</h4>
@@ -1478,18 +1478,18 @@
                 `;
 
                 console.log('[MINT DEBUG] 🔍 Looking for third column container...');
-                console.log('[MINT DEBUG] 📐 Selector:', '.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
+                console.log('[MINT DEBUG] 📐 Selector: .grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
                 
                 // Insert in the third column container
                 const thirdColumn = document.querySelector('.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
-                console.log('[MINT DEBUG] 📦 Third column element:', thirdColumn ? 'FOUND ✅' : 'NOT FOUND ❌');
+                console.log('[MINT DEBUG] 📦 Third column element: ' + (thirdColumn ? 'FOUND ✅' : 'NOT FOUND ❌'));
                 
                 if (thirdColumn) {
                     console.log('[MINT DEBUG] ➕ Inserting success HTML into third column...');
-                    console.log('[MINT DEBUG] 📏 Success HTML length:', successHtml.length, 'chars');
+                    console.log('[MINT DEBUG] 📏 Success HTML length: ' + successHtml.length + ' chars');
                     thirdColumn.insertAdjacentHTML('beforeend', successHtml);
                     console.log('[MINT DEBUG] ✅ Success HTML inserted!');
-                    console.log('[MINT DEBUG] 📏 Third column new innerHTML length:', thirdColumn.innerHTML.length, 'chars');
+                    console.log('[MINT DEBUG] 📏 Third column new innerHTML length: ' + thirdColumn.innerHTML.length + ' chars');
                     localStorage.setItem('mint_debug_step', 'success_ui_inserted');
                 } else {
                     console.error('[MINT DEBUG] ❌ Third column container not found! Success UI cannot be displayed!');
@@ -1497,9 +1497,9 @@
                     
                     // Debug: show all grid containers
                     const allGrids = document.querySelectorAll('.grid');
-                    console.log('[MINT DEBUG] 🔍 Found', allGrids.length, 'grid elements');
+                    console.log('[MINT DEBUG] 🔍 Found ' + allGrids.length + ' grid elements');
                     allGrids.forEach((grid, index) => {
-                        console.log(`[MINT DEBUG] Grid ${index}:`, grid.className);
+                        console.log('[MINT DEBUG] Grid ' + index + ': ' + grid.className);
                     });
                 }
             }
