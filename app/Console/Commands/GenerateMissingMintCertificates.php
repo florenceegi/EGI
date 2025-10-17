@@ -22,8 +22,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  *
  * Usage: php artisan egi:generate-missing-mint-certificates [--dry-run] [--egi-id=16]
  */
-class GenerateMissingMintCertificates extends Command
-{
+class GenerateMissingMintCertificates extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -65,8 +64,7 @@ class GenerateMissingMintCertificates extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
-    {
+    public function handle(): int {
         $dryRun = $this->option('dry-run');
         $egiId = $this->option('egi-id');
 
