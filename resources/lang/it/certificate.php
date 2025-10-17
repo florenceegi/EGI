@@ -3,6 +3,7 @@
 return [
     // Titoli e descrizioni pagine
     'page_title' => 'Certificato di Prenotazione #:uuid',
+    'blockchain_certificate_title' => 'Certificato di Acquisto Blockchain',
     'meta_description' => 'Certificato di Prenotazione :type per EGI - FlorenceEGI',
     'verify_page_title' => 'Verifica Certificato #:uuid',
     'verify_meta_description' => 'Verifica l\'autenticità del certificato di prenotazione EGI #:uuid su FlorenceEGI',
@@ -10,6 +11,12 @@ return [
     'list_by_egi_meta_description' => 'Visualizza tutti i certificati di prenotazione per EGI #:egi_id su FlorenceEGI',
     'user_certificates_title' => 'I tuoi Certificati di Prenotazione',
     'user_certificates_meta_description' => 'Visualizza tutti i tuoi certificati di prenotazione EGI su FlorenceEGI',
+    
+    // Certificate types
+    'type' => [
+        'blockchain_purchase' => 'Acquisto Blockchain',
+        'reservation' => 'Prenotazione',
+    ],
 
     // Messaggi errore
     'not_found' => 'Il certificato richiesto non è stato trovato.',
@@ -81,10 +88,10 @@ return [
         'weak' => 'Utente Base',
         'pa_entity' => 'Ente Pubblico',
         'inspector' => 'Ispettore',
-        
+
         // Backward compatibility (old user_type enum)
         'trader-pro' => 'Trader Professionale',
-        
+
         // Unknown fallback
         'unknown' => 'Ruolo Sconosciuto',
 
