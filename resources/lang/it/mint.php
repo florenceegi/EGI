@@ -7,7 +7,9 @@ return [
 
     // Header
     'header_title' => 'Mint del tuo EGI',
+    'header_title_completed' => 'EGI Mintato con Successo',
     'header_description' => 'Completa l\'acquisto e minta il tuo EGI sulla blockchain Algorand. Questo processo è irreversibile.',
+    'header_description_completed' => 'Il tuo EGI è stato mintato sulla blockchain Algorand. Scarica il certificato e visualizza i dettagli della transazione.',
 
     // Buttons
     'mint_button' => 'Mint (:price)',

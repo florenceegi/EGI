@@ -5,10 +5,18 @@
             {{-- Header --}}
             <div class="mb-8">
                 <h1 class="mb-2 text-3xl font-bold text-gray-900">
-                    {{ __('mint.header_title') }}
+                    @if($mintStatus === 'completed')
+                        {{ __('mint.header_title_completed') }}
+                    @else
+                        {{ __('mint.header_title') }}
+                    @endif
                 </h1>
-                <p class="text-gray-600">
-                    {{ __('mint.header_description') }}
+                <p class="text-lg text-gray-800">
+                    @if($mintStatus === 'completed')
+                        {{ __('mint.header_description_completed') }}
+                    @else
+                        {{ __('mint.header_description') }}
+                    @endif
                 </p>
 
                 {{-- DEBUG PANEL - Mostra log salvati in localStorage --}}
@@ -852,7 +860,7 @@
 
                 // Check mint status from backend (ALWAYS, not only with ?success=1)
                 const mintStatus = '{{ $mintStatus }}';
-                console.log('[MINT DEBUG] 📊 Mint status from backend:', mintStatus);
+                console.log('[MINT DEBUG] 📊 Mint status from backend: ' + mintStatus);
                 localStorage.setItem('mint_debug_status', mintStatus);
 
                 if (mintStatus === 'completed') {
@@ -983,7 +991,8 @@
                  * Update UI to show minted status (generate certificate + show success state)
                  */
                 async function updateUIToMinted(data) {
-                    console.log('[MINT] 🎉 updateUIToMinted called with data:', data);
+                    console.log('[MINT] 🎉 updateUIToMinted called with data:');
+                    console.log(data);
                     localStorage.setItem('mint_debug_step', 'updateUIToMinted_called');
                     localStorage.setItem('mint_debug_data', JSON.stringify(data));
 
@@ -1008,11 +1017,11 @@
 
                     try {
                         console.log('[MINT DEBUG] 📞 Calling certificate generation endpoint...');
-                        console.log('[MINT DEBUG] 🌐 Endpoint URL:', `/mint/{{ $egi->id }}/certificate/generate`);
+                        console.log('[MINT DEBUG] 🌐 Endpoint URL: /mint/{{ $egi->id }}/certificate/generate');
                         localStorage.setItem('mint_debug_step', 'calling_certificate_endpoint');
 
                         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-                        console.log('[MINT DEBUG] 🔑 CSRF Token:', csrfToken ? 'Found' : 'MISSING!');
+                        console.log('[MINT DEBUG] 🔑 CSRF Token: ' + (csrfToken ? 'Found' : 'MISSING!'));
                         
                         if (!csrfToken) {
                             console.error('[MINT DEBUG] ❌ CSRF token missing! Fetch will fail!');
@@ -1029,8 +1038,9 @@
                             }
                         });
 
-                        console.log('[MINT DEBUG] 📨 Certificate endpoint response status:', response.status);
-                        console.log('[MINT DEBUG] 📨 Response headers:', {
+                        console.log('[MINT DEBUG] 📨 Certificate endpoint response status: ' + response.status);
+                        console.log('[MINT DEBUG] 📨 Response headers:');
+                        console.log({
                             'Content-Type': response.headers.get('Content-Type'),
                             'Status': response.status,
                             'StatusText': response.statusText
@@ -1040,15 +1050,17 @@
 
                         console.log('[MINT DEBUG] 📦 Parsing JSON response...');
                         const result = await response.json();
-                        console.log('[MINT DEBUG] 📦 Certificate endpoint result:', result);
-                        console.log('[MINT DEBUG] 📦 Result.success:', result.success);
-                        console.log('[MINT DEBUG] 📦 Result.data:', result.data);
+                        console.log('[MINT DEBUG] 📦 Certificate endpoint result:');
+                        console.log(result);
+                        console.log('[MINT DEBUG] 📦 Result.success: ' + result.success);
+                        console.log('[MINT DEBUG] 📦 Result.data:');
+                        console.log(result.data);
                         localStorage.setItem('mint_debug_result', JSON.stringify(result));
 
                         if (result.success) {
                             console.log('[MINT DEBUG] ✅ Certificate generated successfully, calling showPostMintSuccess()');
-                            console.log('[MINT DEBUG] 📄 Certificate URL:', result.data?.certificate_url);
-                            console.log('[MINT DEBUG] 💰 Payment breakdown count:', result.data?.payment_breakdown?.length);
+                            console.log('[MINT DEBUG] 📄 Certificate URL: ' + (result.data?.certificate_url || 'N/A'));
+                            console.log('[MINT DEBUG] 💰 Payment breakdown count: ' + (result.data?.payment_breakdown?.length || 0));
                             localStorage.setItem('mint_debug_step', 'showing_success_ui');
                             
                             // Show post-mint success UI with certificate + payment breakdown
@@ -1349,12 +1361,13 @@
              * Show post-mint success with certificate + payment breakdown
              */
             function showPostMintSuccess(data) {
-                console.log('[MINT DEBUG] 🎨 showPostMintSuccess() called with data:', data);
+                console.log('[MINT DEBUG] 🎨 showPostMintSuccess() called with data:');
+                console.log(data);
                 localStorage.setItem('mint_debug_showPostMintSuccess', JSON.stringify(data));
                 
                 // Remove loading
                 const loadingElement = document.getElementById('post-mint-loading');
-                console.log('[MINT DEBUG] 🔍 Looking for #post-mint-loading element:', loadingElement ? 'Found' : 'Not found');
+                console.log('[MINT DEBUG] 🔍 Looking for #post-mint-loading element: ' + (loadingElement ? 'Found' : 'Not found'));
                 loadingElement?.remove();
 
                 // Build payment breakdown table HTML
