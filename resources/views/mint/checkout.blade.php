@@ -1,18 +1,18 @@
 {{-- resources/views/mint/checkout.blade.php --}}
 <x-platform-layout :title="__('mint.page_title', ['title' => $egi->title])">
-    <div class="container px-4 py-8 mx-auto">
+    <div class="container px-4 py-8 mx-auto bg-white">
         <div class="mx-auto max-w-7xl">
             {{-- Header --}}
-            <div class="mb-8">
-                <h1 class="mb-2 text-3xl font-bold text-gray-900">
-                    @if($mintStatus === 'completed')
+            <div class="p-6 mb-8 bg-white rounded-lg shadow-sm">
+                <h1 class="mb-3 text-4xl font-bold text-gray-900">
+                    @if ($mintStatus === 'completed')
                         {{ __('mint.header_title_completed') }}
                     @else
                         {{ __('mint.header_title') }}
                     @endif
                 </h1>
-                <p class="text-lg text-gray-800">
-                    @if($mintStatus === 'completed')
+                <p class="text-xl font-medium text-gray-900">
+                    @if ($mintStatus === 'completed')
                         {{ __('mint.header_description_completed') }}
                     @else
                         {{ __('mint.header_description') }}
@@ -346,18 +346,19 @@
                                 <div class="p-4 space-y-3 bg-green-100 border border-green-300 rounded-lg">
                                     <div class="flex items-center justify-between text-sm">
                                         <span class="font-medium text-green-700">{{ __('mint.status.asa_id') }}</span>
-                                        <a href="https://testnet.explorer.perawallet.app/asset/{{ $blockchainData['asa_id'] ?? $egi->token_EGI }}" 
+                                        <a href="https://testnet.explorer.perawallet.app/asset/{{ $blockchainData['asa_id'] ?? $egi->token_EGI }}"
                                             target="_blank"
-                                            class="font-mono text-base font-bold text-green-900 hover:text-green-700 hover:underline transition-colors">
+                                            class="font-mono text-base font-bold text-green-900 transition-colors hover:text-green-700 hover:underline">
                                             {{ $blockchainData['asa_id'] ?? $egi->token_EGI }}
                                         </a>
                                     </div>
                                     @if (!empty($blockchainData['tx_id']))
                                         <div class="flex items-center justify-between text-sm">
-                                            <span class="font-medium text-green-700">{{ __('mint.status.transaction_id') }}</span>
-                                            <a href="https://testnet.explorer.perawallet.app/tx/{{ $blockchainData['tx_id'] }}" 
+                                            <span
+                                                class="font-medium text-green-700">{{ __('mint.status.transaction_id') }}</span>
+                                            <a href="https://testnet.explorer.perawallet.app/tx/{{ $blockchainData['tx_id'] }}"
                                                 target="_blank"
-                                                class="font-mono text-xs font-semibold text-green-900 hover:text-green-700 hover:underline transition-colors">
+                                                class="font-mono text-xs font-semibold text-green-900 transition-colors hover:text-green-700 hover:underline">
                                                 {{ Str::limit($blockchainData['tx_id'], 20) }}
                                             </a>
                                         </div>
@@ -847,7 +848,7 @@
             document.addEventListener('DOMContentLoaded', function() {
                 console.log('[MINT DEBUG] 🚀 DOMContentLoaded event fired');
                 localStorage.setItem('mint_debug_step', 'dom_loaded');
-                
+
                 const urlParams = new URLSearchParams(window.location.search);
                 const success = urlParams.get('success');
 
@@ -869,12 +870,13 @@
 
                     @if (!empty($blockchainData['asa_id']))
                         console.log('[MINT DEBUG] 🔗 Blockchain data available, calling updateUIToMinted');
-                        console.log('[MINT DEBUG] 📦 Blockchain data:', {
+                        console.log('[MINT DEBUG] 📦 Blockchain data:');
+                        console.log({
                             asa_id: '{{ $blockchainData['asa_id'] }}',
                             tx_id: '{{ $blockchainData['tx_id'] ?? '' }}',
                             minted_at: '{{ $blockchainData['minted_at'] ?? '' }}'
                         });
-                        
+
                         // Call updateUIToMinted with blockchain data
                         updateUIToMinted({
                             status: 'minted',
@@ -894,260 +896,262 @@
                     // Start polling for mint completion
                     startMintStatusPolling();
                 }
-            }
+            });
 
-                /**
-                 * Enterprise-grade mint status polling
-                 * - AJAX polling without page reload
-                 * - Exponential backoff (5s → 10s → 15s)
-                 * - Automatic UI update on status change
-                 * - Error handling with UEM integration
-                 * - Max 10 minutes timeout
-                 */
-                function startMintStatusPolling() {
-                    const egiId = {{ $egi->id }};
-                    const statusUrl = `/mint/status/${egiId}`;
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            /**
+             * Enterprise-grade mint status polling
+             * - AJAX polling without page reload
+             * - Exponential backoff (5s → 10s → 15s)
+             * - Automatic UI update on status change
+             * - Error handling with UEM integration
+             * - Max 10 minutes timeout
+             */
+            function startMintStatusPolling() {
+                const egiId = {{ $egi->id }};
+                const statusUrl = `/mint/status/${egiId}`;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                    let pollCount = 0;
-                    let pollInterval = 5000; // Start with 5 seconds
-                    const maxPolls = 60; // 10 minutes max (adaptive interval)
-                    let currentPollTimeout = null;
+                let pollCount = 0;
+                let pollInterval = 5000; // Start with 5 seconds
+                const maxPolls = 60; // 10 minutes max (adaptive interval)
+                let currentPollTimeout = null;
 
-                    const pollStatus = async () => {
-                        pollCount++;
+                const pollStatus = async () => {
+                    pollCount++;
 
-                        // Timeout after max polls
-                        if (pollCount > maxPolls) {
-                            console.warn('[MINT POLL] Max polling time reached (10 minutes)');
-                            showPollingTimeoutNotification();
-                            return;
-                        }
-
-                        try {
-                            const response = await fetch(statusUrl, {
-                                method: 'GET',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'X-CSRF-TOKEN': csrfToken,
-                                    'X-Requested-With': 'XMLHttpRequest'
-                                },
-                                credentials: 'same-origin'
-                            });
-
-                            if (!response.ok) {
-                                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                            }
-
-                            const data = await response.json();
-
-                            console.log(`[MINT POLL ${pollCount}] Status:`, data.status);
-
-                            // Handle status changes
-                            if (data.status === 'minted') {
-                                // ✅ MINT COMPLETED
-                                console.log('[MINT POLL] ✅ Mint completed!', data);
-                                updateUIToMinted(data);
-                                return; // Stop polling
-
-                            } else if (data.status === 'failed') {
-                                // ❌ MINT FAILED
-                                console.error('[MINT POLL] ❌ Mint failed:', data.error);
-                                updateUIToFailed(data);
-                                return; // Stop polling
-
-                            } else if (data.status === 'minting_queued' || data.status === 'minting') {
-                                // ⏳ STILL PROCESSING - Continue polling with adaptive interval
-
-                                // Exponential backoff: 5s → 8s → 10s → 15s
-                                if (pollCount > 20) {
-                                    pollInterval = 15000; // 15s after 20 polls (~3 minutes)
-                                } else if (pollCount > 10) {
-                                    pollInterval = 10000; // 10s after 10 polls (~1.5 minutes)
-                                } else if (pollCount > 5) {
-                                    pollInterval = 8000; // 8s after 5 polls (~40 seconds)
-                                }
-
-                                currentPollTimeout = setTimeout(pollStatus, pollInterval);
-                            }
-
-                        } catch (error) {
-                            console.error('[MINT POLL] Error:', error);
-
-                            // Retry with longer interval on error
-                            if (pollCount < maxPolls) {
-                                currentPollTimeout = setTimeout(pollStatus, pollInterval * 2);
-                            } else {
-                                showPollingErrorNotification();
-                            }
-                        }
-                    };
-
-                    // Start polling
-                    pollStatus();
-                }
-
-                /**
-                 * Update UI to show minted status (generate certificate + show success state)
-                 */
-                async function updateUIToMinted(data) {
-                    console.log('[MINT] 🎉 updateUIToMinted called with data:');
-                    console.log(data);
-                    localStorage.setItem('mint_debug_step', 'updateUIToMinted_called');
-                    localStorage.setItem('mint_debug_data', JSON.stringify(data));
-
-                    // Remove processing badge
-                    const processingBadge = document.querySelector('.border-blue-200.bg-blue-50');
-                    if (processingBadge) {
-                        processingBadge.remove();
+                    // Timeout after max polls
+                    if (pollCount > maxPolls) {
+                        console.warn('[MINT POLL] Max polling time reached (10 minutes)');
+                        showPollingTimeoutNotification();
+                        return;
                     }
 
-                    // Show initial success notification
-                    showMintSuccessNotification({
-                        asaId: data.asa_id,
-                        txId: data.tx_id,
-                        egiTitle: '{{ $egi->title }}'
-                    });
-
-                    console.log('[MINT] 📋 Showing post-mint loading state');
-                    localStorage.setItem('mint_debug_step', 'showing_loading');
-
-                    // Show loading state
-                    showPostMintLoading();
-
                     try {
-                        console.log('[MINT DEBUG] 📞 Calling certificate generation endpoint...');
-                        console.log('[MINT DEBUG] 🌐 Endpoint URL: /mint/{{ $egi->id }}/certificate/generate');
-                        localStorage.setItem('mint_debug_step', 'calling_certificate_endpoint');
+                        const response = await fetch(statusUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            credentials: 'same-origin'
+                        });
 
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-                        console.log('[MINT DEBUG] 🔑 CSRF Token: ' + (csrfToken ? 'Found' : 'MISSING!'));
-                        
-                        if (!csrfToken) {
-                            console.error('[MINT DEBUG] ❌ CSRF token missing! Fetch will fail!');
-                            localStorage.setItem('mint_debug_error', 'csrf_token_missing');
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                         }
 
-                        // Call endpoint to generate certificate + payment breakdown
-                        const response = await fetch(`/mint/{{ $egi->id }}/certificate/generate`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
+                        const data = await response.json();
+
+                        console.log(`[MINT POLL ${pollCount}] Status:`, data.status);
+
+                        // Handle status changes
+                        if (data.status === 'minted') {
+                            // ✅ MINT COMPLETED
+                            console.log('[MINT POLL] ✅ Mint completed!', data);
+                            updateUIToMinted(data);
+                            return; // Stop polling
+
+                        } else if (data.status === 'failed') {
+                            // ❌ MINT FAILED
+                            console.error('[MINT POLL] ❌ Mint failed:', data.error);
+                            updateUIToFailed(data);
+                            return; // Stop polling
+
+                        } else if (data.status === 'minting_queued' || data.status === 'minting') {
+                            // ⏳ STILL PROCESSING - Continue polling with adaptive interval
+
+                            // Exponential backoff: 5s → 8s → 10s → 15s
+                            if (pollCount > 20) {
+                                pollInterval = 15000; // 15s after 20 polls (~3 minutes)
+                            } else if (pollCount > 10) {
+                                pollInterval = 10000; // 10s after 10 polls (~1.5 minutes)
+                            } else if (pollCount > 5) {
+                                pollInterval = 8000; // 8s after 5 polls (~40 seconds)
                             }
-                        });
 
-                        console.log('[MINT DEBUG] 📨 Certificate endpoint response status: ' + response.status);
-                        console.log('[MINT DEBUG] 📨 Response headers:');
-                        console.log({
-                            'Content-Type': response.headers.get('Content-Type'),
-                            'Status': response.status,
-                            'StatusText': response.statusText
-                        });
-                        localStorage.setItem('mint_debug_step', 'certificate_response_received');
-                        localStorage.setItem('mint_debug_response_status', response.status);
-
-                        console.log('[MINT DEBUG] 📦 Parsing JSON response...');
-                        const result = await response.json();
-                        console.log('[MINT DEBUG] 📦 Certificate endpoint result:');
-                        console.log(result);
-                        console.log('[MINT DEBUG] 📦 Result.success: ' + result.success);
-                        console.log('[MINT DEBUG] 📦 Result.data:');
-                        console.log(result.data);
-                        localStorage.setItem('mint_debug_result', JSON.stringify(result));
-
-                        if (result.success) {
-                            console.log('[MINT DEBUG] ✅ Certificate generated successfully, calling showPostMintSuccess()');
-                            console.log('[MINT DEBUG] 📄 Certificate URL: ' + (result.data?.certificate_url || 'N/A'));
-                            console.log('[MINT DEBUG] 💰 Payment breakdown count: ' + (result.data?.payment_breakdown?.length || 0));
-                            localStorage.setItem('mint_debug_step', 'showing_success_ui');
-                            
-                            // Show post-mint success UI with certificate + payment breakdown
-                            showPostMintSuccess(result.data);
-                            
-                            console.log('[MINT DEBUG] ✅ showPostMintSuccess() called successfully');
-                        } else {
-                            console.error('[MINT DEBUG] ⚠️ Certificate generation failed:', result.message);
-                            localStorage.setItem('mint_debug_step', 'certificate_failed');
-                            localStorage.setItem('mint_debug_error', result.message);
-                            showPostMintPartialSuccess(data);
+                            currentPollTimeout = setTimeout(pollStatus, pollInterval);
                         }
 
                     } catch (error) {
-                        console.error('[MINT] ❌ Failed to generate certificate:', error);
-                        localStorage.setItem('mint_debug_step', 'exception_caught');
-                        localStorage.setItem('mint_debug_exception', error.message);
-                        // Certificate generation failed, but mint succeeded - show partial success
+                        console.error('[MINT POLL] Error:', error);
+
+                        // Retry with longer interval on error
+                        if (pollCount < maxPolls) {
+                            currentPollTimeout = setTimeout(pollStatus, pollInterval * 2);
+                        } else {
+                            showPollingErrorNotification();
+                        }
+                    }
+                };
+
+                // Start polling
+                pollStatus();
+            }
+
+            /**
+             * Update UI to show minted status (generate certificate + show success state)
+             */
+            async function updateUIToMinted(data) {
+                console.log('[MINT] 🎉 updateUIToMinted called with data:');
+                console.log(data);
+                localStorage.setItem('mint_debug_step', 'updateUIToMinted_called');
+                localStorage.setItem('mint_debug_data', JSON.stringify(data));
+
+                // Remove processing badge
+                const processingBadge = document.querySelector('.border-blue-200.bg-blue-50');
+                if (processingBadge) {
+                    processingBadge.remove();
+                }
+
+                // Show initial success notification
+                showMintSuccessNotification({
+                    asaId: data.asa_id,
+                    txId: data.tx_id,
+                    egiTitle: '{{ $egi->title }}'
+                });
+
+                console.log('[MINT] 📋 Showing post-mint loading state');
+                localStorage.setItem('mint_debug_step', 'showing_loading');
+
+                // Show loading state
+                showPostMintLoading();
+
+                try {
+                    console.log('[MINT DEBUG] 📞 Calling certificate generation endpoint...');
+                    console.log('[MINT DEBUG] 🌐 Endpoint URL: /mint/{{ $egi->id }}/certificate/generate');
+                    localStorage.setItem('mint_debug_step', 'calling_certificate_endpoint');
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                    console.log('[MINT DEBUG] 🔑 CSRF Token: ' + (csrfToken ? 'Found' : 'MISSING!'));
+
+                    if (!csrfToken) {
+                        console.error('[MINT DEBUG] ❌ CSRF token missing! Fetch will fail!');
+                        localStorage.setItem('mint_debug_error', 'csrf_token_missing');
+                    }
+
+                    // Call endpoint to generate certificate + payment breakdown
+                    const response = await fetch(`/mint/{{ $egi->id }}/certificate/generate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    console.log('[MINT DEBUG] 📨 Certificate endpoint response status: ' + response.status);
+                    console.log('[MINT DEBUG] 📨 Response headers:');
+                    console.log({
+                        'Content-Type': response.headers.get('Content-Type'),
+                        'Status': response.status,
+                        'StatusText': response.statusText
+                    });
+                    localStorage.setItem('mint_debug_step', 'certificate_response_received');
+                    localStorage.setItem('mint_debug_response_status', response.status);
+
+                    console.log('[MINT DEBUG] 📦 Parsing JSON response...');
+                    const result = await response.json();
+                    console.log('[MINT DEBUG] 📦 Certificate endpoint result:');
+                    console.log(result);
+                    console.log('[MINT DEBUG] 📦 Result.success: ' + result.success);
+                    console.log('[MINT DEBUG] 📦 Result.data:');
+                    console.log(result.data);
+                    localStorage.setItem('mint_debug_result', JSON.stringify(result));
+
+                    if (result.success) {
+                        console.log(
+                            '[MINT DEBUG] ✅ Certificate generated successfully, calling showPostMintSuccess()');
+                        console.log('[MINT DEBUG] 📄 Certificate URL: ' + (result.data?.certificate_url || 'N/A'));
+                        console.log('[MINT DEBUG] 💰 Payment breakdown count: ' + (result.data?.payment_breakdown
+                            ?.length || 0));
+                        localStorage.setItem('mint_debug_step', 'showing_success_ui');
+
+                        // Show post-mint success UI with certificate + payment breakdown
+                        showPostMintSuccess(result.data);
+
+                        console.log('[MINT DEBUG] ✅ showPostMintSuccess() called successfully');
+                    } else {
+                        console.error('[MINT DEBUG] ⚠️ Certificate generation failed:', result.message);
+                        localStorage.setItem('mint_debug_step', 'certificate_failed');
+                        localStorage.setItem('mint_debug_error', result.message);
                         showPostMintPartialSuccess(data);
                     }
+
+                } catch (error) {
+                    console.error('[MINT] ❌ Failed to generate certificate:', error);
+                    localStorage.setItem('mint_debug_step', 'exception_caught');
+                    localStorage.setItem('mint_debug_exception', error.message);
+                    // Certificate generation failed, but mint succeeded - show partial success
+                    showPostMintPartialSuccess(data);
+                }
+            }
+
+            /**
+             * Update UI to show failed status (red badge)
+             */
+            function updateUIToFailed(data) {
+                // Remove processing badge
+                const processingBadge = document.querySelector('.border-blue-200.bg-blue-50');
+                if (processingBadge) {
+                    processingBadge.remove();
                 }
 
-                /**
-                 * Update UI to show failed status (red badge)
-                 */
-                function updateUIToFailed(data) {
-                    // Remove processing badge
-                    const processingBadge = document.querySelector('.border-blue-200.bg-blue-50');
-                    if (processingBadge) {
-                        processingBadge.remove();
-                    }
-
-                    // Show error notification with SweetAlert2
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            title: '{{ __('mint.errors.mint_failed') }}',
-                            text: data.error || '{{ __('mint.errors.mint_error_generic') }}',
-                            confirmButtonText: '{{ __('mint.errors.reload_page') }}',
-                            confirmButtonColor: '#DC2626',
-                            allowOutsideClick: false
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        });
-                    } else {
-                        console.error('Mint failed:', data.error || '{{ __('mint.errors.unknown_error') }}');
-                        setTimeout(() => {
+                // Show error notification with SweetAlert2
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ __('mint.errors.mint_failed') }}',
+                        text: data.error || '{{ __('mint.errors.mint_error_generic') }}',
+                        confirmButtonText: '{{ __('mint.errors.reload_page') }}',
+                        confirmButtonColor: '#DC2626',
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
                             window.location.reload();
-                        }, 1000);
-                    }
+                        }
+                    });
+                } else {
+                    console.error('Mint failed:', data.error || '{{ __('mint.errors.unknown_error') }}');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
                 }
+            }
 
-                /**
-                 * Show timeout notification
-                 */
-                function showPollingTimeoutNotification() {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'info',
-                            title: '{{ __('mint.errors.polling_timeout') }}',
-                            html: '{{ __('mint.errors.polling_timeout_message') }}<br><br>' +
-                                '<strong>Cosa fare:</strong><br>' +
-                                '• {{ __('mint.errors.polling_timeout_instructions') }}',
-                            confirmButtonText: '{{ __('mint.errors.polling_reload_now') }}',
-                            showCancelButton: true,
-                            cancelButtonText: '{{ __('mint.errors.polling_close') }}',
-                            confirmButtonColor: '#3B82F6',
-                            cancelButtonColor: '#6B7280'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        });
-                    } else {
-                        console.error('{{ __('mint.errors.polling_timeout') }}:',
-                            '{{ __('mint.errors.polling_timeout_message') }}');
-                    }
+            /**
+             * Show timeout notification
+             */
+            function showPollingTimeoutNotification() {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: '{{ __('mint.errors.polling_timeout') }}',
+                        html: '{{ __('mint.errors.polling_timeout_message') }}<br><br>' +
+                            '<strong>Cosa fare:</strong><br>' +
+                            '• {{ __('mint.errors.polling_timeout_instructions') }}',
+                        confirmButtonText: '{{ __('mint.errors.polling_reload_now') }}',
+                        showCancelButton: true,
+                        cancelButtonText: '{{ __('mint.errors.polling_close') }}',
+                        confirmButtonColor: '#3B82F6',
+                        cancelButtonColor: '#6B7280'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    console.error('{{ __('mint.errors.polling_timeout') }}:',
+                        '{{ __('mint.errors.polling_timeout_message') }}');
                 }
+            }
 
-                /**
-                 * Show polling error notification
-                 */
-                function showPollingErrorNotification() {
-                    console.error('[MINT POLL] Too many errors, stopping');
-                }
+            /**
+             * Show polling error notification
+             */
+            function showPollingErrorNotification() {
+                console.error('[MINT POLL] Too many errors, stopping');
+            }
             });
 
             form.addEventListener('submit', async (e) => {
@@ -1291,23 +1295,23 @@
                             <h3 class="text-lg font-semibold text-green-900">{{ __('mint.notification.success_title') }}</h3>
                             <p class="mt-1 text-sm text-green-800">{{ __('mint.notification.success_message') }}</p>
                             ${data.asaId ? `
-                                                                                            <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
-                                                                                                <div class="flex items-center justify-between mb-2 text-sm">
-                                                                                                    <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                                                                                    <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
-                                                                                                        class="font-mono font-bold text-green-900 hover:text-green-700 hover:underline transition-colors">
-                                                                                                        ${data.asaId}
-                                                                                                    </a>
-                                                                                                </div>
-                                                                                                <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
-                                                                                                    class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                                                    </svg>
-                                                                                                    {{ __('mint.notification.view_blockchain') }}
-                                                                                                </a>
-                                                                                            </div>
-                                                                                        ` : ''}
+                                                                                                    <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
+                                                                                                        <div class="flex items-center justify-between mb-2 text-sm">
+                                                                                                            <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
+                                                                                                            <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
+                                                                                                                class="font-mono font-bold text-green-900 transition-colors hover:text-green-700 hover:underline">
+                                                                                                                ${data.asaId}
+                                                                                                            </a>
+                                                                                                        </div>
+                                                                                                        <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
+                                                                                                            class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
+                                                                                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                                            </svg>
+                                                                                                            {{ __('mint.notification.view_blockchain') }}
+                                                                                                        </a>
+                                                                                                    </div>
+                                                                                                ` : ''}
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-green-600 transition-colors hover:text-green-900">
@@ -1364,16 +1368,18 @@
                 console.log('[MINT DEBUG] 🎨 showPostMintSuccess() called with data:');
                 console.log(data);
                 localStorage.setItem('mint_debug_showPostMintSuccess', JSON.stringify(data));
-                
+
                 // Remove loading
                 const loadingElement = document.getElementById('post-mint-loading');
-                console.log('[MINT DEBUG] 🔍 Looking for #post-mint-loading element: ' + (loadingElement ? 'Found' : 'Not found'));
+                console.log('[MINT DEBUG] 🔍 Looking for #post-mint-loading element: ' + (loadingElement ? 'Found' :
+                    'Not found'));
                 loadingElement?.remove();
 
                 // Build payment breakdown table HTML
                 let paymentBreakdownHtml = '';
                 if (data.payment_breakdown && data.payment_breakdown.length > 0) {
-                    console.log('[MINT DEBUG] 💰 Building payment breakdown table with ' + data.payment_breakdown.length + ' entries');
+                    console.log('[MINT DEBUG] 💰 Building payment breakdown table with ' + data.payment_breakdown.length +
+                        ' entries');
                     paymentBreakdownHtml = `
                         <div class="p-4 mb-6 border border-gray-200 rounded-lg bg-gray-50">
                             <h4 class="mb-3 text-sm font-semibold text-gray-700">{{ __('mint.post_mint.payment_breakdown') }}</h4>
@@ -1387,12 +1393,12 @@
                                 </thead>
                                 <tbody>
                                     ${data.payment_breakdown.map(dist => `
-                                                                <tr class="border-b border-gray-200">
-                                                                    <td class="py-2 font-medium text-gray-900">${dist.recipient}</td>
-                                                                    <td class="py-2 text-gray-700">${dist.role}</td>
-                                                                    <td class="py-2 font-semibold text-right text-gray-900">&euro; ${dist.amount_eur}</td>
-                                                                </tr>
-                                                            `).join('')}
+                                                                        <tr class="border-b border-gray-200">
+                                                                            <td class="py-2 font-medium text-gray-900">${dist.recipient}</td>
+                                                                            <td class="py-2 text-gray-700">${dist.role}</td>
+                                                                            <td class="py-2 font-semibold text-right text-gray-900">&euro; ${dist.amount_eur}</td>
+                                                                        </tr>
+                                                                    `).join('')}
                                 </tbody>
                             </table>
                         </div>
@@ -1492,22 +1498,23 @@
 
                 console.log('[MINT DEBUG] 🔍 Looking for third column container...');
                 console.log('[MINT DEBUG] 📐 Selector: .grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
-                
+
                 // Insert in the third column container
                 const thirdColumn = document.querySelector('.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
                 console.log('[MINT DEBUG] 📦 Third column element: ' + (thirdColumn ? 'FOUND ✅' : 'NOT FOUND ❌'));
-                
+
                 if (thirdColumn) {
                     console.log('[MINT DEBUG] ➕ Inserting success HTML into third column...');
                     console.log('[MINT DEBUG] 📏 Success HTML length: ' + successHtml.length + ' chars');
                     thirdColumn.insertAdjacentHTML('beforeend', successHtml);
                     console.log('[MINT DEBUG] ✅ Success HTML inserted!');
-                    console.log('[MINT DEBUG] 📏 Third column new innerHTML length: ' + thirdColumn.innerHTML.length + ' chars');
+                    console.log('[MINT DEBUG] 📏 Third column new innerHTML length: ' + thirdColumn.innerHTML.length +
+                    ' chars');
                     localStorage.setItem('mint_debug_step', 'success_ui_inserted');
                 } else {
                     console.error('[MINT DEBUG] ❌ Third column container not found! Success UI cannot be displayed!');
                     localStorage.setItem('mint_debug_error', 'third_column_not_found');
-                    
+
                     // Debug: show all grid containers
                     const allGrids = document.querySelectorAll('.grid');
                     console.log('[MINT DEBUG] 🔍 Found ' + allGrids.length + ' grid elements');
