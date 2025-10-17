@@ -161,7 +161,7 @@ return [
         'mock_success_rate' => env('EGI_MOCK_SUCCESS_RATE', 0.95),
         'mock_processing_delay' => env('EGI_MOCK_DELAY', 2), // seconds
 
-        // Real PSP settings (V2) 
+        // Real PSP settings (V2)
         'stripe_enabled' => env('STRIPE_ENABLED', false),
         'paypal_enabled' => env('PAYPAL_ENABLED', false),
     ],

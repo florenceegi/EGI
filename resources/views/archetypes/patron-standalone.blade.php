@@ -159,7 +159,8 @@
         <div class="golden-ratio-container px-4 py-4 sm:px-6 sm:py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <i class="fas fa-heart text-oro-fiorentino text-3xl sm:text-4xl" role="img" aria-label="Icona cuore mecenate"></i>
+                    <i class="fas fa-heart text-oro-fiorentino text-3xl sm:text-4xl" role="img"
+                        aria-label="Icona cuore mecenate"></i>
                     <div>
                         <h1 class="renaissance-title text-xl font-bold sm:text-2xl">Mecenati FlorenceEGI</h1>
                         <p class="font-body text-sm text-blue-200 sm:text-base">Il Nuovo Rinascimento Ecologico Digitale
@@ -170,7 +171,8 @@
                 <!-- Desktop Navigation -->
                 <nav class="hidden space-x-6 md:flex" role="navigation" aria-label="Navigazione principale">
                     <a href="{{ route('home') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base" aria-label="Torna alla home">Home</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base"
+                        aria-label="Torna alla home">Home</a>
                     <a href="#ruolo" class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Il
                         Ruolo</a>
                     <a href="#casi" class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Casi
@@ -184,15 +186,14 @@
                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button"
                     class="block rounded-md p-2 transition-colors hover:bg-blue-700 md:hidden"
-                    aria-label="Apri menu navigazione"
-                    aria-expanded="false"
-                    aria-controls="mobile-menu">
+                    aria-label="Apri menu navigazione" aria-expanded="false" aria-controls="mobile-menu">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
 
             <!-- Mobile Navigation Menu -->
-            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden" role="navigation" aria-label="Menu mobile">
+            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden" role="navigation"
+                aria-label="Menu mobile">
                 <div class="space-y-3 pt-4">
                     <a href="{{ route('home') }}"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
@@ -228,7 +229,8 @@
     <section class="hero-background text-white" role="region" aria-labelledby="hero-heading">
         <div class="golden-ratio-container px-4 py-16 sm:px-6 sm:py-24">
             <div class="mx-auto max-w-4xl text-center">
-                <h1 id="hero-heading" class="renaissance-title mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
+                <h1 id="hero-heading"
+                    class="renaissance-title mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
                     Diventa Protagonista del<br>
                     <span class="text-oro-fiorentino">Nuovo Rinascimento</span>
                 </h1>
@@ -239,15 +241,13 @@
                 <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                     <a href="#ruolo"
                         class="cta-primary elegant-hover inline-flex items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold text-white"
-                        role="button"
-                        aria-label="Scopri il ruolo del mecenate">
+                        role="button" aria-label="Scopri il ruolo del mecenate">
                         <i class="fas fa-crown mr-3" aria-hidden="true"></i>
                         Scopri il Ruolo
                     </a>
                     <a href="#processo"
                         class="border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover inline-flex items-center justify-center rounded-xl border-2 px-8 py-4 text-lg font-semibold transition-all hover:text-blu-algoritmo"
-                        role="button"
-                        aria-label="Scopri come iniziare come mecenate">
+                        role="button" aria-label="Scopri come iniziare come mecenate">
                         <i class="fas fa-handshake mr-3" aria-hidden="true"></i>
                         Come Iniziare
                     </a>
@@ -260,7 +260,8 @@
     <section id="ruolo" class="bg-white py-16 sm:py-24" role="region" aria-labelledby="ruolo-heading">
         <div class="golden-ratio-container px-4 sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 id="ruolo-heading" class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                <h2 id="ruolo-heading"
+                    class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
                     Il Ruolo del <span class="text-oro-fiorentino">Mecenate</span>
                 </h2>
                 <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
@@ -316,7 +317,8 @@
     <section id="casi" class="bg-gray-50 py-16 sm:py-24" role="region" aria-labelledby="casi-heading">
         <div class="golden-ratio-container px-4 sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 id="casi-heading" class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                <h2 id="casi-heading"
+                    class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
                     Chi Può Diventare <span class="text-oro-fiorentino">Mecenate</span>
                 </h2>
                 <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
@@ -419,7 +421,8 @@
     <section id="processo" class="bg-white py-16 sm:py-24" role="region" aria-labelledby="processo-heading">
         <div class="golden-ratio-container px-4 sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 id="processo-heading" class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                <h2 id="processo-heading"
+                    class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
                     Come <span class="text-oro-fiorentino">Iniziare</span>
                 </h2>
                 <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
@@ -487,7 +490,8 @@
     <section id="contatti" class="bg-gray-50 py-16 sm:py-24" role="region" aria-labelledby="contatti-heading">
         <div class="golden-ratio-container px-4 sm:px-6">
             <div class="text-center">
-                <h2 id="contatti-heading" class="renaissance-title mb-8 text-3xl font-bold text-grigio-pietra sm:text-4xl">
+                <h2 id="contatti-heading"
+                    class="renaissance-title mb-8 text-3xl font-bold text-grigio-pietra sm:text-4xl">
                     Inizia la <span class="text-oro-fiorentino">Conversazione</span>
                 </h2>
                 <p class="mx-auto mb-8 max-w-2xl font-body text-xl text-grigio-pietra">
@@ -495,8 +499,7 @@
                 </p>
                 <a href="mailto:mecenati@florenceegi.com"
                     class="cta-primary elegant-hover inline-flex items-center rounded-xl px-8 py-4 text-lg font-semibold text-white"
-                    role="button"
-                    aria-label="Contatta mecenati FlorenceEGI via email">
+                    role="button" aria-label="Contatta mecenati FlorenceEGI via email">
                     <i class="fas fa-envelope mr-3" aria-hidden="true"></i>
                     mecenati@florenceegi.com
                 </a>

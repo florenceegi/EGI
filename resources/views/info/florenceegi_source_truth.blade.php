@@ -261,7 +261,8 @@
         <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" role="main">
             <div class="mb-8 rounded-2xl bg-white p-6 shadow-lg">
                 <h2 class="mb-4 text-center text-xl font-bold text-gray-800">Esplora il Sistema FlorenceEGI</h2>
-                <nav id="main-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4" role="navigation" aria-label="Navigazione sezioni">
+                <nav id="main-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4" role="navigation"
+                    aria-label="Navigazione sezioni">
                 </nav>
             </div>
 

@@ -281,7 +281,8 @@
             <div class="mb-8 rounded-2xl bg-white p-6 shadow-lg">
                 <h2 class="mb-4 text-center text-xl font-bold text-gray-800">Inizia da qui: seleziona un argomento o il
                     tuo ruolo.</h2>
-                <nav id="role-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4" role="navigation" aria-label="Navigazione per ruolo">
+                <nav id="role-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4" role="navigation"
+                    aria-label="Navigazione per ruolo">
                 </nav>
             </div>
 
@@ -345,7 +346,8 @@
                             <dt id="glossary-mint" class="text-xl font-bold text-emerald-700">Mint (o Minting)</dt>
                             <dd class="mt-1 text-gray-700">L'atto di creare un nuovo token (come un <a
                                     href="#glossary-egi" class="glossary-link">EGI</a>) sulla <a
-                                    href="#glossary-blockchain" class="glossary-link">blockchain</a>, registrandolo per
+                                    href="#glossary-blockchain" class="glossary-link">blockchain</a>, registrandolo
+                                per
                                 la prima volta.</dd>
                         </div>
                         <div>

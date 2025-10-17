@@ -125,7 +125,8 @@
             <div class="flex items-center justify-between">
                 <!-- Logo + Branding -->
                 <div class="flex items-center space-x-3">
-                    <span class="material-icons text-4xl" role="img" aria-label="Icona edificio pubblico">account_balance</span>
+                    <span class="material-icons text-4xl" role="img"
+                        aria-label="Icona edificio pubblico">account_balance</span>
                     <div>
                         <h1 class="text-2xl font-bold">N.A.T.A.N.</h1>
                         <p class="text-xs text-blue-200">by Florence EGI</p>
@@ -133,18 +134,21 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden items-center space-x-8 lg:flex" role="navigation" aria-label="Navigazione principale">
-                    <a href="{{ route('home') }}" class="text-sm transition hover:text-blue-200 lg:text-base" aria-label="Torna alla home">Home</a>
+                <nav class="hidden items-center space-x-8 lg:flex" role="navigation"
+                    aria-label="Navigazione principale">
+                    <a href="{{ route('home') }}" class="text-sm transition hover:text-blue-200 lg:text-base"
+                        aria-label="Torna alla home">Home</a>
                     <a href="#il-sistema" class="font-medium transition hover:text-blue-200">Il Sistema</a>
 
                     <!-- Dropdown Vantaggi -->
                     <div class="dropdown relative">
-                        <button class="flex items-center font-medium transition hover:text-blue-200" aria-label="Menu vantaggi" aria-haspopup="true" aria-expanded="false">
+                        <button class="flex items-center font-medium transition hover:text-blue-200"
+                            aria-label="Menu vantaggi" aria-haspopup="true" aria-expanded="false">
                             Vantaggi
                             <span class="material-icons ml-1 text-sm" aria-hidden="true">arrow_drop_down</span>
                         </button>
-                        <div
-                            class="dropdown-menu absolute left-0 top-full mt-2 w-64 rounded-lg bg-white py-2 text-gray-900 shadow-xl" role="menu">
+                        <div class="dropdown-menu absolute left-0 top-full mt-2 w-64 rounded-lg bg-white py-2 text-gray-900 shadow-xl"
+                            role="menu">
                             <a href="#certezza-trasparenza" class="block px-4 py-3 transition hover:bg-gray-100">
                                 <span class="font-semibold">🔒 Certezza e Trasparenza</span>
                             </a>
@@ -171,13 +175,15 @@
                 </nav>
 
                 <!-- Mobile Menu Button -->
-                <button id="mobile-menu-button" class="rounded-md p-2 transition hover:bg-blue-700 lg:hidden" aria-label="Apri menu mobile" aria-expanded="false" aria-controls="mobile-menu">
+                <button id="mobile-menu-button" class="rounded-md p-2 transition hover:bg-blue-700 lg:hidden"
+                    aria-label="Apri menu mobile" aria-expanded="false" aria-controls="mobile-menu">
                     <span class="material-icons text-3xl">menu</span>
                 </button>
             </div>
 
             <!-- Mobile Menu -->
-            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 pt-4 lg:hidden" role="navigation" aria-label="Menu mobile">
+            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 pt-4 lg:hidden" role="navigation"
+                aria-label="Menu mobile">
                 <div class="space-y-3">
                     <a href="#home" class="block rounded-md px-4 py-2 transition hover:bg-blue-700">🏠 Home</a>
                     <a href="#il-sistema" class="block rounded-md px-4 py-2 transition hover:bg-blue-700">🎯 Il
@@ -208,7 +214,8 @@
     </header>
 
     <!-- HERO SECTION -->
-    <section id="home" class="from-institutional-blue bg-gradient-to-br via-blue-800 to-blue-900 py-20 md:py-32" role="region" aria-labelledby="home-heading">
+    <section id="home" class="from-institutional-blue bg-gradient-to-br via-blue-800 to-blue-900 py-20 md:py-32"
+        role="region" aria-labelledby="home-heading">
         <div class="container mx-auto max-w-6xl px-6 text-center text-white">
 
             <span

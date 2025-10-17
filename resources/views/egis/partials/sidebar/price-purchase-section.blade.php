@@ -203,7 +203,7 @@ $userReservation =
                 @endif
             @else
                 {{-- No actions available (or price = 0) --}}
-                @if($egi->isMinted())
+                @if ($egi->isMinted())
                     {{-- EGI già mintato - Bottone cliccabile per visualizzare dettagli mint --}}
                     <a href="{{ route('egi.mint-direct', $egi->id) }}"
                         class="inline-flex w-full items-center justify-center rounded-lg border border-green-600/30 bg-green-700/20 px-6 py-4 font-medium text-green-400 backdrop-blur-sm transition-all hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300">
@@ -220,7 +220,7 @@ $userReservation =
                         <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
-                            </svg>
+                        </svg>
                         @if (!$showButtons)
                             {{ __('egi.crud.price_not_set') }}
                         @else
