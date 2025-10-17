@@ -326,11 +326,29 @@ class EgiReservationCertificateController extends Controller {
                 'asa_id' => $egi->blockchain->asa_id
             ]);
 
-            // Generate blockchain certificate
-            $certificate = $this->certificateGenerator->generateBlockchainCertificate(
-                $egi,
-                $egi->blockchain
-            );
+            // ✅ Check if certificate already exists (prevent duplicate generation on page reload)
+            $certificate = \App\Models\EgiReservationCertificate::where('egi_id', $egi->id)
+                ->where('certificate_type', 'mint')
+                ->where('egi_blockchain_id', $egi->blockchain->id)
+                ->first();
+
+            if (!$certificate) {
+                // Certificate doesn't exist - generate new one
+                $this->logger->info('No existing certificate found, generating new one', [
+                    'egi_id' => $egiId
+                ]);
+
+                $certificate = $this->certificateGenerator->generateBlockchainCertificate(
+                    $egi,
+                    $egi->blockchain
+                );
+            } else {
+                // Certificate already exists - use existing one
+                $this->logger->info('Using existing certificate (prevented duplicate)', [
+                    'egi_id' => $egiId,
+                    'certificate_uuid' => $certificate->certificate_uuid
+                ]);
+            }
 
             // Query payment breakdown (amounts > 0 only)
             $distributions = \App\Models\PaymentDistribution::where('egi_id', $egi->id)
