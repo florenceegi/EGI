@@ -162,11 +162,11 @@
 <body class="bg-gray-50 pt-20 text-grigio-pietra">
 
     <!-- Header con Navigazione - Fixed -->
-    <header class="fixed left-0 right-0 top-0 z-50 bg-blu-algoritmo text-white shadow-lg">
+    <header class="fixed left-0 right-0 top-0 z-50 bg-blu-algoritmo text-white shadow-lg" role="banner">
         <div class="golden-ratio-container px-4 py-4 sm:px-6 sm:py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <i class="fas fa-infinity text-oro-fiorentino text-3xl sm:text-4xl"></i>
+                    <i class="fas fa-infinity text-oro-fiorentino text-3xl sm:text-4xl" role="img" aria-label="Icona infinito FlorenceEGI"></i>
                     <div>
                         <h1 class="renaissance-title text-xl font-bold sm:text-2xl">FlorenceEGI</h1>
                         <p class="font-body text-sm text-blue-200 sm:text-base">Il Rinascimento Digitale</p>
@@ -174,9 +174,9 @@
                 </div>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden space-x-3 md:flex">
+                <nav class="hidden space-x-3 md:flex" role="navigation" aria-label="Navigazione principale">
                     <a href="{{ route('home') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">Home</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base" aria-label="Torna alla home">Home</a>
                     <a href="{{ route('info.florence-egi') }}"
                         class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">FlorenceEGI</a>
                     <a href="{{ route('archetypes.patron') }}"
@@ -187,13 +187,16 @@
 
                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button"
-                    class="block rounded-md p-2 transition-colors hover:bg-blue-700 md:hidden">
+                    class="block rounded-md p-2 transition-colors hover:bg-blue-700 md:hidden"
+                    aria-label="Apri menu navigazione"
+                    aria-expanded="false"
+                    aria-controls="mobile-menu">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
 
             <!-- Mobile Navigation Menu -->
-            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden">
+            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden" role="navigation" aria-label="Menu mobile">
                 <div class="space-y-3 pt-4">
                     <a href="{{ route('home') }}"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">
@@ -221,16 +224,16 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero-background">
+    <section class="hero-background" role="region" aria-labelledby="hero-heading">
         <div class="golden-ratio-container flex min-h-[50vh] items-center justify-center px-4">
             <div class="mx-auto max-w-4xl text-center text-white">
                 <div class="mb-6">
                     <span class="dev-badge">
-                        <i class="fas fa-code"></i>
+                        <i class="fas fa-code" aria-hidden="true"></i>
                         Ambiente di Sviluppo
                     </span>
                 </div>
-                <h1 class="renaissance-title mb-6 text-4xl font-bold sm:text-5xl lg:text-6xl">
+                <h1 id="hero-heading" class="renaissance-title mb-6 text-4xl font-bold sm:text-5xl lg:text-6xl">
                     Disclaimer
                 </h1>
                 <p class="mb-6 font-body text-lg leading-relaxed text-blue-100 sm:text-xl">

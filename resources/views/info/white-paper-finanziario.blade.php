@@ -269,7 +269,7 @@
 
 <body class="antialiased">
     <div class="min-h-screen">
-        <header class="sticky top-0 z-50 bg-white shadow-sm">
+        <header class="sticky top-0 z-50 bg-white shadow-sm" role="banner">
             <div class="mx-auto max-w-7xl px-4 py-6 text-center sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold text-emerald-800">White Paper Finanziario Interattivo</h1>
                 <p class="text-md mt-2 text-gray-600">Esplora la gestione finanziaria e fiscale di FlorenceEGI in modo
@@ -277,11 +277,11 @@
             </div>
         </header>
 
-        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" role="main">
             <div class="mb-8 rounded-2xl bg-white p-6 shadow-lg">
                 <h2 class="mb-4 text-center text-xl font-bold text-gray-800">Inizia da qui: seleziona un argomento o il
                     tuo ruolo.</h2>
-                <nav id="role-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4">
+                <nav id="role-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4" role="navigation" aria-label="Navigazione per ruolo">
                 </nav>
             </div>
 
