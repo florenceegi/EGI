@@ -336,14 +336,21 @@ class EgiReservationCertificateController extends Controller {
                 ->where('source_type', 'mint')
                 ->where('distribution_status', 'CONFIRMED')
                 ->where('amount_eur', '>', 0)
-                ->with('user:id,name') // Only load user id and name
+                ->with('user:id,name,nick_name,last_name,wallet') // Load all fields needed for User->name accessor
                 ->get();
 
             // Format payment breakdown for frontend
             $paymentBreakdown = $distributions->map(function ($dist) {
+                // Get user name from relationship or metadata fallback
+                $recipientName = $dist->user?->name ?? $dist->metadata['recipient_name'] ?? __('certificate.unknown_recipient');
+                
+                // Get role translation from user_type enum
+                $roleKey = $dist->user_type->value ?? 'unknown';
+                $roleTranslated = __('certificate.roles.' . $roleKey);
+                
                 return [
-                    'recipient' => $dist->user->name ?? __('certificate.unknown_recipient'),
-                    'role' => __('certificate.roles.' . $dist->recipient_role),
+                    'recipient' => $recipientName,
+                    'role' => $roleTranslated,
                     'amount_eur' => number_format($dist->amount_eur, 2, ',', '.'),
                     'percentage' => $dist->percentage,
                 ];

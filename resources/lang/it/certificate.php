@@ -66,9 +66,20 @@ return [
     'created_just_now' => 'Creato ora',
     'qr_code_alt' => 'Codice QR per la verifica del certificato',
 
-    // Payment distribution roles
+    // Payment distribution roles (aligned with PaymentDistribution user_type enum)
     'roles' => [
+        'weak' => 'Utente Base',
         'creator' => 'Creatore',
+        'collector' => 'Collezionista',
+        'commissioner' => 'Committente',
+        'company' => 'Azienda',
+        'epp' => 'Progetto Ambientale (EPP)',
+        'trader-pro' => 'Trader Professionale',
+        'vip' => 'VIP',
+        'natan' => 'Natan Platform',
+        'unknown' => 'Ruolo Sconosciuto',
+        
+        // Legacy roles (deprecated but kept for backward compatibility)
         'co_creator' => 'Co-Creatore',
         'collection_owner' => 'Proprietario Collezione',
         'platform' => 'Piattaforma',
