@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use TCPDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Ultra\ErrorManager\Facades\UltraError;
 use Ultra\UltraLogManager\UltraLogManager;
 
@@ -406,31 +407,181 @@ class CertificateGeneratorService {
      * @param array $certificateData Certificate data array
      * @return string PDF content as string
      */
+    /**
+     * Generate blockchain certificate PDF with DomPDF
+     * 
+     * @param array $certificateData Certificate data
+     * @return string Binary PDF content
+     */
     private function generateBlockchainCertificatePdf(array $certificateData): string {
-        // For MVP: Simple text-based certificate
-        // TODO Phase 2: Use TCPDF for professional PDF with QR code
+        // Build HTML for certificate
+        $html = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                @page { margin: 40px; }
+                body { 
+                    font-family: "DejaVu Sans", sans-serif; 
+                    color: #1a202c;
+                    line-height: 1.6;
+                }
+                .header {
+                    text-align: center;
+                    border-bottom: 4px solid #D4A574;
+                    padding-bottom: 20px;
+                    margin-bottom: 30px;
+                }
+                .header h1 {
+                    color: #1B365D;
+                    font-size: 28px;
+                    margin: 0 0 10px 0;
+                    font-weight: bold;
+                }
+                .header .subtitle {
+                    color: #2D5016;
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+                .section {
+                    margin-bottom: 25px;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-left: 4px solid #D4A574;
+                }
+                .section-title {
+                    color: #1B365D;
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    text-transform: uppercase;
+                }
+                .info-row {
+                    display: table;
+                    width: 100%;
+                    margin-bottom: 8px;
+                }
+                .info-label {
+                    display: table-cell;
+                    width: 40%;
+                    font-weight: 600;
+                    color: #4a5568;
+                }
+                .info-value {
+                    display: table-cell;
+                    color: #1a202c;
+                    font-family: "DejaVu Sans Mono", monospace;
+                    font-size: 11px;
+                }
+                .blockchain-box {
+                    background: #e6ffed;
+                    border: 2px solid #2D5016;
+                    padding: 15px;
+                    margin: 20px 0;
+                }
+                .verification-box {
+                    background: #fff3cd;
+                    border: 2px solid #D4A574;
+                    padding: 15px;
+                    margin: 20px 0;
+                    text-align: center;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 40px;
+                    padding-top: 20px;
+                    border-top: 2px solid #e2e8f0;
+                    font-size: 10px;
+                    color: #6b6b6b;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>🏛️ CERTIFICATO DI PROPRIETÀ BLOCKCHAIN</h1>
+                <div class="subtitle">FlorenceEGI Platform - Ecosistema Generativo Italiano</div>
+            </div>
 
-        $content = "========================================\n";
-        $content .= "  FLORENCE EGI BLOCKCHAIN CERTIFICATE\n";
-        $content .= "========================================\n\n";
-        $content .= "Certificate UUID: {$certificateData['certificate_uuid']}\n";
-        $content .= "EGI Title: {$certificateData['egi_title']}\n";
-        $content .= "EGI ID: {$certificateData['egi_id']}\n\n";
-        $content .= "Owner: {$certificateData['buyer_name']}\n";
-        $content .= "Wallet Address: {$certificateData['buyer_wallet']}\n";
-        $content .= "Ownership Type: {$certificateData['ownership_type']}\n\n";
-        $content .= "BLOCKCHAIN DATA:\n";
-        $content .= "Asset ID (ASA): {$certificateData['asa_id']}\n";
-        $content .= "Transaction ID: {$certificateData['blockchain_tx_id']}\n";
-        $content .= "Minted At: {$certificateData['minted_at']}\n\n";
-        $content .= "PAYMENT INFO:\n";
-        $content .= "Amount: {$certificateData['purchase_amount']} {$certificateData['purchase_currency']}\n\n";
-        $content .= "VERIFICATION:\n";
-        $content .= "Verification URL: {$certificateData['verification_url']}\n\n";
-        $content .= "This certificate proves blockchain ownership of the EGI asset.\n";
-        $content .= "Generated by FlorenceEGI Platform - " . now()->toDateTimeString() . "\n";
-        $content .= "========================================\n";
+            <div class="section">
+                <div class="section-title">📜 Informazioni Certificato</div>
+                <div class="info-row">
+                    <div class="info-label">UUID Certificato:</div>
+                    <div class="info-value">' . htmlspecialchars($certificateData['certificate_uuid']) . '</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Data Emissione:</div>
+                    <div class="info-value">' . htmlspecialchars($certificateData['minted_at']) . '</div>
+                </div>
+            </div>
 
-        return $content;
+            <div class="section">
+                <div class="section-title">🎨 Dettagli EGI</div>
+                <div class="info-row">
+                    <div class="info-label">Titolo:</div>
+                    <div class="info-value">' . htmlspecialchars($certificateData['egi_title']) . '</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">EGI ID:</div>
+                    <div class="info-value">#' . htmlspecialchars($certificateData['egi_id']) . '</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">👤 Proprietario</div>
+                <div class="info-row">
+                    <div class="info-label">Nome:</div>
+                    <div class="info-value">' . htmlspecialchars($certificateData['buyer_name']) . '</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Wallet Address:</div>
+                    <div class="info-value">' . htmlspecialchars($certificateData['buyer_wallet']) . '</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Tipo Proprietà:</div>
+                    <div class="info-value">' . htmlspecialchars($certificateData['ownership_type']) . '</div>
+                </div>
+            </div>
+
+            <div class="blockchain-box">
+                <div class="section-title">⛓️ DATI BLOCKCHAIN (Algorand)</div>
+                <div class="info-row">
+                    <div class="info-label">Asset ID (ASA):</div>
+                    <div class="info-value"><strong>' . htmlspecialchars($certificateData['asa_id']) . '</strong></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Transaction ID:</div>
+                    <div class="info-value">' . htmlspecialchars($certificateData['blockchain_tx_id']) . '</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Importo Pagato:</div>
+                    <div class="info-value">' . number_format($certificateData['purchase_amount'], 2, ',', '.') . ' ' . htmlspecialchars($certificateData['purchase_currency']) . '</div>
+                </div>
+            </div>
+
+            <div class="verification-box">
+                <div class="section-title">🔐 VERIFICA AUTENTICITÀ</div>
+                <p style="margin: 10px 0; font-size: 11px;">
+                    Questo certificato può essere verificato pubblicamente all\'indirizzo:
+                </p>
+                <p style="margin: 5px 0; font-family: monospace; font-size: 10px; word-break: break-all;">
+                    ' . htmlspecialchars($certificateData['verification_url']) . '
+                </p>
+            </div>
+
+            <div class="footer">
+                <p><strong>FlorenceEGI</strong> - Piattaforma di tokenizzazione ecologica e artistica</p>
+                <p>Certificato generato il ' . now()->format('d/m/Y H:i:s') . '</p>
+                <p>© ' . date('Y') . ' FlorenceEGI - Tutti i diritti riservati</p>
+            </div>
+        </body>
+        </html>
+        ';
+
+        // Generate PDF with DomPDF
+        $pdf = Pdf::loadHTML($html);
+        $pdf->setPaper('A4', 'portrait');
+        
+        return $pdf->output();
     }
 }
