@@ -166,7 +166,8 @@
         <div class="golden-ratio-container px-4 py-4 sm:px-6 sm:py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <i class="fas fa-infinity text-oro-fiorentino text-3xl sm:text-4xl" role="img" aria-label="Icona infinito FlorenceEGI"></i>
+                    <i class="fas fa-infinity text-oro-fiorentino text-3xl sm:text-4xl" role="img"
+                        aria-label="Icona infinito FlorenceEGI"></i>
                     <div>
                         <h1 class="renaissance-title text-xl font-bold sm:text-2xl">FlorenceEGI</h1>
                         <p class="font-body text-sm text-blue-200 sm:text-base">Il Rinascimento Digitale</p>
@@ -176,7 +177,8 @@
                 <!-- Desktop Navigation -->
                 <nav class="hidden space-x-3 md:flex" role="navigation" aria-label="Navigazione principale">
                     <a href="{{ route('home') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base" aria-label="Torna alla home">Home</a>
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base"
+                        aria-label="Torna alla home">Home</a>
                     <a href="{{ route('info.florence-egi') }}"
                         class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">FlorenceEGI</a>
                     <a href="{{ route('archetypes.patron') }}"
@@ -188,15 +190,14 @@
                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button"
                     class="block rounded-md p-2 transition-colors hover:bg-blue-700 md:hidden"
-                    aria-label="Apri menu navigazione"
-                    aria-expanded="false"
-                    aria-controls="mobile-menu">
+                    aria-label="Apri menu navigazione" aria-expanded="false" aria-controls="mobile-menu">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
 
             <!-- Mobile Navigation Menu -->
-            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden" role="navigation" aria-label="Menu mobile">
+            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden" role="navigation"
+                aria-label="Menu mobile">
                 <div class="space-y-3 pt-4">
                     <a href="{{ route('home') }}"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700">

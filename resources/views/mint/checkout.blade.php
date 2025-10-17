@@ -326,7 +326,10 @@
 
                 {{-- COLUMN 3: Checkout Form + MiCA Compliance --}}
                 <div class="space-y-6">
-                    <div class="p-6 bg-white rounded-lg shadow-lg">
+                    {{-- Post-mint success UI will be injected here by JavaScript --}}
+                    <div id="post-mint-container"></div>
+
+                    <div id="mint-form" class="p-6 bg-white rounded-lg shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.payment.title') }}</h2>
 
                         {{-- Mint Status Badges --}}
@@ -1152,8 +1155,7 @@
             function showPollingErrorNotification() {
                 console.error('[MINT POLL] Too many errors, stopping');
             }
-            });
-
+            
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
@@ -1342,9 +1344,9 @@
                     checkoutForm.style.display = 'none';
                 }
 
-                // Show loading UI in the third column container
-                const thirdColumn = document.querySelector('.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
-                if (thirdColumn) {
+                // Show loading UI in the post-mint container
+                const postMintContainer = document.getElementById('post-mint-container');
+                if (postMintContainer) {
                     const loadingHtml = `
                         <div id="post-mint-loading" class="p-6 bg-white rounded-lg shadow-sm">
                             <div class="flex flex-col items-center justify-center py-12 text-center">
@@ -1357,7 +1359,7 @@
                             </div>
                         </div>
                     `;
-                    thirdColumn.insertAdjacentHTML('beforeend', loadingHtml);
+                    postMintContainer.innerHTML = loadingHtml;
                 }
             }
 
@@ -1496,31 +1498,21 @@
                     </div>
                 `;
 
-                console.log('[MINT DEBUG] 🔍 Looking for third column container...');
-                console.log('[MINT DEBUG] 📐 Selector: .grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
+                console.log('[MINT DEBUG] 🔍 Looking for post-mint container...');
 
-                // Insert in the third column container
-                const thirdColumn = document.querySelector('.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
-                console.log('[MINT DEBUG] 📦 Third column element: ' + (thirdColumn ? 'FOUND ✅' : 'NOT FOUND ❌'));
+                // Insert in the dedicated post-mint container
+                const postMintContainer = document.getElementById('post-mint-container');
+                console.log('[MINT DEBUG] 📦 Post-mint container: ' + (postMintContainer ? 'FOUND ✅' : 'NOT FOUND ❌'));
 
-                if (thirdColumn) {
-                    console.log('[MINT DEBUG] ➕ Inserting success HTML into third column...');
+                if (postMintContainer) {
+                    console.log('[MINT DEBUG] ➕ Inserting success HTML into container...');
                     console.log('[MINT DEBUG] 📏 Success HTML length: ' + successHtml.length + ' chars');
-                    thirdColumn.insertAdjacentHTML('beforeend', successHtml);
+                    postMintContainer.innerHTML = successHtml;
                     console.log('[MINT DEBUG] ✅ Success HTML inserted!');
-                    console.log('[MINT DEBUG] 📏 Third column new innerHTML length: ' + thirdColumn.innerHTML.length +
-                    ' chars');
                     localStorage.setItem('mint_debug_step', 'success_ui_inserted');
                 } else {
-                    console.error('[MINT DEBUG] ❌ Third column container not found! Success UI cannot be displayed!');
-                    localStorage.setItem('mint_debug_error', 'third_column_not_found');
-
-                    // Debug: show all grid containers
-                    const allGrids = document.querySelectorAll('.grid');
-                    console.log('[MINT DEBUG] 🔍 Found ' + allGrids.length + ' grid elements');
-                    allGrids.forEach((grid, index) => {
-                        console.log('[MINT DEBUG] Grid ' + index + ': ' + grid.className);
-                    });
+                    console.error('[MINT DEBUG] ❌ Post-mint container #post-mint-container not found!');
+                    localStorage.setItem('mint_debug_error', 'post_mint_container_not_found');
                 }
             }
 

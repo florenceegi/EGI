@@ -449,7 +449,7 @@ $hasCurrentReservation =
                 @endif
             @else
                 {{-- ❌ No actions available (or price = 0) --}}
-                @if($egi->isMinted())
+                @if ($egi->isMinted())
                     {{-- EGI già mintato - Link cliccabile per visualizzare dettagli mint --}}
                     <a href="{{ route('egi.mint-direct', $egi->id) }}"
                         class="flex w-full items-center justify-center rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-100">
