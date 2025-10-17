@@ -203,20 +203,31 @@ $userReservation =
                 @endif
             @else
                 {{-- No actions available (or price = 0) --}}
-                <div
-                    class="inline-flex w-full items-center justify-center rounded-lg border border-gray-600/30 bg-gray-700/50 px-6 py-4 font-medium text-gray-400 backdrop-blur-sm">
-                    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
-                    </svg>
-                    @if (!$showButtons)
-                        {{ __('egi.crud.price_not_set') }}
-                    @elseif($egi->isMinted())
-                        {{ __('egi.status.already_minted') ?? 'Già mintato' }}
-                    @else
-                        {{ __('egi.status.not_available') ?? 'Non disponibile' }}
-                    @endif
-                </div>
+                @if($egi->isMinted())
+                    {{-- EGI già mintato - Bottone cliccabile per visualizzare dettagli mint --}}
+                    <a href="{{ route('egi.mint-direct', $egi->id) }}"
+                        class="inline-flex w-full items-center justify-center rounded-lg border border-green-600/30 bg-green-700/20 px-6 py-4 font-medium text-green-400 backdrop-blur-sm transition-all hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300">
+                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ __('egi.status.view_mint_details') ?? 'Visualizza Dettagli Mint' }}
+                    </a>
+                @else
+                    {{-- Stato non disponibile o prezzo non impostato --}}
+                    <div
+                        class="inline-flex w-full items-center justify-center rounded-lg border border-gray-600/30 bg-gray-700/50 px-6 py-4 font-medium text-gray-400 backdrop-blur-sm">
+                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                            </svg>
+                        @if (!$showButtons)
+                            {{ __('egi.crud.price_not_set') }}
+                        @else
+                            {{ __('egi.status.not_available') ?? 'Non disponibile' }}
+                        @endif
+                    </div>
+                @endif
             @endif
         @elseif(!auth()->check())
             {{-- User not logged in --}}

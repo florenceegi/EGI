@@ -107,6 +107,7 @@ return [
         'login_required' => '🔐 Login Richiesto',
         'already_minted' => '✅ Già Mintato',
         'not_available' => '⚠️ Non Disponibile',
+        'view_mint_details' => 'Visualizza Dettagli Mint',
     ],
 
     // Azioni
