@@ -104,10 +104,33 @@
                                     <dd class="col-span-2 text-sm text-gray-900">{{ $certificate->egi->collection->collection_name ?? '-' }}</dd>
                                 </div>
 
+                                @if($certificate->certificate_type === 'mint')
+                                {{-- MINT certificate: Show ownership type instead of reservation type --}}
+                                <div class="grid grid-cols-3 gap-4">
+                                    <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.ownership_type') }}</dt>
+                                    <dd class="col-span-2 text-sm text-gray-900">
+                                        @if($certificate->egiBlockchain)
+                                            @if($certificate->egiBlockchain->ownership_type === 'wallet')
+                                                <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">
+                                                    🔐 {{ __('certificate.ownership.user_wallet') }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-purple-800 bg-purple-100 rounded-full">
+                                                    🏛️ {{ __('certificate.ownership.treasury') }}
+                                                </span>
+                                            @endif
+                                        @else
+                                            -
+                                        @endif
+                                    </dd>
+                                </div>
+                                @else
+                                {{-- RESERVATION certificate: Show reservation type (forte/debole) --}}
                                 <div class="grid grid-cols-3 gap-4">
                                     <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.reservation_type') }}</dt>
                                     <dd class="col-span-2 text-sm text-gray-900">{{ __('reservation.type.' . $certificate->reservation_type) }}</dd>
                                 </div>
+                                @endif
 
                                 <div class="grid grid-cols-3 gap-4">
                                     <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.wallet_address') }}</dt>
@@ -115,7 +138,13 @@
                                 </div>
 
                                 <div class="grid grid-cols-3 gap-4">
-                                    <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.offer_amount_fiat') }}</dt>
+                                    <dt class="text-sm font-medium text-gray-500">
+                                        @if($certificate->certificate_type === 'mint')
+                                            {{ __('certificate.details.purchase_amount') }}
+                                        @else
+                                            {{ __('certificate.details.offer_amount_fiat') }}
+                                        @endif
+                                    </dt>
                                     <dd class="col-span-2 text-sm text-gray-900">€{{ number_format($certificate->offer_amount_fiat, 2) }}</dd>
                                 </div>
 
@@ -156,16 +185,21 @@
                                 </div>
                                 @endif
 
+                                @if($certificate->certificate_type !== 'mint')
+                                {{-- ALGO amount only for RESERVATION certificates (not used in mint) --}}
                                 <div class="grid grid-cols-3 gap-4">
                                     <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.offer_amount_algo') }}</dt>
                                     <dd class="col-span-2 text-sm text-gray-900">{{ number_format($certificate->offer_amount_algo, 8) }} ALGO</dd>
                                 </div>
+                                @endif
 
                                 <div class="grid grid-cols-3 gap-4">
                                     <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.created_at') }}</dt>
                                     <dd class="col-span-2 text-sm text-gray-900">{{ $certificate->created_at->format('d M Y H:i:s') }}</dd>
                                 </div>
 
+                                @if($certificate->certificate_type !== 'mint')
+                                {{-- Status and Priority only for RESERVATION certificates --}}
                                 <div class="grid grid-cols-3 gap-4">
                                     <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.status') }}</dt>
                                     <dd class="col-span-2 text-sm text-gray-900">
@@ -193,6 +227,7 @@
                                         </span>
                                     </dd>
                                 </div>
+                                @endif
                             </dl>
                         </div>
 

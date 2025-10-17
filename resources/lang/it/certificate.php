@@ -31,14 +31,22 @@ return [
         'egi_title' => 'Titolo EGI',
         'collection' => 'Collezione',
         'reservation_type' => 'Tipo di Prenotazione',
+        'ownership_type' => 'Tipo di Proprietà',
         'wallet_address' => 'Indirizzo Wallet',
         'offer_amount_fiat' => 'Importo Offerta (EUR)',
+        'purchase_amount' => 'Importo Pagato (EUR)',
         'offer_amount_algo' => 'Importo Offerta (ALGO)',
         'certificate_uuid' => 'UUID Certificato',
         'signature_hash' => 'Hash della Firma',
         'created_at' => 'Creato il',
         'status' => 'Stato',
         'priority' => 'Priorità'
+    ],
+
+    // Ownership types (for mint certificates)
+    'ownership' => [
+        'user_wallet' => 'Wallet Utente',
+        'treasury' => 'Custodia Treasury',
     ],
 
     // Azioni
