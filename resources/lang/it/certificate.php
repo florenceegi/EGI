@@ -99,6 +99,9 @@ return [
         'superseded' => 'Superato',
     ],
 
+    // Ownership type (used in mint history component)
+    'ownership_type' => 'Tipo di Proprietà',
+
     // Payment distribution roles (aligned with PlatformRole enum + UserTypeEnum for backward compat)
     'roles' => [
         // Platform Roles (from wallets table - SOURCE OF TRUTH)
