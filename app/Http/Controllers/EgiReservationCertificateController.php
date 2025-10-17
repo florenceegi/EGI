@@ -344,13 +344,13 @@ class EgiReservationCertificateController extends Controller {
                 // Get user name from relationship or metadata fallback
                 $recipientName = $dist->user?->name ?? $dist->metadata['recipient_name'] ?? __('certificate.unknown_recipient');
 
-                // 🎯 USE platform_role from wallet (SOURCE OF TRUTH), fallback to user_type for backward compat
-                $roleKey = $dist->platform_role ?? ($dist->user_type?->value ?? 'unknown');
-                $roleTranslated = __('certificate.roles.' . $roleKey);
+                // 🎯 platform_role is a BRAND NAME (Frangette, Natan, EPP, Creator)
+                // NOT translated - same in all languages (proper noun)
+                $role = $dist->platform_role ?? ($dist->user_type?->value ?? 'Unknown');
 
                 return [
                     'recipient' => $recipientName,
-                    'role' => $roleTranslated,
+                    'role' => $role, // Raw value - no translation (Frangette stays Frangette worldwide)
                     'amount_eur' => number_format($dist->amount_eur, 2, ',', '.'),
                     'percentage' => $dist->percentage,
                 ];
