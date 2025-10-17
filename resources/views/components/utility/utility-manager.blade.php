@@ -21,7 +21,7 @@
                         L'utility è ora certificata e non può più essere modificata per garantire l'integrità della
                         blockchain.
                     </p>
-                    <a href="https://testnet.algoexplorer.io/asset/{{ $egi->token_EGI }}" target="_blank"
+                    <a href="https://testnet.explorer.perawallet.app/asset/{{ $egi->token_EGI }}" target="_blank"
                         class="mt-4 inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700">
                         Verifica su Blockchain
                         <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

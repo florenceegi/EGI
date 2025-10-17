@@ -338,19 +338,24 @@
                                 <div class="p-4 space-y-3 bg-green-100 border border-green-300 rounded-lg">
                                     <div class="flex items-center justify-between text-sm">
                                         <span class="font-medium text-green-700">{{ __('mint.status.asa_id') }}</span>
-                                        <span
-                                            class="font-mono text-base font-bold text-green-900">{{ $blockchainData['asa_id'] ?? $egi->token_EGI }}</span>
+                                        <a href="https://testnet.explorer.perawallet.app/asset/{{ $blockchainData['asa_id'] ?? $egi->token_EGI }}" 
+                                            target="_blank"
+                                            class="font-mono text-base font-bold text-green-900 hover:text-green-700 hover:underline transition-colors">
+                                            {{ $blockchainData['asa_id'] ?? $egi->token_EGI }}
+                                        </a>
                                     </div>
                                     @if (!empty($blockchainData['tx_id']))
                                         <div class="flex items-center justify-between text-sm">
-                                            <span
-                                                class="font-medium text-green-700">{{ __('mint.status.transaction_id') }}</span>
-                                            <span
-                                                class="font-mono text-xs font-semibold text-green-900">{{ Str::limit($blockchainData['tx_id'], 20) }}</span>
+                                            <span class="font-medium text-green-700">{{ __('mint.status.transaction_id') }}</span>
+                                            <a href="https://testnet.explorer.perawallet.app/tx/{{ $blockchainData['tx_id'] }}" 
+                                                target="_blank"
+                                                class="font-mono text-xs font-semibold text-green-900 hover:text-green-700 hover:underline transition-colors">
+                                                {{ Str::limit($blockchainData['tx_id'], 20) }}
+                                            </a>
                                         </div>
                                     @endif
                                     <div class="pt-3 mt-3 border-t border-green-300">
-                                        <a href="https://testnet.algoexplorer.io/asset/{{ $blockchainData['asa_id'] ?? $egi->token_EGI }}"
+                                        <a href="https://testnet.explorer.perawallet.app/asset/{{ $blockchainData['asa_id'] ?? $egi->token_EGI }}"
                                             target="_blank"
                                             class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
@@ -1238,9 +1243,12 @@
                                                                                             <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
                                                                                                 <div class="flex items-center justify-between mb-2 text-sm">
                                                                                                     <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                                                                                    <span class="font-mono font-bold text-green-900">${data.asaId}</span>
+                                                                                                    <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
+                                                                                                        class="font-mono font-bold text-green-900 hover:text-green-700 hover:underline transition-colors">
+                                                                                                        ${data.asaId}
+                                                                                                    </a>
                                                                                                 </div>
-                                                                                                <a href="https://testnet.algoexplorer.io/asset/${data.asaId}" target="_blank"
+                                                                                                <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
                                                                                                     class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
                                                                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
