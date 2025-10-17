@@ -5,6 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>White Paper Finanziario Interattivo - FlorenceEGI</title>
+    <meta name="description"
+        content="White Paper finanziario interattivo FlorenceEGI. Modello economico, tokenomics, revenue streams e sostenibilità del progetto blockchain.">
+    <meta name="keywords"
+        content="White Paper,Finanziario,FlorenceEGI,Tokenomics,Blockchain,Revenue,Sostenibilità,Investimenti">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="author" content="FlorenceEGI">
+    <meta name="language" content="it">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph Protocol -->
+    <meta property="og:title" content="White Paper Finanziario - FlorenceEGI">
+    <meta property="og:description" content="Modello economico e tokenomics del progetto blockchain sostenibile.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="FlorenceEGI">
+    <meta property="og:locale" content="it_IT">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="White Paper Finanziario - FlorenceEGI">
+    <meta name="twitter:description" content="Modello economico e tokenomics blockchain sostenibile.">
+    <meta name="twitter:site" content="@FlorenceEGI">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "White Paper Finanziario Interattivo - FlorenceEGI",
+        "description": "Documentazione completa del modello economico e tokenomics",
+        "author": {
+            "@type": "Organization",
+            "name": "FlorenceEGI",
+            "url": "https://florence-egi.com"
+        },
+        "datePublished": "2025",
+        "url": "{{ url()->current() }}",
+        "inLanguage": "it",
+        "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://florence-egi.com/#website"
+        }
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -314,21 +359,24 @@
                         <div>
                             <dt id="glossary-off-chain" class="text-xl font-bold text-emerald-700">Off-chain</dt>
                             <dd class="mt-1 text-gray-700">Si riferisce a qualsiasi operazione o dato che avviene al di
-                                fuori della <a href="#glossary-blockchain" class="glossary-link">blockchain</a>, tramite
+                                fuori della <a href="#glossary-blockchain" class="glossary-link">blockchain</a>,
+                                tramite
                                 sistemi tradizionali (es. un bonifico gestito da un <a href="#glossary-psp"
                                     class="glossary-link">PSP</a>).</dd>
                         </div>
                         <div>
                             <dt id="glossary-on-chain" class="text-xl font-bold text-emerald-700">On-chain</dt>
                             <dd class="mt-1 text-gray-700">Si riferisce a qualsiasi operazione o dato registrato
-                                direttamente sulla <a href="#glossary-blockchain" class="glossary-link">blockchain</a>,
+                                direttamente sulla <a href="#glossary-blockchain"
+                                    class="glossary-link">blockchain</a>,
                                 rendendolo pubblicamente verificabile e immutabile.</dd>
                         </div>
                         <div>
                             <dt id="glossary-opt-in" class="text-xl font-bold text-emerald-700">Opt-in</dt>
-                            <dd class="mt-1 text-gray-700">Un'azione richiesta su alcune <a href="#glossary-blockchain"
-                                    class="glossary-link">blockchain</a> (come Algorand) in cui un <a
-                                    href="#glossary-wallet" class="glossary-link">wallet</a> deve esplicitamente
+                            <dd class="mt-1 text-gray-700">Un'azione richiesta su alcune <a
+                                    href="#glossary-blockchain" class="glossary-link">blockchain</a> (come Algorand)
+                                in cui un <a href="#glossary-wallet" class="glossary-link">wallet</a> deve
+                                esplicitamente
                                 "accettare" di poter ricevere un determinato tipo di token (<a href="#glossary-asa"
                                     class="glossary-link">ASA</a>) prima che questo possa essergli trasferito.</dd>
                         </div>

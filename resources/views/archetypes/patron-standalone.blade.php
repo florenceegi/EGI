@@ -14,6 +14,49 @@
     <title>Mecenati FlorenceEGI - Il Nuovo Rinascimento Ecologico Digitale</title>
     <meta name="description"
         content="Diventa protagonista del nuovo Rinascimento: facilita connessioni significative tra arte contemporanea e rigenerazione ambientale. Un ruolo di prestigio per impatto misurabile.">
+    <meta name="keywords"
+        content="Mecenate,Patron,FlorenceEGI,Rinascimento,Arte,Sostenibilità,Blockchain,Impatto ambientale">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="author" content="FlorenceEGI">
+    <meta name="language" content="it">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph Protocol -->
+    <meta property="og:title" content="Mecenati FlorenceEGI - Nuovo Rinascimento Ecologico">
+    <meta property="og:description"
+        content="Facilita connessioni tra arte contemporanea e rigenerazione ambientale. Ruolo di prestigio per impatto misurabile.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="FlorenceEGI">
+    <meta property="og:locale" content="it_IT">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mecenati FlorenceEGI - Nuovo Rinascimento">
+    <meta name="twitter:description" content="Facilita connessioni tra arte e sostenibilità ambientale.">
+    <meta name="twitter:site" content="@FlorenceEGI">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Mecenati FlorenceEGI",
+        "description": "Protagonisti del nuovo Rinascimento ecologico digitale",
+        "url": "{{ url()->current() }}",
+        "inLanguage": "it",
+        "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://florence-egi.com/#website",
+            "name": "FlorenceEGI"
+        },
+        "about": {
+            "@type": "Role",
+            "name": "Mecenate Archetype",
+            "description": "Facilitatore di connessioni tra arte e sostenibilità"
+        }
+    }
+    </script>
 
     <!-- Google Fonts - Brand Guidelines -->
     <link

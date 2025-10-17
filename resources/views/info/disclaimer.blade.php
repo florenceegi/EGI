@@ -14,6 +14,45 @@
     <title>Disclaimer - FlorenceEGI Portale in Sviluppo</title>
     <meta name="description"
         content="Disclaimer per il portale FlorenceEGI in fase di sviluppo. Informazioni su stato di avanzamento e contatti per feedback.">
+    <meta name="keywords" content="FlorenceEGI,Disclaimer,Sviluppo,Staging,Beta,Blockchain">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="author" content="FlorenceEGI">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph Protocol -->
+    <meta property="og:title" content="Disclaimer - FlorenceEGI in Sviluppo">
+    <meta property="og:description" content="Portale in fase di sviluppo. Preview beta per stakeholder selezionati.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="FlorenceEGI">
+    <meta property="og:locale" content="it_IT">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Disclaimer - FlorenceEGI in Sviluppo">
+    <meta name="twitter:description" content="Portale in fase beta per stakeholder selezionati.">
+    <meta name="twitter:site" content="@FlorenceEGI">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Disclaimer - FlorenceEGI in Sviluppo",
+        "description": "Pagina disclaimer per portale in fase di sviluppo",
+        "url": "{{ url()->current() }}",
+        "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://florence-egi.com/#website",
+            "name": "FlorenceEGI"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "FlorenceEGI",
+            "url": "https://florence-egi.com"
+        }
+    }
+    </script>
 
     <!-- Google Fonts - Brand Guidelines -->
     <link

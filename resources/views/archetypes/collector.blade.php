@@ -19,6 +19,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('collector.meta.title') }}</title>
     <meta name="description" content="{{ __('collector.meta.description') }}">
+    <meta name="keywords" content="{{ __('collector.meta.keywords', 'Collezionista,EGI,Arte digitale,Sostenibilità,Blockchain,Certificazione ambientale') }}">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="author" content="FlorenceEGI">
+    <meta name="language" content="{{ config('app.locale', 'it') }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph Protocol -->
+    <meta property="og:title" content="{{ __('collector.meta.title') }}">
+    <meta property="og:description" content="{{ __('collector.meta.description') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="FlorenceEGI">
+    <meta property="og:locale" content="{{ str_replace('_', '-', config('app.locale', 'it')) }}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ __('collector.meta.title') }}">
+    <meta name="twitter:description" content="{{ __('collector.meta.description') }}">
+    <meta name="twitter:site" content="@FlorenceEGI">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "{{ __('collector.meta.title') }}",
+        "description": "{{ __('collector.meta.description') }}",
+        "url": "{{ url()->current() }}",
+        "inLanguage": "{{ config('app.locale', 'it') }}",
+        "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://florence-egi.com/#website",
+            "name": "FlorenceEGI"
+        },
+        "about": {
+            "@type": "Thing",
+            "name": "Collezionista Archetype",
+            "description": "Figura che colleziona EGI per sostenibilità ambientale"
+        }
+    }
+    </script>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap"
         rel="stylesheet">
@@ -174,7 +216,7 @@
             background-color: var(--blu-algoritmo);
             transform: scale(1.05);
         }
-        
+
         .main-content {
             flex-grow: 1;
             padding-top: 60px;
@@ -196,7 +238,7 @@
             max-width: 800px;
             margin: 0 auto;
         }
-        
+
         header .eyebrow {
             font-size: 1.1em;
             font-weight: 600;
@@ -222,7 +264,7 @@
             margin-left: auto;
             margin-right: auto;
         }
-        
+
         .cta-group {
             margin-top: 40px;
             display: flex;
@@ -249,13 +291,13 @@
             background-color: var(--oro-fiorentino);
             transform: translateY(-3px);
         }
-        
+
         .cta-button.secondary {
              background-color: transparent;
              border: 2px solid var(--oro-fiorentino);
              color: var(--oro-fiorentino);
         }
-        
+
         .cta-button.secondary:hover {
             background-color: var(--oro-fiorentino);
             color: var(--white);
@@ -282,7 +324,7 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        
+
         .section h3 {
             font-family: 'Playfair Display', serif;
             font-size: 1.5em;
@@ -303,7 +345,7 @@
             color: var(--dark-grey);
             line-height: 1.7;
         }
-        
+
         .bullet-list {
             max-width: 600px;
             margin: 30px auto;
@@ -330,7 +372,7 @@
             line-height: 1;
             top: -5px;
         }
-        
+
         .timeline {
             position: relative;
             margin: 40px auto;
@@ -354,7 +396,7 @@
             position: relative;
             padding-left: 60px;
         }
-        
+
         .timeline-item:last-child {
             margin-bottom: 0;
         }
@@ -372,14 +414,14 @@
             font-size: 1em;
             text-align: left;
         }
-        
+
         .two-column {
             display: grid;
             grid-template-columns: 1fr;
             gap: 30px;
             margin-top: 40px;
         }
-        
+
         .col-item {
             background-color: var(--white);
             padding: 30px;
@@ -387,7 +429,7 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.07);
             border-left: 4px solid var(--verde-rinascita);
         }
-        
+
         .col-item h4 {
             font-family: 'Playfair Display', serif;
             color: var(--blu-algoritmo);
@@ -395,12 +437,12 @@
             margin-top: 0;
             font-size: 1.3em;
         }
-        
+
         .col-item p {
             font-size: 1em;
             color: var(--dark-grey);
         }
-        
+
         .note-block {
             background-color: rgba(212, 165, 116, 0.1);
             padding: 25px;
@@ -408,7 +450,7 @@
             margin-top: 40px;
             border-left: 5px solid var(--oro-fiorentino);
         }
-        
+
         .note-block h4 {
             margin-top: 0;
             color: var(--blu-algoritmo);
@@ -421,14 +463,14 @@
             text-align: center;
             margin-top: 30px;
         }
-        
+
         .stat-item .value {
             font-family: 'Playfair Display', serif;
             font-size: 2.2em;
             color: var(--verde-rinascita);
             font-weight: bold;
         }
-        
+
         .stat-item .label {
             font-size: 1em;
             color: var(--dark-grey);
@@ -441,7 +483,7 @@
             gap: 20px;
             margin-top: 30px;
         }
-        
+
         .community-feature-item {
             text-align: center;
         }
@@ -509,12 +551,12 @@
             padding: 60px 20px;
             text-align: center;
         }
-        
+
         .final-cta-section h2 {
             color: var(--white);
             font-size: 2.2em;
         }
-        
+
         .final-cta-section .lead {
             color: var(--light-grey);
             font-size: 1.2em;
@@ -534,7 +576,7 @@
             color: var(--oro-fiorentino);
             text-decoration: none;
         }
-        
+
         footer a:hover {
             text-decoration: underline;
         }
@@ -568,23 +610,23 @@
             header {
                 padding: 120px 20px;
             }
-            
+
             header h1 {
                 font-size: 3.5em;
             }
-            
+
             header .lead {
                 font-size: 1.4em;
             }
-            
+
             .section {
                 padding: 80px 20px;
             }
-            
+
             .section h2 {
                 font-size: 2.8em;
             }
-            
+
             .two-column {
                 grid-template-columns: 1fr 1fr;
             }
@@ -720,7 +762,7 @@
                         <a href="/board" class="cta-button" role="button">{{ __('collector.cta.board') }}</a>
                     </div>
                 </section>
-                
+
                 <section id="privacy" class="section">
                      <h2>{{ __('collector.privacy.title') }}</h2>
                      <div class="text-block">
@@ -777,7 +819,7 @@
                     hamburger.setAttribute('aria-expanded', 'false');
                 }
             });
-            
+
             document.querySelectorAll('.sidebar-link').forEach(link => {
                 link.addEventListener('click', () => {
                     if (sidebar.classList.contains('open')) {
