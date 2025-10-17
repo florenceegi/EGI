@@ -343,11 +343,11 @@ class EgiReservationCertificateController extends Controller {
             $paymentBreakdown = $distributions->map(function ($dist) {
                 // Get user name from relationship or metadata fallback
                 $recipientName = $dist->user?->name ?? $dist->metadata['recipient_name'] ?? __('certificate.unknown_recipient');
-                
-                // Get role translation from user_type enum
-                $roleKey = $dist->user_type->value ?? 'unknown';
+
+                // 🎯 USE platform_role from wallet (SOURCE OF TRUTH), fallback to user_type for backward compat
+                $roleKey = $dist->platform_role ?? ($dist->user_type?->value ?? 'unknown');
                 $roleTranslated = __('certificate.roles.' . $roleKey);
-                
+
                 return [
                     'recipient' => $recipientName,
                     'role' => $roleTranslated,

@@ -66,19 +66,28 @@ return [
     'created_just_now' => 'Creato ora',
     'qr_code_alt' => 'Codice QR per la verifica del certificato',
 
-    // Payment distribution roles (aligned with PaymentDistribution user_type enum)
+    // Payment distribution roles (aligned with PlatformRole enum + UserTypeEnum for backward compat)
     'roles' => [
-        'weak' => 'Utente Base',
+        // Platform Roles (from wallets table - SOURCE OF TRUTH)
+        'epp' => 'Progetto Ambientale (EPP)',
+        'natan' => 'Natan Platform',
+        'frangette' => 'Frangette',
         'creator' => 'Creatore',
         'collector' => 'Collezionista',
         'commissioner' => 'Committente',
         'company' => 'Azienda',
-        'epp' => 'Progetto Ambientale (EPP)',
-        'trader-pro' => 'Trader Professionale',
+        'trader_pro' => 'Trader Professionale',
         'vip' => 'VIP',
-        'natan' => 'Natan Platform',
-        'unknown' => 'Ruolo Sconosciuto',
+        'weak' => 'Utente Base',
+        'pa_entity' => 'Ente Pubblico',
+        'inspector' => 'Ispettore',
         
+        // Backward compatibility (old user_type enum)
+        'trader-pro' => 'Trader Professionale',
+        
+        // Unknown fallback
+        'unknown' => 'Ruolo Sconosciuto',
+
         // Legacy roles (deprecated but kept for backward compatibility)
         'co_creator' => 'Co-Creatore',
         'collection_owner' => 'Proprietario Collezione',

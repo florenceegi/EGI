@@ -55,7 +55,9 @@ class PaymentDistribution extends Model {
         'blockchain_tx_id',      // Phase 2: Algorand transaction ID (mint tracking)
         'collection_id',
         'user_id',
-        'user_type',
+        'wallet_id',             // Reference to wallet (SOURCE OF TRUTH for platform_role)
+        'user_type',             // Account type (weak, creator, etc.) - backward compat
+        'platform_role',         // Wallet role (Natan, EPP, Frangette, Creator) - NEW SOURCE OF TRUTH
         'percentage',
         'amount_eur',
         'exchange_rate',
@@ -112,6 +114,14 @@ class PaymentDistribution extends Model {
      */
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the wallet associated with this distribution
+     * @return BelongsTo
+     */
+    public function wallet(): BelongsTo {
+        return $this->belongsTo(Wallet::class);
     }
 
     // ===== SCOPES FOR ANALYTICS =====

@@ -11,6 +11,7 @@ enum PlatformRole: string {
 
     case EPP = 'epp';
     case NATAN = 'natan';
+    case FRANGETTE = 'frangette';
     case CREATOR = 'creator';
     case COLLECTOR = 'collector';
     case COMMISSIONER = 'commissioner';
@@ -33,6 +34,7 @@ enum PlatformRole: string {
         return match ($value) {
             'epp' => self::EPP,
             'natan' => self::NATAN,
+            'frangette' => self::FRANGETTE,
             'creator' => self::CREATOR,
             'collector' => self::COLLECTOR,
             'commissioner' => self::COMMISSIONER,
