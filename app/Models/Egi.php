@@ -402,6 +402,7 @@ class Egi extends Model
     public function reservationCertificates()
     {
         return $this->hasMany(EgiReservationCertificate::class, 'egi_id')
+            ->where('certificate_type', 'reservation') // ✅ Only RESERVATION certificates, not MINT
             ->orderByRaw("CASE
                         WHEN reservation_type = 'strong' THEN 0
                         WHEN reservation_type = 'weak' THEN 1
