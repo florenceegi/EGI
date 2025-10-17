@@ -22,6 +22,7 @@ return [
         'title' => 'Anteprima EGI',
         'creator_by' => 'Creato da :name',
         'click_to_view' => 'Clicca per visualizzare la pagina completa dell\'EGI',
+        'price_label' => 'Valore EGI',
     ],
 
     // Blockchain Info Section

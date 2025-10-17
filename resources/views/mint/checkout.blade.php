@@ -66,7 +66,16 @@
                                 class="object-cover w-full h-full">
                         </a>
 
-                        <h3 class="text-lg font-semibold text-gray-900">{{ $egi->title }}</h3>
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="flex-1 text-lg font-semibold text-gray-900">{{ $egi->title }}</h3>
+                            <div class="ml-4 text-right">
+                                <div class="text-2xl font-bold text-blue-600">
+                                    €
+                                    {{ number_format($reservation ? $reservation->amount_eur : $egi->price, 2, ',', '.') }}
+                                </div>
+                                <div class="text-xs text-gray-500">{{ __('mint.egi_preview.price_label') }}</div>
+                            </div>
+                        </div>
                         <p class="mb-2 text-sm text-gray-600">
                             {{ __('mint.egi_preview.creator_by', ['name' => $egi->user->name]) }}</p>
 
@@ -1155,7 +1164,7 @@
             function showPollingErrorNotification() {
                 console.error('[MINT POLL] Too many errors, stopping');
             }
-            
+
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
@@ -1297,23 +1306,23 @@
                             <h3 class="text-lg font-semibold text-green-900">{{ __('mint.notification.success_title') }}</h3>
                             <p class="mt-1 text-sm text-green-800">{{ __('mint.notification.success_message') }}</p>
                             ${data.asaId ? `
-                                                                                                    <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
-                                                                                                        <div class="flex items-center justify-between mb-2 text-sm">
-                                                                                                            <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
-                                                                                                            <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
-                                                                                                                class="font-mono font-bold text-green-900 transition-colors hover:text-green-700 hover:underline">
-                                                                                                                ${data.asaId}
-                                                                                                            </a>
-                                                                                                        </div>
-                                                                                                        <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
-                                                                                                            class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
-                                                                                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                                                                            </svg>
-                                                                                                            {{ __('mint.notification.view_blockchain') }}
-                                                                                                        </a>
-                                                                                                    </div>
-                                                                                                ` : ''}
+                                                                                                                    <div class="p-3 mt-3 border border-green-300 rounded-lg bg-green-50">
+                                                                                                                        <div class="flex items-center justify-between mb-2 text-sm">
+                                                                                                                            <span class="font-medium text-green-700">{{ __('mint.notification.asa_label') }}:</span>
+                                                                                                                            <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
+                                                                                                                                class="font-mono font-bold text-green-900 transition-colors hover:text-green-700 hover:underline">
+                                                                                                                                ${data.asaId}
+                                                                                                                            </a>
+                                                                                                                        </div>
+                                                                                                                        <a href="https://testnet.explorer.perawallet.app/asset/${data.asaId}" target="_blank"
+                                                                                                                            class="inline-flex items-center text-sm font-medium text-green-700 transition-colors hover:text-green-900">
+                                                                                                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                                                                                            </svg>
+                                                                                                                            {{ __('mint.notification.view_blockchain') }}
+                                                                                                                        </a>
+                                                                                                                    </div>
+                                                                                                                ` : ''}
                         </div>
                         <button onclick="this.parentElement.parentElement.remove()"
                                 class="ml-4 text-green-600 transition-colors hover:text-green-900">
@@ -1395,12 +1404,12 @@
                                 </thead>
                                 <tbody>
                                     ${data.payment_breakdown.map(dist => `
-                                                                        <tr class="border-b border-gray-200">
-                                                                            <td class="py-2 font-medium text-gray-900">${dist.recipient}</td>
-                                                                            <td class="py-2 text-gray-700">${dist.role}</td>
-                                                                            <td class="py-2 font-semibold text-right text-gray-900">&euro; ${dist.amount_eur}</td>
-                                                                        </tr>
-                                                                    `).join('')}
+                                                                                        <tr class="border-b border-gray-200">
+                                                                                            <td class="py-2 font-medium text-gray-900">${dist.recipient}</td>
+                                                                                            <td class="py-2 text-gray-700">${dist.role}</td>
+                                                                                            <td class="py-2 font-semibold text-right text-gray-900">&euro; ${dist.amount_eur}</td>
+                                                                                        </tr>
+                                                                                    `).join('')}
                                 </tbody>
                             </table>
                         </div>
