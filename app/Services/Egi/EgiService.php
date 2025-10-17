@@ -183,7 +183,8 @@ class EgiService {
                 'coaTraits',
                 'traits.category',
                 'traits.traitType',
-                'reservationCertificates',
+                'reservationCertificates', // ✅ Reservation history
+                'mintCertificates', // ✅ Mint/Rebind blockchain purchases history
             ]);
 
             // Check likes for authenticated user

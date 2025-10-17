@@ -412,6 +412,17 @@ class Egi extends Model
             ->orderBy('created_at', 'desc'); // Tie-breaker per stesso prezzo
     }
 
+    /**
+     * Get mint/rebind certificates for this EGI (blockchain purchases)
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function mintCertificates()
+    {
+        return $this->hasMany(EgiReservationCertificate::class, 'egi_id')
+            ->where('certificate_type', 'mint') // ✅ Only MINT certificates (blockchain purchases)
+            ->orderBy('created_at', 'desc'); // Most recent first
+    }
+
     // ---------------------------------------------------------------------
     // Categoria (Trait con category.slug = 'category') Accessors
     // ---------------------------------------------------------------------

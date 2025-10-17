@@ -212,6 +212,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             {{-- Description Section --}}
                             @include('egis.partials.sidebar.description-section', compact('egi'))
 
+                            {{-- Mint/Rebind Blockchain History (PRIMA delle prenotazioni) --}}
+                            @include('egis.partials.sidebar.mint-history-section', compact('egi'))
+
                             {{-- Reservation History --}}
                             @include('egis.partials.sidebar.reservation-history-section', compact('egi'))
 

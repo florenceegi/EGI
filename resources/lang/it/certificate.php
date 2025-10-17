@@ -80,6 +80,24 @@ return [
     'success_message' => 'Prenotazione completata con successo! Ecco il tuo certificato.',
     'created_just_now' => 'Creato ora',
     'qr_code_alt' => 'Codice QR per la verifica del certificato',
+    'view_certificate' => 'Vedi Certificato',
+    'view_on_explorer' => 'Vedi su Explorer',
+
+    // Mint/Rebind History
+    'mint_history' => [
+        'title' => 'Storico Acquisti Blockchain',
+        'section_title' => 'Acquisti e Mercato Secondario',
+        'entries' => '{1} acquisto|[2,*] acquisti',
+        'no_entries' => 'Nessun Acquisto Blockchain',
+        'no_purchases_yet' => 'Questo EGI non è ancora stato acquistato tramite blockchain.',
+    ],
+
+    // Badge labels
+    'badge' => [
+        'minted' => 'Mintato',
+        'highest' => 'Priorità Massima',
+        'superseded' => 'Superato',
+    ],
 
     // Payment distribution roles (aligned with PlatformRole enum + UserTypeEnum for backward compat)
     'roles' => [

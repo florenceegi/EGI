@@ -409,7 +409,7 @@ class CertificateGeneratorService {
      */
     /**
      * Generate blockchain certificate PDF with DomPDF
-     * 
+     *
      * @param array $certificateData Certificate data
      * @return string Binary PDF content
      */
@@ -422,8 +422,8 @@ class CertificateGeneratorService {
             <meta charset="UTF-8">
             <style>
                 @page { margin: 40px; }
-                body { 
-                    font-family: "DejaVu Sans", sans-serif; 
+                body {
+                    font-family: "DejaVu Sans", sans-serif;
                     color: #1a202c;
                     line-height: 1.6;
                 }
@@ -581,7 +581,7 @@ class CertificateGeneratorService {
         // Generate PDF with DomPDF
         $pdf = Pdf::loadHTML($html);
         $pdf->setPaper('A4', 'portrait');
-        
+
         return $pdf->output();
     }
 }
