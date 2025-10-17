@@ -61,17 +61,27 @@
 
             <div class="overflow-hidden bg-white rounded-lg shadow-lg">
                 {{-- Header --}}
-                <div class="p-6 bg-gradient-to-r from-indigo-500 to-purple-600">
+                <div class="p-6 @if($certificate->certificate_type === 'mint') bg-gradient-to-r from-green-500 to-emerald-600 @else bg-gradient-to-r from-indigo-500 to-purple-600 @endif">
                     <div class="flex items-center justify-between">
                         <h1 class="text-2xl font-bold text-white truncate">
-                            {{ __('certificate.page_title', ['uuid' => $certificate->certificate_uuid]) }}
+                            @if($certificate->certificate_type === 'mint')
+                                {{ __('certificate.blockchain_certificate_title') }}
+                            @else
+                                {{ __('certificate.page_title', ['uuid' => $certificate->certificate_uuid]) }}
+                            @endif
                         </h1>
                         <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full
-                            @if($certificate->reservation_type === 'strong') bg-blue-100 text-blue-800 @else bg-orange-100 text-orange-800 @endif">
-                            {{ __('reservation.type.' . $certificate->reservation_type) }}
+                            @if($certificate->certificate_type === 'mint') bg-green-100 text-green-800
+                            @elseif($certificate->reservation_type === 'strong') bg-blue-100 text-blue-800
+                            @else bg-orange-100 text-orange-800 @endif">
+                            @if($certificate->certificate_type === 'mint')
+                                {{ __('certificate.type.blockchain_purchase') }}
+                            @else
+                                {{ __('reservation.type.' . $certificate->reservation_type) }}
+                            @endif
                         </span>
                     </div>
-                    <p class="mt-2 text-indigo-100">
+                    <p class="mt-2 @if($certificate->certificate_type === 'mint') text-green-100 @else text-indigo-100 @endif">
                         {{ $certificate->created_at->diffForHumans() }}
                     </p>
                 </div>
@@ -101,13 +111,50 @@
 
                                 <div class="grid grid-cols-3 gap-4">
                                     <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.wallet_address') }}</dt>
-                                    <dd class="col-span-2 font-mono text-xs text-sm text-gray-900 break-all">{{ $certificate->wallet_address }}</dd>
+                                    <dd class="col-span-2 font-mono text-xs text-gray-900 break-all">{{ $certificate->wallet_address }}</dd>
                                 </div>
 
                                 <div class="grid grid-cols-3 gap-4">
                                     <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.offer_amount_fiat') }}</dt>
                                     <dd class="col-span-2 text-sm text-gray-900">€{{ number_format($certificate->offer_amount_fiat, 2) }}</dd>
                                 </div>
+
+                                @if($certificate->certificate_type === 'mint' && $certificate->egiBlockchain)
+                                {{-- Blockchain specific data for MINT certificates --}}
+                                <div class="col-span-3 p-4 mt-4 border-2 border-green-200 rounded-lg bg-green-50">
+                                    <h3 class="mb-3 text-sm font-semibold text-green-800">🔗 Dati Blockchain</h3>
+                                    
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-xs font-medium text-green-700">ASA ID:</span>
+                                            <span class="font-mono text-xs text-green-900">{{ $certificate->egiBlockchain->asa_id }}</span>
+                                        </div>
+                                        
+                                        <div class="flex justify-between">
+                                            <span class="text-xs font-medium text-green-700">Transaction ID:</span>
+                                            <span class="font-mono text-xs text-green-900 truncate" title="{{ $certificate->egiBlockchain->blockchain_tx_id }}">
+                                                {{ substr($certificate->egiBlockchain->blockchain_tx_id, 0, 16) }}...
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="flex justify-between">
+                                            <span class="text-xs font-medium text-green-700">Mintato il:</span>
+                                            <span class="text-xs text-green-900">{{ $certificate->egiBlockchain->minted_at->format('d/m/Y H:i') }}</span>
+                                        </div>
+                                        
+                                        @if($certificate->egiBlockchain->asa_id)
+                                        <a href="https://explorer.perawallet.app/asset/{{ $certificate->egiBlockchain->asa_id }}" 
+                                           target="_blank" 
+                                           class="inline-flex items-center mt-2 text-xs font-medium text-green-700 transition-colors hover:text-green-900">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                            Visualizza su Pera Explorer
+                                        </a>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
 
                                 <div class="grid grid-cols-3 gap-4">
                                     <dt class="text-sm font-medium text-gray-500">{{ __('certificate.details.offer_amount_algo') }}</dt>

@@ -68,7 +68,8 @@ class EgiReservationCertificateController extends Controller {
                         $query->with('reservationCertificates');
                     },
                     'egi.collection',
-                    'reservation'
+                    'reservation',
+                    'egiBlockchain' // Load blockchain data for MINT certificates
                 ])
                 ->firstOrFail();
 
