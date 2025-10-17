@@ -11,7 +11,7 @@ return [
     'list_by_egi_meta_description' => 'Visualizza tutti i certificati di prenotazione per EGI #:egi_id su FlorenceEGI',
     'user_certificates_title' => 'I tuoi Certificati di Prenotazione',
     'user_certificates_meta_description' => 'Visualizza tutti i tuoi certificati di prenotazione EGI su FlorenceEGI',
-    
+
     // Certificate types
     'type' => [
         'blockchain_purchase' => 'Acquisto Blockchain',
