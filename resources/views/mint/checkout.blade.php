@@ -837,6 +837,9 @@
 
             // Check for success parameter in URL on page load
             document.addEventListener('DOMContentLoaded', function() {
+                console.log('[MINT DEBUG] 🚀 DOMContentLoaded event fired');
+                localStorage.setItem('mint_debug_step', 'dom_loaded');
+                
                 const urlParams = new URLSearchParams(window.location.search);
                 const success = urlParams.get('success');
 
@@ -844,16 +847,26 @@
                 if (success === '1') {
                     const newUrl = window.location.pathname + window.location.hash;
                     window.history.replaceState({}, document.title, newUrl);
+                    console.log('[MINT DEBUG] ✂️ Removed ?success=1 from URL');
                 }
 
                 // Check mint status from backend (ALWAYS, not only with ?success=1)
                 const mintStatus = '{{ $mintStatus }}';
+                console.log('[MINT DEBUG] 📊 Mint status from backend:', mintStatus);
+                localStorage.setItem('mint_debug_status', mintStatus);
 
                 if (mintStatus === 'completed') {
                     // EGI already minted - show post-mint UI directly
-                    console.log('[MINT] EGI already minted, showing post-mint UI directly');
+                    console.log('[MINT DEBUG] ✅ EGI already minted, showing post-mint UI directly');
 
                     @if (!empty($blockchainData['asa_id']))
+                        console.log('[MINT DEBUG] 🔗 Blockchain data available, calling updateUIToMinted');
+                        console.log('[MINT DEBUG] 📦 Blockchain data:', {
+                            asa_id: '{{ $blockchainData['asa_id'] }}',
+                            tx_id: '{{ $blockchainData['tx_id'] ?? '' }}',
+                            minted_at: '{{ $blockchainData['minted_at'] ?? '' }}'
+                        });
+                        
                         // Call updateUIToMinted with blockchain data
                         updateUIToMinted({
                             status: 'minted',
@@ -861,9 +874,13 @@
                             tx_id: '{{ $blockchainData['tx_id'] ?? '' }}',
                             minted_at: '{{ $blockchainData['minted_at'] ?? '' }}'
                         });
+                    @else
+                        console.error('[MINT DEBUG] ❌ No blockchain data available despite completed status!');
+                        localStorage.setItem('mint_debug_error', 'no_blockchain_data');
                     @endif
                 } else if (mintStatus === 'processing') {
                     // Mint still processing - show processing notification
+                    console.log('[MINT DEBUG] ⏳ Mint still processing, showing notification');
                     showMintProcessingNotification();
 
                     // Start polling for mint completion
@@ -990,34 +1007,56 @@
                     showPostMintLoading();
 
                     try {
-                        console.log('[MINT] 📞 Calling certificate generation endpoint');
+                        console.log('[MINT DEBUG] 📞 Calling certificate generation endpoint...');
+                        console.log('[MINT DEBUG] 🌐 Endpoint URL:', `/mint/{{ $egi->id }}/certificate/generate`);
                         localStorage.setItem('mint_debug_step', 'calling_certificate_endpoint');
+
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                        console.log('[MINT DEBUG] 🔑 CSRF Token:', csrfToken ? 'Found' : 'MISSING!');
+                        
+                        if (!csrfToken) {
+                            console.error('[MINT DEBUG] ❌ CSRF token missing! Fetch will fail!');
+                            localStorage.setItem('mint_debug_error', 'csrf_token_missing');
+                        }
 
                         // Call endpoint to generate certificate + payment breakdown
                         const response = await fetch(`/mint/{{ $egi->id }}/certificate/generate`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'X-CSRF-TOKEN': csrfToken,
                                 'Accept': 'application/json'
                             }
                         });
 
-                        console.log('[MINT] 📨 Certificate endpoint response status:', response.status);
+                        console.log('[MINT DEBUG] 📨 Certificate endpoint response status:', response.status);
+                        console.log('[MINT DEBUG] 📨 Response headers:', {
+                            'Content-Type': response.headers.get('Content-Type'),
+                            'Status': response.status,
+                            'StatusText': response.statusText
+                        });
                         localStorage.setItem('mint_debug_step', 'certificate_response_received');
                         localStorage.setItem('mint_debug_response_status', response.status);
 
+                        console.log('[MINT DEBUG] 📦 Parsing JSON response...');
                         const result = await response.json();
-                        console.log('[MINT] 📦 Certificate endpoint result:', result);
+                        console.log('[MINT DEBUG] 📦 Certificate endpoint result:', result);
+                        console.log('[MINT DEBUG] 📦 Result.success:', result.success);
+                        console.log('[MINT DEBUG] 📦 Result.data:', result.data);
                         localStorage.setItem('mint_debug_result', JSON.stringify(result));
 
                         if (result.success) {
-                            console.log('[MINT] ✅ Certificate generated successfully, showing success UI');
+                            console.log('[MINT DEBUG] ✅ Certificate generated successfully, calling showPostMintSuccess()');
+                            console.log('[MINT DEBUG] 📄 Certificate URL:', result.data?.certificate_url);
+                            console.log('[MINT DEBUG] 💰 Payment breakdown count:', result.data?.payment_breakdown?.length);
                             localStorage.setItem('mint_debug_step', 'showing_success_ui');
+                            
                             // Show post-mint success UI with certificate + payment breakdown
                             showPostMintSuccess(result.data);
+                            
+                            console.log('[MINT DEBUG] ✅ showPostMintSuccess() called successfully');
                         } else {
-                            console.error('[MINT] ⚠️ Certificate generation failed:', result.message);
+                            console.error('[MINT DEBUG] ⚠️ Certificate generation failed:', result.message);
                             localStorage.setItem('mint_debug_step', 'certificate_failed');
                             localStorage.setItem('mint_debug_error', result.message);
                             showPostMintPartialSuccess(data);
@@ -1310,12 +1349,18 @@
              * Show post-mint success with certificate + payment breakdown
              */
             function showPostMintSuccess(data) {
+                console.log('[MINT DEBUG] 🎨 showPostMintSuccess() called with data:', data);
+                localStorage.setItem('mint_debug_showPostMintSuccess', JSON.stringify(data));
+                
                 // Remove loading
-                document.getElementById('post-mint-loading')?.remove();
+                const loadingElement = document.getElementById('post-mint-loading');
+                console.log('[MINT DEBUG] 🔍 Looking for #post-mint-loading element:', loadingElement ? 'Found' : 'Not found');
+                loadingElement?.remove();
 
                 // Build payment breakdown table HTML
                 let paymentBreakdownHtml = '';
                 if (data.payment_breakdown && data.payment_breakdown.length > 0) {
+                    console.log('[MINT DEBUG] 💰 Building payment breakdown table with', data.payment_breakdown.length, 'entries');
                     paymentBreakdownHtml = `
                         <div class="p-4 mb-6 border border-gray-200 rounded-lg bg-gray-50">
                             <h4 class="mb-3 text-sm font-semibold text-gray-700">{{ __('mint.post_mint.payment_breakdown') }}</h4>
@@ -1432,10 +1477,30 @@
                     </div>
                 `;
 
+                console.log('[MINT DEBUG] 🔍 Looking for third column container...');
+                console.log('[MINT DEBUG] 📐 Selector:', '.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
+                
                 // Insert in the third column container
                 const thirdColumn = document.querySelector('.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
+                console.log('[MINT DEBUG] 📦 Third column element:', thirdColumn ? 'FOUND ✅' : 'NOT FOUND ❌');
+                
                 if (thirdColumn) {
+                    console.log('[MINT DEBUG] ➕ Inserting success HTML into third column...');
+                    console.log('[MINT DEBUG] 📏 Success HTML length:', successHtml.length, 'chars');
                     thirdColumn.insertAdjacentHTML('beforeend', successHtml);
+                    console.log('[MINT DEBUG] ✅ Success HTML inserted!');
+                    console.log('[MINT DEBUG] 📏 Third column new innerHTML length:', thirdColumn.innerHTML.length, 'chars');
+                    localStorage.setItem('mint_debug_step', 'success_ui_inserted');
+                } else {
+                    console.error('[MINT DEBUG] ❌ Third column container not found! Success UI cannot be displayed!');
+                    localStorage.setItem('mint_debug_error', 'third_column_not_found');
+                    
+                    // Debug: show all grid containers
+                    const allGrids = document.querySelectorAll('.grid');
+                    console.log('[MINT DEBUG] 🔍 Found', allGrids.length, 'grid elements');
+                    allGrids.forEach((grid, index) => {
+                        console.log(`[MINT DEBUG] Grid ${index}:`, grid.className);
+                    });
                 }
             }
 
