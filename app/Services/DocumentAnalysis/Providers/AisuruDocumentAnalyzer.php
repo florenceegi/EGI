@@ -187,4 +187,3 @@ class AisuruDocumentAnalyzer implements DocumentAnalysisInterface
         return true;
     }
 }
-

@@ -73,4 +73,3 @@ class DocumentAnalysisException extends Exception
         return $this->providerResponse;
     }
 }
-

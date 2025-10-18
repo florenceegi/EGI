@@ -414,4 +414,106 @@ class EgiReservationCertificateController extends Controller {
             ], 500);
         }
     }
+
+    /**
+     * Check if mint certificate PDF exists and return download URL
+     * Used by checkout page to render PDF thumbnail
+     *
+     * @package App\Http\Controllers
+     * @author Padmin D. Curtis (AI Partner OS3.0)
+     * @version 1.0.0 (FlorenceEGI - Mint Certificate Thumbnail)
+     * @date 2025-01-18
+     * @purpose Check mint certificate PDF availability for thumbnail rendering
+     *
+     * @param Request $request
+     * @param int $egiId - EGI ID
+     * @return JsonResponse
+     */
+    public function checkMintCertificatePdf(Request $request, int $egiId) {
+        try {
+            $user = $request->user();
+
+            // Load EGI with blockchain
+            $egi = \App\Models\Egi::with('blockchain')->findOrFail($egiId);
+
+            // Verify authorization - user must be the buyer
+            if (!$egi->blockchain || $egi->blockchain->buyer_user_id !== $user->id) {
+                $this->logger->warning('Unauthorized mint certificate PDF check', [
+                    'egi_id' => $egiId,
+                    'user_id' => $user->id,
+                    'buyer_id' => $egi->blockchain->buyer_user_id ?? null
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => __('certificate.unauthorized_access')
+                ], 403);
+            }
+
+            // Find mint certificate
+            $certificate = \App\Models\EgiReservationCertificate::where('egi_id', $egiId)
+                ->where('certificate_type', 'mint')
+                ->where('egi_blockchain_id', $egi->blockchain->id)
+                ->first();
+
+            if (!$certificate) {
+                $this->logger->info('No mint certificate found for PDF check', [
+                    'egi_id' => $egiId,
+                    'user_id' => $user->id
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'pdf_exists' => false,
+                    'message' => __('certificate.not_found')
+                ], 404);
+            }
+
+            // Check if PDF file exists on disk
+            $pdfPath = $certificate->pdf_path;
+            $pdfExists = $pdfPath && \Storage::disk('local')->exists($pdfPath);
+
+            if (!$pdfExists) {
+                $this->logger->warning('Mint certificate exists but PDF file missing', [
+                    'egi_id' => $egiId,
+                    'certificate_uuid' => $certificate->certificate_uuid,
+                    'pdf_path' => $pdfPath
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'pdf_exists' => false,
+                    'message' => __('certificate.pdf_not_found')
+                ], 404);
+            }
+
+            // PDF exists - return download URL
+            $this->logger->info('Mint certificate PDF check successful', [
+                'egi_id' => $egiId,
+                'certificate_uuid' => $certificate->certificate_uuid,
+                'pdf_exists' => true
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'pdf_exists' => true,
+                'download_url' => $certificate->getPdfUrl(),
+                'certificate_uuid' => $certificate->certificate_uuid,
+                'public_url' => route('egi-certificates.show', $certificate->certificate_uuid),
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to check mint certificate PDF', [
+                'egi_id' => $egiId,
+                'user_id' => $request->user()?->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => __('certificate.check_failed')
+            ], 500);
+        }
+    }
 }

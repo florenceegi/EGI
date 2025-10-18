@@ -175,33 +175,33 @@ class ContextMenus
                 $menus[] = $statisticsMenu;
                 break;
 
-            case 'pa.acts':
-            case 'pa.natan.chat':
-                // PA Acts Tokenization Context (route: pa.acts.index, pa.acts.upload, pa.acts.show)
-                Log::channel('upload')->info('🔍 CONTEXT MENUS - PA ACTS CONTEXT', [
-                    'context' => $context,
-                ]);
+            // case 'pa.acts':
+            // case 'pa.natan.chat':
+            //     // PA Acts Tokenization Context (route: pa.acts.index, pa.acts.upload, pa.acts.show)
+            //     Log::channel('upload')->info('🔍 CONTEXT MENUS - PA ACTS CONTEXT', [
+            //         'context' => $context,
+            //     ]);
 
-                $paActsMenu = new MenuGroup(__('menu.pa_acts_management'), 'pa-acts', [
+            //     $paActsMenu = new MenuGroup(__('menu.pa_acts_management'), 'pa-acts', [
 
-                    new MenuItem(
-                        translationKey: 'menu.pa_acts_list',
-                        route: 'pa.acts.index',
-                        icon: 'pa-acts-list',
-                        permission: 'access_pa_dashboard'
-                    ),
-                    new MenuItem(
-                        translationKey: 'menu.pa_acts_upload',
-                        route: 'pa.acts.upload',
-                        icon: 'pa-acts-upload',
-                        permission: 'access_pa_dashboard'
-                    ),
+            //         new MenuItem(
+            //             translationKey: 'menu.pa_acts_list',
+            //             route: 'pa.acts.index',
+            //             icon: 'pa-acts-list',
+            //             permission: 'access_pa_dashboard'
+            //         ),
+            //         new MenuItem(
+            //             translationKey: 'menu.pa_acts_upload',
+            //             route: 'pa.acts.upload',
+            //             icon: 'pa-acts-upload',
+            //             permission: 'access_pa_dashboard'
+            //         ),
 
-                    new PAStatisticsMenu()
-                ]);
-                $menus[] = $paActsMenu;
+            //         new PAStatisticsMenu()
+            //     ]);
+            //     $menus[] = $paActsMenu;
 
-                break;
+            //     break;
 
             // case 'egis':
             //     // PA Heritage Context (route: egis.index, egis.create, egis.edit, egis.show)
@@ -234,6 +234,8 @@ class ContextMenus
             //     $menus[] = $paNavMenu;
             //     break;
 
+
+            case 'pa.acts':
             case 'pa.egis':
             case 'pa.dashboard':
             case 'pa.heritage':

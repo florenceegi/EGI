@@ -105,6 +105,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/mint/status/{egiId}', [App\Http\Controllers\MintController::class, 'checkMintStatus'])
         ->name('mint.status');
 
+    // Mint certificate PDF check endpoint (AJAX)
+    Route::post('/mint/{egiId}/certificate/pdf/check', [App\Http\Controllers\EgiReservationCertificateController::class, 'checkMintCertificatePdf'])
+        ->name('mint.certificate.pdf-check');
+
     // Phase 2: Direct mint route (dual path: mint OR reserve)
     Route::get('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'showDirectMint'])
         ->name('egi.mint-direct');

@@ -52,7 +52,7 @@
                 }
             </script>
 
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
                 {{-- COLUMN 1: EGI Preview + Blockchain Info --}}
                 <div class="space-y-6">
                     <div class="p-6 bg-white rounded-lg shadow-lg">
@@ -335,10 +335,7 @@
 
                 {{-- COLUMN 3: Checkout Form + MiCA Compliance --}}
                 <div class="space-y-6">
-                    {{-- Post-mint success UI will be injected here by JavaScript --}}
-                    <div id="post-mint-container"></div>
-
-                    <div id="mint-form-container" class="p-6 bg-white rounded-lg shadow-lg">
+                        <div id="mint-form-container" class="p-6 bg-white rounded-lg shadow-lg">
                         <h2 class="mb-4 text-xl font-semibold">{{ __('mint.payment.title') }}</h2>
 
                         {{-- Mint Status Badges --}}
@@ -672,6 +669,12 @@
                             {{ __('mint.compliance.mica_description') }}
                         </p>
                     </div>
+                </div>
+
+                {{-- COLUMN 4: Post-Mint Success --}}
+                <div class="space-y-6">
+                    {{-- Post-mint UI will be injected here by JavaScript after mint completion --}}
+                    <div id="post-mint-container"></div>
                 </div>
             </div>
         </div>
@@ -1373,6 +1376,115 @@
             }
 
             /**
+             * Ensure PDF.js library is loaded (lazy loading from CDN)
+             * @returns {Promise} Resolves when PDF.js is ready
+             */
+            function ensurePdfJsLoaded() {
+                if (window.pdfjsLib && window.pdfjsLib.getDocument) {
+                    console.log('[PDF.js] ✅ Already loaded');
+                    return Promise.resolve();
+                }
+
+                return new Promise((resolve, reject) => {
+                    console.log('[PDF.js] 📦 Loading from CDN...');
+                    
+                    // Load main PDF.js library
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+                    script.async = true;
+                    
+                    script.onload = () => {
+                        // Set worker path
+                        pdfjsLib.GlobalWorkerOptions.workerSrc = 
+                            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                        console.log('[PDF.js] ✅ Loaded successfully');
+                        resolve();
+                    };
+                    
+                    script.onerror = () => {
+                        console.error('[PDF.js] ❌ Failed to load from CDN');
+                        reject(new Error('Failed to load PDF.js'));
+                    };
+                    
+                    document.head.appendChild(script);
+                });
+            }
+
+            /**
+             * Render Mint Certificate PDF thumbnail
+             * REPLICATES CoA thumbnail system from components/coa/sidebar-section.blade.php
+             * @param {HTMLElement} container - Container div with data-egi-id
+             * @param {number} egiId - EGI ID for certificate lookup
+             */
+            async function renderMintCertificateThumb(container, egiId) {
+                console.log('[CERT THUMB] 🎨 Starting render for EGI ' + egiId);
+                
+                if (!container) {
+                    console.error('[CERT THUMB] ❌ Container element not provided');
+                    return;
+                }
+
+                try {
+                    // 1) Check existing PDF and get URL
+                    const res = await fetch(`/mint/${egiId}/certificate/pdf/check`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    });
+                    
+                    const info = await res.json();
+                    console.log('[CERT THUMB] 📄 Certificate info received:', info);
+                    
+                    if (!info || !info.pdf_exists || !info.download_url) {
+                        container.innerHTML = `<div class="p-3 text-xs text-center text-gray-400">{{ __('mint.certificate.loading') }}</div>`;
+                        return;
+                    }
+
+                    // 2) Load pdf.js
+                    await ensurePdfJsLoaded();
+
+                    // 3) Render first page to canvas (SAME AS COA)
+                    const url = info.download_url;
+                    container.dataset.downloadUrl = url;
+                    const pdf = await window['pdfjsLib'].getDocument({ url }).promise;
+                    const page = await pdf.getPage(1);
+
+                    const view = page.getViewport({ scale: 1 });
+                    const targetW = parseInt(container.getAttribute('data-thumb-width') || '140', 10);
+                    const scale = targetW / view.width;
+                    const vp = page.getViewport({ scale });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.floor(vp.width);
+                    canvas.height = Math.floor(vp.height);
+                    const ctx = canvas.getContext('2d');
+                    await page.render({
+                        canvasContext: ctx,
+                        viewport: vp
+                    }).promise;
+
+                    container.innerHTML = '';
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                    container.appendChild(canvas);
+                    
+                    // Make clickable
+                    container.addEventListener('click', () => {
+                        const du = container.getAttribute('data-download-url') || container.dataset.downloadUrl;
+                        if (du) window.open(du, '_blank');
+                    }, { once: true });
+                    
+                    console.log('[CERT THUMB] ✅ Thumbnail rendered successfully');
+
+                } catch (error) {
+                    console.error('[CERT THUMB] ❌ Render failed:', error);
+                    container.innerHTML = `<div class="p-3 text-xs text-center text-red-300">Anteprima non disponibile</div>`;
+                }
+            }
+
+            /**
              * Show post-mint success with certificate + payment breakdown
              */
             function showPostMintSuccess(data) {
@@ -1443,65 +1555,89 @@
                     </div>
                 ` : '';
 
-                // Show success UI
+                // Show success UI with Golden Ratio layout (1.618:1)
                 const successHtml = `
-                    <div id="post-mint-success" class="p-6 bg-white rounded-lg shadow-sm">
-                        <div class="mb-6 text-center">
-                            <div class="inline-flex items-center justify-center w-16 h-16 mb-4 text-white bg-green-500 rounded-full">
-                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    <div id="post-mint-success" class="overflow-hidden bg-white rounded-lg shadow-lg">
+                        <!-- Header Section (38.2% - Minor) -->
+                        <div class="p-6 text-center bg-gradient-to-br from-green-50 to-emerald-50">
+                            <div class="inline-flex items-center justify-center w-20 h-20 mb-4 text-white bg-gradient-to-br from-green-500 to-emerald-600 rounded-full shadow-lg">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
                             <h2 class="mb-2 text-2xl font-bold text-gray-900">{{ __('mint.post_mint.congratulations') }}</h2>
-                            <p class="text-gray-600">{{ __('mint.post_mint.success_message') }}</p>
+                            <p class="text-gray-700">{{ __('mint.post_mint.success_message') }}</p>
                         </div>
 
-                        ${blockchainHtml}
-                        ${paymentBreakdownHtml}
+                        <!-- Main Content Section (61.8% - Major) -->
+                        <div class="p-6 space-y-6">
+                            ${blockchainHtml}
+                            ${paymentBreakdownHtml}
 
-                        <div class="p-4 mb-6 border border-blue-200 rounded-lg bg-blue-50">
-                            <h4 class="mb-3 text-sm font-semibold text-blue-800">{{ __('mint.post_mint.certificate_title') }}</h4>
-                            <p class="mb-4 text-sm text-blue-700">{{ __('mint.post_mint.certificate_description') }}</p>
-
-                            <!-- PDF Thumbnail -->
-                            <div class="mb-4 overflow-hidden border-2 border-blue-300 rounded-lg">
-                                <a href="${data.public_url}" target="_blank" class="block transition-opacity hover:opacity-80">
-                                    <div class="flex items-center justify-center h-48 bg-gradient-to-br from-blue-50 to-blue-100">
-                                        <div class="text-center">
-                                            <svg class="w-20 h-20 mx-auto mb-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                            <!-- Certificate Section -->
+                            <div class="p-5 border-2 border-blue-200 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50">
+                                <div class="flex items-center mb-4">
+                                    <svg class="w-6 h-6 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                    <h4 class="text-lg font-semibold text-blue-900">{{ __('mint.post_mint.certificate_title') }}</h4>
+                                </div>
+                                <p class="mb-5 text-sm text-blue-800">{{ __('mint.post_mint.certificate_description') }}</p>
+                               
+                                <!-- Certificate PDF Thumbnail (collapsible like CoA) -->
+                                <details class="mt-3 mb-5 group" id="mintCertPdfThumbSection-${data.egi_id}">
+                                    <summary class="flex items-center justify-between text-xs text-blue-700 cursor-pointer select-none hover:text-blue-900">
+                                        <span>Anteprima PDF</span>
+                                        <svg class="w-3 h-3 transition-transform transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </summary>
+                                    <div class="flex justify-center mt-2">
+                                        <div id="mintCertPdfPreview-${data.egi_id}" 
+                                             data-egi-id="${data.egi_id}" 
+                                             data-thumb-width="140"
+                                             class="relative flex aspect-[3/4] w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded border border-blue-500/20 bg-gray-100">
+                                            <div class="absolute inset-0 bg-gradient-to-br from-gray-200/50 to-gray-300/50 animate-pulse"></div>
+                                            <svg class="relative w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                             </svg>
-                                            <p class="text-sm font-medium text-blue-700">{{ __('mint.post_mint.certificate_blockchain') }}</p>
-                                            <p class="text-xs text-blue-600">UUID: ${data.certificate_uuid.substring(0, 8)}...</p>
                                         </div>
                                     </div>
-                                </a>
+                                </details>
+
+                                <!-- Certificate Actions (2-column grid) -->
+                                <div class="grid grid-cols-2 gap-3">
+                                    <a href="${data.certificate_url}" download 
+                                       class="flex items-center justify-center px-4 py-3 text-sm font-semibold text-white transition-all bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg hover:scale-105">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        {{ __('mint.post_mint.download_certificate') }}
+                                    </a>
+                                    <a href="${data.public_url}" target="_blank"
+                                       class="flex items-center justify-center px-4 py-3 text-sm font-semibold text-blue-700 transition-all bg-white border-2 border-blue-300 rounded-lg shadow-md hover:bg-blue-50 hover:border-blue-400 hover:shadow-lg">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        {{ __('mint.post_mint.view_certificate') }}
+                                    </a>
+                                </div>
+                                
+                                <!-- Certificate UUID (subtle info) -->
+                                <div class="mt-3 text-xs text-center text-blue-600">
+                                    <span class="font-mono">UUID: ${data.certificate_uuid.substring(0, 16)}...</span>
+                                </div>
                             </div>
 
-                            <!-- Action Buttons -->
-                            <div class="flex gap-2">
-                                <a href="${data.certificate_url}" download class="flex items-center justify-center flex-1 px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-700">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    {{ __('mint.post_mint.download_certificate') }}
-                                </a>
-                                <a href="${data.public_url}" target="_blank" class="flex items-center justify-center flex-1 px-4 py-2 text-sm font-medium text-blue-700 transition-colors bg-blue-100 border border-blue-300 rounded-md hover:bg-blue-200">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                    {{ __('mint.post_mint.view_certificate') }}
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="flex gap-3">
-                            <a href="{{ route('egis.show', $egi->id) }}" class="flex-1 px-6 py-3 text-center text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700">
+                            <!-- CTA: View EGI (single primary action) -->
+                            <a href="{{ route('egis.show', $egi->id) }}" 
+                               class="block w-full px-6 py-4 text-base font-bold text-center text-white transition-all bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg shadow-lg hover:from-green-700 hover:to-emerald-700 hover:shadow-xl hover:scale-105">
+                                <svg class="inline-block w-6 h-6 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
                                 {{ __('mint.post_mint.view_egi') }}
-                            </a>
-                            <a href="${data.public_url}" class="flex-1 px-6 py-3 text-center text-blue-600 transition-colors border-2 border-blue-600 rounded-lg hover:bg-blue-50">
-                                {{ __('mint.post_mint.view_certificate') }}
                             </a>
                         </div>
                     </div>
@@ -1519,6 +1655,33 @@
                     postMintContainer.innerHTML = successHtml;
                     console.log('[MINT DEBUG] ✅ Success HTML inserted!');
                     localStorage.setItem('mint_debug_step', 'success_ui_inserted');
+                    
+                    // Setup thumbnail rendering (lazy load when details opened - SAME AS COA)
+                    if (data.egi_id) {
+                        const thumbSection = document.getElementById('mintCertPdfThumbSection-' + data.egi_id);
+                        const thumbContainer = document.getElementById('mintCertPdfPreview-' + data.egi_id);
+                        
+                        if (thumbSection && thumbContainer) {
+                            let rendered = false;
+                            
+                            // AUTO-OPEN details and render immediately
+                            thumbSection.open = true;
+                            rendered = true;
+                            console.log('[MINT DEBUG] 🎨 Auto-opening thumbnail section and rendering PDF for EGI ' + data.egi_id);
+                            renderMintCertificateThumb(thumbContainer, data.egi_id);
+                            
+                            // Also setup toggle handler for re-opening
+                            thumbSection.addEventListener('toggle', () => {
+                                if (thumbSection.open && !rendered) {
+                                    rendered = true;
+                                    console.log('[MINT DEBUG] 🎨 Rendering PDF thumbnail for EGI ' + data.egi_id);
+                                    renderMintCertificateThumb(thumbContainer, data.egi_id);
+                                }
+                            });
+                        } else {
+                            console.error('[MINT DEBUG] ❌ Thumbnail section or container not found');
+                        }
+                    }
                 } else {
                     console.error('[MINT DEBUG] ❌ Post-mint container #post-mint-container not found!');
                     localStorage.setItem('mint_debug_error', 'post_mint_container_not_found');
@@ -1561,12 +1724,62 @@
                     </div>
                 `;
 
-                // Insert in the third column container
-                const thirdColumn = document.querySelector('.grid.grid-cols-1.gap-6.lg\\:grid-cols-3 > div:last-child');
-                if (thirdColumn) {
-                    thirdColumn.insertAdjacentHTML('beforeend', successHtml);
+                // Insert in the post-mint-container of column 4
+                const postMintContainer = document.getElementById('post-mint-container');
+                if (postMintContainer) {
+                    postMintContainer.innerHTML = successHtml;
+                    console.log('[Post-Mint UI] Success HTML injected into #post-mint-container');
+                } else {
+                    console.error('[Post-Mint UI] #post-mint-container not found in DOM');
                 }
             }
+
+            /**
+             * Initialize post-mint UI on page load
+             */
+            document.addEventListener('DOMContentLoaded', async function() {
+                const mintStatus = '{{ $mintStatus }}';
+                const egiId = {{ $egi->id }};
+
+                console.log('[Post-Mint Init] DOMContentLoaded fired', { mintStatus, egiId });
+
+                // If mint already completed (page reload), populate post-mint UI
+                if (mintStatus === 'completed') {
+                    console.log('[Post-Mint Init] Mint completed, fetching certificate data...');
+
+                    try {
+                        // Fetch certificate and payment breakdown data
+                        const response = await fetch(`/mint/${egiId}/certificate/generate`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                        });
+
+                        if (!response.ok) {
+                            console.error('[Post-Mint Init] Failed to fetch certificate data:', response.status);
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+
+                        const result = await response.json();
+                        console.log('[Post-Mint Init] Certificate data received:', result);
+
+                        if (result.success && result.data) {
+                            // Populate payment breakdown and certificate section
+                            showPostMintSuccess(result.data);
+                            console.log('[Post-Mint Init] Post-mint UI populated successfully');
+                        } else {
+                            console.warn('[Post-Mint Init] Certificate generation returned no data');
+                        }
+
+                    } catch (error) {
+                        console.error('[Post-Mint Init] Error fetching certificate data:', error);
+                    }
+                } else {
+                    console.log('[Post-Mint Init] Mint not completed, skipping post-mint UI');
+                }
+            });
         </script>
     @endpush
 </x-platform-layout>

@@ -252,6 +252,11 @@ return [
         'certificate_blockchain' => 'Certificato Blockchain',
         'download_certificate' => 'Scarica Certificato PDF',
         'view_certificate' => 'Visualizza Certificato',
+        'preview_pdf' => 'Anteprima PDF',
+        'loading' => 'Caricamento...',
+        'download_pdf' => 'Scarica PDF',
+        'info_title' => 'Certificato Ufficiale',
+        'info_description' => 'Questo certificato contiene i dati blockchain verificati del tuo EGI mintato.',
 
         // Payment breakdown
         'payment_breakdown' => 'Riepilogo Distribuzione Pagamento',
