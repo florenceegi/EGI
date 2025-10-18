@@ -205,7 +205,7 @@ $userReservation =
                 {{-- No actions available (or price = 0) --}}
                 @if ($egi->isMinted())
                     {{-- EGI già mintato - Bottone cliccabile per visualizzare dettagli mint --}}
-                    <a href="{{ route('egi.mint-direct', $egi->id) }}"
+                    <a href="{{ route('mint.show', $egi->blockchain->id) }}"
                         class="inline-flex w-full items-center justify-center rounded-lg border border-green-600/30 bg-green-700/20 px-6 py-4 font-medium text-green-400 backdrop-blur-sm transition-all hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300">
                         <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
