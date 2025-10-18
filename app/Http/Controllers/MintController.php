@@ -51,7 +51,7 @@ class MintController extends Controller {
             $reservationId = request()->query('reservation_id');
 
             if (!$reservationId) {
-                $this->errorManager->handle('MINT_PAYMENT_MISSING_RESERVATION', [
+                $this->errorManager->handle('MINT_CHECKOUT_MISSING_PARAMS', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egiId,
                 ]);
@@ -63,7 +63,7 @@ class MintController extends Controller {
 
             // Authorization: user must be reservation winner
             if ($reservation->user_id !== Auth::id()) {
-                $this->errorManager->handle('MINT_PAYMENT_UNAUTHORIZED', [
+                $this->errorManager->handle('MINT_CHECKOUT_UNAUTHORIZED', [
                     'user_id' => Auth::id(),
                     'reservation_user_id' => $reservation->user_id,
                     'egi_id' => $egiId,
@@ -74,7 +74,7 @@ class MintController extends Controller {
 
             // Check reservation is still valid
             if (!$reservation->is_current || $reservation->status !== 'active') {
-                $this->errorManager->handle('MINT_PAYMENT_INVALID_RESERVATION', [
+                $this->errorManager->handle('MINT_CHECKOUT_INVALID_RESERVATION', [
                     'user_id' => Auth::id(),
                     'egi_id' => $egiId,
                     'reservation_id' => $reservationId,
@@ -91,7 +91,7 @@ class MintController extends Controller {
             return view('mint.payment-form', compact('egi', 'reservation'));
 
         } catch (\Exception $e) {
-            $this->errorManager->handle('MINT_PAYMENT_FORM_ERROR', [
+            $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),
                 'egi_id' => $egiId,
                 'error' => $e->getMessage()
@@ -555,9 +555,9 @@ class MintController extends Controller {
                 }
             }
 
-            return view('mint.checkout', compact('egi', 'availability', 'reservation', 'mintStatus', 'blockchainData'));
+            return view('mint.payment-form', compact('egi', 'availability', 'reservation', 'mintStatus', 'blockchainData'));
         } catch (\Exception $e) {
-            $this->errorManager->handle('DIRECT_MINT_CHECKOUT_ERROR', [
+            $this->errorManager->handle('DIRECT_MINT_VALIDATION_ERROR', [
                 'user_id' => Auth::id(),
                 'egi_id' => $id,
                 'error' => $e->getMessage()
