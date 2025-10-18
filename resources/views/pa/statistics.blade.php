@@ -2,7 +2,7 @@
     <div class="container mx-auto px-4 py-8">
         {{-- Page Header --}}
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-[#1B365D] mb-2">
+            <h1 class="mb-2 text-3xl font-bold text-[#1B365D]">
                 📊 {{ __('pa_acts.statistics.page_title') }}
             </h1>
             <p class="text-gray-600">
@@ -11,9 +11,9 @@
         </div>
 
         {{-- KPI Cards Row 1 - Contatori Base --}}
-        <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
+        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {{-- Total Acts --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600">{{ __('pa_acts.index.stats.total') }}</p>
@@ -22,13 +22,13 @@
                         </p>
                     </div>
                     <div class="rounded-lg bg-[#1B365D] bg-opacity-10 p-3">
-                        <span class="material-icons text-[#1B365D] text-3xl">description</span>
+                        <span class="material-icons text-3xl text-[#1B365D]">description</span>
                     </div>
                 </div>
             </div>
 
             {{-- Anchored --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600">{{ __('pa_acts.index.stats.anchored') }}</p>
@@ -37,13 +37,13 @@
                         </p>
                     </div>
                     <div class="rounded-lg bg-green-100 p-3">
-                        <span class="material-icons text-green-600 text-3xl">verified</span>
+                        <span class="material-icons text-3xl text-green-600">verified</span>
                     </div>
                 </div>
             </div>
 
             {{-- Pending --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600">{{ __('pa_acts.index.stats.pending') }}</p>
@@ -52,34 +52,34 @@
                         </p>
                     </div>
                     <div class="rounded-lg bg-orange-100 p-3">
-                        <span class="material-icons text-orange-600 text-3xl">schedule</span>
+                        <span class="material-icons text-3xl text-orange-600">schedule</span>
                     </div>
                 </div>
             </div>
 
             {{-- Failed --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600">{{ __('pa_acts.index.stats.failed') }}</p>
                         <p class="mt-2 text-3xl font-bold text-red-600">
                             {{ $stats['failed'] ?? 0 }}
                         </p>
-                        @if(($stats['failed'] ?? 0) > 0)
+                        @if (($stats['failed'] ?? 0) > 0)
                             <p class="mt-1 text-xs text-red-500">{{ __('pa_acts.statistics.require_attention') }}</p>
                         @endif
                     </div>
                     <div class="rounded-lg bg-red-100 p-3">
-                        <span class="material-icons text-red-600 text-3xl">error</span>
+                        <span class="material-icons text-3xl text-red-600">error</span>
                     </div>
                 </div>
             </div>
         </div>
 
         {{-- KPI Cards Row 2 - Performance Metrics --}}
-        <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-3">
+        <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
             {{-- Success Rate --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <div class="mb-4">
                     <p class="text-sm font-medium text-gray-600">{{ __('pa_acts.index.stats.success_rate') }}</p>
                     <p class="mt-2 text-3xl font-bold text-green-600">
@@ -87,19 +87,19 @@
                     </p>
                 </div>
                 <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                    <div class="h-full bg-green-600 transition-all" 
-                         style="width: {{ $stats['success_rate'] ?? 0 }}%"></div>
+                    <div class="h-full bg-green-600 transition-all" style="width: {{ $stats['success_rate'] ?? 0 }}%">
+                    </div>
                 </div>
                 <p class="mt-2 text-xs text-gray-500">
                     {{ __('pa_acts.statistics.completed_of_total', [
-                        'completed' => $stats['tokenization']['completed'] ?? 0, 
-                        'total' => $stats['total'] ?? 0
+                        'completed' => $stats['tokenization']['completed'] ?? 0,
+                        'total' => $stats['total'] ?? 0,
                     ]) }}
                 </p>
             </div>
 
             {{-- This Month --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                 <div>
                     <p class="text-sm font-medium text-gray-600">{{ __('pa_acts.index.stats.this_month') }}</p>
                     <p class="mt-2 text-3xl font-bold text-purple-600">
@@ -113,15 +113,15 @@
         </div>
 
         {{-- Charts Row --}}
-        <div class="grid grid-cols-1 gap-6 mb-8 lg:grid-cols-2">
+        <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
             {{-- Document Type Distribution --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h3 class="mb-4 text-lg font-semibold text-gray-800">
                     {{ __('pa_acts.statistics.doc_type_distribution') }}
                 </h3>
-                @if(!empty($docTypeDistribution))
+                @if (!empty($docTypeDistribution))
                     <div class="space-y-3">
-                        @foreach($docTypeDistribution as $type => $count)
+                        @foreach ($docTypeDistribution as $type => $count)
                             @php
                                 $percentage = $stats['total'] > 0 ? ($count / $stats['total']) * 100 : 0;
                                 $colors = [
@@ -134,8 +134,8 @@
                                 $color = $colors[$type] ?? ['bg' => 'bg-gray-500', 'text' => 'text-gray-700'];
                             @endphp
                             <div>
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-sm font-medium {{ $color['text'] }} capitalize">
+                                <div class="mb-1 flex items-center justify-between">
+                                    <span class="{{ $color['text'] }} text-sm font-medium capitalize">
                                         {{ ucfirst($type) }}
                                     </span>
                                     <span class="text-sm text-gray-600">
@@ -143,47 +143,48 @@
                                     </span>
                                 </div>
                                 <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                                    <div class="h-full {{ $color['bg'] }} transition-all" 
-                                         style="width: {{ $percentage }}%"></div>
+                                    <div class="{{ $color['bg'] }} h-full transition-all"
+                                        style="width: {{ $percentage }}%"></div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <p class="text-center text-gray-500 py-8">{{ __('pa_acts.statistics.no_data') }}</p>
+                    <p class="py-8 text-center text-gray-500">{{ __('pa_acts.statistics.no_data') }}</p>
                 @endif
             </div>
 
             {{-- Monthly Trends --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h3 class="mb-4 text-lg font-semibold text-gray-800">
                     {{ __('pa_acts.statistics.monthly_trends') }}
                 </h3>
-                @if(!empty($monthlyTrends))
+                @if (!empty($monthlyTrends))
                     <div class="space-y-3">
-                        @foreach(array_slice($monthlyTrends, -6) as $trend)
+                        @foreach (array_slice($monthlyTrends, -6) as $trend)
                             <div>
-                                <div class="flex justify-between items-center mb-1">
+                                <div class="mb-1 flex items-center justify-between">
                                     <span class="text-sm font-medium text-gray-700">
                                         {{ $trend['month_label'] }}
                                     </span>
                                     <span class="text-sm text-gray-600">
                                         {{ __('pa_acts.statistics.uploaded_anchored', [
-                                            'uploaded' => $trend['uploaded'], 
-                                            'anchored' => $trend['anchored']
+                                            'uploaded' => $trend['uploaded'],
+                                            'anchored' => $trend['anchored'],
                                         ]) }}
                                     </span>
                                 </div>
                                 <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                                     @php
                                         $uploadPercentage = 100;
-                                        $anchoredPercentage = $trend['uploaded'] > 0 
-                                            ? ($trend['anchored'] / $trend['uploaded']) * 100 
-                                            : 0;
+                                        $anchoredPercentage =
+                                            $trend['uploaded'] > 0
+                                                ? ($trend['anchored'] / $trend['uploaded']) * 100
+                                                : 0;
                                     @endphp
-                                    <div class="h-full bg-[#1B365D] relative" style="width: {{ $uploadPercentage }}%">
-                                        <div class="h-full bg-green-500 absolute left-0 top-0" 
-                                             style="width: {{ $anchoredPercentage }}%"></div>
+                                    <div class="relative h-full bg-[#1B365D]" style="width: {{ $uploadPercentage }}%">
+                                        <div class="absolute left-0 top-0 h-full bg-green-500"
+                                            style="width: {{ $anchoredPercentage }}%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -191,24 +192,24 @@
                     </div>
                     <div class="mt-4 flex gap-4 text-xs">
                         <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded bg-[#1B365D]"></div>
+                            <div class="h-3 w-3 rounded bg-[#1B365D]"></div>
                             <span class="text-gray-600">{{ __('pa_acts.statistics.legend_uploaded') }}</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded bg-green-500"></div>
+                            <div class="h-3 w-3 rounded bg-green-500"></div>
                             <span class="text-gray-600">{{ __('pa_acts.statistics.legend_anchored') }}</span>
                         </div>
                     </div>
                 @else
-                    <p class="text-center text-gray-500 py-8">{{ __('pa_acts.statistics.no_data') }}</p>
+                    <p class="py-8 text-center text-gray-500">{{ __('pa_acts.statistics.no_data') }}</p>
                 @endif
             </div>
         </div>
 
         {{-- Failed Acts Table (if any) --}}
-        @if(!empty($recentFailed) && $recentFailed->count() > 0)
-            <div class="bg-white rounded-xl border border-red-200 p-6 shadow-sm mb-8">
-                <h3 class="text-lg font-semibold text-red-700 mb-4 flex items-center gap-2">
+        @if (!empty($recentFailed) && $recentFailed->count() > 0)
+            <div class="mb-8 rounded-xl border border-red-200 bg-white p-6 shadow-sm">
+                <h3 class="mb-4 flex items-center gap-2 text-lg font-semibold text-red-700">
                     <span class="material-icons">error</span>
                     {{ __('pa_acts.statistics.failed_acts_title', ['count' => $recentFailed->count()]) }}
                 </h3>
@@ -216,31 +217,36 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('pa_acts.statistics.table.protocol') }}</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('pa_acts.statistics.table.type') }}</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('pa_acts.statistics.table.attempts') }}</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('pa_acts.statistics.table.error') }}</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('pa_acts.statistics.table.actions') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                                    {{ __('pa_acts.statistics.table.protocol') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                                    {{ __('pa_acts.statistics.table.type') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                                    {{ __('pa_acts.statistics.table.attempts') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                                    {{ __('pa_acts.statistics.table.error') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                                    {{ __('pa_acts.statistics.table.actions') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($recentFailed as $act)
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            @foreach ($recentFailed as $act)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
                                         {{ $act->pa_protocol_number }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm capitalize text-gray-500">
                                         {{ $act->pa_act_type }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                                         {{ $act->pa_tokenization_attempts }}
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-red-600 max-w-md truncate">
+                                    <td class="max-w-md truncate px-6 py-4 text-sm text-red-600">
                                         {{ Str::limit($act->pa_tokenization_error, 100) }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <a href="{{ route('pa.acts.show', $act) }}" 
-                                           class="text-blue-600 hover:text-blue-900">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm">
+                                        <a href="{{ route('pa.acts.show', $act) }}"
+                                            class="text-blue-600 hover:text-blue-900">
                                             {{ __('pa_acts.statistics.table.view_details') }}
                                         </a>
                                     </td>
@@ -253,12 +259,12 @@
         @endif
 
         {{-- Info Footer --}}
-        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+        <div class="rounded-xl border border-blue-200 bg-blue-50 p-6">
             <div class="flex items-start gap-3">
-                <span class="material-icons text-blue-600 text-2xl">info</span>
+                <span class="material-icons text-2xl text-blue-600">info</span>
                 <div>
-                    <h4 class="font-semibold text-blue-900 mb-2">{{ __('pa_acts.statistics.info_title') }}</h4>
-                    <ul class="text-sm text-blue-800 space-y-1">
+                    <h4 class="mb-2 font-semibold text-blue-900">{{ __('pa_acts.statistics.info_title') }}</h4>
+                    <ul class="space-y-1 text-sm text-blue-800">
                         <li>• {{ __('pa_acts.statistics.info_realtime') }}</li>
                         <li>• {{ __('pa_acts.statistics.info_success_rate') }}</li>
                         <li>• {{ __('pa_acts.statistics.info_retry') }}</li>
