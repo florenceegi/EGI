@@ -38,6 +38,7 @@ return [
 
         // Blockchain Minting Errors (Dev)
         'mint_checkout_error' => 'Errore durante caricamento checkout mint. User: :user_id, EGI: :egi_id, Error: :error',
+        'certificate_regeneration_failed' => 'Errore rigenerazione certificato blockchain. User: :user_id, Blockchain: :blockchain_id, Error: :error',
         'mint_process_error' => 'Errore processo mint blockchain. User: :user_id, EGI: :egi_id, Reservation: :reservation_id, Payment: :payment_method, Error: :error',
         'real_blockchain_mint_failed' => 'CRITICAL: Real blockchain mint failed. EgiBlockchain: :egi_blockchain_id, Attempt: :attempt, Error: :error',
 
@@ -148,6 +149,7 @@ return [
 
         // Blockchain Minting Errors (User)
         'mint_checkout_error' => 'Impossibile caricare la pagina di acquisto. Riprova tra poco.',
+        'certificate_regeneration_failed' => 'Impossibile rigenerare il certificato. Riprova o contatta l\'assistenza.',
         'mint_process_error' => 'Errore durante il processo di acquisto. Il pagamento non è stato effettuato. Riprova o contatta l\'assistenza.',
         'real_blockchain_mint_failed' => 'Il mint sulla blockchain è fallito. Il tuo pagamento è al sicuro, contatteremo l\'assistenza per risolvere.',
 

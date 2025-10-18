@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Log;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
+use App\Services\CertificateGeneratorService;
 use App\Enums\Gdpr\GdprActivityCategory;
 
 class MintController extends Controller {
@@ -28,16 +29,19 @@ class MintController extends Controller {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
+    protected CertificateGeneratorService $certificateGenerator;
 
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
-        AuditLogService $auditService
+        AuditLogService $auditService,
+        CertificateGeneratorService $certificateGenerator
     ) {
         $this->middleware('auth');
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
+        $this->certificateGenerator = $certificateGenerator;
     }
 
     /**
@@ -198,9 +202,9 @@ class MintController extends Controller {
      * Process mint payment and initiate blockchain minting
      *
      * @param Request $request
-     * @return JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function processMint(Request $request): JsonResponse {
+    public function processMint(Request $request): \Illuminate\Http\RedirectResponse {
         try {
             $validated = $request->validate([
                 'egi_id' => 'required|integer|exists:egis,id',
@@ -211,12 +215,12 @@ class MintController extends Controller {
             ]);
 
             $egi = Egi::findOrFail($validated['egi_id']);
-            
+
             // ✅ DUAL PATH: Mint con reservation VS Mint diretto
             $reservation = null;
             if (!empty($validated['reservation_id'])) {
                 $reservation = Reservation::findOrFail($validated['reservation_id']);
-                
+
                 // Security checks SOLO per mint con reservation
                 if ($reservation->user_id !== Auth::id()) {
                     $this->errorManager->handle('MINT_UNAUTHORIZED', [
@@ -225,7 +229,7 @@ class MintController extends Controller {
                         'egi_id' => $validated['egi_id'],
                         'reservation_id' => $validated['reservation_id'],
                     ]);
-                    return response()->json([], 403);
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.unauthorized')]);
                 }
 
                 if (!$reservation->is_current || $reservation->status !== 'active') {
@@ -236,7 +240,7 @@ class MintController extends Controller {
                         'is_current' => $reservation->is_current,
                         'status' => $reservation->status,
                     ]);
-                    return response()->json([], 400);
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.invalid_reservation')]);
                 }
             }
 
@@ -246,7 +250,8 @@ class MintController extends Controller {
                     'egi_id' => $validated['egi_id'],
                     'blockchain_id' => $egi->blockchain->id,
                 ]);
-                return response()->json([], 400);
+                return redirect()->route('mint.show', $egi->blockchain->id)
+                    ->with('info', __('mint.errors.already_minted'));
             }
 
             // CRITICAL: Check treasury funds BEFORE payment processing
@@ -271,10 +276,9 @@ class MintController extends Controller {
                         'treasury_address' => $fundsCheck['treasury_address']
                     ]);
 
-                    return response()->json([
-                        'error' => 'insufficient_funds',
-                        'message' => __('mint.errors.insufficient_treasury_funds')
-                    ], 503);
+                    return redirect()->back()->withErrors([
+                        'error' => __('mint.errors.insufficient_treasury_funds')
+                    ]);
                 }
 
                 $this->logger->info('Treasury funds check passed', [
@@ -295,10 +299,10 @@ class MintController extends Controller {
 
             // MOCK Payment processing (V1 - FIAT only)
             // ✅ DUAL PATH: usa reservation amount se presente, altrimenti EGI price
-            $paymentAmount = $reservation 
+            $paymentAmount = $reservation
                 ? ($reservation->offer_amount_fiat ?? $reservation->amount_eur)
                 : $egi->price;
-            
+
             $paymentResult = $this->mockPaymentProcessing($validated['payment_method'], $paymentAmount);
 
             if (!$paymentResult['success']) {
@@ -309,7 +313,7 @@ class MintController extends Controller {
                     'amount' => $paymentAmount,
                     'error' => $paymentResult['error'] ?? 'Unknown',
                 ]);
-                return response()->json([], 500);
+                return redirect()->back()->withErrors(['error' => __('mint.errors.payment_failed')]);
             }
 
             // Create blockchain record
@@ -376,10 +380,9 @@ class MintController extends Controller {
                     'attempts' => $maxRetries
                 ]);
 
-                return response()->json([
-                    'error' => 'worker_unavailable',
-                    'message' => 'Il sistema di elaborazione non è disponibile. Riprova tra qualche minuto.'
-                ], 503);
+                return redirect()->back()->withErrors([
+                    'error' => __('mint.errors.worker.error_message')
+                ]);
             }
 
             // Queue REAL blockchain mint job (async with worker)
@@ -421,21 +424,15 @@ class MintController extends Controller {
                 'amount' => $paymentAmount
             ]);
 
-            // NEW: Redirect to mint result page with success toast
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'blockchain_record_id' => $blockchainRecord->id,
-                    'mint_status' => 'minting_queued',
-                    'redirect_url' => route('mint.show', $blockchainRecord->id)
-                ]
-            ]);
+            // ✅ REDIRECT to mint result page (form submit normale, non AJAX)
+            return redirect()->route('mint.show', $blockchainRecord->id)
+                ->with('success', __('mint.notification.processing_message'));
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->errorManager->handle('MINT_VALIDATION_ERROR', [
                 'user_id' => Auth::id(),
                 'errors' => json_encode($e->errors()), // Convert array to string
             ], $e);
-            return response()->json([], 422);
+            return redirect()->back()->withErrors(['error' => __('mint.errors.validation_failed')]);
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_PROCESS_ERROR', [
                 'user_id' => Auth::id(),
@@ -445,7 +442,7 @@ class MintController extends Controller {
                 'error' => $e->getMessage()
             ], $e);
 
-            return response()->json([], 500);
+            return redirect()->back()->withErrors(['error' => __('mint.errors.mint_failed')]);
         }
     }
 
@@ -974,6 +971,95 @@ class MintController extends Controller {
             ], $e);
 
             return redirect()->back()->withErrors(['error' => __('mint.errors.unexpected')]);
+        }
+    }
+
+    /**
+     * Regenerate blockchain certificate without new mint
+     *
+     * @package App\Http\Controllers
+     * @author Padmin D. Curtis (AI Partner OS3.0)
+     * @version 1.0.0 (FlorenceEGI - Certificate Regeneration)
+     * @date 2025-10-19
+     * @purpose Allows users to regenerate certificate after fixes without minting again
+     *
+     * @param int $egiBlockchainId The blockchain record ID
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function regenerateCertificate(int $egiBlockchainId) {
+        try {
+            // 1. ULM: Log start
+            $this->logger->info('Certificate regeneration initiated', [
+                'user_id' => Auth::id(),
+                'blockchain_id' => $egiBlockchainId
+            ]);
+
+            // 2. Load blockchain record with EGI
+            $blockchain = EgiBlockchain::with('egi')->findOrFail($egiBlockchainId);
+
+            // 3. Authorization: user must be the buyer
+            if ($blockchain->buyer_user_id !== Auth::id()) {
+                $this->logger->warning('Unauthorized certificate regeneration attempt', [
+                    'user_id' => Auth::id(),
+                    'blockchain_id' => $egiBlockchainId,
+                    'actual_buyer_id' => $blockchain->buyer_user_id
+                ]);
+
+                return redirect()->back()->withErrors(['error' => __('errors.unauthorized')]);
+            }
+
+            // 4. DELETE old certificates for this blockchain to force regeneration
+            \App\Models\EgiReservationCertificate::where('egi_blockchain_id', $blockchain->id)
+                ->delete();
+
+            $this->logger->info('Old certificates deleted before regeneration', [
+                'blockchain_id' => $blockchain->id
+            ]);
+
+            // 5. Regenerate certificate (creates NEW record)
+            $certificate = $this->certificateGenerator->generateBlockchainCertificate(
+                $blockchain->egi,
+                $blockchain
+            );
+
+            // 6. GDPR: Audit trail
+            $this->auditService->logUserAction(
+                Auth::user(),
+                'certificate_regenerated',
+                [
+                    'blockchain_id' => $blockchain->id,
+                    'egi_id' => $blockchain->egi_id,
+                    'certificate_uuid' => $certificate->certificate_uuid,
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );
+
+            // 7. ULM: Log success
+            $this->logger->info('Certificate regenerated successfully', [
+                'user_id' => Auth::id(),
+                'blockchain_id' => $egiBlockchainId,
+                'certificate_uuid' => $certificate->certificate_uuid,
+                'new_pdf_path' => $certificate->pdf_path
+            ]);
+
+            // 8. Return JSON response to trigger thumbnail reload
+            return response()->json([
+                'success' => true,
+                'message' => __('mint.post_mint.regenerate_success'),
+                'certificate_uuid' => $certificate->certificate_uuid,
+                'pdf_url' => $certificate->getPdfUrl(),
+                'egi_id' => $blockchain->egi_id
+            ]);
+
+        } catch (\Exception $e) {
+            // 9. UEM: Error handling
+            $this->errorManager->handle('CERTIFICATE_REGENERATION_FAILED', [
+                'user_id' => Auth::id(),
+                'blockchain_id' => $egiBlockchainId,
+                'error' => $e->getMessage()
+            ], $e);
+
+            return redirect()->back()->withErrors(['error' => __('errors.certificate_regeneration_failed')]);
         }
     }
 }

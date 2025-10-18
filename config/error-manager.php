@@ -5392,6 +5392,16 @@ return [
             'notify_slack' => false,
             'msg_to' => 'toast',
         ],
+        'CERTIFICATE_REGENERATION_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.certificate_regeneration_failed',
+            'user_message_key' => 'error-manager::errors_2.user.certificate_regeneration_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
         'MINT_PROCESS_ERROR' => [
             'type' => 'error',
             'blocking' => 'semi-blocking',

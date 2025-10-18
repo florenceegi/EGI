@@ -313,9 +313,18 @@ class CertificateGeneratorService {
      */
     public function generateBlockchainCertificate(\App\Models\Egi $egi, \App\Models\EgiBlockchain $egiBlockchain): EgiReservationCertificate {
         try {
-            // Validate blockchain record has required data
-            if (!$egiBlockchain->asa_id || !$egiBlockchain->blockchain_tx_id) {
-                throw new \Exception('Blockchain record missing required data (asa_id or blockchain_tx_id)');
+            // ✅ VALIDAZIONE BLOCKING - Certificato SOLO con dati completi
+            // Un certificato senza ASA ID, TX ID o importo NON CERTIFICA NULLA
+            if (empty($egiBlockchain->asa_id)) {
+                throw new \Exception('Cannot generate certificate: ASA ID missing (mint not completed)');
+            }
+
+            if (empty($egiBlockchain->blockchain_tx_id)) {
+                throw new \Exception('Cannot generate certificate: Transaction ID missing (mint not completed)');
+            }
+
+            if (empty($egiBlockchain->paid_amount) || $egiBlockchain->paid_amount <= 0) {
+                throw new \Exception('Cannot generate certificate: Payment amount missing or invalid');
             }
 
             // Generate certificate UUID
@@ -346,20 +355,33 @@ class CertificateGeneratorService {
             $buyerName = $buyer ? $buyer->name : 'Anonymous Buyer';
 
             // Prepare certificate data (ensure all values are strings for PDF generation)
+            // IMPORTANT: blockchain_tx_id and paid_amount may be NULL if mint is still processing
             $certificateData = [
                 'certificate_uuid' => (string) $certificate->certificate_uuid,
                 'egi_id' => (string) $egi->id,
                 'egi_title' => (string) ($egi->title ?? 'Unknown EGI'),
                 'buyer_name' => (string) $buyerName,
                 'buyer_wallet' => (string) ($egiBlockchain->buyer_wallet ?? 'Treasury Custody'),
-                'asa_id' => (string) $egiBlockchain->asa_id,
-                'blockchain_tx_id' => (string) $egiBlockchain->blockchain_tx_id,
-                'purchase_amount' => (float) $egiBlockchain->paid_amount,
+                'asa_id' => $egiBlockchain->asa_id ?? '', // May be NULL during processing
+                'blockchain_tx_id' => $egiBlockchain->blockchain_tx_id ?? '', // May be NULL during processing
+                'purchase_amount' => (float) ($egiBlockchain->paid_amount ?? $egi->price ?? 0), // Fallback to EGI price
                 'purchase_currency' => (string) ($egiBlockchain->paid_currency ?? 'EUR'),
                 'minted_at' => (string) ($egiBlockchain->minted_at ? $egiBlockchain->minted_at->format('d/m/Y H:i:s') : now()->format('d/m/Y H:i:s')),
                 'ownership_type' => (string) ($egiBlockchain->ownership_type ?? 'Unknown'),
                 'verification_url' => (string) route('egi-certificates.show', $certificate->certificate_uuid)
             ];
+
+            // 🔍 DEBUG: Log certificate data before PDF generation
+            $this->logger->debug('Certificate data prepared for PDF', [
+                'egi_id' => $egi->id,
+                'blockchain_id' => $egiBlockchain->id,
+                'asa_id' => $egiBlockchain->asa_id,
+                'tx_id' => $egiBlockchain->blockchain_tx_id,
+                'paid_amount' => $egiBlockchain->paid_amount,
+                'egi_price' => $egi->price,
+                'final_purchase_amount' => $certificateData['purchase_amount'],
+                'certificate_data' => $certificateData,
+            ]);
 
             // Generate PDF content
             $pdfContent = $this->generateBlockchainCertificatePdf($certificateData);
@@ -408,268 +430,355 @@ class CertificateGeneratorService {
      * @return string PDF content as string
      */
     /**
-     * Generate blockchain certificate PDF with DomPDF
+     * Generate blockchain certificate PDF - ULTRA ECCELLENZA PA-READY v2
+     * NO EMOJI (DomPDF non li supporta), layout professionale, singola pagina
      *
      * @param array $certificateData Certificate data
      * @return string Binary PDF content
      */
     private function generateBlockchainCertificatePdf(array $certificateData): string {
-        // Build HTML for certificate with Brand Guidelines
-        $html = '
+        // Dati DEVONO essere presenti (validati in generateBlockchainCertificate)
+        // Se arriviamo qui, ASA ID, TX ID e paid_amount sono garantiti NON NULL
+        $asaId = htmlspecialchars($certificateData['asa_id']);
+        $txId = htmlspecialchars($certificateData['blockchain_tx_id']);
+        $amount = number_format($certificateData['purchase_amount'], 2, ',', '.') . ' ' . htmlspecialchars($certificateData['purchase_currency'] ?? 'EUR');
+
+        // Dati certificato escapati
+        $certificateUuid = htmlspecialchars($certificateData['certificate_uuid']);
+        $mintedAt = htmlspecialchars($certificateData['minted_at']);
+        $egiId = htmlspecialchars($certificateData['egi_id']);
+        $egiTitle = htmlspecialchars($certificateData['egi_title']);
+        $buyerName = htmlspecialchars($certificateData['buyer_name']);
+        $buyerWallet = htmlspecialchars($certificateData['buyer_wallet']);
+        $ownershipType = htmlspecialchars(ucfirst($certificateData['ownership_type']));
+        $verificationUrl = htmlspecialchars($certificateData['verification_url']);
+        $generatedAt = now()->format('d/m/Y H:i:s');
+        $currentYear = date('Y');
+
+        // TRADUZIONI (NO TESTO HARDCODED MAI PIÙ!)
+        $t = [
+            'header_title' => __('certificate_pdf.header_title'),
+            'header_subtitle' => __('certificate_pdf.header_subtitle'),
+            'section_certificate' => __('certificate_pdf.section_certificate'),
+            'label_uuid' => __('certificate_pdf.label_uuid'),
+            'label_issue_date' => __('certificate_pdf.label_issue_date'),
+            'section_artwork' => __('certificate_pdf.section_artwork'),
+            'label_title' => __('certificate_pdf.label_title'),
+            'label_artwork_id' => __('certificate_pdf.label_artwork_id'),
+            'section_owner' => __('certificate_pdf.section_owner'),
+            'label_name' => __('certificate_pdf.label_name'),
+            'label_wallet' => __('certificate_pdf.label_wallet'),
+            'label_custody' => __('certificate_pdf.label_custody'),
+            'section_blockchain' => __('certificate_pdf.section_blockchain'),
+            'label_asset_id' => __('certificate_pdf.label_asset_id'),
+            'label_transaction_id' => __('certificate_pdf.label_transaction_id'),
+            'label_amount_paid' => __('certificate_pdf.label_amount_paid'),
+            'section_verification' => __('certificate_pdf.section_verification'),
+            'verification_text' => __('certificate_pdf.verification_text'),
+            'footer_brand' => __('certificate_pdf.footer_brand'),
+            'footer_tagline' => __('certificate_pdf.footer_tagline'),
+            'footer_description' => __('certificate_pdf.footer_description'),
+            'footer_generated' => __('certificate_pdf.footer_generated', [
+                'date' => $generatedAt,
+                'year' => $currentYear
+            ]),
+        ];
+
+        $html = <<<HTML
         <!DOCTYPE html>
         <html>
         <head>
             <meta charset="UTF-8">
             <style>
                 @page {
-                    margin: 25mm 20mm;
+                    margin: 12mm;
                     size: A4 portrait;
                 }
-                @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap");
+
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
 
                 body {
-                    font-family: "Source Sans Pro", "DejaVu Sans", sans-serif;
-                    color: #1a202c;
-                    line-height: 1.4;
-                    font-size: 10pt;
+                    font-family: "DejaVu Sans", sans-serif;
+                    color: #1B365D;
+                    line-height: 1.3;
+                    font-size: 9pt;
                 }
 
-                /* HEADER - Eleganza Rinascimentale */
+                /* HEADER */
                 .header {
                     text-align: center;
-                    margin-bottom: 20px;
                     padding: 15px 0;
-                    border-top: 3px solid #D4A574;
-                    border-bottom: 3px solid #D4A574;
-                    background: linear-gradient(to bottom, #ffffff 0%, #faf8f5 100%);
+                    margin-bottom: 15px;
+                    background: linear-gradient(to bottom, #fdfbf7 0%, #f8f5ef 100%);
+                    border-top: 4px solid #D4A574;
+                    border-bottom: 4px solid #D4A574;
                 }
                 .header h1 {
-                    font-family: "Playfair Display", serif;
                     color: #1B365D;
-                    font-size: 20pt;
-                    margin: 5px 0;
+                    font-size: 18pt;
                     font-weight: 700;
-                    letter-spacing: 0.5px;
+                    margin-bottom: 5px;
+                    letter-spacing: 1px;
                 }
                 .header .subtitle {
                     color: #D4A574;
-                    font-size: 11pt;
+                    font-size: 10pt;
                     font-weight: 600;
                     font-style: italic;
                 }
 
-                /* LAYOUT A 2 COLONNE */
-                .content-wrapper {
+                /* GRID 2 COLONNE */
+                .grid {
                     display: table;
                     width: 100%;
-                    margin-top: 15px;
+                    margin-bottom: 10px;
+                    border-spacing: 8px 0;
                 }
-                .column {
+                .col {
                     display: table-cell;
+                    width: 50%;
                     vertical-align: top;
-                    width: 48%;
-                    padding: 0 1%;
                 }
 
-                /* SEZIONI - Oro Fiorentino */
-                .section {
-                    margin-bottom: 12px;
+                /* BOX */
+                .box {
+                    background: #fdfbf7;
+                    border: 2px solid #D4A574;
+                    border-radius: 5px;
                     padding: 10px;
-                    background: linear-gradient(135deg, #fdfbf7 0%, #f8f5ef 100%);
-                    border-left: 3px solid #D4A574;
-                    border-radius: 3px;
+                    margin-bottom: 10px;
                 }
-                .section-title {
-                    font-family: "Playfair Display", serif;
+                .box-title {
                     color: #1B365D;
                     font-size: 11pt;
                     font-weight: 700;
                     margin-bottom: 8px;
-                    padding-bottom: 4px;
-                    border-bottom: 1px solid #D4A574;
+                    padding-bottom: 5px;
+                    border-bottom: 2px solid #D4A574;
                 }
 
                 /* INFO ROWS */
                 .info-row {
-                    margin-bottom: 5px;
-                    font-size: 9pt;
+                    margin-bottom: 6px;
+                    padding: 4px 0;
+                    border-bottom: 1px solid #f0ebe0;
                 }
-                .info-label {
+                .info-row:last-child {
+                    border-bottom: none;
+                }
+                .label {
+                    display: inline-block;
+                    width: 38%;
                     color: #6B6B6B;
                     font-weight: 600;
-                    display: inline-block;
-                    width: 35%;
-                }
-                .info-value {
-                    color: #1a202c;
-                    display: inline-block;
-                    width: 63%;
-                    font-family: "DejaVu Sans Mono", monospace;
                     font-size: 8.5pt;
+                }
+                .value {
+                    display: inline-block;
+                    width: 60%;
+                    color: #1B365D;
+                    font-weight: 600;
+                    font-family: "DejaVu Sans Mono", monospace;
+                    font-size: 8pt;
                     word-wrap: break-word;
                 }
 
-                /* BLOCKCHAIN BOX - Blu Algoritmo */
-                .blockchain-box {
-                    background: linear-gradient(135deg, #1B365D 0%, #2a4a7a 100%);
+                /* BLOCKCHAIN BOX */
+                .blockchain {
+                    background: linear-gradient(to bottom, #1B365D 0%, #2a4a7a 100%);
                     color: white;
                     padding: 12px;
-                    margin: 15px 0;
+                    margin: 10px 0;
                     border-radius: 5px;
-                    box-shadow: 0 2px 8px rgba(27, 54, 93, 0.3);
+                    border: 3px solid #D4A574;
                 }
-                .blockchain-box .section-title {
+                .blockchain .box-title {
                     color: #D4A574;
-                    border-bottom-color: #D4A574;
-                }
-                .blockchain-box .info-label {
-                    color: #D4A574;
-                }
-                .blockchain-box .info-value {
-                    color: white;
-                    font-weight: 600;
-                }
-
-                /* VERIFICATION BOX */
-                .verification-box {
-                    background: linear-gradient(135deg, #fff9e6 0%, #fef5d4 100%);
-                    border: 2px solid #D4A574;
-                    padding: 10px;
-                    margin: 12px 0;
-                    border-radius: 3px;
+                    border-bottom-color: rgba(212, 165, 116, 0.4);
+                    font-size: 12pt;
                     text-align: center;
                 }
-                .verification-box .section-title {
+                .blockchain .label {
+                    color: #D4A574;
+                    font-weight: 700;
+                }
+                .blockchain .value {
+                    color: white;
+                    font-weight: 700;
+                }
+                .blockchain .highlight {
+                    background: rgba(255, 255, 255, 0.1);
+                    padding: 8px;
+                    border-radius: 4px;
+                    margin: 8px 0;
+                    text-align: center;
+                    border: 2px solid rgba(212, 165, 116, 0.3);
+                }
+                .blockchain .highlight .value {
+                    font-size: 12pt;
+                    color: #D4A574;
+                }
+
+                /* VERIFICATION */
+                .verify {
+                    background: linear-gradient(to bottom, #FFF9E6 0%, #FEF5D4 100%);
+                    border: 2px solid #D4A574;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 5px;
+                    text-align: center;
+                }
+                .verify .title {
                     color: #1B365D;
                     font-size: 10pt;
-                    margin-bottom: 5px;
-                    border: none;
+                    font-weight: 700;
+                    margin-bottom: 6px;
                 }
-                .verification-box p {
-                    margin: 3px 0;
+                .verify p {
+                    margin: 4px 0;
                     font-size: 8pt;
-                    line-height: 1.3;
+                    color: #6B6B6B;
                 }
-                .verification-url {
+                .verify .url {
                     font-family: "DejaVu Sans Mono", monospace;
                     font-size: 7pt;
                     color: #1B365D;
                     word-break: break-all;
+                    background: white;
+                    padding: 6px;
+                    border-radius: 3px;
+                    margin-top: 6px;
+                    border: 1px solid #D4A574;
                 }
 
-                /* FOOTER - Elegante */
+                /* FOOTER */
                 .footer {
                     text-align: center;
-                    margin-top: 15px;
+                    margin-top: 12px;
                     padding-top: 10px;
-                    border-top: 2px solid #D4A574;
-                    font-size: 8pt;
+                    border-top: 3px solid #D4A574;
+                    font-size: 7.5pt;
                     color: #6B6B6B;
                     line-height: 1.3;
                 }
-                .footer strong {
+                .footer .brand {
                     color: #1B365D;
-                    font-family: "Playfair Display", serif;
+                    font-weight: 700;
+                    font-size: 9pt;
+                }
+                .footer .tagline {
+                    color: #D4A574;
+                    font-style: italic;
+                    margin: 3px 0;
                 }
             </style>
         </head>
         <body>
             <!-- HEADER -->
             <div class="header">
-                <h1>🏛️ CERTIFICATO DI PROPRIETÀ BLOCKCHAIN</h1>
-                <div class="subtitle">FlorenceEGI - Il Rinascimento Digitale</div>
+                <h1>{$t['header_title']}</h1>
+                <div class="subtitle">{$t['header_subtitle']}</div>
             </div>
 
-            <!-- CONTENT A 2 COLONNE -->
-            <div class="content-wrapper">
-                <!-- COLONNA SINISTRA -->
-                <div class="column">
-                    <!-- Certificato Info -->
-                    <div class="section">
-                        <div class="section-title">📜 Certificato</div>
+            <!-- GRID 2 COLONNE -->
+            <div class="grid">
+                <div class="col">
+                    <!-- Certificato -->
+                    <div class="box">
+                        <div class="box-title">{$t['section_certificate']}</div>
                         <div class="info-row">
-                            <span class="info-label">UUID:</span>
-                            <span class="info-value">' . htmlspecialchars($certificateData['certificate_uuid']) . '</span>
+                            <span class="label">{$t['label_uuid']}</span>
+                            <span class="value">{$certificateUuid}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Emissione:</span>
-                            <span class="info-value">' . htmlspecialchars($certificateData['minted_at']) . '</span>
+                            <span class="label">{$t['label_issue_date']}</span>
+                            <span class="value">{$mintedAt}</span>
                         </div>
                     </div>
 
-                    <!-- EGI Info -->
-                    <div class="section">
-                        <div class="section-title">🎨 Dettagli EGI</div>
+                    <!-- Opera Digitale -->
+                    <div class="box">
+                        <div class="box-title">{$t['section_artwork']}</div>
                         <div class="info-row">
-                            <span class="info-label">Titolo:</span>
-                            <span class="info-value">' . htmlspecialchars($certificateData['egi_title']) . '</span>
+                            <span class="label">{$t['label_title']}</span>
+                            <span class="value">{$egiTitle}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">EGI ID:</span>
-                            <span class="info-value">#' . htmlspecialchars($certificateData['egi_id']) . '</span>
+                            <span class="label">{$t['label_artwork_id']}</span>
+                            <span class="value">#{$egiId}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- COLONNA DESTRA -->
-                <div class="column">
+                <div class="col">
                     <!-- Proprietario -->
-                    <div class="section">
-                        <div class="section-title">👤 Proprietario</div>
+                    <div class="box">
+                        <div class="box-title">{$t['section_owner']}</div>
                         <div class="info-row">
-                            <span class="info-label">Nome:</span>
-                            <span class="info-value">' . htmlspecialchars($certificateData['buyer_name']) . '</span>
+                            <span class="label">{$t['label_name']}</span>
+                            <span class="value">{$buyerName}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Wallet:</span>
-                            <span class="info-value">' . htmlspecialchars($certificateData['buyer_wallet']) . '</span>
+                            <span class="label">{$t['label_wallet']}</span>
+                            <span class="value">{$buyerWallet}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Tipo:</span>
-                            <span class="info-value">' . htmlspecialchars($certificateData['ownership_type']) . '</span>
+                            <span class="label">{$t['label_custody']}</span>
+                            <span class="value">{$ownershipType}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- BLOCKCHAIN DATA - Full Width -->
-            <div class="blockchain-box">
-                <div class="section-title">⛓️ DATI BLOCKCHAIN (Algorand)</div>
+            <!-- BLOCKCHAIN DATA -->
+            <div class="blockchain">
+                <div class="box-title">{$t['section_blockchain']}</div>
+
+                <div class="highlight">
+                    <div class="info-row">
+                        <span class="label" style="width: 30%; text-align: right; padding-right: 8px; color: #6B6B6B; font-weight: 600;">{$t['label_asset_id']}</span>
+                        <span class="value" style="width: 68%; color: #1B365D; font-weight: 600;">{$asaId}</span>
+                    </div>
+                </div>
+
                 <div class="info-row">
-                    <span class="info-label">Asset ID (ASA):</span>
-                    <span class="info-value" style="font-size: 10pt; font-weight: 700;">' . htmlspecialchars($certificateData['asa_id']) . '</span>
+                    <span class="label" style="color: #6B6B6B; font-weight: 600;">{$t['label_transaction_id']}</span>
+                    <span class="value" style="color: #1B365D; font-weight: 600;">{$txId}</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Transaction ID:</span>
-                    <span class="info-value">' . htmlspecialchars($certificateData['blockchain_tx_id']) . '</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Importo Pagato:</span>
-                    <span class="info-value">' . number_format($certificateData['purchase_amount'], 2, ',', '.') . ' ' . htmlspecialchars($certificateData['purchase_currency']) . '</span>
+                    <span class="label" style="color: #6B6B6B; font-weight: 600;">{$t['label_amount_paid']}</span>
+                    <span class="value" style="color: #1B365D; font-weight: 600;">{$amount}</span>
                 </div>
             </div>
 
             <!-- VERIFICATION -->
-            <div class="verification-box">
-                <div class="section-title">🔐 VERIFICA AUTENTICITÀ</div>
-                <p>Questo certificato può essere verificato pubblicamente:</p>
-                <p class="verification-url">' . htmlspecialchars($certificateData['verification_url']) . '</p>
+            <div class="verify">
+                <div class="title">{$t['section_verification']}</div>
+                <p>{$t['verification_text']}</p>
+                <div class="url">{$verificationUrl}</div>
             </div>
 
             <!-- FOOTER -->
             <div class="footer">
-                <p><strong>FlorenceEGI</strong> - Arte, Tecnologia e Rigenerazione Planetaria</p>
-                <p style="font-size: 7.5pt;">Il primo marketplace che unisce Qualità Artistica + Liquidità Massima + Impatto Ambientale Reale</p>
-                <p style="margin-top: 5px;">Certificato generato il ' . now()->format('d/m/Y H:i:s') . ' | © ' . date('Y') . ' FlorenceEGI - Tutti i diritti riservati</p>
+                <p class="brand">{$t['footer_brand']}</p>
+                <p class="tagline">{$t['footer_tagline']}</p>
+                <p style="font-size: 7pt; margin-top: 6px;">
+                    {$t['footer_description']}
+                </p>
+                <p style="margin-top: 6px; font-size: 7pt;">
+                    {$t['footer_generated']}
+                </p>
             </div>
         </body>
         </html>
-        ';
+        HTML;
 
-        // Generate PDF with DomPDF
         $pdf = Pdf::loadHTML($html);
         $pdf->setPaper('A4', 'portrait');
-
         return $pdf->output();
     }
 }
