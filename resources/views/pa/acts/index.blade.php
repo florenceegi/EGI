@@ -215,25 +215,6 @@
             </div>
         </div>
 
-        {{-- Avg Tokenization Time --}}
-        <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div>
-                <p class="text-sm font-medium text-gray-600">
-                    {{ __('pa_acts.index.stats.avg_time') }}
-                </p>
-                <p class="mt-2 text-3xl font-bold text-blue-600">
-                    @if (isset($stats['avg_tokenization_time']) && $stats['avg_tokenization_time'])
-                        {{ number_format($stats['avg_tokenization_time'], 0) }}s
-                    @else
-                        --
-                    @endif
-                </p>
-                <p class="mt-1 text-xs text-gray-500">
-                    Tempo medio ancoraggio
-                </p>
-            </div>
-        </div>
-
         {{-- This Month --}}
         <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div>
