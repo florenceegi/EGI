@@ -98,21 +98,6 @@
                 </p>
             </div>
 
-            {{-- Avg Time --}}
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">{{ __('pa_acts.index.stats.avg_time') }}</p>
-                    <p class="mt-2 text-3xl font-bold text-blue-600">
-                        @if(isset($stats['avg_tokenization_time']) && $stats['avg_tokenization_time'])
-                            {{ number_format($stats['avg_tokenization_time'], 0) }}<span class="text-xl">s</span>
-                        @else
-                            <span class="text-gray-400">--</span>
-                        @endif
-                    </p>
-                    <p class="mt-1 text-xs text-gray-500">{{ __('pa_acts.statistics.from_upload_to_anchor') }}</p>
-                </div>
-            </div>
-
             {{-- This Month --}}
             <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                 <div>
@@ -276,7 +261,6 @@
                     <ul class="text-sm text-blue-800 space-y-1">
                         <li>• {{ __('pa_acts.statistics.info_realtime') }}</li>
                         <li>• {{ __('pa_acts.statistics.info_success_rate') }}</li>
-                        <li>• {{ __('pa_acts.statistics.info_avg_time') }}</li>
                         <li>• {{ __('pa_acts.statistics.info_retry') }}</li>
                     </ul>
                 </div>
