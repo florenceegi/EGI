@@ -133,9 +133,9 @@ $userReservation =
             @endphp
 
             @if ($showButtons && count($availableActions) > 0)
-                {{-- SCENARIO 1: User has reservation → Show MINT button (complete purchase) - VIOLA --}}
+                {{-- ✅ SCENARIO 1: User has reservation → Show MINT button (complete purchase) - VIOLA --}}
                 @if ($isReservedByUser && $canMint && $userReservation)
-                    <a href="{{ route('mint.checkout', ['egi_id' => $egi->id, 'reservation_id' => $userReservation->id]) }}"
+                    <a href="{{ route('mint.payment-form', ['egiId' => $egi->id]) }}?reservation_id={{ $userReservation->id }}"
                         class="mint-button inline-flex w-full transform items-center justify-center rounded-lg border border-purple-500/30 bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-6 py-4 font-medium text-white shadow-lg backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-purple-400/50 hover:from-[#7d3c98] hover:to-[#8e44ad]">
                         <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
