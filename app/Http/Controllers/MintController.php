@@ -89,7 +89,6 @@ class MintController extends Controller {
             }
 
             return view('mint.payment-form', compact('egi', 'reservation'));
-
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),
@@ -918,48 +917,38 @@ class MintController extends Controller {
      */
     public function showMintResult(int $egiBlockchainId) {
         try {
-            $blockchain = EgiBlockchain::with(['egi.utility.media', 'egi.user'])->findOrFail($egiBlockchainId);
-
-            // Authorization: only buyer can view
-            if ($blockchain->buyer_user_id !== Auth::id()) {
-                $this->errorManager->handle('MINT_CHECKOUT_UNAUTHORIZED', [
-                    'user_id' => Auth::id(),
-                    'buyer_user_id' => $blockchain->buyer_user_id,
-                    'blockchain_id' => $egiBlockchainId,
-                ]);
-                return redirect()->back()->withErrors(['error' => __('mint.errors.unauthorized')]);
-            }
-
-            // Check mint is completed
-            if (!$blockchain->isMinted()) {
-                $this->errorManager->handle('MINT_VALIDATION_ERROR', [
-                    'user_id' => Auth::id(),
-                    'blockchain_id' => $egiBlockchainId,
-                    'mint_status' => $blockchain->mint_status,
-                ]);
-                return redirect()->back()->withErrors(['error' => __('mint.errors.not_minted_yet')]);
-            }
-
+            // NESSUN CHECK RESTRITTIVO - Solo fetch dati e mostra
+            $blockchain = EgiBlockchain::with(['egi.utility.media', 'egi.user', 'egi.reservations'])->findOrFail($egiBlockchainId);
             $egi = $blockchain->egi;
 
-            // Get certificate
-            $certificate = \App\Models\EgiReservationCertificate::where('egi_blockchain_id', $blockchain->id)
-                ->where('buyer_user_id', Auth::id())
+            // 💰 CALCOLO PREZZO VENDITA (base o ultima prenotazione)
+            $lastReservation = $egi->reservations()
+                ->where('status', 'active')
+                ->orderBy('created_at', 'desc')
                 ->first();
 
-            // Get payment breakdown
+            $salePrice = $lastReservation
+                ? ($lastReservation->offer_amount_fiat ?? $egi->price)
+                : $egi->price;
+
+            // Get certificate (può essere null se non ancora generato)
+            $certificate = \App\Models\EgiReservationCertificate::where('egi_blockchain_id', $blockchain->id)
+                ->first();
+
+            // Get payment breakdown (può essere vuoto)
             $paymentBreakdown = \App\Models\PaymentDistribution::where('source_type', 'mint')
-                ->where('source_id', $blockchain->id)
+                ->where('egi_blockchain_id', $blockchain->id)
                 ->where('amount_eur', '>', 0)
+                ->with('user') // CARICA relazione user
                 ->get()
-                ->map(function($dist) {
+                ->map(function ($dist) {
                     return [
-                        'recipient_user_id' => $dist->recipient_user_id,
-                        'recipient_name' => $dist->recipientUser->name ?? 'N/A',
-                        'recipient_wallet' => $dist->recipient_wallet,
+                        'recipient_user_id' => $dist->user_id,
+                        'recipient_name' => $dist->user->name ?? 'N/A',
+                        'recipient_wallet' => $dist->wallet_id ?? 'N/A',
                         'amount_eur' => $dist->amount_eur,
-                        'currency' => $dist->currency,
-                        'role' => $dist->role
+                        'currency' => 'EUR',
+                        'role' => $dist->platform_role ?? 'N/A' // PLATFORM_ROLE non role!
                     ];
                 })
                 ->toArray();
@@ -970,8 +959,7 @@ class MintController extends Controller {
                 'blockchain_id' => $blockchain->id,
             ]);
 
-            return view('mint.mint', compact('egi', 'blockchain', 'certificate', 'paymentBreakdown'));
-
+            return view('mint.mint', compact('egi', 'blockchain', 'certificate', 'paymentBreakdown', 'salePrice'));
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),

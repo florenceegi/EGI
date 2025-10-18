@@ -1,0 +1,407 @@
+{{--
+    MINT PAGE - PAGINA 2 (READ-ONLY)
+    🎯 Purpose: Mostra dati mint completato (riapribile)
+    📍 Route: GET /mint/{egiBlockchainId}
+    🔒 Auth: Buyer può vedere
+--}}
+<x-platform-layout :title="__('mint.minted_title', ['title' => $egi->title])">
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
+        <div class="container mx-auto max-w-7xl px-4">
+
+            {{-- Header Success --}}
+            <div class="mb-12 text-center">
+                <div class="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
+                    <svg class="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h1 class="mb-3 text-4xl font-bold text-gray-900">
+                    {{ __('mint.post_mint.congratulations') }}
+                </h1>
+                <p class="text-lg text-gray-600">
+                    {{ __('mint.post_mint.success_message') }}
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+
+                {{-- COLONNA 1: EGI Preview (4 cols) --}}
+                <div class="lg:col-span-4">
+                    <div class="overflow-hidden rounded-2xl bg-white shadow-xl">
+                        @if ($egi->main_image_url)
+                            <div class="aspect-[3/4] w-full overflow-hidden">
+                                <img src="{{ $egi->main_image_url }}" alt="{{ $egi->title }}"
+                                    class="h-full w-full object-cover transition-transform hover:scale-105">
+                            </div>
+                        @else
+                            <div class="flex aspect-[3/4] w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                                <span class="text-6xl">🎨</span>
+                            </div>
+                        @endif
+
+                        <div class="p-6">
+                            <h2 class="mb-2 text-xl font-bold text-gray-900">{{ $egi->title }}</h2>
+                            <p class="mb-4 text-sm text-gray-600">
+                                {{ __('mint.egi_preview.creator_by', ['name' => $egi->user->name]) }}
+                            </p>
+                            
+                            {{-- View EGI Button --}}
+                            <a href="{{ route('egis.show', $egi->id) }}"
+                                class="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800 hover:shadow-xl">
+                                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                {{ __('mint.post_mint.view_egi') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- COLONNA 2: Blockchain + Payment (5 cols) --}}
+                <div class="space-y-8 lg:col-span-5">
+
+                    {{-- Blockchain Info Card --}}
+                    <div class="rounded-2xl bg-white p-8 shadow-xl">
+                        <div class="mb-6 flex items-center">
+                            <div class="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-400 to-purple-600">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900">
+                                {{ __('mint.post_mint.blockchain_info') }}
+                            </h3>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 p-4">
+                                <dt class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-600">{{ __('mint.post_mint.asa_id') }}</dt>
+                                <dd class="font-mono text-2xl font-bold text-green-700">{{ $blockchain->asa_id }}</dd>
+                            </div>
+                            
+                            <div class="rounded-xl bg-gray-50 p-4">
+                                <dt class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-600">{{ __('mint.post_mint.tx_id') }}</dt>
+                                <dd class="break-all font-mono text-xs text-gray-900">
+                                    {{ $blockchain->blockchain_tx_id }}
+                                </dd>
+                            </div>
+                            
+                            <div class="rounded-xl bg-blue-50 p-4">
+                                <dt class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-600">{{ __('mint.post_mint.minted_at') }}</dt>
+                                <dd class="text-sm font-semibold text-gray-900">{{ $blockchain->minted_at->format('d/m/Y H:i:s') }}</dd>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <a href="https://explorer.perawallet.app/asset/{{ $blockchain->asa_id }}" target="_blank"
+                                class="flex w-full items-center justify-center rounded-xl border-2 border-blue-600 px-6 py-3 font-semibold text-blue-700 transition-all hover:bg-blue-50">
+                                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                {{ __('mint.post_mint.view_pera_explorer') }}
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- Payment Breakdown --}}
+                    @if ($paymentBreakdown && count($paymentBreakdown) > 0)
+                        <div class="rounded-2xl bg-white p-8 shadow-xl">
+                            <div class="mb-6 flex items-center">
+                                <div class="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-600">
+                                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-900">
+                                    {{ __('mint.post_mint.payment_breakdown') }}
+                                </h3>
+                            </div>
+
+                            <div class="overflow-hidden rounded-xl border border-gray-200">
+                                <table class="w-full">
+                                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                {{ __('mint.post_mint.recipient') }}
+                                            </th>
+                                            <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                {{ __('mint.post_mint.role') }}
+                                            </th>
+                                            <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                {{ __('mint.post_mint.amount') }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 bg-white">
+                                        @foreach ($paymentBreakdown as $payment)
+                                            <tr class="transition-colors hover:bg-gray-50">
+                                                <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                                                    {{ $payment['recipient_name'] ?? 'N/A' }}
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <span class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
+                                                        {{ ucfirst($payment['role']) }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-right text-sm font-bold text-gray-900">
+                                                    €{{ number_format($payment['amount_eur'], 2) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @endif
+
+                </div>
+
+                {{-- COLONNA 3: Certificate (3 cols) --}}
+                <div class="lg:col-span-3">
+                    <div class="rounded-2xl bg-white p-6 shadow-xl">
+                        <div class="mb-4 flex items-center">
+                            <div class="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-400 to-indigo-600">
+                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900">
+                                {{ __('mint.post_mint.certificate_title') }}
+                            </h3>
+                        </div>
+                        
+                        <p class="mb-6 text-sm text-gray-600">
+                            {{ __('mint.post_mint.certificate_description') }}
+                        </p>
+
+                        @if ($certificate)
+                            {{-- PDF Thumbnail --}}
+                            <div class="mb-6">
+                                <div id="certificate-thumbnail-container"
+                                    class="cursor-pointer overflow-hidden rounded-xl border-2 border-gray-300 transition-all hover:border-blue-500 hover:shadow-lg"
+                                    data-coa-id="{{ $certificate->id }}" data-thumb-width="280"
+                                    onclick="window.open('{{ $certificate->getPdfUrl() }}', '_blank')">
+                                    <div class="flex h-96 items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                                        <svg class="h-12 w-12 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-center text-xs text-gray-500">
+                                    {{ __('mint.post_mint.click_to_view') }}
+                                </p>
+                            </div>
+
+                            {{-- Action Buttons --}}
+                            <div class="space-y-3">
+                                <a href="{{ $certificate->getPdfUrl() }}" download
+                                    class="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-green-600 to-green-700 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-green-700 hover:to-green-800 hover:shadow-xl">
+                                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    {{ __('mint.post_mint.download_certificate') }}
+                                </a>
+
+                                <a href="{{ route('egi-certificates.show', $certificate->certificate_uuid) }}" target="_blank"
+                                    class="flex w-full items-center justify-center rounded-xl border-2 border-indigo-600 px-4 py-3 text-sm font-semibold text-indigo-700 transition-all hover:bg-indigo-50">
+                                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    {{ __('mint.post_mint.view_certificate') }}
+                                </a>
+
+                                <a href="{{ route('my-certificates') }}"
+                                    class="flex w-full items-center justify-center rounded-xl bg-gray-100 px-4 py-3 text-sm font-semibold text-gray-700 transition-all hover:bg-gray-200">
+                                    {{ __('mint.post_mint.my_certificates') }}
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">
+                                            {{ __('mint.post_mint.role') }}
+                                        </th>
+                                        <th class="px-3 py-2 text-right text-xs font-medium text-gray-700">
+                                            {{ __('mint.post_mint.amount') }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 bg-white">
+                                    @foreach ($paymentBreakdown as $payment)
+                                        <tr>
+                                            <td class="px-3 py-2 text-xs text-gray-900">
+                                                {{ $payment['recipient_name'] ?? 'N/A' }}
+                                            </td>
+                                            <td class="px-3 py-2 text-xs text-gray-600">
+                                                {{ ucfirst($payment['role']) }}
+                                            </td>
+                                            <td class="px-3 py-2 text-right text-xs font-medium text-gray-900">
+                                                €{{ number_format($payment['amount_eur'], 2) }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+
+            </div>
+
+            {{-- COLONNA 3: Certificate --}}
+            <div class="space-y-6">
+
+                {{-- Certificate Card --}}
+                <div class="rounded-lg bg-white p-6 shadow-lg">
+                    <h3 class="mb-4 text-lg font-semibold text-gray-900">
+                        {{ __('mint.post_mint.certificate_title') }}
+                    </h3>
+                    <p class="mb-4 text-sm text-gray-600">
+                        {{ __('mint.post_mint.certificate_description') }}
+                    </p>
+
+                    {{-- PDF Thumbnail --}}
+                    @if ($certificate)
+                        <div class="mb-4">
+                            <div id="certificate-thumbnail-container"
+                                class="cursor-pointer overflow-hidden rounded-lg border border-gray-300 hover:shadow-lg"
+                                data-coa-id="{{ $certificate->id }}" data-thumb-width="280"
+                                onclick="window.open('{{ $certificate->getPdfUrl() }}', '_blank')">
+                                <div class="flex h-64 items-center justify-center bg-gray-100">
+                                    <svg class="h-8 w-8 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="mt-2 text-center text-xs text-gray-500">
+                                {{ __('mint.post_mint.click_to_view') }}
+                            </p>
+                        </div>
+
+                        {{-- Download Button --}}
+                        <a href="{{ $certificate->getPdfUrl() }}" download
+                            class="mb-3 flex w-full items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            {{ __('mint.post_mint.download_certificate') }}
+                        </a>
+
+                        {{-- View Certificate Button --}}
+                        <a href="{{ route('egi-certificates.show', $certificate->certificate_uuid) }}" target="_blank"
+                            class="flex w-full items-center justify-center rounded-md border-2 border-blue-600 px-4 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-50">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            {{ __('mint.post_mint.view_certificate') }}
+                        </a>
+                    @endif
+
+                </div>
+
+                {{-- Action Buttons --}}
+                <div class="rounded-lg bg-white p-6 shadow-lg">
+                    <a href="{{ route('egis.show', $egi->id) }}"
+                        class="mb-3 flex w-full items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700">
+                        {{ __('mint.post_mint.view_egi') }}
+                    </a>
+                    <a href="{{ route('my-certificates') }}"
+                        class="flex w-full items-center justify-center rounded-lg border-2 border-blue-600 px-6 py-3 text-blue-600 transition-colors hover:bg-blue-50">
+                        {{ __('mint.post_mint.my_certificates') }}
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+@push('scripts')
+    {{-- PDF.js Library --}}
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    
+    {{-- Certificate Thumbnail Rendering --}}
+    <script>
+        // Configure PDF.js worker
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+        }
+
+        // Render PDF thumbnail
+            async function renderCertificateThumbnail() {
+                const container = document.getElementById('certificate-thumbnail-container');
+                if (!container) return;
+
+                try {
+                    const coaId = container.dataset.coaId;
+                    const targetWidth = parseInt(container.dataset.thumbWidth || '280', 10);
+
+                    // Check PDF exists
+                    const res = await fetch(`/coa/${coaId}/pdf/check`, {
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    });
+                    const info = await res.json();
+
+                    if (!info || !info.pdf_exists || !info.download_url) {
+                        container.innerHTML =
+                            '<div class="p-4 text-sm text-center text-gray-500">{{ __('mint.post_mint.generating_pdf') }}</div>';
+                        return;
+                    }
+
+                    // Render PDF first page
+                    const pdf = await pdfjsLib.getDocument(info.download_url).promise;
+                    const page = await pdf.getPage(1);
+
+                    const viewport = page.getViewport({
+                        scale: 1
+                    });
+                    const scale = targetWidth / viewport.width;
+                    const scaledViewport = page.getViewport({
+                        scale
+                    });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.floor(scaledViewport.width);
+                    canvas.height = Math.floor(scaledViewport.height);
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+
+                    const ctx = canvas.getContext('2d');
+                    await page.render({
+                        canvasContext: ctx,
+                        viewport: scaledViewport
+                    }).promise;
+
+                    container.innerHTML = '';
+                    container.appendChild(canvas);
+
+                } catch (error) {
+                    console.error('Certificate thumbnail error:', error);
+                    container.innerHTML =
+                        '<div class="p-4 text-sm text-center text-red-500">{{ __('mint.post_mint.thumbnail_error') }}</div>';
+                }
+            }
+
+        // Render on page load
+        document.addEventListener('DOMContentLoaded', renderCertificateThumbnail);
+    </script>
+@endpush
+
+</x-platform-layout>
