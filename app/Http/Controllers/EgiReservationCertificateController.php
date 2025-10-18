@@ -417,13 +417,14 @@ class EgiReservationCertificateController extends Controller {
 
     /**
      * Check if mint certificate PDF exists and return download URL
-     * Used by checkout page to render PDF thumbnail
+     * PUBLIC ENDPOINT - Certificates are blockchain-verified public documents
      *
      * @package App\Http\Controllers
      * @author Padmin D. Curtis (AI Partner OS3.0)
-     * @version 1.0.0 (FlorenceEGI - Mint Certificate Thumbnail)
-     * @date 2025-01-18
+     * @version 2.0.0 (FlorenceEGI - PUBLIC Certificate Access)
+     * @date 2025-10-18
      * @purpose Check mint certificate PDF availability for thumbnail rendering
+     * @access PUBLIC - No authorization required (blockchain transparency principle)
      *
      * @param Request $request
      * @param int $egiId - EGI ID
@@ -431,23 +432,27 @@ class EgiReservationCertificateController extends Controller {
      */
     public function checkMintCertificatePdf(Request $request, int $egiId) {
         try {
-            $user = $request->user();
-
-            // Load EGI with blockchain
+            // Load EGI with blockchain (NO AUTH CHECK - certificates are PUBLIC)
             $egi = \App\Models\Egi::with('blockchain')->findOrFail($egiId);
 
-            // Verify authorization - user must be the buyer
-            if (!$egi->blockchain || $egi->blockchain->buyer_user_id !== $user->id) {
-                $this->logger->warning('Unauthorized mint certificate PDF check', [
-                    'egi_id' => $egiId,
-                    'user_id' => $user->id,
-                    'buyer_id' => $egi->blockchain->buyer_user_id ?? null
+            $this->logger->info('Certificate PDF check started', [
+                'egi_id' => $egiId,
+                'has_blockchain' => $egi->blockchain ? true : false,
+                'blockchain_id' => $egi->blockchain?->id,
+                'mint_status' => $egi->blockchain?->mint_status
+            ]);
+
+            // Verify EGI has been minted
+            if (!$egi->blockchain) {
+                $this->logger->info('EGI not minted yet for PDF check', [
+                    'egi_id' => $egiId
                 ]);
 
                 return response()->json([
                     'success' => false,
-                    'message' => __('certificate.unauthorized_access')
-                ], 403);
+                    'pdf_exists' => false,
+                    'message' => __('certificate.egi_not_minted')
+                ], 404);
             }
 
             // Find mint certificate
@@ -456,10 +461,17 @@ class EgiReservationCertificateController extends Controller {
                 ->where('egi_blockchain_id', $egi->blockchain->id)
                 ->first();
 
+            $this->logger->info('Certificate search result', [
+                'egi_id' => $egiId,
+                'blockchain_id' => $egi->blockchain->id,
+                'certificate_found' => $certificate ? true : false,
+                'certificate_uuid' => $certificate?->certificate_uuid
+            ]);
+
             if (!$certificate) {
                 $this->logger->info('No mint certificate found for PDF check', [
                     'egi_id' => $egiId,
-                    'user_id' => $user->id
+                    'blockchain_id' => $egi->blockchain->id
                 ]);
 
                 return response()->json([
@@ -469,15 +481,16 @@ class EgiReservationCertificateController extends Controller {
                 ], 404);
             }
 
-            // Check if PDF file exists on disk
+            // Check if PDF file exists on disk (use default disk, not 'local')
             $pdfPath = $certificate->pdf_path;
-            $pdfExists = $pdfPath && \Storage::disk('local')->exists($pdfPath);
+            $pdfExists = $pdfPath && \Storage::exists($pdfPath); // Uses default disk (public)
 
             if (!$pdfExists) {
                 $this->logger->warning('Mint certificate exists but PDF file missing', [
                     'egi_id' => $egiId,
                     'certificate_uuid' => $certificate->certificate_uuid,
-                    'pdf_path' => $pdfPath
+                    'pdf_path' => $pdfPath,
+                    'default_disk' => config('filesystems.default')
                 ]);
 
                 return response()->json([

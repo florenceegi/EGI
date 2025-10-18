@@ -250,6 +250,8 @@ return [
         'certificate_title' => 'Certificato di Proprietà Blockchain',
         'certificate_description' => 'Il tuo certificato digitale ufficiale con i dati blockchain verificati.',
         'certificate_blockchain' => 'Certificato Blockchain',
+        'certificate_preview' => 'Anteprima Certificato',
+        'loading_preview' => 'Caricamento anteprima...',
         'download_certificate' => 'Scarica Certificato PDF',
         'view_certificate' => 'Visualizza Certificato',
         'preview_pdf' => 'Anteprima PDF',
@@ -274,5 +276,8 @@ return [
         // Action buttons
         'view_egi' => 'Visualizza il tuo EGI',
         'my_certificates' => 'I miei Certificati',
+        'sale_price' => 'Prezzo Vendita',
+        'click_to_view' => 'Clicca per aprire',
+        'thumbnail_error' => 'Errore caricamento anteprima',
     ],
 ];

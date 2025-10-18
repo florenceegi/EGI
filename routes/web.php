@@ -88,6 +88,10 @@ Route::get('/test-create-fegi', function () {
     return $controller->connect($request);
 });
 
+// 📄 PUBLIC CERTIFICATE ENDPOINT (No auth required - blockchain transparency)
+Route::post('/mint/{egiId}/certificate/pdf/check', [App\Http\Controllers\EgiReservationCertificateController::class, 'checkMintCertificatePdf'])
+    ->name('mint.certificate.pdf-check');
+
 // Mint routes (blockchain integration) - NEW ARCHITECTURE 2-PAGES
 Route::middleware('auth')->group(function () {
     // PAGINA 1: Payment Form
@@ -105,10 +109,6 @@ Route::middleware('auth')->group(function () {
     // Mint status polling endpoint (AJAX)
     Route::get('/mint/status/{egiId}', [App\Http\Controllers\MintController::class, 'checkMintStatus'])
         ->name('mint.status');
-
-    // Mint certificate PDF check endpoint (AJAX)
-    Route::post('/mint/{egiId}/certificate/pdf/check', [App\Http\Controllers\EgiReservationCertificateController::class, 'checkMintCertificatePdf'])
-        ->name('mint.certificate.pdf-check');
 
     // Phase 2: Direct mint route (dual path: mint OR reserve)
     Route::get('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'showDirectMint'])
