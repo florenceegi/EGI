@@ -500,7 +500,7 @@ class CertificateGeneratorService {
         <body>
             <div class="header">
                 <h1>🏛️ CERTIFICATO DI PROPRIETÀ BLOCKCHAIN</h1>
-                <div class="subtitle">FlorenceEGI Platform - Ecosistema Generativo Italiano</div>
+                <div class="subtitle">FlorenceEGI - Il Rinascimento Digitale</div>
             </div>
 
             <div class="section">
@@ -570,7 +570,8 @@ class CertificateGeneratorService {
             </div>
 
             <div class="footer">
-                <p><strong>FlorenceEGI</strong> - Piattaforma di tokenizzazione ecologica e artistica</p>
+                <p><strong>FlorenceEGI</strong> - Arte, Tecnologia e Rigenerazione Planetaria</p>
+                <p>Il primo marketplace che unisce Qualità Artistica + Liquidità Massima + Impatto Ambientale Reale</p>
                 <p>Certificato generato il ' . now()->format('d/m/Y H:i:s') . '</p>
                 <p>© ' . date('Y') . ' FlorenceEGI - Tutti i diritti riservati</p>
             </div>
