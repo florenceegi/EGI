@@ -255,43 +255,41 @@ class PaActApiController extends Controller
     }
 
     /**
-     * Extract document info from text (simplified version).
+     * Extract document info from text using configured provider
      *
-     * TODO: Move to dedicated service (PaBatchMetadataService)
+     * Uses DocumentAnalyzerFactory to get provider from config
+     * Supports: regex (default), claude, aisuru, openai, ollama
      *
-     * @param string $text
-     * @return array
+     * @param string $text Full document text
+     * @return array Extracted metadata (act_type, protocol, title, etc.)
+     * @throws \App\Exceptions\DocumentAnalysisException When analysis fails
      */
     private function extractDocumentInfo(string $text): array
     {
-        $info = [];
+        try {
+            // Get analyzer from factory (with fallback support)
+            $analyzer = \App\Services\DocumentAnalysis\DocumentAnalyzerFactory::makeWithFallback();
 
-        // Extract act type (basic regex)
-        if (preg_match('/DELIBERA(?:ZIONE)?/i', $text)) {
-            $info['act_type'] = 'delibera';
-        } elseif (preg_match('/DETERMINA(?:ZIONE)?/i', $text)) {
-            $info['act_type'] = 'determina';
-        } elseif (preg_match('/ORDINANZA/i', $text)) {
-            $info['act_type'] = 'ordinanza';
-        } elseif (preg_match('/DECRETO/i', $text)) {
-            $info['act_type'] = 'decreto';
-        } else {
-            $info['act_type'] = 'atto';
+            // Analyze document
+            return $analyzer->analyzeDocument($text, 'pa_act');
+        } catch (\Exception $e) {
+            // Log error
+            $this->logger->error('DOCUMENT_ANALYSIS_FAILED', [
+                'error' => $e->getMessage(),
+                'provider' => config('document_analysis.default_provider'),
+            ]);
+
+            // Fallback to empty data (don't block EGI creation)
+            return [
+                'act_type' => 'atto',
+                'protocol' => null,
+                'protocol_date' => null,
+                'title' => '',
+                'description' => '',
+                'entities' => [],
+                'confidence' => 0.0,
+            ];
         }
-
-        // Extract protocol number (pattern: N. XXX/YYYY or n. XXX del YYYY)
-        if (preg_match('/(?:N\.|n\.)\s*(\d+)(?:\/|del\s+)(\d{4})/i', $text, $matches)) {
-            $info['protocol'] = $matches[1] . '/' . $matches[2];
-            $info['protocol_date'] = $matches[2] . '-01-01'; // Default to year start
-        }
-
-        // Extract title (OGGETTO: ...)
-        if (preg_match('/OGGETTO:\s*(.+?)(?:\n|$)/i', $text, $matches)) {
-            $info['title'] = trim($matches[1]);
-            $info['description'] = $info['title']; // Use as description too
-        }
-
-        return $info;
     }
 
     /**
