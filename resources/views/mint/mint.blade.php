@@ -265,7 +265,7 @@
 
                             {{-- Action Buttons --}}
                             <div class="space-y-3">
-                                <a href="{{ $certificate->getPdfUrl() }}" target="_blank"
+                                <a href="{{ $certificate->getPdfUrl() }}" download
                                     class="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-green-600 to-green-700 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-green-700 hover:to-green-800 hover:shadow-xl">
                                     <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">

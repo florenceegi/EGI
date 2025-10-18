@@ -127,17 +127,18 @@ class EgiReservationCertificateController extends Controller {
             // Log download
             $this->logger->info('Certificate PDF downloaded', [
                 'certificate_uuid' => $uuid,
+                'pdf_path' => $certificate->pdf_path,
+                'disk' => config('filesystems.default'),
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent()
             ]);
 
-            // Return the file
+            // Return the file (use default disk - usually 'public')
             return Storage::download(
                 $certificate->pdf_path,
                 'Certificate_' . $certificate->certificate_uuid . '.pdf',
                 [
                     'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => 'attachment; filename="Certificate_' . $certificate->certificate_uuid . '.pdf"'
                 ]
             );
         } catch (\Exception $e) {
