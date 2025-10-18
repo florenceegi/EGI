@@ -501,7 +501,6 @@ class EgiReservationCertificateController extends Controller {
                 'certificate_uuid' => $certificate->certificate_uuid,
                 'public_url' => route('egi-certificates.show', $certificate->certificate_uuid),
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to check mint certificate PDF', [
                 'egi_id' => $egiId,

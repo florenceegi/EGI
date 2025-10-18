@@ -3,9 +3,9 @@
 /**
  * @package App\Http\Controllers
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Blockchain Integration)
- * @date 2025-10-07
- * @purpose Controller for EGI minting operations (primo acquisto after reservation)
+ * @version 2.0.0 (FlorenceEGI - NEW 2-PAGE ARCHITECTURE)
+ * @date 2025-10-18
+ * @purpose Controller for EGI minting - NEW CLEAN APPROACH
  */
 
 namespace App\Http\Controllers;
@@ -34,17 +34,79 @@ class MintController extends Controller {
         ErrorManagerInterface $errorManager,
         AuditLogService $auditService
     ) {
-        // $this->middleware('auth');
+        $this->middleware('auth');
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
     }
 
     /**
-     * Show mint checkout form for winning reservation
+     * PAGINA 1: Show payment form (NEW 2-PAGE ARCHITECTURE)
+     *
+     * @param int $egiId EGI to mint
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function showPaymentForm(int $egiId) {
+        try {
+            $reservationId = request()->query('reservation_id');
+
+            if (!$reservationId) {
+                $this->errorManager->handle('MINT_PAYMENT_MISSING_RESERVATION', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egiId,
+                ]);
+                return redirect()->back()->withErrors(['error' => __('mint.errors.missing_params')]);
+            }
+
+            $egi = Egi::with(['utility.media', 'user'])->findOrFail($egiId);
+            $reservation = Reservation::findOrFail($reservationId);
+
+            // Authorization: user must be reservation winner
+            if ($reservation->user_id !== Auth::id()) {
+                $this->errorManager->handle('MINT_PAYMENT_UNAUTHORIZED', [
+                    'user_id' => Auth::id(),
+                    'reservation_user_id' => $reservation->user_id,
+                    'egi_id' => $egiId,
+                    'reservation_id' => $reservationId,
+                ]);
+                return redirect()->back()->withErrors(['error' => __('mint.errors.unauthorized')]);
+            }
+
+            // Check reservation is still valid
+            if (!$reservation->is_current || $reservation->status !== 'active') {
+                $this->errorManager->handle('MINT_PAYMENT_INVALID_RESERVATION', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egiId,
+                    'reservation_id' => $reservationId,
+                    'status' => $reservation->status,
+                ]);
+                return redirect()->back()->withErrors(['error' => __('mint.errors.invalid_reservation')]);
+            }
+
+            // Check if already minted
+            if ($egi->blockchain && $egi->blockchain->isMinted()) {
+                return redirect()->route('mint.show', $egi->blockchain->id);
+            }
+
+            return view('mint.payment-form', compact('egi', 'reservation'));
+
+        } catch (\Exception $e) {
+            $this->errorManager->handle('MINT_PAYMENT_FORM_ERROR', [
+                'user_id' => Auth::id(),
+                'egi_id' => $egiId,
+                'error' => $e->getMessage()
+            ], $e);
+
+            return redirect()->back()->withErrors(['error' => __('mint.errors.unexpected')]);
+        }
+    }
+
+    /**
+     * OLD METHOD - Mantained for backward compatibility
      *
      * @param Request $request
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     * @deprecated Use showPaymentForm() instead
      */
     public function showCheckout(Request $request) {
         try {
@@ -354,11 +416,13 @@ class MintController extends Controller {
                 'amount' => $paymentAmount
             ]);
 
+            // NEW: Redirect to mint result page with success toast
             return response()->json([
                 'success' => true,
                 'data' => [
                     'blockchain_record_id' => $blockchainRecord->id,
                     'mint_status' => 'minting_queued',
+                    'redirect_url' => route('mint.show', $blockchainRecord->id)
                 ]
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -845,6 +909,79 @@ class MintController extends Controller {
                 'status' => 'error',
                 'message' => 'Failed to check mint status'
             ], 500);
+        }
+    }
+
+    /**
+     * PAGINA 2: Show mint result (READ-ONLY, riapribile)
+     *
+     * @param int $egiBlockchainId EgiBlockchain record ID
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function showMintResult(int $egiBlockchainId) {
+        try {
+            $blockchain = EgiBlockchain::with(['egi.utility.media', 'egi.user'])->findOrFail($egiBlockchainId);
+
+            // Authorization: only buyer can view
+            if ($blockchain->buyer_user_id !== Auth::id()) {
+                $this->errorManager->handle('MINT_RESULT_UNAUTHORIZED', [
+                    'user_id' => Auth::id(),
+                    'buyer_user_id' => $blockchain->buyer_user_id,
+                    'blockchain_id' => $egiBlockchainId,
+                ]);
+                return redirect()->back()->withErrors(['error' => __('mint.errors.unauthorized')]);
+            }
+
+            // Check mint is completed
+            if (!$blockchain->isMinted()) {
+                $this->errorManager->handle('MINT_RESULT_NOT_MINTED', [
+                    'user_id' => Auth::id(),
+                    'blockchain_id' => $egiBlockchainId,
+                    'mint_status' => $blockchain->mint_status,
+                ]);
+                return redirect()->back()->withErrors(['error' => __('mint.errors.not_minted_yet')]);
+            }
+
+            $egi = $blockchain->egi;
+
+            // Get certificate
+            $certificate = \App\Models\EgiReservationCertificate::where('egi_blockchain_id', $blockchain->id)
+                ->where('buyer_user_id', Auth::id())
+                ->first();
+
+            // Get payment breakdown
+            $paymentBreakdown = \App\Models\PaymentDistribution::where('source_type', 'mint')
+                ->where('source_id', $blockchain->id)
+                ->where('amount_eur', '>', 0)
+                ->get()
+                ->map(function($dist) {
+                    return [
+                        'recipient_user_id' => $dist->recipient_user_id,
+                        'recipient_name' => $dist->recipientUser->name ?? 'N/A',
+                        'recipient_wallet' => $dist->recipient_wallet,
+                        'amount_eur' => $dist->amount_eur,
+                        'currency' => $dist->currency,
+                        'role' => $dist->role
+                    ];
+                })
+                ->toArray();
+
+            $this->logger->info('Mint result page viewed', [
+                'user_id' => Auth::id(),
+                'egi_id' => $egi->id,
+                'blockchain_id' => $blockchain->id,
+            ]);
+
+            return view('mint.mint', compact('egi', 'blockchain', 'certificate', 'paymentBreakdown'));
+
+        } catch (\Exception $e) {
+            $this->errorManager->handle('MINT_RESULT_ERROR', [
+                'user_id' => Auth::id(),
+                'blockchain_id' => $egiBlockchainId,
+                'error' => $e->getMessage()
+            ], $e);
+
+            return redirect()->back()->withErrors(['error' => __('mint.errors.unexpected')]);
         }
     }
 }

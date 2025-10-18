@@ -235,6 +235,7 @@ class ContextMenus
             //     break;
 
 
+            case 'pa.batch':
             case 'pa.acts':
             case 'pa.egis':
             case 'pa.dashboard':
@@ -248,12 +249,12 @@ class ContextMenus
                 ]);
 
                 $paMainMenu = new MenuGroup(__('menu.pa_management'), 'pa-building', [
-                    new PAHeritageMenu(),
+                    // new PAHeritageMenu(),
                     new PAActsMenu(),
                     new PAStatisticsMenu(),
                     new PABatchProcessorMenu(),
-                    new PACoAMenu(),
-                    new PAInspectorsMenu(),
+                    // new PACoAMenu(),
+                    // new PAInspectorsMenu(),
                 ]);
                 $menus[] = $paMainMenu;
                 break;

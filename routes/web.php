@@ -88,16 +88,17 @@ Route::get('/test-create-fegi', function () {
     return $controller->connect($request);
 });
 
-// Mint routes (blockchain integration) - authenticated only
+// Mint routes (blockchain integration) - NEW ARCHITECTURE 2-PAGES
 Route::middleware('auth')->group(function () {
-    Route::get('/mint/checkout', [App\Http\Controllers\MintController::class, 'showCheckout'])
-        ->name('mint.checkout');
+    // PAGINA 1: Payment Form
+    Route::get('/mint/payment/{egiId}', [App\Http\Controllers\MintController::class, 'showPaymentForm'])
+        ->name('mint.payment-form');
 
-    // Alternative route with EGI ID in URL (redirects to correct route)
-    Route::get('/mint/{egiId}/checkout', function ($egiId) {
-        return redirect()->route('mint.checkout', ['egi_id' => $egiId]);
-    })->name('mint.checkout.alt');
+    // PAGINA 2: Mint Result (READ-ONLY, riapribile)
+    Route::get('/mint/{egiBlockchainId}', [App\Http\Controllers\MintController::class, 'showMintResult'])
+        ->name('mint.show');
 
+    // Process payment + mint
     Route::post('/mint/process', [App\Http\Controllers\MintController::class, 'processMint'])
         ->name('mint.process');
 

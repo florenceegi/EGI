@@ -79,7 +79,7 @@ Il menu PA ha 6 voci totali, ma l'utente vedeva voci VECCHIE/COMMENTATE a causa 
 case 'pa.acts':
 case 'pa':
     $paMainMenu = new MenuGroup(__('menu.pa_management'), 'pa-building', [
-        new PAHeritageMenu(),        // 1
+        // new PAHeritageMenu(),        // 1
         new PAActsMenu(),            // 2
         new PAStatisticsMenu(),      // 3
         new PABatchProcessorMenu(),  // 4
