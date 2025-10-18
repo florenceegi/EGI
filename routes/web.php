@@ -102,6 +102,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/mint/{egiBlockchainId}', [App\Http\Controllers\MintController::class, 'showMintResult'])
         ->name('mint.show');
 
+    // Regenerate certificate (without new mint)
+    Route::post('/mint/{egiBlockchainId}/regenerate-certificate', [App\Http\Controllers\MintController::class, 'regenerateCertificate'])
+        ->name('mint.regenerate-certificate');
+
     // Process payment + mint
     Route::post('/mint/process', [App\Http\Controllers\MintController::class, 'processMint'])
         ->name('mint.process');
