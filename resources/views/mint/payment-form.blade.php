@@ -5,7 +5,7 @@
     ➡️ Submit: POST /mint/process → Redirect a mint.blade.php
 --}}
 <x-platform-layout :title="__('mint.page_title', ['title' => $egi->title])">
-    <div class="container max-w-4xl px-4 py-8 mx-auto">
+    <div class="container mx-auto max-w-4xl px-4 py-8">
 
         {{-- Header --}}
         <div class="mb-8 text-center">
@@ -23,12 +23,12 @@
             <div class="space-y-6">
 
                 {{-- Immagine EGI --}}
-                <div class="overflow-hidden bg-white rounded-lg shadow-lg">
+                <div class="overflow-hidden rounded-lg bg-white shadow-lg">
                     @if ($egi->utility && $egi->utility->getFirstMediaUrl('utility'))
                         <img src="{{ $egi->utility->getFirstMediaUrl('utility') }}" alt="{{ $egi->title }}"
-                            class="object-cover w-full h-64">
+                            class="h-64 w-full object-cover">
                     @else
-                        <div class="flex items-center justify-center w-full h-64 bg-gray-200">
+                        <div class="flex h-64 w-full items-center justify-center bg-gray-200">
                             <span class="text-4xl text-gray-400">🎨</span>
                         </div>
                     @endif
@@ -46,7 +46,7 @@
                 </div>
 
                 {{-- Blockchain Info --}}
-                <div class="p-6 rounded-lg bg-blue-50">
+                <div class="rounded-lg bg-blue-50 p-6">
                     <h3 class="mb-3 text-lg font-semibold text-blue-900">
                         {{ __('mint.blockchain_info.title') }}
                     </h3>
@@ -67,7 +67,7 @@
                 </div>
 
                 {{-- Prezzo Originale --}}
-                <div class="p-6 rounded-lg bg-green-50">
+                <div class="rounded-lg bg-green-50 p-6">
                     <h3 class="mb-2 font-semibold text-green-900">
                         {{ __('mint.payment.price_label') }}
                     </h3>
@@ -88,7 +88,7 @@
             <div class="space-y-6">
 
                 {{-- MiCA Compliance Notice --}}
-                <div class="p-4 border-l-4 border-blue-500 bg-blue-50">
+                <div class="border-l-4 border-blue-500 bg-blue-50 p-4">
                     <h4 class="mb-1 text-sm font-semibold text-blue-900">
                         {{ __('mint.compliance.mica_title') }}
                     </h4>
@@ -99,7 +99,7 @@
 
                 {{-- Form Pagamento --}}
                 <form id="mint-payment-form" action="{{ route('mint.process') }}" method="POST"
-                    class="p-6 bg-white rounded-lg shadow-lg">
+                    class="rounded-lg bg-white p-6 shadow-lg">
                     @csrf
 
                     <input type="hidden" name="egi_id" value="{{ $egi->id }}">
@@ -109,22 +109,22 @@
 
                     {{-- Payment Method --}}
                     <div class="mb-6">
-                        <label class="block mb-3 text-sm font-medium text-gray-700">
+                        <label class="mb-3 block text-sm font-medium text-gray-700">
                             {{ __('mint.payment.payment_method_label') }}
                         </label>
                         <div class="space-y-3">
                             <label
-                                class="flex items-center p-3 transition-colors border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                                class="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 transition-colors hover:bg-gray-50">
                                 <input type="radio" name="payment_method" value="stripe" checked
-                                    class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="ml-3 text-sm font-medium text-gray-900">
                                     💳 {{ __('mint.payment.credit_card') }}
                                 </span>
                             </label>
                             <label
-                                class="flex items-center p-3 transition-colors border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                                class="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 transition-colors hover:bg-gray-50">
                                 <input type="radio" name="payment_method" value="paypal"
-                                    class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="ml-3 text-sm font-medium text-gray-900">
                                     💙 {{ __('mint.payment.paypal') }}
                                 </span>
@@ -134,21 +134,21 @@
 
                     {{-- Wallet Destinazione (Opzionale) --}}
                     <div class="mb-6">
-                        <div class="flex items-center mb-3">
+                        <div class="mb-3 flex items-center">
                             <input type="checkbox" id="has_wallet_toggle"
-                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                             <label for="has_wallet_toggle" class="ml-2 text-sm font-medium text-gray-700">
                                 {{ __('mint.buyer_info.has_wallet') }}
                             </label>
                         </div>
 
                         <div id="wallet_input_container" class="hidden">
-                            <label class="block mb-2 text-sm font-medium text-gray-700">
+                            <label class="mb-2 block text-sm font-medium text-gray-700">
                                 {{ __('mint.buyer_info.wallet_label') }}
                             </label>
                             <input type="text" name="buyer_wallet" id="buyer_wallet"
                                 placeholder="{{ __('mint.buyer_info.wallet_placeholder') }}"
-                                class="w-full px-3 py-2 font-mono text-sm border border-gray-300 rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                class="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <p class="mt-1 text-xs text-gray-500">
                                 {{ __('mint.buyer_info.wallet_help') }}
                             </p>
@@ -157,18 +157,18 @@
 
                     {{-- Nickname Co-Creator (pre-filled) --}}
                     <div class="mb-6">
-                        <label for="co_creator_display_name" class="block mb-2 text-sm font-medium text-gray-700">
+                        <label for="co_creator_display_name" class="mb-2 block text-sm font-medium text-gray-700">
                             {{ __('mint.payment.co_creator_name_label') }}
                             <span class="text-xs text-gray-500">({{ __('mint.payment.optional') }})</span>
                         </label>
                         <input type="text" name="co_creator_display_name" id="co_creator_display_name"
                             value="{{ Auth::user()->name }}" placeholder="{{ Auth::user()->name }}"
                             pattern="^[a-zA-Z0-9\s.\'\-]+$" maxlength="100"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <p class="mt-1 text-xs text-gray-500">
                             {{ __('mint.payment.co_creator_name_help') }}
                         </p>
-                        <div class="p-2 mt-2 border-l-4 border-yellow-500 bg-yellow-50">
+                        <div class="mt-2 border-l-4 border-yellow-500 bg-yellow-50 p-2">
                             <p class="text-xs text-yellow-800">
                                 ⚠️ {{ __('mint.payment.co_creator_name_warning') }}
                             </p>
@@ -176,7 +176,7 @@
                     </div>
 
                     {{-- Total --}}
-                    <div class="pt-4 mb-6 border-t">
+                    <div class="mb-6 border-t pt-4">
                         <div class="flex items-center justify-between text-lg font-semibold">
                             <span>{{ __('mint.payment.total_label') }}</span>
                             <span class="text-green-600">
@@ -187,7 +187,7 @@
 
                     {{-- Submit Button --}}
                     <button type="submit" id="submit-mint-btn"
-                        class="w-full px-6 py-3 font-bold text-white transition-all bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        class="w-full rounded-lg bg-blue-600 px-6 py-3 font-bold text-white transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         {{ __('mint.payment.submit_button') }}
                     </button>
 
@@ -229,13 +229,52 @@
                 }
             });
 
-            // Form submission
+                        // Form submission con MODALE DI PROGRESS
             document.getElementById('mint-payment-form').addEventListener('submit', function(e) {
+                e.preventDefault(); // Previeni submit default
+                
+                const form = this;
                 const btn = document.getElementById('submit-mint-btn');
+                
+                // Disabilita button e mostra spinner
                 btn.disabled = true;
                 btn.innerHTML =
                     '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> {{ __('mint.payment.processing') }}';
+
+                // Mostra modale di progress
+                if (window.Swal) {
+                    Swal.fire({
+                        title: '⏳ Elaborazione Mint',
+                        html: `
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-center">
+                                    <svg class="w-16 h-16 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-gray-700">Stiamo elaborando il tuo pagamento e preparando il mint sulla blockchain Algorand.</p>
+                                <p class="text-sm text-gray-500">⚠️ Non chiudere questa finestra</p>
+                            </div>
+                        `,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            // Submit form DOPO aver mostrato la modale
+                            form.submit();
+                        }
+                    });
+                } else {
+                    // Se SweetAlert non disponibile, submit normale
+                    form.submit();
+                }
             });
+        </script>
+    @endpush
+
+</x-platform-layout>
+```
         </script>
     @endpush
 

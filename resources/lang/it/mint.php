@@ -71,6 +71,7 @@ return [
         'wallet_label' => 'Wallet Algorand (Opzionale)',
         'wallet_placeholder' => 'Inserisci il tuo indirizzo wallet Algorand',
         'wallet_help' => 'Se inserisci un wallet, l\'EGI verrà trasferito direttamente lì. Altrimenti sarà custodito nel Treasury della piattaforma.',
+        'processing' => 'Elaborazione in corso...',
 
         // AREA 5.5.1: Co-Creator Display Name
         'optional' => 'opzionale',
@@ -84,6 +85,7 @@ return [
     // Buyer Info Section
     'buyer_info' => [
         'title' => 'Informazioni Acquirente',
+        'has_wallet' => 'Possiedi già un wallet Algorand?',
         'wallet_label' => 'Wallet Algorand di destinazione',
         'wallet_placeholder' => 'Inserisci il tuo indirizzo wallet Algorand',
         'wallet_help' => 'L\'EGI verrà trasferito a questo indirizzo dopo il mint.',
@@ -252,6 +254,7 @@ return [
         'certificate_blockchain' => 'Certificato Blockchain',
         'certificate_preview' => 'Anteprima Certificato',
         'loading_preview' => 'Caricamento anteprima...',
+        'generating_pdf' => 'Generazione PDF in corso...',
         'download_certificate' => 'Scarica Certificato PDF',
         'view_certificate' => 'Visualizza Certificato',
         'preview_pdf' => 'Anteprima PDF',
