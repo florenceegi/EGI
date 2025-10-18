@@ -132,4 +132,3 @@ class DocumentAnalyzerFactory
         return config('document_analysis.default_provider', 'regex');
     }
 }
-

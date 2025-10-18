@@ -60,4 +60,3 @@ interface DocumentAnalysisInterface
      */
     public function supportsDocumentType(string $documentType): bool;
 }
-

@@ -121,6 +121,7 @@ Il ruolo `pa_entity` **HA TUTTI I PERMESSI PA** necessari:
 Il problema era la **cache** che mostrava menu vecchi/commentati.
 
 **Comando eseguito:**
+
 ```bash
 php artisan cache:clear
 php artisan view:clear

@@ -24,6 +24,11 @@ return [
     'verification_failed' => 'Impossibile verificare il certificato. Potrebbe essere non valido o non più esistente.',
     'list_failed' => 'Impossibile recuperare l\'elenco dei certificati.',
     'auth_required' => 'Accedi per visualizzare i tuoi certificati.',
+    'pdf_not_found' => 'Il file PDF del certificato non è stato trovato sul server.',
+    'check_failed' => 'Impossibile verificare la disponibilità del PDF. Riprova più tardi.',
+    'unauthorized_access' => 'Non sei autorizzato ad accedere a questo certificato.',
+    'egi_not_minted' => 'L\'EGI non è stato ancora mintato sulla blockchain.',
+    'generation_failed' => 'Impossibile generare il certificato. Riprova più tardi.',
 
     // Dettagli certificato
     'details' => [

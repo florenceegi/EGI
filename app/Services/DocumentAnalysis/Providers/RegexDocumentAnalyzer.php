@@ -114,4 +114,3 @@ class RegexDocumentAnalyzer implements DocumentAnalysisInterface
         return in_array($documentType, ['pa_act', 'contract', 'invoice']);
     }
 }
-

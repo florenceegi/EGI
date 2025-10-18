@@ -13,13 +13,13 @@ N.A.T.A.N. uses a **provider-agnostic architecture** for document analysis, enab
 
 ### Supported Providers
 
-| Provider | Status | Use Case | Cost |
-|----------|--------|----------|------|
-| **Regex** | ✅ Active | Basic extraction, fallback | Free |
-| **AISURU** | 🔄 Stub Ready | Italian AI, AI Act compliant | TBD |
-| **Claude** | 📋 Planned | High accuracy, expensive | $$$ |
-| **OpenAI** | 📋 Planned | Balanced quality/cost | $$ |
-| **Ollama** | 📋 Planned | Self-hosted, on-premise | Free |
+| Provider   | Status        | Use Case                     | Cost |
+| ---------- | ------------- | ---------------------------- | ---- |
+| **Regex**  | ✅ Active     | Basic extraction, fallback   | Free |
+| **AISURU** | 🔄 Stub Ready | Italian AI, AI Act compliant | TBD  |
+| **Claude** | 📋 Planned    | High accuracy, expensive     | $$$  |
+| **OpenAI** | 📋 Planned    | Balanced quality/cost        | $$   |
+| **Ollama** | 📋 Planned    | Self-hosted, on-premise      | Free |
 
 ---
 
@@ -68,11 +68,11 @@ $metadata = $analyzer->analyzeDocument($text, 'pa_act');
 return [
     // Default provider
     'default_provider' => env('DOCUMENT_ANALYZER_PROVIDER', 'regex'),
-    
+
     // Fallback configuration
     'fallback_enabled' => env('DOCUMENT_ANALYSIS_FALLBACK', false),
     'fallback_provider' => env('DOCUMENT_ANALYSIS_FALLBACK_PROVIDER', 'regex'),
-    
+
     'providers' => [
         'regex' => [...],
         'aisuru' => [...],
@@ -116,13 +116,15 @@ DOCUMENT_ANALYZER_PROVIDER=regex
 ```
 
 **Pros:**
-- ✅ No API costs
-- ✅ Fast (< 1ms)
-- ✅ No external dependencies
+
+-   ✅ No API costs
+-   ✅ Fast (< 1ms)
+-   ✅ No external dependencies
 
 **Cons:**
-- ❌ Limited accuracy (~60-80%)
-- ❌ Only basic pattern matching
+
+-   ❌ Limited accuracy (~60-80%)
+-   ❌ Only basic pattern matching
 
 ---
 
@@ -165,14 +167,14 @@ File: `app/Services/DocumentAnalysis/Providers/AisuruDocumentAnalyzer.php`
 1. **Endpoint:** Full URL for document analysis API
 2. **Authentication:** Confirm Bearer token format
 3. **Request Format:**
-   ```json
-   {
-     "memori_id": "...",
-     "text": "...",
-     "document_type": "pa_act",
-     "extract_fields": ["act_type", "protocol", "title"]
-   }
-   ```
+    ```json
+    {
+        "memori_id": "...",
+        "text": "...",
+        "document_type": "pa_act",
+        "extract_fields": ["act_type", "protocol", "title"]
+    }
+    ```
 4. **Response Format:** Expected JSON structure
 5. **Rate Limits:** Requests per minute/day
 6. **Pricing:** Cost per request or subscription model
@@ -238,9 +240,10 @@ OLLAMA_TIMEOUT=60
 ```
 
 **Requirements:**
-- Ollama installed on server
-- Llama 3 70B model downloaded (~40GB)
-- Sufficient GPU/CPU resources
+
+-   Ollama installed on server
+-   Llama 3 70B model downloaded (~40GB)
+-   Sufficient GPU/CPU resources
 
 **Implementation:** `app/Services/DocumentAnalysis/Providers/OllamaDocumentAnalyzer.php`
 
@@ -298,10 +301,11 @@ grep "DOCUMENT_ANALYSIS" storage/logs/laravel.log
 ### Dashboard Stats
 
 PA Statistics dashboard shows:
-- Provider in use
-- Success rate
-- Average response time
-- Fallback activations
+
+-   Provider in use
+-   Success rate
+-   Average response time
+-   Fallback activations
 
 ---
 
@@ -321,7 +325,7 @@ class MyProviderAnalyzer implements DocumentAnalysisInterface
     {
         // Your implementation
     }
-    
+
     // ... implement other interface methods
 }
 ```
@@ -382,18 +386,17 @@ Architecture: Provider-agnostic by design (OS3 standard)
 
 ## ✅ Checklist: Production Deployment
 
-- [ ] Provider selected based on requirements (cost, accuracy, privacy)
-- [ ] API credentials configured in `.env`
-- [ ] Health check passing (`healthCheck()` returns true)
-- [ ] Test with 10+ sample PA acts
-- [ ] Compare accuracy vs. regex baseline
-- [ ] Fallback provider configured (if needed)
-- [ ] Monitoring alerts configured
-- [ ] Costs tracked (if using paid API)
+-   [ ] Provider selected based on requirements (cost, accuracy, privacy)
+-   [ ] API credentials configured in `.env`
+-   [ ] Health check passing (`healthCheck()` returns true)
+-   [ ] Test with 10+ sample PA acts
+-   [ ] Compare accuracy vs. regex baseline
+-   [ ] Fallback provider configured (if needed)
+-   [ ] Monitoring alerts configured
+-   [ ] Costs tracked (if using paid API)
 
 ---
 
 **Document version:** 1.0.0  
 **Last updated:** 2025-10-18  
 **Maintained by:** FlorenceEGI Team
-
