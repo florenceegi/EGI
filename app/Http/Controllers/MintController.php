@@ -42,6 +42,7 @@ class MintController extends Controller {
 
     /**
      * PAGINA 1: Show payment form (NEW 2-PAGE ARCHITECTURE)
+     * ✅ DUAL PATH: Supporta mint con reservation E mint diretto
      *
      * @param int $egiId EGI to mint
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
@@ -49,38 +50,34 @@ class MintController extends Controller {
     public function showPaymentForm(int $egiId) {
         try {
             $reservationId = request()->query('reservation_id');
-
-            if (!$reservationId) {
-                $this->errorManager->handle('MINT_CHECKOUT_MISSING_PARAMS', [
-                    'user_id' => Auth::id(),
-                    'egi_id' => $egiId,
-                ]);
-                return redirect()->back()->withErrors(['error' => __('mint.errors.missing_params')]);
-            }
-
             $egi = Egi::with(['utility.media', 'user'])->findOrFail($egiId);
-            $reservation = Reservation::findOrFail($reservationId);
+            $reservation = null;
 
-            // Authorization: user must be reservation winner
-            if ($reservation->user_id !== Auth::id()) {
-                $this->errorManager->handle('MINT_CHECKOUT_UNAUTHORIZED', [
-                    'user_id' => Auth::id(),
-                    'reservation_user_id' => $reservation->user_id,
-                    'egi_id' => $egiId,
-                    'reservation_id' => $reservationId,
-                ]);
-                return redirect()->back()->withErrors(['error' => __('mint.errors.unauthorized')]);
-            }
+            // ✅ DUAL PATH: Se c'è reservation_id, valida la reservation
+            if ($reservationId) {
+                $reservation = Reservation::findOrFail($reservationId);
 
-            // Check reservation is still valid
-            if (!$reservation->is_current || $reservation->status !== 'active') {
-                $this->errorManager->handle('MINT_CHECKOUT_INVALID_RESERVATION', [
-                    'user_id' => Auth::id(),
-                    'egi_id' => $egiId,
-                    'reservation_id' => $reservationId,
-                    'status' => $reservation->status,
-                ]);
-                return redirect()->back()->withErrors(['error' => __('mint.errors.invalid_reservation')]);
+                // Authorization: user must be reservation winner
+                if ($reservation->user_id !== Auth::id()) {
+                    $this->errorManager->handle('MINT_CHECKOUT_UNAUTHORIZED', [
+                        'user_id' => Auth::id(),
+                        'reservation_user_id' => $reservation->user_id,
+                        'egi_id' => $egiId,
+                        'reservation_id' => $reservationId,
+                    ]);
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.unauthorized')]);
+                }
+
+                // Check reservation is still valid
+                if (!$reservation->is_current || $reservation->status !== 'active') {
+                    $this->errorManager->handle('MINT_CHECKOUT_INVALID_RESERVATION', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egiId,
+                        'reservation_id' => $reservationId,
+                        'status' => $reservation->status,
+                    ]);
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.invalid_reservation')]);
+                }
             }
 
             // Check if already minted
@@ -207,35 +204,40 @@ class MintController extends Controller {
         try {
             $validated = $request->validate([
                 'egi_id' => 'required|integer|exists:egis,id',
-                'reservation_id' => 'required|integer|exists:reservations,id',
+                'reservation_id' => 'nullable|integer|exists:reservations,id', // ✅ NULLABLE per mint diretto
                 'payment_method' => 'required|string|in:stripe,paypal',
                 'buyer_wallet' => 'nullable|string|max:255', // Optional - user wallet for direct transfer
                 'co_creator_display_name' => 'nullable|string|min:2|max:100|regex:/^[a-zA-Z0-9\s.\'\-]+$/', // AREA 5.5.1
             ]);
 
             $egi = Egi::findOrFail($validated['egi_id']);
-            $reservation = Reservation::findOrFail($validated['reservation_id']);
+            
+            // ✅ DUAL PATH: Mint con reservation VS Mint diretto
+            $reservation = null;
+            if (!empty($validated['reservation_id'])) {
+                $reservation = Reservation::findOrFail($validated['reservation_id']);
+                
+                // Security checks SOLO per mint con reservation
+                if ($reservation->user_id !== Auth::id()) {
+                    $this->errorManager->handle('MINT_UNAUTHORIZED', [
+                        'user_id' => Auth::id(),
+                        'reservation_user_id' => $reservation->user_id,
+                        'egi_id' => $validated['egi_id'],
+                        'reservation_id' => $validated['reservation_id'],
+                    ]);
+                    return response()->json([], 403);
+                }
 
-            // Security checks
-            if ($reservation->user_id !== Auth::id()) {
-                $this->errorManager->handle('MINT_UNAUTHORIZED', [
-                    'user_id' => Auth::id(),
-                    'reservation_user_id' => $reservation->user_id,
-                    'egi_id' => $validated['egi_id'],
-                    'reservation_id' => $validated['reservation_id'],
-                ]);
-                return response()->json([], 403);
-            }
-
-            if (!$reservation->is_current || $reservation->status !== 'active') {
-                $this->errorManager->handle('MINT_INVALID_RESERVATION', [
-                    'user_id' => Auth::id(),
-                    'egi_id' => $validated['egi_id'],
-                    'reservation_id' => $validated['reservation_id'],
-                    'is_current' => $reservation->is_current,
-                    'status' => $reservation->status,
-                ]);
-                return response()->json([], 400);
+                if (!$reservation->is_current || $reservation->status !== 'active') {
+                    $this->errorManager->handle('MINT_INVALID_RESERVATION', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $validated['egi_id'],
+                        'reservation_id' => $validated['reservation_id'],
+                        'is_current' => $reservation->is_current,
+                        'status' => $reservation->status,
+                    ]);
+                    return response()->json([], 400);
+                }
             }
 
             if ($egi->blockchain && $egi->blockchain->isMinted()) {
@@ -292,7 +294,11 @@ class MintController extends Controller {
             }
 
             // MOCK Payment processing (V1 - FIAT only)
-            $paymentAmount = $reservation->offer_amount_fiat ?? $reservation->amount_eur;
+            // ✅ DUAL PATH: usa reservation amount se presente, altrimenti EGI price
+            $paymentAmount = $reservation 
+                ? ($reservation->offer_amount_fiat ?? $reservation->amount_eur)
+                : $egi->price;
+            
             $paymentResult = $this->mockPaymentProcessing($validated['payment_method'], $paymentAmount);
 
             if (!$paymentResult['success']) {
@@ -309,7 +315,7 @@ class MintController extends Controller {
             // Create blockchain record
             $blockchainRecord = EgiBlockchain::create([
                 'egi_id' => $egi->id,
-                'reservation_id' => $reservation->id,
+                'reservation_id' => $reservation?->id, // ✅ NULLABLE per mint diretto
                 'payment_method' => $validated['payment_method'], // stripe, paypal, bank_transfer
                 'psp_provider' => $paymentResult['provider'],
                 'payment_reference' => $paymentResult['reference'],
@@ -401,7 +407,7 @@ class MintController extends Controller {
                 'EGI mint initiated',
                 [
                     'egi_id' => $egi->id,
-                    'reservation_id' => $reservation->id,
+                    'reservation_id' => $reservation?->id, // ✅ NULLABLE per mint diretto
                     'amount' => $paymentAmount,
                     'payment_method' => $validated['payment_method']
                 ],
@@ -427,7 +433,7 @@ class MintController extends Controller {
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->errorManager->handle('MINT_VALIDATION_ERROR', [
                 'user_id' => Auth::id(),
-                'errors' => $e->errors(),
+                'errors' => json_encode($e->errors()), // Convert array to string
             ], $e);
             return response()->json([], 422);
         } catch (\Exception $e) {
