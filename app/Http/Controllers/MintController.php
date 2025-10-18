@@ -524,6 +524,12 @@ class MintController extends Controller {
             // Direct mint = no reservation
             $reservation = null;
 
+            // Check mint status - REDIRECT if already minted
+            if ($egi->blockchain && $egi->blockchain->isMinted()) {
+                // EGI già mintato → redirect a mint.show (pagina risultato)
+                return redirect()->route('mint.show', $egi->blockchain->id);
+            }
+
             // Check mint status (supports async minting)
             $mintStatus = 'not_started'; // Default: no mint initiated
             $blockchainData = null;
@@ -531,15 +537,7 @@ class MintController extends Controller {
             if ($egi->blockchain) {
                 $blockchain = $egi->blockchain;
 
-                if ($blockchain->isMinted()) {
-                    // Mint completed - show success badge
-                    $mintStatus = 'completed';
-                    $blockchainData = [
-                        'asa_id' => $blockchain->asa_id,
-                        'tx_id' => $blockchain->blockchain_tx_id,
-                        'minted_at' => $blockchain->minted_at?->format('d/m/Y H:i:s'),
-                    ];
-                } elseif (in_array($blockchain->mint_status, ['minting_queued', 'minting'])) {
+                if (in_array($blockchain->mint_status, ['minting_queued', 'minting'])) {
                     // Mint in progress - show processing badge
                     $mintStatus = 'processing';
                     $blockchainData = [
@@ -924,7 +922,7 @@ class MintController extends Controller {
 
             // Authorization: only buyer can view
             if ($blockchain->buyer_user_id !== Auth::id()) {
-                $this->errorManager->handle('MINT_RESULT_UNAUTHORIZED', [
+                $this->errorManager->handle('MINT_CHECKOUT_UNAUTHORIZED', [
                     'user_id' => Auth::id(),
                     'buyer_user_id' => $blockchain->buyer_user_id,
                     'blockchain_id' => $egiBlockchainId,
@@ -934,7 +932,7 @@ class MintController extends Controller {
 
             // Check mint is completed
             if (!$blockchain->isMinted()) {
-                $this->errorManager->handle('MINT_RESULT_NOT_MINTED', [
+                $this->errorManager->handle('MINT_VALIDATION_ERROR', [
                     'user_id' => Auth::id(),
                     'blockchain_id' => $egiBlockchainId,
                     'mint_status' => $blockchain->mint_status,
@@ -975,7 +973,7 @@ class MintController extends Controller {
             return view('mint.mint', compact('egi', 'blockchain', 'certificate', 'paymentBreakdown'));
 
         } catch (\Exception $e) {
-            $this->errorManager->handle('MINT_RESULT_ERROR', [
+            $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),
                 'blockchain_id' => $egiBlockchainId,
                 'error' => $e->getMessage()
