@@ -5,14 +5,14 @@
     🔒 Auth: Buyer può vedere
 --}}
 <x-platform-layout :title="__('mint.minted_title', ['title' => $egi->title])">
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
-        <div class="container mx-auto max-w-7xl px-4">
+    <div class="min-h-screen py-12 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div class="container px-4 mx-auto max-w-7xl">
 
             {{-- Header Success --}}
             <div class="mb-12 text-center">
                 <div
-                    class="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow-lg">
-                    <svg class="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-full shadow-lg bg-gradient-to-br from-green-400 to-green-600">
+                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
@@ -28,11 +28,11 @@
 
                 {{-- COLONNA 1: EGI Preview (4 cols) --}}
                 <div class="lg:col-span-4">
-                    <div class="overflow-hidden rounded-2xl bg-white shadow-xl">
+                    <div class="overflow-hidden bg-white shadow-xl rounded-2xl">
                         @if ($egi->main_image_url)
                             <div class="aspect-[3/4] w-full overflow-hidden">
                                 <img src="{{ $egi->main_image_url }}" alt="{{ $egi->title }}"
-                                    class="h-full w-full object-cover transition-transform hover:scale-105">
+                                    class="object-cover w-full h-full transition-transform hover:scale-105">
                             </div>
                         @else
                             <div
@@ -42,14 +42,14 @@
                         @endif
 
                         <div class="p-6">
-                            <div class="mb-4 flex items-start justify-between">
+                            <div class="flex items-start justify-between mb-4">
                                 <div class="flex-1">
                                     <h2 class="mb-1 text-xl font-bold text-gray-900">{{ $egi->title }}</h2>
                                     <p class="text-sm text-gray-600">
                                         {{ __('mint.egi_preview.creator_by', ['name' => $egi->user->name]) }}
                                     </p>
                                 </div>
-                                <div class="ml-4 flex-shrink-0 text-right">
+                                <div class="flex-shrink-0 ml-4 text-right">
                                     <p class="text-xs text-gray-500">{{ __('mint.post_mint.sale_price') }}</p>
                                     <p class="text-2xl font-bold text-green-700">
                                         €{{ number_format($salePrice, 2, ',', '.') }}</p>
@@ -58,8 +58,8 @@
 
                             {{-- View EGI Button --}}
                             <a href="{{ route('egis.show', $egi->id) }}"
-                                class="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800 hover:shadow-xl">
-                                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="flex items-center justify-center w-full px-6 py-3 font-semibold text-white transition-all shadow-lg rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -75,11 +75,11 @@
                 <div class="space-y-8 lg:col-span-5">
 
                     {{-- Blockchain Info Card --}}
-                    <div class="rounded-2xl bg-white p-8 shadow-xl">
-                        <div class="mb-6 flex items-center">
+                    <div class="p-8 bg-white shadow-xl rounded-2xl">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-400 to-purple-600">
-                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor"
+                                class="flex items-center justify-center w-12 h-12 mr-4 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -91,22 +91,22 @@
                         </div>
 
                         <div class="space-y-4">
-                            <div class="rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 p-4">
-                                <dt class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-600">
+                            <div class="p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50">
+                                <dt class="mb-1 text-xs font-medium tracking-wide text-gray-600 uppercase">
                                     {{ __('mint.post_mint.asa_id') }}</dt>
                                 <dd class="font-mono text-2xl font-bold text-green-700">{{ $blockchain->asa_id }}</dd>
                             </div>
 
-                            <div class="rounded-xl bg-gray-50 p-4">
-                                <dt class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-600">
+                            <div class="p-4 rounded-xl bg-gray-50">
+                                <dt class="mb-1 text-xs font-medium tracking-wide text-gray-600 uppercase">
                                     {{ __('mint.post_mint.tx_id') }}</dt>
-                                <dd class="break-all font-mono text-xs text-gray-900">
+                                <dd class="font-mono text-xs text-gray-900 break-all">
                                     {{ $blockchain->blockchain_tx_id }}
                                 </dd>
                             </div>
 
-                            <div class="rounded-xl bg-blue-50 p-4">
-                                <dt class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-600">
+                            <div class="p-4 rounded-xl bg-blue-50">
+                                <dt class="mb-1 text-xs font-medium tracking-wide text-gray-600 uppercase">
                                     {{ __('mint.post_mint.minted_at') }}</dt>
                                 <dd class="text-sm font-semibold text-gray-900">
                                     {{ $blockchain->minted_at->format('d/m/Y H:i:s') }}</dd>
@@ -115,8 +115,8 @@
 
                         <div class="mt-6">
                             <a href="https://explorer.perawallet.app/asset/{{ $blockchain->asa_id }}" target="_blank"
-                                class="flex w-full items-center justify-center rounded-xl border-2 border-blue-600 px-6 py-3 font-semibold text-blue-700 transition-all hover:bg-blue-50">
-                                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="flex items-center justify-center w-full px-6 py-3 font-semibold text-blue-700 transition-all border-2 border-blue-600 rounded-xl hover:bg-blue-50">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
@@ -127,11 +127,11 @@
 
                     {{-- Payment Breakdown --}}
                     @if ($paymentBreakdown && count($paymentBreakdown) > 0)
-                        <div class="rounded-2xl bg-white p-8 shadow-xl">
-                            <div class="mb-6 flex items-center">
+                        <div class="p-8 bg-white shadow-xl rounded-2xl">
+                            <div class="flex items-center mb-6">
                                 <div
-                                    class="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-600">
-                                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor"
+                                    class="flex items-center justify-center w-12 h-12 mr-4 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -142,25 +142,25 @@
                                 </h3>
                             </div>
 
-                            <div class="overflow-hidden rounded-xl border border-gray-200">
+                            <div class="overflow-hidden border border-gray-200 rounded-xl">
                                 <table class="w-full">
                                     <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                                         <tr>
                                             <th
-                                                class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                class="px-4 py-3 text-xs font-bold tracking-wider text-left text-gray-700 uppercase">
                                                 {{ __('mint.post_mint.recipient') }}
                                             </th>
                                             <th
-                                                class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                class="px-4 py-3 text-xs font-bold tracking-wider text-left text-gray-700 uppercase">
                                                 {{ __('mint.post_mint.role') }}
                                             </th>
                                             <th
-                                                class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                class="px-4 py-3 text-xs font-bold tracking-wider text-right text-gray-700 uppercase">
                                                 {{ __('mint.post_mint.amount') }}
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-200 bg-white">
+                                    <tbody class="bg-white divide-y divide-gray-200">
                                         @foreach ($paymentBreakdown as $payment)
                                             <tr class="transition-colors hover:bg-gray-50">
                                                 <td class="px-4 py-3 text-sm font-medium text-gray-900">
@@ -168,11 +168,11 @@
                                                 </td>
                                                 <td class="px-4 py-3">
                                                     <span
-                                                        class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
+                                                        class="inline-flex px-3 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">
                                                         {{ ucfirst($payment['role']) }}
                                                     </span>
                                                 </td>
-                                                <td class="px-4 py-3 text-right text-sm font-bold text-gray-900">
+                                                <td class="px-4 py-3 text-sm font-bold text-right text-gray-900">
                                                     €{{ number_format($payment['amount_eur'], 2) }}
                                                 </td>
                                             </tr>
@@ -187,11 +187,11 @@
 
                 {{-- COLONNA 3: Certificate (3 cols) --}}
                 <div class="lg:col-span-3">
-                    <div class="rounded-2xl bg-white p-6 shadow-xl">
-                        <div class="mb-4 flex items-center">
+                    <div class="p-6 bg-white shadow-xl rounded-2xl">
+                        <div class="flex items-center mb-4">
                             <div
-                                class="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-400 to-indigo-600">
-                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor"
+                                class="flex items-center justify-center w-10 h-10 mr-3 rounded-lg bg-gradient-to-br from-indigo-400 to-indigo-600">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -211,9 +211,9 @@
                             <div class="mb-6">
                                 @if ($certificate->hasPdf())
                                     {{-- CoA PDF Thumbnail Section (SAME SYSTEM AS egis-show) --}}
-                                    <details class="group mt-3" id="coaPdfThumbSection-{{ $certificate->id }}" open>
+                                    <details class="mt-3 group" id="coaPdfThumbSection-{{ $certificate->id }}" open>
                                         <summary
-                                            class="mb-3 cursor-pointer text-sm font-semibold text-indigo-700 hover:text-indigo-900">
+                                            class="mb-3 text-sm font-semibold text-indigo-700 cursor-pointer hover:text-indigo-900">
                                             📄 {{ __('mint.post_mint.certificate_preview') }}
                                         </summary>
 
@@ -226,7 +226,7 @@
                                             <div
                                                 class="absolute inset-0 animate-pulse bg-gradient-to-br from-indigo-50 to-purple-50">
                                             </div>
-                                            <svg class="h-12 w-12 animate-spin text-indigo-600"
+                                            <svg class="w-12 h-12 text-indigo-600 animate-spin"
                                                 xmlns="http://www.w3.org/2000/svg" fill="none"
                                                 viewBox="0 0 24 24">
                                                 <circle class="opacity-25" cx="12" cy="12" r="10"
@@ -240,15 +240,15 @@
                                         </div>
                                     </details>
 
-                                    <p class="mt-2 text-center text-xs text-gray-500">
+                                    <p class="mt-2 text-xs text-center text-gray-500">
                                         {{ __('mint.post_mint.click_to_view') }}
                                     </p>
                                 @else
                                     {{-- PDF non ancora generato --}}
                                     <div
-                                        class="flex h-96 items-center justify-center rounded-xl border-2 border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100">
+                                        class="flex items-center justify-center border-2 border-gray-300 h-96 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100">
                                         <div class="text-center">
-                                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none"
+                                            <svg class="w-12 h-12 mx-auto text-gray-400" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -258,27 +258,29 @@
                                         </div>
                                     </div>
                                 @endif
-                                <p class="mt-2 text-center text-xs text-gray-500">
+                                <p class="mt-2 text-xs text-center text-gray-500">
                                     {{ __('mint.post_mint.click_to_view') }}
                                 </p>
                             </div>
 
                             {{-- Action Buttons --}}
                             <div class="space-y-3">
-                                <a href="{{ $certificate->getPdfUrl() }}" download
-                                    class="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-green-600 to-green-700 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-green-700 hover:to-green-800 hover:shadow-xl">
-                                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor"
+                                {{-- Download button - Back to _blank (works) --}}
+                                <button type="button"
+                                    onclick="window.open('{{ $certificate->getPdfUrl() }}', '_blank');"
+                                    class="flex items-center justify-center w-full px-4 py-3 text-sm font-semibold text-white transition-all shadow-lg cursor-pointer rounded-xl bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 hover:shadow-xl">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                     {{ __('mint.post_mint.download_certificate') }}
-                                </a>
+                                </button>
 
                                 <a href="{{ route('egi-certificates.show', $certificate->certificate_uuid) }}"
                                     target="_blank"
-                                    class="flex w-full items-center justify-center rounded-xl border-2 border-indigo-600 px-4 py-3 text-sm font-semibold text-indigo-700 transition-all hover:bg-indigo-50">
-                                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor"
+                                    class="flex items-center justify-center w-full px-4 py-3 text-sm font-semibold text-indigo-700 transition-all border-2 border-indigo-600 rounded-xl hover:bg-indigo-50">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -287,7 +289,7 @@
                                 </a>
 
                                 <a href="{{ route('my-certificates') }}"
-                                    class="flex w-full items-center justify-center rounded-xl bg-gray-100 px-4 py-3 text-sm font-semibold text-gray-700 transition-all hover:bg-gray-200">
+                                    class="flex items-center justify-center w-full px-4 py-3 text-sm font-semibold text-gray-700 transition-all bg-gray-100 rounded-xl hover:bg-gray-200">
                                     {{ __('mint.post_mint.my_certificates') }}
                                 </a>
                             </div>
@@ -304,6 +306,25 @@
     @once
         @push('scripts')
             <script>
+                // --- Force Download Certificate PDF via hidden iframe (most compatible) ---
+                function downloadCertificatePdf(url, filename) {
+                    console.log('🔽 Starting download via iframe:', url);
+
+                    // Method 1: Try with hidden iframe (works with Content-Disposition)
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = url;
+                    document.body.appendChild(iframe);
+
+                    console.log('✅ Download iframe created');
+
+                    // Cleanup iframe after 3 seconds
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                        console.log('🧹 Iframe cleaned up');
+                    }, 3000);
+                }
+
                 // --- Lazy PDF.js loader ---
                 let __pdfjsReady = null;
 

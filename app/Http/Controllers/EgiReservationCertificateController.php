@@ -133,12 +133,16 @@ class EgiReservationCertificateController extends Controller {
                 'user_agent' => $request->userAgent()
             ]);
 
-            // Return the file (use default disk - usually 'public')
-            return Storage::download(
+            // Generate safe filename
+            $filename = 'Certificato_Blockchain_' . $certificate->certificate_uuid . '.pdf';
+
+            // Return the file for INLINE viewing (no attachment header - browser will display)
+            return Storage::response(
                 $certificate->pdf_path,
-                'Certificate_' . $certificate->certificate_uuid . '.pdf',
+                $filename,
                 [
                     'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="' . $filename . '"',
                 ]
             );
         } catch (\Exception $e) {
