@@ -5522,6 +5522,90 @@ return [
         ],
 
         // ====================================================
+        // DUAL ARCHITECTURE - EGI Living / SmartContract Errors
+        // ====================================================
+        'SMART_CONTRACT_DEPLOY_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.smart_contract_deploy_failed',
+            'user_message_key' => 'error-manager::errors_2.user.smart_contract_deploy_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+        'EGI_MINTING_ORCHESTRATOR_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.egi_minting_orchestrator_failed',
+            'user_message_key' => 'error-manager::errors_2.user.egi_minting_orchestrator_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+        'PRE_MINT_CREATE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.pre_mint_create_failed',
+            'user_message_key' => 'error-manager::errors_2.user.pre_mint_create_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'PRE_MINT_PROMOTE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.pre_mint_promote_failed',
+            'user_message_key' => 'error-manager::errors_2.user.pre_mint_promote_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'ORACLE_POLL_FAILED' => [
+            'type' => 'critical',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.oracle_poll_failed',
+            'user_message_key' => 'error-manager::errors_2.user.oracle_poll_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'log',
+        ],
+        'LIVING_SUBSCRIPTION_CREATE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.living_subscription_create_failed',
+            'user_message_key' => 'error-manager::errors_2.user.living_subscription_create_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+        'LIVING_SUBSCRIPTION_PAYMENT_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.living_subscription_payment_failed',
+            'user_message_key' => 'error-manager::errors_2.user.living_subscription_payment_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+        'LIVING_SUBSCRIPTION_CANCEL_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.living_subscription_cancel_failed',
+            'user_message_key' => 'error-manager::errors_2.user.living_subscription_cancel_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        // ====================================================
         // AREA 2.3.1 - Analytics Errors
         // ====================================================
         'ANALYTICS_DISTRIBUTION_SUMMARY_ERROR' => [

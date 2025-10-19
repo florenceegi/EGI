@@ -47,6 +47,16 @@ return [
         'mint_not_completed' => 'Tentativo di creare distribuzione per mint non completato. EgiBlockchain: :egi_blockchain_id, Status: :current_status',
         'invalid_payment_amount' => 'Importo pagamento non valido per mint distribution. EgiBlockchain: :egi_blockchain_id, Amount: :paid_amount',
 
+        // DUAL ARCHITECTURE - EGI Living / SmartContract Errors (Dev)
+        'smart_contract_deploy_failed' => 'Errore durante deploy SmartContract su Algorand. User: :user_id, EGI: :egi_id, Error: :error_message',
+        'egi_minting_orchestrator_failed' => 'Errore orchestratore minting EGI. EGI: :egi_id, Tipo: :egi_type, User: :user_id, Error: :error_message',
+        'pre_mint_create_failed' => 'Errore creazione EGI Pre-Mint. User: :user_id, Error: :error_message',
+        'pre_mint_promote_failed' => 'Errore promozione EGI Pre-Mint a blockchain. EGI: :egi_id, Target: :target_type, User: :user_id, Error: :error_message',
+        'oracle_poll_failed' => 'CRITICAL: Oracle polling fallito. Error: :error_message',
+        'living_subscription_create_failed' => 'Errore creazione abbonamento EGI Vivente. EGI: :egi_id, User: :user_id, Error: :error_message',
+        'living_subscription_payment_failed' => 'Errore attivazione pagamento abbonamento. Subscription: :subscription_id, Error: :error_message',
+        'living_subscription_cancel_failed' => 'Errore cancellazione abbonamento. Subscription: :subscription_id, Error: :error_message',
+
         // AREA 2.2.2 - EgiMintingService Integration Errors (Dev)
         'egi_mint_with_payment_failed' => 'Mint EGI con distribuzione pagamento fallito. User: :user_id, EGI: :egi_id, Title: :egi_title, PaidAmount: :paid_amount, Error: :error_message',
         'mint_distribution_partial_failure' => 'Mint riuscito ma distribuzione pagamento fallita. EgiBlockchain: :egi_blockchain_id, User: :user_id, PaidAmount: :paid_amount, Error: :error',
@@ -169,6 +179,16 @@ return [
         // EgiMintingService Errors (User) - P1 Compliance Fix
         'egi_transfer_failed' => 'Errore durante il trasferimento dell\'EGI al tuo wallet. Contatta l\'assistenza.',
         'egi_minting_failed' => 'Errore durante il mint dell\'EGI sulla blockchain. Il pagamento non è stato effettuato. Riprova o contatta l\'assistenza.',
+
+        // DUAL ARCHITECTURE - EGI Living / SmartContract Errors (User)
+        'smart_contract_deploy_failed' => 'Impossibile attivare le funzionalità EGI Vivente. Riprova tra qualche minuto o contatta l\'assistenza.',
+        'egi_minting_orchestrator_failed' => 'Errore durante il mint dell\'EGI. Riprova più tardi o contatta l\'assistenza.',
+        'pre_mint_create_failed' => 'Impossibile creare l\'EGI in modalità Pre-Mint. Riprova.',
+        'pre_mint_promote_failed' => 'Impossibile promuovere l\'EGI su blockchain. Verifica i requisiti e riprova.',
+        'oracle_poll_failed' => 'Servizio AI temporaneamente non disponibile. Le analisi riprenderanno automaticamente.',
+        'living_subscription_create_failed' => 'Impossibile creare l\'abbonamento EGI Vivente. Riprova più tardi.',
+        'living_subscription_payment_failed' => 'Impossibile completare il pagamento. Verifica il metodo di pagamento e riprova.',
+        'living_subscription_cancel_failed' => 'Impossibile cancellare l\'abbonamento. Riprova o contatta l\'assistenza.',
 
         // AREA 2.3.1 - Analytics Errors (User)
         'analytics_distribution_summary_error' => 'Impossibile caricare il riepilogo delle distribuzioni. Riprova tra poco.',
