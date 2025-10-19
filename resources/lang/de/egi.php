@@ -228,6 +228,7 @@ return [
         'title_max_length' => 'Der Titel darf 60 Zeichen nicht überschreiten',
         'price_numeric' => 'Der Preis muss eine gültige Zahl sein',
         'price_min' => 'Der Preis darf nicht negativ sein',
+        'price_required_for_fixed_price' => 'Der Festpreis-Modus erfordert einen Preis größer als null',
         'creation_date_format' => 'Ungültiges Datumsformat',
 
         // Erfolgsmeldungen

@@ -393,7 +393,17 @@ class EgiController extends Controller {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:60',
                 'description' => 'nullable|string|max:5000',
-                'price' => 'nullable|numeric|min:0',
+                'price' => [
+                    'nullable',
+                    'numeric',
+                    'min:0',
+                    // FIXED PRICE MODE: price must be > 0
+                    function ($attribute, $value, $fail) use ($request) {
+                        if ($request->input('sale_mode') === 'fixed_price' && (!$value || $value <= 0)) {
+                            $fail(__('egi.validation.price_required_for_fixed_price'));
+                        }
+                    }
+                ],
                 'creation_date' => 'nullable|date',
                 'is_published' => 'boolean',
                 // Sale/Auction fields

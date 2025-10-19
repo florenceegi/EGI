@@ -221,6 +221,7 @@ return [
         'title_max_length' => 'Le titre ne peut pas dépasser 60 caractères',
         'price_numeric' => 'Le prix doit être un nombre valide',
         'price_min' => 'Le prix ne peut pas être négatif',
+        'price_required_for_fixed_price' => 'Le mode Prix Fixe nécessite un prix supérieur à zéro',
         'creation_date_format' => 'Format de date invalide',
 
         // Messages de Succès
