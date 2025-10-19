@@ -10,20 +10,18 @@ use Illuminate\Support\Facades\Schema;
  * @version 1.0.0 (FlorenceEGI - Auction System)
  * @date 2025-10-19
  * @purpose Add auction configuration fields to egis table
- * 
+ *
  * AUCTION SYSTEM - NON-INVASIVE EXTENSION:
  * - Mantiene model Reservation intatto
  * - Aggiunge campi configurazione vendita su tabella egis
  * - Creator/Owner configura modalità vendita (fixed_price/auction/not_for_sale)
  * - Backward compatible: default = not_for_sale
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('egis', function (Blueprint $table) {
             // ===== SALE MODE CONFIGURATION =====
             $table->enum('sale_mode', ['fixed_price', 'auction', 'not_for_sale'])
@@ -61,8 +59,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('egis', function (Blueprint $table) {
             // Drop indexes first
             $table->dropIndex('idx_egis_sale_mode');
