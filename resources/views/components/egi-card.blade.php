@@ -1048,8 +1048,19 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                                 {{ __('egi.actions.mint_direct') }}
                             </a>
                         </div>
-                    @else
-                        {{-- Fixed Price Mode: Show Reserve + Mint Direct --}}
+                    @elseif ($isAuctionMode && $displayPriceForAction == 0)
+                        {{-- Auction Mode WITHOUT Fixed Price (price = 0): Show ONLY "Fai un'Offerta" --}}
+                        <button type="button"
+                            class="reserve-button flex w-full transform items-center justify-center rounded-b-lg rounded-t-none bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-2 text-sm font-medium text-white transition-all hover:scale-[1.01] hover:from-amber-600 hover:to-orange-700"
+                            data-egi-id="{{ $egi->id }}">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m-3-6h6" />
+                            </svg>
+                            {{ __('egi.actions.make_offer') }}
+                        </button>
+                    @elseif ($isFixedPrice && $displayPriceForAction > 0)
+                        {{-- Fixed Price Mode: Show Reserve + Mint Direct (ONLY if price > 0) --}}
                         <div class="grid grid-cols-2 gap-2">
                             {{-- Reserve Button (left) - ARANCIONE --}}
                             <button type="button"
@@ -1143,7 +1154,13 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
                         </svg>
-                        @if (!$showButtons)
+                        @php $saleMode = $egi->sale_mode ?? 'fixed_price'; @endphp
+                        @if ($saleMode === 'not_for_sale')
+                            <span class="flex items-center gap-1">
+                                <span class="inline-block w-4 h-4 text-red-500"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="#6B6B6B"/><path stroke="#C13120" stroke-width="2" stroke-linecap="round" d="M8 16l8-8"/></svg></span>
+                                {{ __('egi.status.not_for_sale') }}
+                            </span>
+                        @elseif (!$showButtons)
                             {{ __('egi.crud.price_not_set') }}
                         @elseif (!auth()->check())
                             {{ __('egi.status.login_required') ?? 'Login richiesto' }}
