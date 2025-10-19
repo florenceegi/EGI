@@ -230,6 +230,42 @@ return [
         'blockchain_warning_message' => 'Questo EGI è stato mintato (ASA #:asa_id). Puoi modificare solo il prezzo per dinamiche di mercato. Titolo, descrizione e metadati sono immutabili.',
         'blockchain_verify_link' => 'Verifica su Blockchain',
         'field_immutable_hint' => 'Immutabile (certificato blockchain)',
+
+        // Vendita/Asta
+        'sale_mode' => 'Modalità di Vendita',
+        'sale_mode_hint' => 'Scegli come vuoi vendere questo EGI',
+        'sale_mode_not_for_sale' => 'Non in Vendita',
+        'sale_mode_fixed_price' => 'Prezzo Fisso',
+        'sale_mode_auction' => 'Asta',
+        'auction_section_title' => 'Configurazione Asta',
+        'auction_minimum_price' => 'Prezzo Minimo',
+        'auction_minimum_price_hint' => 'Prezzo di partenza dell’asta in EUR',
+        'auction_start' => 'Inizio Asta',
+        'auction_start_hint' => 'Data e ora di avvio',
+        'auction_end' => 'Fine Asta',
+        'auction_end_hint' => 'Data e ora di chiusura',
+        'auto_mint_highest' => 'Auto-mint al miglior offerente',
+        'auto_mint_highest_hint' => 'Alla chiusura dell’asta, minta automaticamente all’offerente vincente'
+    ],
+
+    // Validazione (usata da EgiController)
+    'validation' => [
+        'title_required' => 'Il titolo è obbligatorio',
+        'title_max' => 'Il titolo non può superare i 60 caratteri',
+        'description_max' => 'La descrizione è troppo lunga',
+        'price_numeric' => 'Il prezzo deve essere un numero valido',
+        'price_min' => 'Il prezzo non può essere negativo',
+        'creation_date_invalid' => 'La data di creazione non è valida',
+
+        'sale_mode_invalid' => 'Modalità di vendita non valida',
+        'auction_minimum_price_required' => 'Il prezzo minimo è obbligatorio per l’asta',
+        'auction_minimum_price_numeric' => 'Il prezzo minimo deve essere un numero',
+        'auction_minimum_price_min' => 'Il prezzo minimo deve essere maggiore di zero',
+        'auction_start_required' => 'La data di inizio asta è obbligatoria',
+        'auction_start_date' => 'La data di inizio asta non è valida',
+        'auction_end_required' => 'La data di fine asta è obbligatoria',
+        'auction_end_date' => 'La data di fine asta non è valida',
+        'auction_end_after_start' => 'La fine dell’asta deve essere successiva all’inizio',
     ],
 
     /*

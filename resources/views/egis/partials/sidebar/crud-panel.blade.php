@@ -161,6 +161,113 @@
                         </div>
                     </div>
 
+                    {{-- Sale Mode Selector --}}
+                    <div>
+                        <label for="sale_mode" class="mb-2 block text-sm font-medium text-emerald-300">
+                            {{ __('egi.crud.sale_mode') }}
+                        </label>
+                        <select id="sale_mode" name="sale_mode"
+                            class="bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full rounded-lg border px-3 py-2 text-white">
+                            @php $saleModeVal = old('sale_mode', $egi->sale_mode ?? 'not_for_sale'); @endphp
+                            <option value="not_for_sale" {{ $saleModeVal === 'not_for_sale' ? 'selected' : '' }}>
+                                {{ __('egi.crud.sale_mode_not_for_sale') }}</option>
+                            <option value="fixed_price" {{ $saleModeVal === 'fixed_price' ? 'selected' : '' }}>
+                                {{ __('egi.crud.sale_mode_fixed_price') }}</option>
+                            <option value="auction" {{ $saleModeVal === 'auction' ? 'selected' : '' }}>
+                                {{ __('egi.crud.sale_mode_auction') }}</option>
+                        </select>
+                        <div class="text-gray-400 mt-1 text-xs">
+                            {{ __('egi.crud.sale_mode_hint') }}
+                        </div>
+                    </div>
+
+                    {{-- Auction Configuration (visible only if sale_mode = auction) --}}
+                    <div id="auction-config" class="mt-2 hidden">
+                        <div class="rounded-lg border border-emerald-700/30 bg-black/10 p-3">
+                            <div class="mb-2 text-sm font-medium text-emerald-300">
+                                {{ __('egi.crud.auction_section_title') }}
+                            </div>
+
+                            {{-- Minimum Price --}}
+                            <div class="mb-3">
+                                <label for="auction_minimum_price" class="mb-1 block text-xs font-medium text-emerald-300">
+                                    {{ __('egi.crud.auction_minimum_price') }} (EUR)
+                                </label>
+                                <input type="number" id="auction_minimum_price" name="auction_minimum_price"
+                                    value="{{ old('auction_minimum_price', $egi->auction_minimum_price) }}"
+                                    min="0" step="0.01"
+                                    class="bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400"
+                                    placeholder="0.00">
+                                <div class="text-gray-400 mt-1 text-xs">
+                                    {{ __('egi.crud.auction_minimum_price_hint') }}
+                                </div>
+                            </div>
+
+                            {{-- Start Datetime --}}
+                            <div class="mb-3">
+                                <label for="auction_start" class="mb-1 block text-xs font-medium text-emerald-300">
+                                    {{ __('egi.crud.auction_start') }}
+                                </label>
+                                <input type="datetime-local" id="auction_start" name="auction_start"
+                                    value="{{ old('auction_start', optional($egi->auction_start)->format('Y-m-d\\TH:i')) }}"
+                                    class="bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400">
+                                <div class="text-gray-400 mt-1 text-xs">
+                                    {{ __('egi.crud.auction_start_hint') }}
+                                </div>
+                            </div>
+
+                            {{-- End Datetime --}}
+                            <div class="mb-3">
+                                <label for="auction_end" class="mb-1 block text-xs font-medium text-emerald-300">
+                                    {{ __('egi.crud.auction_end') }}
+                                </label>
+                                <input type="datetime-local" id="auction_end" name="auction_end"
+                                    value="{{ old('auction_end', optional($egi->auction_end)->format('Y-m-d\\TH:i')) }}"
+                                    class="bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400">
+                                <div class="text-gray-400 mt-1 text-xs">
+                                    {{ __('egi.crud.auction_end_hint') }}
+                                </div>
+                            </div>
+
+                            {{-- Auto-mint to highest bidder --}}
+                            <div class="mt-1">
+                                <label class="flex items-center">
+                                    <input type="hidden" name="auto_mint_highest" value="0">
+                                    <input type="checkbox" id="auto_mint_highest" name="auto_mint_highest" value="1"
+                                        {{ old('auto_mint_highest', $egi->auto_mint_highest) ? 'checked' : '' }}
+                                        class="bg-black/30 border-emerald-700/50 focus:ring-emerald-500 focus:ring-2 h-4 w-4 rounded text-emerald-600">
+                                    <span class="ml-3 text-xs font-medium text-emerald-300">
+                                        {{ __('egi.crud.auto_mint_highest') }}
+                                    </span>
+                                </label>
+                                <div class="text-gray-400 ml-7 mt-1 text-[11px]">
+                                    {{ __('egi.crud.auto_mint_highest_hint') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @push('scripts')
+                        <script>
+                            (function() {
+                                const saleModeSel = document.getElementById('sale_mode');
+                                const auctionBox = document.getElementById('auction-config');
+                                function refreshAuctionVisibility() {
+                                    const v = saleModeSel?.value || 'not_for_sale';
+                                    if (!auctionBox) return;
+                                    if (v === 'auction') {
+                                        auctionBox.classList.remove('hidden');
+                                    } else {
+                                        auctionBox.classList.add('hidden');
+                                    }
+                                }
+                                saleModeSel?.addEventListener('change', refreshAuctionVisibility);
+                                // init
+                                refreshAuctionVisibility();
+                            })();
+                        </script>
+                    @endpush
+
                     {{-- Creation Date Field --}}
                     <div class="{{ $egi->token_EGI ? 'opacity-50 pointer-events-none' : '' }}">
                         <label for="creation_date" class="mb-2 block text-sm font-medium text-emerald-300">

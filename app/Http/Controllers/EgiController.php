@@ -389,20 +389,36 @@ class EgiController extends Controller {
                 ]);
             }
 
-            // Validate input
+            // Validate input (including auction configuration)
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:60',
                 'description' => 'nullable|string|max:5000',
                 'price' => 'nullable|numeric|min:0',
                 'creation_date' => 'nullable|date',
-                'is_published' => 'boolean'
+                'is_published' => 'boolean',
+                // Sale/Auction fields
+                'sale_mode' => 'nullable|in:not_for_sale,fixed_price,auction',
+                'auction_minimum_price' => 'nullable|required_if:sale_mode,auction|numeric|min:0.01',
+                'auction_start' => 'nullable|required_if:sale_mode,auction|date',
+                'auction_end' => 'nullable|required_if:sale_mode,auction|date|after:auction_start',
+                'auto_mint_highest' => 'nullable|boolean',
             ], [
                 'title.required' => __('egi.validation.title_required'),
                 'title.max' => __('egi.validation.title_max'),
                 'description.max' => __('egi.validation.description_max'),
                 'price.numeric' => __('egi.validation.price_numeric'),
                 'price.min' => __('egi.validation.price_min'),
-                'creation_date.date' => __('egi.validation.creation_date_invalid')
+                'creation_date.date' => __('egi.validation.creation_date_invalid'),
+                // Messages for auction
+                'sale_mode.in' => __('egi.validation.sale_mode_invalid'),
+                'auction_minimum_price.required_if' => __('egi.validation.auction_minimum_price_required'),
+                'auction_minimum_price.numeric' => __('egi.validation.auction_minimum_price_numeric'),
+                'auction_minimum_price.min' => __('egi.validation.auction_minimum_price_min'),
+                'auction_start.required_if' => __('egi.validation.auction_start_required'),
+                'auction_start.date' => __('egi.validation.auction_start_date'),
+                'auction_end.required_if' => __('egi.validation.auction_end_required'),
+                'auction_end.date' => __('egi.validation.auction_end_date'),
+                'auction_end.after' => __('egi.validation.auction_end_after_start'),
             ]);
 
             if ($validator->fails()) {
