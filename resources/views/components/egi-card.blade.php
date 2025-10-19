@@ -139,12 +139,18 @@ if ($portfolioContext && $portfolioOwner) {
         $badgeLabel = $hasActiveReservations || $isMinted ? __('egi.badge.winning_bid') : __('egi.badge.not_owned');
     } else {
         // Card normale (non portfolio)
-        $badgeLabel = match ($badgeStatus) {
-            'minted' => __('egi.badge.minted'),
-            'reserved' => __('egi.badge.reserved'),
-            'not_activated' => __('egi.badge.to_activate'), // Verde: da attivare
-            default => __('egi.status.not_available'), // Rosso: non disponibile
-        };
+        // 🔨 AUCTION MODE: Mostra "Da Mintare" se EGI è all'asta
+        if (($egi->sale_mode ?? null) === 'auction' && $badgeStatus !== 'minted') {
+            $badgeLabel = __('egi.badge.auction_active'); // "Da Mintare"
+            $badgeColor = 'bg-gradient-to-r from-amber-500 to-orange-600'; // Colore distintivo per asta
+        } else {
+            $badgeLabel = match ($badgeStatus) {
+                'minted' => __('egi.badge.minted'),
+                'reserved' => __('egi.badge.reserved'),
+                'not_activated' => __('egi.badge.to_activate'), // Verde: da attivare
+                default => __('egi.status.not_available'), // Rosso: non disponibile
+            };
+        }
     }
 
     // 🔒 Creator check: Determina se l'utente corrente è il creatore dell'EGI
