@@ -35,6 +35,66 @@
                     </button>
                 </div>
 
+                {{-- ============================================ --}}
+                {{-- DUAL ARCHITECTURE PANELS (Feature-flagged) --}}
+                {{-- ============================================ --}}
+
+                @php
+                    $egiType = $egi->egi_type ?? 'PreMint'; // DEFAULT: PreMint (tutti gli EGI nascono così)
+                    $isCreatorCheck = App\Helpers\FegiAuth::check() && App\Helpers\FegiAuth::id() === $egi->user_id;
+                @endphp
+
+                {{-- 🐛 DEBUG PANEL (RIMUOVERE IN PRODUCTION) --}}
+                @if (config('app.debug'))
+                    <div class="mb-4 rounded-lg border-2 border-yellow-500 bg-yellow-500/10 p-3">
+                        <div class="text-xs font-mono text-yellow-300">
+                            <div><strong>DEBUG:</strong> EGI #{{ $egi->id }}</div>
+                            <div>egi_type DB: <strong>{{ $egi->egi_type ?? 'NULL' }}</strong></div>
+                            <div>egi_type Used: <strong>{{ $egiType }}</strong></div>
+                            <div>pre_mint_mode: <strong>{{ $egi->pre_mint_mode ?? 'NULL' }}</strong></div>
+                            <div>isCreator: <strong>{{ $isCreatorCheck ? 'YES' : 'NO' }}</strong></div>
+                            <div>Feature PRE_MINT: <strong>{{ config('egi_living.feature_flags.pre_mint_enabled', true) ? 'ON' : 'OFF' }}</strong></div>
+                            <div>smartContract exists: <strong>{{ $egi->smartContract ? 'YES' : 'NO' }}</strong></div>
+                            <div class="mt-2 border-t border-yellow-600 pt-2">
+                                <strong>Condizioni Auto-Mint Panel:</strong><br>
+                                Feature enabled: {{ config('egi_living.feature_flags.pre_mint_enabled', true) ? '✓' : '✗' }}<br>
+                                Is PreMint: {{ $egiType === 'PreMint' ? '✓' : '✗' }}<br>
+                                Is Creator: {{ $isCreatorCheck ? '✓' : '✗' }}<br>
+                                <strong>Result: {{ (config('egi_living.feature_flags.pre_mint_enabled', true) && $egiType === 'PreMint' && $isCreatorCheck) ? 'SHOW PANEL' : 'HIDE PANEL' }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Auto-Mint Panel (Solo Creator di PreMint) --}}
+                @if (config('egi_living.feature_flags.pre_mint_enabled', true) && 
+                     $egiType === 'PreMint' && 
+                     $isCreatorCheck)
+                    <div class="mb-6">
+                        <x-egi-auto-mint-panel :egi="$egi" :isCreator="$isCreatorCheck" />
+                    </div>
+                @endif
+
+                {{-- EGI Vivente Panel (Solo SmartContract attivi) --}}
+                @if (config('egi_living.feature_flags.smart_contract_mint_enabled', false) && 
+                     $egiType === 'SmartContract' && 
+                     $egi->smartContract)
+                    <div class="mb-6">
+                        <x-egi-living-panel :egi="$egi" />
+                    </div>
+                @endif
+
+                {{-- Pre-Mint Panel (Tutti i PreMint, info generali) --}}
+                @if (config('egi_living.feature_flags.pre_mint_enabled', true) && 
+                     $egiType === 'PreMint' && 
+                     ($egi->pre_mint_mode ?? false))
+                    <div class="mb-6">
+                        <x-egi-pre-mint-panel :egi="$egi" />
+                    </div>
+                @endif
+
+                {{-- ============================================ --}}
+
                 {{-- 🔒 BLOCKCHAIN IMMUTABILITY WARNING --}}
                 @if ($egi->token_EGI)
                     <div class="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
@@ -167,7 +227,7 @@
                             {{ __('egi.crud.sale_mode') }}
                         </label>
                         <select id="sale_mode" name="sale_mode"
-                            class="bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full rounded-lg border px-3 py-2 text-white">
+                            class="w-full rounded-lg border border-emerald-700/50 bg-black/30 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                             @php $saleModeVal = old('sale_mode', $egi->sale_mode ?? 'not_for_sale'); @endphp
                             <option value="not_for_sale" {{ $saleModeVal === 'not_for_sale' ? 'selected' : '' }}>
                                 {{ __('egi.crud.sale_mode_not_for_sale') }}</option>
@@ -176,7 +236,7 @@
                             <option value="auction" {{ $saleModeVal === 'auction' ? 'selected' : '' }}>
                                 {{ __('egi.crud.sale_mode_auction') }}</option>
                         </select>
-                        <div class="text-gray-400 mt-1 text-xs">
+                        <div class="mt-1 text-xs text-gray-400">
                             {{ __('egi.crud.sale_mode_hint') }}
                         </div>
                     </div>
@@ -190,15 +250,16 @@
 
                             {{-- Minimum Price --}}
                             <div class="mb-3">
-                                <label for="auction_minimum_price" class="mb-1 block text-xs font-medium text-emerald-300">
+                                <label for="auction_minimum_price"
+                                    class="mb-1 block text-xs font-medium text-emerald-300">
                                     {{ __('egi.crud.auction_minimum_price') }} (EUR)
                                 </label>
                                 <input type="number" id="auction_minimum_price" name="auction_minimum_price"
                                     value="{{ old('auction_minimum_price', $egi->auction_minimum_price) }}"
                                     min="0" step="0.01"
-                                    class="bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400"
+                                    class="w-full rounded-lg border border-emerald-700/50 bg-black/30 px-3 py-2 text-white placeholder-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                                     placeholder="0.00">
-                                <div class="text-gray-400 mt-1 text-xs">
+                                <div class="mt-1 text-xs text-gray-400">
                                     {{ __('egi.crud.auction_minimum_price_hint') }}
                                 </div>
                             </div>
@@ -210,8 +271,8 @@
                                 </label>
                                 <input type="datetime-local" id="auction_start" name="auction_start"
                                     value="{{ old('auction_start', optional($egi->auction_start)->format('Y-m-d\\TH:i')) }}"
-                                    class="bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400">
-                                <div class="text-gray-400 mt-1 text-xs">
+                                    class="w-full rounded-lg border border-emerald-700/50 bg-black/30 px-3 py-2 text-white placeholder-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <div class="mt-1 text-xs text-gray-400">
                                     {{ __('egi.crud.auction_start_hint') }}
                                 </div>
                             </div>
@@ -223,8 +284,8 @@
                                 </label>
                                 <input type="datetime-local" id="auction_end" name="auction_end"
                                     value="{{ old('auction_end', optional($egi->auction_end)->format('Y-m-d\\TH:i')) }}"
-                                    class="bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full rounded-lg border px-3 py-2 text-white placeholder-gray-400">
-                                <div class="text-gray-400 mt-1 text-xs">
+                                    class="w-full rounded-lg border border-emerald-700/50 bg-black/30 px-3 py-2 text-white placeholder-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <div class="mt-1 text-xs text-gray-400">
                                     {{ __('egi.crud.auction_end_hint') }}
                                 </div>
                             </div>
@@ -233,14 +294,15 @@
                             <div class="mt-1">
                                 <label class="flex items-center">
                                     <input type="hidden" name="auto_mint_highest" value="0">
-                                    <input type="checkbox" id="auto_mint_highest" name="auto_mint_highest" value="1"
+                                    <input type="checkbox" id="auto_mint_highest" name="auto_mint_highest"
+                                        value="1"
                                         {{ old('auto_mint_highest', $egi->auto_mint_highest) ? 'checked' : '' }}
-                                        class="bg-black/30 border-emerald-700/50 focus:ring-emerald-500 focus:ring-2 h-4 w-4 rounded text-emerald-600">
+                                        class="h-4 w-4 rounded border-emerald-700/50 bg-black/30 text-emerald-600 focus:ring-2 focus:ring-emerald-500">
                                     <span class="ml-3 text-xs font-medium text-emerald-300">
                                         {{ __('egi.crud.auto_mint_highest') }}
                                     </span>
                                 </label>
-                                <div class="text-gray-400 ml-7 mt-1 text-[11px]">
+                                <div class="ml-7 mt-1 text-[11px] text-gray-400">
                                     {{ __('egi.crud.auto_mint_highest_hint') }}
                                 </div>
                             </div>
@@ -252,6 +314,7 @@
                             (function() {
                                 const saleModeSel = document.getElementById('sale_mode');
                                 const auctionBox = document.getElementById('auction-config');
+
                                 function refreshAuctionVisibility() {
                                     const v = saleModeSel?.value || 'not_for_sale';
                                     if (!auctionBox) return;
