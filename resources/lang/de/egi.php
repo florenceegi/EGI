@@ -53,6 +53,9 @@ return [
         'not_owned' => 'NICHT BESITZT',
         'to_activate' => 'ZU AKTIVIEREN',
         'activated' => 'AKTIVIERT',
+        'reserved' => 'RESERVIERT',
+        'minted' => 'GEMINTET',
+        'auction_active' => 'ZU MINTEN',  // Badge für EGI in Auktion
     ],
 
     // Titel
@@ -95,6 +98,23 @@ return [
     'originally_reserved_in' => 'Ursprünglich reserviert in :currency für :amount',
     'originally_reserved_in_short' => 'Res. :currency :amount',
 
+    // Auktionssystem
+    'auction' => [
+        'minimum_price' => 'Startgebot',
+        'starting_price' => 'Startpreis',
+        'current_bid' => 'Aktuelles Gebot',
+        'highest_bid' => 'Höchstes Gebot',
+        'no_bids' => 'Keine Gebote',
+        'starts_at' => 'Beginnt',
+        'ends_at' => 'Endet',
+        'ended' => 'Auktion Beendet',
+        'not_started' => 'Auktion Nicht Begonnen',
+        'time_remaining' => 'Verbleibende Zeit',
+        'days' => 'Tage',
+        'hours' => 'Stunden',
+        'minutes' => 'Minuten',
+    ],
+
     // Status
     'status' => [
         'not_for_sale' => '🚫 Nicht zu verkaufen',
@@ -117,6 +137,8 @@ return [
         // Phase 2: Dual path actions
         'mint_now' => 'Jetzt Minten',
         'mint_direct' => 'Sofort Minten',
+        // Auktionsaktionen
+        'make_offer' => 'Ein Angebot Machen',
     ],
 
     // System für Reservierungsverlauf

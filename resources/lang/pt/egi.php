@@ -53,6 +53,9 @@ return [
         'not_owned' => 'NÃO POSUÍDO',
         'to_activate' => 'A ATIVAR',
         'activated' => 'ATIVADO',
+        'reserved' => 'RESERVADO',
+        'minted' => 'MINTADO',
+        'auction_active' => 'A MINTAR',  // Badge para EGI em leilão
     ],
 
     // Títulos
@@ -95,6 +98,23 @@ return [
     'originally_reserved_in' => 'Reservado originalmente em :currency por :amount',
     'originally_reserved_in_short' => 'Res. :currency :amount',
 
+    // Sistema de Leilão
+    'auction' => [
+        'minimum_price' => 'Lance Inicial',
+        'starting_price' => 'Preço Inicial',
+        'current_bid' => 'Lance Atual',
+        'highest_bid' => 'Lance Mais Alto',
+        'no_bids' => 'Sem Lances',
+        'starts_at' => 'Início',
+        'ends_at' => 'Término',
+        'ended' => 'Leilão Encerrado',
+        'not_started' => 'Leilão Não Iniciado',
+        'time_remaining' => 'Tempo Restante',
+        'days' => 'dias',
+        'hours' => 'horas',
+        'minutes' => 'minutos',
+    ],
+
     // Estados
     'status' => [
         'not_for_sale' => '🚫 Não à Venda',
@@ -117,6 +137,8 @@ return [
         // Phase 2: Dual path actions
         'mint_now' => 'Mintar Agora',
         'mint_direct' => 'Mintar Instantaneamente',
+        // Ações de leilão
+        'make_offer' => 'Fazer uma Oferta',
     ],
 
     // Sistema de Histórico de Reservas

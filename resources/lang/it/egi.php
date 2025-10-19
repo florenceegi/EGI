@@ -55,6 +55,7 @@ return [
         'activated' => 'ATTIVATO',
         'reserved' => 'PRENOTATO',
         'minted' => 'MINTATO',
+        'auction_active' => 'DA MINTARE',  // Badge per EGI all'asta
     ],
 
     // Titoli
@@ -99,6 +100,23 @@ return [
     'originally_reserved_in' => 'Originariamente prenotato in :currency per :amount',
     'originally_reserved_in_short' => 'Pren. :currency :amount',
 
+    // Sistema Asta
+    'auction' => [
+        'minimum_price' => 'Base d\'Asta',
+        'starting_price' => 'Prezzo di Partenza',
+        'current_bid' => 'Offerta Attuale',
+        'highest_bid' => 'Offerta Più Alta',
+        'no_bids' => 'Nessuna Offerta',
+        'starts_at' => 'Inizio',
+        'ends_at' => 'Termina il',
+        'ended' => 'Asta Terminata',
+        'not_started' => 'Asta Non Ancora Iniziata',
+        'time_remaining' => 'Tempo Rimanente',
+        'days' => 'giorni',
+        'hours' => 'ore',
+        'minutes' => 'minuti',
+    ],
+
     // Stato
     'status' => [
         'not_for_sale' => '🚫 Non in Vendita',
@@ -122,6 +140,8 @@ return [
         // Phase 2: Dual path actions
         'mint_now' => 'Minta Ora',
         'mint_direct' => 'Minta Subito',
+        // Auction actions
+        'make_offer' => 'Fai un\'Offerta',
     ],
 
     // Sistema di Cronologia delle Prenotazioni
