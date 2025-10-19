@@ -20,11 +20,27 @@
                     </svg>
                 </div>
                 <h1 class="mb-3 text-4xl font-bold text-gray-900">
-                    {{ __('mint.post_mint.congratulations') }}
+                    @if ($isOwner)
+                        {{ __('mint.post_mint.congratulations') }}
+                    @else
+                        {{ __('mint.post_mint.title_guest') }}
+                    @endif
                 </h1>
                 <p class="text-lg text-gray-600">
-                    {{ __('mint.post_mint.success_message') }}
+                    @if ($isOwner)
+                        {{ __('mint.post_mint.success_message') }}
+                    @else
+                        {{ __('mint.post_mint.message_guest') }}
+                    @endif
                 </p>
+                
+                {{-- Mostra owner solo se NON è l'owner corrente che visualizza --}}
+                @if (!$isOwner && $blockchain->buyer)
+                    <p class="mt-2 text-sm text-gray-500">
+                        <span class="font-medium text-gray-700">{{ __('mint.post_mint.current_owner') }}:</span>
+                        {{ $blockchain->buyer->name }}
+                    </p>
+                @endif
             </div>
 
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">

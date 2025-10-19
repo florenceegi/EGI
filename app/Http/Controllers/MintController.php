@@ -921,7 +921,7 @@ class MintController extends Controller {
     public function showMintResult(int $egiBlockchainId) {
         try {
             // NESSUN CHECK RESTRITTIVO - Solo fetch dati e mostra
-            $blockchain = EgiBlockchain::with(['egi.utility.media', 'egi.user', 'egi.reservations'])->findOrFail($egiBlockchainId);
+            $blockchain = EgiBlockchain::with(['egi.utility.media', 'egi.user', 'egi.reservations', 'buyer'])->findOrFail($egiBlockchainId);
             $egi = $blockchain->egi;
 
             // 💰 CALCOLO PREZZO VENDITA (base o ultima prenotazione)
