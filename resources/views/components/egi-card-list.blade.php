@@ -355,6 +355,114 @@ $hasCurrentReservation =
                     </div>
                 @endif
             @endif
+
+            {{-- 🎯 Auction Info Section (compact for list view) --}}
+            @if (!$egi->isMinted() && $egi->sale_mode === 'auction')
+                @php
+                    // Get highest bid from reservations
+                    $highestBid = 0;
+                    if ($egi->reservations && $egi->reservations->count() > 0) {
+                        $highestReservation = $egi->reservations
+                            ->where('is_highest', true)
+                            ->where('amount_eur', '>=', $egi->auction_minimum_price ?? 0)
+                            ->first();
+                        if ($highestReservation) {
+                            $highestBid = $highestReservation->amount_eur;
+                        }
+                    }
+
+                    // Calculate time remaining
+                    $now = now();
+                    $auctionStart = $egi->auction_start ? \Carbon\Carbon::parse($egi->auction_start) : null;
+                    $auctionEnd = $egi->auction_end ? \Carbon\Carbon::parse($egi->auction_end) : null;
+
+                    $auctionStatus = 'not_started';
+                    $timeRemaining = '';
+                    $timeRemainingClass = 'text-gray-400';
+
+                    if ($auctionStart && $auctionEnd) {
+                        if ($now->lt($auctionStart)) {
+                            $auctionStatus = 'not_started';
+                            $diff = $now->diff($auctionStart);
+                            $timeRemaining = sprintf(
+                                '%d %s, %d %s',
+                                $diff->days,
+                                __('egi.auction.days'),
+                                $diff->h,
+                                __('egi.auction.hours'),
+                            );
+                            $timeRemainingClass = 'text-blue-400';
+                        } elseif ($now->between($auctionStart, $auctionEnd)) {
+                            $auctionStatus = 'active';
+                            $diff = $now->diff($auctionEnd);
+                            $timeRemaining = sprintf(
+                                '%d %s, %d %s',
+                                $diff->days,
+                                __('egi.auction.days'),
+                                $diff->h,
+                                __('egi.auction.hours'),
+                            );
+                            $timeRemainingClass = $diff->days > 1 ? 'text-green-400' : 'text-orange-400';
+                        } else {
+                            $auctionStatus = 'ended';
+                            $timeRemaining = __('egi.auction.ended');
+                            $timeRemainingClass = 'text-red-400';
+                        }
+                    }
+                @endphp
+
+                <div
+                    class="mt-2 rounded-lg border border-amber-500/30 bg-gradient-to-r from-amber-500/5 to-orange-500/5 p-2">
+                    <div class="mb-1 flex items-center gap-1.5">
+                        <svg class="h-3.5 w-3.5 text-amber-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-xs font-bold text-amber-300">{{ __('egi.auction.auction_details') }}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        {{-- Minimum Price --}}
+                        <div>
+                            <span class="text-gray-400">{{ __('egi.auction.minimum_price') }}:</span>
+                            <span class="font-bold text-amber-300">
+                                €{{ number_format($egi->auction_minimum_price ?? 0, 2, ',', '.') }}
+                            </span>
+                        </div>
+
+                        {{-- Current Bid --}}
+                        <div>
+                            <span class="text-gray-400">{{ __('egi.auction.current_bid') }}:</span>
+                            <span class="font-bold text-green-300">
+                                @if ($highestBid > 0)
+                                    €{{ number_format($highestBid, 2, ',', '.') }}
+                                @else
+                                    <span class="text-gray-500">{{ __('egi.auction.no_bids') }}</span>
+                                @endif
+                            </span>
+                        </div>
+
+                        {{-- Auction Dates (if available) --}}
+                        @if ($auctionStart && $auctionEnd)
+                            <div class="col-span-2 mt-1 border-t border-amber-500/20 pt-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-400">
+                                        @if ($auctionStatus === 'not_started')
+                                            {{ __('egi.auction.starts_in') }}:
+                                        @elseif ($auctionStatus === 'active')
+                                            {{ __('egi.auction.ends_in') }}:
+                                        @else
+                                            {{ __('egi.auction.status') }}:
+                                        @endif
+                                    </span>
+                                    <span class="{{ $timeRemainingClass }} font-bold">{{ $timeRemaining }}</span>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
