@@ -5,6 +5,9 @@
     🔒 Auth: Buyer può vedere
 --}}
 <x-platform-layout :title="__('mint.minted_title', ['title' => $egi->title])">
+    @php
+        $isOwner = Auth::id() !== null && $blockchain && Auth::id() === $blockchain->buyer_user_id;
+    @endphp
     <div class="min-h-screen py-12 bg-gradient-to-br from-gray-50 to-gray-100">
         <div class="container px-4 mx-auto max-w-7xl">
 
@@ -65,7 +68,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
-                                {{ __('mint.post_mint.view_egi') }}
+                                {{ $isOwner ? __('mint.post_mint.view_egi') : __('common.view_egi') }}
                             </a>
                         </div>
                     </div>
@@ -92,7 +95,10 @@
 
                         @php
                             $network = config('algorand.algorand.network', 'testnet');
-                            $explorerUrl = config("algorand.algorand.{$network}.explorer_url", 'https://testnet.explorer.perawallet.app');
+                            $explorerUrl = config(
+                                "algorand.algorand.{$network}.explorer_url",
+                                'https://testnet.explorer.perawallet.app',
+                            );
                         @endphp
 
                         <div class="space-y-4">
@@ -100,8 +106,8 @@
                                 <dt class="mb-1 text-xs font-medium tracking-wide text-gray-600 uppercase">
                                     {{ __('mint.post_mint.asa_id') }}</dt>
                                 <dd class="font-mono text-2xl font-bold text-green-700">
-                                    <a href="{{ $explorerUrl }}/asset/{{ $blockchain->asa_id }}" target="_blank" 
-                                       class="text-green-700 hover:text-green-900 hover:underline transition-all">
+                                    <a href="{{ $explorerUrl }}/asset/{{ $blockchain->asa_id }}" target="_blank"
+                                        class="text-green-700 transition-all hover:text-green-900 hover:underline">
                                         {{ $blockchain->asa_id }}
                                     </a>
                                 </dd>
@@ -111,8 +117,9 @@
                                 <dt class="mb-1 text-xs font-medium tracking-wide text-gray-600 uppercase">
                                     {{ __('mint.post_mint.tx_id') }}</dt>
                                 <dd class="font-mono text-xs text-gray-900 break-all">
-                                    <a href="{{ $explorerUrl }}/tx/{{ $blockchain->blockchain_tx_id }}" target="_blank" 
-                                       class="text-blue-600 hover:text-blue-800 hover:underline transition-all">
+                                    <a href="{{ $explorerUrl }}/tx/{{ $blockchain->blockchain_tx_id }}"
+                                        target="_blank"
+                                        class="text-blue-600 transition-all hover:text-blue-800 hover:underline">
                                         {{ $blockchain->blockchain_tx_id }}
                                     </a>
                                 </dd>
@@ -277,7 +284,7 @@
                             {{-- Action Buttons --}}
                             <div class="space-y-3">
                                 {{-- Download button - Back to _blank (works) --}}
-                                <button type="button"
+                                <button type="button" id="download-cert-btn"
                                     onclick="window.open('{{ $certificate->getPdfUrl() }}', '_blank');"
                                     class="flex items-center justify-center w-full px-4 py-3 text-sm font-semibold text-white transition-all shadow-lg cursor-pointer rounded-xl bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 hover:shadow-xl">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
@@ -289,25 +296,26 @@
                                 </button>
 
                                 {{-- Regenerate Certificate Button - ONLY FOR OWNER --}}
-                                @if(Auth::id() === $blockchain->buyer_user_id)
+                                @if ($isOwner)
                                     <form id="regenerate-cert-form"
-                                    action="{{ route('mint.regenerate-certificate', $blockchain->id) }}"
-                                    method="POST" class="w-full">
-                                    @csrf
-                                    <button type="button" id="regenerate-cert-btn"
-                                        class="flex w-full cursor-pointer items-center justify-center rounded-xl bg-gradient-to-r from-[#1B365D] to-[#2D5016] px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-[#2a4a7a] hover:to-[#3d6b21] hover:shadow-xl">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                        <span
-                                            id="regenerate-btn-text">{{ __('mint.post_mint.regenerate_certificate') }}</span>
-                                    </button>
-                                </form>
+                                        action="{{ route('mint.regenerate-certificate', $blockchain->id) }}"
+                                        method="POST" class="w-full">
+                                        @csrf
+                                        <button type="button" id="regenerate-cert-btn"
+                                            class="flex w-full cursor-pointer items-center justify-center rounded-xl bg-gradient-to-r from-[#1B365D] to-[#2D5016] px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-[#2a4a7a] hover:to-[#3d6b21] hover:shadow-xl">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <span
+                                                id="regenerate-btn-text">{{ __('mint.post_mint.regenerate_certificate') }}</span>
+                                        </button>
+                                    </form>
                                 @endif
 
-                                <a href="{{ route('egi-certificates.show', $certificate->certificate_uuid) }}"
+                                <a id="view-cert-link"
+                                    href="{{ route('egi-certificates.show', $certificate->certificate_uuid) }}"
                                     target="_blank"
                                     class="flex items-center justify-center w-full px-4 py-3 text-sm font-semibold text-indigo-700 transition-all border-2 border-indigo-600 rounded-xl hover:bg-indigo-50">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
@@ -318,10 +326,12 @@
                                     {{ __('mint.post_mint.view_certificate') }}
                                 </a>
 
-                                <a href="{{ route('my-certificates') }}"
-                                    class="flex items-center justify-center w-full px-4 py-3 text-sm font-semibold text-gray-700 transition-all bg-gray-100 rounded-xl hover:bg-gray-200">
-                                    {{ __('mint.post_mint.my_certificates') }}
-                                </a>
+                                @if ($isOwner)
+                                    <a href="{{ route('my-certificates') }}"
+                                        class="flex items-center justify-center w-full px-4 py-3 text-sm font-semibold text-gray-700 transition-all bg-gray-100 rounded-xl hover:bg-gray-200">
+                                        {{ __('mint.post_mint.my_certificates') }}
+                                    </a>
+                                @endif
                             </div>
                         @endif
                     </div>
@@ -567,6 +577,23 @@
                                 console.log('✅ PDF thumbnail reloaded with flash effect');
                             } else {
                                 console.warn('❌ Thumbnail container not found');
+                            }
+
+                            // Update certificate action links to new regenerated URLs
+                            try {
+                                // 1) Update Download button onclick to use new pdf_url
+                                const downloadBtn = document.getElementById('download-cert-btn');
+                                if (downloadBtn && data.pdf_url) {
+                                    downloadBtn.setAttribute('onclick', `window.open('${data.pdf_url}', '_blank');`);
+                                }
+
+                                // 2) Update "View Certificate" link href to new public_url
+                                const viewLink = document.getElementById('view-cert-link');
+                                if (viewLink && data.public_url) {
+                                    viewLink.setAttribute('href', data.public_url);
+                                }
+                            } catch (linkErr) {
+                                console.warn('Link update after regeneration failed', linkErr);
                             }
 
                             // Reset button after 2 seconds

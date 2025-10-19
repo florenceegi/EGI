@@ -170,7 +170,7 @@ class EgiReservationCertificateController extends Controller {
     public function verify(Request $request, string $uuid) {
         try {
             $certificate = EgiReservationCertificate::where('certificate_uuid', $uuid)
-                ->with(['egi', 'egi.collection', 'reservation'])
+                ->with(['egi', 'egi.collection', 'reservation', 'egiBlockchain'])
                 ->firstOrFail();
 
             // Generate verification data
@@ -179,16 +179,25 @@ class EgiReservationCertificateController extends Controller {
             // Verify signature
             $isValid = $certificate->verifySignature($verificationData);
 
-            // Check if certificate is current highest
-            $isHighestPriority = $certificate->is_current_highest && !$certificate->is_superseded;
+            // Determine certificate type
+            $isBlockchainCertificate = $certificate->certificate_type === 'mint';
 
-            // Check if EGI is still available (not minted)
-            $isEgiAvailable = $certificate->egi && !$certificate->egi->mint;
+            // Variables for reservation certificates
+            $isHighestPriority = false;
+            $isEgiAvailable = false;
+
+            // Only check reservation-specific validations for reservation certificates
+            if (!$isBlockchainCertificate) {
+                $isHighestPriority = $certificate->is_current_highest && !$certificate->is_superseded;
+                $isEgiAvailable = $certificate->egi && !$certificate->egi->mint;
+            }
 
             // Log verification
             $this->logger->info('Certificate verification accessed', [
                 'certificate_uuid' => $uuid,
+                'certificate_type' => $certificate->certificate_type,
                 'is_valid' => $isValid,
+                'is_blockchain_cert' => $isBlockchainCertificate,
                 'is_highest_priority' => $isHighestPriority,
                 'is_egi_available' => $isEgiAvailable,
                 'ip' => $request->ip()
@@ -197,6 +206,7 @@ class EgiReservationCertificateController extends Controller {
             return view('certificates.verify', [
                 'certificate' => $certificate,
                 'isValid' => $isValid,
+                'isBlockchainCertificate' => $isBlockchainCertificate,
                 'isHighestPriority' => $isHighestPriority,
                 'isEgiAvailable' => $isEgiAvailable,
                 'title' => __('certificate.verify_page_title', ['uuid' => $certificate->certificate_uuid]),

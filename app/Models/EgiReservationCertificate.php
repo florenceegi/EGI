@@ -167,7 +167,23 @@ class EgiReservationCertificate extends Model {
 
         $createdAt = $this->created_at ?? now();
 
-        // Concatenate key attributes for verification
+        // Different verification data based on certificate type
+        if ($this->certificate_type === 'mint' && $this->egi_blockchain_id) {
+            // Blockchain certificate: use blockchain-specific fields
+            $blockchain = $this->egiBlockchain;
+
+            return implode('|', [
+                $this->certificate_uuid,
+                $this->egi_id,
+                $this->egi_blockchain_id,
+                $blockchain->asa_id ?? '',
+                $blockchain->blockchain_tx_id ?? '',
+                $blockchain->paid_amount ?? '',
+                $createdAt->toIso8601String()
+            ]);
+        }
+
+        // Reservation certificate: use reservation-specific fields
         return implode('|', [
             $this->certificate_uuid,
             $this->egi_id,

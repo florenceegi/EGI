@@ -30,13 +30,11 @@ return [
     'egi_not_minted' => 'L\'EGI non è stato ancora mintato sulla blockchain.',
     'generation_failed' => 'Impossibile generare il certificato. Riprova più tardi.',
 
-    // Dettagli certificato
+    // Dettagli
     'details' => [
-        'title ding' => 'Dettagli del Certificato',
+        'title' => 'Dettagli del Certificato',
         'egi_title' => 'Titolo EGI',
-        'collection' => 'Collezione',
         'reservation_type' => 'Tipo di Prenotazione',
-        'ownership_type' => 'Tipo di Proprietà',
         'wallet_address' => 'Indirizzo Wallet',
         'offer_amount_fiat' => 'Importo Offerta (EUR)',
         'purchase_amount' => 'Importo Pagato (EUR)',
@@ -45,7 +43,17 @@ return [
         'signature_hash' => 'Hash della Firma',
         'created_at' => 'Creato il',
         'status' => 'Stato',
-        'priority' => 'Priorità'
+        'priority' => 'Priorità',
+        'certificate_type' => 'Tipo Certificato',
+        'buyer' => 'Acquirente',
+        'amount_paid' => 'Importo Pagato',
+        'minted_at' => 'Mintato il',
+    ],
+
+    // Certificate types
+    'types' => [
+        'reservation' => 'Certificato di Prenotazione',
+        'blockchain' => 'Certificato Blockchain',
     ],
 
     // Ownership types (for mint certificates)
@@ -76,11 +84,15 @@ return [
         'explanation_valid' => 'Questo certificato è stato emesso da FlorenceEGI e non è stato modificato.',
         'explanation_invalid' => 'I dati del certificato non corrispondono alla firma. Potrebbe essere stato modificato.',
         'explanation_priority' => 'È stata effettuata una prenotazione con priorità più alta (tipo forte o importo maggiore) dopo questa.',
-        'explanation_not_available' => 'L\'EGI è stato coniato o non è più disponibile per la prenotazione.'
+        'explanation_not_available' => 'L\'EGI è stato coniato o non è più disponibile per la prenotazione.',
+        'blockchain_confirmed' => 'Certificato Blockchain Confermato',
+        'minted_on' => 'Mintato il',
+        'share_text' => 'Scansiona per verificare il certificato'
     ],
 
     // Altro
     'unknown_egi' => 'EGI Sconosciuto',
+    'unknown_buyer' => 'Acquirente Sconosciuto',
     'no_certificates' => 'Nessun certificato trovato.',
     'success_message' => 'Prenotazione completata con successo! Ecco il tuo certificato.',
     'created_just_now' => 'Creato ora',
