@@ -51,6 +51,9 @@ return [
         'not_owned' => 'NON POSSEDÉ',
         'to_activate' => 'À ACTIVER',
         'activated' => 'ACTIVÉ',
+        'reserved' => 'RÉSERVÉ',
+        'minted' => 'MINTÉ',
+        'auction_active' => 'À MINTER',  // Badge pour EGI en enchère
     ],
 
     // Titres
@@ -93,6 +96,23 @@ return [
     'originally_reserved_in' => 'Réservé initialement en :currency pour :amount',
     'originally_reserved_in_short' => 'Rés. :currency :amount',
 
+    // Système d'Enchères
+    'auction' => [
+        'minimum_price' => 'Mise de Départ',
+        'starting_price' => 'Prix de Départ',
+        'current_bid' => 'Enchère Actuelle',
+        'highest_bid' => 'Enchère la Plus Haute',
+        'no_bids' => 'Aucune Enchère',
+        'starts_at' => 'Début',
+        'ends_at' => 'Fin',
+        'ended' => 'Enchère Terminée',
+        'not_started' => 'Enchère Non Commencée',
+        'time_remaining' => 'Temps Restant',
+        'days' => 'jours',
+        'hours' => 'heures',
+        'minutes' => 'minutes',
+    ],
+
     // États
     'status' => [
         'not_for_sale' => '🚫 Non à Vendre',
@@ -102,12 +122,16 @@ return [
     // Actions
     'actions' => [
         'view' => 'Voir',
-        'view_details' => 'Voir les Détails de l’EGI',
+        'view_details' => 'Voir les Détails de l'EGI',
         'reserve' => 'Activer',
         'reserved' => 'Réservé',
         'outbid' => 'Surenchérir pour Activer',
         'view_history' => 'Historique',
         'reserve_egi' => 'Réserver :title',
+        'mint_now' => 'Minter Maintenant',
+        'mint_direct' => 'Minter Instantanément',
+        // Actions d'enchère
+        'make_offer' => 'Faire une Offre',
     ],
 
     // Système d’Historique des Réservations

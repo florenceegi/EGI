@@ -53,6 +53,9 @@ return [
         'not_owned' => 'NO POSEÍDO',
         'to_activate' => 'POR ACTIVAR',
         'activated' => 'ACTIVADO',
+        'reserved' => 'RESERVADO',
+        'minted' => 'MINTEADO',
+        'auction_active' => 'POR MINTEAR',  // Badge para EGI en subasta
     ],
 
     // Títulos
@@ -95,6 +98,23 @@ return [
     'originally_reserved_in' => 'Reservado originalmente en :currency por :amount',
     'originally_reserved_in_short' => 'Res. :currency :amount',
 
+    // Sistema de Subasta
+    'auction' => [
+        'minimum_price' => 'Puja Inicial',
+        'starting_price' => 'Precio de Salida',
+        'current_bid' => 'Oferta Actual',
+        'highest_bid' => 'Puja Más Alta',
+        'no_bids' => 'Sin Ofertas',
+        'starts_at' => 'Inicia',
+        'ends_at' => 'Termina',
+        'ended' => 'Subasta Terminada',
+        'not_started' => 'Subasta No Iniciada',
+        'time_remaining' => 'Tiempo Restante',
+        'days' => 'días',
+        'hours' => 'horas',
+        'minutes' => 'minutos',
+    ],
+
     // Estados
     'status' => [
         'not_for_sale' => '🚫 No en Venta',
@@ -117,6 +137,8 @@ return [
         // Phase 2: Dual path actions
         'mint_now' => 'Mintear Ahora',
         'mint_direct' => 'Mintear Instantáneamente',
+        // Acciones de subasta
+        'make_offer' => 'Hacer una Oferta',
     ],
 
     // Sistema de Historial de Reservas
