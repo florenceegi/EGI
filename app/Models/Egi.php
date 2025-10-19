@@ -151,6 +151,12 @@ class Egi extends Model {
         'hyper',
         'is_public',
         'updated_by',
+        // Auction configuration (non-invasive extension)
+        'sale_mode',
+        'auction_minimum_price',
+        'auction_start',
+        'auction_end',
+        'auto_mint_highest',
         // Note: 'id', 'created_at', 'updated_at', 'deleted_at' are typically not fillable
     ];
 
@@ -180,6 +186,10 @@ class Egi extends Model {
         'created_at'     => 'datetime',     // Standard timestamp casting
         'updated_at'     => 'datetime',     // Standard timestamp casting
         'deleted_at'     => 'datetime',     // Required for SoftDeletes
+        // Auction configuration casts
+        'auction_start'      => 'datetime',
+        'auction_end'        => 'datetime',
+        'auto_mint_highest'  => 'boolean',
     ];
 
     //--------------------------------------------------------------------------
