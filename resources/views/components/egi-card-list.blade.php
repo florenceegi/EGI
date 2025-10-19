@@ -489,50 +489,95 @@ $hasCurrentReservation =
                     ->first();
             }
 
+            // 🎯 Sale mode detection
+            $isAuctionMode = $egi->sale_mode === 'auction';
+            $isNotForSale = $egi->sale_mode === 'not_for_sale';
+
             // Price for display
             $displayPriceForAction = $egi->price ?? 0;
 
-            // 🚨 CRITICAL: Hide buttons if price is zero (EGI not available)
-            $showButtons = $displayPriceForAction > 0;
+            // 🚨 CRITICAL: For auction mode, buttons visible even if price = 0
+            // For fixed_price mode, hide buttons if price = 0
+            $showButtons = $isAuctionMode || $displayPriceForAction > 0;
         @endphp
 
         <div class="mt-3">
-            @if ($showButtons && count($availableActions) > 0)
-                {{-- ✅ SCENARIO 1: User has reservation → Show MINT button (complete purchase) - VIOLA --}}
+            @if ($isNotForSale)
+                {{-- 🚫 Sale mode = not_for_sale → Show "Non in Vendita" message --}}
+                <div
+                    class="flex w-full items-center justify-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500">
+                    <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                    {{ __('egi.status.not_for_sale') }}
+                </div>
+            @elseif ($showButtons && count($availableActions) > 0)
+                {{-- ✅ SCENARIO 1: User has reservation → Show complete purchase button --}}
                 @if ($isReservedByUser && $canMint && $userReservation)
                     <a href="{{ route('mint.payment-form', ['egiId' => $egi->id]) }}?reservation_id={{ $userReservation->id }}"
                         class="mint-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
                         <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m-3-6h6" />
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        {{ __('egi.actions.mint_now') }} · €{{ number_format($displayPriceForAction, 2, ',', '.') }}
+                        @if ($isAuctionMode)
+                            {{ __('egi.actions.complete_purchase') }}
+                        @else
+                            {{ __('egi.actions.mint_now') }}
+                        @endif
+                        · €{{ number_format($displayPriceForAction, 2, ',', '.') }}
                     </a>
 
-                    {{-- ✅ SCENARIO 2: Both MINT and RESERVE available (dual path) → Show both buttons --}}
+                    {{-- ✅ SCENARIO 2: Both MINT and RESERVE available (dual path) → Split by mode --}}
                 @elseif($canMint && $canReserve)
-                    <div class="grid grid-cols-2 gap-2">
-                        {{-- Reserve Button (left) - ARANCIONE --}}
-                        <button type="button"
-                            class="reserve-button flex transform items-center justify-center rounded-lg bg-gradient-to-r from-[#E67E22] to-[#d35400] px-3 py-2 text-xs font-medium text-white transition-all hover:scale-[1.02] hover:from-[#d35400] hover:to-[#ba4a00]"
-                            data-egi-id="{{ $egi->id }}">
-                            <svg class="mr-1.5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            {{ __('egi.actions.reserve') }}
-                        </button>
+                    @if ($isAuctionMode && $displayPriceForAction > 0)
+                        {{-- 2a: Auction mode WITH fixed price → Dual buttons --}}
+                        <div class="grid grid-cols-2 gap-2">
+                            {{-- Make Offer Button (left) - AMBER --}}
+                            <button type="button"
+                                class="reserve-button flex transform items-center justify-center rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-2 text-xs font-bold text-white transition-all hover:scale-[1.02] hover:from-amber-600 hover:to-orange-600"
+                                data-egi-id="{{ $egi->id }}">
+                                <svg class="mr-1.5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0 0h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                {{ __('egi.actions.make_offer') }}
+                            </button>
 
-                        {{-- Mint Direct Button (right, emphasized) - VIOLA --}}
+                            {{-- Mint Direct Button (right, emphasized) - PURPLE --}}
+                            <a href="{{ route('egi.mint-direct', $egi->id) }}"
+                                class="mint-direct-button flex transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-3 py-2 text-xs font-bold text-white shadow-md transition-all hover:scale-[1.02] hover:from-[#7d3c98] hover:to-[#8e44ad]">
+                                <svg class="mr-1.5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                {{ __('egi.actions.mint_now') }}
+                            </a>
+                        </div>
+                    @elseif ($isAuctionMode && $displayPriceForAction == 0)
+                        {{-- 2b: Auction mode WITHOUT fixed price → Only "Fai un'Offerta" --}}
+                        <button type="button"
+                            class="reserve-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-amber-600 hover:to-orange-600"
+                            data-egi-id="{{ $egi->id }}">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0 0h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ __('egi.actions.make_offer') }}
+                        </button>
+                    @else
+                        {{-- 2c: Fixed price mode → Only "Minta Subito" --}}
                         <a href="{{ route('egi.mint-direct', $egi->id) }}"
-                            class="mint-direct-button flex transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-3 py-2 text-xs font-bold text-white shadow-md transition-all hover:scale-[1.02] hover:from-[#7d3c98] hover:to-[#8e44ad]">
-                            <svg class="mr-1.5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="mint-direct-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
-                            {{ __('egi.actions.mint_direct') }}
+                            {{ __('egi.actions.mint_now') }} ·
+                            €{{ number_format($displayPriceForAction, 2, ',', '.') }}
                         </a>
-                    </div>
+                    @endif
 
                     {{-- ✅ SCENARIO 3: Only MINT available (no reservation possible) - VIOLA --}}
                 @elseif($canMint && !$canReserve)
@@ -546,28 +591,28 @@ $hasCurrentReservation =
                         €{{ number_format($displayPriceForAction, 2, ',', '.') }}
                     </a>
 
-                    {{-- ✅ SCENARIO 4: Only RESERVE available (already reserved by others or user can only reserve) - ARANCIONE --}}
+                    {{-- ✅ SCENARIO 4: Only RESERVE available → "Fai Offerta" (auction) or "Attivalo" (fixed) --}}
                 @elseif(!$canMint && $canReserve)
                     <button type="button"
-                        class="reserve-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#E67E22] to-[#d35400] px-4 py-2 text-sm font-medium text-white transition-all hover:scale-[1.01] hover:from-[#d35400] hover:to-[#ba4a00]"
+                        class="reserve-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r {{ $isAuctionMode ? 'from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600' : 'from-[#E67E22] to-[#d35400] hover:from-[#d35400] hover:to-[#ba4a00]' }} px-4 py-2 text-sm font-bold text-white transition-all hover:scale-[1.01]"
                         data-egi-id="{{ $egi->id }}">
                         @if ($hasCurrentReservation)
                             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
-                            {{ __('egi.actions.outbid') }}
+                            {{ $isAuctionMode ? __('egi.actions.make_offer') : __('egi.actions.outbid') }}
                         @else
                             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            {{ __('egi.actions.reserve') }}
+                            {{ $isAuctionMode ? __('egi.actions.make_offer') : __('egi.actions.reserve') }}
                         @endif
                     </button>
                 @endif
             @else
-                {{-- ❌ No actions available (or price = 0) --}}
+                {{-- ❌ No actions available --}}
                 @if ($egi->isMinted())
                     {{-- EGI già mintato - Link cliccabile per visualizzare dettagli mint --}}
                     <a href="{{ route('egi.mint-direct', $egi->id) }}"
@@ -586,7 +631,7 @@ $hasCurrentReservation =
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
                         </svg>
-                        @if (!$showButtons)
+                        @if (!$showButtons && !$isAuctionMode)
                             {{ __('egi.crud.price_not_set') }}
                         @elseif (!auth()->check())
                             {{ __('egi.status.login_required') ?? 'Login richiesto' }}
