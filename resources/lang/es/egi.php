@@ -100,6 +100,7 @@ return [
 
     // Sistema de Subasta
     'auction' => [
+        'auction_details' => 'Detalles de la Subasta',
         'minimum_price' => 'Puja Inicial',
         'starting_price' => 'Precio de Salida',
         'current_bid' => 'Oferta Actual',
@@ -134,6 +135,7 @@ return [
         'outbid' => 'Superar para Activar',
         'view_history' => 'Historial',
         'reserve_egi' => 'Reservar :title',
+        'complete_purchase' => 'Completar Compra',
         // Phase 2: Dual path actions
         'mint_now' => 'Mintear Ahora',
         'mint_direct' => 'Mintear Instantáneamente',

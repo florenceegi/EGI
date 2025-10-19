@@ -100,6 +100,7 @@ return [
 
     // Auktionssystem
     'auction' => [
+        'auction_details' => 'Auktionsdetails',
         'minimum_price' => 'Startgebot',
         'starting_price' => 'Startpreis',
         'current_bid' => 'Aktuelles Gebot',
@@ -134,6 +135,7 @@ return [
         'outbid' => 'Überbieten zum Aktivieren',
         'view_history' => 'Verlauf',
         'reserve_egi' => ':title reservieren',
+        'complete_purchase' => 'Kauf Abschließen',
         // Phase 2: Dual path actions
         'mint_now' => 'Jetzt Minten',
         'mint_direct' => 'Sofort Minten',

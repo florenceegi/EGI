@@ -98,6 +98,7 @@ return [
 
     // Système d'Enchères
     'auction' => [
+        'auction_details' => 'Détails de l\'Enchère',
         'minimum_price' => 'Mise de Départ',
         'starting_price' => 'Prix de Départ',
         'current_bid' => 'Enchère Actuelle',
@@ -122,12 +123,13 @@ return [
     // Actions
     'actions' => [
         'view' => 'Voir',
-        'view_details' => 'Voir les Détails de l'EGI',
+        'view_details' => 'Voir les Détails de l\'EGI',
         'reserve' => 'Activer',
         'reserved' => 'Réservé',
         'outbid' => 'Surenchérir pour Activer',
         'view_history' => 'Historique',
         'reserve_egi' => 'Réserver :title',
+        'complete_purchase' => 'Finaliser l\'Achat',
         'mint_now' => 'Minter Maintenant',
         'mint_direct' => 'Minter Instantanément',
         // Actions d'enchère
