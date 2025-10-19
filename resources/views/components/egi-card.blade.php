@@ -704,21 +704,6 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                         </div>
                     @endif
                 </div>
-            @else
-                {{-- NOT FOR SALE --}}
-                <div
-                    class="flex items-center justify-center rounded-xl border border-gray-500/30 bg-gradient-to-r from-gray-600/20 to-gray-500/20 p-3">
-                    <div class="flex items-center gap-2">
-                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-500">
-                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM4 10a6 6 0 1112 0A6 6 0 014 10z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-gray-300">{{ __('egi.status.not_for_sale') }}</span>
-                    </div>
-                </div>
             @endif
         </div>
     </div>
