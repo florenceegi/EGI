@@ -193,7 +193,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
 
     {{-- 🎨 Pattern rinascimentale GOLD per EGI mintati - MOLTO PIÙ VISIBILE --}}
     @if ($isMinted)
-        <div class="pointer-events-none absolute inset-0 opacity-15" aria-hidden="true">
+        <div class="absolute inset-0 pointer-events-none opacity-15" aria-hidden="true">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <pattern id="renaissance-pattern-{{ $egi->id }}" x="0" y="0" width="60" height="60"
@@ -220,7 +220,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             aria-hidden="true"></div>
 
         {{-- Effetto shimmer animato gold (eleganza certificato) --}}
-        <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
             <div
                 class="absolute -inset-full skew-x-12 animate-[shimmer_3s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-[#D4A574]/20 to-transparent">
             </div>
@@ -236,7 +236,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
     @endif
     {{-- 🖼️ Sezione Immagine --}}
     <figure class="relative aspect-[4/5] w-full overflow-hidden bg-black">
-        <a href="{{ route('egis.show', $egi->id) }}" class="block h-full w-full">
+        <a href="{{ route('egis.show', $egi->id) }}" class="block w-full h-full">
             @php
                 // � OTTIMIZZAZIONE IMMAGINI: usa l'accessor del modello con fallback interno
 // getMainImageUrlAttribute() restituisce la variante 'card' se presente,
@@ -247,13 +247,13 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             {{-- 🎯 Immagine Principale o Placeholder --}}
             @if ($optimizedImageUrl)
                 <img src="{{ $optimizedImageUrl }}" {{-- Usa l'URL ottimizzato con fallback --}} alt="{{ $egi->title ?? 'EGI Image' }}"
-                    class="h-full w-full bg-gray-800 object-contain object-center transition-transform duration-300 ease-in-out group-hover:scale-105"
+                    class="object-contain object-center w-full h-full transition-transform duration-300 ease-in-out bg-gray-800 group-hover:scale-105"
                     loading="lazy" {{-- Supporto WebP con fallback automatico del browser --}}
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             @else
                 {{-- Placeholder --}}
-                <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-                    <svg class="h-16 w-16 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                <div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-gray-800 to-gray-900">
+                    <svg class="w-16 h-16 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -262,13 +262,13 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             @endif
 
             {{-- Overlay leggero su hover --}}
-            <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <div class="absolute inset-0 transition-opacity duration-300 opacity-0 bg-black/40 group-hover:opacity-100">
             </div>
         </a>
 
         {{-- Logo piattaforma posizionato fuori dal badge --}}
         <img src="{{ asset('images/logo/logo_1.webp') }}" alt=""
-            class="absolute left-2 top-2 h-6 w-6 opacity-70 transition-opacity duration-200 hover:opacity-100"
+            class="absolute w-6 h-6 transition-opacity duration-200 left-2 top-2 opacity-70 hover:opacity-100"
             loading="lazy" decoding="async" aria-hidden="true" role="img"
             title="{{ __('egi.platform.powered_by', ['platform' => 'Frangette']) }}">
 
@@ -292,7 +292,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
         {{-- Fix posizione badge: alcune palette (Art, Science) includono 'relative' per pseudo-element overlays
              che sovrascriveva 'absolute' rendendo invisibile il badge solo su questa card.
              Avvolgiamo in un container assoluto e lasciamo la <span> relativa per gli effetti. --}}
-        <div class="absolute left-0 top-9 z-10">
+        <div class="absolute left-0 z-10 top-9">
             <span
                 class="{{ $categoryClasses }} inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide shadow ring-1 ring-white/10 backdrop-blur-sm"
                 title="{{ $categoryName }}" aria-label="EGI Category: {{ $categoryName }}"
@@ -306,7 +306,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             <div class="badge-composite">
                 <div class="hyper-overlay">⭐ HYPER ⭐</div>
                 <div class="owned-base">
-                    <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                             clip-rule="evenodd" />
@@ -318,7 +318,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
         @elseif ($showPurchasePrice)
             <span
                 class="{{ $badgeColor }} absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clip-rule="evenodd" />
@@ -360,7 +360,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         data-lbl-winning="{{ $badgeLabel }}" data-lbl-not-owned="{{ __('egi.badge.not_owned') }}">
                         <div class="hyper-overlay">⭐ HYPER ⭐</div>
                         <div class="owned-base">
-                            <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                 @if ($badgeStatus === 'minted')
                                     {{-- Icona "Mintato" (blockchain link) --}}
                                     <path fill-rule="evenodd"
@@ -384,7 +384,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         data-lbl-not-owned="{{ __('egi.badge.not_owned') }}"
                         class="{{ $badgeColor }} absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm"
                         title="{{ $badgeLabel }}">
-                        <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                             @if ($badgeStatus === 'minted')
                                 {{-- Icona "Mintato" (blockchain link) --}}
                                 <path fill-rule="evenodd"
@@ -411,7 +411,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         data-lbl-not-owned="{{ $badgeLabel }}">
                         <div class="hyper-overlay">⭐ HYPER ⭐</div>
                         <div class="not-owned-base">
-                            <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                 @if ($showActivationBadge)
                                     {{-- Icona "Attivazione" (play/start) --}}
                                     <path fill-rule="evenodd"
@@ -431,7 +431,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         data-lbl-not-owned="{{ $badgeLabel }}"
                         class="{{ $showActivationBadge ? $badgeColor : 'bg-[#C13120]/90' }} absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm"
                         title="{{ $badgeLabel }}">
-                        <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                             @if ($showActivationBadge)
                                 {{-- Icona "Attivazione" (play/start) --}}
                                 <path fill-rule="evenodd"
@@ -453,7 +453,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             <span
                 class="{{ $badgeColor }} absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm"
                 title="{{ $badgeLabel }}">
-                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     @if ($badgeStatus === 'minted')
                         {{-- Icona "Mintato" (blockchain link) --}}
                         <path fill-rule="evenodd"
@@ -469,9 +469,9 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             {{-- Badge per contenuto media --}}
         @elseif ($egi->media)
             <span
-                class="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm"
+                class="absolute inline-flex items-center justify-center w-6 h-6 text-white rounded-full right-2 top-2 bg-black/50 backdrop-blur-sm"
                 title="{{ __('egi.badge.media_content') }}">
-                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                     aria-hidden="true">
                     <path
                         d="M6.3 2.84A1.5 1.5 0 0 0 4 4.11v11.78a1.5 1.5 0 0 0 2.3 1.27l9.344-5.891a1.5 1.5 0 0 0 0-2.538L6.3 2.84Z" />
@@ -481,13 +481,13 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
     </figure>
 
     {{-- ℹ️ Information Section --}}
-    <div class="flex flex-1 flex-col justify-between bg-gradient-to-b from-gray-900/50 to-gray-900 p-4">
+    <div class="flex flex-col justify-between flex-1 p-4 bg-gradient-to-b from-gray-900/50 to-gray-900">
         {{-- Title and Like --}}
         <div>
-            <div class="mb-2 flex items-center gap-2">
+            <div class="flex items-center gap-2 mb-2">
                 <div
-                    class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
-                    <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    class="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path
                             d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
@@ -499,7 +499,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                     {{-- Tooltip for description --}}
                     @if ($egi->description)
                         <div
-                            class="absolute bottom-full left-1/2 z-50 mb-2 min-w-64 max-w-80 rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm font-normal text-white shadow-xl">
+                            class="absolute z-50 px-3 py-2 mb-2 text-sm font-normal text-white bg-gray-900 border border-gray-700 rounded-lg shadow-xl bottom-full left-1/2 min-w-64 max-w-80">
                             {{ Str::limit($egi->description, 200) }}
                         </div>
                     @endif
@@ -516,27 +516,27 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
 
             {{-- 🎨 CREATOR INFO - SEMPRE VISIBILE --}}
             @if ($egiCreator)
-                <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
+                <div class="flex items-center gap-2 p-2 mb-2 border rounded-lg border-gray-700/50 bg-gray-800/50"
                     data-creator-info>
                     <div
-                        class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
+                        class="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
                         <img src="{{ $imageUrl }}" alt="{{ $egiCreator->name }}"
-                            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                             loading="lazy" decoding="async">
                     </div>
-                    <div class="min-w-0 flex-1">
+                    <div class="flex-1 min-w-0">
                         <span class="text-xs font-medium text-gray-300">{{ __('egi.creator.created_by') }}</span>
-                        <span class="ml-1 truncate text-xs font-semibold text-white">{{ $egiCreator->name }}</span>
+                        <span class="ml-1 text-xs font-semibold text-white truncate">{{ $egiCreator->name }}</span>
                     </div>
                 </div>
             @endif
 
             {{-- 📦 COLLECTION INFO --}}
             @if ($egiCollection)
-                <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
+                <div class="flex items-center gap-2 p-2 mb-2 border rounded-lg border-gray-700/50 bg-gray-800/50"
                     data-collection-info>
                     <div
-                        class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-indigo-500">
+                        class="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500">
                         @php
                             $collectionImageUrl = '';
                             if (method_exists($egiCollection, 'getFirstMediaUrl')) {
@@ -545,37 +545,37 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         @endphp
                         @if ($collectionImageUrl)
                             <img src="{{ $collectionImageUrl }}" alt="{{ $egiCollection->collection_name }}"
-                                class="h-full w-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                class="object-cover w-full h-full transition-transform duration-300 rounded-full group-hover:scale-105"
                                 loading="lazy" decoding="async">
                         @else
-                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
                             </svg>
                         @endif
                     </div>
-                    <div class="min-w-0 flex-1">
+                    <div class="flex-1 min-w-0">
                         <span class="text-xs font-medium text-gray-300">{{ __('egi.collection.part_of') }}</span>
                         <span
-                            class="ml-1 truncate text-xs font-semibold text-white">{{ $egiCollection->collection_name }}</span>
+                            class="ml-1 text-xs font-semibold text-white truncate">{{ $egiCollection->collection_name }}</span>
                     </div>
                 </div>
             @endif
 
             {{-- 📊 RESERVATION COUNT --}}
             @if ($egi->reservations && $egi->reservations->count() > 0)
-                <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
+                <div class="flex items-center gap-2 p-2 mb-2 border rounded-lg border-gray-700/50 bg-gray-800/50"
                     data-reservation-count>
                     <div
-                        class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500">
-                        <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        class="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-green-500 to-emerald-500">
+                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                             <path fill-rule="evenodd"
                                 d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-1a1 1 0 100-2 2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V5z"
                                 clip-rule="evenodd" />
                         </svg>
                     </div>
-                    <div class="min-w-0 flex-1">
+                    <div class="flex-1 min-w-0">
                         <span class="text-xs font-medium text-gray-300">
                             {{ $egi->reservations->count() }} {{ __('egi.reservation.count') }}
                         </span>
@@ -589,10 +589,10 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             @if (!(bool) $egi->is_published)
                 {{-- DRAFT Status --}}
                 <div
-                    class="flex items-center justify-center rounded-xl border border-yellow-500/30 bg-gradient-to-r from-yellow-600/20 to-amber-500/20 p-3">
+                    class="flex items-center justify-center p-3 border rounded-xl border-yellow-500/30 bg-gradient-to-r from-yellow-600/20 to-amber-500/20">
                     <div class="flex items-center gap-2">
-                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500">
-                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <div class="flex items-center justify-center w-6 h-6 bg-yellow-500 rounded-full">
+                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                                     clip-rule="evenodd" />
@@ -604,11 +604,11 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             @elseif ($displayPrice && $displayPrice > 0)
                 {{-- ACTIVE PRICE - From highest reservation or base price --}}
                 <div
-                    class="rounded-xl border border-green-500/30 bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-3">
-                    <div class="mb-2 flex items-center justify-between">
+                    class="p-3 border rounded-xl border-green-500/30 bg-gradient-to-r from-green-500/20 to-emerald-500/20">
+                    <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-2">
-                            <div class="flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
-                                <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="flex items-center justify-center w-6 h-6 bg-green-500 rounded-full">
+                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
                                         clip-rule="evenodd" />
@@ -635,22 +635,22 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         @php
                             $coCreatorDisplay = formatActivatorDisplay($egi->blockchain->buyer);
                         @endphp
-                        <div class="flex items-center gap-2 border-t border-purple-500/20 pt-2">
+                        <div class="flex items-center gap-2 pt-2 border-t border-purple-500/20">
                             <div
-                                class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-purple-600">
+                                class="flex items-center justify-center flex-shrink-0 w-4 h-4 bg-purple-600 rounded-full">
                                 @if ($coCreatorDisplay && $coCreatorDisplay['avatar'])
                                     <img src="{{ $coCreatorDisplay['avatar'] }}"
                                         alt="{{ $coCreatorDisplay['name'] }}"
-                                        class="h-4 w-4 rounded-full border border-white/20 object-cover">
+                                        class="object-cover w-4 h-4 border rounded-full border-white/20">
                                 @else
-                                    <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
                                             clip-rule="evenodd" />
                                     </svg>
                                 @endif
                             </div>
-                            <span class="truncate text-xs text-purple-200">
+                            <span class="text-xs text-purple-200 truncate">
                                 {{ __('egi.creator.co_creator') }}
                                 <span class="font-semibold" data-activator-name>{{ $coCreatorDisplay['name'] }}</span>
                             </span>
@@ -663,12 +663,12 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                                 ? formatActivatorDisplay($highestReservation->user)
                                 : null;
                         @endphp
-                        <div class="flex items-center gap-2 border-t border-green-500/20 pt-2">
+                        <div class="flex items-center gap-2 pt-2 border-t border-green-500/20">
                             <div
                                 class="{{ $isWeakReservation ? 'bg-amber-600' : 'bg-green-600' }} flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full">
                                 @if ($isWeakReservation)
                                     {{-- Weak reservation: generic icon --}}
-                                    <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
                                             clip-rule="evenodd" />
@@ -678,10 +678,10 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                                     @if ($reservationDisplay && $reservationDisplay['avatar'])
                                         <img src="{{ $reservationDisplay['avatar'] }}"
                                             alt="{{ $reservationDisplay['name'] }}"
-                                            class="h-4 w-4 rounded-full border border-white/20 object-cover">
+                                            class="object-cover w-4 h-4 border rounded-full border-white/20">
                                     @else
                                         {{-- Fallback solo se non c'è avatar dal backend (caso molto raro) --}}
-                                        <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
                                                 d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
                                                 clip-rule="evenodd" />
@@ -707,10 +707,10 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             @else
                 {{-- NOT FOR SALE --}}
                 <div
-                    class="flex items-center justify-center rounded-xl border border-gray-500/30 bg-gradient-to-r from-gray-600/20 to-gray-500/20 p-3">
+                    class="flex items-center justify-center p-3 border rounded-xl border-gray-500/30 bg-gradient-to-r from-gray-600/20 to-gray-500/20">
                     <div class="flex items-center gap-2">
-                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-500">
-                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <div class="flex items-center justify-center w-6 h-6 bg-gray-500 rounded-full">
+                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM4 10a6 6 0 1112 0A6 6 0 014 10z"
                                     clip-rule="evenodd" />
@@ -723,9 +723,129 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
         </div>
     </div>
 
+    {{-- AUCTION INFO BOX - Mostra dettagli asta se sale_mode = auction --}}
+    @if (($egi->sale_mode ?? null) === 'auction' && !$egi->minted)
+        <div class="px-2 pb-2">
+            <div class="p-3 space-y-2 border rounded-xl border-amber-500/30 bg-gradient-to-r from-amber-500/20 to-orange-500/20">
+                {{-- Auction Header --}}
+                <div class="flex items-center gap-2 pb-2 border-b border-amber-500/20">
+                    <div class="flex items-center justify-center w-5 h-5 rounded-full bg-amber-500">
+                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-semibold text-amber-300">{{ __('egi.auction.auction_details') }}</span>
+                </div>
+
+                {{-- Minimum Price --}}
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] text-gray-400">{{ __('egi.auction.minimum_price') }}:</span>
+                    <x-currency-price :price="$egi->auction_minimum_price ?? 0" 
+                        :currency="__('utility.currency_symbol')" 
+                        textSize="text-xs" 
+                        fontWeight="font-bold" 
+                        color="text-amber-400" />
+                </div>
+
+                {{-- Current Bid (se ci sono offerte) --}}
+                @php
+                    $highestAuctionBid = $egi->reservations()
+                        ->where('is_highest', true)
+                        ->where('amount_eur', '>=', $egi->auction_minimum_price ?? 0)
+                        ->orderBy('amount_eur', 'desc')
+                        ->first();
+                @endphp
+                
+                @if ($highestAuctionBid)
+                    <div class="flex items-center justify-between pt-1 border-t border-amber-500/20">
+                        <span class="text-[10px] text-gray-400">{{ __('egi.auction.current_bid') }}:</span>
+                        <x-currency-price :price="$highestAuctionBid->amount_eur" 
+                            :currency="__('utility.currency_symbol')" 
+                            textSize="text-xs" 
+                            fontWeight="font-bold" 
+                            color="text-green-400" />
+                    </div>
+                @else
+                    <div class="flex items-center justify-center pt-1 border-t border-amber-500/20">
+                        <span class="text-[10px] italic text-gray-500">{{ __('egi.auction.no_bids') }}</span>
+                    </div>
+                @endif
+
+                {{-- Auction Dates --}}
+                <div class="pt-2 space-y-1 border-t border-amber-500/20">
+                    {{-- Start Date --}}
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] text-gray-400">{{ __('egi.auction.starts_at') }}:</span>
+                        <span class="text-[10px] font-medium text-amber-300">
+                            {{ $egi->auction_start ? $egi->auction_start->format('d M Y, H:i') : 'N/A' }}
+                        </span>
+                    </div>
+                    
+                    {{-- End Date with Status --}}
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] text-gray-400">{{ __('egi.auction.ends_at') }}:</span>
+                        <span class="text-[10px] font-medium text-orange-300">
+                            {{ $egi->auction_end ? $egi->auction_end->format('d M Y, H:i') : 'N/A' }}
+                        </span>
+                    </div>
+
+                    {{-- Time Remaining (se l'asta è attiva) --}}
+                    @if ($egi->auction_start && $egi->auction_end)
+                        @php
+                            $now = now();
+                            $auctionStarted = $now->greaterThanOrEqualTo($egi->auction_start);
+                            $auctionEnded = $now->greaterThanOrEqualTo($egi->auction_end);
+                            $timeRemaining = null;
+                            
+                            if ($auctionStarted && !$auctionEnded) {
+                                $diff = $now->diff($egi->auction_end);
+                                $timeRemaining = [
+                                    'days' => $diff->d,
+                                    'hours' => $diff->h,
+                                    'minutes' => $diff->i,
+                                ];
+                            }
+                        @endphp
+
+                        @if (!$auctionStarted)
+                            <div class="flex items-center justify-center gap-1 px-2 py-1 mt-1 rounded-lg bg-blue-500/20">
+                                <svg class="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-[10px] font-medium text-blue-300">{{ __('egi.auction.not_started') }}</span>
+                            </div>
+                        @elseif ($auctionEnded)
+                            <div class="flex items-center justify-center gap-1 px-2 py-1 mt-1 rounded-lg bg-red-500/20">
+                                <svg class="w-3 h-3 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-[10px] font-medium text-red-300">{{ __('egi.auction.ended') }}</span>
+                            </div>
+                        @elseif ($timeRemaining)
+                            <div class="flex items-center justify-center gap-1 px-2 py-1 mt-1 rounded-lg bg-green-500/20">
+                                <svg class="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-[10px] font-medium text-green-300">
+                                    @if ($timeRemaining['days'] > 0)
+                                        {{ $timeRemaining['days'] }} {{ __('egi.auction.days') }}
+                                    @elseif ($timeRemaining['hours'] > 0)
+                                        {{ $timeRemaining['hours'] }}h {{ $timeRemaining['minutes'] }}m
+                                    @else
+                                        {{ $timeRemaining['minutes'] }} {{ __('egi.auction.minutes') }}
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Utility Images Carousel --}}
     @if ($egi->utility && $egi->utility->getMedia('utility_gallery')->count() > 0)
-        <div class="border-t border-white/5 px-2 pb-2">
+        <div class="px-2 pb-2 border-t border-white/5">
 
             @if ($egi->utility->getMedia('utility_gallery')->count() > 5)
                 <div class="mt-1 text-center">
@@ -738,14 +858,14 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
             <!-- Container con larghezza massima per forzare overflow -->
             <div class="relative w-full" style="max-width: 280px;">
                 <!-- Scrollable Container -->
-                <div class="utility-scroll-container scrollbar-hide flex gap-2 overflow-x-auto py-1"
+                <div class="flex gap-2 py-1 overflow-x-auto utility-scroll-container scrollbar-hide"
                     style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
                     @foreach ($egi->utility->getMedia('utility_gallery') as $index => $media)
-                        <div class="h-12 w-12 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg hover:ring-2 hover:ring-white/50"
+                        <div class="flex-shrink-0 w-12 h-12 overflow-hidden transition-all duration-200 rounded-lg cursor-pointer hover:scale-105 hover:shadow-lg hover:ring-2 hover:ring-white/50"
                             onclick="openUtilityImageModal('{{ $media->getUrl('large') }}', '{{ $egi->utility->title }}', {{ $index }})">
                             <img src="{{ $media->getUrl('thumb') }}"
                                 alt="{{ $egi->utility->title }} - Image {{ $index + 1 }}"
-                                class="h-full w-full object-cover opacity-80 transition-opacity duration-200 hover:opacity-100"
+                                class="object-cover w-full h-full transition-opacity duration-200 opacity-80 hover:opacity-100"
                                 loading="lazy">
                         </div>
                     @endforeach
@@ -865,7 +985,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                 @if ($isReservedByUser && $canMint && $userReservation)
                     <a href="{{ route('mint.payment-form', ['egiId' => $egi->id]) }}?reservation_id={{ $userReservation->id }}"
                         class="mint-button flex w-full transform items-center justify-center rounded-b-lg rounded-t-none bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
-                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m-3-6h6" />
                         </svg>
@@ -901,7 +1021,7 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                 @elseif($canMint && !$canReserve)
                     <a href="{{ route('egi.mint-direct', $egi->id) }}"
                         class="mint-direct-button flex w-full transform items-center justify-center rounded-b-lg rounded-t-none bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
-                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
@@ -915,13 +1035,13 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                         class="reserve-button flex w-full transform items-center justify-center rounded-b-lg rounded-t-none bg-gradient-to-r from-[#E67E22] to-[#d35400] px-4 py-2 text-sm font-medium text-white transition-all hover:scale-[1.01] hover:from-[#d35400] hover:to-[#ba4a00]"
                         data-egi-id="{{ $egi->id }}">
                         @if ($hasCurrentReservation)
-                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
                             {{ __('egi.actions.outbid') }}
                         @else
-                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
@@ -934,8 +1054,8 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                 @if ($egi->isMinted())
                     {{-- EGI già mintato - Link cliccabile per visualizzare dettagli mint --}}
                     <a href="{{ route('egi.mint-direct', $egi->id) }}"
-                        class="flex w-full items-center justify-center rounded-b-lg rounded-t-none bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-100">
-                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-green-700 transition-colors rounded-t-none rounded-b-lg bg-green-50 hover:bg-green-100">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -944,8 +1064,8 @@ $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_cur
                 @else
                     {{-- Stato non disponibile --}}
                     <div
-                        class="flex w-full items-center justify-center rounded-b-lg rounded-t-none bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500">
-                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-t-none rounded-b-lg">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
                         </svg>
