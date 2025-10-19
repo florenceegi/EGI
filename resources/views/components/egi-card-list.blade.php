@@ -147,6 +147,17 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
                 </span>
             </div>
 
+            {{-- 🎯 Badge Asta (bottom-left) --}}
+            @if (!$egi->isMinted() && $egi->sale_mode === 'auction')
+                <div class="absolute bottom-2 left-2">
+                    <span
+                        class="inline-flex items-center rounded-md bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-lg ring-1 ring-white/20"
+                        title="{{ __('egi.auction.to_mint') }}">
+                        {{ __('egi.auction.to_mint') }}
+                    </span>
+                </div>
+            @endif
+
             <!-- Context Badge -->
             @if ($showOwnershipBadge)
                 <div class="absolute right-2 top-12">
