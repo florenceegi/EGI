@@ -1,0 +1,15 @@
+# EGI Living SmartContract Dependencies
+# Python requirements for Algorand SmartContract development
+
+# PyTeal - Algorand SmartContract development framework
+pyteal==0.24.1
+
+# Algorand SDK - Python SDK for Algorand blockchain
+py-algorand-sdk==2.4.0
+
+# Development tools
+pytest==7.4.3
+pytest-cov==4.1.0
+black==23.12.1
+flake8==6.1.0
+
