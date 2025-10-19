@@ -277,6 +277,7 @@ return [
         'description_max' => 'La descrizione è troppo lunga',
         'price_numeric' => 'Il prezzo deve essere un numero valido',
         'price_min' => 'Il prezzo non può essere negativo',
+        'price_required_for_fixed_price' => 'Con Prezzo Fisso devi impostare un prezzo superiore a zero',
         'creation_date_invalid' => 'La data di creazione non è valida',
 
         'sale_mode_invalid' => 'Modalità di vendita non valida',
