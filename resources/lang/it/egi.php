@@ -102,6 +102,7 @@ return [
 
     // Sistema Asta
     'auction' => [
+        'auction_details' => 'Dettagli Asta',
         'minimum_price' => 'Base d\'Asta',
         'starting_price' => 'Prezzo di Partenza',
         'current_bid' => 'Offerta Attuale',
@@ -137,6 +138,7 @@ return [
         'outbid' => 'Supera per Attivare',
         'view_history' => 'Cronologia',
         'reserve_egi' => 'Prenota :title',
+        'complete_purchase' => 'Completa Acquisto',
         // Phase 2: Dual path actions
         'mint_now' => 'Minta Ora',
         'mint_direct' => 'Minta Subito',

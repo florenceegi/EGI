@@ -100,6 +100,7 @@ return [
 
     // Auction System
     'auction' => [
+        'auction_details' => 'Auction Details',
         'minimum_price' => 'Starting Bid',
         'starting_price' => 'Starting Price',
         'current_bid' => 'Current Bid',
@@ -134,6 +135,7 @@ return [
         'outbid' => 'Outbid to Activate',
         'view_history' => 'History',
         'reserve_egi' => 'Reserve :title',
+        'complete_purchase' => 'Complete Purchase',
         // Phase 2: Dual path actions
         'mint_now' => 'Mint Now',
         'mint_direct' => 'Mint Instantly',

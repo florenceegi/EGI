@@ -100,6 +100,7 @@ return [
 
     // Sistema de Leilão
     'auction' => [
+        'auction_details' => 'Detalhes do Leilão',
         'minimum_price' => 'Lance Inicial',
         'starting_price' => 'Preço Inicial',
         'current_bid' => 'Lance Atual',
@@ -134,6 +135,7 @@ return [
         'outbid' => 'Superar para Ativar',
         'view_history' => 'Histórico',
         'reserve_egi' => 'Reservar :title',
+        'complete_purchase' => 'Concluir Compra',
         // Phase 2: Dual path actions
         'mint_now' => 'Mintar Agora',
         'mint_direct' => 'Mintar Instantaneamente',
