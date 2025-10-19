@@ -93,14 +93,14 @@ Route::post('/mint/{egiId}/certificate/pdf/check', [App\Http\Controllers\EgiRese
     ->name('mint.certificate.pdf-check');
 
 // Mint routes (blockchain integration) - NEW ARCHITECTURE 2-PAGES
+// PAGINA 2: Mint Result (READ-ONLY, riapribile) - accesso pubblico
+Route::get('/mint/{egiBlockchainId}', [App\Http\Controllers\MintController::class, 'showMintResult'])
+    ->name('mint.show');
+
 Route::middleware('auth')->group(function () {
     // PAGINA 1: Payment Form
     Route::get('/mint/payment/{egiId}', [App\Http\Controllers\MintController::class, 'showPaymentForm'])
         ->name('mint.payment-form');
-
-    // PAGINA 2: Mint Result (READ-ONLY, riapribile)
-    Route::get('/mint/{egiBlockchainId}', [App\Http\Controllers\MintController::class, 'showMintResult'])
-        ->name('mint.show');
 
     // Regenerate certificate (without new mint)
     Route::post('/mint/{egiBlockchainId}/regenerate-certificate', [App\Http\Controllers\MintController::class, 'regenerateCertificate'])

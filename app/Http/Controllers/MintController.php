@@ -37,7 +37,7 @@ class MintController extends Controller {
         AuditLogService $auditService,
         CertificateGeneratorService $certificateGenerator
     ) {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['showMintResult']);
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
@@ -1048,6 +1048,7 @@ class MintController extends Controller {
                 'message' => __('mint.post_mint.regenerate_success'),
                 'certificate_uuid' => $certificate->certificate_uuid,
                 'pdf_url' => $certificate->getPdfUrl(),
+                'public_url' => route('egi-certificates.show', $certificate->certificate_uuid),
                 'egi_id' => $blockchain->egi_id
             ]);
         } catch (\Exception $e) {

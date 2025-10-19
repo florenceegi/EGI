@@ -330,6 +330,21 @@ class CertificateGeneratorService {
             // Generate certificate UUID
             $certificateUuid = (string) Str::uuid();
 
+            // Create timestamp for signature
+            $createdAt = now()->toIso8601String();
+
+            // Generate signature hash using blockchain-specific fields
+            // MUST match generateVerificationData() in EgiReservationCertificate model
+            $signatureData = implode('|', [
+                $certificateUuid,
+                $egi->id,
+                $egiBlockchain->id,
+                $egiBlockchain->asa_id ?? '',
+                $egiBlockchain->blockchain_tx_id ?? '',
+                $egiBlockchain->paid_amount ?? '',
+                $createdAt
+            ]);
+
             // Create certificate record in egi_reservation_certificates table
             $certificate = EgiReservationCertificate::create([
                 'certificate_type' => 'mint',
@@ -341,9 +356,10 @@ class CertificateGeneratorService {
                 'offer_amount_fiat' => $egiBlockchain->paid_amount,
                 'offer_amount_algo' => 0, // Not used for mint certificates
                 'certificate_uuid' => $certificateUuid,
-                'signature_hash' => hash('sha256', $certificateUuid . '|' . $egiBlockchain->asa_id . '|' . $egiBlockchain->blockchain_tx_id),
+                'signature_hash' => hash('sha256', $signatureData),
                 'is_superseded' => false,
                 'is_current_highest' => true,
+                'created_at' => $createdAt,
             ]);
 
             // Generate certificate path
