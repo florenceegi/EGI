@@ -1050,7 +1050,6 @@ class MintController extends Controller {
                 'pdf_url' => $certificate->getPdfUrl(),
                 'egi_id' => $blockchain->egi_id
             ]);
-
         } catch (\Exception $e) {
             // 9. UEM: Error handling
             $this->errorManager->handle('CERTIFICATE_REGENERATION_FAILED', [
