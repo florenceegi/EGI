@@ -14,11 +14,11 @@
 
 @props(['egi', 'isCreator'])
 
-@if(!$isCreator)
+@if (!$isCreator)
     @php return; @endphp
 @endif
 
-<div class="bg-white rounded-2xl shadow-lg border-2 border-green-200 overflow-hidden">
+<div class="overflow-hidden rounded-2xl border-2 border-green-200 bg-white shadow-lg">
     {{-- Header with Verde Rinascita --}}
     <div class="bg-gradient-to-r from-green-700 to-green-600 px-6 py-4">
         <div class="flex items-center gap-3">
@@ -27,29 +27,28 @@
                 <h3 class="text-xl font-bold text-white" style="font-family: 'Playfair Display', serif;">
                     Auto-Mint Creator
                 </h3>
-                <p class="text-green-100 text-sm">Minta tu stesso la tua opera</p>
+                <p class="text-sm text-green-100">Minta tu stesso la tua opera</p>
             </div>
         </div>
     </div>
 
-    <div class="p-6 space-y-6">
-        @if(!$egi->auto_mint_enabled)
+    <div class="space-y-6 p-6">
+        @if (!$egi->auto_mint_enabled)
             {{-- Enable Auto-Mint Section --}}
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border-2 border-blue-200">
+            <div class="rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 p-5">
                 <div class="flex items-start gap-4">
-                    <i class="fas fa-lightbulb text-blue-600 text-2xl mt-1"></i>
+                    <i class="fas fa-lightbulb mt-1 text-2xl text-blue-600"></i>
                     <div>
-                        <h4 class="text-lg font-bold text-blue-900 mb-2">
+                        <h4 class="mb-2 text-lg font-bold text-blue-900">
                             Vuoi mintare personalmente questo EGI?
                         </h4>
-                        <p class="text-sm text-blue-800 mb-4">
-                            Abilita l'Auto-Mint per riservare a te stesso il mint di questa opera. 
-                            Potrai scegliere tra EGI Classico o EGI Vivente e diventerai automaticamente il proprietario.
+                        <p class="mb-4 text-sm text-blue-800">
+                            Abilita l'Auto-Mint per riservare a te stesso il mint di questa opera.
+                            Potrai scegliere tra EGI Classico o EGI Vivente e diventerai automaticamente il
+                            proprietario.
                         </p>
-                        <button 
-                            wire:click="enableAutoMint"
-                            class="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-lg font-bold hover:from-green-700 hover:to-green-600 transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
-                        >
+                        <button wire:click="enableAutoMint"
+                            class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 font-bold text-white shadow-md transition-all duration-200 hover:from-green-700 hover:to-green-600 hover:shadow-lg">
                             <i class="fas fa-check-circle"></i>
                             Abilita Auto-Mint
                         </button>
@@ -60,9 +59,9 @@
             {{-- Auto-Mint Enabled - Show Minting Options --}}
             <div class="space-y-4">
                 {{-- Info --}}
-                <div class="bg-green-50 rounded-xl p-4 border-2 border-green-200">
+                <div class="rounded-xl border-2 border-green-200 bg-green-50 p-4">
                     <div class="flex items-center gap-3">
-                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        <i class="fas fa-check-circle text-xl text-green-600"></i>
                         <div>
                             <p class="font-semibold text-green-900">Auto-Mint Abilitato</p>
                             <p class="text-sm text-green-700">Puoi mintare questa opera quando vuoi</p>
@@ -72,25 +71,23 @@
 
                 {{-- Mint Options --}}
                 <div class="border-t border-gray-200 pt-4">
-                    <h4 class="text-lg font-bold text-gray-900 mb-4" style="font-family: 'Playfair Display', serif;">
+                    <h4 class="mb-4 text-lg font-bold text-gray-900" style="font-family: 'Playfair Display', serif;">
                         Scegli il tipo di mint:
                     </h4>
 
                     <div class="space-y-3">
                         {{-- Mint as ASA --}}
-                        <button 
-                            wire:click="openCreatorMintModal('ASA')"
-                            class="w-full bg-gradient-to-r from-blue-900 to-blue-800 text-white px-6 py-5 rounded-xl font-bold hover:from-blue-950 hover:to-blue-900 transition-all duration-200 text-left shadow-lg hover:shadow-xl border-2 border-blue-700"
-                        >
+                        <button wire:click="openCreatorMintModal('ASA')"
+                            class="w-full rounded-xl border-2 border-blue-700 bg-gradient-to-r from-blue-900 to-blue-800 px-6 py-5 text-left font-bold text-white shadow-lg transition-all duration-200 hover:from-blue-950 hover:to-blue-900 hover:shadow-xl">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">
                                     <i class="fas fa-shield-check text-3xl"></i>
                                     <div>
                                         <div class="text-lg">EGI Classico (ASA)</div>
-                                        <div class="text-sm font-normal text-blue-200 mt-1">
+                                        <div class="mt-1 text-sm font-normal text-blue-200">
                                             Asset statico su blockchain Algorand
                                         </div>
-                                        <div class="text-xs font-normal text-blue-300 mt-2 flex items-center gap-2">
+                                        <div class="mt-2 flex items-center gap-2 text-xs font-normal text-blue-300">
                                             <i class="fas fa-check-circle"></i>
                                             Gratuito • Permanente • Sicuro
                                         </div>
@@ -101,22 +98,20 @@
                         </button>
 
                         {{-- Mint as SmartContract --}}
-                        <button 
-                            wire:click="openCreatorMintModal('SmartContract')"
-                            class="w-full bg-gradient-to-r from-purple-700 to-purple-600 text-white px-6 py-5 rounded-xl font-bold hover:from-purple-800 hover:to-purple-700 transition-all duration-200 text-left shadow-lg hover:shadow-xl border-2 border-purple-400"
-                        >
+                        <button wire:click="openCreatorMintModal('SmartContract')"
+                            class="w-full rounded-xl border-2 border-purple-400 bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-5 text-left font-bold text-white shadow-lg transition-all duration-200 hover:from-purple-800 hover:to-purple-700 hover:shadow-xl">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">
                                     <i class="fas fa-brain text-3xl"></i>
                                     <div>
-                                        <div class="text-lg flex items-center gap-2">
+                                        <div class="flex items-center gap-2 text-lg">
                                             EGI Vivente (SmartContract)
-                                            <span class="px-2 py-1 bg-amber-500 text-xs rounded-full">PREMIUM</span>
+                                            <span class="rounded-full bg-amber-500 px-2 py-1 text-xs">PREMIUM</span>
                                         </div>
-                                        <div class="text-sm font-normal text-purple-200 mt-1">
+                                        <div class="mt-1 text-sm font-normal text-purple-200">
                                             Asset intelligente con AI Curator integrata
                                         </div>
-                                        <div class="text-xs font-normal text-purple-300 mt-2 space-y-1">
+                                        <div class="mt-2 space-y-1 text-xs font-normal text-purple-300">
                                             <div class="flex items-center gap-2">
                                                 <i class="fas fa-check-circle"></i>
                                                 Analisi AI automatiche
@@ -130,7 +125,7 @@
                                                 Memoria evolutiva
                                             </div>
                                         </div>
-                                        <div class="text-sm font-semibold text-amber-300 mt-3">
+                                        <div class="mt-3 text-sm font-semibold text-amber-300">
                                             Da €{{ config('egi_living.subscription_plans.one_time.price_eur') }}
                                         </div>
                                     </div>
@@ -143,10 +138,8 @@
 
                 {{-- Disable Auto-Mint --}}
                 <div class="border-t border-gray-200 pt-4">
-                    <button 
-                        wire:click="disableAutoMint"
-                        class="text-sm text-gray-600 hover:text-red-600 transition-colors duration-200 flex items-center gap-2"
-                    >
+                    <button wire:click="disableAutoMint"
+                        class="flex items-center gap-2 text-sm text-gray-600 transition-colors duration-200 hover:text-red-600">
                         <i class="fas fa-times-circle"></i>
                         Disabilita Auto-Mint
                     </button>
@@ -155,4 +148,3 @@
         @endif
     </div>
 </div>
-
