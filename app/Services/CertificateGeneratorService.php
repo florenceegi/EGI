@@ -443,6 +443,12 @@ class CertificateGeneratorService {
         $txId = htmlspecialchars($certificateData['blockchain_tx_id']);
         $amount = number_format($certificateData['purchase_amount'], 2, ',', '.') . ' ' . htmlspecialchars($certificateData['purchase_currency'] ?? 'EUR');
 
+        // Blockchain explorer URLs (network-aware)
+        $network = config('algorand.algorand.network', 'testnet');
+        $explorerBaseUrl = config("algorand.algorand.{$network}.explorer_url", 'https://testnet.explorer.perawallet.app');
+        $asaExplorerUrl = "{$explorerBaseUrl}/asset/{$asaId}";
+        $txExplorerUrl = "{$explorerBaseUrl}/tx/{$txId}";
+
         // Dati certificato escapati
         $certificateUuid = htmlspecialchars($certificateData['certificate_uuid']);
         $mintedAt = htmlspecialchars($certificateData['minted_at']);
@@ -584,7 +590,15 @@ class CertificateGeneratorService {
                     font-weight: 600;
                     font-family: "DejaVu Sans Mono", monospace;
                     font-size: 8pt;
-                    word-wrap: break-word;
+                    word-break: break-all;
+                }
+                .value a {
+                    color: #1B365D;
+                    text-decoration: underline;
+                    font-weight: 600;
+                }
+                .value a:hover {
+                    color: #D4A574;
                 }
 
                 /* BLOCKCHAIN BOX */
@@ -741,13 +755,13 @@ class CertificateGeneratorService {
                 <div class="highlight">
                     <div class="info-row">
                         <span class="label" style="width: 30%; text-align: right; padding-right: 8px; color: #6B6B6B; font-weight: 600;">{$t['label_asset_id']}</span>
-                        <span class="value" style="width: 68%; color: #1B365D; font-weight: 600;">{$asaId}</span>
+                        <span class="value" style="width: 68%; color: #1B365D; font-weight: 600;"><a href="{$asaExplorerUrl}" target="_blank" style="color: #1B365D; text-decoration: underline;">{$asaId}</a></span>
                     </div>
                 </div>
 
                 <div class="info-row">
                     <span class="label" style="color: #6B6B6B; font-weight: 600;">{$t['label_transaction_id']}</span>
-                    <span class="value" style="color: #1B365D; font-weight: 600;">{$txId}</span>
+                    <span class="value" style="color: #1B365D; font-weight: 600;"><a href="{$txExplorerUrl}" target="_blank" style="color: #1B365D; text-decoration: underline;">{$txId}</a></span>
                 </div>
                 <div class="info-row">
                     <span class="label" style="color: #6B6B6B; font-weight: 600;">{$t['label_amount_paid']}</span>
