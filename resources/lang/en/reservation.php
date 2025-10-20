@@ -10,56 +10,56 @@
 
 return [
     // Success messages
-    'success' => 'Your reservation has been successfully placed! The certificate has been generated.',
-    'cancel_success' => 'Your reservation has been successfully cancelled.',
-    'success_title' => 'Reservation placed!',
+    'success' => 'Your bid has been successfully placed! The certificate has been generated.',
+    'cancel_success' => 'Your bid has been successfully cancelled.',
+    'success_title' => 'Bid placed!',
     'view_certificate' => 'View Certificate',
     'close' => 'Close',
 
     // Error messages
-    'unauthorized' => 'You must connect your wallet or sign in to make a reservation.',
+    'unauthorized' => 'You must connect your wallet or sign in to make a bid.',
     'validation_failed' => 'Please check the entered data and try again.',
-    'auth_required' => 'Authentication is required to view your reservations.',
-    'list_failed' => 'Unable to retrieve your reservations. Please try again later.',
-    'status_failed' => 'Unable to retrieve reservation status. Please try again later.',
-    'unauthorized_cancel' => 'You do not have permission to cancel this reservation.',
-    'cancel_failed' => 'Unable to cancel the reservation. Please try again later.',
+    'auth_required' => 'Authentication is required to view your bids.',
+    'list_failed' => 'Unable to retrieve your bids. Please try again later.',
+    'status_failed' => 'Unable to retrieve bid status. Please try again later.',
+    'unauthorized_cancel' => 'You do not have permission to cancel this bid.',
+    'cancel_failed' => 'Unable to cancel the bid. Please try again later.',
 
     // UI Buttons
     'button' => [
-        'reserve' => 'Reserve',
-        'reserved' => 'Reserved',
-        'make_offer' => 'Make an offer'
+        'reserve' => 'Make a bid',
+        'reserved' => 'Bid placed',
+        'make_offer' => 'Make a bid'
     ],
 
     // Badges
     'badge' => [
-        'highest' => 'Highest Priority',
-        'superseded' => 'Lower Priority',
-        'has_offers' => 'Reserved'
+        'highest' => 'Highest Bid',
+        'superseded' => 'Outbid',
+        'has_offers' => 'With Bids'
     ],
 
-    // Reservation details
+    // Bid details
     'already_reserved' => [
-        'title' => 'Already Reserved',
-        'text' => 'You already have a reservation for this EGI.',
-        'details' => 'Details of your reservation:',
+        'title' => 'Already Bid',
+        'text' => 'You already have an active bid for this EGI.',
+        'details' => 'Details of your bid:',
         'type' => 'Type',
         'amount' => 'Amount',
         'status' => 'Status',
         'view_certificate' => 'View Certificate',
         'ok' => 'OK',
-        'new_reservation' => 'New Reservation',
-        'confirm_new' => 'Do you want to make a new reservation?'
+        'new_reservation' => 'New Bid',
+        'confirm_new' => 'Do you want to place a new bid?'
     ],
 
-    // Reservation history
+    // Bid history
     'history' => [
-        'title' => 'Reservation History',
-        'entries' => 'Reservation Entries',
+        'title' => 'Bid History',
+        'entries' => 'Bid Entries',
         'view_certificate' => 'View Certificate',
-        'no_entries' => 'No reservations found.',
-        'be_first' => 'Be the first to reserve this EGI!'
+        'no_entries' => 'No bids found.',
+        'be_first' => 'Be the first to bid on this EGI!'
     ],
 
     // Error messages
@@ -67,16 +67,16 @@ return [
         'button_click_error' => 'An error occurred while processing your request.',
         'form_validation' => 'Please check the entered data and try again.',
         'api_error' => 'A communication error occurred with the server.',
-        'unauthorized' => 'You must connect your wallet or sign in to make a reservation.'
+        'unauthorized' => 'You must connect your wallet or sign in to make a bid.'
     ],
 
     // Form
     'form' => [
-        'title' => 'Reserve this EGI',
-        'offer_amount_label' => 'Your Offer (EUR)',
+        'title' => 'Place a bid for this EGI',
+        'offer_amount_label' => 'Your Bid (EUR)',
         'offer_amount_placeholder' => 'Enter amount in EUR',
         'algo_equivalent' => 'Approximately :amount ALGO',
-        'terms_accepted' => 'I accept the terms and conditions for EGI reservations',
+        'terms_accepted' => 'I accept the terms and conditions for EGI bidding',
         'contact_info' => 'Additional Contact Information (Optional)',
         'submit_button' => 'Place Reservation',
         'cancel_button' => 'Cancel'

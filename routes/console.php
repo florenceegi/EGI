@@ -19,8 +19,8 @@ Artisan::command('inspire', function () {
 Artisan::command('notifications:summary', function () {
     $pendingCount = CustomDatabaseNotification::where('outcome', 'pending')->count();
     $expiringSoon = CustomDatabaseNotification::where('outcome', 'pending')
-                                ->where('created_at', '<', Carbon::now()->subHours(config('app.notifications.expiration_hours', 72) - 5))
-                                ->count();
+        ->where('created_at', '<', Carbon::now()->subHours(config('app.notifications.expiration_hours', 72) - 5))
+        ->count();
 
     $this->info("📌 Notifiche in sospeso: {$pendingCount}");
     $this->info("⏳ Notifiche che scadranno nelle prossime 5 ore: {$expiringSoon}");
@@ -31,10 +31,10 @@ Artisan::command('notifications:summary', function () {
 Schedule::call(function () {
     app()->make(CheckAndSetExpired::class)->checkAndSetExpired();
 })
-->name('check-and-set-expired')
-->everyMinute()
-->withoutOverlapping()
-->onOneServer();
+    ->name('check-and-set-expired')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();
 
 ### 📌 3️⃣ JOB AUTOMATICO: NOTIFICHE SCADUTE ###
 Schedule::command('reservations:process-rankings')
@@ -42,3 +42,15 @@ Schedule::command('reservations:process-rankings')
     ->withoutOverlapping()
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/rankings.log'));
+
+### 📌 4️⃣ JOB AUTOMATICO: EGI ORACLE POLLING ###
+// Polling Oracle per SmartContract EGI Living (ogni 5 minuti)
+Schedule::command('oracle:poll')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->when(function () {
+        // Attiva solo se il feature flag è abilitato
+        return config('egi_living.feature_flags.oracle_polling_enabled', false);
+    })
+    ->appendOutputTo(storage_path('logs/oracle.log'));

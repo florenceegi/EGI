@@ -716,9 +716,10 @@ export class ReservationFormModal {
                     // 🎯 PROVA A TROVARE IL BOTTONE CON METODI ALTERNATIVI
                     const allButtons = egiCard.querySelectorAll('button');
                     const buttonByText = Array.from(allButtons).find(btn =>
-                        btn.textContent?.includes('Prenota') ||
+                        btn.textContent?.includes(appTranslate('reservation.button.reserve')) ||
                         btn.textContent?.includes('Reserve') ||
-                        btn.innerHTML.includes('Prenota')
+                        btn.textContent?.includes('Bid') ||
+                        btn.innerHTML.includes(appTranslate('reservation.button.reserve'))
                     );
 
                     if (buttonByText) {
@@ -762,7 +763,7 @@ export class ReservationFormModal {
                         </div>
                         <div class="flex-1 min-w-0">
                             <span class="text-xs font-medium text-gray-300">
-                                1 Prenotazione
+                                1 ${appTranslate('reservation.badge.reservation_singular')}
                             </span>
                         </div>
                     `;
@@ -783,7 +784,8 @@ export class ReservationFormModal {
                     if (existingSection && existingSection instanceof HTMLElement) {
                         const currentCount = existingSection.textContent?.match(/(\d+)/)?.[1] || '0';
                         const newCount = parseInt(currentCount) + 1;
-                        existingSection.textContent = `${newCount} ${newCount === 1 ? 'Prenotazione' : 'Prenotazioni'}`;
+                        const labelKey = newCount === 1 ? 'reservation.badge.reservation_singular' : 'reservation.badge.reservation_plural';
+                        existingSection.textContent = `${newCount} ${appTranslate(labelKey)}`;
 
                         // Evidenziazione visiva
                         existingSection.style.backgroundColor = '#dcfce7';

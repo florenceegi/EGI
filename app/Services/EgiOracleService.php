@@ -310,3 +310,4 @@ class EgiOracleService
         return $this->processTrigger($smartContract);
     }
 }
+
