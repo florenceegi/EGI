@@ -120,6 +120,18 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/egi/{id}/mint-direct', [App\Http\Controllers\MintController::class, 'processDirectMint'])
         ->name('egi.mint-direct.process');
+
+    // Dual Architecture: Auto-Mint & Pre-Mint actions
+    Route::prefix('egi/{egi}/dual-arch')->name('egi.dual-arch.')->group(function () {
+        Route::post('/auto-mint/enable', [App\Http\Controllers\EgiDualArchitectureController::class, 'enableAutoMint'])
+            ->name('auto-mint.enable');
+        Route::post('/auto-mint/disable', [App\Http\Controllers\EgiDualArchitectureController::class, 'disableAutoMint'])
+            ->name('auto-mint.disable');
+        Route::post('/pre-mint/request-analysis', [App\Http\Controllers\EgiDualArchitectureController::class, 'requestPreMintAnalysis'])
+            ->name('pre-mint.request-analysis');
+        Route::post('/pre-mint/promote', [App\Http\Controllers\EgiDualArchitectureController::class, 'promoteToOnChain'])
+            ->name('pre-mint.promote');
+    });
 });
 
 // Aggiungi questa route in web.php per debug

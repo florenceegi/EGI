@@ -12,6 +12,7 @@
 
 import { ReservationModalUI } from './ReservationModalUI';
 import type { ReservationResponse } from '../../../types/reservationTypes';
+import { appTranslate } from '../../../config/appConfig';
 
 export interface StructureChanges {
     is_first_reservation: boolean;
@@ -340,12 +341,12 @@ export class EgiDisplayUpdater {
     }
 
     /**
-     * Update button from "Prenota" to "Rilancia"
+     * Update button from "Reserve/Prenota" to "Raise/Rilancia"
      *
      * @private
      */
     private static updateButton(egiCard: HTMLElement): void {
-        console.log('🔄 Aggiornamento bottone prenotazione...');
+        console.log('🔄 Aggiornamento bottone offerta...');
 
         let reserveButton = egiCard.querySelector('.reserve-button') as HTMLElement;
 
@@ -353,9 +354,10 @@ export class EgiDisplayUpdater {
         if (!reserveButton) {
             const allButtons = egiCard.querySelectorAll('button');
             reserveButton = Array.from(allButtons).find(btn =>
-                btn.textContent?.includes('Prenota') ||
+                btn.textContent?.includes(appTranslate('reservation.button.reserve')) ||
                 btn.textContent?.includes('Reserve') ||
-                btn.innerHTML.includes('Prenota')
+                btn.textContent?.includes('Bid') ||
+                btn.innerHTML.includes(appTranslate('reservation.button.reserve'))
             ) as HTMLElement;
         }
 
@@ -365,7 +367,7 @@ export class EgiDisplayUpdater {
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                Rilancia
+                ${appTranslate('reservation.button.raise')}
             `;
 
             // Cambia colori (da purple a amber/orange)
@@ -373,7 +375,7 @@ export class EgiDisplayUpdater {
                 .replace(/bg-gradient-to-r from-purple-500 to-purple-600/, 'bg-gradient-to-r from-amber-500 to-orange-600')
                 .replace(/hover:from-purple-600 hover:to-purple-700/, 'hover:from-amber-600 hover:to-orange-700');
 
-            console.log('✅ BOTTONE AGGIORNATO: "Prenota" → "Rilancia"');
+            console.log('✅ BOTTONE AGGIORNATO: "Reserve" → "Raise"');
         }
     }
 
@@ -383,7 +385,7 @@ export class EgiDisplayUpdater {
      * @private
      */
     private static updateReservationCount(egiCard: HTMLElement): void {
-        console.log('📊 Aggiornamento conteggio prenotazioni...');
+        console.log('📊 Aggiornamento conteggio offerte...');
 
         const existingSection = egiCard.querySelector('[data-reservation-count] .text-gray-300');
 
@@ -391,7 +393,8 @@ export class EgiDisplayUpdater {
             // Aggiorna conteggio esistente
             const currentCount = existingSection.textContent?.match(/(\d+)/)?.[1] || '0';
             const newCount = parseInt(currentCount) + 1;
-            existingSection.textContent = `${newCount} ${newCount === 1 ? 'Prenotazione' : 'Prenotazioni'}`;
+            const labelKey = newCount === 1 ? 'reservation.badge.reservation_singular' : 'reservation.badge.reservation_plural';
+            existingSection.textContent = `${newCount} ${appTranslate(labelKey)}`;
 
             // Evidenziazione visiva
             existingSection.style.backgroundColor = '#dcfce7';
@@ -434,7 +437,7 @@ export class EgiDisplayUpdater {
                 </div>
                 <div class="flex-1 min-w-0">
                     <span class="text-xs font-medium text-gray-300">
-                        1 Prenotazione
+                        1 ${appTranslate('reservation.badge.reservation_singular')}
                     </span>
                 </div>
             `;
