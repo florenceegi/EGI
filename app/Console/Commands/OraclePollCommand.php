@@ -103,3 +103,4 @@ class OraclePollCommand extends Command
         }
     }
 }
+

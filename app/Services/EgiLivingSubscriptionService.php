@@ -356,3 +356,4 @@ class EgiLivingSubscriptionService
         return config('egi_living.subscription_plans');
     }
 }
+
