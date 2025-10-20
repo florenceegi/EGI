@@ -233,3 +233,4 @@ Tutti i componenti sono responsive:
 ---
 
 **FlorenceEGI - Dove l'arte diventa valore virtuoso**
+
