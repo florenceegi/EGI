@@ -10,56 +10,56 @@
 
 return [
     // Messaggi di successo
-    'success' => 'La tua prenotazione è stata effettuata con successo! Il certificato è stato generato.',
-    'cancel_success' => 'La tua prenotazione è stata annullata con successo.',
-    'success_title' => 'Prenotazione effettuata!',
+    'success' => 'La tua offerta è stata effettuata con successo! Il certificato è stato generato.',
+    'cancel_success' => 'La tua offerta è stata annullata con successo.',
+    'success_title' => 'Offerta effettuata!',
     'view_certificate' => 'Visualizza Certificato',
     'close' => 'Chiudi',
 
     // Messaggi di errore
-    'unauthorized' => 'Devi collegare il tuo wallet o effettuare l\'accesso per prenotare.',
+    'unauthorized' => 'Devi collegare il tuo wallet o effettuare l\'accesso per fare un\'offerta.',
     'validation_failed' => 'Controlla i dati inseriti e riprova.',
-    'auth_required' => 'È richiesta l\'autenticazione per visualizzare le tue prenotazioni.',
-    'list_failed' => 'Impossibile recuperare le tue prenotazioni. Riprova più tardi.',
-    'status_failed' => 'Impossibile recuperare lo stato della prenotazione. Riprova più tardi.',
-    'unauthorized_cancel' => 'Non hai il permesso per annullare questa prenotazione.',
-    'cancel_failed' => 'Impossibile annullare la prenotazione. Riprova più tardi.',
+    'auth_required' => 'È richiesta l\'autenticazione per visualizzare le tue offerte.',
+    'list_failed' => 'Impossibile recuperare le tue offerte. Riprova più tardi.',
+    'status_failed' => 'Impossibile recuperare lo stato dell\'offerta. Riprova più tardi.',
+    'unauthorized_cancel' => 'Non hai il permesso per annullare questa offerta.',
+    'cancel_failed' => 'Impossibile annullare l\'offerta. Riprova più tardi.',
 
     // Pulsanti UI
     'button' => [
-        'reserve' => 'Prenota',
-        'reserved' => 'Prenotato',
+        'reserve' => 'Fai un\'offerta',
+        'reserved' => 'Offerta fatta',
         'make_offer' => 'Fai un\'offerta'
     ],
 
     // Badge
     'badge' => [
-        'highest' => 'Massima Priorità',
-        'superseded' => 'Priorità Inferiore',
-        'has_offers' => 'Prenotato'
+        'highest' => 'Offerta Più Alta',
+        'superseded' => 'Offerta Superata',
+        'has_offers' => 'Con Offerte'
     ],
 
-    // Dettagli prenotazione
+    // Dettagli offerta
     'already_reserved' => [
-        'title' => 'Già Prenotato',
-        'text' => 'Hai già una prenotazione per questo EGI.',
-        'details' => 'Dettagli della tua prenotazione:',
+        'title' => 'Hai già fatto un\'offerta',
+        'text' => 'Hai già un\'offerta attiva per questo EGI.',
+        'details' => 'Dettagli della tua offerta:',
         'type' => 'Tipo',
         'amount' => 'Importo',
         'status' => 'Stato',
         'view_certificate' => 'Visualizza Certificato',
         'ok' => 'OK',
-        'new_reservation' => 'Nuova Prenotazione',
-        'confirm_new' => 'Vuoi effettuare una nuova prenotazione?'
+        'new_reservation' => 'Nuova Offerta',
+        'confirm_new' => 'Vuoi effettuare una nuova offerta?'
     ],
 
-    // Storico prenotazioni
+    // Storico offerte
     'history' => [
-        'title' => 'Storico Prenotazioni',
-        'entries' => 'Voci di Prenotazione',
+        'title' => 'Storico Offerte',
+        'entries' => 'Voci di Offerta',
         'view_certificate' => 'Visualizza Certificato',
-        'no_entries' => 'Nessuna prenotazione trovata.',
-        'be_first' => 'Sii il primo a prenotare questo EGI!'
+        'no_entries' => 'Nessuna offerta trovata.',
+        'be_first' => 'Sii il primo a fare un\'offerta per questo EGI!'
     ],
 
     // Messaggi di errore
@@ -67,34 +67,34 @@ return [
         'button_click_error' => 'Si è verificato un errore nell\'elaborazione della tua richiesta.',
         'form_validation' => 'Controlla i dati inseriti e riprova.',
         'api_error' => 'Si è verificato un errore nella comunicazione con il server.',
-        'unauthorized' => 'Devi collegare il tuo wallet o effettuare l\'accesso per prenotare.'
+        'unauthorized' => 'Devi collegare il tuo wallet o effettuare l\'accesso per fare un\'offerta.'
     ],
 
     // Form
     'form' => [
-        'title' => 'Prenota questo EGI',
+        'title' => 'Fai un\'offerta per questo EGI',
         'offer_amount_label' => 'La tua Offerta (EUR)',
         'offer_amount_placeholder' => 'Inserisci l\'importo in EUR',
         'algo_equivalent' => 'Circa :amount ALGO',
-        'terms_accepted' => 'Accetto i termini e le condizioni per la prenotazione degli EGI',
+        'terms_accepted' => 'Accetto i termini e le condizioni per le offerte sugli EGI',
         'contact_info' => 'Informazioni di Contatto Aggiuntive (Opzionale)',
-        'submit_button' => 'Effettua Prenotazione',
+        'submit_button' => 'Conferma Offerta',
         'cancel_button' => 'Annulla'
     ],
 
-    // Tipologia prenotazione
+    // Tipologia offerta
     'type' => [
-        'strong' => 'Prenotazione Forte',
-        'weak' => 'Prenotazione Debole'
+        'strong' => 'Offerta Identificata',
+        'weak' => 'Offerta Anonima'
     ],
 
     // Livelli di priorità
     'priority' => [
-        'highest' => 'Prenotazione Attiva',
+        'highest' => 'Offerta Attiva',
         'superseded' => 'Superata',
     ],
 
-    // Stato della prenotazione
+    // Stato dell'offerta
     'status' => [
         'active' => 'Attiva',
         'pending' => 'In attesa',

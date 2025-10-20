@@ -332,7 +332,4 @@ debug dual mode smart contract / ASA in egis.show
 
 implementare modifiche da prenotaizone ad asta nel processo di "offerta", si carica la voce 1 prenotaiozne al posto di un'offerta, si apre l aodal edelle prenotazioni a,drebbe rivsta come Offerta Asta, insomma rivedere tutta qusta parte
 
-test cn smart contract, a copilot far fare unit test
-
-l
-
+test cn smart contract, a copilot far fare unit test 
