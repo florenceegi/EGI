@@ -61,3 +61,4 @@
     <i class="fas {{ $style['icon'] }}"></i>
     <span class="font-semibold">{{ $style['label'] }}</span>
 </span>
+
