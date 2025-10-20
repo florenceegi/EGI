@@ -10,34 +10,61 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        // Columns already exist from previous partial migration, just need to:
-        // 1. Rename blockchain_algorand_id to egi_blockchain_id
-        // 2. Add foreign key
-        // 3. Add indexes
+        // Check if we need to rename blockchain_algorand_id to egi_blockchain_id
+        if (Schema::hasColumn('egi_reservation_certificates', 'blockchain_algorand_id')) {
+            // Rename column using raw SQL
+            DB::statement('ALTER TABLE egi_reservation_certificates
+                CHANGE COLUMN blockchain_algorand_id egi_blockchain_id BIGINT UNSIGNED NULL
+                COMMENT "Reference to blockchain record for mint certificates"');
+        } elseif (!Schema::hasColumn('egi_reservation_certificates', 'egi_blockchain_id')) {
+            // Add egi_blockchain_id column if it doesn't exist
+            Schema::table('egi_reservation_certificates', function (Blueprint $table) {
+                $table->unsignedBigInteger('egi_blockchain_id')
+                    ->nullable()
+                    ->after('egi_id')
+                    ->comment('Reference to blockchain record for mint certificates');
+            });
+        }
 
-        // Step 1: Rename column using raw SQL
-        DB::statement('ALTER TABLE egi_reservation_certificates
-            CHANGE COLUMN blockchain_algorand_id egi_blockchain_id BIGINT UNSIGNED NULL
-            COMMENT "Reference to blockchain record for mint certificates"');
+        // Add certificate_type column if not exists
+        if (!Schema::hasColumn('egi_reservation_certificates', 'certificate_type')) {
+            Schema::table('egi_reservation_certificates', function (Blueprint $table) {
+                $table->enum('certificate_type', ['reservation', 'mint'])
+                    ->default('reservation')
+                    ->after('egi_id')
+                    ->comment('Type of certificate: reservation or mint');
+            });
+        }
 
-        // Step 2: Add certificate_type column first
+        // Add foreign key and indexes if not exist
         Schema::table('egi_reservation_certificates', function (Blueprint $table) {
-            $table->enum('certificate_type', ['reservation', 'mint'])
-                ->default('reservation')
-                ->after('egi_id')
-                ->comment('Type of certificate: reservation or mint');
-        });
+            // Check if foreign key exists
+            $foreignKeys = DB::select("
+                SELECT CONSTRAINT_NAME 
+                FROM information_schema.KEY_COLUMN_USAGE 
+                WHERE TABLE_SCHEMA = DATABASE() 
+                AND TABLE_NAME = 'egi_reservation_certificates' 
+                AND COLUMN_NAME = 'egi_blockchain_id' 
+                AND REFERENCED_TABLE_NAME IS NOT NULL
+            ");
+            
+            if (empty($foreignKeys)) {
+                $table->foreign('egi_blockchain_id')
+                    ->references('id')
+                    ->on('egi_blockchain')
+                    ->onDelete('cascade');
+            }
 
-        // Step 3: Add foreign key and indexes
-        Schema::table('egi_reservation_certificates', function (Blueprint $table) {
-            $table->foreign('egi_blockchain_id')
-                ->references('id')
-                ->on('egi_blockchain')
-                ->onDelete('cascade');
+            // Add indexes if they don't exist
+            $indexes = DB::select("SHOW INDEX FROM egi_reservation_certificates WHERE Key_name = 'egi_reservation_certificates_certificate_type_index'");
+            if (empty($indexes)) {
+                $table->index('certificate_type');
+            }
 
-            // Add indexes for performance
-            $table->index('certificate_type');
-            $table->index(['egi_id', 'certificate_type']);
+            $compositeIndexes = DB::select("SHOW INDEX FROM egi_reservation_certificates WHERE Key_name = 'egi_reservation_certificates_egi_id_certificate_type_index'");
+            if (empty($compositeIndexes)) {
+                $table->index(['egi_id', 'certificate_type']);
+            }
         });
     }
 
@@ -46,19 +73,42 @@ return new class extends Migration {
      */
     public function down(): void {
         Schema::table('egi_reservation_certificates', function (Blueprint $table) {
-            // Drop foreign key first
-            $table->dropForeign(['egi_blockchain_id']);
+            // Check and drop foreign key if exists
+            $foreignKeys = DB::select("
+                SELECT CONSTRAINT_NAME 
+                FROM information_schema.KEY_COLUMN_USAGE 
+                WHERE TABLE_SCHEMA = DATABASE() 
+                AND TABLE_NAME = 'egi_reservation_certificates' 
+                AND COLUMN_NAME = 'egi_blockchain_id' 
+                AND REFERENCED_TABLE_NAME IS NOT NULL
+            ");
+            
+            if (!empty($foreignKeys)) {
+                $constraintName = $foreignKeys[0]->CONSTRAINT_NAME;
+                DB::statement("ALTER TABLE egi_reservation_certificates DROP FOREIGN KEY `{$constraintName}`");
+            }
 
-            // Drop indexes
-            $table->dropIndex(['egi_id', 'certificate_type']);
-            $table->dropIndex(['certificate_type']);
+            // Drop indexes if they exist
+            $indexes = DB::select("SHOW INDEX FROM egi_reservation_certificates WHERE Key_name = 'egi_reservation_certificates_egi_id_certificate_type_index'");
+            if (!empty($indexes)) {
+                $table->dropIndex(['egi_id', 'certificate_type']);
+            }
 
-            // Drop certificate_type column
-            $table->dropColumn('certificate_type');
+            $singleIndexes = DB::select("SHOW INDEX FROM egi_reservation_certificates WHERE Key_name = 'egi_reservation_certificates_certificate_type_index'");
+            if (!empty($singleIndexes)) {
+                $table->dropIndex(['certificate_type']);
+            }
+
+            // Drop certificate_type column if exists
+            if (Schema::hasColumn('egi_reservation_certificates', 'certificate_type')) {
+                $table->dropColumn('certificate_type');
+            }
         });
 
-        // Rename column back using raw SQL
-        DB::statement('ALTER TABLE egi_reservation_certificates
-            CHANGE COLUMN egi_blockchain_id blockchain_algorand_id BIGINT UNSIGNED NULL');
+        // Rename column back if needed
+        if (Schema::hasColumn('egi_reservation_certificates', 'egi_blockchain_id')) {
+            DB::statement('ALTER TABLE egi_reservation_certificates
+                CHANGE COLUMN egi_blockchain_id blockchain_algorand_id BIGINT UNSIGNED NULL');
+        }
     }
 };
