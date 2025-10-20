@@ -9,6 +9,8 @@
  * @author GitHub Copilot for Fabio Cherici
  */
 
+import { appTranslate } from '../../../config/appConfig';
+
 // Local type definitions
 interface ModalConfig {
     title: string;
@@ -202,11 +204,10 @@ export class ReservationModalUI {
                             </svg>
                         </div>
 
-                        <h2 class="text-2xl font-bold text-gray-900 mb-2">🎉 Prenotazione Confermata!</h2>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">🎉 ${appTranslate('reservation.success_title')}</h2>
 
                         <p class="text-gray-600 mb-6">
-                            La tua prenotazione è stata registrata con successo.
-                            Riceverai una notifica quando la criptovaluta sarà disponibile per il lancio.
+                            ${appTranslate('reservation.success_message')}
                         </p>
 
                         <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
@@ -218,8 +219,7 @@ export class ReservationModalUI {
                                 </div>
                                 <div class="ml-3">
                                     <p class="text-sm text-blue-700">
-                                        <strong>Importante:</strong> La prenotazione non è ancora definitiva.
-                                        Potrai completare l'acquisto quando la criptovaluta sarà lanciata.
+                                        <strong>${appTranslate('reservation.important_label')}</strong> ${appTranslate('reservation.important_note')}
                                     </p>
                                 </div>
                             </div>
