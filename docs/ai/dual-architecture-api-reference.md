@@ -19,18 +19,20 @@
 Minta EGI basandosi sul tipo (ASA o SmartContract). Factory pattern.
 
 **Parameters:**
-- `$egi` - Istanza Egi model
-- `$user` - User che esegue il mint
-- `$options` - Array opzionale con:
-  - `trigger_interval` (int) - Per SmartContract
-  - `metadata_hash` (string) - Hash IPFS custom
-  - `metadata` (array) - Metadati aggiuntivi
+
+-   `$egi` - Istanza Egi model
+-   `$user` - User che esegue il mint
+-   `$options` - Array opzionale con:
+    -   `trigger_interval` (int) - Per SmartContract
+    -   `metadata_hash` (string) - Hash IPFS custom
+    -   `metadata` (array) - Metadati aggiuntivi
 
 **Returns:** `EgiBlockchain|EgiSmartContract`
 
 **Throws:** `\Exception`
 
 **Example:**
+
 ```php
 $orchestrator = app(EgiMintingOrchestrator::class);
 $result = $orchestrator->mint($egi, $user, [
@@ -52,17 +54,19 @@ $result = $orchestrator->mint($egi, $user, [
 Deploy SmartContract EGI Vivente su Algorand.
 
 **Parameters:**
-- `$egi` - EGI da rendere "Living"
-- `$user` - Creator/Owner
-- `$options`:
-  - `trigger_interval` (int) - Secondi tra AI triggers
-  - `metadata_hash` (string) - IPFS hash iniziale
+
+-   `$egi` - EGI da rendere "Living"
+-   `$user` - Creator/Owner
+-   `$options`:
+    -   `trigger_interval` (int) - Secondi tra AI triggers
+    -   `metadata_hash` (string) - IPFS hash iniziale
 
 **Returns:** `EgiSmartContract`
 
 **Throws:** `\Exception`
 
 **Example:**
+
 ```php
 $service = app(EgiSmartContractService::class);
 $sc = $service->deploySmartContract($egi, $user, [
@@ -87,12 +91,14 @@ echo "Deployed: {$sc->app_id}";
 Crea EGI virtuale in modalità Pre-Mint.
 
 **Parameters:**
-- `$data` - Dati EGI (title, description, collection_id, etc.)
-- `$user` - Creator
+
+-   `$data` - Dati EGI (title, description, collection_id, etc.)
+-   `$user` - Creator
 
 **Returns:** `Egi` (con `egi_type = 'PreMint'`)
 
 **Example:**
+
 ```php
 $service = app(PreMintEgiService::class);
 $egi = $service->createPreMintEgi([
@@ -112,13 +118,15 @@ $egi = $service->createPreMintEgi([
 Promuove Pre-Mint EGI a ASA o SmartContract.
 
 **Parameters:**
-- `$egi` - EGI Pre-Mint
-- `$targetType` - `EgiType::ASA` o `EgiType::SMART_CONTRACT`
-- `$user` - User che esegue promozione
+
+-   `$egi` - EGI Pre-Mint
+-   `$targetType` - `EgiType::ASA` o `EgiType::SMART_CONTRACT`
+-   `$user` - User che esegue promozione
 
 **Returns:** `Egi` (aggiornato)
 
 **Example:**
+
 ```php
 use App\Enums\EgiType;
 
@@ -135,12 +143,14 @@ $egi = $service->promoteToBlockchain($egi, EgiType::SMART_CONTRACT, $user);
 Richiede analisi AI N.A.T.A.N per Pre-Mint EGI.
 
 **Parameters:**
-- `$egi` - Pre-Mint EGI
-- `$analysisType` - `'description'` | `'traits'` | `'promotion'`
+
+-   `$egi` - Pre-Mint EGI
+-   `$analysisType` - `'description'` | `'traits'` | `'promotion'`
 
 **Returns:** `array` - Risultato analisi AI
 
 **Example:**
+
 ```php
 $result = $service->requestAIAnalysis($egi, 'description');
 // ['description' => '...', 'keywords' => [...], 'confidence' => 0.85]
@@ -161,6 +171,7 @@ Polling automatico SmartContracts pronti per AI trigger.
 **Returns:** `array` - Status e risultati
 
 **Example (Console Command):**
+
 ```bash
 php artisan oracle:poll
 ```
@@ -177,6 +188,7 @@ Processa singolo trigger AI per SmartContract.
 **Returns:** `array`
 
 **Example:**
+
 ```php
 $oracle = app(EgiOracleService::class);
 $result = $oracle->processTrigger($smartContract);
@@ -194,14 +206,16 @@ $result = $oracle->processTrigger($smartContract);
 Crea abbonamento EGI Vivente (pending payment).
 
 **Parameters:**
-- `$egi` - EGI da attivare
-- `$user` - Acquirente
-- `$planType` - `'one_time'` | `'monthly'` | `'yearly'` | `'lifetime'`
-- `$paymentMethod` - `'stripe'` | `'paypal'` | `'bank_transfer'`
+
+-   `$egi` - EGI da attivare
+-   `$user` - Acquirente
+-   `$planType` - `'one_time'` | `'monthly'` | `'yearly'` | `'lifetime'`
+-   `$paymentMethod` - `'stripe'` | `'paypal'` | `'bank_transfer'`
 
 **Returns:** `EgiLivingSubscription`
 
 **Example:**
+
 ```php
 $service = app(EgiLivingSubscriptionService::class);
 $subscription = $service->createSubscription($egi, $user, 'one_time', 'stripe');
@@ -217,12 +231,14 @@ $subscription = $service->createSubscription($egi, $user, 'one_time', 'stripe');
 Completa pagamento e attiva subscription (chiamato da PSP webhook).
 
 **Parameters:**
-- `$subscription` - Subscription pending
-- `$paymentReference` - TX ID da PSP
+
+-   `$subscription` - Subscription pending
+-   `$paymentReference` - TX ID da PSP
 
 **Returns:** `EgiLivingSubscription` (attivato)
 
 **Example:**
+
 ```php
 $subscription = $service->completePayment($subscription, 'stripe_tx_abc123');
 // Status: active
@@ -238,6 +254,7 @@ $subscription = $service->completePayment($subscription, 'stripe_tx_abc123');
 Cancella abbonamento attivo.
 
 **Example:**
+
 ```php
 $service->cancelSubscription($subscription, 'Non serve più', $user);
 // Status: cancelled
@@ -255,6 +272,7 @@ Job automatico per expirare abbonamenti scaduti.
 **Returns:** `int` - Numero subscription expirate
 
 **Example (Scheduled):**
+
 ```php
 // In Kernel.php
 $schedule->call(function() {
@@ -269,6 +287,7 @@ $schedule->call(function() {
 ### Egi Model
 
 **New Relations:**
+
 ```php
 $egi->smartContract()       // HasOne EgiSmartContract
 $egi->livingSubscription()  // HasOne EgiLivingSubscription (active)
@@ -276,6 +295,7 @@ $egi->livingSubscriptions() // HasMany EgiLivingSubscription (all)
 ```
 
 **New Properties:**
+
 ```php
 $egi->egi_type              // 'ASA' | 'SmartContract' | 'PreMint'
 $egi->pre_mint_mode         // bool
@@ -288,12 +308,14 @@ $egi->smart_contract_app_id // string (Algorand App ID)
 ### EgiSmartContract Model
 
 **Scopes:**
+
 ```php
 EgiSmartContract::readyForTrigger()->get()  // SC pronti per AI
 EgiSmartContract::active()->get()           // SC attivi
 ```
 
 **Methods:**
+
 ```php
 $sc->isActive()                 // bool
 $sc->isTriggerReady()           // bool
@@ -306,6 +328,7 @@ $sc->getAISuccessRate()         // float (0-100)
 ### EgiLivingSubscription Model
 
 **Scopes:**
+
 ```php
 EgiLivingSubscription::active()->get()              // Subscription attive
 EgiLivingSubscription::expired()->get()             // Scadute
@@ -313,6 +336,7 @@ EgiLivingSubscription::expiringSoon(7)->get()       // In scadenza entro 7 giorn
 ```
 
 **Methods:**
+
 ```php
 $sub->isActive()            // bool
 $sub->isExpired()           // bool
@@ -328,6 +352,7 @@ $sub->cancel(?string $reason) // void
 ## 🎨 Enum Reference
 
 ### EgiType
+
 ```php
 use App\Enums\EgiType;
 
@@ -344,6 +369,7 @@ $type->badgeClass()      // Tailwind classes
 ```
 
 ### EgiLivingStatus
+
 ```php
 use App\Enums\EgiLivingStatus;
 
@@ -359,6 +385,7 @@ $status->canCancel()    // bool
 ```
 
 ### SmartContractStatus
+
 ```php
 use App\Enums\SmartContractStatus;
 
@@ -377,30 +404,30 @@ $status->canResume()         // bool
 ## 🔐 Security & GDPR
 
 Tutti i metodi implementano:
-- ✅ **UltraLogManager** per logging
-- ✅ **ErrorManager** per error handling
-- ✅ **AuditLogService** per GDPR trail
-- ✅ **DB Transactions** per atomicità
-- ✅ **ConsentService** check dove necessario
+
+-   ✅ **UltraLogManager** per logging
+-   ✅ **ErrorManager** per error handling
+-   ✅ **AuditLogService** per GDPR trail
+-   ✅ **DB Transactions** per atomicità
+-   ✅ **ConsentService** check dove necessario
 
 ---
 
 ## 📞 Error Codes Reference
 
-| Code | Type | Blocking | Notify |
-|------|------|----------|--------|
-| SMART_CONTRACT_DEPLOY_FAILED | error | semi | email+slack |
-| EGI_MINTING_ORCHESTRATOR_FAILED | error | blocking | email+slack |
-| PRE_MINT_CREATE_FAILED | error | semi | none |
-| PRE_MINT_PROMOTE_FAILED | error | semi | none |
-| ORACLE_POLL_FAILED | critical | not | email+slack |
-| LIVING_SUBSCRIPTION_CREATE_FAILED | error | semi | none |
-| LIVING_SUBSCRIPTION_PAYMENT_FAILED | error | semi | email+slack |
-| LIVING_SUBSCRIPTION_CANCEL_FAILED | error | not | none |
+| Code                               | Type     | Blocking | Notify      |
+| ---------------------------------- | -------- | -------- | ----------- |
+| SMART_CONTRACT_DEPLOY_FAILED       | error    | semi     | email+slack |
+| EGI_MINTING_ORCHESTRATOR_FAILED    | error    | blocking | email+slack |
+| PRE_MINT_CREATE_FAILED             | error    | semi     | none        |
+| PRE_MINT_PROMOTE_FAILED            | error    | semi     | none        |
+| ORACLE_POLL_FAILED                 | critical | not      | email+slack |
+| LIVING_SUBSCRIPTION_CREATE_FAILED  | error    | semi     | none        |
+| LIVING_SUBSCRIPTION_PAYMENT_FAILED | error    | semi     | email+slack |
+| LIVING_SUBSCRIPTION_CANCEL_FAILED  | error    | not      | none        |
 
 Tutti mappati in `config/error-manager.php` con traduzioni IT.
 
 ---
 
 **FlorenceEGI - Dove l'arte diventa valore virtuoso**
-
