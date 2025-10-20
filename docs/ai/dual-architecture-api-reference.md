@@ -431,3 +431,4 @@ Tutti mappati in `config/error-manager.php` con traduzioni IT.
 ---
 
 **FlorenceEGI - Dove l'arte diventa valore virtuoso**
+
