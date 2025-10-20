@@ -46,9 +46,22 @@ return new class extends Migration {
                 WHERE pd.egi_id IS NULL
             ');
 
-            // Make egi_id NOT NULL after population
+            // To change NOT NULL with foreign key, we need to drop and recreate
+            Schema::table('payment_distributions', function (Blueprint $table) {
+                // Drop foreign key constraint first
+                $table->dropForeign(['egi_id']);
+                $table->dropIndex(['idx_payment_dist_egi_source']);
+            });
+
+            // Change column to NOT NULL
             Schema::table('payment_distributions', function (Blueprint $table) {
                 $table->unsignedBigInteger('egi_id')->nullable(false)->change();
+            });
+
+            // Recreate foreign key and index
+            Schema::table('payment_distributions', function (Blueprint $table) {
+                $table->foreign('egi_id')->references('id')->on('egis')->onDelete('cascade');
+                $table->index(['egi_id', 'source_type'], 'idx_payment_dist_egi_source');
             });
         }
     }

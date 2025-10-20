@@ -52,7 +52,7 @@ return new class extends Migration {
             // Drop indexes
             $table->dropIndex(['egi_id', 'certificate_type']);
             $table->dropIndex(['certificate_type']);
-            
+
             // Drop certificate_type column
             $table->dropColumn('certificate_type');
         });
