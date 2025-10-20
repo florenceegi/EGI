@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @Oracode Migration: Add egi_id to payment_distributions
@@ -47,11 +48,30 @@ return new class extends Migration {
             ');
 
             // To change NOT NULL with foreign key, we need to drop and recreate
-            Schema::table('payment_distributions', function (Blueprint $table) {
-                // Drop foreign key constraint first
-                $table->dropForeign(['egi_id']);
-                $table->dropIndex(['idx_payment_dist_egi_source']);
-            });
+            // Check if foreign key exists before dropping
+            $foreignKeys = DB::select("
+                SELECT CONSTRAINT_NAME 
+                FROM information_schema.KEY_COLUMN_USAGE 
+                WHERE TABLE_SCHEMA = DATABASE() 
+                AND TABLE_NAME = 'payment_distributions' 
+                AND COLUMN_NAME = 'egi_id' 
+                AND REFERENCED_TABLE_NAME IS NOT NULL
+            ");
+            
+            if (!empty($foreignKeys)) {
+                $constraintName = $foreignKeys[0]->CONSTRAINT_NAME;
+                DB::statement("ALTER TABLE payment_distributions DROP FOREIGN KEY `{$constraintName}`");
+            }
+            
+            // Drop index if exists
+            $indexes = DB::select("
+                SHOW INDEX FROM payment_distributions 
+                WHERE Key_name = 'idx_payment_dist_egi_source'
+            ");
+            
+            if (!empty($indexes)) {
+                DB::statement("ALTER TABLE payment_distributions DROP INDEX idx_payment_dist_egi_source");
+            }
 
             // Change column to NOT NULL
             Schema::table('payment_distributions', function (Blueprint $table) {
