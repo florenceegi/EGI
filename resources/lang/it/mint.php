@@ -243,16 +243,16 @@ return [
     'post_mint' => [
         'generating_certificate' => 'Generazione certificato in corso...',
         'please_wait' => 'Attendere prego, stiamo preparando il tuo certificato di autenticità blockchain.',
-        
+
         // Owner messages (chi ha acquistato)
         'congratulations' => 'Complimenti! 🎉',
         'success_message' => 'Hai acquistato con successo questo EGI. Il certificato di proprietà è pronto.',
-        
+
         // Guest/Other users messages (chi visualizza ma non ha acquistato)
         'title_guest' => 'EGI Mintato sulla Blockchain',
         'message_guest' => 'Questo EGI è stato acquistato e registrato sulla blockchain Algorand.',
         'current_owner' => 'Proprietario attuale',
-        
+
         'partial_success_title' => 'Mint completato ⚠️',
         'partial_success_message' => 'L\'EGI è stato mintato con successo, ma la generazione del certificato ha riscontrato un problema.',
         'certificate_generation_failed' => 'Non è stato possibile generare automaticamente il certificato.',

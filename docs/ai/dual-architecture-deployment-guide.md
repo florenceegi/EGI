@@ -20,6 +20,7 @@
 ## 🔧 Prerequisiti
 
 ### Database
+
 ```bash
 # Run migrations
 php artisan migrate
@@ -32,6 +33,7 @@ php artisan tinker
 ```
 
 ### Python Environment (SmartContracts)
+
 ```bash
 cd algorand-smartcontracts
 python3 -m venv venv
@@ -43,7 +45,9 @@ python egi_living_v1.py
 ```
 
 ### Environment Variables
+
 Aggiungere a `.env`:
+
 ```env
 # Feature Flags (disabilita per default)
 FEATURE_SC_MINT=false
@@ -64,6 +68,7 @@ ALGORAND_NETWORK=testnet
 ## 🚀 Deployment Steps
 
 ### Step 1: Database Migration
+
 ```bash
 # Backup database first!
 php artisan backup:db
@@ -76,6 +81,7 @@ php artisan migrate:status
 ```
 
 ### Step 2: Clear Caches
+
 ```bash
 php artisan config:clear
 php artisan cache:clear
@@ -84,6 +90,7 @@ php artisan route:clear
 ```
 
 ### Step 3: Update Existing EGIs
+
 ```bash
 php artisan tinker
 
@@ -92,7 +99,9 @@ php artisan tinker
 ```
 
 ### Step 4: Register Console Commands
+
 Verificare che `OraclePollCommand` sia in `app/Console/Kernel.php`:
+
 ```php
 protected function schedule(Schedule $schedule)
 {
@@ -106,6 +115,7 @@ protected function schedule(Schedule $schedule)
 ```
 
 ### Step 5: Test SmartContract Deployment (Testnet)
+
 ```bash
 cd algorand-smartcontracts
 python deploy_helper.py
@@ -119,6 +129,7 @@ python deploy_helper.py
 ## 🎛️ Configurazione Feature Flags
 
 ### Fase 1: Solo ASA (Production Safe)
+
 ```env
 FEATURE_SC_MINT=false
 FEATURE_PRE_MINT=false
@@ -131,6 +142,7 @@ FEATURE_ORACLE=false
 ---
 
 ### Fase 2: Abilita Pre-Mint (Testing Interno)
+
 ```env
 FEATURE_PRE_MINT=true  # ← ABILITATO
 FEATURE_SC_MINT=false
@@ -139,13 +151,15 @@ FEATURE_ORACLE=false
 ```
 
 **Test:**
-- Crea EGI → verifica sia PreMint di default
-- Richiedi analisi AI → verifica mock funziona
-- Promuovi a ASA → verifica mint corretto
+
+-   Crea EGI → verifica sia PreMint di default
+-   Richiedi analisi AI → verifica mock funziona
+-   Promuovi a ASA → verifica mint corretto
 
 ---
 
 ### Fase 3: SmartContract Beta (Beta Testers)
+
 ```env
 FEATURE_PRE_MINT=true
 FEATURE_SC_MINT=true  # ← ABILITATO
@@ -154,13 +168,15 @@ FEATURE_ORACLE=false
 ```
 
 **Test:**
-- Deploy SmartContract su testnet
-- Verifica creazione record `egi_smart_contracts`
-- Check Algorand Explorer per App ID
+
+-   Deploy SmartContract su testnet
+-   Verifica creazione record `egi_smart_contracts`
+-   Check Algorand Explorer per App ID
 
 ---
 
 ### Fase 4: Full AI + Oracle (Production)
+
 ```env
 FEATURE_PRE_MINT=true
 FEATURE_SC_MINT=true
@@ -169,6 +185,7 @@ FEATURE_ORACLE=true      # ← ABILITATO
 ```
 
 **Setup Oracle:**
+
 ```bash
 # Registra comando scheduler
 php artisan schedule:work
@@ -185,89 +202,100 @@ tail -f storage/logs/laravel.log | grep ORACLE
 ## ✅ Testing Checklist
 
 ### Database
-- [ ] Tutte le migrations eseguite senza errori
-- [ ] Tabelle `egi_smart_contracts` e `egi_living_subscriptions` create
-- [ ] Foreign keys funzionanti
-- [ ] Rollback migrations OK
+
+-   [ ] Tutte le migrations eseguite senza errori
+-   [ ] Tabelle `egi_smart_contracts` e `egi_living_subscriptions` create
+-   [ ] Foreign keys funzionanti
+-   [ ] Rollback migrations OK
 
 ### Backend Services
-- [ ] `EgiMintingOrchestrator` routing corretto ASA/SmartContract
-- [ ] `PreMintEgiService` creazione EGI PreMint
-- [ ] `EgiSmartContractService` deploy (con mock OK)
-- [ ] `EgiOracleService` polling funzionante
-- [ ] `EgiLivingSubscriptionService` subscription flow
+
+-   [ ] `EgiMintingOrchestrator` routing corretto ASA/SmartContract
+-   [ ] `PreMintEgiService` creazione EGI PreMint
+-   [ ] `EgiSmartContractService` deploy (con mock OK)
+-   [ ] `EgiOracleService` polling funzionante
+-   [ ] `EgiLivingSubscriptionService` subscription flow
 
 ### Models
-- [ ] `Egi` relations `smartContract()` e `livingSubscription()` OK
-- [ ] `EgiSmartContract` model accessibile
-- [ ] `EgiLivingSubscription` model accessibile
-- [ ] Enum `EgiType`, `EgiLivingStatus`, `SmartContractStatus` OK
+
+-   [ ] `Egi` relations `smartContract()` e `livingSubscription()` OK
+-   [ ] `EgiSmartContract` model accessibile
+-   [ ] `EgiLivingSubscription` model accessibile
+-   [ ] Enum `EgiType`, `EgiLivingStatus`, `SmartContractStatus` OK
 
 ### UI Components
-- [ ] `x-egi-type-badge` rendering corretto
-- [ ] `x-egi-living-panel` solo per SmartContract
-- [ ] `x-egi-pre-mint-panel` solo per PreMint
-- [ ] `x-egi-auto-mint-panel` solo per creator
-- [ ] Brand Guidelines rispettate (colori, font, spacing)
+
+-   [ ] `x-egi-type-badge` rendering corretto
+-   [ ] `x-egi-living-panel` solo per SmartContract
+-   [ ] `x-egi-pre-mint-panel` solo per PreMint
+-   [ ] `x-egi-auto-mint-panel` solo per creator
+-   [ ] Brand Guidelines rispettate (colori, font, spacing)
 
 ### Error Handling (UEM)
-- [ ] Tutti gli 8 codici UEM mappati in `config/error-manager.php`
-- [ ] Traduzioni IT complete in `errors_2.php`
-- [ ] Test trigger errore → verifica messaggio user corretto
-- [ ] Notifiche Slack/Email per errori critici
+
+-   [ ] Tutti gli 8 codici UEM mappati in `config/error-manager.php`
+-   [ ] Traduzioni IT complete in `errors_2.php`
+-   [ ] Test trigger errore → verifica messaggio user corretto
+-   [ ] Notifiche Slack/Email per errori critici
 
 ---
 
 ## 📅 Rollout Plan
 
 ### Week 1: Internal Testing
-- **Goal:** Validare backend senza impatto utenti
-- **Actions:**
-  - Deploy con tutti i flags OFF
-  - Test manuale funzioni ASA esistenti
-  - Zero regressioni
-- **Success:** Sistema stabile, nessun bug ASA
+
+-   **Goal:** Validare backend senza impatto utenti
+-   **Actions:**
+    -   Deploy con tutti i flags OFF
+    -   Test manuale funzioni ASA esistenti
+    -   Zero regressioni
+-   **Success:** Sistema stabile, nessun bug ASA
 
 ### Week 2: Pre-Mint Testing
-- **Goal:** Testare creazione EGI virtuali
-- **Actions:**
-  - Abilita `FEATURE_PRE_MINT=true`
-  - Team interno crea EGI Pre-Mint
-  - Test promozione → ASA
-- **Success:** Pre-Mint → ASA funziona, UI OK
+
+-   **Goal:** Testare creazione EGI virtuali
+-   **Actions:**
+    -   Abilita `FEATURE_PRE_MINT=true`
+    -   Team interno crea EGI Pre-Mint
+    -   Test promozione → ASA
+-   **Success:** Pre-Mint → ASA funziona, UI OK
 
 ### Week 3: SmartContract Beta
-- **Goal:** Deploy SC su testnet con beta users
-- **Actions:**
-  - Abilita `FEATURE_SC_MINT=true`
-  - 5-10 beta tester selezionati
-  - Deploy SC reali su Algorand testnet
-  - Monitor Algorand Explorer
-- **Success:** SC deployati, visibili on-chain, UI corretta
+
+-   **Goal:** Deploy SC su testnet con beta users
+-   **Actions:**
+    -   Abilita `FEATURE_SC_MINT=true`
+    -   5-10 beta tester selezionati
+    -   Deploy SC reali su Algorand testnet
+    -   Monitor Algorand Explorer
+-   **Success:** SC deployati, visibili on-chain, UI corretta
 
 ### Week 4: Oracle + AI Integration
-- **Goal:** Attivare analisi AI automatiche
-- **Actions:**
-  - Integra N.A.T.A.N API reale
-  - Abilita `FEATURE_ORACLE=true`
-  - Monitor trigger automatici
-  - Verifica update_state on-chain
-- **Success:** AI triggers funzionano, state sync OK
+
+-   **Goal:** Attivare analisi AI automatiche
+-   **Actions:**
+    -   Integra N.A.T.A.N API reale
+    -   Abilita `FEATURE_ORACLE=true`
+    -   Monitor trigger automatici
+    -   Verifica update_state on-chain
+-   **Success:** AI triggers funzionano, state sync OK
 
 ### Week 5: Production Launch
-- **Goal:** Lancio pubblico EGI Viventi
-- **Actions:**
-  - Comunicazione marketing
-  - Pricing plans attivi
-  - PSP integration (Stripe/PayPal)
-  - Monitor subscriptions
-- **Success:** Primi utenti paganti, zero downtime
+
+-   **Goal:** Lancio pubblico EGI Viventi
+-   **Actions:**
+    -   Comunicazione marketing
+    -   Pricing plans attivi
+    -   PSP integration (Stripe/PayPal)
+    -   Monitor subscriptions
+-   **Success:** Primi utenti paganti, zero downtime
 
 ---
 
 ## 🔥 Troubleshooting
 
 ### Migration Fails
+
 ```bash
 # Rollback
 php artisan migrate:rollback --step=1
@@ -278,6 +306,7 @@ php artisan migrate
 ```
 
 ### SmartContract Deploy Error
+
 ```bash
 # Check Python environment
 python --version  # >= 3.8
@@ -291,6 +320,7 @@ curl https://testnet-api.algonode.cloud/v2/status
 ```
 
 ### Oracle Not Triggering
+
 ```bash
 # Check scheduler running
 php artisan schedule:list
@@ -303,6 +333,7 @@ tail -f storage/logs/laravel.log | grep ORACLE
 ```
 
 ### UI Components Not Showing
+
 ```bash
 # Clear views
 php artisan view:clear
@@ -315,6 +346,7 @@ ls -la resources/views/components/egi-*.blade.php
 ```
 
 ### UEM Errors Not Showing
+
 ```bash
 # Check config cached
 php artisan config:cache
@@ -332,21 +364,21 @@ php artisan tinker
 ## 📞 Support
 
 Per problemi contattare:
-- **Backend:** Fabio Cherici / Padmin D. Curtis
-- **Blockchain:** AlgoKit Team
-- **AI/N.A.T.A.N:** AI Integration Team
+
+-   **Backend:** Fabio Cherici / Padmin D. Curtis
+-   **Blockchain:** AlgoKit Team
+-   **AI/N.A.T.A.N:** AI Integration Team
 
 ---
 
 ## 📚 Riferimenti
 
-- [EGI Dual Architecture Overview](./mint/egi_dual_architecture_overview.md)
-- [UI Integration Guide](./dual-architecture-ui-integration.md)
-- [Brand Guidelines](./marketing/FlorenceEGI%20Brand%20Guidelines.md)
-- [Algorand Docs](https://developer.algorand.org/)
-- [PyTeal Docs](https://pyteal.readthedocs.io/)
+-   [EGI Dual Architecture Overview](./mint/egi_dual_architecture_overview.md)
+-   [UI Integration Guide](./dual-architecture-ui-integration.md)
+-   [Brand Guidelines](./marketing/FlorenceEGI%20Brand%20Guidelines.md)
+-   [Algorand Docs](https://developer.algorand.org/)
+-   [PyTeal Docs](https://pyteal.readthedocs.io/)
 
 ---
 
 **FlorenceEGI - Dove l'arte diventa valore virtuoso**
-
