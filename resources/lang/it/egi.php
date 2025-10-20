@@ -93,12 +93,12 @@ return [
         'weak_bidder' => 'Codice FEGI',
         'activator' => 'Co-Creatore',
         'activated_by' => 'Attivato da',
-        'reserved_by' => '📝 Prenotato da:',
+        'reserved_by' => '📝 Offerta di:',
     ],
 
     // Nota sulla Valuta Originale
-    'originally_reserved_in' => 'Originariamente prenotato in :currency per :amount',
-    'originally_reserved_in_short' => 'Pren. :currency :amount',
+    'originally_reserved_in' => 'Originariamente offerto in :currency per :amount',
+    'originally_reserved_in_short' => 'Off. :currency :amount',
 
     // Sistema Asta
     'auction' => [
