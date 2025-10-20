@@ -24,7 +24,8 @@ use Illuminate\Support\Facades\Session;
  * @version 2.1.0-oracode-corrected
  * @package App\Http\Controllers
  */
-class ReservationController extends Controller {
+class ReservationController extends Controller
+{
     protected ReservationService $reservationService;
     protected ErrorManagerInterface $errorManager;
     protected UltraLogManager $logger;
@@ -46,7 +47,8 @@ class ReservationController extends Controller {
      * @param \App\Models\Egi $egi
      * @return array
      */
-    private function prepareStructureChanges($reservation, $egi): array {
+    private function prepareStructureChanges($reservation, $egi): array
+    {
         // Get total reservation count for this EGI
         $reservationCount = $egi->reservations()->count();
         $isFirstReservation = $reservationCount === 1;
@@ -88,7 +90,8 @@ class ReservationController extends Controller {
      *
      * @return array
      */
-    private function prepareGlobalStats(): array {
+    private function prepareGlobalStats(): array
+    {
         try {
             // Usa il controller delle statistiche per ottenere i dati aggiornati
             $statsController = new \App\Http\Controllers\Api\PaymentDistributionStatsController();
@@ -114,7 +117,8 @@ class ReservationController extends Controller {
      * @param int $collectionId
      * @return array
      */
-    private function prepareCollectionStats(int $collectionId): array {
+    private function prepareCollectionStats(int $collectionId): array
+    {
         try {
             $collection = \App\Models\Collection::findOrFail($collectionId);
 
@@ -183,7 +187,8 @@ class ReservationController extends Controller {
      * @param int $egiId
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function reserve(Request $request, int $egiId) {
+    public function reserve(Request $request, int $egiId)
+    {
         $this->logger->info('[RESERVATION_WEB_ATTEMPT] Web reservation attempt started', [
             'egi_id' => $egiId,
             'user_id' => FegiAuth::id(),
@@ -364,7 +369,8 @@ class ReservationController extends Controller {
      * @param int $egiId
      * @return JsonResponse
      */
-    public function apiReserve(Request $request, int $egiId): JsonResponse {
+    public function apiReserve(Request $request, int $egiId): JsonResponse
+    {
         $this->logger->info('[RESERVATION_API_ATTEMPT] API reservation attempt started', [
             'egi_id' => $egiId,
             'user_id' => FegiAuth::id(),
@@ -577,7 +583,8 @@ class ReservationController extends Controller {
      * @param int $id
      * @return JsonResponse
      */
-    public function cancel(Request $request, int $id): JsonResponse {
+    public function cancel(Request $request, int $id): JsonResponse
+    {
         $this->logger->info('[RESERVATION_CANCEL_ATTEMPT] Reservation cancellation attempt', [
             'reservation_id' => $id,
             'user_id' => FegiAuth::id()
@@ -666,7 +673,8 @@ class ReservationController extends Controller {
      * @param Request $request
      * @return JsonResponse
      */
-    public function listUserReservations(Request $request): JsonResponse {
+    public function listUserReservations(Request $request): JsonResponse
+    {
         $this->logger->info('[RESERVATION_LIST_ATTEMPT] User reservations list requested', [
             'user_id' => FegiAuth::id()
         ]);
@@ -747,7 +755,8 @@ class ReservationController extends Controller {
      * @param int $egiId
      * @return JsonResponse
      */
-    public function getEgiReservationStatus(Request $request, int $egiId): JsonResponse {
+    public function getEgiReservationStatus(Request $request, int $egiId): JsonResponse
+    {
         // $this->logger->info('[RESERVATION_STATUS_REQUEST] EGI reservation status requested', [
         //     'egi_id' => $egiId,
         //     'user_id' => FegiAuth::id()
@@ -856,7 +865,8 @@ class ReservationController extends Controller {
      * @param int $egiId
      * @return JsonResponse
      */
-    public function getReservationHistory(Request $request, int $egiId): JsonResponse {
+    public function getReservationHistory(Request $request, int $egiId): JsonResponse
+    {
         try {
             // Trova l'EGI
             $egi = Egi::findOrFail($egiId);
@@ -924,7 +934,8 @@ class ReservationController extends Controller {
      * @param int $egiId
      * @return JsonResponse
      */
-    public function getReservationStatus(Request $request, int $egiId): JsonResponse {
+    public function getReservationStatus(Request $request, int $egiId): JsonResponse
+    {
         try {
             // Find the EGI
             $egi = Egi::find($egiId);
@@ -993,7 +1004,8 @@ class ReservationController extends Controller {
      * @param Request $request
      * @return JsonResponse
      */
-    public function createPreLaunchReservation(Request $request): JsonResponse {
+    public function createPreLaunchReservation(Request $request): JsonResponse
+    {
         $this->logger->info('[PRE_LAUNCH_RESERVATION] Create/update request', [
             'user_id' => FegiAuth::id(),
             'ip' => $request->ip()
@@ -1100,7 +1112,8 @@ class ReservationController extends Controller {
      * @param int $egiId
      * @return JsonResponse
      */
-    public function getPreLaunchRankings(Request $request, int $egiId): JsonResponse {
+    public function getPreLaunchRankings(Request $request, int $egiId): JsonResponse
+    {
         $this->logger->info('[PRE_LAUNCH_RESERVATION] Rankings requested', [
             'egi_id' => $egiId,
             'user_id' => FegiAuth::id()
@@ -1166,7 +1179,8 @@ class ReservationController extends Controller {
      * @param int $reservationId
      * @return JsonResponse
      */
-    public function withdrawPreLaunchReservation(Request $request, int $reservationId): JsonResponse {
+    public function withdrawPreLaunchReservation(Request $request, int $reservationId): JsonResponse
+    {
         $this->logger->info('[PRE_LAUNCH_RESERVATION] Withdraw request', [
             'reservation_id' => $reservationId,
             'user_id' => FegiAuth::id()
@@ -1221,7 +1235,8 @@ class ReservationController extends Controller {
      * @param Request $request
      * @return JsonResponse
      */
-    public function getUserPreLaunchReservations(Request $request): JsonResponse {
+    public function getUserPreLaunchReservations(Request $request): JsonResponse
+    {
         $user = FegiAuth::user();
         if (!$user) {
             return response()->json([
@@ -1281,7 +1296,8 @@ class ReservationController extends Controller {
      * @param int $egiId
      * @return JsonResponse
      */
-    public function checkPreLaunchReservationEligibility(Request $request, int $egiId): JsonResponse {
+    public function checkPreLaunchReservationEligibility(Request $request, int $egiId): JsonResponse
+    {
         $user = FegiAuth::user();
         if (!$user) {
             return response()->json([
@@ -1316,7 +1332,8 @@ class ReservationController extends Controller {
      * @param int $egiId
      * @return JsonResponse
      */
-    public function getEgiModalInfo(Request $request, int $egiId): JsonResponse {
+    public function getEgiModalInfo(Request $request, int $egiId): JsonResponse
+    {
         $this->logger->info('[EGI_MODAL_INFO] Request received', [
             'egi_id' => $egiId,
             'user_id' => FegiAuth::id(),
@@ -1346,8 +1363,8 @@ class ReservationController extends Controller {
                 'data' => [
                     'egi_id' => $egiId,
                     'title' => $egi->title,
-                    'base_price' => $egi->price,
-                    'current_price' => $egi->price,
+                    'base_price' => $egi->auction_minimum_price,
+                    'current_price' => $egi->auction_minimum_price,
                     'has_reservations' => false,
                     'activator' => null
                 ]

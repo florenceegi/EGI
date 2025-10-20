@@ -192,6 +192,12 @@ export class ReservationFormModal {
                             <span class="text-lg font-bold text-green-800">€${parseFloat(data.current_price).toFixed(2)}</span>
                         </div>
                     `;
+                    // Pre-compila il campo con l'offerta corrente + 0.01
+                    if (this.offerInput) {
+                        const minOffer = parseFloat(data.current_price) + 0.01;
+                        this.offerInput.value = minOffer.toFixed(2);
+                        this.updateAlgoEquivalent();
+                    }
                 } else if (data.base_price) {
                     egiInfoHTML += `
                         <div class="flex items-center justify-between mb-3">
@@ -199,6 +205,11 @@ export class ReservationFormModal {
                             <span class="text-lg font-bold text-amber-800">€${parseFloat(data.base_price).toFixed(2)}</span>
                         </div>
                     `;
+                    // Pre-compila il campo con il prezzo base (auction_minimum_price)
+                    if (this.offerInput) {
+                        this.offerInput.value = parseFloat(data.base_price).toFixed(2);
+                        this.updateAlgoEquivalent();
+                    }
                 }
 
                 // Mostra informazioni sull'attivatore se esiste

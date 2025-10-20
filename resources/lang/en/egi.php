@@ -92,11 +92,12 @@ return [
         'weak_bidder' => 'FEGI Code',
         'activator' => 'Co Creator',
         'activated_by' => 'Activated by',
+        'reserved_by' => '📝 Bid by:',
     ],
 
     // Original Currency Note
-    'originally_reserved_in' => 'Originally reserved in :currency for :amount',
-    'originally_reserved_in_short' => 'Res. :currency :amount',
+    'originally_reserved_in' => 'Originally bid in :currency for :amount',
+    'originally_reserved_in_short' => 'Bid :currency :amount',
 
     // Auction System
     'auction' => [
