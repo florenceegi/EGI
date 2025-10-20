@@ -20,7 +20,15 @@ return new class extends Migration {
             CHANGE COLUMN blockchain_algorand_id egi_blockchain_id BIGINT UNSIGNED NULL
             COMMENT "Reference to blockchain record for mint certificates"');
 
-        // Step 2 & 3: Add foreign key and indexes
+        // Step 2: Add certificate_type column first
+        Schema::table('egi_reservation_certificates', function (Blueprint $table) {
+            $table->enum('certificate_type', ['reservation', 'mint'])
+                ->default('reservation')
+                ->after('egi_id')
+                ->comment('Type of certificate: reservation or mint');
+        });
+
+        // Step 3: Add foreign key and indexes
         Schema::table('egi_reservation_certificates', function (Blueprint $table) {
             $table->foreign('egi_blockchain_id')
                 ->references('id')
@@ -44,6 +52,9 @@ return new class extends Migration {
             // Drop indexes
             $table->dropIndex(['egi_id', 'certificate_type']);
             $table->dropIndex(['certificate_type']);
+            
+            // Drop certificate_type column
+            $table->dropColumn('certificate_type');
         });
 
         // Rename column back using raw SQL

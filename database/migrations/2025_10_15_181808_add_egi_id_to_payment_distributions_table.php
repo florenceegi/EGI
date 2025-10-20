@@ -20,32 +20,37 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        Schema::table('payment_distributions', function (Blueprint $table) {
-            // Add egi_id as direct foreign key (always set, regardless of source_type)
-            $table->foreignId('egi_id')
-                ->nullable() // Temporarily nullable for existing records
-                ->after('reservation_id')
-                ->constrained('egis')
-                ->onDelete('cascade')
-                ->comment('Direct EGI reference (always set for both reservation and mint)');
+        // Check if egi_id column already exists
+        if (!Schema::hasColumn('payment_distributions', 'egi_id')) {
+            Schema::table('payment_distributions', function (Blueprint $table) {
+                // Add egi_id as direct foreign key (always set, regardless of source_type)
+                $table->foreignId('egi_id')
+                    ->nullable() // Temporarily nullable for existing records
+                    ->after('reservation_id')
+                    ->constrained('egis')
+                    ->onDelete('cascade')
+                    ->comment('Direct EGI reference (always set for both reservation and mint)');
 
-            // Add index for better query performance
-            $table->index(['egi_id', 'source_type'], 'idx_payment_dist_egi_source');
-        });
+                // Add index for better query performance
+                $table->index(['egi_id', 'source_type'], 'idx_payment_dist_egi_source');
+            });
+        }
 
-        // Populate egi_id for existing records
-        DB::statement('
-            UPDATE payment_distributions pd
-            LEFT JOIN reservations r ON pd.reservation_id = r.id
-            LEFT JOIN egi_blockchain eb ON pd.egi_blockchain_id = eb.id
-            SET pd.egi_id = COALESCE(r.egi_id, eb.egi_id)
-            WHERE pd.egi_id IS NULL
-        ');
+        // Populate egi_id for existing records only if column was just created
+        if (Schema::hasColumn('payment_distributions', 'egi_id')) {
+            DB::statement('
+                UPDATE payment_distributions pd
+                LEFT JOIN reservations r ON pd.reservation_id = r.id
+                LEFT JOIN egi_blockchain eb ON pd.egi_blockchain_id = eb.id
+                SET pd.egi_id = COALESCE(r.egi_id, eb.egi_id)
+                WHERE pd.egi_id IS NULL
+            ');
 
-        // Make egi_id NOT NULL after population
-        Schema::table('payment_distributions', function (Blueprint $table) {
-            $table->unsignedBigInteger('egi_id')->nullable(false)->change();
-        });
+            // Make egi_id NOT NULL after population
+            Schema::table('payment_distributions', function (Blueprint $table) {
+                $table->unsignedBigInteger('egi_id')->nullable(false)->change();
+            });
+        }
     }
 
     /**
