@@ -139,3 +139,4 @@ enum EgiLivingStatus: string
         };
     }
 }
+
