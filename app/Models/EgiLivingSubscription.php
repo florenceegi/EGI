@@ -199,3 +199,4 @@ class EgiLivingSubscription extends Model
             ->where('status', EgiLivingStatus::ACTIVE->value);
     }
 }
+
