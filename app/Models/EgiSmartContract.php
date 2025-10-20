@@ -163,3 +163,4 @@ class EgiSmartContract extends Model
         return $query->where('sc_status', SmartContractStatus::ACTIVE->value);
     }
 }
+

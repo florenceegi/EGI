@@ -15,6 +15,7 @@ Questa guida spiega come integrare i componenti UI dell'architettura duale nella
 ## 🎨 Componenti Blade Creati
 
 ### 1. `x-egi-type-badge`
+
 **Badge tipo EGI** - Conforme Brand Guidelines FlorenceEGI
 
 ```blade
@@ -22,13 +23,15 @@ Questa guida spiega come integrare i componenti UI dell'architettura duale nella
 ```
 
 **Colori:**
-- ASA: Blu Algoritmo (#1B365D)
-- SmartContract: Viola Innovazione (#8E44AD) con glow
-- PreMint: Oro Fiorentino (#D4A574)
+
+-   ASA: Blu Algoritmo (#1B365D)
+-   SmartContract: Viola Innovazione (#8E44AD) con glow
+-   PreMint: Oro Fiorentino (#D4A574)
 
 ---
 
 ### 2. `x-egi-living-panel`
+
 **Dashboard EGI Vivente** - Solo per `egi_type = 'SmartContract'`
 
 ```blade
@@ -38,15 +41,17 @@ Questa guida spiega come integrare i componenti UI dell'architettura duale nella
 ```
 
 **Features:**
-- Success rate AI (grafico)
-- Prossimo trigger
-- Totale analisi
-- Link Algorand Explorer
-- Info abbonamento
+
+-   Success rate AI (grafico)
+-   Prossimo trigger
+-   Totale analisi
+-   Link Algorand Explorer
+-   Info abbonamento
 
 ---
 
 ### 3. `x-egi-pre-mint-panel`
+
 **Pannello Pre-Mint** - Solo per `egi_type = 'PreMint'`
 
 ```blade
@@ -56,13 +61,15 @@ Questa guida spiega come integrare i componenti UI dell'architettura duale nella
 ```
 
 **Features:**
-- Countdown scadenza
-- Bottoni analisi AI (descrizione, traits, promozione)
-- Promozione a ASA o SmartContract
+
+-   Countdown scadenza
+-   Bottoni analisi AI (descrizione, traits, promozione)
+-   Promozione a ASA o SmartContract
 
 ---
 
 ### 4. `x-egi-auto-mint-panel`
+
 **Auto-Mint Creator** - Solo per creator del PreMint
 
 ```blade
@@ -72,9 +79,10 @@ Questa guida spiega come integrare i componenti UI dell'architettura duale nella
 ```
 
 **Features:**
-- Abilita/Disabilita Auto-Mint
-- Scelta mint ASA o SmartContract
-- Pricing visibile per SmartContract
+
+-   Abilita/Disabilita Auto-Mint
+-   Scelta mint ASA o SmartContract
+-   Pricing visibile per SmartContract
 
 ---
 
@@ -206,20 +214,21 @@ public function triggerAIAnalysis()
 ## 📱 Responsive Design
 
 Tutti i componenti sono responsive:
-- **Mobile**: Colonna singola
-- **Tablet**: Grid 2 colonne ove appropriato
-- **Desktop**: Grid 3 colonne con sidebar
+
+-   **Mobile**: Colonna singola
+-   **Tablet**: Grid 2 colonne ove appropriato
+-   **Desktop**: Grid 3 colonne con sidebar
 
 ---
 
 ## ✅ Checklist Integrazione
 
-- [ ] Importare componenti Blade in `egis/show.blade.php`
-- [ ] Implementare metodi Livewire richiesti
-- [ ] Testare su mobile/tablet/desktop
-- [ ] Verificare conformità Brand Guidelines
-- [ ] Testare accessibilità (ARIA, contrasti, navigazione)
-- [ ] Feature flags abilitati correttamente
+-   [ ] Importare componenti Blade in `egis/show.blade.php`
+-   [ ] Implementare metodi Livewire richiesti
+-   [ ] Testare su mobile/tablet/desktop
+-   [ ] Verificare conformità Brand Guidelines
+-   [ ] Testare accessibilità (ARIA, contrasti, navigazione)
+-   [ ] Feature flags abilitati correttamente
 
 ---
 

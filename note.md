@@ -327,3 +327,9 @@ controllare funzione di ricerca
 
 il CoA lo devo mintare?
 sulla vista del mint occorre visualizzare certificato di proprietà. denaro speso. epp a cui si è contribuito e in che misura. denaro inviato a piattaforma,creator,feangette.
+
+debug dual mode smart contract / ASA in egis.show
+
+implementare modifiche da prenotaizone ad asta nel processo di "offerta", si carica la voce 1 prenotaiozne al posto di un'offerta, si apre l aodal edelle prenotazioni a,drebbe rivsta come Offerta Asta, insomma rivedere tutta qusta parte
+
+test cn smart contract, a copilot far fare unit test 
