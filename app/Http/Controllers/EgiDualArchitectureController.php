@@ -474,7 +474,6 @@ class EgiDualArchitectureController extends Controller
                     'previous_description' => $result['previous_description'],
                 ],
             ]);
-
         } catch (\Exception $e) {
             return $this->errorManager->handle('DUAL_ARCH_AI_ANALYSIS_FAILED', [
                 'egi_id' => $egi->id,
@@ -577,7 +576,6 @@ class EgiDualArchitectureController extends Controller
                     'improvement_stats' => $result['improvement_stats'],
                 ],
             ]);
-
         } catch (\Exception $e) {
             return $this->errorManager->handle('DUAL_ARCH_AI_ANALYSIS_FAILED', [
                 'egi_id' => $egi->id,
