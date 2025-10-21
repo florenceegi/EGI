@@ -11,46 +11,48 @@ This work includes i18n updates, TypeScript UI updates, modal success messages, 
 
 ## Files changed (high level)
 
-- resources/lang/it/reservation.php — Italian translations updated (prenotazione → offerta)
-- resources/lang/en/reservation.php — English translations updated (reservation → bid)
-- resources/lang/it/egi.php — 'reserved_by' string updated to "📝 Offerta di:"
-- resources/lang/en/egi.php — added 'reserved_by' => "📝 Bid by:" and updated original-currency strings
-- resources/ts/services/reservation/modal/ReservationFormModal.ts — replaced hardcoded strings, modal uses i18n keys
-- resources/ts/services/reservation/ui/ReservationModalUI.ts — success modal switched to i18n keys
-- resources/ts/services/reservation/ui/EgiDisplayUpdater.ts — replaced UI strings and imported appTranslate for i18n use
-- resources/views/components/reservation-form.blade.php — already using i18n helpers; verified
+-   resources/lang/it/reservation.php — Italian translations updated (prenotazione → offerta)
+-   resources/lang/en/reservation.php — English translations updated (reservation → bid)
+-   resources/lang/it/egi.php — 'reserved_by' string updated to "📝 Offerta di:"
+-   resources/lang/en/egi.php — added 'reserved_by' => "📝 Bid by:" and updated original-currency strings
+-   resources/ts/services/reservation/modal/ReservationFormModal.ts — replaced hardcoded strings, modal uses i18n keys
+-   resources/ts/services/reservation/ui/ReservationModalUI.ts — success modal switched to i18n keys
+-   resources/ts/services/reservation/ui/EgiDisplayUpdater.ts — replaced UI strings and imported appTranslate for i18n use
+-   resources/views/components/reservation-form.blade.php — already using i18n helpers; verified
 
 Other files read/inspected (no changes):
-- app/Http/Controllers/ReservationController.php (verified PriceUpdated dispatch with structureChanges)
-- resources/ts/current-price.ts (verified Echo listener and EgiDisplayUpdater usage)
+
+-   app/Http/Controllers/ReservationController.php (verified PriceUpdated dispatch with structureChanges)
+-   resources/ts/current-price.ts (verified Echo listener and EgiDisplayUpdater usage)
 
 ## Engineering notes
 
-- i18n changes were applied first to prevent missing-translation issues when switching UI text.
-- Where hardcoded Italian strings existed in TypeScript UI code (eg. "Prenotazione", "Prenotazioni", "Rilancia"), they were replaced with `appTranslate('...')` keys.
-- `ReservationModalUI` now uses `appTranslate` from `resources/ts/config/appConfig.ts` to render multilingual success messages.
-- `EgiDisplayUpdater` imports `appTranslate` and updates button text and reservation count labels using i18n keys.
-- Live update flow:
-  - Backend: `ReservationController::reserve()` calls `PriceUpdated::dispatch($egiId, $amount, $currency, $timestamp, $structureChanges)`
-  - Frontend: `resources/ts/current-price.ts` listens on `price.{egiId}` and calls `EgiDisplayUpdater.updateFromBroadcast()` with `structure_changes`.
+-   i18n changes were applied first to prevent missing-translation issues when switching UI text.
+-   Where hardcoded Italian strings existed in TypeScript UI code (eg. "Prenotazione", "Prenotazioni", "Rilancia"), they were replaced with `appTranslate('...')` keys.
+-   `ReservationModalUI` now uses `appTranslate` from `resources/ts/config/appConfig.ts` to render multilingual success messages.
+-   `EgiDisplayUpdater` imports `appTranslate` and updates button text and reservation count labels using i18n keys.
+-   Live update flow:
+    -   Backend: `ReservationController::reserve()` calls `PriceUpdated::dispatch($egiId, $amount, $currency, $timestamp, $structureChanges)`
+    -   Frontend: `resources/ts/current-price.ts` listens on `price.{egiId}` and calls `EgiDisplayUpdater.updateFromBroadcast()` with `structure_changes`.
 
 ## What I tested locally
 
-- Built frontend assets with `npm run build` in the main workspace; build completed successfully (warnings only from CSS minifier).
-- Verified `PriceUpdated` event payload and that `EgiDisplayUpdater.updateFromBroadcast()` will consume `structure_changes` and update card UI.
-- Created Git worktrees for parallel branch development:
-  - `/home/fabio/EGI` (feature/dual-architecture)
-  - `/home/fabio/EGI-wallet-security` (feature/wallet-security-module)
-  - `/home/fabio/EGI-auction-debug` (feature/auction-module-debug)
-- Ran `composer install` in the two new worktrees and generated `APP_KEY` where necessary.
+-   Built frontend assets with `npm run build` in the main workspace; build completed successfully (warnings only from CSS minifier).
+-   Verified `PriceUpdated` event payload and that `EgiDisplayUpdater.updateFromBroadcast()` will consume `structure_changes` and update card UI.
+-   Created Git worktrees for parallel branch development:
+    -   `/home/fabio/EGI` (feature/dual-architecture)
+    -   `/home/fabio/EGI-wallet-security` (feature/wallet-security-module)
+    -   `/home/fabio/EGI-auction-debug` (feature/auction-module-debug)
+-   Ran `composer install` in the two new worktrees and generated `APP_KEY` where necessary.
 
 ## Remaining / Follow-ups
 
 1. End-to-end manual test (not yet executed):
-   - Open the app in browser from one worktree.
-   - Click "Fai un'offerta" → modal appears with i18n title
-   - Submit offer → success modal shows i18n success text
-   - Confirm EGI card updates live (price, activator, count)
+
+    - Open the app in browser from one worktree.
+    - Click "Fai un'offerta" → modal appears with i18n title
+    - Submit offer → success modal shows i18n success text
+    - Confirm EGI card updates live (price, activator, count)
 
 2. Translate remaining languages (ES/FR/PT/DE) if needed (I changed IT and EN only).
 
@@ -74,10 +76,9 @@ Open http://127.0.0.1:8000 and test the auction flow while watching browser cons
 
 If you want, I can:
 
-- Run the E2E test and report the precise UI changes observed.
-- Update the remaining language files (ES/FR/PT/DE).
-- Add unit/integration tests for the broadcast handling.
-
+-   Run the E2E test and report the precise UI changes observed.
+-   Update the remaining language files (ES/FR/PT/DE).
+-   Add unit/integration tests for the broadcast handling.
 
 ---
 
