@@ -803,9 +803,4 @@ class KmsClient {
             throw $e;
         }
     }
-        // - Azure Key Vault: $keyVault->decrypt($kekId, $encryptedDek)
-        // - HashiCorp Vault: $vault->decrypt($kekId, $encryptedDek)
-
-        throw new \Exception('Production KMS integration not yet implemented');
-    }
 }
