@@ -6181,5 +6181,94 @@ return [
             'msg_to' => 'json',
         ],
 
+        // === KMS ERRORS ===
+        'KMS_DEK_GENERATION_FAILED' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.kms_dek_generation_failed',
+            'user_message_key' => 'error-manager::errors_2.user.kms_dek_generation_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'KMS_DEK_ENCRYPTION_FAILED' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.kms_dek_encryption_failed',
+            'user_message_key' => 'error-manager::errors_2.user.kms_dek_encryption_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'KMS_DEK_DECRYPTION_FAILED' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.kms_dek_decryption_failed',
+            'user_message_key' => 'error-manager::errors_2.user.kms_dek_decryption_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'KMS_SECURE_ENCRYPT_FAILED' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.kms_secure_encrypt_failed',
+            'user_message_key' => 'error-manager::errors_2.user.kms_secure_encrypt_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'KMS_SECURE_DECRYPT_FAILED' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.kms_secure_decrypt_failed',
+            'user_message_key' => 'error-manager::errors_2.user.kms_secure_decrypt_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'KMS_PROVIDER_UNAVAILABLE' => [
+            'type' => 'critical',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.kms_provider_unavailable',
+            'user_message_key' => 'error-manager::errors_2.user.kms_provider_unavailable',
+            'http_status_code' => 503,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'KMS_CONFIGURATION_INVALID' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.kms_configuration_invalid',
+            'user_message_key' => 'error-manager::errors_2.user.kms_configuration_invalid',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'KMS_AUDIT_LOG_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.kms_audit_log_failed',
+            'user_message_key' => 'error-manager::errors_2.user.kms_audit_log_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];
