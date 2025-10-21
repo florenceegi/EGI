@@ -78,6 +78,13 @@
                     </div>
                 @endif
 
+                {{-- AI Traits Panel (Solo Creator di EGI non mintati) --}}
+                @if ($isNotMinted && $isCreatorCheck)
+                    <div class="mb-6">
+                        <x-egi-ai-traits-panel :egi="$egi" :isCreator="$isCreatorCheck" />
+                    </div>
+                @endif
+
                 {{-- Pre-Mint Panel (EGI non mintati e disponibili sul marketplace) --}}
                 @if ($isNotMinted && !$egi->pre_mint_mode)
                     <div class="mb-6">
