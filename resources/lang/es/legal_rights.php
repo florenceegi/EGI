@@ -22,7 +22,7 @@ return [
     // Títulos de sección
     'section_title' => 'Derechos de Autor y Derecho de Reventa',
     'section_subtitle' => 'Legislación italiana y europea: qué pertenece al Creator, qué adquiere el Owner',
-    
+
     // Aviso legal
     'disclaimer_title' => 'Aviso Importante',
     'disclaimer_text' => 'La siguiente información se proporciona solo con fines informativos y educativos. No constituye asesoramiento legal. Para asuntos específicos, consulte a un abogado especializado en derechos de autor.',
@@ -31,7 +31,7 @@ return [
     // Derechos del Creator
     'creator_rights_title' => 'Derechos del Creator (Siempre)',
     'creator_rights_subtitle' => 'El Creator conserva estos derechos incluso después de vender la obra',
-    
+
     'moral_rights_title' => 'Derechos Morales (Inalienables)',
     'moral_rights_subtitle' => 'Ley italiana 633/1941 Art. 20 - Nunca transferibles, incluso después de la venta',
     'moral_rights' => [
@@ -78,39 +78,39 @@ return [
     // Comparación Royalty
     'comparison_title' => 'Derecho de Reventa vs Royalty Plataforma',
     'comparison_subtitle' => 'Dos mecanismos distintos y acumulables',
-    
+
     'comparison_table' => [
         'aspect' => 'Aspecto',
         'platform_royalty' => 'Royalty Plataforma (FlorenceEGI)',
         'legal_droit' => 'Derecho de Reventa (Legal)',
-        
+
         'legal_basis' => 'Base jurídica',
         'legal_basis_platform' => 'Contrato smart contract',
         'legal_basis_law' => 'Ley 633/1941 Art. 19bis',
-        
+
         'min_threshold' => 'Umbral mínimo',
         'min_threshold_platform' => '€0 (todas las ventas)',
         'min_threshold_law' => '€3,000',
-        
+
         'percentage' => 'Porcentaje',
         'percentage_platform' => '4.5% fijo',
         'percentage_law' => '4% → 0.25% (decreciente)',
-        
+
         'sale_type' => 'Tipo de ventas',
         'sale_type_platform' => 'P2P directas (plataforma)',
         'sale_type_law' => 'A través de profesionales (galerías/subastas)',
-        
+
         'management' => 'Gestión',
         'management_platform' => 'Smart contract automático',
         'management_law' => 'SIAE (manual)',
-        
+
         'cumulative' => 'Acumulable',
         'cumulative_yes' => '¡SÍ! El Creator puede recibir AMBOS',
     ],
 
     // Escenarios de venta
     'scenarios_title' => 'Cómo Funciona en FlorenceEGI',
-    
+
     'scenario_primary' => [
         'title' => 'Venta Primaria (Mint) - EGI €1,000',
         'distribution' => 'Distribución de ingresos:',
@@ -154,7 +154,7 @@ return [
 
     // Normativa
     'legislation_title' => 'Marco Legislativo',
-    
+
     'law_lda' => [
         'title' => 'Ley 633/1941 (Ley de Derechos de Autor - LDA)',
         'art_12_19' => 'Art. 12-19: Derechos patrimoniales (reproducción, comunicación, distribución)',
@@ -209,4 +209,3 @@ return [
         'enforcement' => 'Smart contract impide evasión de royalties (ejecución sin confianza)',
     ],
 ];
-

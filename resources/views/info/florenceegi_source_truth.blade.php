@@ -293,8 +293,15 @@
                                 dell'identità dell'<a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-creator" class="text-xl font-bold text-emerald-700">Creator (Artista/Autore)</dt>
-                            <dd class="mt-1 text-gray-700">L'autore originale dell'opera. Riceve proventi vendite primarie e <a href="#glossary-royalty-piattaforma" class="glossary-link">royalty</a> automatiche sulle rivendite (4.5% + eventuale <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di Seguito</a> legale >€3k). <strong>Conserva sempre</strong> i <a href="#glossary-diritti-morali" class="glossary-link">Diritti Morali</a> e <a href="#glossary-diritti-patrimoniali" class="glossary-link">Diritti Patrimoniali</a>, anche dopo la vendita.</dd>
+                            <dt id="glossary-creator" class="text-xl font-bold text-emerald-700">Creator
+                                (Artista/Autore)</dt>
+                            <dd class="mt-1 text-gray-700">L'autore originale dell'opera. Riceve proventi vendite
+                                primarie e <a href="#glossary-royalty-piattaforma" class="glossary-link">royalty</a>
+                                automatiche sulle rivendite (4.5% + eventuale <a href="#glossary-diritto-seguito"
+                                    class="glossary-link">Diritto di Seguito</a> legale >€3k). <strong>Conserva
+                                    sempre</strong> i <a href="#glossary-diritti-morali" class="glossary-link">Diritti
+                                    Morali</a> e <a href="#glossary-diritti-patrimoniali" class="glossary-link">Diritti
+                                    Patrimoniali</a>, anche dopo la vendita.</dd>
                         </div>
                         <div>
                             <dt id="glossary-collector" class="text-xl font-bold text-emerald-700">Collector</dt>
@@ -302,26 +309,42 @@
                                 preservando <a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-royalty-piattaforma" class="text-xl font-bold text-emerald-700">Royalty Piattaforma</dt>
-                            <dd class="mt-1 text-gray-700">Percentuale (4.5%) garantita al Creator su <strong>ogni</strong> rivendita, anche sotto €3,000. Automatica via smart contract, <strong>separata</strong> dal <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di Seguito</a> legale.</dd>
+                            <dt id="glossary-royalty-piattaforma" class="text-xl font-bold text-emerald-700">Royalty
+                                Piattaforma</dt>
+                            <dd class="mt-1 text-gray-700">Percentuale (4.5%) garantita al Creator su
+                                <strong>ogni</strong> rivendita, anche sotto €3,000. Automatica via smart contract,
+                                <strong>separata</strong> dal <a href="#glossary-diritto-seguito"
+                                    class="glossary-link">Diritto di Seguito</a> legale.
+                            </dd>
                         </div>
                         <div>
-                            <dt id="glossary-diritto-seguito" class="text-xl font-bold text-emerald-700">Diritto di Seguito</dt>
-                            <dd class="mt-1 text-gray-700">Diritto <strong>legale</strong> (L. 633/1941 Art. 19bis) del Creator: 4%-0.25% sulle rivendite ≥€3,000 tramite professionisti. Gestito SIAE. <strong>Cumulabile</strong> con royalty piattaforma.</dd>
+                            <dt id="glossary-diritto-seguito" class="text-xl font-bold text-emerald-700">Diritto di
+                                Seguito</dt>
+                            <dd class="mt-1 text-gray-700">Diritto <strong>legale</strong> (L. 633/1941 Art. 19bis) del
+                                Creator: 4%-0.25% sulle rivendite ≥€3,000 tramite professionisti. Gestito SIAE.
+                                <strong>Cumulabile</strong> con royalty piattaforma.
+                            </dd>
                         </div>
                         <div>
-                            <dt id="glossary-diritti-morali" class="text-xl font-bold text-emerald-700">Diritti Morali d'Autore</dt>
-                            <dd class="mt-1 text-gray-700">Diritti <strong>inalienabili e perpetui</strong> (L. 633/1941 Art. 20): paternità (riconoscimento autore) e integrità (no modifiche). Il Creator li <strong>conserva sempre</strong>.</dd>
+                            <dt id="glossary-diritti-morali" class="text-xl font-bold text-emerald-700">Diritti Morali
+                                d'Autore</dt>
+                            <dd class="mt-1 text-gray-700">Diritti <strong>inalienabili e perpetui</strong> (L.
+                                633/1941 Art. 20): paternità (riconoscimento autore) e integrità (no modifiche). Il
+                                Creator li <strong>conserva sempre</strong>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-diritti-patrimoniali" class="text-xl font-bold text-emerald-700">Diritti Patrimoniali</dt>
-                            <dd class="mt-1 text-gray-700">Diritti economici (L. 633/1941 Art. 12-19): riproduzione, comunicazione pubblica, distribuzione. L'Owner <strong>NON acquisisce</strong> il copyright comprando l'opera fisica o NFT.</dd>
+                            <dt id="glossary-diritti-patrimoniali" class="text-xl font-bold text-emerald-700">Diritti
+                                Patrimoniali</dt>
+                            <dd class="mt-1 text-gray-700">Diritti economici (L. 633/1941 Art. 12-19): riproduzione,
+                                comunicazione pubblica, distribuzione. L'Owner <strong>NON acquisisce</strong> il
+                                copyright comprando l'opera fisica o NFT.</dd>
                         </div>
                         <div>
                             <dt id="glossary-algorand" class="text-xl font-bold text-emerald-700">Algorand</dt>
                             <dd class="mt-1 text-gray-700"><a href="#glossary-blockchain"
                                     class="glossary-link">Blockchain</a> sostenibile e <a
-                                    href="#glossary-carbon-negative" class="glossary-link">carbon-negative</a> basata su
+                                    href="#glossary-carbon-negative" class="glossary-link">carbon-negative</a> basata
+                                su
                                 <a href="#glossary-proof-of-stake" class="glossary-link">Proof-of-Stake</a>.
                             </dd>
                         </div>
@@ -399,20 +422,44 @@
                                     class="glossary-link">Equilibrium</a>.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-royalty-piattaforma" class="text-xl font-bold text-emerald-700">Royalty Piattaforma (Contrattuale)</dt>
-                            <dd class="mt-1 text-gray-700">Percentuale (4.5%) che FlorenceEGI garantisce al Creator su <strong>ogni</strong> rivendita secondaria, anche sotto €3,000. Gestita automaticamente via smart contract. Questa è una royalty <strong>contrattuale</strong>, separata e aggiuntiva al <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di Seguito</a> legale.</dd>
+                            <dt id="glossary-royalty-piattaforma" class="text-xl font-bold text-emerald-700">Royalty
+                                Piattaforma (Contrattuale)</dt>
+                            <dd class="mt-1 text-gray-700">Percentuale (4.5%) che FlorenceEGI garantisce al Creator su
+                                <strong>ogni</strong> rivendita secondaria, anche sotto €3,000. Gestita automaticamente
+                                via smart contract. Questa è una royalty <strong>contrattuale</strong>, separata e
+                                aggiuntiva al <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di
+                                    Seguito</a> legale.
+                            </dd>
                         </div>
                         <div>
-                            <dt id="glossary-diritto-seguito" class="text-xl font-bold text-emerald-700">Diritto di Seguito (Legale)</dt>
-                            <dd class="mt-1 text-gray-700">Diritto previsto dalla <strong>Legge 633/1941 Art. 19bis</strong> che garantisce al Creator una percentuale (4%-0.25%) sulle rivendite <strong>solo se</strong>: (1) prezzo ≥ €3,000, (2) vendita tramite professionisti (gallerie/aste), (3) nell'Unione Europea. Gestito da SIAE. È <strong>cumulabile</strong> con la <a href="#glossary-royalty-piattaforma" class="glossary-link">Royalty Piattaforma</a>.</dd>
+                            <dt id="glossary-diritto-seguito" class="text-xl font-bold text-emerald-700">Diritto di
+                                Seguito (Legale)</dt>
+                            <dd class="mt-1 text-gray-700">Diritto previsto dalla <strong>Legge 633/1941 Art.
+                                    19bis</strong> che garantisce al Creator una percentuale (4%-0.25%) sulle rivendite
+                                <strong>solo se</strong>: (1) prezzo ≥ €3,000, (2) vendita tramite professionisti
+                                (gallerie/aste), (3) nell'Unione Europea. Gestito da SIAE. È <strong>cumulabile</strong>
+                                con la <a href="#glossary-royalty-piattaforma" class="glossary-link">Royalty
+                                    Piattaforma</a>.
+                            </dd>
                         </div>
                         <div>
-                            <dt id="glossary-diritti-morali" class="text-xl font-bold text-emerald-700">Diritti Morali d'Autore</dt>
-                            <dd class="mt-1 text-gray-700">Diritti <strong>inalienabili e perpetui</strong> del Creator (Legge 633/1941 Art. 20): (1) <strong>Paternità</strong> - diritto di essere sempre riconosciuto come autore, (2) <strong>Integrità</strong> - diritto di opporsi a modifiche/alterazioni dell'opera. Il Creator <strong>conserva sempre</strong> questi diritti, anche dopo la vendita dell'opera fisica.</dd>
+                            <dt id="glossary-diritti-morali" class="text-xl font-bold text-emerald-700">Diritti Morali
+                                d'Autore</dt>
+                            <dd class="mt-1 text-gray-700">Diritti <strong>inalienabili e perpetui</strong> del Creator
+                                (Legge 633/1941 Art. 20): (1) <strong>Paternità</strong> - diritto di essere sempre
+                                riconosciuto come autore, (2) <strong>Integrità</strong> - diritto di opporsi a
+                                modifiche/alterazioni dell'opera. Il Creator <strong>conserva sempre</strong> questi
+                                diritti, anche dopo la vendita dell'opera fisica.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-diritti-patrimoniali" class="text-xl font-bold text-emerald-700">Diritti Patrimoniali d'Autore</dt>
-                            <dd class="mt-1 text-gray-700">Diritti economici del Creator (Legge 633/1941 Art. 12-19): <strong>riproduzione</strong> (fare copie/stampe), <strong>comunicazione al pubblico</strong> (pubblicare online/TV), <strong>distribuzione</strong> (vendere copie). L'Owner che compra l'opera fisica <strong>NON acquisisce</strong> questi diritti, che restano al Creator salvo cessione esplicita scritta.</dd>
+                            <dt id="glossary-diritti-patrimoniali" class="text-xl font-bold text-emerald-700">Diritti
+                                Patrimoniali d'Autore</dt>
+                            <dd class="mt-1 text-gray-700">Diritti economici del Creator (Legge 633/1941 Art. 12-19):
+                                <strong>riproduzione</strong> (fare copie/stampe), <strong>comunicazione al
+                                    pubblico</strong> (pubblicare online/TV), <strong>distribuzione</strong> (vendere
+                                copie). L'Owner che compra l'opera fisica <strong>NON acquisisce</strong> questi
+                                diritti, che restano al Creator salvo cessione esplicita scritta.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-mecenate" class="text-xl font-bold text-emerald-700">Mecenate</dt>

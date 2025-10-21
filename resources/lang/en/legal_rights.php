@@ -22,7 +22,7 @@ return [
     // Section titles
     'section_title' => 'Copyright & Resale Rights',
     'section_subtitle' => 'Italian and European legislation: what belongs to the Creator, what the Owner acquires',
-    
+
     // Disclaimer
     'disclaimer_title' => 'Important Notice',
     'disclaimer_text' => 'The following information is provided for informational and educational purposes only. It does not constitute legal advice. For specific matters, consult a lawyer specialized in copyright law.',
@@ -31,7 +31,7 @@ return [
     // Creator Rights
     'creator_rights_title' => 'Creator Rights (Always and Forever)',
     'creator_rights_subtitle' => 'The Creator retains these rights even after selling the artwork',
-    
+
     'moral_rights_title' => 'Moral Rights (Inalienable)',
     'moral_rights_subtitle' => 'Italian Law 633/1941 Art. 20 - Never transferable, even after sale',
     'moral_rights' => [
@@ -78,39 +78,39 @@ return [
     // Comparison Royalty
     'comparison_title' => 'Resale Right vs Platform Royalty',
     'comparison_subtitle' => 'Two distinct and cumulative mechanisms',
-    
+
     'comparison_table' => [
         'aspect' => 'Aspect',
         'platform_royalty' => 'Platform Royalty (FlorenceEGI)',
         'legal_droit' => 'Resale Right (Legal)',
-        
+
         'legal_basis' => 'Legal basis',
         'legal_basis_platform' => 'Smart contract agreement',
         'legal_basis_law' => 'Italian Law 633/1941 Art. 19bis',
-        
+
         'min_threshold' => 'Minimum threshold',
         'min_threshold_platform' => '€0 (all sales)',
         'min_threshold_law' => '€3,000',
-        
+
         'percentage' => 'Percentage',
         'percentage_platform' => '4.5% fixed',
         'percentage_law' => '4% → 0.25% (decreasing)',
-        
+
         'sale_type' => 'Sale type',
         'sale_type_platform' => 'P2P direct (platform)',
         'sale_type_law' => 'Through professionals (galleries/auctions)',
-        
+
         'management' => 'Management',
         'management_platform' => 'Automatic smart contract',
         'management_law' => 'SIAE (manual)',
-        
+
         'cumulative' => 'Cumulative',
         'cumulative_yes' => 'YES! Creator can receive BOTH',
     ],
 
     // Sale scenarios
     'scenarios_title' => 'How It Works on FlorenceEGI',
-    
+
     'scenario_primary' => [
         'title' => 'Primary Sale (Mint) - EGI €1,000',
         'distribution' => 'Revenue distribution:',
@@ -154,7 +154,7 @@ return [
 
     // Legislation
     'legislation_title' => 'Legislative Framework',
-    
+
     'law_lda' => [
         'title' => 'Italian Law 633/1941 (Copyright Act - LDA)',
         'art_12_19' => 'Art. 12-19: Economic rights (reproduction, communication, distribution)',
@@ -209,4 +209,3 @@ return [
         'enforcement' => 'Smart contract prevents royalty evasion (trustless enforcement)',
     ],
 ];
-
