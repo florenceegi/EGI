@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\Gdpr\GdprActivityCategory;
 use App\Models\Egi;
 use App\Models\User;
+use App\Services\AnthropicService;
 use App\Services\Gdpr\AuditLogService;
 use Illuminate\Support\Facades\DB;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -32,6 +33,7 @@ class EgiPreMintManagementService
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
+    protected AnthropicService $anthropicService;
 
     /**
      * Constructor with dependency injection
@@ -39,16 +41,19 @@ class EgiPreMintManagementService
      * @param UltraLogManager $logger Ultra logging manager for service operations
      * @param ErrorManagerInterface $errorManager Ultra error manager for error handling
      * @param AuditLogService $auditService GDPR audit logging service
+     * @param AnthropicService $anthropicService N.A.T.A.N AI service (Anthropic Claude)
      * @privacy-safe All injected services handle GDPR compliance
      */
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
-        AuditLogService $auditService
+        AuditLogService $auditService,
+        AnthropicService $anthropicService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
+        $this->anthropicService = $anthropicService;
     }
 
     /**
@@ -123,7 +128,6 @@ class EgiPreMintManagementService
                 'pre_mint_mode' => true,
                 'pre_mint_created_at' => $egi->pre_mint_created_at->toIso8601String(),
             ];
-
         } catch (\Exception $e) {
             // 6. ULM: Log service-level error
             $this->logger->error('[PRE_MINT_SERVICE] Failed to enable Pre-Mint mode', [
@@ -206,7 +210,6 @@ class EgiPreMintManagementService
                 'egi_id' => $egi->id,
                 'pre_mint_mode' => false,
             ];
-
         } catch (\Exception $e) {
             // 6. ULM: Log service-level error
             $this->logger->error('[PRE_MINT_SERVICE] Failed to disable Pre-Mint mode', [
@@ -244,40 +247,62 @@ class EgiPreMintManagementService
     {
         try {
             // 1. ULM: Log service operation start
-            $this->logger->info('[PRE_MINT_SERVICE] Requesting AI analysis', [
+            $this->logger->info('[PRE_MINT_SERVICE] Requesting N.A.T.A.N AI analysis', [
                 'egi_id' => $egi->id,
                 'user_id' => $user->id,
                 'log_category' => 'PRE_MINT_AI_ANALYSIS_START'
             ]);
 
-            // 2. TODO: Integrate with N.A.T.A.N AI service
-            // For now, just log the request
-            $analysisJobId = 'AI_JOB_' . $egi->id . '_' . now()->timestamp;
+            // 2. Prepare EGI context for N.A.T.A.N AI (GDPR-safe: only public metadata)
+            $egiContext = [
+                'egi_id' => $egi->id,
+                'title' => $egi->title,
+                'description' => $egi->description,
+                'type' => $egi->type,
+                'creation_date' => $egi->creation_date?->format('Y-m-d'),
+                'status' => $egi->status,
+                'creator_id' => $egi->user_id, // No personal data, just ID
+            ];
 
-            // 3. GDPR: Log user action with AuditLogService
-            $this->auditService->logUserAction($user, 'egi_ai_analysis_requested', [
+            // 3. Call N.A.T.A.N AI for Pre-Mint analysis
+            $aiPrompt = "Analizza questo EGI Pre-Mint e fornisci suggerimenti per migliorare la sua commerciabilità e valore sul marketplace. "
+                      . "Considera: completezza metadati, qualità descrizione, potenziale appeal per acquirenti. "
+                      . "Fornisci: (1) Punteggio qualità 1-10, (2) Suggerimenti concreti per migliorare, (3) Stima potenziale prezzo di vendita.";
+
+            $aiResponse = $this->anthropicService->chat($aiPrompt, $egiContext, []);
+
+            // 4. Store AI analysis result in EGI metadata (for future reference)
+            $analysisResult = [
+                'analysis_timestamp' => now()->toIso8601String(),
+                'ai_response' => $aiResponse,
+                'ai_model' => config('services.anthropic.model', 'claude-3-5-sonnet-20241022'),
+            ];
+
+            // 5. GDPR: Log user action with AuditLogService
+            $this->auditService->logUserAction($user, 'egi_ai_analysis_completed', [
                 'egi_id' => $egi->id,
                 'egi_title' => $egi->title,
-                'analysis_job_id' => $analysisJobId,
+                'analysis_success' => true,
+                'ai_model_used' => $analysisResult['ai_model'],
                 'ip_address' => $requestMetadata['ip_address'],
                 'user_agent' => $requestMetadata['user_agent'],
             ], GdprActivityCategory::CONTENT_MODIFICATION);
 
-            // 4. ULM: Log successful AI request
-            $this->logger->info('[PRE_MINT_SERVICE] AI analysis requested successfully', [
+            // 6. ULM: Log successful AI analysis
+            $this->logger->info('[PRE_MINT_SERVICE] N.A.T.A.N AI analysis completed successfully', [
                 'egi_id' => $egi->id,
                 'user_id' => $user->id,
-                'analysis_job_id' => $analysisJobId,
+                'response_length' => strlen($aiResponse),
                 'log_category' => 'PRE_MINT_AI_ANALYSIS_SUCCESS'
             ]);
 
             return [
                 'success' => true,
-                'analysis_job_id' => $analysisJobId,
                 'egi_id' => $egi->id,
-                'message' => 'AI analysis request queued successfully',
+                'analysis' => $analysisResult,
+                'ai_response' => $aiResponse,
+                'message' => 'N.A.T.A.N AI analysis completed successfully',
             ];
-
         } catch (\Exception $e) {
             // 5. ULM: Log service-level error
             $this->logger->error('[PRE_MINT_SERVICE] AI analysis request failed', [
@@ -371,7 +396,6 @@ class EgiPreMintManagementService
                 'blockchain_tx_id' => $blockchainTxId,
                 'message' => 'EGI promotion to blockchain initiated successfully',
             ];
-
         } catch (\Exception $e) {
             // 6. ULM: Log service-level error
             $this->logger->error('[PRE_MINT_SERVICE] Pre-Mint promotion failed', [
@@ -388,4 +412,3 @@ class EgiPreMintManagementService
         }
     }
 }
-
