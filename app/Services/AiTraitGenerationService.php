@@ -105,17 +105,18 @@ class AiTraitGenerationService
                 ]);
 
                 // GDPR Audit
-                $this->auditService->logAction(
+                $user = \App\Models\User::findOrFail($userId);
+                $this->auditService->logUserAction(
+                    $user,
                     'ai_trait_generation_requested',
-                    $userId,
-                    \App\Enums\GdprActivityCategory::AI_PROCESSING,
                     [
                         'generation_id' => $generation->id,
                         'egi_id' => $egiId,
                         'requested_count' => $requestedCount,
+                        'ip_address' => $ipAddress,
+                        'user_agent' => $userAgent,
                     ],
-                    $ipAddress,
-                    $userAgent
+                    \App\Enums\Gdpr\GdprActivityCategory::AI_PROCESSING
                 );
 
                 try {
@@ -254,17 +255,18 @@ class AiTraitGenerationService
                 }
 
                 // GDPR Audit
-                $this->auditService->logAction(
+                $user = \App\Models\User::findOrFail($userId);
+                $this->auditService->logUserAction(
+                    $user,
                     'ai_trait_proposals_reviewed',
-                    $userId,
-                    \App\Enums\GdprActivityCategory::AI_PROCESSING,
                     [
                         'generation_id' => $generationId,
                         'approved' => $approvedCount,
                         'total' => $totalCount,
+                        'ip_address' => $ipAddress,
+                        'user_agent' => $userAgent,
                     ],
-                    $ipAddress,
-                    $userAgent
+                    \App\Enums\Gdpr\GdprActivityCategory::AI_PROCESSING
                 );
 
                 $this->logger->info("[AiTraitGen] Review completed", [
@@ -372,17 +374,18 @@ class AiTraitGenerationService
                 $generation->markAsApplied();
 
                 // GDPR Audit
-                $this->auditService->logAction(
+                $user = \App\Models\User::findOrFail($userId);
+                $this->auditService->logUserAction(
+                    $user,
                     'ai_traits_applied_to_egi',
-                    $userId,
-                    \App\Enums\GdprActivityCategory::EGI_TRAIT_MANAGEMENT,
                     [
                         'generation_id' => $generationId,
                         'egi_id' => $generation->egi_id,
                         'traits_created' => count($createdTraits),
+                        'ip_address' => $ipAddress,
+                        'user_agent' => $userAgent,
                     ],
-                    $ipAddress,
-                    $userAgent
+                    \App\Enums\Gdpr\GdprActivityCategory::EGI_TRAIT_MANAGEMENT
                 );
 
                 $this->logger->info("[AiTraitGen] Application completed", [
