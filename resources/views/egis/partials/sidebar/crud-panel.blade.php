@@ -53,7 +53,9 @@
                         <div class="font-mono text-xs text-yellow-300">
                             <div><strong>DEBUG:</strong> EGI #{{ $egi->id }}</div>
                             <div>egi_type: <strong>{{ $egi->egi_type ?? 'NULL' }}</strong></div>
-                            <div>pre_mint_mode: <strong>{{ $egi->pre_mint_mode ? 'TRUE (riservato creator)' : 'FALSE (marketplace)' }}</strong></div>
+                            <div>pre_mint_mode:
+                                <strong>{{ $egi->pre_mint_mode ? 'TRUE (riservato creator)' : 'FALSE (marketplace)' }}</strong>
+                            </div>
                             <div>token_EGI: <strong>{{ $egi->token_EGI ?? 'NULL' }}</strong></div>
                             <div>isNotMinted: <strong>{{ $isNotMinted ? 'YES' : 'NO' }}</strong></div>
                             <div>isASA: <strong>{{ $isASA ? 'YES' : 'NO' }}</strong></div>

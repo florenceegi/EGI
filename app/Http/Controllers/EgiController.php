@@ -439,7 +439,7 @@ class EgiController extends Controller {
                         'errors' => $validator->errors()
                     ], 422);
                 }
-                
+
                 return redirect()->back()
                     ->withErrors($validator)
                     ->withInput();
