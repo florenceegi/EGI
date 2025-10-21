@@ -81,11 +81,16 @@ class AiTraitGenerationService
                 // Load EGI
                 $egi = Egi::findOrFail($egiId);
 
-                // Get image URL (use 'card' variant for AI)
-                $imageUrl = $egi->getImageUrl('card') ?? $egi->getImageUrl();
+                // Get image URL (use optimized 'card' variant 400x400 for AI)
+                $imageUrl = $egi->main_image_url; // Already optimized 400x400 WebP variant
 
-                if (!$imageUrl) {
-                    throw new \Exception("EGI has no image for AI analysis");
+                if (empty($imageUrl)) {
+                    // Fallback to original if card variant not available
+                    $imageUrl = $egi->original_image_url;
+                }
+
+                if (empty($imageUrl)) {
+                    throw new \Exception("EGI has no image for AI analysis. Please upload an image first.");
                 }
 
                 // Create generation session (status=pending)
