@@ -18,7 +18,13 @@
 
 @props(['egi', 'isCreator'])
 
+{{-- Only creator can use AI Traits --}}
 @if (!$isCreator)
+    @php return; @endphp
+@endif
+
+{{-- AI Traits only available for UNMINTED EGI (blockchain immutability) --}}
+@if (!is_null($egi->token_EGI))
     @php return; @endphp
 @endif
 
@@ -93,7 +99,8 @@
 
         {{-- Show Latest Generation with Proposals --}}
         @php
-            $latestGeneration = $egi->aiTraitGenerations()
+            $latestGeneration = $egi
+                ->aiTraitGenerations()
                 ->with('proposals')
                 ->where('status', 'analyzed')
                 ->latest()
