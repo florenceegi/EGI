@@ -70,6 +70,12 @@ enum GdprActivityCategory: string {
 /** Notification management and interactions */
     case NOTIFICATION_MANAGEMENT = 'notification_management';
 
+/** AI processing and analysis activities */
+    case AI_PROCESSING = 'ai_processing';
+
+/** EGI trait management (creation, modification) */
+    case EGI_TRAIT_MANAGEMENT = 'egi_trait_management';
+
     /**
      * Ritorna la descrizione umana della categoria, OS2.0 style.
      */
@@ -93,6 +99,8 @@ enum GdprActivityCategory: string {
             self::PERSONAL_DATA_UPDATE => 'Personal Data Updates and Modifications',
             self::WALLET_MANAGEMENT => 'Wallet and Financial Operations Management',
             self::NOTIFICATION_MANAGEMENT => 'Notification Management and User Interactions',
+            self::AI_PROCESSING => 'AI Processing and Analysis Activities',
+            self::EGI_TRAIT_MANAGEMENT => 'EGI Trait Management (Creation, Modification)',
         };
     }
 
@@ -125,7 +133,9 @@ enum GdprActivityCategory: string {
             self::MEDIA_MANAGEMENT,
             self::PLATFORM_USAGE,
             self::SYSTEM_INTERACTION,
-            self::NOTIFICATION_MANAGEMENT => PrivacyLevel::STANDARD,
+            self::NOTIFICATION_MANAGEMENT,
+            self::AI_PROCESSING,
+            self::EGI_TRAIT_MANAGEMENT => PrivacyLevel::STANDARD,
         };
     }
 
