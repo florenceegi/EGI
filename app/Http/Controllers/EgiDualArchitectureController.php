@@ -2,42 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Gdpr\GdprActivityCategory;
 use App\Helpers\FegiAuth;
 use App\Models\Egi;
-use App\Services\PreMintEgiService;
-use App\Services\EgiMintingOrchestrator;
+use App\Services\EgiPreMintManagementService;
+use App\Services\Gdpr\AuditLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UltraLogManager\UltraLogManager;
 
 /**
- * EgiDualArchitectureController OS3.0 - UEM/ULM Compliant
+ * EgiDualArchitectureController OS3.0 - UEM/ULM/GDPR Compliant
  *
  * Handles Auto-Mint and Pre-Mint actions for the Dual Architecture EGI system.
  * Supports ASA (classic) and SmartContract (living) minting workflows.
+ * Implements SOLID principles with proper service layer separation.
+ *
+ * @Oracode Controller: Dual Architecture EGI Management
+ * 🎯 Purpose: Coordinate Pre-Mint operations with full GDPR audit trail
+ * 🛡️ Privacy: Tracks all EGI state changes with creator identification
+ * 🧱 Core Logic: Validates requests, delegates to service, logs actions
  *
  * @package App\Http\Controllers
  * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
- * @version 1.0.0 (FlorenceEGI - Dual Architecture)
+ * @version 2.0.0 (FlorenceEGI - Dual Architecture + GDPR)
  * @date 2025-10-21
- * @purpose Orchestrate creator-driven minting and pre-mint workflows with UEM/ULM
+ * @purpose Orchestrate creator-driven minting and pre-mint workflows with GDPR compliance
  */
 class EgiDualArchitectureController extends Controller
 {
-    protected PreMintEgiService $preMintService;
-    protected EgiMintingOrchestrator $mintOrchestrator;
+    protected EgiPreMintManagementService $preMintManagementService;
+    protected AuditLogService $auditService;
     protected ErrorManagerInterface $errorManager;
     protected UltraLogManager $logger;
 
+    /**
+     * Constructor with dependency injection
+     *
+     * @param EgiPreMintManagementService $preMintManagementService Service for Pre-Mint operations
+     * @param AuditLogService $auditService GDPR audit logging service
+     * @param ErrorManagerInterface $errorManager Ultra error manager
+     * @param UltraLogManager $logger Ultra logging manager
+     * @privacy-safe All injected services handle GDPR compliance
+     */
     public function __construct(
-        PreMintEgiService $preMintService,
-        EgiMintingOrchestrator $mintOrchestrator,
+        EgiPreMintManagementService $preMintManagementService,
+        AuditLogService $auditService,
         ErrorManagerInterface $errorManager,
         UltraLogManager $logger
     ) {
-        $this->preMintService = $preMintService;
-        $this->mintOrchestrator = $mintOrchestrator;
+        $this->preMintManagementService = $preMintManagementService;
+        $this->auditService = $auditService;
         $this->errorManager = $errorManager;
         $this->logger = $logger;
     }
@@ -45,35 +61,39 @@ class EgiDualArchitectureController extends Controller
     /**
      * Enable Auto-Mint for a Pre-Mint EGI
      *
-     * @Oracode Method: Auto-Mint Activation
-     * 🎯 Purpose: Allow creator to enable self-minting of their Pre-Mint EGI
-     * 📥 Input: HTTP request with mint_type preference (ASA|SmartContract)
-     * 📤 Output: JSON response confirming activation or error via UEM
-     * 🔒 Security: Creator-only authorization, feature flag validation
-     * 🪵 Logging: ULM tracks attempt, success, and failures
+     * @Oracode Method: Auto-Mint Activation (Controller)
+     * 🎯 Purpose: Validate request and delegate to service
+     * 📥 Input: HTTP request for Pre-Mint mode activation
+     * 📤 Output: JSON response confirming activation or error
+     * 🔒 Security: Creator-only authorization
+     * 🪵 Logging: ULM tracks controller-level operation
+     * 🛡️ Privacy: GDPR audit via service layer
      *
-     * @param Request $request HTTP request containing mint_type
+     * @param Request $request HTTP request
      * @param Egi $egi Target EGI instance (route model binding)
      * @return JsonResponse Success response or UEM-handled error
      * @throws never UEM handles all exceptions
+     * @privacy-safe Delegates to service with full GDPR audit
      */
     public function enableAutoMint(Request $request, Egi $egi): JsonResponse
     {
-        $this->logger->info('[DUAL_ARCH] Auto-Mint enable attempt', [
+        // 1. ULM: Log controller operation start
+        $this->logger->info('[DUAL_ARCH_CTRL] Auto-Mint enable request received', [
             'egi_id' => $egi->id,
             'user_id' => FegiAuth::id(),
             'current_egi_type' => $egi->egi_type,
             'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent()
+            'log_category' => 'DUAL_ARCH_CONTROLLER_REQUEST'
         ]);
 
         try {
-            // 🔒 Authorization: Verify user is the creator
-            if ($egi->user_id !== FegiAuth::id()) {
+            // 2. 🔒 Authorization: Verify user is the creator
+            $user = FegiAuth::user();
+            if ($egi->user_id !== $user->id) {
                 return $this->errorManager->handle('DUAL_ARCH_AUTO_MINT_UNAUTHORIZED', [
                     'egi_id' => $egi->id,
                     'egi_creator_id' => $egi->user_id,
-                    'requesting_user_id' => FegiAuth::id(),
+                    'requesting_user_id' => $user->id,
                     'operation' => 'enable_auto_mint',
                     'ip_address' => $request->ip(),
                     'user_agent' => $request->userAgent(),
@@ -81,47 +101,42 @@ class EgiDualArchitectureController extends Controller
                 ]);
             }
 
-            // ✅ Validate EGI is NOT minted (egi_type must be NULL)
+            // 3. ✅ Validate EGI is NOT minted (egi_type must be NULL)
             if (!is_null($egi->egi_type)) {
                 return $this->errorManager->handle('DUAL_ARCH_NOT_PRE_MINT', [
                     'egi_id' => $egi->id,
                     'current_type' => $egi->egi_type ?? 'NULL',
                     'required_type' => 'NULL (not minted)',
                     'operation' => 'enable_auto_mint',
-                    'user_id' => FegiAuth::id(),
+                    'user_id' => $user->id,
                     'timestamp' => now()->toIso8601String()
                 ]);
             }
 
-            // ✅ Enable pre-mint mode (reserve for creator)
-            $egi->update([
-                'pre_mint_mode' => true,
-                'pre_mint_created_at' => $egi->pre_mint_created_at ?? now(),
-            ]);
+            // 4. Prepare request metadata for service
+            $requestMetadata = [
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ];
 
-            $this->logger->info('[DUAL_ARCH] Pre-Mint mode enabled (reserved for creator)', [
+            // 5. Delegate to service (SOLID: separation of concerns)
+            $result = $this->preMintManagementService->enablePreMintMode($egi, $user, $requestMetadata);
+
+            // 6. ULM: Log controller success
+            $this->logger->info('[DUAL_ARCH_CTRL] Auto-Mint enabled successfully', [
                 'egi_id' => $egi->id,
-                'user_id' => FegiAuth::id()
+                'user_id' => $user->id,
+                'log_category' => 'DUAL_ARCH_CONTROLLER_SUCCESS'
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => __('egi_dual_arch.auto_mint_enabled'),
-                'data' => [
-                    'egi_id' => $egi->id,
-                    'pre_mint_mode' => true,
-                ]
+                'data' => $result
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return $this->errorManager->handle('VALIDATION_ERROR', [
-                'egi_id' => $egi->id,
-                'operation' => 'enable_auto_mint',
-                'validation_errors' => $e->errors(),
-                'user_id' => FegiAuth::id(),
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent()
-            ], $e);
+
         } catch (\Exception $e) {
+            // 7. UEM: Handle all exceptions with full context
             return $this->errorManager->handle('DUAL_ARCH_AUTO_MINT_FAILED', [
                 'egi_id' => $egi->id,
                 'operation' => 'enable_auto_mint',
@@ -151,19 +166,19 @@ class EgiDualArchitectureController extends Controller
      */
     public function disableAutoMint(Request $request, Egi $egi): JsonResponse
     {
-        $this->logger->info('[DUAL_ARCH] Auto-Mint disable attempt', [
+        $this->logger->info('[DUAL_ARCH_CTRL] Auto-Mint disable request', [
             'egi_id' => $egi->id,
             'user_id' => FegiAuth::id(),
-            'ip_address' => $request->ip()
+            'log_category' => 'DUAL_ARCH_CONTROLLER_REQUEST'
         ]);
 
         try {
-            // 🔒 Authorization: Verify user is the creator
-            if ($egi->user_id !== FegiAuth::id()) {
+            $user = FegiAuth::user();
+            if ($egi->user_id !== $user->id) {
                 return $this->errorManager->handle('DUAL_ARCH_AUTO_MINT_UNAUTHORIZED', [
                     'egi_id' => $egi->id,
                     'egi_creator_id' => $egi->user_id,
-                    'requesting_user_id' => FegiAuth::id(),
+                    'requesting_user_id' => $user->id,
                     'operation' => 'disable_auto_mint',
                     'ip_address' => $request->ip(),
                     'user_agent' => $request->userAgent(),
@@ -171,19 +186,17 @@ class EgiDualArchitectureController extends Controller
                 ]);
             }
 
-            // ✅ Disable pre-mint mode (make available on marketplace)
-            $egi->update([
-                'pre_mint_mode' => false,
-            ]);
+            $requestMetadata = [
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ];
 
-            $this->logger->info('[DUAL_ARCH] Pre-Mint mode disabled (available on marketplace)', [
-                'egi_id' => $egi->id,
-                'user_id' => FegiAuth::id()
-            ]);
+            $result = $this->preMintManagementService->disablePreMintMode($egi, $user, $requestMetadata);
 
             return response()->json([
                 'success' => true,
                 'message' => __('egi_dual_arch.auto_mint_disabled'),
+                'data' => $result
             ]);
         } catch (\Exception $e) {
             return $this->errorManager->handle('DUAL_ARCH_AUTO_MINT_FAILED', [
@@ -248,13 +261,13 @@ class EgiDualArchitectureController extends Controller
                 ]);
             }
 
-            // 🤖 Request AI analysis via service
-            $result = $this->preMintService->requestAiAnalysis($egi);
+            $requestMetadata = [
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ];
 
-            $this->logger->info('[DUAL_ARCH] AI analysis requested successfully', [
-                'egi_id' => $egi->id,
-                'user_id' => FegiAuth::id()
-            ]);
+            $user = FegiAuth::user();
+            $result = $this->preMintManagementService->requestAiAnalysis($egi, $user, $requestMetadata);
 
             return response()->json([
                 'success' => true,
@@ -343,14 +356,13 @@ class EgiDualArchitectureController extends Controller
                 ]);
             }
 
-            // ⛓️ Promote to on-chain via service
-            $result = $this->preMintService->promoteToOnChain($egi, $targetType);
+            $requestMetadata = [
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ];
 
-            $this->logger->info('[DUAL_ARCH] Promotion to on-chain initiated successfully', [
-                'egi_id' => $egi->id,
-                'user_id' => FegiAuth::id(),
-                'target_type' => $targetType
-            ]);
+            $user = FegiAuth::user();
+            $result = $this->preMintManagementService->promoteToOnChain($egi, $targetType, $user, $requestMetadata);
 
             return response()->json([
                 'success' => true,
