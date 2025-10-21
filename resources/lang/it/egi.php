@@ -232,6 +232,7 @@ return [
         'price_numeric' => 'Il prezzo deve essere un numero valido',
         'price_min' => 'Il prezzo non può essere negativo',
         'creation_date_format' => 'Formato data non valido',
+        'validation_failed' => 'Errore di Validazione',
 
         // Messaggi di Successo
         'update_success' => 'EGI aggiornato con successo!',
@@ -242,10 +243,12 @@ return [
         'delete_error' => 'Errore durante l\'eliminazione dell\'EGI.',
         'permission_denied' => 'Non hai i permessi necessari per questa azione.',
         'not_found' => 'EGI non trovato.',
+        'generic_error' => 'Si è verificato un errore imprevisto.',
 
         // Messaggi Generali
         'no_changes_detected' => 'Nessuna modifica rilevata.',
         'unsaved_changes_warning' => 'Hai modifiche non salvate. Sei sicuro di voler uscire?',
+        'ok' => 'OK',
 
         // Blockchain Immutability Messages
         'blockchain_warning_title' => 'EGI Certificato su Blockchain',
