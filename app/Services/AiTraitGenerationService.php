@@ -9,7 +9,7 @@ use App\Services\AnthropicService;
 use App\Services\TraitMatchingService;
 use App\Services\TraitCreationService;
 use App\Services\TraitTranslationService;
-use App\Services\AuditLogService;
+use App\Services\Gdpr\AuditLogService;
 use Illuminate\Support\Facades\DB;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -502,4 +502,3 @@ class AiTraitGenerationService
         }
     }
 }
-
