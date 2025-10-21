@@ -24,7 +24,8 @@
                     <h3 class="text-xl font-bold text-white" style="font-family: 'Playfair Display', serif;">
                         Proposte Traits AI
                     </h3>
-                    <p class="text-sm text-indigo-100">N.A.T.A.N ha identificato {{ $generation->proposals->count() }} traits
+                    <p class="text-sm text-indigo-100">N.A.T.A.N ha identificato {{ $generation->proposals->count() }}
+                        traits
                         (Confidence: {{ $generation->total_confidence }}%)</p>
                 </div>
             </div>
@@ -66,9 +67,11 @@
                                         'new_type' => 'bg-orange-100 text-orange-800 border-orange-300',
                                         'new_category' => 'bg-red-100 text-red-800 border-red-300',
                                     ];
-                                    $badgeClass = $badgeColors[$proposal->match_type] ?? 'bg-gray-100 text-gray-800 border-gray-300';
+                                    $badgeClass =
+                                        $badgeColors[$proposal->match_type] ??
+                                        'bg-gray-100 text-gray-800 border-gray-300';
                                 @endphp
-                                <span class="rounded-full border px-3 py-1 text-xs font-semibold {{ $badgeClass }}">
+                                <span class="{{ $badgeClass }} rounded-full border px-3 py-1 text-xs font-semibold">
                                     @switch($proposal->match_type)
                                         @case('exact')
                                             ✓ Match Esatto
@@ -93,7 +96,8 @@
                                 </span>
 
                                 {{-- Confidence Badge --}}
-                                <span class="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-800">
+                                <span
+                                    class="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-800">
                                     {{ $proposal->confidence }}% confident
                                 </span>
                             </div>
@@ -121,7 +125,8 @@
                         {{-- Approval Checkbox --}}
                         <div class="flex flex-col items-center gap-2">
                             <label class="flex cursor-pointer items-center">
-                                <input type="checkbox" class="proposal-checkbox h-6 w-6 rounded border-gray-300 text-purple-600 focus:ring-2 focus:ring-purple-500"
+                                <input type="checkbox"
+                                    class="proposal-checkbox h-6 w-6 rounded border-gray-300 text-purple-600 focus:ring-2 focus:ring-purple-500"
                                     data-proposal-id="{{ $proposal->id }}" checked>
                             </label>
                             <span class="text-xs text-gray-500">Approva</span>
@@ -310,4 +315,3 @@
         }
     </script>
 @endpush
-
