@@ -6,6 +6,7 @@ use App\Enums\Gdpr\GdprActivityCategory;
 use App\Models\Egi;
 use App\Models\User;
 use App\Services\AnthropicService;
+use App\Services\EgiMintingOrchestrator;
 use App\Services\Gdpr\AuditLogService;
 use Illuminate\Support\Facades\DB;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -34,6 +35,7 @@ class EgiPreMintManagementService
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
     protected AnthropicService $anthropicService;
+    protected EgiMintingOrchestrator $mintingOrchestrator;
 
     /**
      * Constructor with dependency injection
@@ -42,18 +44,21 @@ class EgiPreMintManagementService
      * @param ErrorManagerInterface $errorManager Ultra error manager for error handling
      * @param AuditLogService $auditService GDPR audit logging service
      * @param AnthropicService $anthropicService N.A.T.A.N AI service (Anthropic Claude)
+     * @param EgiMintingOrchestrator $mintingOrchestrator Blockchain minting orchestrator (ASA/SmartContract)
      * @privacy-safe All injected services handle GDPR compliance
      */
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
         AuditLogService $auditService,
-        AnthropicService $anthropicService
+        AnthropicService $anthropicService,
+        EgiMintingOrchestrator $mintingOrchestrator
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
         $this->anthropicService = $anthropicService;
+        $this->mintingOrchestrator = $mintingOrchestrator;
     }
 
     /**
@@ -266,8 +271,8 @@ class EgiPreMintManagementService
 
             // 3. Call N.A.T.A.N AI for Pre-Mint analysis
             $aiPrompt = "Analizza questo EGI Pre-Mint e fornisci suggerimenti per migliorare la sua commerciabilità e valore sul marketplace. "
-                      . "Considera: completezza metadati, qualità descrizione, potenziale appeal per acquirenti. "
-                      . "Fornisci: (1) Punteggio qualità 1-10, (2) Suggerimenti concreti per migliorare, (3) Stima potenziale prezzo di vendita.";
+                . "Considera: completezza metadati, qualità descrizione, potenziale appeal per acquirenti. "
+                . "Fornisci: (1) Punteggio qualità 1-10, (2) Suggerimenti concreti per migliorare, (3) Stima potenziale prezzo di vendita.";
 
             $aiResponse = $this->anthropicService->chat($aiPrompt, $egiContext, []);
 
@@ -354,19 +359,25 @@ class EgiPreMintManagementService
                 'token_EGI' => $egi->token_EGI,
             ];
 
-            // 3. TODO: Integrate with EgiMintingOrchestrator for actual blockchain minting
-            // For now, just simulate the state change
-            $blockchainTxId = 'TX_' . $egi->id . '_' . now()->timestamp;
-
-            DB::transaction(function () use ($egi, $targetType, $blockchainTxId) {
+            // 3. Update EGI type BEFORE minting (required by EgiMintingOrchestrator)
+            DB::transaction(function () use ($egi, $targetType) {
                 $egi->update([
                     'egi_type' => $targetType,
                     'pre_mint_mode' => false, // No longer in pre-mint mode
-                    // blockchain_txid will be set by minting service
                 ]);
             });
 
-            // 4. GDPR: Log user action with AuditLogService
+            // 4. Call EgiMintingOrchestrator for actual blockchain minting
+            $mintingResult = $this->mintingOrchestrator->mint($egi, $user, [
+                'source' => 'pre_mint_promotion',
+                'auto_mint' => true,
+            ]);
+
+            // 5. Extract blockchain transaction details
+            $blockchainTxId = $mintingResult->blockchain_txid ?? $mintingResult->txid ?? 'PENDING';
+            $assetId = $mintingResult->asset_id ?? $mintingResult->app_id ?? null;
+
+            // 6. GDPR: Log user action with AuditLogService
             $this->auditService->logUserAction($user, 'egi_promoted_to_blockchain', [
                 'egi_id' => $egi->id,
                 'egi_title' => $egi->title,
@@ -374,18 +385,22 @@ class EgiPreMintManagementService
                 'new_state' => [
                     'egi_type' => $targetType,
                     'blockchain_tx_id' => $blockchainTxId,
+                    'asset_id' => $assetId,
                 ],
                 'target_type' => $targetType,
+                'minting_result_class' => get_class($mintingResult),
                 'ip_address' => $requestMetadata['ip_address'],
                 'user_agent' => $requestMetadata['user_agent'],
             ], GdprActivityCategory::WALLET_MANAGEMENT); // Blockchain operations = Wallet category
 
-            // 5. ULM: Log successful promotion
-            $this->logger->info('[PRE_MINT_SERVICE] Pre-Mint promoted successfully', [
+            // 7. ULM: Log successful promotion with blockchain confirmation
+            $this->logger->info('[PRE_MINT_SERVICE] Pre-Mint promoted to blockchain successfully', [
                 'egi_id' => $egi->id,
                 'user_id' => $user->id,
                 'target_type' => $targetType,
                 'blockchain_tx_id' => $blockchainTxId,
+                'asset_id' => $assetId,
+                'minting_result_type' => get_class($mintingResult),
                 'log_category' => 'PRE_MINT_PROMOTION_SUCCESS'
             ]);
 
@@ -394,7 +409,9 @@ class EgiPreMintManagementService
                 'egi_id' => $egi->id,
                 'egi_type' => $targetType,
                 'blockchain_tx_id' => $blockchainTxId,
-                'message' => 'EGI promotion to blockchain initiated successfully',
+                'asset_id' => $assetId,
+                'minting_result' => $mintingResult,
+                'message' => 'EGI promotion to blockchain completed successfully',
             ];
         } catch (\Exception $e) {
             // 6. ULM: Log service-level error
