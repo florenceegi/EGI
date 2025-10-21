@@ -258,12 +258,85 @@ return [
         'blockchain_transaction_pool_error' => 'La rete Algorand è temporaneamente sovraccarica. Riprova tra 5-10 minuti. Il tuo pagamento NON è stato effettuato.',
 
         // Dual Architecture - Auto-Mint & Pre-Mint Errors (User Messages)
+                // Dual Architecture - Auto-Mint & Pre-Mint Errors (Dev)
+        'dual_arch_auto_mint_unauthorized' => 'Tentativo di gestione Auto-Mint non autorizzato. User: :user_id, EGI: :egi_id',
+        'dual_arch_not_pre_mint' => 'Tentativo operazione su EGI non Pre-Mint. User: :user_id, EGI: :egi_id, Status: :status',
+        'dual_arch_smart_contract_disabled' => 'Tentativo di accesso EGI Vivente con feature disabilitata. User: :user_id, EGI: :egi_id',
+        'dual_arch_auto_mint_failed' => 'Errore gestione Auto-Mint. User: :user_id, EGI: :egi_id, Operation: :operation, Error: :error',
+        'dual_arch_ai_analysis_failed' => 'Errore richiesta analisi AI NATAN. User: :user_id, EGI: :egi_id, Request: :request_data, Error: :error',
+        'dual_arch_promotion_failed' => 'CRITICAL: Promozione EGI blockchain fallita. User: :user_id, EGI: :egi_id, Blockchain: :blockchain, Error: :error',
+
+        // KMS Security Service Errors (Dev)
+        'kms_dek_generation_failed' => 'CRITICAL: KMS DEK generation failed. Provider: :provider, KeyId: :key_id, Error: :error',
+        'kms_dek_encryption_failed' => 'CRITICAL: KMS DEK encryption failed. Provider: :provider, KeyId: :key_id, Error: :error',
+        'kms_dek_decryption_failed' => 'CRITICAL: KMS DEK decryption failed. Provider: :provider, KeyId: :key_id, Error: :error',
+        'kms_secure_encrypt_failed' => 'CRITICAL: KMS secure data encryption failed. DataType: :data_type, Size: :data_size, Error: :error',
+        'kms_secure_decrypt_failed' => 'CRITICAL: KMS secure data decryption failed. DataType: :data_type, Error: :error',
+        'kms_provider_unavailable' => 'CRITICAL: KMS provider unavailable. Provider: :provider, Endpoint: :endpoint, Error: :error',
+        'kms_configuration_invalid' => 'CRITICAL: KMS configuration invalid. Provider: :provider, Issue: :issue',
+        'kms_audit_log_failed' => 'KMS audit logging failed. Operation: :operation, User: :user_id, Error: :error',
+    ],
+
+    'user' => [
+        // ProfileImage Controller Errors (User Messages)
+        'profile_image_upload_validation_error' => 'I dati dell\'immagine non sono validi. Controlla il formato e le dimensioni.',
+        'profile_image_upload_error' => 'Errore durante il caricamento dell\'immagine. Riprova più tardi.',
+        'profile_set_current_image_error' => 'Errore durante l\'impostazione dell\'immagine principale. Riprova più tardi.',
+        'profile_image_delete_error' => 'Errore durante l\'eliminazione dell\'immagine. Riprova più tardi.',
+        'profile_banner_upload_error' => 'Errore durante il caricamento del banner. Riprova più tardi.',
+        'profile_set_current_banner_error' => 'Errore durante l\'impostazione del banner principale. Riprova più tardi.',
+        'profile_banner_delete_error' => 'Errore durante l\'eliminazione del banner. Riprova più tardi.',
+
+        // COA Signature Errors (User Messages)
+        'coa_author_sign_error' => 'Errore durante la firma del certificato. Riprova più tardi o contatta l\'assistenza.',
+
+        // PA/Enterprise System Errors (User Messages)
+        'pa_dashboard_error' => 'Errore durante il caricamento della dashboard. Riprova più tardi.',
+        'pa_dashboard_quickstats_error' => 'Errore durante il caricamento delle statistiche. Riprova più tardi.',
+        'pa_heritage_list_error' => 'Errore durante il caricamento del patrimonio. Riprova più tardi.',
+        'pa_heritage_detail_error' => 'Errore durante il caricamento del dettaglio. Riprova più tardi.',
+
+        // PA Acts Upload Errors (User Messages)
+        'pa_act_auth_required' => 'È necessario effettuare il login per caricare atti PA.',
+        'pa_act_role_required' => 'Non sei autorizzato a caricare atti PA. Contatta l\'amministratore.',
+        'pa_act_validation_failed' => 'I dati inseriti non sono validi. Controlla tutti i campi obbligatori.',
+        'pa_act_invalid_file' => 'Il file selezionato non è valido. Usa solo file PDF firmati digitalmente.',
+        'pa_act_invalid_signature' => 'Il file PDF deve essere firmato digitalmente. Carica un file con firma valida.',
+        'pa_act_upload_failed' => 'Errore durante il caricamento dell\'atto. Riprova più tardi.',
+        'pa_act_collection_failed' => 'Errore durante la creazione del fascicolo. Riprova più tardi.',
+
+        // Blockchain Minting Errors (User Messages)
+        'mint_checkout_error' => 'Errore durante il caricamento della pagina di acquisto. Riprova più tardi.',
+        'certificate_regeneration_failed' => 'Errore durante la rigenerazione del certificato. Riprova più tardi.',
+        'mint_process_error' => 'Errore durante il processo di minting. La transazione NON è stata completata. Riprova più tardi.',
+        'real_blockchain_mint_failed' => 'Errore durante il minting sulla blockchain. La transazione NON è stata completata. Contatta l\'assistenza.',
+
+        // AREA 2.2.1 - Payment Distribution Service (Mint-based) Errors (User Messages)
+        'mint_distribution_error' => 'Errore durante l\'elaborazione del pagamento. Contatta l\'assistenza.',
+        'mint_not_completed' => 'Il minting non è ancora completato. Riprova più tardi.',
+        'invalid_payment_amount' => 'Importo del pagamento non valido. Contatta l\'assistenza.',
+
+        // Dual Architecture - Auto-Mint & Pre-Mint Errors (User Messages)
         'dual_arch_auto_mint_unauthorized' => 'Non sei autorizzato a gestire l\'Auto-Mint di questo EGI. Solo il creator può abilitare o disabilitare l\'Auto-Mint.',
         'dual_arch_not_pre_mint' => 'Questa operazione è disponibile solo per EGI in stato Pre-Mint. L\'EGI selezionato è già stato mintato sulla blockchain.',
         'dual_arch_smart_contract_disabled' => 'La funzionalità EGI Vivente (SmartContract) non è al momento disponibile. Contatta l\'assistenza per maggiori informazioni.',
         'dual_arch_auto_mint_failed' => 'Si è verificato un errore durante la gestione dell\'Auto-Mint. Riprova più tardi o contatta l\'assistenza.',
         'dual_arch_ai_analysis_failed' => 'Si è verificato un errore durante la richiesta di analisi AI. Il sistema N.A.T.A.N potrebbe essere temporaneamente non disponibile. Riprova più tardi.',
         'dual_arch_promotion_failed' => 'Si è verificato un errore durante la promozione dell\'EGI su blockchain. La transazione NON è stata eseguita. Riprova più tardi.',
+
+        // KMS Security Service Errors (User Messages)
+        'kms_dek_generation_failed' => 'Errore di sicurezza durante la generazione delle chiavi. Contatta immediatamente l\'assistenza.',
+        'kms_dek_encryption_failed' => 'Errore di sicurezza durante la protezione dei dati. Contatta immediatamente l\'assistenza.',
+        'kms_dek_decryption_failed' => 'Errore di sicurezza durante l\'accesso ai dati protetti. Contatta immediatamente l\'assistenza.',
+        'kms_secure_encrypt_failed' => 'Errore durante la protezione sicura dei dati sensibili. Contatta immediatamente l\'assistenza.',
+        'kms_secure_decrypt_failed' => 'Errore durante l\'accesso ai dati protetti. Contatta immediatamente l\'assistenza.',
+        'kms_provider_unavailable' => 'Il sistema di sicurezza non è al momento disponibile. Riprova tra qualche minuto o contatta l\'assistenza.',
+        'kms_configuration_invalid' => 'Configurazione di sicurezza non valida. Contatta immediatamente l\'assistenza tecnica.',
+        'kms_audit_log_failed' => 'Errore nel sistema di tracciamento sicurezza. L\'operazione è stata comunque completata.',
+    ],
+
+    // Generic message (used by UserInterfaceHandler if no specific message found)
+    'generic_error' => 'Si è verificato un errore. Riprova più tardi o contatta l\'assistenza.',,
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
