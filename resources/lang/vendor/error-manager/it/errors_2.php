@@ -336,9 +336,5 @@ return [
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
-    'generic_error' => 'Si è verificato un errore. Riprova più tardi o contatta l\'assistenza.',,
-    ],
-
-    // Generic message (used by UserInterfaceHandler if no specific message found)
     'generic_error' => 'Si è verificato un errore. Riprova più tardi o contatta l\'assistenza.',
 ];
