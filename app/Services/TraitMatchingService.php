@@ -404,4 +404,3 @@ class TraitMatchingService
         return strtolower(trim($str));
     }
 }
-

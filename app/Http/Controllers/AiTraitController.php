@@ -292,4 +292,3 @@ class AiTraitController extends Controller
         ];
     }
 }
-
