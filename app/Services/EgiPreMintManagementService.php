@@ -428,4 +428,219 @@ class EgiPreMintManagementService
             throw new \Exception("Pre-Mint promotion failed: " . $e->getMessage(), 0, $e);
         }
     }
+
+    /**
+     * Generate AI description for an EGI from scratch
+     *
+     * @Oracode Method: Generate Description with AI
+     * 🎯 Purpose: Create professional description using N.A.T.A.N AI
+     * 📥 Input: EGI with title/type, User
+     * 📤 Output: AI-generated description saved to DB
+     * 🔒 Security: Creator-only operation
+     * 🪵 Logging: Full audit trail
+     * 🛡️ Privacy: GDPR audit for content generation
+     *
+     * @param Egi $egi Target EGI for description generation
+     * @param User $user Creator user
+     * @param array $requestMetadata Request metadata (IP, UA) for audit
+     * @return array Generated description result
+     * @throws \Exception When AI generation fails
+     * @privacy-safe Logs AI content generation with GDPR audit trail
+     */
+    public function generateDescription(Egi $egi, User $user, array $requestMetadata): array
+    {
+        try {
+            // 1. ULM: Log service operation start
+            $this->logger->info('[PRE_MINT_SERVICE] Generating AI description', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'has_existing_description' => !empty($egi->description),
+                'log_category' => 'PRE_MINT_GENERATE_DESCRIPTION_START'
+            ]);
+
+            // 2. Store previous state for GDPR audit
+            $previousDescription = $egi->description;
+
+            // 3. Prepare context for N.A.T.A.N AI
+            $egiContext = [
+                'egi_id' => $egi->id,
+                'title' => $egi->title,
+                'type' => $egi->type,
+                'creation_date' => $egi->creation_date?->format('Y-m-d'),
+                'existing_description' => $egi->description,
+            ];
+
+            // 4. Call N.A.T.A.N AI to generate description
+            $aiPrompt = "Genera una descrizione professionale, coinvolgente e ottimizzata per il marketplace FlorenceEGI. "
+                      . "L'EGI ha titolo: '{$egi->title}' e tipo: '{$egi->type}'. "
+                      . "La descrizione deve: "
+                      . "(1) Essere accattivante per potenziali acquirenti, "
+                      . "(2) Evidenziare il valore e l'unicità dell'opera, "
+                      . "(3) Essere lunga 2-3 paragrafi (150-250 parole), "
+                      . "(4) Usare linguaggio professionale ma accessibile, "
+                      . "(5) Includere dettagli rilevanti per il tipo di asset. "
+                      . "Fornisci SOLO il testo della descrizione, senza titoli o prefissi.";
+
+            $generatedDescription = $this->anthropicService->chat($aiPrompt, $egiContext, []);
+
+            // 5. Save description to database
+            DB::transaction(function () use ($egi, $generatedDescription) {
+                $egi->update([
+                    'description' => trim($generatedDescription),
+                ]);
+            });
+
+            // 6. GDPR: Log user action with AuditLogService
+            $this->auditService->logUserAction($user, 'egi_description_generated_by_ai', [
+                'egi_id' => $egi->id,
+                'egi_title' => $egi->title,
+                'previous_description' => $previousDescription,
+                'new_description_length' => strlen($generatedDescription),
+                'ai_model_used' => config('services.anthropic.model', 'claude-3-5-sonnet-20241022'),
+                'ip_address' => $requestMetadata['ip_address'],
+                'user_agent' => $requestMetadata['user_agent'],
+            ], GdprActivityCategory::CONTENT_CREATION);
+
+            // 7. ULM: Log successful generation
+            $this->logger->info('[PRE_MINT_SERVICE] AI description generated successfully', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'description_length' => strlen($generatedDescription),
+                'log_category' => 'PRE_MINT_GENERATE_DESCRIPTION_SUCCESS'
+            ]);
+
+            return [
+                'success' => true,
+                'egi_id' => $egi->id,
+                'description' => $generatedDescription,
+                'previous_description' => $previousDescription,
+                'message' => 'Descrizione generata da N.A.T.A.N AI e salvata con successo',
+            ];
+
+        } catch (\Exception $e) {
+            // 8. ULM: Log service-level error
+            $this->logger->error('[PRE_MINT_SERVICE] Description generation failed', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'error_message' => $e->getMessage(),
+                'log_category' => 'PRE_MINT_GENERATE_DESCRIPTION_ERROR'
+            ]);
+
+            // 9. Re-throw for controller UEM handling
+            throw new \Exception("Description generation failed: " . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * Improve existing EGI description using AI
+     *
+     * @Oracode Method: Improve Description with AI
+     * 🎯 Purpose: Enhance existing description using N.A.T.A.N AI
+     * 📥 Input: EGI with existing description, User
+     * 📤 Output: AI-improved description saved to DB
+     * 🔒 Security: Creator-only operation
+     * 🪵 Logging: Full audit trail
+     * 🛡️ Privacy: GDPR audit for content modification
+     *
+     * @param Egi $egi Target EGI with existing description
+     * @param User $user Creator user
+     * @param array $requestMetadata Request metadata (IP, UA) for audit
+     * @return array Improved description result
+     * @throws \Exception When AI improvement fails or no description exists
+     * @privacy-safe Logs AI content modification with GDPR audit trail
+     */
+    public function improveDescription(Egi $egi, User $user, array $requestMetadata): array
+    {
+        try {
+            // 1. Validate existing description
+            if (empty($egi->description)) {
+                throw new \Exception('Cannot improve description: EGI has no existing description. Use generateDescription() instead.');
+            }
+
+            // 2. ULM: Log service operation start
+            $this->logger->info('[PRE_MINT_SERVICE] Improving AI description', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'original_length' => strlen($egi->description),
+                'log_category' => 'PRE_MINT_IMPROVE_DESCRIPTION_START'
+            ]);
+
+            // 3. Store previous state for GDPR audit
+            $previousDescription = $egi->description;
+
+            // 4. Prepare context for N.A.T.A.N AI
+            $egiContext = [
+                'egi_id' => $egi->id,
+                'title' => $egi->title,
+                'type' => $egi->type,
+                'current_description' => $egi->description,
+            ];
+
+            // 5. Call N.A.T.A.N AI to improve description
+            $aiPrompt = "Migliora questa descrizione di un EGI sul marketplace FlorenceEGI rendendola più professionale, coinvolgente e vendibile. "
+                      . "Descrizione attuale: '{$egi->description}' "
+                      . "Mantieni il significato originale ma: "
+                      . "(1) Rendi il linguaggio più accattivante e professionale, "
+                      . "(2) Evidenzia meglio il valore dell'opera, "
+                      . "(3) Ottimizza la struttura e la leggibilità, "
+                      . "(4) Lunghezza ideale: 2-3 paragrafi (150-250 parole), "
+                      . "(5) Correggi eventuali errori grammaticali. "
+                      . "Fornisci SOLO il testo della descrizione migliorata, senza commenti o prefissi.";
+
+            $improvedDescription = $this->anthropicService->chat($aiPrompt, $egiContext, []);
+
+            // 6. Save improved description to database
+            DB::transaction(function () use ($egi, $improvedDescription) {
+                $egi->update([
+                    'description' => trim($improvedDescription),
+                ]);
+            });
+
+            // 7. GDPR: Log user action with AuditLogService
+            $this->auditService->logUserAction($user, 'egi_description_improved_by_ai', [
+                'egi_id' => $egi->id,
+                'egi_title' => $egi->title,
+                'previous_description' => $previousDescription,
+                'previous_description_length' => strlen($previousDescription),
+                'new_description_length' => strlen($improvedDescription),
+                'ai_model_used' => config('services.anthropic.model', 'claude-3-5-sonnet-20241022'),
+                'ip_address' => $requestMetadata['ip_address'],
+                'user_agent' => $requestMetadata['user_agent'],
+            ], GdprActivityCategory::CONTENT_MODIFICATION);
+
+            // 8. ULM: Log successful improvement
+            $this->logger->info('[PRE_MINT_SERVICE] AI description improved successfully', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'original_length' => strlen($previousDescription),
+                'improved_length' => strlen($improvedDescription),
+                'log_category' => 'PRE_MINT_IMPROVE_DESCRIPTION_SUCCESS'
+            ]);
+
+            return [
+                'success' => true,
+                'egi_id' => $egi->id,
+                'description' => $improvedDescription,
+                'previous_description' => $previousDescription,
+                'improvement_stats' => [
+                    'original_length' => strlen($previousDescription),
+                    'improved_length' => strlen($improvedDescription),
+                    'length_change' => strlen($improvedDescription) - strlen($previousDescription),
+                ],
+                'message' => 'Descrizione migliorata da N.A.T.A.N AI e salvata con successo',
+            ];
+
+        } catch (\Exception $e) {
+            // 9. ULM: Log service-level error
+            $this->logger->error('[PRE_MINT_SERVICE] Description improvement failed', [
+                'egi_id' => $egi->id,
+                'user_id' => $user->id,
+                'error_message' => $e->getMessage(),
+                'log_category' => 'PRE_MINT_IMPROVE_DESCRIPTION_ERROR'
+            ]);
+
+            // 10. Re-throw for controller UEM handling
+            throw new \Exception("Description improvement failed: " . $e->getMessage(), 0, $e);
+        }
+    }
 }

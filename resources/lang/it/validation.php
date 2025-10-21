@@ -181,7 +181,12 @@ return [
             'string' => 'Il nome deve contenere solo testo.',
             'max' => 'Il nome non può superare :max caratteri.',
         ],
+        'iban' => [
+            'required' => 'Il codice IBAN è obbligatorio per ricevere eventuali rimborsi.',
+            'valid_iban' => 'Il codice IBAN inserito non è valido. Controlla il formato e riprova.',
+        ],
         'nick_name' => [
+            'required' => 'Il nickname è obbligatorio.',
             'unique' => 'Questo nickname è già in uso. Scegline un altro.',
             'max' => 'Il nickname non può superare :max caratteri.',
         ],
@@ -203,5 +208,6 @@ return [
         'nick_name' => 'nickname',
         'usertype' => 'tipo di account',
         'terms_accepted' => 'termini e condizioni',
+        'iban' => 'codice IBAN',
     ],
 ];

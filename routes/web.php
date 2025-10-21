@@ -131,6 +131,10 @@ Route::middleware('auth')->group(function () {
             ->name('pre-mint.request-analysis');
         Route::post('/pre-mint/promote', [App\Http\Controllers\EgiDualArchitectureController::class, 'promoteToOnChain'])
             ->name('pre-mint.promote');
+        Route::post('/ai/generate-description', [App\Http\Controllers\EgiDualArchitectureController::class, 'generateDescription'])
+            ->name('ai.generate-description');
+        Route::post('/ai/improve-description', [App\Http\Controllers\EgiDualArchitectureController::class, 'improveDescription'])
+            ->name('ai.improve-description');
     });
 });
 

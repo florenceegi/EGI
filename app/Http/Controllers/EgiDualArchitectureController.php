@@ -134,7 +134,6 @@ class EgiDualArchitectureController extends Controller
                 'message' => __('egi_dual_arch.auto_mint_enabled'),
                 'data' => $result
             ]);
-
         } catch (\Exception $e) {
             // 7. UEM: Handle all exceptions with full context
             return $this->errorManager->handle('DUAL_ARCH_AUTO_MINT_FAILED', [
@@ -382,6 +381,202 @@ class EgiDualArchitectureController extends Controller
             return $this->errorManager->handle('DUAL_ARCH_PROMOTION_FAILED', [
                 'egi_id' => $egi->id,
                 'operation' => 'promote_to_onchain',
+                'exception_class' => get_class($e),
+                'error_message' => $e->getMessage(),
+                'user_id' => FegiAuth::id(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'timestamp' => now()->toIso8601String()
+            ], $e);
+        }
+    }
+
+    /**
+     * Generate AI description for EGI
+     *
+     * @Oracode Method: Generate AI Description
+     * 🎯 Purpose: Create professional description using N.A.T.A.N AI
+     * 🔒 Security: Creator-only access
+     * 📋 Validation: EGI ownership, not yet minted
+     * 🪵 Logging: ULM controller action logging
+     *
+     * @param Request $request HTTP request
+     * @param Egi $egi Target EGI
+     * @return JsonResponse Success/error response
+     * @privacy-safe Uses AuditLogService for GDPR compliance
+     */
+    public function generateDescription(Request $request, Egi $egi): JsonResponse
+    {
+        try {
+            // 1. ULM: Log controller action
+            $this->logger->info('[DUAL_ARCH_CONTROLLER] Generate AI description request', [
+                'egi_id' => $egi->id,
+                'user_id' => FegiAuth::id(),
+                'log_category' => 'DUAL_ARCH_GENERATE_DESCRIPTION_REQUEST'
+            ]);
+
+            // 2. Authorization: Must be creator
+            if (FegiAuth::id() !== $egi->user_id) {
+                return $this->errorManager->handle('DUAL_ARCH_AUTO_MINT_UNAUTHORIZED', [
+                    'egi_id' => $egi->id,
+                    'operation' => 'generate_description',
+                    'user_id' => FegiAuth::id(),
+                    'creator_id' => $egi->user_id,
+                    'ip_address' => $request->ip(),
+                    'timestamp' => now()->toIso8601String()
+                ]);
+            }
+
+            // 3. Validation: EGI must not be minted yet (egi_type === NULL)
+            if (!is_null($egi->egi_type)) {
+                return $this->errorManager->handle('DUAL_ARCH_NOT_PRE_MINT', [
+                    'egi_id' => $egi->id,
+                    'operation' => 'generate_description',
+                    'egi_type' => $egi->egi_type,
+                    'user_id' => FegiAuth::id(),
+                    'ip_address' => $request->ip(),
+                    'timestamp' => now()->toIso8601String()
+                ]);
+            }
+
+            // 4. Prepare request metadata for GDPR audit
+            $requestMetadata = [
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ];
+
+            // 5. Delegate to service layer (SOLID: Single Responsibility)
+            $result = $this->preMintManagementService->generateDescription(
+                $egi,
+                FegiAuth::user(),
+                $requestMetadata
+            );
+
+            // 6. ULM: Log successful operation
+            $this->logger->info('[DUAL_ARCH_CONTROLLER] AI description generated', [
+                'egi_id' => $egi->id,
+                'user_id' => FegiAuth::id(),
+                'description_length' => strlen($result['description']),
+                'log_category' => 'DUAL_ARCH_GENERATE_DESCRIPTION_SUCCESS'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('egi_dual_arch.description_generated'),
+                'data' => [
+                    'egi_id' => $egi->id,
+                    'description' => $result['description'],
+                    'previous_description' => $result['previous_description'],
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->errorManager->handle('DUAL_ARCH_AI_ANALYSIS_FAILED', [
+                'egi_id' => $egi->id,
+                'operation' => 'generate_description',
+                'exception_class' => get_class($e),
+                'error_message' => $e->getMessage(),
+                'user_id' => FegiAuth::id(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'timestamp' => now()->toIso8601String()
+            ], $e);
+        }
+    }
+
+    /**
+     * Improve existing EGI description with AI
+     *
+     * @Oracode Method: Improve AI Description
+     * 🎯 Purpose: Enhance existing description using N.A.T.A.N AI
+     * 🔒 Security: Creator-only access
+     * 📋 Validation: EGI ownership, not yet minted, has existing description
+     * 🪵 Logging: ULM controller action logging
+     *
+     * @param Request $request HTTP request
+     * @param Egi $egi Target EGI
+     * @return JsonResponse Success/error response
+     * @privacy-safe Uses AuditLogService for GDPR compliance
+     */
+    public function improveDescription(Request $request, Egi $egi): JsonResponse
+    {
+        try {
+            // 1. ULM: Log controller action
+            $this->logger->info('[DUAL_ARCH_CONTROLLER] Improve AI description request', [
+                'egi_id' => $egi->id,
+                'user_id' => FegiAuth::id(),
+                'log_category' => 'DUAL_ARCH_IMPROVE_DESCRIPTION_REQUEST'
+            ]);
+
+            // 2. Authorization: Must be creator
+            if (FegiAuth::id() !== $egi->user_id) {
+                return $this->errorManager->handle('DUAL_ARCH_AUTO_MINT_UNAUTHORIZED', [
+                    'egi_id' => $egi->id,
+                    'operation' => 'improve_description',
+                    'user_id' => FegiAuth::id(),
+                    'creator_id' => $egi->user_id,
+                    'ip_address' => $request->ip(),
+                    'timestamp' => now()->toIso8601String()
+                ]);
+            }
+
+            // 3. Validation: EGI must not be minted yet (egi_type === NULL)
+            if (!is_null($egi->egi_type)) {
+                return $this->errorManager->handle('DUAL_ARCH_NOT_PRE_MINT', [
+                    'egi_id' => $egi->id,
+                    'operation' => 'improve_description',
+                    'egi_type' => $egi->egi_type,
+                    'user_id' => FegiAuth::id(),
+                    'ip_address' => $request->ip(),
+                    'timestamp' => now()->toIso8601String()
+                ]);
+            }
+
+            // 4. Validation: EGI must have existing description
+            if (empty($egi->description)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Non puoi migliorare una descrizione vuota. Usa prima "Genera Descrizione".',
+                ], 400);
+            }
+
+            // 5. Prepare request metadata for GDPR audit
+            $requestMetadata = [
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ];
+
+            // 6. Delegate to service layer (SOLID: Single Responsibility)
+            $result = $this->preMintManagementService->improveDescription(
+                $egi,
+                FegiAuth::user(),
+                $requestMetadata
+            );
+
+            // 7. ULM: Log successful operation
+            $this->logger->info('[DUAL_ARCH_CONTROLLER] AI description improved', [
+                'egi_id' => $egi->id,
+                'user_id' => FegiAuth::id(),
+                'original_length' => $result['improvement_stats']['original_length'],
+                'improved_length' => $result['improvement_stats']['improved_length'],
+                'log_category' => 'DUAL_ARCH_IMPROVE_DESCRIPTION_SUCCESS'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('egi_dual_arch.description_improved'),
+                'data' => [
+                    'egi_id' => $egi->id,
+                    'description' => $result['description'],
+                    'previous_description' => $result['previous_description'],
+                    'improvement_stats' => $result['improvement_stats'],
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->errorManager->handle('DUAL_ARCH_AI_ANALYSIS_FAILED', [
+                'egi_id' => $egi->id,
+                'operation' => 'improve_description',
                 'exception_class' => get_class($e),
                 'error_message' => $e->getMessage(),
                 'user_id' => FegiAuth::id(),
