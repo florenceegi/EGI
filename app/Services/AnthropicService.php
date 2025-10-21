@@ -365,14 +365,35 @@ PROMPT;
                 'original_image_url' => $imageUrl,
             ]);
 
-            // Handle asset() URLs by converting to full path
-            if (str_starts_with($imageUrl, '/')) {
-                $imageUrl = public_path($imageUrl);
-            } elseif (str_starts_with($imageUrl, asset(''))) {
-                $imageUrl = str_replace(asset(''), public_path(), $imageUrl);
+            // Handle different URL formats and convert to absolute local path
+            $originalUrl = $imageUrl;
+            
+            // If it's a full URL (http://... or https://...)
+            if (str_starts_with($imageUrl, 'http://') || str_starts_with($imageUrl, 'https://')) {
+                // Extract path after domain
+                $urlParts = parse_url($imageUrl);
+                $path = $urlParts['path'] ?? '';
+                
+                // If path starts with /storage/, map to public/storage/
+                if (str_starts_with($path, '/storage/')) {
+                    $imageUrl = public_path($path);
+                } else {
+                    $imageUrl = public_path(ltrim($path, '/'));
+                }
             }
+            // If it starts with /, it's already a web path
+            elseif (str_starts_with($imageUrl, '/')) {
+                // If it's /storage/..., map to public/storage/
+                if (str_starts_with($imageUrl, '/storage/')) {
+                    $imageUrl = public_path($imageUrl);
+                } else {
+                    $imageUrl = public_path(ltrim($imageUrl, '/'));
+                }
+            }
+            // Otherwise assume it's already an absolute path
             
             $this->logger->info('[AnthropicService] Resolved image path', [
+                'original_url' => $originalUrl,
                 'resolved_path' => $imageUrl,
                 'is_local_file' => file_exists($imageUrl),
             ]);
@@ -404,19 +425,19 @@ PROMPT;
             // Convert WebP to JPEG for better Anthropic API compatibility
             if ($mediaType === 'image/webp') {
                 $this->logger->info('[AnthropicService] Converting WebP to JPEG for better API compatibility');
-                
+
                 $image = imagecreatefromstring($imageContent);
                 if ($image === false) {
                     throw new RuntimeException('Failed to create image from WebP content');
                 }
-                
+
                 ob_start();
                 imagejpeg($image, null, 85); // 85% quality
                 $imageContent = ob_get_clean();
                 imagedestroy($image);
-                
+
                 $mediaType = 'image/jpeg';
-                
+
                 $this->logger->info('[AnthropicService] WebP converted to JPEG', [
                     'new_size_bytes' => strlen($imageContent),
                 ]);
