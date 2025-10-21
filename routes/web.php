@@ -135,6 +135,20 @@ Route::middleware('auth')->group(function () {
             ->name('ai.generate-description');
         Route::post('/ai/improve-description', [App\Http\Controllers\EgiDualArchitectureController::class, 'improveDescription'])
             ->name('ai.improve-description');
+
+        // AI Traits Generation
+        Route::post('/traits/generate', [App\Http\Controllers\AiTraitController::class, 'generate'])
+            ->name('traits.generate');
+    });
+
+    // AI Traits Management (outside egi prefix for easier access)
+    Route::prefix('traits/generations')->name('traits.generations.')->group(function () {
+        Route::get('/{generation}', [App\Http\Controllers\AiTraitController::class, 'show'])
+            ->name('show');
+        Route::post('/{generation}/review', [App\Http\Controllers\AiTraitController::class, 'review'])
+            ->name('review');
+        Route::post('/{generation}/apply', [App\Http\Controllers\AiTraitController::class, 'apply'])
+            ->name('apply');
     });
 });
 
