@@ -82,22 +82,22 @@
                     </h4>
 
                     {{-- AI Description Tools --}}
-                    <div class="mb-5 rounded-xl border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 p-4">
+                    <div
+                        class="mb-5 rounded-xl border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 p-4">
                         <div class="mb-3 flex items-center gap-2">
                             <i class="fas fa-wand-magic-sparkles text-lg text-purple-600"></i>
-                            <h5 class="text-sm font-bold text-purple-900">N.A.T.A.N AI - Genera/Migliora Descrizione</h5>
+                            <h5 class="text-sm font-bold text-purple-900">N.A.T.A.N AI - Genera/Migliora Descrizione
+                            </h5>
                         </div>
                         <p class="mb-3 text-xs text-purple-700">
                             Usa l'intelligenza artificiale per creare o migliorare la descrizione del tuo EGI
                         </p>
                         <div class="flex gap-2">
-                            <button type="button"
-                                onclick="handleGenerateDescription({{ $egi->id }})"
+                            <button type="button" onclick="handleGenerateDescription({{ $egi->id }})"
                                 class="flex-1 rounded-lg border border-purple-400 bg-purple-600 px-3 py-2 text-xs font-semibold text-white shadow transition-all duration-200 hover:bg-purple-700 hover:shadow-lg">
                                 <i class="fas fa-sparkles mr-1"></i> Genera da Zero
                             </button>
-                            <button type="button"
-                                onclick="handleImproveDescription({{ $egi->id }})"
+                            <button type="button" onclick="handleImproveDescription({{ $egi->id }})"
                                 class="flex-1 rounded-lg border border-indigo-400 bg-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow transition-all duration-200 hover:bg-indigo-700 hover:shadow-lg">
                                 <i class="fas fa-wand-magic mr-1"></i> Migliora Esistente
                             </button>
@@ -456,6 +456,10 @@
          * 🔒 Security: CSRF token included
          */
         function handleGenerateDescription(egiId) {
+            console.log('[AI Description] Generate button clicked', {
+                egiId
+            });
+
             Swal.fire({
                 title: 'Generare Descrizione AI?',
                 html: '<p class="text-sm text-gray-600">N.A.T.A.N analizzerà il tuo EGI e genererà una descrizione professionale ottimizzata per il marketplace.</p>' +
@@ -467,7 +471,15 @@
                 confirmButtonText: '<i class="fas fa-sparkles"></i> Genera',
                 cancelButtonText: 'Annulla'
             }).then((result) => {
+                console.log('[AI Description] User confirmation result', {
+                    confirmed: result.isConfirmed
+                });
+
                 if (result.isConfirmed) {
+                    console.log('[AI Description] Starting API call to generate description', {
+                        egiId
+                    });
+
                     // Show loading
                     Swal.fire({
                         title: 'N.A.T.A.N AI al lavoro...',
@@ -479,7 +491,12 @@
                         }
                     });
 
-                    fetch(`/egi/${egiId}/dual-arch/ai/generate-description`, {
+                    const apiUrl = `/egi/${egiId}/dual-arch/ai/generate-description`;
+                    console.log('[AI Description] Fetching URL', {
+                        apiUrl
+                    });
+
+                    fetch(apiUrl, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -487,9 +504,21 @@
                             },
                             body: JSON.stringify({})
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            console.log('[AI Description] Response received', {
+                                status: response.status,
+                                ok: response.ok
+                            });
+                            return response.json();
+                        })
                         .then(data => {
+                            console.log('[AI Description] Response data', data);
+
                             if (data.success) {
+                                console.log('[AI Description] Success! Description generated', {
+                                    length: data.data?.description?.length
+                                });
+
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Descrizione Generata!',
@@ -514,10 +543,13 @@
                             }
                         })
                         .catch(error => {
+                            console.error('[AI Description] Fetch error', error);
+
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Errore di Connessione',
-                                text: 'Impossibile comunicare con il server. Riprova.',
+                                text: 'Impossibile comunicare con il server. Riprova. Errore: ' + error
+                                    .message,
                                 confirmButtonColor: '#9333ea'
                             });
                         });
