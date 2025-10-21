@@ -517,4 +517,308 @@ PROMPT;
 
         return $basePrompt;
     }
+
+    /**
+     * Analyze image with Claude Vision to extract trait suggestions
+     *
+     * @Oracode Method: AI Trait Extraction with Vision
+     * 🎯 Purpose: Analyze artwork image to suggest NFT traits (categories, types, values)
+     * 📥 Input: Image URL, EGI context, requested trait count
+     * 📤 Output: Structured JSON with trait proposals
+     * 🔒 Security: Privacy-safe, no PII
+     * 🪵 Logging: Full audit trail
+     *
+     * @param string $imageUrl Public URL of the artwork image
+     * @param array $context EGI metadata (title, type, collection, etc.)
+     * @param int $requestedCount Number of traits to generate (1-10)
+     * @return array Structured trait proposals with confidence scores
+     * @throws RuntimeException When analysis fails
+     */
+    public function analyzeImageForTraits(string $imageUrl, array $context, int $requestedCount = 5): array
+    {
+        try {
+            $this->logger->info('[AnthropicService] Trait analysis request initiated', [
+                'image_url_length' => strlen($imageUrl),
+                'requested_count' => $requestedCount,
+                'context_keys' => array_keys($context),
+            ]);
+
+            // Validate requested count
+            $requestedCount = max(1, min(10, $requestedCount));
+
+            // Get image data as base64
+            $imageData = $this->fetchImageAsBase64($imageUrl);
+            $mediaType = $imageData['media_type'];
+            $base64Data = $imageData['base64'];
+
+            // Build specialized system prompt for trait extraction
+            $systemPrompt = $this->buildTraitExtractionSystemPrompt($context);
+
+            // Build detailed trait extraction prompt
+            $userPrompt = $this->buildTraitExtractionPrompt($context, $requestedCount);
+
+            // Build message with image content
+            $messages = [
+                [
+                    'role' => 'user',
+                    'content' => [
+                        [
+                            'type' => 'image',
+                            'source' => [
+                                'type' => 'base64',
+                                'media_type' => $mediaType,
+                                'data' => $base64Data,
+                            ],
+                        ],
+                        [
+                            'type' => 'text',
+                            'text' => $userPrompt,
+                        ],
+                    ],
+                ],
+            ];
+
+            // Call Claude Vision API with extended timeout for complex analysis
+            $response = Http::withHeaders([
+                'x-api-key' => $this->apiKey,
+                'anthropic-version' => '2023-06-01',
+                'content-type' => 'application/json',
+            ])->timeout(120)->post($this->baseUrl . '/v1/messages', [
+                'model' => $this->model,
+                'max_tokens' => 4096,
+                'system' => $systemPrompt,
+                'messages' => $messages,
+                'temperature' => 0.7,
+            ]);
+
+            if (!$response->successful()) {
+                $this->logger->error('[AnthropicService] Trait analysis API error', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+                throw new RuntimeException('Anthropic Trait Analysis API error: ' . $response->body());
+            }
+
+            $data = $response->json();
+            $analysisText = $data['content'][0]['text'] ?? '';
+
+            // Extract JSON from response (may contain markdown)
+            $traits = $this->parseTraitAnalysisResponse($analysisText);
+
+            $this->logger->info('[AnthropicService] Trait analysis completed', [
+                'traits_extracted' => count($traits['identified_traits'] ?? []),
+                'total_confidence' => $traits['total_confidence'] ?? 0,
+                'usage' => $data['usage'] ?? null,
+            ]);
+
+            return $traits;
+
+        } catch (\Exception $e) {
+            $this->logger->error('[AnthropicService] Trait analysis failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw new RuntimeException('Errore analisi traits con Claude Vision: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Build system prompt specialized for trait extraction
+     *
+     * @param array $context EGI context
+     * @return string System prompt for Claude
+     */
+    private function buildTraitExtractionSystemPrompt(array $context): string
+    {
+        $basePrompt = <<<PROMPT
+Sei N.A.T.A.N. (Nodo di Analisi e Tracciamento Atti Notarizzati), un assistente AI specializzato nell'estrazione di NFT traits per il marketplace FlorenceEGI.
+
+COMPETENZE TRAIT EXTRACTION:
+- Analisi visiva professionale di opere d'arte digitali e fisiche
+- Identificazione di materiali, tecniche, stili, colori, dimensioni
+- Estrazione di caratteristiche culturali, storiche e di sostenibilità
+- Valutazione di rarità e unicità
+- Categorizzazione secondo standard NFT marketplace
+
+OBIETTIVO:
+Analizzare l'immagine e estrarre TRAITS strutturati nel formato:
+- CATEGORY (es: Materials, Visual, Dimensions, Cultural)
+- TYPE (es: Primary Material, Color Palette, Style)
+- VALUE (es: Bronze, Warm Tones, Contemporary)
+
+CATEGORIE PRINCIPALI DISPONIBILI:
+1. 📦 Materials - Materiali fisici (Gold, Wood, Marble, Glass, Fabric, etc.)
+2. 🎨 Visual - Aspetto visivo (Colors, Style, Mood, Texture, Pattern)
+3. 📐 Dimensions - Dimensioni fisiche (Size, Weight, Width, Height)
+4. ⚡ Special - Caratteristiche speciali (Edition, Signature, Condition, Rarity)
+5. 🌿 Sustainability - Sostenibilità (Recycled, Eco-Certified, Carbon Neutral)
+6. 🏛️ Cultural - Aspetti culturali (Historical Period, Origin, Technique)
+7. 👜 Accessories - Accessori e componenti (Packaging, Includes, etc.)
+8. 📋 Categories - Categorie generali (Art, Music, Collectibles, Heritage)
+
+REGOLE FONDAMENTALI:
+1. Analizza SOLO ciò che VEDI nell'immagine
+2. Non inventare informazioni non visibili
+3. Concentrati su traits verificabili e oggettivi
+4. Prioritizza traits che aumentano valore e descrivibilità
+5. Ogni trait DEVE avere confidence score (0-100%)
+6. Fornisci reasoning conciso per ogni trait proposto
+7. Se non sei sicuro (confidence < 50%), NON proporre il trait
+
+OUTPUT FORMAT:
+Fornisci SOLO un JSON valido (no markdown, no commenti) con questa struttura:
+{
+  "identified_traits": [
+    {
+      "confidence": 95,
+      "category_suggestion": "Materials",
+      "type_suggestion": "Primary Material",
+      "value_suggestion": "Bronze",
+      "display_value_suggestion": "Bronze Patina",
+      "reasoning": "La superficie presenta caratteristica colorazione bronzea con patina visibile"
+    }
+  ],
+  "total_confidence": 87,
+  "analysis_notes": "Breve nota generale sull'opera analizzata"
+}
+
+PROMPT;
+
+        // Add specific context if available
+        if (!empty($context['collection_type'])) {
+            $basePrompt .= "\n\nCOLLECTION TYPE: " . $context['collection_type'];
+        }
+
+        return $basePrompt;
+    }
+
+    /**
+     * Build detailed user prompt for trait extraction
+     *
+     * @param array $context EGI context
+     * @param int $requestedCount Number of traits requested
+     * @return string User prompt
+     */
+    private function buildTraitExtractionPrompt(array $context, int $requestedCount): string
+    {
+        $prompt = "Analizza questa opera d'arte e identifica **ESATTAMENTE {$requestedCount} TRAITS** più rilevanti e descrittivi.\n\n";
+
+        if (!empty($context['title'])) {
+            $prompt .= "TITOLO OPERA: {$context['title']}\n";
+        }
+        if (!empty($context['type'])) {
+            $prompt .= "TIPO: {$context['type']}\n";
+        }
+        if (!empty($context['creation_date'])) {
+            $prompt .= "DATA CREAZIONE: {$context['creation_date']}\n";
+        }
+
+        $prompt .= <<<INSTRUCTIONS
+
+ISTRUZIONI DETTAGLIATE:
+1. Osserva attentamente l'immagine
+2. Identifica i {$requestedCount} traits PIÙ DISTINTIVI e VERIFICABILI
+3. Per ogni trait, specifica:
+   - Category (una delle 8 categorie principali)
+   - Type (sottotipo specifico)
+   - Value (valore specifico osservato)
+   - Display Value (valore formattato per UI)
+   - Confidence (0-100%, solo se > 50%)
+   - Reasoning (1 frase che spiega perché hai scelto questo trait)
+
+4. Priorità traits:
+   - ALTA: Materials, Visual (colors/style), Special (edition/signature)
+   - MEDIA: Dimensions, Cultural, Sustainability
+   - BASSA: Accessories (solo se visibili e rilevanti)
+
+5. Se l'opera è:
+   - Pittura/Disegno → Focus su: Technique, Primary Color, Style, Mood
+   - Scultura → Focus su: Primary Material, Finish, Size, Cultural Origin
+   - Fotografia → Focus su: Style, Mood, Composition, Subject Matter
+   - Artigianato → Focus su: Primary Material, Artisan Technique, Cultural Origin
+   - Digitale → Focus su: Style, Color Palette, Technique, Mood
+
+6. EVITA traits generici come "High Quality", "Beautiful", "Unique" senza specificità
+
+Fornisci SOLO il JSON, nessun testo aggiuntivo.
+INSTRUCTIONS;
+
+        return $prompt;
+    }
+
+    /**
+     * Parse Claude's trait analysis response and extract JSON
+     *
+     * @param string $response Raw response from Claude
+     * @return array Parsed trait data
+     * @throws RuntimeException If JSON parsing fails
+     */
+    private function parseTraitAnalysisResponse(string $response): array
+    {
+        try {
+            // Remove markdown code blocks if present
+            $response = preg_replace('/```json\s*/i', '', $response);
+            $response = preg_replace('/```\s*$/i', '', $response);
+            $response = trim($response);
+
+            // Try to extract JSON object
+            if (preg_match('/\{[\s\S]*\}/', $response, $matches)) {
+                $json = $matches[0];
+                $data = json_decode($json, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    // Validate structure
+                    if (!isset($data['identified_traits']) || !is_array($data['identified_traits'])) {
+                        throw new RuntimeException('Invalid JSON structure: missing identified_traits array');
+                    }
+
+                    // Ensure total_confidence exists
+                    if (!isset($data['total_confidence'])) {
+                        $data['total_confidence'] = $this->calculateAverageConfidence($data['identified_traits']);
+                    }
+
+                    $this->logger->info('[AnthropicService] Trait JSON parsed successfully', [
+                        'traits_count' => count($data['identified_traits']),
+                        'total_confidence' => $data['total_confidence'],
+                    ]);
+
+                    return $data;
+                }
+            }
+
+            throw new RuntimeException('Unable to parse JSON from Claude response: ' . substr($response, 0, 200));
+
+        } catch (\Exception $e) {
+            $this->logger->error('[AnthropicService] JSON parsing failed', [
+                'error' => $e->getMessage(),
+                'response_preview' => substr($response, 0, 500),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Calculate average confidence from traits
+     *
+     * @param array $traits Array of trait objects
+     * @return float Average confidence
+     */
+    private function calculateAverageConfidence(array $traits): float
+    {
+        if (empty($traits)) {
+            return 0;
+        }
+
+        $total = 0;
+        $count = 0;
+
+        foreach ($traits as $trait) {
+            if (isset($trait['confidence'])) {
+                $total += $trait['confidence'];
+                $count++;
+            }
+        }
+
+        return $count > 0 ? round($total / $count, 2) : 0;
+    }
 }
