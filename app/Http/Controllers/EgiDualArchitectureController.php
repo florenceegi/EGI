@@ -408,10 +408,15 @@ class EgiDualArchitectureController extends Controller
     public function generateDescription(Request $request, Egi $egi): JsonResponse
     {
         try {
-            // 1. ULM: Log controller action
+            // 1. ULM: Log controller action with detailed info
             $this->logger->info('[DUAL_ARCH_CONTROLLER] Generate AI description request', [
                 'egi_id' => $egi->id,
+                'egi_title' => $egi->title,
+                'egi_type' => $egi->egi_type,
                 'user_id' => FegiAuth::id(),
+                'creator_id' => $egi->user_id,
+                'request_method' => $request->method(),
+                'request_path' => $request->path(),
                 'log_category' => 'DUAL_ARCH_GENERATE_DESCRIPTION_REQUEST'
             ]);
 
