@@ -59,4 +59,42 @@ return [
         'minting_in_progress' => 'Minting in Corso',
         'minted' => 'Mintato',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | AI Traits Generation Messages
+    |--------------------------------------------------------------------------
+    */
+    'ai' => [
+        'unauthorized' => 'Devi essere autenticato per utilizzare questa funzionalità.',
+        'forbidden' => 'Non hai i permessi per accedere a questa risorsa.',
+        'generation_started' => 'Generazione traits AI avviata con successo! N.A.T.A.N sta analizzando l\'immagine.',
+        'generation_failed' => 'Si è verificato un errore durante la generazione dei traits. Riprova più tardi.',
+        'generation_not_found' => 'Sessione di generazione non trovata.',
+        'review_completed' => 'Revisione delle proposte completata con successo.',
+        'review_failed' => 'Si è verificato un errore durante la revisione. Riprova più tardi.',
+        'traits_applied' => 'Traits applicati con successo al tuo EGI!',
+        'apply_failed' => 'Si è verificato un errore durante l\'applicazione dei traits. Riprova più tardi.',
+
+        // UI Labels
+        'generate_traits' => 'Genera Traits con AI',
+        'requested_count' => 'Numero di traits da generare',
+        'trait_proposals' => 'Proposte Traits',
+        'confidence' => 'Confidenza',
+        'match_type' => 'Tipo Match',
+        'exact_match' => 'Match Esatto',
+        'fuzzy_match' => 'Match Fuzzy',
+        'new_value' => 'Valore Nuovo',
+        'new_type' => 'Tipo Nuovo',
+        'new_category' => 'Categoria Nuova',
+        'approve' => 'Approva',
+        'reject' => 'Rifiuta',
+        'modify' => 'Modifica',
+        'apply_traits' => 'Applica Traits Approvati',
+        'analyzing' => 'N.A.T.A.N sta analizzando...',
+        'pending_review' => 'In attesa di revisione',
+        'approved' => 'Approvato',
+        'rejected' => 'Rifiutato',
+        'applied' => 'Applicato',
+    ],
 ];
