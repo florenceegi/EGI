@@ -17,8 +17,8 @@ return new class extends Migration {
      * Run the migrations.
      *
      * Adds fields to support EGI Dual Architecture:
-     * - egi_type: ASA (classic) | SmartContract (living) | PreMint (AI-managed virtual)
-     * - pre_mint_mode: For PreMint EGIs, tracks if it's in promotion/test phase
+     * - egi_type: NULL (not minted) | ASA (classic) | SmartContract (living)
+     * - pre_mint_mode: Boolean flag for pre-mint phase (not yet on blockchain)
      * - egi_living_enabled: Flag for premium "EGI Vivente" features
      * - egi_living_activated_at: Timestamp when living features were enabled
      */
@@ -26,11 +26,11 @@ return new class extends Migration {
     {
         Schema::table('egis', function (Blueprint $table) {
             // === DUAL ARCHITECTURE TYPE ===
-            $table->enum('egi_type', ['ASA', 'SmartContract', 'PreMint'])
+            $table->enum('egi_type', ['ASA', 'SmartContract'])
                 ->nullable()
                 ->default(null)
                 ->after('status')
-                ->comment('EGI architecture type: NULL=not minted, ASA=classic, SmartContract=living, PreMint=legacy');
+                ->comment('EGI architecture type: NULL=not minted, ASA=classic, SmartContract=living');
 
             // === PRE-MINT TRACKING ===
             $table->boolean('pre_mint_mode')->default(false)
