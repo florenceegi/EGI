@@ -27,6 +27,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'ai_analysis_requested' => 'Richiesta di analisi AI inviata con successo. N.A.T.A.N elaborerà i tuoi dati a breve.',
+    'description_generated' => 'Descrizione generata con successo da N.A.T.A.N AI e salvata nel tuo EGI.',
+    'description_improved' => 'Descrizione migliorata con successo da N.A.T.A.N AI e salvata nel tuo EGI.',
 
     /*
     |--------------------------------------------------------------------------

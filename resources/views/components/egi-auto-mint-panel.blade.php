@@ -81,6 +81,29 @@
                         Scegli il tipo di mint:
                     </h4>
 
+                    {{-- AI Description Tools --}}
+                    <div class="mb-5 rounded-xl border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 p-4">
+                        <div class="mb-3 flex items-center gap-2">
+                            <i class="fas fa-wand-magic-sparkles text-lg text-purple-600"></i>
+                            <h5 class="text-sm font-bold text-purple-900">N.A.T.A.N AI - Genera/Migliora Descrizione</h5>
+                        </div>
+                        <p class="mb-3 text-xs text-purple-700">
+                            Usa l'intelligenza artificiale per creare o migliorare la descrizione del tuo EGI
+                        </p>
+                        <div class="flex gap-2">
+                            <button type="button"
+                                onclick="handleGenerateDescription({{ $egi->id }})"
+                                class="flex-1 rounded-lg border border-purple-400 bg-purple-600 px-3 py-2 text-xs font-semibold text-white shadow transition-all duration-200 hover:bg-purple-700 hover:shadow-lg">
+                                <i class="fas fa-sparkles mr-1"></i> Genera da Zero
+                            </button>
+                            <button type="button"
+                                onclick="handleImproveDescription({{ $egi->id }})"
+                                class="flex-1 rounded-lg border border-indigo-400 bg-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow transition-all duration-200 hover:bg-indigo-700 hover:shadow-lg">
+                                <i class="fas fa-wand-magic mr-1"></i> Migliora Esistente
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="space-y-3">
                         {{-- Mint as ASA --}}
                         <form method="POST" action="{{ route('egi.dual-arch.pre-mint.promote', $egi) }}"
@@ -196,7 +219,7 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Abilitazione...';
 
-                fetch(form.action, {
+            fetch(form.action, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -204,22 +227,22 @@
                         'Accept': 'application/json'
                     }
                 })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Success toast and reload
-            Swal.fire({
-                icon: 'success',
-                title: 'Pre-Mint Riservato',
-                text: data.message,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            }).then(() => {
-                window.location.reload();
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Success toast and reload
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pre-Mint Riservato',
+                            text: data.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            window.location.reload();
+                        });
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -257,9 +280,9 @@
 
             const form = event.target;
 
-        Swal.fire({
-            title: 'Disabilita Pre-Mint?',
-            text: 'Sei sicuro di voler disabilitare la modalità Pre-Mint? L\'EGI sarà visibile sul marketplace.',
+            Swal.fire({
+                title: 'Disabilita Pre-Mint?',
+                text: 'Sei sicuro di voler disabilitare la modalità Pre-Mint? L\'EGI sarà visibile sul marketplace.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -291,10 +314,10 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-        if (data.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Pre-Mint Disabilitato',
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pre-Mint Disabilitato',
                             text: data.message,
                             toast: true,
                             position: 'top-end',
@@ -424,6 +447,173 @@
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalContent;
                 });
+        }
+
+        /**
+         * Handle Generate AI Description
+         * @Oracode JavaScript: Generate Description with N.A.T.A.N AI
+         * 🎯 Purpose: Call AI to generate professional description from scratch
+         * 🔒 Security: CSRF token included
+         */
+        function handleGenerateDescription(egiId) {
+            Swal.fire({
+                title: 'Generare Descrizione AI?',
+                html: '<p class="text-sm text-gray-600">N.A.T.A.N analizzerà il tuo EGI e genererà una descrizione professionale ottimizzata per il marketplace.</p>' +
+                    '<p class="mt-2 text-xs text-amber-600"><i class="fas fa-exclamation-triangle"></i> Questo sovrascriverà la descrizione esistente!</p>',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#9333ea',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-sparkles"></i> Genera',
+                cancelButtonText: 'Annulla'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'N.A.T.A.N AI al lavoro...',
+                        html: 'Generazione descrizione in corso...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/egi/${egiId}/dual-arch/ai/generate-description`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Descrizione Generata!',
+                                    html: `<div class="text-left">
+                                            <p class="mb-3 text-sm text-gray-700">N.A.T.A.N ha generato la descrizione con successo!</p>
+                                            <div class="rounded-lg bg-gray-100 p-3 text-xs text-gray-800">
+                                                ${data.data.description.substring(0, 200)}...
+                                            </div>
+                                        </div>`,
+                                    confirmButtonColor: '#9333ea',
+                                    confirmButtonText: 'Chiudi'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Errore Generazione',
+                                    text: data.message || 'Errore durante la generazione',
+                                    confirmButtonColor: '#9333ea'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Errore di Connessione',
+                                text: 'Impossibile comunicare con il server. Riprova.',
+                                confirmButtonColor: '#9333ea'
+                            });
+                        });
+                }
+            });
+        }
+
+        /**
+         * Handle Improve AI Description
+         * @Oracode JavaScript: Improve Description with N.A.T.A.N AI
+         * 🎯 Purpose: Call AI to enhance existing description
+         * 🔒 Security: CSRF token included
+         */
+        function handleImproveDescription(egiId) {
+            Swal.fire({
+                title: 'Migliorare Descrizione AI?',
+                html: '<p class="text-sm text-gray-600">N.A.T.A.N analizzerà la descrizione esistente e la migliorerà rendendola più professionale e coinvolgente.</p>',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#6366f1',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-wand-magic"></i> Migliora',
+                cancelButtonText: 'Annulla'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'N.A.T.A.N AI al lavoro...',
+                        html: 'Miglioramento descrizione in corso...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/egi/${egiId}/dual-arch/ai/improve-description`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const stats = data.data.improvement_stats;
+                                const lengthChange = stats.length_change > 0 ? '+' : '';
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Descrizione Migliorata!',
+                                    html: `<div class="text-left">
+                                            <p class="mb-3 text-sm text-gray-700">N.A.T.A.N ha migliorato la descrizione con successo!</p>
+                                            <div class="mb-3 rounded-lg bg-blue-50 p-3 text-xs">
+                                                <div class="flex justify-between">
+                                                    <span>Lunghezza originale:</span>
+                                                    <span class="font-bold">${stats.original_length} caratteri</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span>Lunghezza migliorata:</span>
+                                                    <span class="font-bold">${stats.improved_length} caratteri</span>
+                                                </div>
+                                                <div class="mt-2 flex justify-between border-t border-blue-200 pt-2">
+                                                    <span>Variazione:</span>
+                                                    <span class="font-bold text-blue-600">${lengthChange}${stats.length_change} caratteri</span>
+                                                </div>
+                                            </div>
+                                            <div class="rounded-lg bg-gray-100 p-3 text-xs text-gray-800">
+                                                ${data.data.description.substring(0, 200)}...
+                                            </div>
+                                        </div>`,
+                                    confirmButtonColor: '#6366f1',
+                                    confirmButtonText: 'Chiudi'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Errore Miglioramento',
+                                    text: data.message || 'Errore durante il miglioramento',
+                                    confirmButtonColor: '#6366f1'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Errore di Connessione',
+                                text: 'Impossibile comunicare con il server. Riprova.',
+                                confirmButtonColor: '#6366f1'
+                            });
+                        });
+                }
+            });
         }
     </script>
 @endpush
