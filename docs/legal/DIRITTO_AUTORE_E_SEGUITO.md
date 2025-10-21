@@ -3,21 +3,22 @@
 **Documento di Riferimento Legale**  
 **Versione:** 1.0  
 **Data:** 2025-10-21  
-**Ambito:** Normativa italiana ed europea applicata a FlorenceEGI  
+**Ambito:** Normativa italiana ed europea applicata a FlorenceEGI
 
 ---
 
 ## ⚠️ **DISCLAIMER LEGALE**
 
-Le informazioni contenute in questo documento sono fornite **a scopo informativo generale** e **non costituiscono consulenza legale professionale**. 
+Le informazioni contenute in questo documento sono fornite **a scopo informativo generale** e **non costituiscono consulenza legale professionale**.
 
-La normativa sul diritto d'autore è complessa, soggetta a interpretazioni giurisprudenziali e può variare in base a circostanze specifiche. 
+La normativa sul diritto d'autore è complessa, soggetta a interpretazioni giurisprudenziali e può variare in base a circostanze specifiche.
 
 Per questioni legali specifiche relative a opere d'arte, NFT, contratti o controversie, si raccomanda **sempre** di consultare un avvocato specializzato in:
-- Proprietà intellettuale
-- Diritto dell'arte
-- Diritto digitale/blockchain
-- Contrattualistica commerciale
+
+-   Proprietà intellettuale
+-   Diritto dell'arte
+-   Diritto digitale/blockchain
+-   Contrattualistica commerciale
 
 **FlorenceEGI non assume responsabilità** per decisioni prese sulla base di queste informazioni senza adeguata consulenza professionale.
 
@@ -31,12 +32,13 @@ Per questioni legali specifiche relative a opere d'arte, NFT, contratti o contro
 **Link:** [Normattiva](https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:legge:1941-04-22;633)
 
 **Articoli rilevanti:**
-- **Art. 1-11**: Opere protette e soggetti
-- **Art. 12-19**: Diritti patrimoniali (sfruttamento economico)
-- **Art. 20-24**: Diritti morali (paternità, integrità)
-- **Art. 19bis**: Diritto di seguito (aggiunto con D.Lgs. 118/2006)
-- **Art. 25**: Durata della protezione (vita autore + 70 anni)
-- **Art. 171-174**: Sanzioni civili e penali
+
+-   **Art. 1-11**: Opere protette e soggetti
+-   **Art. 12-19**: Diritti patrimoniali (sfruttamento economico)
+-   **Art. 20-24**: Diritti morali (paternità, integrità)
+-   **Art. 19bis**: Diritto di seguito (aggiunto con D.Lgs. 118/2006)
+-   **Art. 25**: Durata della protezione (vita autore + 70 anni)
+-   **Art. 171-174**: Sanzioni civili e penali
 
 ---
 
@@ -46,13 +48,14 @@ Per questioni legali specifiche relative a opere d'arte, NFT, contratti o contro
 **Scopo:** Implementare il "droit de suite" (diritto di seguito) in Italia
 
 **Articoli chiave:**
-- **Art. 1**: Ambito di applicazione (opere d'arte originali)
-- **Art. 3**: Aliquote progressive (4% → 0.25%)
-- **Art. 4**: Soglia minima (€3,000)
-- **Art. 5**: Compenso massimo (€12,500 per vendita)
-- **Art. 6**: Responsabilità del pagamento (venditore)
-- **Art. 8**: Gestione tramite SIAE
-- **Art. 10**: Durata (vita + 70 anni, come LDA)
+
+-   **Art. 1**: Ambito di applicazione (opere d'arte originali)
+-   **Art. 3**: Aliquote progressive (4% → 0.25%)
+-   **Art. 4**: Soglia minima (€3,000)
+-   **Art. 5**: Compenso massimo (€12,500 per vendita)
+-   **Art. 6**: Responsabilità del pagamento (venditore)
+-   **Art. 8**: Gestione tramite SIAE
+-   **Art. 10**: Durata (vita + 70 anni, come LDA)
 
 ---
 
@@ -61,11 +64,13 @@ Per questioni legali specifiche relative a opere d'arte, NFT, contratti o contro
 **Ambito:** Diritto dell'autore sulle opere dell'ingegno
 
 **Principio fondamentale (Art. 2575):**
+
 > "Formano oggetto del diritto di autore le opere dell'ingegno di carattere creativo che appartengono alle scienze, alla letteratura, alla musica, alle arti figurative, all'architettura, al teatro e alla cinematografia, qualunque ne sia il modo o la forma di espressione."
 
 **Distinzione critica:**
-- **Proprietà dell'oggetto fisico** (Codice Civile Art. 832) → Owner
-- **Diritti sull'opera dell'ingegno** (Codice Civile Art. 2575-2583) → Creator
+
+-   **Proprietà dell'oggetto fisico** (Codice Civile Art. 832) → Owner
+-   **Diritti sull'opera dell'ingegno** (Codice Civile Art. 2575-2583) → Creator
 
 **Acquistare un quadro ≠ Acquistare il copyright del quadro**
 
@@ -91,69 +96,78 @@ Per questioni legali specifiche relative a opere d'arte, NFT, contratti o contro
 #### **1. Diritto di Paternità (Art. 20 LDA)**
 
 **Cosa significa:**
-- Il Creator ha **sempre** il diritto di essere riconosciuto come autore dell'opera
-- Può rivendicare la paternità in qualsiasi momento
-- Può opporsi ad attribuzioni false o errate
-- Deve essere citato in ogni utilizzo, esposizione o pubblicazione
+
+-   Il Creator ha **sempre** il diritto di essere riconosciuto come autore dell'opera
+-   Può rivendicare la paternità in qualsiasi momento
+-   Può opporsi ad attribuzioni false o errate
+-   Deve essere citato in ogni utilizzo, esposizione o pubblicazione
 
 **Cosa NON può fare l'Owner:**
-- ❌ Rimuovere la firma dell'artista
-- ❌ Presentarsi come autore dell'opera
-- ❌ Attribuire l'opera ad altri artisti
-- ❌ Omettere i crediti nelle esposizioni pubbliche
-- ❌ Rimuovere watermark/attribution digitali
+
+-   ❌ Rimuovere la firma dell'artista
+-   ❌ Presentarsi come autore dell'opera
+-   ❌ Attribuire l'opera ad altri artisti
+-   ❌ Omettere i crediti nelle esposizioni pubbliche
+-   ❌ Rimuovere watermark/attribution digitali
 
 **Durata:** **Perpetua** (anche oltre i 70 anni post-mortem, per i diritti morali)
 
 **Sanzioni per violazione:**
-- Azione giudiziaria per inibitoria
-- Risarcimento danni (anche morali)
-- Pubblicazione della sentenza
-- Rimozione dell'opera se falsamente attribuita
+
+-   Azione giudiziaria per inibitoria
+-   Risarcimento danni (anche morali)
+-   Pubblicazione della sentenza
+-   Rimozione dell'opera se falsamente attribuita
 
 ---
 
 #### **2. Diritto all'Integrità dell'Opera (Art. 20 LDA)**
 
 **Cosa significa:**
-- Il Creator può opporsi a qualsiasi modifica che danneggi la sua reputazione
-- Vietate deformazioni, mutilazioni, alterazioni sostanziali
-- L'opera deve essere conservata nella sua forma originale
-- Eventuali interventi devono essere concordati
+
+-   Il Creator può opporsi a qualsiasi modifica che danneggi la sua reputazione
+-   Vietate deformazioni, mutilazioni, alterazioni sostanziali
+-   L'opera deve essere conservata nella sua forma originale
+-   Eventuali interventi devono essere concordati
 
 **Cosa NON può fare l'Owner:**
-- ❌ Modificare l'opera (ridipingere, ritagliare, alterare colori)
-- ❌ Rimuovere parti dell'opera
-- ❌ Aggiungere elementi non originali
-- ❌ Creare opere derivative senza consenso
-- ❌ Esporre l'opera in contesti degradanti
+
+-   ❌ Modificare l'opera (ridipingere, ritagliare, alterare colori)
+-   ❌ Rimuovere parti dell'opera
+-   ❌ Aggiungere elementi non originali
+-   ❌ Creare opere derivative senza consenso
+-   ❌ Esporre l'opera in contesti degradanti
 
 **Eccezioni ammesse:**
-- ✅ Restauro conservativo (preserva l'originale)
-- ✅ Pulizia professionale (non altera)
-- ✅ Ri-incorniciatura (se appropriata)
-- ⚠️ **Sempre consigliato consultare il Creator**
+
+-   ✅ Restauro conservativo (preserva l'originale)
+-   ✅ Pulizia professionale (non altera)
+-   ✅ Ri-incorniciatura (se appropriata)
+-   ⚠️ **Sempre consigliato consultare il Creator**
 
 **Violazioni tipiche:**
-- Tagliare una tela per adattarla a una cornice
-- Ridipingere parti dell'opera
-- Aggiungere scritte/elementi
-- Modificare digitalmente l'immagine per NFT
+
+-   Tagliare una tela per adattarla a una cornice
+-   Ridipingere parti dell'opera
+-   Aggiungere scritte/elementi
+-   Modificare digitalmente l'immagine per NFT
 
 ---
 
 #### **3. Diritto di Pentimento/Ritiro (Art. 142 LDA)**
 
 **Caso eccezionale:**
-- Il Creator può ritirare l'opera dal commercio per **gravi ragioni morali**
-- Richiede procedura giudiziaria
-- Previo indennizzo all'Owner (valore di mercato)
-- Raramente esercitato (onere economico Creator)
+
+-   Il Creator può ritirare l'opera dal commercio per **gravi ragioni morali**
+-   Richiede procedura giudiziaria
+-   Previo indennizzo all'Owner (valore di mercato)
+-   Raramente esercitato (onere economico Creator)
 
 **Esempi di "gravi ragioni morali":**
-- Evoluzione artisticache rende l'opera non rappresentativa
-- Uso dell'opera per scopi contrari ai valori dell'artista
-- Situazioni che ledono gravemente l'onore dell'artista
+
+-   Evoluzione artisticache rende l'opera non rappresentativa
+-   Uso dell'opera per scopi contrari ai valori dell'artista
+-   Situazioni che ledono gravemente l'onore dell'artista
 
 ---
 
@@ -165,59 +179,67 @@ Per questioni legali specifiche relative a opere d'arte, NFT, contratti o contro
 #### **1. Diritto di Riproduzione (Art. 13 LDA)**
 
 **Il Creator ha il diritto esclusivo di:**
-- ✅ Realizzare copie dell'opera (fisiche o digitali)
-- ✅ Stampare riproduzioni (poster, stampe d'arte)
-- ✅ Fotografare/scansionare per uso commerciale
-- ✅ Creare stampe limitate o illimitate
-- ✅ Digitalizzare l'opera per archivio/vendita
-- ✅ Produrre merchandise (t-shirt, mug, etc.)
+
+-   ✅ Realizzare copie dell'opera (fisiche o digitali)
+-   ✅ Stampare riproduzioni (poster, stampe d'arte)
+-   ✅ Fotografare/scansionare per uso commerciale
+-   ✅ Creare stampe limitate o illimitate
+-   ✅ Digitalizzare l'opera per archivio/vendita
+-   ✅ Produrre merchandise (t-shirt, mug, etc.)
 
 **L'Owner NON può:**
-- ❌ Fare stampe dell'opera senza licenza
-- ❌ Fotografare per vendere poster
-- ❌ Scansionare per creare copie digitali vendibili
-- ❌ Produrre merchandise commerciale
+
+-   ❌ Fare stampe dell'opera senza licenza
+-   ❌ Fotografare per vendere poster
+-   ❌ Scansionare per creare copie digitali vendibili
+-   ❌ Produrre merchandise commerciale
 
 **Eccezione uso privato (Art. 68 LDA):**
-- ✅ Owner può fare 1 copia per uso personale (non commerciale)
-- ✅ Fotografare per documentazione privata
-- ❌ NON può distribuire/vendere questa copia
+
+-   ✅ Owner può fare 1 copia per uso personale (non commerciale)
+-   ✅ Fotografare per documentazione privata
+-   ❌ NON può distribuire/vendere questa copia
 
 ---
 
 #### **2. Diritto di Comunicazione al Pubblico (Art. 16 LDA)**
 
 **Il Creator ha il diritto esclusivo di:**
-- ✅ Autorizzare esposizioni pubbliche commerciali
-- ✅ Pubblicare l'immagine online (sito/social/cataloghi)
-- ✅ Licenziare uso in media (TV, film, pubblicità)
-- ✅ Permettere streaming/broadcast
-- ✅ Autorizzare uso in videogiochi/metaverso
+
+-   ✅ Autorizzare esposizioni pubbliche commerciali
+-   ✅ Pubblicare l'immagine online (sito/social/cataloghi)
+-   ✅ Licenziare uso in media (TV, film, pubblicità)
+-   ✅ Permettere streaming/broadcast
+-   ✅ Autorizzare uso in videogiochi/metaverso
 
 **L'Owner può:**
-- ✅ Esporre l'opera in casa/ufficio (privato)
-- ✅ Esporre in galleria/museo (pubblico non commerciale, con attribuzione)
-- ⚠️ Fotografare per documentazione assicurativa/archivio
+
+-   ✅ Esporre l'opera in casa/ufficio (privato)
+-   ✅ Esporre in galleria/museo (pubblico non commerciale, con attribuzione)
+-   ⚠️ Fotografare per documentazione assicurativa/archivio
 
 **L'Owner NON può (senza licenza Creator):**
-- ❌ Usare l'immagine in pubblicità aziendale
-- ❌ Pubblicare online su sito commerciale
-- ❌ Vendere diritti d'uso dell'immagine a terzi
-- ❌ Autorizzare riproduzione in riviste/libri
+
+-   ❌ Usare l'immagine in pubblicità aziendale
+-   ❌ Pubblicare online su sito commerciale
+-   ❌ Vendere diritti d'uso dell'immagine a terzi
+-   ❌ Autorizzare riproduzione in riviste/libri
 
 ---
 
 #### **3. Diritto di Distribuzione (Art. 17 LDA)**
 
 **Il Creator ha il diritto esclusivo di:**
-- ✅ Vendere copie/riproduzioni dell'opera
-- ✅ Distribuire stampe commercialmente
-- ✅ Licenziare diritti d'uso a gallerie/editori
+
+-   ✅ Vendere copie/riproduzioni dell'opera
+-   ✅ Distribuire stampe commercialmente
+-   ✅ Licenziare diritti d'uso a gallerie/editori
 
 **Principio dell'esaurimento (Art. 17 comma 2):**
-- ✅ Owner può rivendere l'**originale** senza consenso Creator
-- ✅ Diritto di rivendita = diritto di proprietà (C.C. Art. 832)
-- ❌ **MA** con obbligo di royalty (diritto di seguito se >€3k)
+
+-   ✅ Owner può rivendere l'**originale** senza consenso Creator
+-   ✅ Diritto di rivendita = diritto di proprietà (C.C. Art. 832)
+-   ❌ **MA** con obbligo di royalty (diritto di seguito se >€3k)
 
 ---
 
@@ -263,17 +285,18 @@ Diritto dell'autore di un'opera d'arte **originale** di percepire un compenso su
 
 #### **Aliquote (D.Lgs. 118/2006 Art. 3):**
 
-| Fascia Prezzo | Aliquota | Esempio Calcolo |
-|---------------|----------|-----------------|
-| €0 - €50,000 | **4%** | €30,000 × 4% = €1,200 |
-| €50,001 - €200,000 | **3%** | €100,000 × 3% = €3,000 |
-| €200,001 - €350,000 | **1%** | €100,000 × 1% = €1,000 |
-| €350,001 - €500,000 | **0.5%** | €100,000 × 0.5% = €500 |
-| Oltre €500,000 | **0.25%** | €500,000 × 0.25% = €1,250 |
+| Fascia Prezzo       | Aliquota  | Esempio Calcolo           |
+| ------------------- | --------- | ------------------------- |
+| €0 - €50,000        | **4%**    | €30,000 × 4% = €1,200     |
+| €50,001 - €200,000  | **3%**    | €100,000 × 3% = €3,000    |
+| €200,001 - €350,000 | **1%**    | €100,000 × 1% = €1,000    |
+| €350,001 - €500,000 | **0.5%**  | €100,000 × 0.5% = €500    |
+| Oltre €500,000      | **0.25%** | €500,000 × 0.25% = €1,250 |
 
 **Massimale:** €12,500 per singola vendita (Art. 5)
 
 **Calcolo su vendita €150,000:**
+
 ```
 ├─ Prima fascia (0-€50k): €50,000 × 4% = €2,000
 ├─ Seconda fascia (€50k-€200k): €100,000 × 3% = €3,000
@@ -289,11 +312,13 @@ Diritto dell'autore di un'opera d'arte **originale** di percepire un compenso su
 **Solidalmente responsabile:** L'intermediario professionale (galleria, casa d'asta)
 
 **Nella pratica:**
-- La galleria/casa d'asta trattiene il diritto di seguito dal ricavato del venditore
-- L'intermediario versa trimestralmente a SIAE
-- SIAE distribuisce agli artisti (o eredi)
+
+-   La galleria/casa d'asta trattiene il diritto di seguito dal ricavato del venditore
+-   L'intermediario versa trimestralmente a SIAE
+-   SIAE distribuisce agli artisti (o eredi)
 
 **Esempio:**
+
 ```
 Vendita €100,000 in galleria
 ├─ Prezzo concordato: €100,000
@@ -308,16 +333,18 @@ Vendita €100,000 in galleria
 #### **Gestione SIAE:**
 
 **Procedura:**
-- Artista si iscrive a SIAE (sezione "Arti Figurative")
-- Deposita opere nel repertorio SIAE
-- Gallerie/case d'asta comunicano vendite a SIAE
-- SIAE verifica e distribuisce compensi trimestralmente
-- Creator riceve pagamento (bonifico)
+
+-   Artista si iscrive a SIAE (sezione "Arti Figurative")
+-   Deposita opere nel repertorio SIAE
+-   Gallerie/case d'asta comunicano vendite a SIAE
+-   SIAE verifica e distribuisce compensi trimestralmente
+-   Creator riceve pagamento (bonifico)
 
 **Costi SIAE:**
-- Iscrizione: ~€100-150 (una tantum)
-- Fee gestione: ~3-5% del diritto di seguito riscosso
-- Worth it per artisti con vendite significative
+
+-   Iscrizione: ~€100-150 (una tantum)
+-   Fee gestione: ~3-5% del diritto di seguito riscosso
+-   Worth it per artisti con vendite significative
 
 **Info:** [SIAE - Diritto di Seguito](https://www.siae.it)
 
@@ -326,9 +353,10 @@ Vendita €100,000 in galleria
 #### **Durata (Art. 10 D.Lgs. 118/2006):**
 
 **Stesso periodo del diritto d'autore:**
-- Vita dell'autore + 70 anni
-- Passa agli eredi (coniuge, figli, etc.)
-- Dopo 70 anni → opera in pubblico dominio
+
+-   Vita dell'autore + 70 anni
+-   Passa agli eredi (coniuge, figli, etc.)
+-   Dopo 70 anni → opera in pubblico dominio
 
 ---
 
@@ -337,31 +365,35 @@ Vendita €100,000 in galleria
 #### **1. Diritto di Esposizione (Art. 23 LDA)**
 
 **Il Creator può:**
-- Esporre l'opera in mostre pubbliche (anche se venduta)
-- Richiedere prestito temporaneo dell'opera
-- Fotografare l'opera per documentazione/portfolio
-- Includere in cataloghi e pubblicazioni personali
+
+-   Esporre l'opera in mostre pubbliche (anche se venduta)
+-   Richiedere prestito temporaneo dell'opera
+-   Fotografare l'opera per documentazione/portfolio
+-   Includere in cataloghi e pubblicazioni personali
 
 **Condizioni:**
-- Previo accordo con Owner
-- Restituzione garantita (assicurazione a carico Creator)
-- Rimborso spese trasporto/assicurazione
-- Non eccessivamente oneroso per l'Owner
+
+-   Previo accordo con Owner
+-   Restituzione garantita (assicurazione a carico Creator)
+-   Rimborso spese trasporto/assicurazione
+-   Non eccessivamente oneroso per l'Owner
 
 ---
 
 #### **2. Diritto di Citazione (Art. 70 LDA)**
 
 **Il Creator può:**
-- Riprodurre l'opera per fini didattici/scientifici
-- Citare l'opera in conferenze/lezioni
-- Utilizzare per promozione propria carriera
-- Includere in portfolio online (non commerciale)
+
+-   Riprodurre l'opera per fini didattici/scientifici
+-   Citare l'opera in conferenze/lezioni
+-   Utilizzare per promozione propria carriera
+-   Includere in portfolio online (non commerciale)
 
 **Limiti:**
-- Finalità non commerciali
-- Citazione della fonte
-- Non in competizione con sfruttamento normale opera
+
+-   Finalità non commerciali
+-   Citazione della fonte
+-   Non in competizione con sfruttamento normale opera
 
 ---
 
@@ -393,20 +425,23 @@ Vendita €100,000 in galleria
 #### **Esposizione Pubblica (Art. 23 LDA):**
 
 **L'Owner può esporre pubblicamente se:**
-- ✅ In luogo aperto al pubblico (galleria, museo, spazio espositivo)
-- ✅ Senza scopo di lucro diretto dall'esposizione stessa
-- ✅ Con corretta attribuzione al Creator (nome visibile)
-- ✅ Senza alterare o modificare l'opera
+
+-   ✅ In luogo aperto al pubblico (galleria, museo, spazio espositivo)
+-   ✅ Senza scopo di lucro diretto dall'esposizione stessa
+-   ✅ Con corretta attribuzione al Creator (nome visibile)
+-   ✅ Senza alterare o modificare l'opera
 
 **Esempi ammessi:**
-- Esporre in galleria (non a scopo vendita diretta)
-- Prestare a museo per mostra temporanea
-- Includere in esposizione collettiva
+
+-   Esporre in galleria (non a scopo vendita diretta)
+-   Prestare a museo per mostra temporanea
+-   Includere in esposizione collettiva
 
 **Non ammessi:**
-- Usare l'opera per attrarre clienti (pubblicità implicita)
-- Riprodurre l'immagine in cataloghi commerciali (senza licenza)
-- Vendere biglietti per vedere specificamente quell'opera
+
+-   Usare l'opera per attrarre clienti (pubblicità implicita)
+-   Riprodurre l'immagine in cataloghi commerciali (senza licenza)
+-   Vendere biglietti per vedere specificamente quell'opera
 
 ---
 
@@ -435,12 +470,12 @@ Vendita €100,000 in galleria
 
 **Sanzioni per Violazione (Art. 171 LDA):**
 
-| Tipo Violazione | Sanzione |
-|-----------------|----------|
-| **Violazione diritti patrimoniali (semplice)** | Multa €51 - €2,065 |
-| **Violazione a scopo di lucro** | Multa €2,582 - €15,493 |
-| **Contraffazione sistematica (Art. 171-ter)** | Reclusione fino a 3 anni + Multa fino €1,032,000 |
-| **Sanzioni accessorie** | Sequestro materiale + Risarcimento danni + Pubblicazione sentenza |
+| Tipo Violazione                                | Sanzione                                                          |
+| ---------------------------------------------- | ----------------------------------------------------------------- |
+| **Violazione diritti patrimoniali (semplice)** | Multa €51 - €2,065                                                |
+| **Violazione a scopo di lucro**                | Multa €2,582 - €15,493                                            |
+| **Contraffazione sistematica (Art. 171-ter)**  | Reclusione fino a 3 anni + Multa fino €1,032,000                  |
+| **Sanzioni accessorie**                        | Sequestro materiale + Risarcimento danni + Pubblicazione sentenza |
 
 ---
 
@@ -472,6 +507,7 @@ Vendita €100,000 in galleria
 ### **Esempi Pratici:**
 
 #### **CASO 1: Vendita Galleria €80,000**
+
 ```
 ✅ SI APPLICA:
 ├─ Prezzo: €80,000 (> €3,000) ✅
@@ -491,6 +527,7 @@ Pagamento:
 ```
 
 #### **CASO 2: Vendita P2P FlorenceEGI €5,000**
+
 ```
 ❌ DIRITTO SEGUITO NON SI APPLICA:
 ├─ Prezzo: €5,000 (> €3,000) ✅
@@ -513,6 +550,7 @@ Confronto:
 ```
 
 #### **CASO 3: Vendita Asta Christie's €500,000**
+
 ```
 ✅✅ SI APPLICANO ENTRAMBI (cumulabili!):
 
@@ -542,21 +580,21 @@ TOTALE Creator riceve:
 
 ### **TABELLA COMPARATIVA:**
 
-| Caratteristica | Royalty Piattaforma FlorenceEGI | Diritto di Seguito Legale |
-|----------------|--------------------------------|---------------------------|
-| **Base Giuridica** | Contratto Smart Contract (Terms of Service) | Legge 633/1941 Art. 19bis + D.Lgs. 118/2006 |
-| **Obbligatorietà** | Contrattuale (consenso utente) | Legale (imperativa, non derogabile) |
-| **Soglia Minima** | **€0** (tutte le vendite) | **€3,000** |
-| **Percentuale** | **4.5% fisso** | **4% → 0.25%** (progressivamente decrescente) |
-| **Massimale** | Nessuno (% su qualsiasi importo) | **€12,500** per vendita |
-| **Tipo Vendite** | P2P dirette sulla piattaforma | Tramite professionisti (gallerie/aste) |
-| **Gestione** | Smart contract automatico (trustless) | SIAE (manuale, trimestrale) |
-| **Distribuzione** | Istantanea (on-chain) | Differita (90-120 giorni) |
-| **Costi Gestione** | 0% (incluso in piattaforma) | ~3-5% (fee SIAE) |
-| **Trasparenza** | 100% (blockchain pubblica) | Limitata (reporting SIAE) |
-| **Applicabilità** | Solo vendite su FlorenceEGI | Tutte vendite professionali UE |
-| **Cumulabilità** | ✅ **SÌ** | ✅ **SÌ** (con royalty piattaforma) |
-| **Durata** | Vita + 70 anni (come da contratto) | Vita + 70 anni (come da legge) |
+| Caratteristica     | Royalty Piattaforma FlorenceEGI             | Diritto di Seguito Legale                     |
+| ------------------ | ------------------------------------------- | --------------------------------------------- |
+| **Base Giuridica** | Contratto Smart Contract (Terms of Service) | Legge 633/1941 Art. 19bis + D.Lgs. 118/2006   |
+| **Obbligatorietà** | Contrattuale (consenso utente)              | Legale (imperativa, non derogabile)           |
+| **Soglia Minima**  | **€0** (tutte le vendite)                   | **€3,000**                                    |
+| **Percentuale**    | **4.5% fisso**                              | **4% → 0.25%** (progressivamente decrescente) |
+| **Massimale**      | Nessuno (% su qualsiasi importo)            | **€12,500** per vendita                       |
+| **Tipo Vendite**   | P2P dirette sulla piattaforma               | Tramite professionisti (gallerie/aste)        |
+| **Gestione**       | Smart contract automatico (trustless)       | SIAE (manuale, trimestrale)                   |
+| **Distribuzione**  | Istantanea (on-chain)                       | Differita (90-120 giorni)                     |
+| **Costi Gestione** | 0% (incluso in piattaforma)                 | ~3-5% (fee SIAE)                              |
+| **Trasparenza**    | 100% (blockchain pubblica)                  | Limitata (reporting SIAE)                     |
+| **Applicabilità**  | Solo vendite su FlorenceEGI                 | Tutte vendite professionali UE                |
+| **Cumulabilità**   | ✅ **SÌ**                                   | ✅ **SÌ** (con royalty piattaforma)           |
+| **Durata**         | Vita + 70 anni (come da contratto)          | Vita + 70 anni (come da legge)                |
 
 ---
 
@@ -601,6 +639,7 @@ TOTALE Creator riceve:
 ### **Clausole Essenziali (Obbligatorie):**
 
 #### **1. IDENTIFICAZIONE OPERA**
+
 ```
 ✅ Titolo opera, artista (Creator), anno creazione
 ✅ Dimensioni, tecnica, materiali
@@ -611,9 +650,10 @@ TOTALE Creator riceve:
 ```
 
 #### **2. TRASFERIMENTO PROPRIETÀ FISICA**
+
 ```
 Clausola tipo:
-"Il Venditore trasferisce all'Acquirente la piena proprietà 
+"Il Venditore trasferisce all'Acquirente la piena proprietà
  materiale dell'opera identificata, comprensiva di:
  - Diritto di possesso esclusivo
  - Diritto di godimento privato
@@ -622,6 +662,7 @@ Clausola tipo:
 ```
 
 #### **3. CONSERVAZIONE DIRITTI D'AUTORE**
+
 ```
 Clausola tipo:
 "Il Creator (Artista) conserva in via esclusiva e perpetua:
@@ -630,54 +671,58 @@ Clausola tipo:
  - Tutti i diritti patrimoniali (Art. 12-19 L. 633/1941):
    riproduzione, comunicazione al pubblico, distribuzione
  - Diritto di seguito (Art. 19bis L. 633/1941)
-   
+
  Nessun diritto d'autore viene ceduto con la presente vendita,
  salvo specifici accordi scritti separati."
 ```
 
 #### **4. ROYALTY CONTRATTUALE (FlorenceEGI)**
+
 ```
 Clausola tipo:
-"L'Acquirente riconosce e accetta che su ogni rivendita futura 
- dell'opera sulla piattaforma FlorenceEGI, sarà applicata 
- automaticamente via smart contract una royalty del 4.5% 
+"L'Acquirente riconosce e accetta che su ogni rivendita futura
+ dell'opera sulla piattaforma FlorenceEGI, sarà applicata
+ automaticamente via smart contract una royalty del 4.5%
  in favore del Creator originale.
- 
- Questa royalty è separata e aggiuntiva rispetto ad eventuali 
+
+ Questa royalty è separata e aggiuntiva rispetto ad eventuali
  diritti di seguito previsti dalla legge italiana."
 ```
 
 #### **5. DIRITTO DI SEGUITO LEGALE**
+
 ```
 Clausola tipo:
 "L'Acquirente è informato che, ai sensi del D.Lgs. 118/2006,
- in caso di rivendita dell'opera tramite professionisti del 
- mercato dell'arte (gallerie, case d'asta) per un prezzo 
- pari o superiore a €3,000, sarà dovuto al Creator il 
+ in caso di rivendita dell'opera tramite professionisti del
+ mercato dell'arte (gallerie, case d'asta) per un prezzo
+ pari o superiore a €3,000, sarà dovuto al Creator il
  diritto di seguito nelle percentuali di legge (4%-0.25%).
- 
- Tale diritto è gestito da SIAE ed è indipendente dalle 
+
+ Tale diritto è gestito da SIAE ed è indipendente dalle
  royalty della piattaforma FlorenceEGI."
 ```
 
 #### **6. USO DELL'IMMAGINE**
+
 ```
 Clausola tipo:
 "L'Acquirente può:
  - Fotografare l'opera per documentazione personale/assicurativa
  - Esporre pubblicamente con attribuzione corretta al Creator
  - Pubblicare su social media personali (non commerciali)
- 
+
  L'Acquirente NON può, senza licenza scritta del Creator:
  - Riprodurre commercialmente l'immagine
  - Usare in pubblicità/marketing
  - Vendere diritti di riproduzione
  - Creare opere derivative
- 
+
  Qualsiasi uso commerciale richiede licenza separata."
 ```
 
 #### **7. INTEGRITÀ DELL'OPERA**
+
 ```
 Clausola tipo:
 "L'Acquirente si impegna a:
@@ -686,25 +731,26 @@ Clausola tipo:
  - Consultare il Creator per restauri significativi
  - Mantenere firma e attribuzione visibili
  - Conservare in condizioni ambientali appropriate
- 
- Eventuali danni accidentali dovranno essere comunicati 
+
+ Eventuali danni accidentali dovranno essere comunicati
  al Creator per documentazione CoA."
 ```
 
 #### **8. BLOCKCHAIN & NFT**
+
 ```
 Clausola tipo:
 "Il NFT (EGI) associato a questa opera include:
  - Certificato digitale di autenticità
  - Metadata immutabili (post-mint)
  - Smart contract per royalty automatiche
- 
- IMPORTANTE: Il NFT certifica la proprietà dell'opera ma 
- NON trasferisce i diritti d'autore (copyright), che 
+
+ IMPORTANTE: Il NFT certifica la proprietà dell'opera ma
+ NON trasferisce i diritti d'autore (copyright), che
  restano al Creator originale.
- 
+
  Il Creator può emettere NFT aggiuntivi (edizioni diverse,
- versioni digitali) senza violare i diritti dell'Owner 
+ versioni digitali) senza violare i diritti dell'Owner
  sull'opera fisica originale."
 ```
 
@@ -715,9 +761,10 @@ Clausola tipo:
 ### **Q1: Posso usare l'immagine del mio EGI sul mio sito aziendale?**
 
 **A:** Dipende dall'uso:
-- ✅ **Sì** se: "Guarda la mia collezione d'arte" (documentazione proprietà)
-- ❌ **No** se: "Compra i nostri prodotti" accanto all'opera (pubblicità commerciale)
-- ⚠️ **Serve licenza** se: vuoi usare come logo/branding aziendale
+
+-   ✅ **Sì** se: "Guarda la mia collezione d'arte" (documentazione proprietà)
+-   ❌ **No** se: "Compra i nostri prodotti" accanto all'opera (pubblicità commerciale)
+-   ⚠️ **Serve licenza** se: vuoi usare come logo/branding aziendale
 
 **Soluzione:** Chiedi licenza scritta al Creator (può essere gratuita o a pagamento)
 
@@ -741,10 +788,11 @@ Clausola tipo:
 **A:** **❌ NO**, viola il diritto all'integrità (Art. 20 LDA).
 
 **Esempi vietati:**
-- Cambiare colori/filtri
-- Aggiungere watermark/loghi
-- Ritagliare parti
-- Applicare effetti grafici
+
+-   Cambiare colori/filtri
+-   Aggiungere watermark/loghi
+-   Ritagliare parti
+-   Applicare effetti grafici
 
 **Eccezione:** Modifiche minime necessarie per adattamento tecnico (es: resize per piattaforma) se non alterano sostanzialmente l'opera e con attribuzione corretta.
 
@@ -755,27 +803,31 @@ Clausola tipo:
 **A:** **Questione aperta** (richiede qualificazione legale):
 
 **ARGOMENTO "SÌ" (siamo professionisti):**
-- Intermediamo vendite in modo sistematico
-- Forniamo piattaforma specializzata arte
-- Gestiamo pagamenti e trasferimenti
-- Prendiamo commissioni sulle vendite
+
+-   Intermediamo vendite in modo sistematico
+-   Forniamo piattaforma specializzata arte
+-   Gestiamo pagamenti e trasferimenti
+-   Prendiamo commissioni sulle vendite
 
 **ARGOMENTO "NO" (siamo solo tech platform):**
-- Non valutiamo/selezioniamo opere (curatori sono utenti)
-- Non abbiamo inventory fisico
-- Non gestiamo vendite in consignment
-- Siamo marketplace P2P (like eBay, non Christie's)
+
+-   Non valutiamo/selezioniamo opere (curatori sono utenti)
+-   Non abbiamo inventory fisico
+-   Non gestiamo vendite in consignment
+-   Siamo marketplace P2P (like eBay, non Christie's)
 
 **RACCOMANDAZIONE:**
-- ⚖️ Consulenza legale specifica con avvocato SIAE
-- 📋 Possibile registrazione volontaria come "intermediario digitale"
-- 🤝 Partnership con SIAE per gestione diritto seguito anche su P2P
-- 📊 Reporting volontario vendite >€3k (good faith)
+
+-   ⚖️ Consulenza legale specifica con avvocato SIAE
+-   📋 Possibile registrazione volontaria come "intermediario digitale"
+-   🤝 Partnership con SIAE per gestione diritto seguito anche su P2P
+-   📊 Reporting volontario vendite >€3k (good faith)
 
 **Status attuale FlorenceEGI:**
-- Royalty contrattuale 4.5% sempre applicata
-- Diritto seguito legale: da definire con SIAE
-- Commitment a rispettare normativa quando applicabile
+
+-   Royalty contrattuale 4.5% sempre applicata
+-   Diritto seguito legale: da definire con SIAE
+-   Commitment a rispettare normativa quando applicabile
 
 ---
 
@@ -784,6 +836,7 @@ Clausola tipo:
 **A:** **Scenario complesso**, richiede contratto chiaro:
 
 **Opzione A: NFT "replica" la proprietà fisica**
+
 ```
 ├─ Vendita quadro fisico = include NFT (bundle)
 ├─ NFT è certificato digitale del fisico
@@ -791,6 +844,7 @@ Clausola tipo:
 ```
 
 **Opzione B: NFT "edition" separata**
+
 ```
 ├─ Vendita quadro fisico = opera fisica (Owner A)
 ├─ Vendita NFT = edizione digitale (Owner B)
@@ -801,9 +855,10 @@ Clausola tipo:
 ```
 
 **Raccomandazione FlorenceEGI:**
-- ✅ **Opzione A** (bundle): NFT = certificato inseparabile dall'opera
-- Smart contract impedisce trasferimento NFT senza trasferimento fisica
-- Chiarezza per collector (1 opera = 1 NFT = 1 owner)
+
+-   ✅ **Opzione A** (bundle): NFT = certificato inseparabile dall'opera
+-   Smart contract impedisce trasferimento NFT senza trasferimento fisica
+-   Chiarezza per collector (1 opera = 1 NFT = 1 owner)
 
 ---
 
@@ -812,19 +867,22 @@ Clausola tipo:
 **A:** **Sì tecnicamente**, ma con considerazioni:
 
 **Se NFT è separato dall'opera fisica:**
-- ✅ Puoi bruciare il NFT (blockchain operation)
-- ⚠️ Ma se hai venduto promettendo "include NFT" → breach of contract
-- ⚠️ Buyer potrebbe fare causa per inadempimento
+
+-   ✅ Puoi bruciare il NFT (blockchain operation)
+-   ⚠️ Ma se hai venduto promettendo "include NFT" → breach of contract
+-   ⚠️ Buyer potrebbe fare causa per inadempimento
 
 **Se NFT è certificato dell'opera fisica:**
-- 🤔 Bruciare NFT = cancellare certificato (perché?)
-- ⚠️ Diminuisce valore opera (no tracciabilità blockchain)
-- ❌ Sconsigliato (perde utility)
+
+-   🤔 Bruciare NFT = cancellare certificato (perché?)
+-   ⚠️ Diminuisce valore opera (no tracciabilità blockchain)
+-   ❌ Sconsigliato (perde utility)
 
 **Soluzione per scarsità:**
-- Create edizioni limitate chiaramente (1/1, 1/10, etc.)
-- Non emettere NFT aggiuntivi dello stesso pezzo
-- Contratto chiaro: "Questo è l'unico NFT per questa opera"
+
+-   Create edizioni limitate chiaramente (1/1, 1/10, etc.)
+-   Non emettere NFT aggiuntivi dello stesso pezzo
+-   Contratto chiaro: "Questo è l'unico NFT per questa opera"
 
 ---
 
@@ -838,41 +896,42 @@ Clausola tipo:
 contract EGI_SmartContract {
     address public creator;
     uint256 public royaltyPercentage = 450; // 4.5% (basis points)
-    
+
     function transferOwnership(address newOwner, uint256 price) public {
         require(msg.sender == currentOwner, "Not owner");
-        
+
         // Calculate royalty
         uint256 royaltyAmount = (price * royaltyPercentage) / 10000;
         uint256 sellerAmount = price - royaltyAmount - platformFee - eppFee;
-        
+
         // Distribute funds
         payable(creator).transfer(royaltyAmount);  // 4.5% to Creator
         payable(eppWallet).transfer(eppFee);       // 1% to EPP
         payable(platform).transfer(platformFee);   // 1% to Platform
         payable(msg.sender).transfer(sellerAmount); // Rest to Seller
-        
+
         // Transfer NFT
         currentOwner = newOwner;
-        
+
         // Emit event for SIAE reporting (if applicable)
         if (price >= 3000 ether) {
             emit HighValueSale(creator, price, block.timestamp);
             // Could trigger off-chain SIAE notification
         }
     }
-    
+
     // Royalty CANNOT be bypassed or set to 0
     // Creator address immutable (set at mint)
 }
 ```
 
 **Caratteristiche:**
-- ✅ Royalty hardcoded (non modificabile)
-- ✅ Creator address immutable
-- ✅ Automatico su ogni transfer
-- ✅ Trustless (no human intervention)
-- ✅ Tracciabile on-chain (public blockchain)
+
+-   ✅ Royalty hardcoded (non modificabile)
+-   ✅ Creator address immutable
+-   ✅ Automatico su ogni transfer
+-   ✅ Trustless (no human intervention)
+-   ✅ Tracciabile on-chain (public blockchain)
 
 ---
 
@@ -888,35 +947,36 @@ CREATE TABLE egi_siae_reportable_sales (
     seller_id BIGINT,
     buyer_id BIGINT,
     creator_id BIGINT,
-    
+
     -- SIAE relevance
     is_professional_sale BOOLEAN DEFAULT FALSE,
     professional_type ENUM('gallery', 'auction', 'dealer', 'fair', 'platform'),
     is_over_threshold BOOLEAN,  -- >= €3,000
-    
+
     -- Droit de suite calculation
     droit_suite_applicable BOOLEAN,
     droit_suite_amount DECIMAL(10,2),
     droit_suite_reported_to_siae BOOLEAN DEFAULT FALSE,
     siae_report_date TIMESTAMP NULL,
-    
+
     -- Platform royalty (sempre applicata)
     platform_royalty_amount DECIMAL(10,2),
     platform_royalty_paid BOOLEAN DEFAULT TRUE,
-    
+
     -- GDPR
     created_at TIMESTAMP,
-    
+
     INDEX(sale_date, is_over_threshold),
     INDEX(creator_id, droit_suite_applicable)
 );
 ```
 
 **Utilizzo:**
-- Tracking tutte vendite >€3k
-- Report trimestrale automatico per SIAE
-- Calcolo automatico diritto seguito
-- Audit trail completo
+
+-   Tracking tutte vendite >€3k
+-   Report trimestrale automatico per SIAE
+-   Calcolo automatico diritto seguito
+-   Audit trail completo
 
 ---
 
@@ -925,6 +985,7 @@ CREATE TABLE egi_siae_reportable_sales (
 ### **SCENARIO 1: Artista Emergente - EGI €150**
 
 **Vendita Primaria (Mint):**
+
 ```
 Prezzo: €150
 ├─ Creator: €97.50 (65%)
@@ -937,6 +998,7 @@ Diritto seguito: ❌ Non applicabile (prima vendita)
 ```
 
 **Prima Rivendita (€200 su FlorenceEGI):**
+
 ```
 Prezzo: €200
 ├─ Seller: €186 (93%)
@@ -951,15 +1013,17 @@ BUT: Creator riceve €9 (royalty piattaforma) ✅
 ```
 
 **Beneficio per artista emergente:**
-- Senza royalty piattaforma: €0 su rivendita
-- Con royalty piattaforma: €9 (extra income!)
-- Democratico: anche piccole vendite generano royalty
+
+-   Senza royalty piattaforma: €0 su rivendita
+-   Con royalty piattaforma: €9 (extra income!)
+-   Democratico: anche piccole vendite generano royalty
 
 ---
 
 ### **SCENARIO 2: Artista Affermato - EGI €25,000**
 
 **Vendita Primaria (Mint):**
+
 ```
 Prezzo: €25,000
 ├─ Creator: €17,000 (68%)
@@ -972,6 +1036,7 @@ Diritto seguito: ❌ Non applicabile (prima vendita)
 ```
 
 **Rivendita 1 (€30,000 P2P FlorenceEGI):**
+
 ```
 Prezzo: €30,000
 ├─ Seller: €27,900 (93%)
@@ -988,6 +1053,7 @@ Diritto seguito SIAE: ✅ Applicabile SE tramite professionista
 ```
 
 **Rivendita 2 (€35,000 tramite Galleria d'Arte):**
+
 ```
 FEE FLORENCEEGI (se transazione passa per piattaforma):
 ├─ Seller: €32,550 (93%)
@@ -1015,6 +1081,7 @@ TOTALE CREATOR:
 ### **SCENARIO 3: Blue Chip Artist - EGI €500,000**
 
 **Rivendita Christie's/Sotheby's:**
+
 ```
 DIRITTO SEGUITO SIAE (se NO FlorenceEGI):
 ├─ €0-€50k: €50,000 × 4% = €2,000
@@ -1049,15 +1116,17 @@ DIFFERENCE: +€22,500 a favore del Creator! 🚀
 **Ambito:** 180+ paesi membri (Italia dal 1887)
 
 **Principi:**
-- Protezione automatica (no registrazione necessaria)
-- Trattamento nazionale (reciprocità tra paesi)
-- Durata minima: vita + 50 anni (Italia: vita + 70)
-- Diritti morali riconosciuti
+
+-   Protezione automatica (no registrazione necessaria)
+-   Trattamento nazionale (reciprocità tra paesi)
+-   Durata minima: vita + 50 anni (Italia: vita + 70)
+-   Diritti morali riconosciuti
 
 **Rilevanza per NFT:**
-- Opera protetta in tutti i paesi Berna
-- Copyright internazionale automatico
-- NFT vendibile globalmente ma copyright resta italiano
+
+-   Opera protetta in tutti i paesi Berna
+-   Copyright internazionale automatico
+-   NFT vendibile globalmente ma copyright resta italiano
 
 ---
 
@@ -1066,26 +1135,29 @@ DIFFERENCE: +€22,500 a favore del Creator! 🚀
 **Ambito:** Digital age, internet, nuove tecnologie
 
 **Rilevanza:**
-- Protezione opere digitali = opere fisiche
-- Diritti online equiparati (Art. 8)
-- Anti-circumvention (protezione DRM)
-- NFT interpretati come "opere digitali" (giurisprudenza emergente)
+
+-   Protezione opere digitali = opere fisiche
+-   Diritti online equiparati (Art. 8)
+-   Anti-circumvention (protezione DRM)
+-   NFT interpretati come "opere digitali" (giurisprudenza emergente)
 
 ---
 
 ### **Normativa UE - Direttiva 2019/790 (Copyright Directive)**
 
 **Digital Single Market:**
-- Armonizzazione copyright digitale UE
-- Platform liability (Art. 17)
-- Upload filters per contenuti protetti
-- NFT marketplace = potenzialmente soggetti
+
+-   Armonizzazione copyright digitale UE
+-   Platform liability (Art. 17)
+-   Upload filters per contenuti protetti
+-   NFT marketplace = potenzialmente soggetti
 
 **Implicazioni FlorenceEGI:**
-- Dobbiamo verificare copyright opere uploadate
-- Sistema di Content ID (riconoscimento opere protette)
-- DMCA-like takedown process
-- Liability per opere contraffatte
+
+-   Dobbiamo verificare copyright opere uploadate
+-   Sistema di Content ID (riconoscimento opere protette)
+-   DMCA-like takedown process
+-   Liability per opere contraffatte
 
 ---
 
@@ -1120,27 +1192,30 @@ DIFFERENCE: +€22,500 a favore del Creator! 🚀
 ### **🎯 PRIORITY ACTIONS:**
 
 1. **Consulenza legale SIAE** (settimana 1)
-   - Qualificare status piattaforma
-   - Definire obblighi reporting
-   - Partnership per diritto seguito
+
+    - Qualificare status piattaforma
+    - Definire obblighi reporting
+    - Partnership per diritto seguito
 
 2. **Contratto vendita template** (settimana 2)
-   - Redatto da legale specializzato
-   - Include tutte clausole obbligatorie
-   - Multilingua (IT/EN/ES)
-   - Firmabile digitalmente
+
+    - Redatto da legale specializzato
+    - Include tutte clausole obbligatorie
+    - Multilingua (IT/EN/ES)
+    - Firmabile digitalmente
 
 3. **Sistema reporting SIAE** (settimana 3-4)
-   - Auto-detect vendite >€3k
-   - Classify se tramite "professionista"
-   - Report trimestrale automatico
-   - Integration API SIAE (se disponibile)
+
+    - Auto-detect vendite >€3k
+    - Classify se tramite "professionista"
+    - Report trimestrale automatico
+    - Integration API SIAE (se disponibile)
 
 4. **Content moderation** (mese 2)
-   - Upload checks (reverse image search)
-   - Creator verification (identità)
-   - DMCA takedown process
-   - Dispute resolution
+    - Upload checks (reverse image search)
+    - Creator verification (identità)
+    - DMCA takedown process
+    - Dispute resolution
 
 ---
 
@@ -1211,46 +1286,53 @@ DIFFERENCE: +€22,500 a favore del Creator! 🚀
 ### **Enti Ufficiali:**
 
 **SIAE (Società Italiana Autori ed Editori)**
-- Website: [www.siae.it](https://www.siae.it)
-- Tel: +39 06 59901
-- Email: [email protected]
-- Ufficio Diritto di Seguito: [dirittodiseguito@siae.it](mailto:dirittodiseguito@siae.it)
+
+-   Website: [www.siae.it](https://www.siae.it)
+-   Tel: +39 06 59901
+-   Email: [email protected]
+-   Ufficio Diritto di Seguito: [dirittodiseguito@siae.it](mailto:dirittodiseguito@siae.it)
 
 **MiBACT (Ministero Beni Culturali)**
-- Website: [www.beniculturali.it](https://www.beniculturali.it)
-- Direzione Generale Creatività Contemporanea
+
+-   Website: [www.beniculturali.it](https://www.beniculturali.it)
+-   Direzione Generale Creatività Contemporanea
 
 **CISAC (Confederation of International Societies of Authors and Composers)**
-- Website: [www.cisac.org](https://www.cisac.org)
-- Diritto di seguito internazionale
+
+-   Website: [www.cisac.org](https://www.cisac.org)
+-   Diritto di seguito internazionale
 
 ---
 
 ### **Associazioni di Categoria:**
 
 **AAI (Associazione Artisti Italiani)**
-- Tutela diritti artisti
-- Consulenza legale gratuita soci
+
+-   Tutela diritti artisti
+-   Consulenza legale gratuita soci
 
 **ADAGP (Francia) - Modello di riferimento**
-- Gestione collettiva diritto di seguito
-- Best practices mercato arte
+
+-   Gestione collettiva diritto di seguito
+-   Best practices mercato arte
 
 ---
 
 ### **Avvocati Specializzati (Italia):**
 
 **Aree di specializzazione necessarie:**
-- Proprietà intellettuale
-- Diritto dell'arte
-- Contrattualistica commerciale
-- Diritto digitale/blockchain
-- Diritto internazionale (se vendite cross-border)
+
+-   Proprietà intellettuale
+-   Diritto dell'arte
+-   Contrattualistica commerciale
+-   Diritto digitale/blockchain
+-   Diritto internazionale (se vendite cross-border)
 
 **Dove cercare:**
-- Ordine Avvocati (sezione IP)
-- Associazioni settore arte/cultura
-- Law firms specializzati tech/blockchain
+
+-   Ordine Avvocati (sezione IP)
+-   Associazioni settore arte/cultura
+-   Law firms specializzati tech/blockchain
 
 ---
 
@@ -1302,14 +1384,13 @@ DIFFERENCE: +€22,500 a favore del Creator! 🚀
 ---
 
 **Fine Documento Legale**  
-*Maintained by: FlorenceEGI Legal Team*  
-*Last Review: 2025-10-21*  
-*Version: 1.0 - Complete Legal Framework*  
-*Next Review: Quarterly (or upon law changes)*
+_Maintained by: FlorenceEGI Legal Team_  
+_Last Review: 2025-10-21_  
+_Version: 1.0 - Complete Legal Framework_  
+_Next Review: Quarterly (or upon law changes)_
 
 ---
 
 **Per domande specifiche:** [legal@florence-egi.com](mailto:legal@florence-egi.com)  
 **Per consulenza SIAE:** [siae@florence-egi.com](mailto:siae@florence-egi.com)  
 **Per dispute resolution:** [disputes@florence-egi.com](mailto:disputes@florence-egi.com)
-
