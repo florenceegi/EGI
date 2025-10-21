@@ -6112,5 +6112,74 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // ====================================================
+        // Dual Architecture EGI - Auto-Mint & Pre-Mint Errors
+        // ====================================================
+        'DUAL_ARCH_AUTO_MINT_UNAUTHORIZED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.dual_arch_auto_mint_unauthorized',
+            'user_message_key' => 'error-manager::errors_2.user.dual_arch_auto_mint_unauthorized',
+            'http_status_code' => 403,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'json',
+        ],
+
+        'DUAL_ARCH_NOT_PRE_MINT' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.dual_arch_not_pre_mint',
+            'user_message_key' => 'error-manager::errors_2.user.dual_arch_not_pre_mint',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'json',
+        ],
+
+        'DUAL_ARCH_SMART_CONTRACT_DISABLED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.dual_arch_smart_contract_disabled',
+            'user_message_key' => 'error-manager::errors_2.user.dual_arch_smart_contract_disabled',
+            'http_status_code' => 503,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'json',
+        ],
+
+        'DUAL_ARCH_AUTO_MINT_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.dual_arch_auto_mint_failed',
+            'user_message_key' => 'error-manager::errors_2.user.dual_arch_auto_mint_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'json',
+        ],
+
+        'DUAL_ARCH_AI_ANALYSIS_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.dual_arch_ai_analysis_failed',
+            'user_message_key' => 'error-manager::errors_2.user.dual_arch_ai_analysis_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'json',
+        ],
+
+        'DUAL_ARCH_PROMOTION_FAILED' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.dual_arch_promotion_failed',
+            'user_message_key' => 'error-manager::errors_2.user.dual_arch_promotion_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'json',
+        ],
+
     ]
 ];
