@@ -53,6 +53,7 @@
                         <div class="font-mono text-xs text-yellow-300">
                             <div><strong>DEBUG:</strong> EGI #{{ $egi->id }}</div>
                             <div>egi_type: <strong>{{ $egi->egi_type ?? 'NULL' }}</strong></div>
+                            <div>pre_mint_mode: <strong>{{ $egi->pre_mint_mode ? 'TRUE (riservato creator)' : 'FALSE (marketplace)' }}</strong></div>
                             <div>token_EGI: <strong>{{ $egi->token_EGI ?? 'NULL' }}</strong></div>
                             <div>isNotMinted: <strong>{{ $isNotMinted ? 'YES' : 'NO' }}</strong></div>
                             <div>isASA: <strong>{{ $isASA ? 'YES' : 'NO' }}</strong></div>
@@ -61,7 +62,7 @@
                             <div class="mt-2 border-t border-yellow-600 pt-2">
                                 <strong>Pannelli visibili:</strong><br>
                                 Auto-Mint Panel: {{ $isNotMinted && $isCreatorCheck ? '✓ SHOW' : '✗ HIDE' }}<br>
-                                Pre-Mint Panel: {{ $isNotMinted ? '✓ SHOW' : '✗ HIDE' }}<br>
+                                Pre-Mint Panel: {{ $isNotMinted && !$egi->pre_mint_mode ? '✓ SHOW' : '✗ HIDE' }}<br>
                                 Living Panel: {{ $isSmartContract ? '✓ SHOW' : '✗ HIDE' }}
                             </div>
                         </div>
@@ -75,8 +76,8 @@
                     </div>
                 @endif
 
-                {{-- Pre-Mint Panel (Tutti gli EGI non mintati) --}}
-                @if ($isNotMinted)
+                {{-- Pre-Mint Panel (EGI non mintati e disponibili sul marketplace) --}}
+                @if ($isNotMinted && !$egi->pre_mint_mode)
                     <div class="mb-6">
                         <x-egi-pre-mint-panel :egi="$egi" />
                     </div>

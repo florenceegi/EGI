@@ -93,34 +93,15 @@ class EgiDualArchitectureController extends Controller
                 ]);
             }
 
-            // ✅ Validate mint type
-            $validated = $request->validate([
-                'mint_type' => 'required|string|in:ASA,SmartContract'
-            ]);
-
-            $mintType = $validated['mint_type'];
-
-            // 🚩 Feature flag check for SmartContract
-            if ($mintType === 'SmartContract' && !config('egi_living.feature_flags.smart_contract_mint_enabled', false)) {
-                return $this->errorManager->handle('DUAL_ARCH_SMART_CONTRACT_DISABLED', [
-                    'egi_id' => $egi->id,
-                    'requested_type' => $mintType,
-                    'feature_flag' => 'smart_contract_mint_enabled',
-                    'user_id' => FegiAuth::id(),
-                    'timestamp' => now()->toIso8601String()
-                ]);
-            }
-
-            // ✅ Enable auto-mint
+            // ✅ Enable pre-mint mode (reserve for creator)
             $egi->update([
-                'auto_mint_enabled' => true,
-                'auto_mint_type' => $mintType,
+                'pre_mint_mode' => true,
+                'pre_mint_created_at' => $egi->pre_mint_created_at ?? now(),
             ]);
 
-            $this->logger->info('[DUAL_ARCH] Auto-Mint enabled successfully', [
+            $this->logger->info('[DUAL_ARCH] Pre-Mint mode enabled (reserved for creator)', [
                 'egi_id' => $egi->id,
-                'user_id' => FegiAuth::id(),
-                'mint_type' => $mintType
+                'user_id' => FegiAuth::id()
             ]);
 
             return response()->json([
@@ -128,8 +109,7 @@ class EgiDualArchitectureController extends Controller
                 'message' => __('egi_dual_arch.auto_mint_enabled'),
                 'data' => [
                     'egi_id' => $egi->id,
-                    'auto_mint_enabled' => true,
-                    'mint_type' => $mintType,
+                    'pre_mint_mode' => true,
                 ]
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -191,13 +171,12 @@ class EgiDualArchitectureController extends Controller
                 ]);
             }
 
-            // ✅ Disable auto-mint
+            // ✅ Disable pre-mint mode (make available on marketplace)
             $egi->update([
-                'auto_mint_enabled' => false,
-                'auto_mint_type' => null,
+                'pre_mint_mode' => false,
             ]);
 
-            $this->logger->info('[DUAL_ARCH] Auto-Mint disabled successfully', [
+            $this->logger->info('[DUAL_ARCH] Pre-Mint mode disabled (available on marketplace)', [
                 'egi_id' => $egi->id,
                 'user_id' => FegiAuth::id()
             ]);
