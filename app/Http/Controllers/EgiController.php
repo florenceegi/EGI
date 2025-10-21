@@ -432,11 +432,17 @@ class EgiController extends Controller {
             ]);
 
             if ($validator->fails()) {
-                return $this->errorManager->handle('EGI_VALIDATION_FAILED', [
-                    'user_id' => $user->id,
-                    'egi_id' => $egi->id,
-                    'validation_errors' => json_encode($validator->errors()->toArray())
-                ]);
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __('egi.validation.validation_failed'),
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
+                
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
             }
 
             $validated = $validator->validated();
