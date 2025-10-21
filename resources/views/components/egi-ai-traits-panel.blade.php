@@ -67,14 +67,13 @@
                 onsubmit="return handleTraitsGenerate(event, {{ $egi->id }});">
                 @csrf
 
-                <label for="requested_count_{{ $egi->id }}"
-                    class="mb-2 block text-sm font-medium text-gray-700">
+                <label for="requested_count_{{ $egi->id }}" class="mb-2 block text-sm font-medium text-gray-700">
                     {{ __('egi_dual_arch.ai.requested_count') }}
                 </label>
 
                 <div class="mb-4 flex items-center gap-3">
-                    <input type="range" id="requested_count_{{ $egi->id }}" name="requested_count"
-                        min="1" max="10" value="5"
+                    <input type="range" id="requested_count_{{ $egi->id }}" name="requested_count" min="1"
+                        max="10" value="5"
                         class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-purple-200"
                         oninput="document.getElementById('count_display_{{ $egi->id }}').textContent = this.value;">
 
@@ -92,18 +91,20 @@
             </form>
         </div>
 
-        {{-- Pending Generations (if any) --}}
-        <div id="pending-generations-{{ $egi->id }}" class="hidden space-y-4">
+        {{-- Show Latest Generation with Proposals --}}
+        @php
+            $latestGeneration = $egi->aiTraitGenerations()
+                ->with('proposals')
+                ->where('status', 'analyzed')
+                ->latest()
+                ->first();
+        @endphp
+
+        @if ($latestGeneration && $latestGeneration->proposals->count() > 0)
             <div class="border-t border-gray-200 pt-4">
-                <h5 class="mb-3 font-semibold text-gray-900">
-                    <i class="fas fa-clock-rotate-left mr-2"></i>
-                    Generazioni in corso
-                </h5>
-                <div id="generation-list-{{ $egi->id }}" class="space-y-3">
-                    {{-- Populated via JavaScript --}}
-                </div>
+                <x-egi-ai-traits-proposals :generation="$latestGeneration" />
             </div>
-        </div>
+        @endif
     </div>
 </div>
 
@@ -193,4 +194,3 @@
         }
     </script>
 @endpush
-
