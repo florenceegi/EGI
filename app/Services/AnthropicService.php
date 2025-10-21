@@ -312,12 +312,12 @@ PROMPT;
                 ],
             ];
 
-            // Call Claude Vision API
+            // Call Claude Vision API (longer timeout for image analysis: 120s)
             $response = Http::withHeaders([
                 'x-api-key' => $this->apiKey,
                 'anthropic-version' => '2023-06-01',
                 'content-type' => 'application/json',
-            ])->timeout($this->timeout)->post($this->baseUrl . '/v1/messages', [
+            ])->timeout(120)->post($this->baseUrl . '/v1/messages', [
                 'model' => $this->model,
                 'max_tokens' => 4096,
                 'system' => $systemPrompt,
@@ -342,7 +342,6 @@ PROMPT;
             ]);
 
             return $description;
-
         } catch (\Exception $e) {
             $this->logger->error('[AnthropicService] Image analysis failed', [
                 'error' => $e->getMessage(),
@@ -362,12 +361,21 @@ PROMPT;
     private function fetchImageAsBase64(string $imageUrl): array
     {
         try {
+            $this->logger->info('[AnthropicService] Starting image fetch', [
+                'original_image_url' => $imageUrl,
+            ]);
+
             // Handle asset() URLs by converting to full path
             if (str_starts_with($imageUrl, '/')) {
                 $imageUrl = public_path($imageUrl);
             } elseif (str_starts_with($imageUrl, asset(''))) {
                 $imageUrl = str_replace(asset(''), public_path(), $imageUrl);
             }
+            
+            $this->logger->info('[AnthropicService] Resolved image path', [
+                'resolved_path' => $imageUrl,
+                'is_local_file' => file_exists($imageUrl),
+            ]);
 
             // If it's a local path, read from file system
             if (file_exists($imageUrl)) {
@@ -378,7 +386,7 @@ PROMPT;
             } else {
                 // If it's a URL, fetch it
                 $response = Http::timeout(30)->get($imageUrl);
-                
+
                 if (!$response->successful()) {
                     throw new RuntimeException('Failed to fetch image from URL: ' . $response->status());
                 }
@@ -387,10 +395,31 @@ PROMPT;
                 $mediaType = $response->header('Content-Type') ?? 'image/jpeg';
             }
 
-            // Validate media type
+            // Validate and convert media type if needed
             $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!in_array($mediaType, $allowedTypes)) {
                 throw new RuntimeException('Unsupported image type: ' . $mediaType);
+            }
+
+            // Convert WebP to JPEG for better Anthropic API compatibility
+            if ($mediaType === 'image/webp') {
+                $this->logger->info('[AnthropicService] Converting WebP to JPEG for better API compatibility');
+                
+                $image = imagecreatefromstring($imageContent);
+                if ($image === false) {
+                    throw new RuntimeException('Failed to create image from WebP content');
+                }
+                
+                ob_start();
+                imagejpeg($image, null, 85); // 85% quality
+                $imageContent = ob_get_clean();
+                imagedestroy($image);
+                
+                $mediaType = 'image/jpeg';
+                
+                $this->logger->info('[AnthropicService] WebP converted to JPEG', [
+                    'new_size_bytes' => strlen($imageContent),
+                ]);
             }
 
             $base64 = base64_encode($imageContent);
@@ -404,7 +433,6 @@ PROMPT;
                 'media_type' => $mediaType,
                 'base64' => $base64,
             ];
-
         } catch (\Exception $e) {
             $this->logger->error('[AnthropicService] Image fetch failed', [
                 'image_url' => $imageUrl,

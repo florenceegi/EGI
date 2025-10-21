@@ -461,12 +461,23 @@ class EgiPreMintManagementService
             // 2. Store previous state for GDPR audit
             $previousDescription = $egi->description;
 
-            // 3. Get EGI image URL for visual analysis
-            $imageUrl = $egi->main_image_url ?? $egi->original_image_url;
+            // 3. Get EGI image URL for visual analysis (use optimized 'card' variant 400x400 for faster processing)
+            $imageUrl = $egi->main_image_url; // Already optimized 400x400 WebP variant
+            
+            if (empty($imageUrl)) {
+                // Fallback to original if card variant not available
+                $imageUrl = $egi->original_image_url;
+            }
             
             if (empty($imageUrl)) {
                 throw new \Exception('Cannot generate description: EGI has no image. Please upload an image first.');
             }
+            
+            $this->logger->info('[PRE_MINT_SERVICE] Image URL for AI analysis', [
+                'egi_id' => $egi->id,
+                'image_url' => $imageUrl,
+                'log_category' => 'PRE_MINT_GENERATE_DESCRIPTION_IMAGE_URL'
+            ]);
 
             // 4. Prepare context for N.A.T.A.N AI Vision
             $egiContext = [
@@ -477,15 +488,15 @@ class EgiPreMintManagementService
 
             // 5. Call N.A.T.A.N AI Vision to analyze image and generate description
             $aiPrompt = "Analizza questa opera d'arte e genera una descrizione professionale, coinvolgente e ottimizzata per il marketplace FlorenceEGI. "
-                      . "Basandoti sull'analisi visiva dell'immagine, crea una descrizione che: "
-                      . "(1) Descriva accuratamente ciò che vedi nell'opera, "
-                      . "(2) Evidenzi lo stile artistico, la tecnica e la composizione, "
-                      . "(3) Catturi l'atmosfera emotiva e il messaggio dell'opera, "
-                      . "(4) Sia accattivante per potenziali acquirenti/collezionisti, "
-                      . "(5) Evidenzi il valore e l'unicità dell'opera, "
-                      . "(6) Sia lunga 2-3 paragrafi (150-250 parole), "
-                      . "(7) Usi linguaggio italiano professionale ma accessibile. "
-                      . "Fornisci SOLO il testo della descrizione, senza titoli o prefissi.";
+                . "Basandoti sull'analisi visiva dell'immagine, crea una descrizione che: "
+                . "(1) Descriva accuratamente ciò che vedi nell'opera, "
+                . "(2) Evidenzi lo stile artistico, la tecnica e la composizione, "
+                . "(3) Catturi l'atmosfera emotiva e il messaggio dell'opera, "
+                . "(4) Sia accattivante per potenziali acquirenti/collezionisti, "
+                . "(5) Evidenzi il valore e l'unicità dell'opera, "
+                . "(6) Sia lunga 2-3 paragrafi (150-250 parole), "
+                . "(7) Usi linguaggio italiano professionale ma accessibile. "
+                . "Fornisci SOLO il testo della descrizione, senza titoli o prefissi.";
 
             $generatedDescription = $this->anthropicService->analyzeImage($imageUrl, $aiPrompt, $egiContext);
 
@@ -522,7 +533,6 @@ class EgiPreMintManagementService
                 'previous_description' => $previousDescription,
                 'message' => 'Descrizione generata da N.A.T.A.N AI e salvata con successo',
             ];
-
         } catch (\Exception $e) {
             // 8. ULM: Log service-level error
             $this->logger->error('[PRE_MINT_SERVICE] Description generation failed', [
@@ -574,12 +584,23 @@ class EgiPreMintManagementService
             // 3. Store previous state for GDPR audit
             $previousDescription = $egi->description;
 
-            // 4. Get EGI image URL for visual analysis
-            $imageUrl = $egi->main_image_url ?? $egi->original_image_url;
+            // 4. Get EGI image URL for visual analysis (use optimized 'card' variant 400x400 for faster processing)
+            $imageUrl = $egi->main_image_url; // Already optimized 400x400 WebP variant
+            
+            if (empty($imageUrl)) {
+                // Fallback to original if card variant not available
+                $imageUrl = $egi->original_image_url;
+            }
             
             if (empty($imageUrl)) {
                 throw new \Exception('Cannot improve description: EGI has no image. Please upload an image first.');
             }
+            
+            $this->logger->info('[PRE_MINT_SERVICE] Image URL for AI analysis', [
+                'egi_id' => $egi->id,
+                'image_url' => $imageUrl,
+                'log_category' => 'PRE_MINT_IMPROVE_DESCRIPTION_IMAGE_URL'
+            ]);
 
             // 5. Prepare context for N.A.T.A.N AI Vision
             $egiContext = [
@@ -590,17 +611,17 @@ class EgiPreMintManagementService
 
             // 6. Call N.A.T.A.N AI Vision to analyze image and improve description
             $aiPrompt = "Analizza questa opera d'arte e migliora la descrizione esistente rendendola più professionale, coinvolgente e vendibile per il marketplace FlorenceEGI. "
-                      . "Descrizione attuale: '{$egi->description}' "
-                      . "Basandoti sull'analisi visiva dell'immagine, migliora la descrizione: "
-                      . "(1) Mantieni il significato e i contenuti originali, "
-                      . "(2) Arricchisci con dettagli visivi che vedi nell'opera (stile, tecnica, composizione, colori), "
-                      . "(3) Rendi il linguaggio più accattivante e professionale, "
-                      . "(4) Evidenzia meglio il valore artistico e l'unicità dell'opera, "
-                      . "(5) Ottimizza la struttura e la leggibilità, "
-                      . "(6) Lunghezza ideale: 2-3 paragrafi (150-250 parole), "
-                      . "(7) Correggi eventuali errori grammaticali, "
-                      . "(8) Mantieni linguaggio italiano elegante e scorrevole. "
-                      . "Fornisci SOLO il testo della descrizione migliorata, senza commenti o prefissi.";
+                . "Descrizione attuale: '{$egi->description}' "
+                . "Basandoti sull'analisi visiva dell'immagine, migliora la descrizione: "
+                . "(1) Mantieni il significato e i contenuti originali, "
+                . "(2) Arricchisci con dettagli visivi che vedi nell'opera (stile, tecnica, composizione, colori), "
+                . "(3) Rendi il linguaggio più accattivante e professionale, "
+                . "(4) Evidenzia meglio il valore artistico e l'unicità dell'opera, "
+                . "(5) Ottimizza la struttura e la leggibilità, "
+                . "(6) Lunghezza ideale: 2-3 paragrafi (150-250 parole), "
+                . "(7) Correggi eventuali errori grammaticali, "
+                . "(8) Mantieni linguaggio italiano elegante e scorrevole. "
+                . "Fornisci SOLO il testo della descrizione migliorata, senza commenti o prefissi.";
 
             $improvedDescription = $this->anthropicService->analyzeImage($imageUrl, $aiPrompt, $egiContext);
 
@@ -644,7 +665,6 @@ class EgiPreMintManagementService
                 ],
                 'message' => 'Descrizione migliorata da N.A.T.A.N AI e salvata con successo',
             ];
-
         } catch (\Exception $e) {
             // 9. ULM: Log service-level error
             $this->logger->error('[PRE_MINT_SERVICE] Description improvement failed', [
