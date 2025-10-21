@@ -160,6 +160,14 @@ class Egi extends Model
         'auction_start',
         'auction_end',
         'auto_mint_highest',
+        // Dual Architecture (ASA/SmartContract/PreMint)
+        'egi_type',
+        'pre_mint_mode',
+        'pre_mint_created_at',
+        'egi_living_enabled',
+        'egi_living_activated_at',
+        'egi_living_subscription_id',
+        'smart_contract_app_id',
         // Note: 'id', 'created_at', 'updated_at', 'deleted_at' are typically not fillable
     ];
 
@@ -193,6 +201,11 @@ class Egi extends Model
         'auction_start'      => 'datetime',
         'auction_end'        => 'datetime',
         'auto_mint_highest'  => 'boolean',
+        // Dual Architecture casts
+        'pre_mint_mode'         => 'boolean',
+        'pre_mint_created_at'   => 'datetime',
+        'egi_living_enabled'    => 'boolean',
+        'egi_living_activated_at' => 'datetime',
     ];
 
     //--------------------------------------------------------------------------

@@ -35,8 +35,8 @@
     </div>
 
     <div class="space-y-6 p-6">
-        @if (!$egi->auto_mint_enabled)
-            {{-- Enable Auto-Mint Section --}}
+        @if (!$egi->pre_mint_mode)
+            {{-- Enable Pre-Mint Mode (Reserve for Creator) --}}
             <div class="rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 p-5">
                 <div class="flex items-start gap-4">
                     <i class="fas fa-lightbulb mt-1 text-2xl text-blue-600"></i>
@@ -45,33 +45,31 @@
                             Vuoi mintare personalmente questo EGI?
                         </h4>
                         <p class="mb-4 text-sm text-blue-800">
-                            Abilita l'Auto-Mint per riservare a te stesso il mint di questa opera.
+                            Abilita la modalità Pre-Mint per riservare a te stesso il mint di questa opera.
                             Potrai scegliere tra EGI Classico o EGI Vivente e diventerai automaticamente il
                             proprietario.
                         </p>
                         <form method="POST" action="{{ route('egi.dual-arch.auto-mint.enable', $egi) }}"
                             onsubmit="return handleAutoMintEnable(event, {{ $egi->id }});">
                             @csrf
-                            <input type="hidden" name="mint_type" value="ASA"
-                                id="enable-mint-type-{{ $egi->id }}">
                             <button type="submit"
                                 class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 font-bold text-white shadow-md transition-all duration-200 hover:from-green-700 hover:to-green-600 hover:shadow-lg">
                                 <i class="fas fa-check-circle"></i>
-                                Abilita Auto-Mint
+                                Riserva per Auto-Mint
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
         @else
-            {{-- Auto-Mint Enabled - Show Minting Options --}}
+            {{-- Pre-Mint Mode Enabled - Show Minting Options --}}
             <div class="space-y-4">
                 {{-- Info --}}
                 <div class="rounded-xl border-2 border-green-200 bg-green-50 p-4">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-check-circle text-xl text-green-600"></i>
                         <div>
-                            <p class="font-semibold text-green-900">Auto-Mint Abilitato</p>
+                            <p class="font-semibold text-green-900">Riservato per Auto-Mint</p>
                             <p class="text-sm text-green-700">Puoi mintare questa opera quando vuoi</p>
                         </div>
                     </div>
@@ -198,33 +196,30 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Abilitazione...';
 
-            fetch(form.action, {
+                fetch(form.action, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                         'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        mint_type: form.querySelector('input[name="mint_type"]').value
-                    })
+                    }
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Success toast and reload
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Auto-Mint Abilitato',
-                            text: data.message,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
-                        }).then(() => {
-                            window.location.reload();
-                        });
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Success toast and reload
+            Swal.fire({
+                icon: 'success',
+                title: 'Pre-Mint Riservato',
+                text: data.message,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            }).then(() => {
+                window.location.reload();
+            });
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -262,9 +257,9 @@
 
             const form = event.target;
 
-            Swal.fire({
-                title: 'Disabilita Auto-Mint?',
-                text: 'Sei sicuro di voler disabilitare l\'Auto-Mint?',
+        Swal.fire({
+            title: 'Disabilita Pre-Mint?',
+            text: 'Sei sicuro di voler disabilitare la modalità Pre-Mint? L\'EGI sarà visibile sul marketplace.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -296,10 +291,10 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Auto-Mint Disabilitato',
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Pre-Mint Disabilitato',
                             text: data.message,
                             toast: true,
                             position: 'top-end',
