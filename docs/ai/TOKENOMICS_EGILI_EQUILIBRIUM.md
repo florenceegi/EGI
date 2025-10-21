@@ -26,8 +26,9 @@
 ```
 
 **Due asset complementari, non sostitutivi:**
-- **Equilibrium**: Premium collectible con utility economica (zero fee)
-- **Egili**: Carburante ecosistema per tutti (fee discount + services)
+
+-   **Equilibrium**: Premium collectible con utility economica (zero fee)
+-   **Egili**: Carburante ecosistema per tutti (fee discount + services)
 
 ---
 
@@ -38,15 +39,17 @@
 #### **1. EQUILIBRIUM MASTER (E#0) - "LA MOLECOLA ORIGINARIA"**
 
 **Caratteristiche:**
-- 🌟 **Unico esemplare al mondo**
-- ID: `E#0` o `E#MASTER`
-- **Valore simbolico:** Genesi dell'intero ecosistema FlorenceEGI
-- **Physical:** Prisma olografico supremo (il più elaborato/prezioso)
-- **Proprietà:** "Guardian of the Origin" (titolo esclusivo)
-- **Valore stimato:** €100k-€1M+ (stratosferico)
-- **Release:** Momento di massima visibilità (IPO/Milestone/Evento speciale)
+
+-   🌟 **Unico esemplare al mondo**
+-   ID: `E#0` o `E#MASTER`
+-   **Valore simbolico:** Genesi dell'intero ecosistema FlorenceEGI
+-   **Physical:** Prisma olografico supremo (il più elaborato/prezioso)
+-   **Proprietà:** "Guardian of the Origin" (titolo esclusivo)
+-   **Valore stimato:** €100k-€1M+ (stratosferico)
+-   **Release:** Momento di massima visibilità (IPO/Milestone/Evento speciale)
 
 **Utility & Powers:**
+
 ```
 ✅ Zero fee FOREVER su 1 EGI accoppiato
 ✅ VIP Access COMPLETO (eventi, decisioni strategiche, community)
@@ -57,23 +60,26 @@
 ```
 
 **Significato:**
-- Codice matrice di tutti gli Equilibrium futuri
-- Certificato di nascita del "Rinascimento Digitale"
-- Santo Graal dell'ecosistema collector
+
+-   Codice matrice di tutti gli Equilibrium futuri
+-   Certificato di nascita del "Rinascimento Digitale"
+-   Santo Graal dell'ecosistema collector
 
 ---
 
 #### **2. EQUILIBRIUM FOUNDER (EF#001-#050) - "I PIONIERI"**
 
 **Caratteristiche:**
-- 🏆 **Solo 50 token al mondo** (numerati progressivamente)
-- ID: `EF#001` → `EF#050`
-- **Rilascio:** Merit-based (investitori seed, early supporters chiave)
-- **Physical:** Prismi olografici premium numerati
-- **Valore base:** €5k-€50k (scarsità + utility + storia)
-- **Rivendibili:** Sì, mercato secondario con royalty (5%)
+
+-   🏆 **Solo 50 token al mondo** (numerati progressivamente)
+-   ID: `EF#001` → `EF#050`
+-   **Rilascio:** Merit-based (investitori seed, early supporters chiave)
+-   **Physical:** Prismi olografici premium numerati
+-   **Valore base:** €5k-€50k (scarsità + utility + storia)
+-   **Rivendibili:** Sì, mercato secondario con royalty (5%)
 
 **Utility & Powers:**
+
 ```
 ✅ Zero fee LIFETIME su 1 EGI accoppiato (permanente)
 ✅ Founder badge permanente (visibile profilo/EGI)
@@ -84,34 +90,38 @@
 ```
 
 **Distribuzione:**
-- Investitori iniziali (seed round)
-- Early contributors significativi
-- Strategic partners chiave
-- Contest/Auction per ultimi slot
+
+-   Investitori iniziali (seed round)
+-   Early contributors significativi
+-   Strategic partners chiave
+-   Contest/Auction per ultimi slot
 
 **Posizionamento:**
-- Mecenati del primo giorno
-- Pionieri del Rinascimento Digitale
-- Accesso esclusivo a eventi/decisioni strategiche
+
+-   Mecenati del primo giorno
+-   Pionieri del Rinascimento Digitale
+-   Accesso esclusivo a eventi/decisioni strategiche
 
 ---
 
 #### **3. EQUILIBRIUM DROP (ED#001+) - "LA GENERAZIONE CONTINUA"**
 
 **Caratteristiche:**
-- 🌊 **10 Equilibrium ogni €1M di volume EPP**
-- **Formula ferrea:** 1 EQUI ogni €100k EPP volume
-- **Soglia:** €999k = ZERO produzione (no rounding up)
-- **Serie tematiche:** Legate al progetto EPP dominante del periodo
-  - Sea Series (progetti mare/oceani)
-  - Forest Series (progetti foreste)
-  - Bee Series (progetti api/impollinatori)
-  - Climate Series (progetti clima)
-  - etc.
-- **Physical:** Prismi olografici tematici (design unico per serie)
-- **Valore base:** €2k-€20k (dipende da serie/rarità/domanda)
+
+-   🌊 **10 Equilibrium ogni €1M di volume EPP**
+-   **Formula ferrea:** 1 EQUI ogni €100k EPP volume
+-   **Soglia:** €999k = ZERO produzione (no rounding up)
+-   **Serie tematiche:** Legate al progetto EPP dominante del periodo
+    -   Sea Series (progetti mare/oceani)
+    -   Forest Series (progetti foreste)
+    -   Bee Series (progetti api/impollinatori)
+    -   Climate Series (progetti clima)
+    -   etc.
+-   **Physical:** Prismi olografici tematici (design unico per serie)
+-   **Valore base:** €2k-€20k (dipende da serie/rarità/domanda)
 
 **Utility:**
+
 ```
 ✅ Zero fee LIFETIME su 1 EGI accoppiato
 ✅ Serie badge (Sea Keeper, Forest Guardian, etc.)
@@ -120,6 +130,7 @@
 ```
 
 **Meccanica di Produzione:**
+
 ```
 📊 Volume EPP mensile raggiunge €1M
   ↓
@@ -135,6 +146,7 @@
 ```
 
 **Distribuzione Ricavi Asta:**
+
 ```
 Vendita 10 EQUI a €50k totale (esempio):
 ├─ 60% → EPP (€30k) - Amplificazione impatto ambientale
@@ -143,6 +155,7 @@ Vendita 10 EQUI a €50k totale (esempio):
 ```
 
 **Mercato Secondario:**
+
 ```
 P2P Trading EQUI Drop:
 ├─ Smart contract escrow automatico
@@ -155,6 +168,7 @@ P2P Trading EQUI Drop:
 ```
 
 **Rarità Matematica:**
+
 ```
 Anno 1: €2M EPP → 20 EQUI Drop
 Anno 2: €5M EPP → 50 EQUI Drop
@@ -186,10 +200,11 @@ Scarsità garantita da formula EPP (no arbitrary minting)
 **Conversion Rate Base:** `1 Egilo = €0.10` (perceived value)
 
 **Anti-Speculazione Compliance:**
-- Trattati come "Loyalty Points" (simile a Punti Esselunga)
-- Nessuna tassazione all'accumulo per l'utente
-- Non costituiscono "moneta elettronica" (no cash-out)
-- T&C espliciti: "Egili have no monetary value outside platform"
+
+-   Trattati come "Loyalty Points" (simile a Punti Esselunga)
+-   Nessuna tassazione all'accumulo per l'utente
+-   Non costituiscono "moneta elettronica" (no cash-out)
+-   T&C espliciti: "Egili have no monetary value outside platform"
 
 ---
 
@@ -198,6 +213,7 @@ Scarsità garantita da formula EPP (no arbitrary minting)
 #### **A) TRADING & VOLUME** 💰
 
 **Vendita Primaria EGI:**
+
 ```
 Cashback tier-based (dipende da Trader Tier):
 ├─ 🥉 Bronze: 0.3% cashback
@@ -210,6 +226,7 @@ Vendi EGI a €1000 → Guadagni 70 Egili (0.7%)
 ```
 
 **Acquisto Secondary Market:**
+
 ```
 Cashback ridotto (buyer incentive):
 ├─ 🥉 Bronze: 0.15% cashback
@@ -222,6 +239,7 @@ Compri EGI a €1000 → Guadagni 35 Egili (0.35%)
 ```
 
 **Donazione Volontaria EPP (MOLTIPLICATORE):**
+
 ```
 🌿 Se doni parte del ricavato a EPP:
 → Bonus 2x Egili sul cashback
@@ -239,6 +257,7 @@ Incentivo forte per supportare EPP + Egili extra
 #### **B) REFERRAL & COMMUNITY** 👥
 
 **Referral Program:**
+
 ```
 👥 Porta un amico:
 ├─ Amico si iscrive (verified email): +50 Egili
@@ -252,6 +271,7 @@ Referral attivo = ha fatto almeno 1 vendita ultimi 60gg
 ```
 
 **Community Participation:**
+
 ```
 🎭 Forum & Engagement:
 ├─ Post utile upvoted (+10 karma): +10 Egili
@@ -270,6 +290,7 @@ Referral attivo = ha fatto almeno 1 vendita ultimi 60gg
 #### **C) MILESTONE & PERFORMANCE** 📈
 
 **Creator Milestones:**
+
 ```
 🏆 Achievement Ladder:
 ├─ Primo EGI mintato: +50 Egili (welcome bonus)
@@ -288,6 +309,7 @@ Referral attivo = ha fatto almeno 1 vendita ultimi 60gg
 ```
 
 **Collector Milestones:**
+
 ```
 📊 Collector Journey:
 ├─ Primo EGI acquistato: +20 Egili
@@ -303,6 +325,7 @@ Referral attivo = ha fatto almeno 1 vendita ultimi 60gg
 ```
 
 **Platform Milestones (TUTTI gli utenti attivi):**
+
 ```
 🌟 Global Achievements:
 ├─ 1k utenti piattaforma: +20 Egili a tutti
@@ -321,6 +344,7 @@ Referral attivo = ha fatto almeno 1 vendita ultimi 60gg
 #### **D) GAMIFICATION & DAILY** 🎮
 
 **Daily Login Streak:**
+
 ```
 📅 Consecutive Days:
 ├─ Ogni giorno: +5 Egili
@@ -334,6 +358,7 @@ Max earning daily: 150 Egili/mese da login (se perfetto)
 ```
 
 **Achievements System (50+ achievements):**
+
 ```
 🎯 Categories:
 ├─ "AI Enthusiast": 10 AI consultations → +100 Egili
@@ -352,6 +377,7 @@ Total potential: 20k+ Egili da achievements
 ```
 
 **Daily/Weekly Quests (Gamification):**
+
 ```
 📋 Quest Examples:
 ├─ Daily: "Add 1 trait to an EGI" → +10 Egili
@@ -372,6 +398,7 @@ Engagement mechanism + steady Egili flow
 #### **1. FEE REDUCTION (PRIMARY USE CASE)** ⭐
 
 **A) Marketplace Secondary Fee Discount:**
+
 ```
 Standard fee: 2.5% (varia per tier, ma base 2.5%)
 
@@ -393,6 +420,7 @@ User sceglie tier al checkout:
 ```
 
 **B) Primary Market Fee Discount (LIMITATO):**
+
 ```
 Fee standard primario: ~30% (varia per volume globale)
 
@@ -409,6 +437,7 @@ Reason: Incentivare uso Egili ma non cannibalizzare
 ```
 
 **NOTA IMPORTANTE:**
+
 ```
 ⚠️ Equilibrium vs Egili:
 ├─ Equilibrium accoppiato = 0% fee AUTOMATICA (priorità)
@@ -429,18 +458,18 @@ AI Marketing Consultant Pricing:
 
 ✅ Quick Check (metadata only):
    - GRATIS (illimitato)
-   
+
 ✅ EGI Deep Analysis (full AI Vision):
    - €4.90 FIAT OR 50 Egili
    - Include: image analysis, pricing, 3 action items
-   
+
 ✅ 3 EGI Bundle:
    - €9.90 FIAT OR 90 Egili (10% discount)
-   
+
 ✅ Collection Smart Sample (12 EGI analysis):
    - €9.90 FIAT OR 95 Egili
    - Include: collection strategy, top/bottom performers
-   
+
 ✅ Monthly AI Monitoring (PRO only):
    - €19/mese FIAT OR 180 Egili/mese
    - Include: weekly reports, alerts, trends
@@ -456,6 +485,7 @@ Free Credits System:
 #### **3. PREMIUM FEATURES** ⭐
 
 **Visibility & Promotion:**
+
 ```
 🎯 Featured Placement:
 ├─ Homepage spotlight (24h): 200 Egili
@@ -476,6 +506,7 @@ Algorithm Impact:
 ```
 
 **Profile Customization:**
+
 ```
 🎭 Profile Premium:
 ├─ Custom badge design: 200 Egili
@@ -488,6 +519,7 @@ Algorithm Impact:
 ```
 
 **Analytics & Tools:**
+
 ```
 📊 Advanced Features:
 ├─ Analytics dashboard PRO: 500 Egili/mese
@@ -503,6 +535,7 @@ Algorithm Impact:
 #### **4. EXCLUSIVE ACCESS** 🏆
 
 **Events & Drops:**
+
 ```
 🎪 Special Access:
 ├─ Early access drop (24h advance): 150 Egili
@@ -521,6 +554,7 @@ Algorithm Impact:
 ```
 
 **Contests & Challenges:**
+
 ```
 🏅 Entry Fees (prize pool funded):
 ├─ Weekly art contest: 50 Egili
@@ -762,10 +796,11 @@ Breakdown %:
 ```
 
 **Note:**
-- Egili discounts = marketing cost (retention/engagement)
-- ROI Egili: ~3-5x (ogni €1 Egili → €3-5 revenue extra da volume)
-- Equilibrium = premium revenue stream (high margin)
-- Sustainable mix: recurring + transactional + premium
+
+-   Egili discounts = marketing cost (retention/engagement)
+-   ROI Egili: ~3-5x (ogni €1 Egili → €3-5 revenue extra da volume)
+-   Equilibrium = premium revenue stream (high margin)
+-   Sustainable mix: recurring + transactional + premium
 
 ---
 
@@ -820,35 +855,37 @@ Monitoring: Dashboard real-time Egili economy
 
 ## 🎯 **TABELLA COMPARATIVA FINALE:**
 
-| Feature | EQUILIBRIUM (EQUI) | EGILI |
-|---------|-------------------|-------|
-| **Tipo Asset** | NFT Premium (ERC-721 like) | Utility Token (Loyalty Points) |
-| **Supply** | Ultra-limited (1+50+formula) | Dynamic volume-based (illimitato) |
-| **Trasferibile** | ✅ Sì (P2P marketplace, royalty 5%) | ❌ No (account-bound, no transfer) |
-| **Scadenza** | ♾️ Mai (asset perpetuo) | 🕐 12 mesi (earned) / ∞ (purchased) |
-| **Utility Primaria** | Zero fee 1 EGI lifetime (accoppiato) | Fee discount multi-use (1-80%) |
-| **Valore Base** | €2k-€1M+ (rarità-based) | ~€0.10/Egilo (perceived utility) |
-| **Appreciation** | ✅ Speculativo + Utility | ❌ Utility pura (no speculation) |
-| **Status Symbol** | ✅✅✅ Supremo (VIP, badges, recognition) | ⭐ Gamification (tiers, achievements) |
-| **Physical Component** | ✅ Prisma olografico reale | ❌ Solo digitale |
-| **Accessibility** | 🔒 Hard (acquisto asta/secondario €€€) | 🟢 Easy (earn gratis o buy packs) |
-| **Target User** | Whales, Collectors premium, VIP | Everyone (democratico) |
-| **Earning** | Auction/Merit/Purchase (one-time) | Multiple streams (ongoing) |
-| **Spending** | One-time coupling (then passive) | Active ongoing (transactional) |
-| **Royalty** | 5% secondary sales (EPP+Platform) | N/A (non vendibile) |
-| **Governance** | Potenziale weight (future DAO) | No governance weight |
-| **Legacy** | Perpetuo (inheritance possible) | 12 mesi max (use-it-or-lose-it) |
+| Feature                | EQUILIBRIUM (EQUI)                        | EGILI                                 |
+| ---------------------- | ----------------------------------------- | ------------------------------------- |
+| **Tipo Asset**         | NFT Premium (ERC-721 like)                | Utility Token (Loyalty Points)        |
+| **Supply**             | Ultra-limited (1+50+formula)              | Dynamic volume-based (illimitato)     |
+| **Trasferibile**       | ✅ Sì (P2P marketplace, royalty 5%)       | ❌ No (account-bound, no transfer)    |
+| **Scadenza**           | ♾️ Mai (asset perpetuo)                   | 🕐 12 mesi (earned) / ∞ (purchased)   |
+| **Utility Primaria**   | Zero fee 1 EGI lifetime (accoppiato)      | Fee discount multi-use (1-80%)        |
+| **Valore Base**        | €2k-€1M+ (rarità-based)                   | ~€0.10/Egilo (perceived utility)      |
+| **Appreciation**       | ✅ Speculativo + Utility                  | ❌ Utility pura (no speculation)      |
+| **Status Symbol**      | ✅✅✅ Supremo (VIP, badges, recognition) | ⭐ Gamification (tiers, achievements) |
+| **Physical Component** | ✅ Prisma olografico reale                | ❌ Solo digitale                      |
+| **Accessibility**      | 🔒 Hard (acquisto asta/secondario €€€)    | 🟢 Easy (earn gratis o buy packs)     |
+| **Target User**        | Whales, Collectors premium, VIP           | Everyone (democratico)                |
+| **Earning**            | Auction/Merit/Purchase (one-time)         | Multiple streams (ongoing)            |
+| **Spending**           | One-time coupling (then passive)          | Active ongoing (transactional)        |
+| **Royalty**            | 5% secondary sales (EPP+Platform)         | N/A (non vendibile)                   |
+| **Governance**         | Potenziale weight (future DAO)            | No governance weight                  |
+| **Legacy**             | Perpetuo (inheritance possible)           | 12 mesi max (use-it-or-lose-it)       |
 
 **Complementarietà:**
-- Equilibrium = Long-term investment + Status + Passive utility
-- Egili = Short-term utility + Active engagement + Gamification
-- Together = Complete tokenomics covering all user types & behaviors
+
+-   Equilibrium = Long-term investment + Status + Passive utility
+-   Egili = Short-term utility + Active engagement + Gamification
+-   Together = Complete tokenomics covering all user types & behaviors
 
 ---
 
 ## 🚀 **IMPLEMENTATION ROADMAP:**
 
 ### **FASE 1: EGILI MVP** (Settimana 1-2)
+
 ```
 ✅ Database schema (balance, transactions, credits)
 ✅ EgiliService (earn, spend, balance management)
@@ -870,6 +907,7 @@ Monitoring: Dashboard real-time Egili economy
 ```
 
 ### **FASE 2: EGILI COMPLETE** (Settimana 3-4)
+
 ```
 ✅ Advanced earning:
    ├─ Milestones & achievements system
@@ -895,6 +933,7 @@ Monitoring: Dashboard real-time Egili economy
 ```
 
 ### **FASE 3: EQUILIBRIUM FOUNDATION** (Mese 2)
+
 ```
 ✅ Database schema:
    ├─ equilibrium table (id, type, series, owner, etc)
@@ -915,6 +954,7 @@ Monitoring: Dashboard real-time Egili economy
 ```
 
 ### **FASE 4: EQUILIBRIUM MARKETPLACE** (Mese 3)
+
 ```
 ✅ P2P Trading:
    ├─ Listing EQUI for sale (set price or auction)
@@ -942,6 +982,7 @@ Monitoring: Dashboard real-time Egili economy
 ```
 
 ### **FASE 5: MASTER & FOUNDER RELEASE** (Mese 4+)
+
 ```
 ✅ Equilibrium Master (E#0):
    ├─ Strategic timing decision (IPO? Milestone?)
@@ -993,33 +1034,38 @@ Monitoring: Dashboard real-time Egili economy
 ### **✅ PRIORITY TODAY:**
 
 **IMPLEMENTARE:**
+
 1. Sistema Egili completo (Fase 1 + inizio Fase 2)
 2. Completare EGI AI Deep Analysis (pricing + actions)
 3. Fee discount con Egili (marketplace integration)
 4. UI balance + transactions
 
 **RIMANDARE (prossimi giorni):**
-- Equilibrium (schema DB ora, rest dopo)
-- Collection AI strategy
-- Advanced gamification (quests, achievements complessi)
+
+-   Equilibrium (schema DB ora, rest dopo)
+-   Collection AI strategy
+-   Advanced gamification (quests, achievements complessi)
 
 ---
 
 ## 📚 **RIFERIMENTI & APPENDICI:**
 
 ### **Documenti Correlati:**
-- `/docs/ai/AI_TRAITS_GENERATION_STRATEGY.md` - Sistema AI Traits
-- `/docs/ai/NATAN_*.md` - Documentazione N.A.T.A.N AI
-- `Addendum alla Tokenomics.md` - Documento origine fee structure
+
+-   `/docs/ai/AI_TRAITS_GENERATION_STRATEGY.md` - Sistema AI Traits
+-   `/docs/ai/NATAN_*.md` - Documentazione N.A.T.A.N AI
+-   `Addendum alla Tokenomics.md` - Documento origine fee structure
 
 ### **File Implementazione (da creare):**
-- `app/Services/EgiliService.php` - Core logic Egili
-- `app/Models/EgiliBalance.php` - User balance model
-- `app/Models/EgiliTransaction.php` - Transaction history
-- `app/Models/Equilibrium.php` - EQUI asset model
-- `database/migrations/*_create_egili_tables.php` - Schema DB
+
+-   `app/Services/EgiliService.php` - Core logic Egili
+-   `app/Models/EgiliBalance.php` - User balance model
+-   `app/Models/EgiliTransaction.php` - Transaction history
+-   `app/Models/Equilibrium.php` - EQUI asset model
+-   `database/migrations/*_create_egili_tables.php` - Schema DB
 
 ### **API Endpoints (da implementare):**
+
 ```
 POST   /egili/balance              - Get user balance
 POST   /egili/earn                 - Manual earn (admin/system)
@@ -1040,27 +1086,30 @@ POST   /equilibrium/buy            - Purchase EQUI P2P
 ## 🎯 **METRICHE DI SUCCESSO:**
 
 ### **Egili KPIs:**
-- **Adoption Rate:** % users che guadagnano Egili (target: 80%+)
-- **Velocity:** Egili earned vs spent ratio (target: 0.9-1.1, equilibrio)
-- **Engagement:** Avg earning streams per user (target: 3+)
-- **Retention:** % users con balance > 0 dopo 90gg (target: 60%+)
-- **Conversion:** Free credits → Paid (Egili/FIAT) (target: 15%+)
-- **Premium Adoption:** % users che spendono su features (target: 25%+)
+
+-   **Adoption Rate:** % users che guadagnano Egili (target: 80%+)
+-   **Velocity:** Egili earned vs spent ratio (target: 0.9-1.1, equilibrio)
+-   **Engagement:** Avg earning streams per user (target: 3+)
+-   **Retention:** % users con balance > 0 dopo 90gg (target: 60%+)
+-   **Conversion:** Free credits → Paid (Egili/FIAT) (target: 15%+)
+-   **Premium Adoption:** % users che spendono su features (target: 25%+)
 
 ### **Equilibrium KPIs:**
-- **Sales Volume:** EQUI venduti (primary + secondary)
-- **Appreciation Rate:** % incremento prezzo medio secondary
-- **Coupling Rate:** % EQUI accoppiati vs floating (target: 80%+)
-- **ROI Users:** Break-even medio in transazioni (target: 18 mesi)
-- **Secondary Volume:** Trading volume P2P (indicator salute mercato)
-- **Series Success:** Auction participation & finale price (per serie)
+
+-   **Sales Volume:** EQUI venduti (primary + secondary)
+-   **Appreciation Rate:** % incremento prezzo medio secondary
+-   **Coupling Rate:** % EQUI accoppiati vs floating (target: 80%+)
+-   **ROI Users:** Break-even medio in transazioni (target: 18 mesi)
+-   **Secondary Volume:** Trading volume P2P (indicator salute mercato)
+-   **Series Success:** Auction participation & finale price (per serie)
 
 ### **Overall Ecosystem:**
-- **Total Egili in Circulation:** Monitoring inflazione
-- **Equilibrium Market Cap:** Sum of all EQUI value
-- **Fee Discount Usage:** % transazioni con Egili discount
-- **Premium Revenue:** % revenue da Egili/EQUI related
-- **User Satisfaction:** NPS score tokenomics features
+
+-   **Total Egili in Circulation:** Monitoring inflazione
+-   **Equilibrium Market Cap:** Sum of all EQUI value
+-   **Fee Discount Usage:** % transazioni con Egili discount
+-   **Premium Revenue:** % revenue da Egili/EQUI related
+-   **User Satisfaction:** NPS score tokenomics features
 
 ---
 
@@ -1069,7 +1118,6 @@ POST   /equilibrium/buy            - Purchase EQUI P2P
 ---
 
 **Fine Documento**  
-*Maintained by: AI Partner OS3.0*  
-*Last Update: 2025-10-21*  
-*Version: 1.0 - Complete Design*
-
+_Maintained by: AI Partner OS3.0_  
+_Last Update: 2025-10-21_  
+_Version: 1.0 - Complete Design_
