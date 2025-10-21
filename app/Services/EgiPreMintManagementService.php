@@ -461,27 +461,33 @@ class EgiPreMintManagementService
             // 2. Store previous state for GDPR audit
             $previousDescription = $egi->description;
 
-            // 3. Prepare context for N.A.T.A.N AI
+            // 3. Get EGI image URL for visual analysis
+            $imageUrl = $egi->main_image_url ?? $egi->original_image_url;
+            
+            if (empty($imageUrl)) {
+                throw new \Exception('Cannot generate description: EGI has no image. Please upload an image first.');
+            }
+
+            // 4. Prepare context for N.A.T.A.N AI Vision
             $egiContext = [
-                'egi_id' => $egi->id,
                 'title' => $egi->title,
                 'type' => $egi->type,
                 'creation_date' => $egi->creation_date?->format('Y-m-d'),
-                'existing_description' => $egi->description,
             ];
 
-            // 4. Call N.A.T.A.N AI to generate description
-            $aiPrompt = "Genera una descrizione professionale, coinvolgente e ottimizzata per il marketplace FlorenceEGI. "
-                      . "L'EGI ha titolo: '{$egi->title}' e tipo: '{$egi->type}'. "
-                      . "La descrizione deve: "
-                      . "(1) Essere accattivante per potenziali acquirenti, "
-                      . "(2) Evidenziare il valore e l'unicità dell'opera, "
-                      . "(3) Essere lunga 2-3 paragrafi (150-250 parole), "
-                      . "(4) Usare linguaggio professionale ma accessibile, "
-                      . "(5) Includere dettagli rilevanti per il tipo di asset. "
+            // 5. Call N.A.T.A.N AI Vision to analyze image and generate description
+            $aiPrompt = "Analizza questa opera d'arte e genera una descrizione professionale, coinvolgente e ottimizzata per il marketplace FlorenceEGI. "
+                      . "Basandoti sull'analisi visiva dell'immagine, crea una descrizione che: "
+                      . "(1) Descriva accuratamente ciò che vedi nell'opera, "
+                      . "(2) Evidenzi lo stile artistico, la tecnica e la composizione, "
+                      . "(3) Catturi l'atmosfera emotiva e il messaggio dell'opera, "
+                      . "(4) Sia accattivante per potenziali acquirenti/collezionisti, "
+                      . "(5) Evidenzi il valore e l'unicità dell'opera, "
+                      . "(6) Sia lunga 2-3 paragrafi (150-250 parole), "
+                      . "(7) Usi linguaggio italiano professionale ma accessibile. "
                       . "Fornisci SOLO il testo della descrizione, senza titoli o prefissi.";
 
-            $generatedDescription = $this->anthropicService->chat($aiPrompt, $egiContext, []);
+            $generatedDescription = $this->anthropicService->analyzeImage($imageUrl, $aiPrompt, $egiContext);
 
             // 5. Save description to database
             DB::transaction(function () use ($egi, $generatedDescription) {
@@ -568,26 +574,35 @@ class EgiPreMintManagementService
             // 3. Store previous state for GDPR audit
             $previousDescription = $egi->description;
 
-            // 4. Prepare context for N.A.T.A.N AI
+            // 4. Get EGI image URL for visual analysis
+            $imageUrl = $egi->main_image_url ?? $egi->original_image_url;
+            
+            if (empty($imageUrl)) {
+                throw new \Exception('Cannot improve description: EGI has no image. Please upload an image first.');
+            }
+
+            // 5. Prepare context for N.A.T.A.N AI Vision
             $egiContext = [
-                'egi_id' => $egi->id,
                 'title' => $egi->title,
                 'type' => $egi->type,
                 'current_description' => $egi->description,
             ];
 
-            // 5. Call N.A.T.A.N AI to improve description
-            $aiPrompt = "Migliora questa descrizione di un EGI sul marketplace FlorenceEGI rendendola più professionale, coinvolgente e vendibile. "
+            // 6. Call N.A.T.A.N AI Vision to analyze image and improve description
+            $aiPrompt = "Analizza questa opera d'arte e migliora la descrizione esistente rendendola più professionale, coinvolgente e vendibile per il marketplace FlorenceEGI. "
                       . "Descrizione attuale: '{$egi->description}' "
-                      . "Mantieni il significato originale ma: "
-                      . "(1) Rendi il linguaggio più accattivante e professionale, "
-                      . "(2) Evidenzia meglio il valore dell'opera, "
-                      . "(3) Ottimizza la struttura e la leggibilità, "
-                      . "(4) Lunghezza ideale: 2-3 paragrafi (150-250 parole), "
-                      . "(5) Correggi eventuali errori grammaticali. "
+                      . "Basandoti sull'analisi visiva dell'immagine, migliora la descrizione: "
+                      . "(1) Mantieni il significato e i contenuti originali, "
+                      . "(2) Arricchisci con dettagli visivi che vedi nell'opera (stile, tecnica, composizione, colori), "
+                      . "(3) Rendi il linguaggio più accattivante e professionale, "
+                      . "(4) Evidenzia meglio il valore artistico e l'unicità dell'opera, "
+                      . "(5) Ottimizza la struttura e la leggibilità, "
+                      . "(6) Lunghezza ideale: 2-3 paragrafi (150-250 parole), "
+                      . "(7) Correggi eventuali errori grammaticali, "
+                      . "(8) Mantieni linguaggio italiano elegante e scorrevole. "
                       . "Fornisci SOLO il testo della descrizione migliorata, senza commenti o prefissi.";
 
-            $improvedDescription = $this->anthropicService->chat($aiPrompt, $egiContext, []);
+            $improvedDescription = $this->anthropicService->analyzeImage($imageUrl, $aiPrompt, $egiContext);
 
             // 6. Save improved description to database
             DB::transaction(function () use ($egi, $improvedDescription) {
