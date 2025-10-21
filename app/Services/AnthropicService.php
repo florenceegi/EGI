@@ -258,4 +258,214 @@ PROMPT;
             throw $e;
         }
     }
+
+    /**
+     * Analyze image with Claude Vision and generate description
+     *
+     * @Oracode Method: Vision Analysis with Claude
+     * 🎯 Purpose: Use Claude Vision to analyze artwork images and generate professional descriptions
+     * 📥 Input: Image URL or base64, artwork context
+     * 📤 Output: AI-generated description with visual analysis
+     * 🔒 Security: Privacy-safe, no PII in images
+     * 🪵 Logging: Full audit trail of vision API calls
+     *
+     * @param string $imageUrl Public URL of the image to analyze
+     * @param string $prompt Analysis prompt for Claude Vision
+     * @param array $context Additional context for analysis
+     * @return string Claude's description based on visual analysis
+     * @throws RuntimeException When vision analysis fails
+     */
+    public function analyzeImage(string $imageUrl, string $prompt, array $context = []): string
+    {
+        try {
+            $this->logger->info('[AnthropicService] Image analysis request initiated', [
+                'image_url_length' => strlen($imageUrl),
+                'context_keys' => array_keys($context),
+            ]);
+
+            // Get image data as base64
+            $imageData = $this->fetchImageAsBase64($imageUrl);
+            $mediaType = $imageData['media_type'];
+            $base64Data = $imageData['base64'];
+
+            // Build system prompt for EGI artwork analysis
+            $systemPrompt = $this->buildEgiVisionSystemPrompt($context);
+
+            // Build message with image content
+            $messages = [
+                [
+                    'role' => 'user',
+                    'content' => [
+                        [
+                            'type' => 'image',
+                            'source' => [
+                                'type' => 'base64',
+                                'media_type' => $mediaType,
+                                'data' => $base64Data,
+                            ],
+                        ],
+                        [
+                            'type' => 'text',
+                            'text' => $prompt,
+                        ],
+                    ],
+                ],
+            ];
+
+            // Call Claude Vision API
+            $response = Http::withHeaders([
+                'x-api-key' => $this->apiKey,
+                'anthropic-version' => '2023-06-01',
+                'content-type' => 'application/json',
+            ])->timeout($this->timeout)->post($this->baseUrl . '/v1/messages', [
+                'model' => $this->model,
+                'max_tokens' => 4096,
+                'system' => $systemPrompt,
+                'messages' => $messages,
+                'temperature' => 0.7,
+            ]);
+
+            if (!$response->successful()) {
+                $this->logger->error('[AnthropicService] Vision API error', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+                throw new RuntimeException('Anthropic Vision API error: ' . $response->body());
+            }
+
+            $data = $response->json();
+            $description = $data['content'][0]['text'] ?? '';
+
+            $this->logger->info('[AnthropicService] Image analysis completed', [
+                'description_length' => strlen($description),
+                'usage' => $data['usage'] ?? null,
+            ]);
+
+            return $description;
+
+        } catch (\Exception $e) {
+            $this->logger->error('[AnthropicService] Image analysis failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw new RuntimeException('Errore analisi immagine con Claude Vision: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Fetch image from URL and convert to base64
+     *
+     * @param string $imageUrl Public URL of the image
+     * @return array ['media_type' => string, 'base64' => string]
+     * @throws RuntimeException When image fetch fails
+     */
+    private function fetchImageAsBase64(string $imageUrl): array
+    {
+        try {
+            // Handle asset() URLs by converting to full path
+            if (str_starts_with($imageUrl, '/')) {
+                $imageUrl = public_path($imageUrl);
+            } elseif (str_starts_with($imageUrl, asset(''))) {
+                $imageUrl = str_replace(asset(''), public_path(), $imageUrl);
+            }
+
+            // If it's a local path, read from file system
+            if (file_exists($imageUrl)) {
+                $imageContent = file_get_contents($imageUrl);
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mediaType = finfo_file($finfo, $imageUrl);
+                finfo_close($finfo);
+            } else {
+                // If it's a URL, fetch it
+                $response = Http::timeout(30)->get($imageUrl);
+                
+                if (!$response->successful()) {
+                    throw new RuntimeException('Failed to fetch image from URL: ' . $response->status());
+                }
+
+                $imageContent = $response->body();
+                $mediaType = $response->header('Content-Type') ?? 'image/jpeg';
+            }
+
+            // Validate media type
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($mediaType, $allowedTypes)) {
+                throw new RuntimeException('Unsupported image type: ' . $mediaType);
+            }
+
+            $base64 = base64_encode($imageContent);
+
+            $this->logger->info('[AnthropicService] Image fetched and encoded', [
+                'media_type' => $mediaType,
+                'size_bytes' => strlen($imageContent),
+            ]);
+
+            return [
+                'media_type' => $mediaType,
+                'base64' => $base64,
+            ];
+
+        } catch (\Exception $e) {
+            $this->logger->error('[AnthropicService] Image fetch failed', [
+                'image_url' => $imageUrl,
+                'error' => $e->getMessage(),
+            ]);
+            throw new RuntimeException('Errore recupero immagine: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Build system prompt for EGI artwork vision analysis
+     *
+     * @param array $context Artwork context (title, type, etc.)
+     * @return string System prompt for Claude Vision
+     */
+    private function buildEgiVisionSystemPrompt(array $context): string
+    {
+        $basePrompt = <<<PROMPT
+Sei N.A.T.A.N. (Nodo di Analisi e Tracciamento Atti Notarizzati), un assistente AI specializzato nell'analisi di opere d'arte digitali per il marketplace FlorenceEGI.
+
+COMPETENZE VISION:
+- Analisi visiva professionale di opere d'arte (pittura, scultura, fotografia, arte digitale)
+- Identificazione di stile artistico, tecnica, composizione, palette colori
+- Interpretazione di contenuto emotivo, tematico e narrativo
+- Contestualizzazione storico-artistica quando rilevante
+- Valutazione di qualità tecnica ed estetica
+
+OBIETTIVO:
+Generare descrizioni professionali, coinvolgenti e ottimizzate per il marketplace che:
+1. Catturino l'essenza visiva e concettuale dell'opera
+2. Evidenzino caratteristiche uniche e valore artistico
+3. Siano accessibili ma mantenendo un linguaggio professionale
+4. Attraggano potenziali acquirenti/collezionisti
+5. Siano lunghe 2-3 paragrafi (150-250 parole)
+
+STILE:
+- Descrittivo ma evocativo
+- Professionale senza essere accademico
+- Focus su dettagli visivi rilevanti
+- Enfasi su valore e unicità dell'opera
+- Linguaggio italiano elegante e scorrevole
+
+REGOLE:
+- NON inventare informazioni non visibili nell'immagine
+- NON fare supposizioni su autore/data se non esplicitamente fornite nel contesto
+- Concentrati su ciò che VEDI nell'immagine
+- Fornisci SOLO il testo della descrizione, senza titoli, prefissi o commenti aggiuntivi
+
+PROMPT;
+
+        // Add artwork context if available
+        if (!empty($context['title'])) {
+            $basePrompt .= "\n\nTITOLO OPERA: " . $context['title'];
+        }
+        if (!empty($context['type'])) {
+            $basePrompt .= "\nTIPOLOGIA: " . $context['type'];
+        }
+        if (!empty($context['creation_date'])) {
+            $basePrompt .= "\nDATA CREAZIONE: " . $context['creation_date'];
+        }
+
+        return $basePrompt;
+    }
 }
