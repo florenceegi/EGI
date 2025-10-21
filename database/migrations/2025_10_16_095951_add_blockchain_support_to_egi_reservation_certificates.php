@@ -40,14 +40,14 @@ return new class extends Migration {
         Schema::table('egi_reservation_certificates', function (Blueprint $table) {
             // Check if foreign key exists
             $foreignKeys = DB::select("
-                SELECT CONSTRAINT_NAME 
-                FROM information_schema.KEY_COLUMN_USAGE 
-                WHERE TABLE_SCHEMA = DATABASE() 
-                AND TABLE_NAME = 'egi_reservation_certificates' 
-                AND COLUMN_NAME = 'egi_blockchain_id' 
+                SELECT CONSTRAINT_NAME
+                FROM information_schema.KEY_COLUMN_USAGE
+                WHERE TABLE_SCHEMA = DATABASE()
+                AND TABLE_NAME = 'egi_reservation_certificates'
+                AND COLUMN_NAME = 'egi_blockchain_id'
                 AND REFERENCED_TABLE_NAME IS NOT NULL
             ");
-            
+
             if (empty($foreignKeys)) {
                 $table->foreign('egi_blockchain_id')
                     ->references('id')
@@ -75,14 +75,14 @@ return new class extends Migration {
         Schema::table('egi_reservation_certificates', function (Blueprint $table) {
             // Check and drop foreign key if exists
             $foreignKeys = DB::select("
-                SELECT CONSTRAINT_NAME 
-                FROM information_schema.KEY_COLUMN_USAGE 
-                WHERE TABLE_SCHEMA = DATABASE() 
-                AND TABLE_NAME = 'egi_reservation_certificates' 
-                AND COLUMN_NAME = 'egi_blockchain_id' 
+                SELECT CONSTRAINT_NAME
+                FROM information_schema.KEY_COLUMN_USAGE
+                WHERE TABLE_SCHEMA = DATABASE()
+                AND TABLE_NAME = 'egi_reservation_certificates'
+                AND COLUMN_NAME = 'egi_blockchain_id'
                 AND REFERENCED_TABLE_NAME IS NOT NULL
             ");
-            
+
             if (!empty($foreignKeys)) {
                 $constraintName = $foreignKeys[0]->CONSTRAINT_NAME;
                 DB::statement("ALTER TABLE egi_reservation_certificates DROP FOREIGN KEY `{$constraintName}`");
