@@ -405,9 +405,24 @@
                         </div>
                         <div>
                             <dt id="glossary-royalties" class="text-xl font-bold text-emerald-700">Royalties</dt>
-                            <dd class="mt-1 text-gray-700">Percentuali sul prezzo di vendita che vengono pagate al
-                                creatore originale o ad altri beneficiari in occasione di vendite secondarie di un bene.
+                            <dd class="mt-1 text-gray-700">Termine generico per percentuali sul prezzo di vendita pagate al creatore. Su FlorenceEGI esistono <strong>due tipi distinti</strong>: (1) <a href="#glossary-royalty-piattaforma" class="glossary-link">Royalty Piattaforma</a> (contrattuale, 4.5%, sempre), (2) <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di Seguito</a> (legale, 4%-0.25%, solo >€3k). Possono essere cumulabili.
                             </dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-royalty-piattaforma" class="text-xl font-bold text-emerald-700">Royalty Piattaforma (Contrattuale)</dt>
+                            <dd class="mt-1 text-gray-700">Percentuale (4.5%) che FlorenceEGI <strong>garantisce contrattualmente</strong> al Creator su ogni rivendita secondaria, <strong>anche sotto €3,000</strong>. Gestita automaticamente via smart contract e distribuita istantaneamente. Questa royalty è <strong>separata e aggiuntiva</strong> al <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di Seguito</a> legale. Si applica su tutte le vendite P2P sulla piattaforma, indipendentemente dalla normativa SIAE.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-diritto-seguito" class="text-xl font-bold text-emerald-700">Diritto di Seguito (Droit de Suite)</dt>
+                            <dd class="mt-1 text-gray-700">Diritto <strong>previsto dalla legge italiana</strong> (L. 633/1941 Art. 19bis, D.Lgs. 118/2006) che garantisce al Creator un compenso sulle rivendite delle opere d'arte. Si applica <strong>solo se</strong>: (1) prezzo di vendita ≥ €3,000, (2) vendita tramite professionisti del mercato dell'arte (gallerie, case d'asta, dealer), (3) vendita nell'Unione Europea. Aliquote: 4% (0-€50k), 3% (€50k-€200k), 1% (€200k-€350k), 0.5% (€350k-€500k), 0.25% (oltre €500k). Massimo: €12,500 per vendita. Gestito da SIAE. Durata: vita dell'artista + 70 anni.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-diritti-morali" class="text-xl font-bold text-emerald-700">Diritti Morali d'Autore</dt>
+                            <dd class="mt-1 text-gray-700">Diritti <strong>inalienabili, irrinunciabili e perpetui</strong> del Creator previsti dalla Legge 633/1941 Art. 20: (1) <strong>Diritto di Paternità</strong> - rivendicare sempre la paternità dell'opera e opporsi ad attribuzioni false, (2) <strong>Diritto all'Integrità</strong> - opporsi a deformazioni, mutilazioni o modifiche che possano danneggiare l'onore o la reputazione dell'artista. Questi diritti <strong>restano sempre al Creator</strong>, anche dopo la vendita dell'opera. L'Owner NON può mai modificare, alterare o rimuovere la firma/attribuzione.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-diritti-patrimoniali" class="text-xl font-bold text-emerald-700">Diritti Patrimoniali d'Autore (Sfruttamento Economico)</dt>
+                            <dd class="mt-1 text-gray-700">Diritti economici del Creator (Legge 633/1941 Art. 12-19) che includono: <strong>riproduzione</strong> (realizzare copie fisiche/digitali, stampe), <strong>comunicazione al pubblico</strong> (pubblicare online, esposizioni commerciali, TV), <strong>distribuzione</strong> (vendere copie/riproduzioni), <strong>elaborazione</strong> (opere derivative). <strong>IMPORTANTE</strong>: l'acquisto dell'opera fisica (o del NFT) <strong>NON trasferisce</strong> automaticamente questi diritti. L'Owner possiede l'oggetto ma il Creator conserva il copyright sull'immagine. Qualsiasi uso commerciale richiede licenza scritta del Creator.</dd>
                         </div>
                         <div>
                             <dt id="glossary-settlement" class="text-xl font-bold text-emerald-700">Settlement</dt>
@@ -511,11 +526,8 @@
                                     class="glossary-link">wallet</a> da ogni transazione di EGI associato.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-creator" class="text-xl font-bold text-emerald-700">Creator</dt>
-                            <dd class="mt-1 text-gray-700">L'autore o il proprietario originale di un bene che crea un
-                                <a href="#glossary-egi" class="glossary-link">EGI</a> sulla piattaforma. Il Creator
-                                riceve i proventi delle vendite e può impostare <a href="#glossary-royalties"
-                                    class="glossary-link">royalties</a> per vendite future.
+                            <dt id="glossary-creator" class="text-xl font-bold text-emerald-700">Creator (Artista/Autore)</dt>
+                            <dd class="mt-1 text-gray-700">L'autore originale dell'opera che crea un <a href="#glossary-egi" class="glossary-link">EGI</a> sulla piattaforma. Il Creator riceve i proventi delle vendite primarie e <a href="#glossary-royalty-piattaforma" class="glossary-link">royalty</a> automatiche sulle rivendite (4.5% sempre + eventuale <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di Seguito</a> legale se >€3k). <strong>IMPORTANTE</strong>: il Creator <strong>conserva sempre</strong> i <a href="#glossary-diritti-morali" class="glossary-link">Diritti Morali</a> (paternità, integrità) e i <a href="#glossary-diritti-patrimoniali" class="glossary-link">Diritti Patrimoniali</a> (riproduzione, copyright immagine), anche dopo la vendita dell'opera fisica o del NFT. L'Owner acquisisce solo il possesso materiale, non il copyright.
                             </dd>
                         </div>
                         <div>
