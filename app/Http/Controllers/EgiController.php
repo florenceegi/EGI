@@ -38,7 +38,8 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - FegiAuth: Unified authentication helper
  * - ULM/UEM/GDPR: Full Ultra ecosystem integration
  */
-class EgiController extends Controller {
+class EgiController extends Controller
+{
     /**
      * Ultra Error Manager instance for standardized error handling
      *
@@ -108,7 +109,8 @@ class EgiController extends Controller {
      * @param Request $request
      * @return View|RedirectResponse
      */
-    public function index(Request $request): View | RedirectResponse {
+    public function index(Request $request): View | RedirectResponse
+    {
         try {
             // Authentication required for EGI list
             if (!FegiAuth::check()) {
@@ -154,7 +156,8 @@ class EgiController extends Controller {
      *
      * @return View|RedirectResponse
      */
-    public function create(): View | RedirectResponse {
+    public function create(): View | RedirectResponse
+    {
         try {
             // Authentication required
             if (!FegiAuth::check()) {
@@ -204,7 +207,8 @@ class EgiController extends Controller {
      * @param Egi $egi EGI model instance (route model binding)
      * @return View|RedirectResponse
      */
-    public function edit(Egi $egi): View | RedirectResponse {
+    public function edit(Egi $egi): View | RedirectResponse
+    {
         try {
             // Authentication required
             if (!FegiAuth::check()) {
@@ -262,7 +266,8 @@ class EgiController extends Controller {
      * @param Egi $egi EGI model instance (route model binding)
      * @return View|RedirectResponse
      */
-    public function show(Egi $egi): View | RedirectResponse {
+    public function show(Egi $egi): View | RedirectResponse
+    {
         try {
             // Check authentication (public access allowed for published EGIs)
             if (!FegiAuth::check()) {
@@ -356,7 +361,8 @@ class EgiController extends Controller {
      * @param Egi $egi
      * @return JsonResponse|RedirectResponse
      */
-    public function update(Request $request, Egi $egi) {
+    public function update(Request $request, Egi $egi)
+    {
         try {
             // Check authentication
             if (!FegiAuth::check()) {
@@ -528,7 +534,8 @@ class EgiController extends Controller {
      * @param Egi $egi
      * @return JsonResponse|RedirectResponse
      */
-    public function destroy(Request $request, Egi $egi) {
+    public function destroy(Request $request, Egi $egi)
+    {
         try {
             // Check authentication
             if (!FegiAuth::check()) {
@@ -628,7 +635,8 @@ class EgiController extends Controller {
      * @param Egi $egi EGI being accessed
      * @return bool True if user can manage this EGI
      */
-    protected function canManageEgi($user, Egi $egi): bool {
+    protected function canManageEgi($user, Egi $egi): bool
+    {
         try {
             $collection = $egi->collection;
 
@@ -665,7 +673,8 @@ class EgiController extends Controller {
      * @param int $collectionId
      * @return float
      */
-    private function calculateRarity($traitTypeId, $value, $collectionId) {
+    private function calculateRarity($traitTypeId, $value, $collectionId)
+    {
         $cacheKey = "trait_rarity_{$collectionId}_{$traitTypeId}_{$value}";
 
         return \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($traitTypeId, $value, $collectionId) {
@@ -693,7 +702,8 @@ class EgiController extends Controller {
      * @param int $collectionId
      * @return void
      */
-    private function clearTraitsRarityCache(int $collectionId): void {
+    private function clearTraitsRarityCache(int $collectionId): void
+    {
         try {
             // Get all cache keys that match the pattern for this collection
             $pattern = "trait_rarity_{$collectionId}_*";
@@ -721,7 +731,8 @@ class EgiController extends Controller {
      * @param int $collectionId
      * @return void
      */
-    private function updateRarityPercentages(int $collectionId): void {
+    private function updateRarityPercentages(int $collectionId): void
+    {
         try {
             $this->logger->info('Updating rarity percentages for collection', ['collection_id' => $collectionId]);
 
@@ -786,7 +797,8 @@ class EgiController extends Controller {
      * @param Egi $egi
      * @return JsonResponse
      */
-    public function dossier(Egi $egi): JsonResponse {
+    public function dossier(Egi $egi): JsonResponse
+    {
         try {
             $this->logger->info('Loading dossier for EGI', ['egi_id' => $egi->id]);
 
