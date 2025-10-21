@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "83d178e7cec03e89bfb734a2c2c63d9b",
+    "content-hash": "5bad27e1fa4b1d3cc7fa32c674272fe1",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -8375,7 +8375,7 @@
         },
         {
             "name": "ultra/egi-module",
-            "version": "dev-feature/auction-module-debug",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/ultra/egi-module",
