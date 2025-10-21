@@ -40,56 +40,52 @@
                 {{-- ============================================ --}}
 
                 @php
-                    $egiType = $egi->egi_type ?? 'PreMint'; // DEFAULT: PreMint (tutti gli EGI nascono così)
+                    // LOGICA CORRETTA: NULL = non mintato (Pre-Mint virtuale)
+                    $isNotMinted = is_null($egi->egi_type);
+                    $isASA = $egi->egi_type === 'ASA';
+                    $isSmartContract = $egi->egi_type === 'SmartContract';
                     $isCreatorCheck = App\Helpers\FegiAuth::check() && App\Helpers\FegiAuth::id() === $egi->user_id;
                 @endphp
 
                 {{-- 🐛 DEBUG PANEL (RIMUOVERE IN PRODUCTION) --}}
                 @if (config('app.debug'))
                     <div class="mb-4 rounded-lg border-2 border-yellow-500 bg-yellow-500/10 p-3">
-                        <div class="text-xs font-mono text-yellow-300">
+                        <div class="font-mono text-xs text-yellow-300">
                             <div><strong>DEBUG:</strong> EGI #{{ $egi->id }}</div>
-                            <div>egi_type DB: <strong>{{ $egi->egi_type ?? 'NULL' }}</strong></div>
-                            <div>egi_type Used: <strong>{{ $egiType }}</strong></div>
-                            <div>pre_mint_mode: <strong>{{ $egi->pre_mint_mode ?? 'NULL' }}</strong></div>
+                            <div>egi_type: <strong>{{ $egi->egi_type ?? 'NULL' }}</strong></div>
+                            <div>token_EGI: <strong>{{ $egi->token_EGI ?? 'NULL' }}</strong></div>
+                            <div>isNotMinted: <strong>{{ $isNotMinted ? 'YES' : 'NO' }}</strong></div>
+                            <div>isASA: <strong>{{ $isASA ? 'YES' : 'NO' }}</strong></div>
+                            <div>isSmartContract: <strong>{{ $isSmartContract ? 'YES' : 'NO' }}</strong></div>
                             <div>isCreator: <strong>{{ $isCreatorCheck ? 'YES' : 'NO' }}</strong></div>
-                            <div>Feature PRE_MINT: <strong>{{ config('egi_living.feature_flags.pre_mint_enabled', true) ? 'ON' : 'OFF' }}</strong></div>
-                            <div>smartContract exists: <strong>{{ $egi->smartContract ? 'YES' : 'NO' }}</strong></div>
                             <div class="mt-2 border-t border-yellow-600 pt-2">
-                                <strong>Condizioni Auto-Mint Panel:</strong><br>
-                                Feature enabled: {{ config('egi_living.feature_flags.pre_mint_enabled', true) ? '✓' : '✗' }}<br>
-                                Is PreMint: {{ $egiType === 'PreMint' ? '✓' : '✗' }}<br>
-                                Is Creator: {{ $isCreatorCheck ? '✓' : '✗' }}<br>
-                                <strong>Result: {{ (config('egi_living.feature_flags.pre_mint_enabled', true) && $egiType === 'PreMint' && $isCreatorCheck) ? 'SHOW PANEL' : 'HIDE PANEL' }}</strong>
+                                <strong>Pannelli visibili:</strong><br>
+                                Auto-Mint Panel: {{ $isNotMinted && $isCreatorCheck ? '✓ SHOW' : '✗ HIDE' }}<br>
+                                Pre-Mint Panel: {{ $isNotMinted ? '✓ SHOW' : '✗ HIDE' }}<br>
+                                Living Panel: {{ $isSmartContract ? '✓ SHOW' : '✗ HIDE' }}
                             </div>
                         </div>
                     </div>
                 @endif
 
-                {{-- Auto-Mint Panel (Solo Creator di PreMint) --}}
-                @if (config('egi_living.feature_flags.pre_mint_enabled', true) && 
-                     $egiType === 'PreMint' && 
-                     $isCreatorCheck)
+                {{-- Auto-Mint Panel (Solo Creator di EGI non mintati) --}}
+                @if ($isNotMinted && $isCreatorCheck)
                     <div class="mb-6">
                         <x-egi-auto-mint-panel :egi="$egi" :isCreator="$isCreatorCheck" />
                     </div>
                 @endif
 
-                {{-- EGI Vivente Panel (Solo SmartContract attivi) --}}
-                @if (config('egi_living.feature_flags.smart_contract_mint_enabled', false) && 
-                     $egiType === 'SmartContract' && 
-                     $egi->smartContract)
+                {{-- Pre-Mint Panel (Tutti gli EGI non mintati) --}}
+                @if ($isNotMinted)
                     <div class="mb-6">
-                        <x-egi-living-panel :egi="$egi" />
+                        <x-egi-pre-mint-panel :egi="$egi" />
                     </div>
                 @endif
 
-                {{-- Pre-Mint Panel (Tutti i PreMint, info generali) --}}
-                @if (config('egi_living.feature_flags.pre_mint_enabled', true) && 
-                     $egiType === 'PreMint' && 
-                     ($egi->pre_mint_mode ?? false))
+                {{-- EGI Vivente Panel (Solo SmartContract mintati) --}}
+                @if ($isSmartContract && $egi->smartContract)
                     <div class="mb-6">
-                        <x-egi-pre-mint-panel :egi="$egi" />
+                        <x-egi-living-panel :egi="$egi" />
                     </div>
                 @endif
 
@@ -499,3 +495,79 @@
         </div>
     </div>
 @endif
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('egi-edit-form');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            // Convert FormData to object for JSON
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = '{{ __('egi.crud.saving') }}...';
+            }
+
+            fetch(form.action, {
+                    method: 'POST',
+                    body: JSON.stringify(formObject),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Success - show SweetAlert
+                        Swal.fire({
+                            icon: 'success',
+                            title: '{{ __('egi.crud.update_success') }}',
+                            text: data.message || '{{ __('egi.crud.update_success') }}',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(() => {
+                            // Reload page to reflect changes
+                            window.location.reload();
+                        });
+                    } else {
+                        // Validation errors - show first error in SweetAlert
+                        const firstError = Object.values(data.errors)[0][0];
+                        Swal.fire({
+                            icon: 'error',
+                            title: '{{ __('egi.validation.validation_failed') }}',
+                            text: firstError,
+                            confirmButtonText: '{{ __('egi.crud.ok') }}'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ __('egi.crud.update_error') }}',
+                        text: '{{ __('egi.crud.generic_error') }}',
+                        confirmButtonText: '{{ __('egi.crud.ok') }}'
+                    });
+                })
+                .finally(() => {
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = '{{ __('egi.crud.save_changes') }}';
+                    }
+                });
+        });
+    });
+</script>

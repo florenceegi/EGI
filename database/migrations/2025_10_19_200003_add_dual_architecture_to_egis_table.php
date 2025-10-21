@@ -27,9 +27,10 @@ return new class extends Migration {
         Schema::table('egis', function (Blueprint $table) {
             // === DUAL ARCHITECTURE TYPE ===
             $table->enum('egi_type', ['ASA', 'SmartContract', 'PreMint'])
-                ->default('ASA')
+                ->nullable()
+                ->default(null)
                 ->after('status')
-                ->comment('EGI architecture type: ASA=classic, SmartContract=living, PreMint=AI virtual');
+                ->comment('EGI architecture type: NULL=not minted, ASA=classic, SmartContract=living, PreMint=legacy');
 
             // === PRE-MINT TRACKING ===
             $table->boolean('pre_mint_mode')->default(false)

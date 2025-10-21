@@ -127,6 +127,14 @@ return [
         'blockchain_asset_optin_required' => 'BLOCKCHAIN ERROR: Asset opt-in mancante. Asset ID: :asset_id, Account: :account, User: :user_id. Wallet destinazione non ha opt-in per asset.',
         'blockchain_network_error' => 'BLOCKCHAIN ERROR: Network connectivity issue con Algorand. User: :user_id, EGI: :egi_id, Error: :error_message. Possibile timeout o nodo irraggiungibile.',
         'blockchain_transaction_pool_error' => 'BLOCKCHAIN ERROR: TransactionPool error Algorand. User: :user_id, EGI: :egi_id. Network congestion o balance issue. Error: :error_message',
+
+        // Dual Architecture - Auto-Mint & Pre-Mint Errors (Dev Messages)
+        'dual_arch_auto_mint_unauthorized' => '[DUAL_ARCH] Unauthorized Auto-Mint operation attempt. EGI :egi_id, Requesting User :requesting_user_id, Creator :egi_creator_id. Operation: :operation',
+        'dual_arch_not_pre_mint' => '[DUAL_ARCH] Invalid EGI state for operation. EGI :egi_id has type :current_type, required :required_type. Operation: :operation',
+        'dual_arch_smart_contract_disabled' => '[DUAL_ARCH] SmartContract mint attempt while feature is disabled. EGI :egi_id, Feature Flag :feature_flag = false',
+        'dual_arch_auto_mint_failed' => '[DUAL_ARCH] Auto-Mint operation failed. EGI :egi_id, Operation: :operation, Exception: :exception_class - :error_message',
+        'dual_arch_ai_analysis_failed' => '[DUAL_ARCH] AI Analysis request failed. EGI :egi_id, Operation: :operation, Exception: :exception_class - :error_message',
+        'dual_arch_promotion_failed' => '[DUAL_ARCH] Pre-Mint promotion to on-chain failed. EGI :egi_id, Target Type: :target_type, Exception: :exception_class - :error_message',
     ],
 
     'user' => [
@@ -248,6 +256,14 @@ return [
         'blockchain_asset_optin_required' => 'Il wallet destinazione deve prima abilitare la ricezione di questo asset. Accedi al tuo wallet Algorand e abilita l\'asset, poi riprova.',
         'blockchain_network_error' => 'Errore di connessione alla rete Algorand. Riprova tra 2-3 minuti. Se il problema persiste, contatta l\'assistenza.',
         'blockchain_transaction_pool_error' => 'La rete Algorand è temporaneamente sovraccarica. Riprova tra 5-10 minuti. Il tuo pagamento NON è stato effettuato.',
+
+        // Dual Architecture - Auto-Mint & Pre-Mint Errors (User Messages)
+        'dual_arch_auto_mint_unauthorized' => 'Non sei autorizzato a gestire l\'Auto-Mint di questo EGI. Solo il creator può abilitare o disabilitare l\'Auto-Mint.',
+        'dual_arch_not_pre_mint' => 'Questa operazione è disponibile solo per EGI in stato Pre-Mint. L\'EGI selezionato è già stato mintato sulla blockchain.',
+        'dual_arch_smart_contract_disabled' => 'La funzionalità EGI Vivente (SmartContract) non è al momento disponibile. Contatta l\'assistenza per maggiori informazioni.',
+        'dual_arch_auto_mint_failed' => 'Si è verificato un errore durante la gestione dell\'Auto-Mint. Riprova più tardi o contatta l\'assistenza.',
+        'dual_arch_ai_analysis_failed' => 'Si è verificato un errore durante la richiesta di analisi AI. Il sistema N.A.T.A.N potrebbe essere temporaneamente non disponibile. Riprova più tardi.',
+        'dual_arch_promotion_failed' => 'Si è verificato un errore durante la promozione dell\'EGI su blockchain. La transazione NON è stata eseguita. Riprova più tardi.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
