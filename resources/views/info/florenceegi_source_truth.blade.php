@@ -293,9 +293,29 @@
                                 dell'identità dell'<a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
                         </div>
                         <div>
+                            <dt id="glossary-creator" class="text-xl font-bold text-emerald-700">Creator (Artista/Autore)</dt>
+                            <dd class="mt-1 text-gray-700">L'autore originale dell'opera. Riceve proventi vendite primarie e <a href="#glossary-royalty-piattaforma" class="glossary-link">royalty</a> automatiche sulle rivendite (4.5% + eventuale <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di Seguito</a> legale >€3k). <strong>Conserva sempre</strong> i <a href="#glossary-diritti-morali" class="glossary-link">Diritti Morali</a> e <a href="#glossary-diritti-patrimoniali" class="glossary-link">Diritti Patrimoniali</a>, anche dopo la vendita.</dd>
+                        </div>
+                        <div>
                             <dt id="glossary-collector" class="text-xl font-bold text-emerald-700">Collector</dt>
                             <dd class="mt-1 text-gray-700">Il custode del valore che tramanda l'opera, acquisendo e
                                 preservando <a href="#glossary-egi" class="glossary-link">EGI</a>.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-royalty-piattaforma" class="text-xl font-bold text-emerald-700">Royalty Piattaforma</dt>
+                            <dd class="mt-1 text-gray-700">Percentuale (4.5%) garantita al Creator su <strong>ogni</strong> rivendita, anche sotto €3,000. Automatica via smart contract, <strong>separata</strong> dal <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di Seguito</a> legale.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-diritto-seguito" class="text-xl font-bold text-emerald-700">Diritto di Seguito</dt>
+                            <dd class="mt-1 text-gray-700">Diritto <strong>legale</strong> (L. 633/1941 Art. 19bis) del Creator: 4%-0.25% sulle rivendite ≥€3,000 tramite professionisti. Gestito SIAE. <strong>Cumulabile</strong> con royalty piattaforma.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-diritti-morali" class="text-xl font-bold text-emerald-700">Diritti Morali d'Autore</dt>
+                            <dd class="mt-1 text-gray-700">Diritti <strong>inalienabili e perpetui</strong> (L. 633/1941 Art. 20): paternità (riconoscimento autore) e integrità (no modifiche). Il Creator li <strong>conserva sempre</strong>.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-diritti-patrimoniali" class="text-xl font-bold text-emerald-700">Diritti Patrimoniali</dt>
+                            <dd class="mt-1 text-gray-700">Diritti economici (L. 633/1941 Art. 12-19): riproduzione, comunicazione pubblica, distribuzione. L'Owner <strong>NON acquisisce</strong> il copyright comprando l'opera fisica o NFT.</dd>
                         </div>
                         <div>
                             <dt id="glossary-algorand" class="text-xl font-bold text-emerald-700">Algorand</dt>
@@ -377,6 +397,22 @@
                             <dt id="glossary-egili" class="text-xl font-bold text-emerald-700">Egili</dt>
                             <dd class="mt-1 text-gray-700">Micro-unità del token <a href="#glossary-equilibrium"
                                     class="glossary-link">Equilibrium</a>.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-royalty-piattaforma" class="text-xl font-bold text-emerald-700">Royalty Piattaforma (Contrattuale)</dt>
+                            <dd class="mt-1 text-gray-700">Percentuale (4.5%) che FlorenceEGI garantisce al Creator su <strong>ogni</strong> rivendita secondaria, anche sotto €3,000. Gestita automaticamente via smart contract. Questa è una royalty <strong>contrattuale</strong>, separata e aggiuntiva al <a href="#glossary-diritto-seguito" class="glossary-link">Diritto di Seguito</a> legale.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-diritto-seguito" class="text-xl font-bold text-emerald-700">Diritto di Seguito (Legale)</dt>
+                            <dd class="mt-1 text-gray-700">Diritto previsto dalla <strong>Legge 633/1941 Art. 19bis</strong> che garantisce al Creator una percentuale (4%-0.25%) sulle rivendite <strong>solo se</strong>: (1) prezzo ≥ €3,000, (2) vendita tramite professionisti (gallerie/aste), (3) nell'Unione Europea. Gestito da SIAE. È <strong>cumulabile</strong> con la <a href="#glossary-royalty-piattaforma" class="glossary-link">Royalty Piattaforma</a>.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-diritti-morali" class="text-xl font-bold text-emerald-700">Diritti Morali d'Autore</dt>
+                            <dd class="mt-1 text-gray-700">Diritti <strong>inalienabili e perpetui</strong> del Creator (Legge 633/1941 Art. 20): (1) <strong>Paternità</strong> - diritto di essere sempre riconosciuto come autore, (2) <strong>Integrità</strong> - diritto di opporsi a modifiche/alterazioni dell'opera. Il Creator <strong>conserva sempre</strong> questi diritti, anche dopo la vendita dell'opera fisica.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-diritti-patrimoniali" class="text-xl font-bold text-emerald-700">Diritti Patrimoniali d'Autore</dt>
+                            <dd class="mt-1 text-gray-700">Diritti economici del Creator (Legge 633/1941 Art. 12-19): <strong>riproduzione</strong> (fare copie/stampe), <strong>comunicazione al pubblico</strong> (pubblicare online/TV), <strong>distribuzione</strong> (vendere copie). L'Owner che compra l'opera fisica <strong>NON acquisisce</strong> questi diritti, che restano al Creator salvo cessione esplicita scritta.</dd>
                         </div>
                         <div>
                             <dt id="glossary-mecenate" class="text-xl font-bold text-emerald-700">Mecenate</dt>
@@ -648,6 +684,348 @@
                 </div>
                 <div class="p-6 mt-6 border-l-4 border-gray-400 rounded-r-lg bg-gray-50">
                     <p class="text-lg text-gray-700"><strong>Questo modello assicura equilibrio tra impresa e missione, tra profitto e scopo.</strong></p>
+                </div>`
+            },
+            'diritti-legali': {
+                title: 'Diritti d\'Autore & Diritto di Seguito',
+                nav: 'Diritti Legali',
+                parent: 'sistema',
+                intro: 'Normativa italiana ed europea: cosa spetta al Creator, cosa acquisisce l\'Owner.',
+                content: `<div class="mb-8 p-6 rounded-lg bg-amber-50 border-2 border-amber-300">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-info-circle text-2xl text-amber-600 mt-1"></i>
+                        <div>
+                            <h4 class="text-lg font-bold text-amber-900 mb-2">Premessa Importante</h4>
+                            <p class="text-gray-700">Le informazioni seguenti sono fornite a scopo <strong>informativo e divulgativo</strong>. Non costituiscono consulenza legale. Per questioni specifiche, consultare un avvocato specializzato in diritto d'autore.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-10">
+                    <h3 class="mb-6 text-2xl font-bold text-center text-emerald-700">🎨 Diritti del Creator (Sempre e Comunque)</h3>
+                    
+                    <div class="grid gap-6 md:grid-cols-2 mb-8">
+                        <div class="p-6 border-l-4 border-emerald-600 rounded-r-lg bg-emerald-50">
+                            <h4 class="text-xl font-bold text-emerald-800 mb-3">
+                                <i class="fas fa-signature mr-2"></i>Diritti Morali (Inalienabili)
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-3"><strong>Legge 633/1941 Art. 20 - Mai cedibili, anche dopo la vendita</strong></p>
+                            <ul class="space-y-2 text-gray-700">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-emerald-600 mr-2 mt-1"></i>
+                                    <span><strong>Paternità</strong>: Diritto di essere sempre riconosciuto come autore dell'opera</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-emerald-600 mr-2 mt-1"></i>
+                                    <span><strong>Integrità</strong>: Diritto di opporsi a modifiche, deformazioni o alterazioni che danneggino la reputazione</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-emerald-600 mr-2 mt-1"></i>
+                                    <span><strong>Attribuzione</strong>: L'Owner deve sempre citare correttamente l'artista</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-ban text-red-600 mr-2 mt-1"></i>
+                                    <span class="text-red-700"><strong>L'Owner NON può</strong>: rimuovere firma, alterare l'opera, attribuirla ad altri</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="p-6 border-l-4 border-blue-600 rounded-r-lg bg-blue-50">
+                            <h4 class="text-xl font-bold text-blue-800 mb-3">
+                                <i class="fas fa-copyright mr-2"></i>Diritti Patrimoniali (Copyright)
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-3"><strong>Legge 633/1941 Art. 12-19 - Sfruttamento economico</strong></p>
+                            <ul class="space-y-2 text-gray-700">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-blue-600 mr-2 mt-1"></i>
+                                    <span><strong>Riproduzione</strong>: Solo il Creator può fare copie/stampe dell'opera</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-blue-600 mr-2 mt-1"></i>
+                                    <span><strong>Comunicazione pubblica</strong>: Uso in pubblicità/TV/online richiede licenza Creator</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-blue-600 mr-2 mt-1"></i>
+                                    <span><strong>Distribuzione</strong>: Vendere copie/merchandise richiede autorizzazione</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-exclamation-triangle text-amber-600 mr-2 mt-1"></i>
+                                    <span class="text-amber-700"><strong>IMPORTANTE</strong>: Comprare NFT ≠ Comprare copyright</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-lg bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300">
+                        <h4 class="text-xl font-bold text-purple-800 mb-4 text-center">
+                            <i class="fas fa-balance-scale mr-2"></i>Diritto di Seguito vs Royalty Piattaforma
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="bg-purple-100">
+                                        <th class="p-3 text-left font-bold text-purple-900">Aspetto</th>
+                                        <th class="p-3 text-left font-bold text-purple-900">Royalty Piattaforma (FlorenceEGI)</th>
+                                        <th class="p-3 text-left font-bold text-purple-900">Diritto di Seguito (Legge)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-700">
+                                    <tr class="border-b">
+                                        <td class="p-3 font-semibold">Base giuridica</td>
+                                        <td class="p-3">Contratto smart contract</td>
+                                        <td class="p-3">L. 633/1941 Art. 19bis</td>
+                                    </tr>
+                                    <tr class="border-b bg-gray-50">
+                                        <td class="p-3 font-semibold">Soglia minima</td>
+                                        <td class="p-3"><span class="text-emerald-700 font-bold">€0</span> (tutte le vendite)</td>
+                                        <td class="p-3"><span class="text-blue-700 font-bold">€3,000</span></td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="p-3 font-semibold">Percentuale</td>
+                                        <td class="p-3"><span class="text-emerald-700 font-bold">4.5%</span> fisso</td>
+                                        <td class="p-3"><span class="text-blue-700 font-bold">4% → 0.25%</span> (decrescente)</td>
+                                    </tr>
+                                    <tr class="border-b bg-gray-50">
+                                        <td class="p-3 font-semibold">Tipo vendite</td>
+                                        <td class="p-3">P2P dirette (piattaforma)</td>
+                                        <td class="p-3">Tramite professionisti (gallerie/aste)</td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="p-3 font-semibold">Chi gestisce</td>
+                                        <td class="p-3">Smart contract automatico</td>
+                                        <td class="p-3">SIAE (manuale)</td>
+                                    </tr>
+                                    <tr class="border-b bg-gray-50">
+                                        <td class="p-3 font-semibold">Cumulabile</td>
+                                        <td class="p-3 text-center" colspan="2"><span class="text-green-700 font-bold">✅ SÌ!</span> Il Creator può ricevere ENTRAMBI</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4 p-4 bg-white rounded-lg">
+                            <p class="text-gray-700"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i><strong>Esempio</strong>: Vendita €50,000 tramite galleria → Creator riceve <span class="text-emerald-700 font-bold">€2,250 (4.5% piattaforma)</span> + <span class="text-blue-700 font-bold">€2,000 (4% diritto seguito)</span> = <span class="text-purple-700 font-bold">€4,250 totali (8.5%)</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-10">
+                    <h3 class="mb-6 text-2xl font-bold text-center text-blue-700">🏠 Diritti dell'Owner (Acquirente)</h3>
+                    
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div class="p-6 border-l-4 border-green-600 rounded-r-lg bg-green-50">
+                            <h4 class="text-lg font-bold text-green-800 mb-3">
+                                <i class="fas fa-check mr-2"></i>Cosa PUÒ Fare l'Owner
+                            </h4>
+                            <ul class="space-y-2 text-gray-700 list-disc list-inside">
+                                <li>Possedere fisicamente l'opera</li>
+                                <li>Esporre privatamente (casa/ufficio)</li>
+                                <li>Rivendere l'opera (con royalty Creator)</li>
+                                <li>Donare o lasciare in eredità</li>
+                                <li>Fotografare per documentazione personale</li>
+                                <li>Esporre pubblicamente senza scopo di lucro (con attribuzione Creator)</li>
+                                <li>Restauro conservativo (senza alterare)</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-6 border-l-4 border-red-600 rounded-r-lg bg-red-50">
+                            <h4 class="text-lg font-bold text-red-800 mb-3">
+                                <i class="fas fa-ban mr-2"></i>Cosa NON PUÒ Fare (Senza Consenso Creator)
+                            </h4>
+                            <ul class="space-y-2 text-gray-700 list-disc list-inside">
+                                <li><strong>Riprodurre commercialmente</strong> (stampe, poster, merchandise)</li>
+                                <li><strong>Modificare/alterare</strong> l'opera originale</li>
+                                <li><strong>Usare in pubblicità/marketing</strong> senza licenza</li>
+                                <li><strong>Pubblicare online</strong> per scopi commerciali</li>
+                                <li><strong>Creare opere derivative</strong> (remix, versioni)</li>
+                                <li><strong>Rimuovere firma/crediti</strong> dell'artista</li>
+                                <li><strong>Emettere NFT aggiuntivi</strong> della stessa opera</li>
+                            </ul>
+                            <p class="mt-3 text-sm text-red-800"><i class="fas fa-exclamation-triangle mr-2"></i><strong>Violazione = Art. 171 LDA</strong>: Multe fino €15,493 + sequestro + risarcimento danni</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="mb-6 text-2xl font-bold text-center text-amber-700">⚖️ Normativa di Riferimento</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="p-5 rounded-lg bg-white border-2 border-gray-200">
+                            <h4 class="font-bold text-gray-800 mb-2">
+                                <i class="fas fa-book-open text-emerald-600 mr-2"></i>Legge 633/1941 (Legge sul Diritto d'Autore - LDA)
+                            </h4>
+                            <ul class="space-y-1 text-sm text-gray-700 ml-6 list-disc">
+                                <li><strong>Art. 12-19</strong>: Diritti patrimoniali (riproduzione, comunicazione, distribuzione)</li>
+                                <li><strong>Art. 20</strong>: Diritti morali (paternità, integrità dell'opera)</li>
+                                <li><strong>Art. 19bis</strong>: Diritto di seguito sulle rivendite</li>
+                                <li><strong>Art. 25</strong>: Durata protezione (vita autore + 70 anni)</li>
+                                <li><strong>Art. 171</strong>: Sanzioni per violazioni (multa €51-€15,493)</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-5 rounded-lg bg-white border-2 border-gray-200">
+                            <h4 class="font-bold text-gray-800 mb-2">
+                                <i class="fas fa-globe-europe text-blue-600 mr-2"></i>D.Lgs. 118/2006 (Recepimento Direttiva UE 2001/84/CE)
+                            </h4>
+                            <ul class="space-y-1 text-sm text-gray-700 ml-6 list-disc">
+                                <li><strong>Art. 3</strong>: Aliquote diritto di seguito (4% fino €50k, poi decrescente)</li>
+                                <li><strong>Art. 4</strong>: Soglia minima €3,000 per applicazione</li>
+                                <li><strong>Art. 5</strong>: Massimo €12,500 per singola vendita</li>
+                                <li><strong>Art. 8</strong>: Gestione tramite SIAE (Società Italiana Autori ed Editori)</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-5 rounded-lg bg-white border-2 border-gray-200">
+                            <h4 class="font-bold text-gray-800 mb-2">
+                                <i class="fas fa-scale-balanced text-purple-600 mr-2"></i>Codice Civile - Art. 2575-2583
+                            </h4>
+                            <p class="text-sm text-gray-700 ml-6">Distinzione tra <strong>proprietà dell'oggetto fisico</strong> (Owner) e <strong>diritti sull'opera dell'ingegno</strong> (Creator). L'acquisto di un'opera d'arte trasferisce solo il possesso materiale, non il copyright.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="mb-6 text-2xl font-bold text-center text-indigo-700">💰 Come Funziona su FlorenceEGI</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="p-6 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-emerald-300">
+                            <h4 class="text-lg font-bold text-emerald-800 mb-3">
+                                <i class="fas fa-shopping-cart mr-2"></i>Vendita Primaria (Mint) - EGI €1,000
+                            </h4>
+                            <div class="grid gap-3 md:grid-cols-2 text-sm">
+                                <div>
+                                    <p class="font-semibold text-gray-800 mb-2">Distribuzione ricavi:</p>
+                                    <ul class="space-y-1 text-gray-700">
+                                        <li>💚 Creator: €650-680 (65-68%)</li>
+                                        <li>🌱 EPP: €200 (20%)</li>
+                                        <li>⚙️ Piattaforma: €100 (10%)</li>
+                                        <li>🏛️ Associazione: €20 (2%)</li>
+                                    </ul>
+                                </div>
+                                <div class="p-3 bg-white rounded-lg">
+                                    <p class="font-semibold text-red-700 mb-1"><i class="fas fa-times-circle mr-1"></i>Diritto di seguito NON applicabile</p>
+                                    <p class="text-xs text-gray-600">È la prima vendita, non una rivendita</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300">
+                            <h4 class="text-lg font-bold text-blue-800 mb-3">
+                                <i class="fas fa-sync-alt mr-2"></i>Rivendita Secondaria - EGI €1,000 (P2P su FlorenceEGI)
+                            </h4>
+                            <div class="grid gap-3 md:grid-cols-2 text-sm">
+                                <div>
+                                    <p class="font-semibold text-gray-800 mb-2">Distribuzione:</p>
+                                    <ul class="space-y-1 text-gray-700">
+                                        <li>💼 Seller riceve: €930 (93%)</li>
+                                        <li>🎨 Creator royalty: €45 (4.5%)</li>
+                                        <li>🌱 EPP: €10 (1%)</li>
+                                        <li>⚙️ Piattaforma: €10 (1%)</li>
+                                        <li>🏛️ Associazione: €5 (0.5%)</li>
+                                    </ul>
+                                </div>
+                                <div class="p-3 bg-white rounded-lg">
+                                    <p class="font-semibold text-red-700 mb-1"><i class="fas fa-times-circle mr-1"></i>Diritto seguito legale NON applicabile</p>
+                                    <p class="text-xs text-gray-600">Sotto soglia €3,000</p>
+                                    <p class="text-xs text-emerald-600 mt-2"><i class="fas fa-check mr-1"></i>Ma Creator riceve comunque 4.5% (nostro contratto)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-300">
+                            <h4 class="text-lg font-bold text-purple-800 mb-3">
+                                <i class="fas fa-gavel mr-2"></i>Rivendita Secondaria - EGI €50,000 (tramite Galleria/Asta)
+                            </h4>
+                            <div class="grid gap-3 md:grid-cols-2 text-sm">
+                                <div>
+                                    <p class="font-semibold text-gray-800 mb-2">Fee FlorenceEGI:</p>
+                                    <ul class="space-y-1 text-gray-700">
+                                        <li>💼 Seller: €46,500 (93%)</li>
+                                        <li>🎨 Creator: €2,250 (4.5%)</li>
+                                        <li>🌱 EPP: €500 (1%)</li>
+                                        <li>⚙️ Platform: €500 (1%)</li>
+                                        <li>🏛️ Assoc: €250 (0.5%)</li>
+                                    </ul>
+                                </div>
+                                <div class="p-3 bg-gradient-to-br from-yellow-50 to-amber-50 rounded-lg border-2 border-yellow-400">
+                                    <p class="font-semibold text-amber-800 mb-1"><i class="fas fa-plus-circle mr-1"></i>Diritto seguito legale APPLICABILE</p>
+                                    <ul class="space-y-1 text-xs text-gray-700">
+                                        <li>📊 Aliquota: 4% (fascia 0-€50k)</li>
+                                        <li>💰 Importo: <span class="font-bold text-blue-700">€2,000</span></li>
+                                        <li>👤 Ricevuto: Creator (via SIAE)</li>
+                                        <li>📋 Separato dalle fee piattaforma</li>
+                                    </ul>
+                                    <p class="mt-3 font-bold text-purple-700 text-center border-t border-yellow-300 pt-2">
+                                        TOTALE Creator: €4,250 (8.5%)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 rounded-lg bg-gray-100 border-2 border-gray-300">
+                    <h4 class="text-lg font-bold text-gray-800 mb-4 text-center">
+                        <i class="fas fa-file-contract mr-2"></i>Cosa Include il Contratto di Vendita EGI
+                    </h4>
+                    <div class="grid gap-4 md:grid-cols-2 text-sm">
+                        <div>
+                            <p class="font-semibold text-emerald-700 mb-2">✅ L'Owner ACQUISISCE:</p>
+                            <ul class="space-y-1 text-gray-700 ml-4 list-disc">
+                                <li>Proprietà fisica dell'opera (oggetto materiale)</li>
+                                <li>NFT digitale (certificato blockchain)</li>
+                                <li>Diritto di godimento privato</li>
+                                <li>Diritto di rivendita (con royalty Creator)</li>
+                                <li>Possesso esclusivo dell'originale</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-red-700 mb-2">❌ Il Creator CONSERVA:</p>
+                            <ul class="space-y-1 text-gray-700 ml-4 list-disc">
+                                <li>Tutti i diritti morali (paternità, integrità)</li>
+                                <li>Diritto di seguito (4%-0.25% su rivendite >€3k)</li>
+                                <li>Royalty piattaforma (4.5% sempre)</li>
+                                <li>Diritti di riproduzione (stampe, copie)</li>
+                                <li>Copyright sull'immagine dell'opera</li>
+                                <li>Diritti digitali (uso online commerciale)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 rounded-lg bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-300">
+                    <h4 class="text-lg font-bold text-red-800 mb-3 text-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Disclaimer Legale
+                    </h4>
+                    <p class="text-sm text-gray-700 text-center">Le informazioni sopra riportate sono fornite <strong>a scopo informativo generale</strong> e non costituiscono consulenza legale professionale. La normativa sul diritto d'autore è complessa e soggetta a interpretazioni. Per questioni legali specifiche, si raccomanda di consultare un avvocato specializzato in proprietà intellettuale e diritto dell'arte. FlorenceEGI non assume responsabilità per decisioni prese sulla base di queste informazioni.</p>
+                </div>
+
+                <div class="p-6 rounded-lg bg-emerald-50 border-2 border-emerald-300">
+                    <h4 class="text-lg font-bold text-emerald-800 mb-3 text-center">
+                        <i class="fas fa-balance-scale mr-2"></i>Impegno FlorenceEGI
+                    </h4>
+                    <p class="text-gray-700 text-center mb-4">FlorenceEGI si impegna a <strong>rispettare e tutelare</strong> i diritti degli artisti previsti dalla legge italiana ed europea:</p>
+                    <ul class="space-y-2 text-gray-700 max-w-3xl mx-auto">
+                        <li class="flex items-start">
+                            <i class="fas fa-shield-alt text-emerald-600 mr-3 mt-1"></i>
+                            <span>Garantiamo attribuzione corretta in tutti gli EGI (paternità)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-shield-alt text-emerald-600 mr-3 mt-1"></i>
+                            <span>Blocchiamo modifiche post-mint (integrità blockchain)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-shield-alt text-emerald-600 mr-3 mt-1"></i>
+                            <span>Royalty automatiche 4.5% su tutte le rivendite (anche sotto €3k)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-shield-alt text-emerald-600 mr-3 mt-1"></i>
+                            <span>Collaboriamo con SIAE per gestione diritto di seguito su vendite >€3k tramite professionisti</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-shield-alt text-emerald-600 mr-3 mt-1"></i>
+                            <span>Smart contract impedisce elusione royalty (trustless enforcement)</span>
+                        </li>
+                    </ul>
                 </div>`
             },
             economia: {
@@ -947,7 +1325,7 @@
             sistema: {
                 title: 'Sistema',
                 icon: '⚙️',
-                sections: ['architettura', 'compliance', 'governance']
+                sections: ['architettura', 'compliance', 'governance', 'diritti-legali']
             },
             economia: {
                 title: 'Economia',
