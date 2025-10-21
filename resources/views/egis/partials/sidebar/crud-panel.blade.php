@@ -404,7 +404,8 @@
                             {{ __('egi.crud.save_changes') }}
                         </button>
 
-                        @if ($canDeleteEgi)
+                        {{-- Delete button: only if user can delete AND EGI is NOT minted (blockchain immutability) --}}
+                        @if ($canDeleteEgi && is_null($egi->token_EGI))
                             <button type="button" id="egi-delete-btn"
                                 class="rounded-lg bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 font-medium text-white transition-all duration-200 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                                 title="{{ __('egi.crud.delete_egi') }}">

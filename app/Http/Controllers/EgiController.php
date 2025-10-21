@@ -561,6 +561,16 @@ class EgiController extends Controller {
                 ]);
             }
 
+            // 🔒 BLOCKCHAIN IMMUTABILITY: Cannot delete minted EGI (BLOCKING)
+            if (!is_null($egi->token_EGI)) {
+                return $this->errorManager->handle('EGI_MINTED_CANNOT_DELETE', [
+                    'user_id' => $user->id,
+                    'egi_id' => $egi->id,
+                    'token_egi' => $egi->token_EGI,
+                    'action' => 'delete'
+                ]);
+            }
+
             // Store data for audit before deletion
             $egiData = [
                 'egi_id' => $egi->id,
