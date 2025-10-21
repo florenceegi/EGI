@@ -1015,6 +1015,17 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        'EGI_MINTED_CANNOT_DELETE' => [
+            'type' => 'warning',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors.dev.egi_minted_cannot_delete',
+            'user_message_key' => 'error-manager::errors.user.egi_minted_cannot_delete',
+            'http_status_code' => 403,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
         'EGI_TRAIT_DELETE_FAILED' => [
             'type' => 'critical',
             'blocking' => 'blocking',
