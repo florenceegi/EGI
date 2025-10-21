@@ -367,13 +367,13 @@ PROMPT;
 
             // Handle different URL formats and convert to absolute local path
             $originalUrl = $imageUrl;
-            
+
             // If it's a full URL (http://... or https://...)
             if (str_starts_with($imageUrl, 'http://') || str_starts_with($imageUrl, 'https://')) {
                 // Extract path after domain
                 $urlParts = parse_url($imageUrl);
                 $path = $urlParts['path'] ?? '';
-                
+
                 // If path starts with /storage/, map to public/storage/
                 if (str_starts_with($path, '/storage/')) {
                     $imageUrl = public_path($path);
@@ -391,7 +391,7 @@ PROMPT;
                 }
             }
             // Otherwise assume it's already an absolute path
-            
+
             $this->logger->info('[AnthropicService] Resolved image path', [
                 'original_url' => $originalUrl,
                 'resolved_path' => $imageUrl,
