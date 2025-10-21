@@ -223,6 +223,16 @@ class Egi extends Model
     }
 
     /**
+     * Get all AI trait generations for this EGI
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function aiTraitGenerations(): HasMany
+    {
+        return $this->hasMany(\App\Models\AiTraitGeneration::class, 'egi_id')->orderBy('created_at', 'desc');
+    }
+
+    /**
      * Get traits grouped by category
      *
      * @return \Illuminate\Support\Collection
