@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Notifications\NotificationHandlerFactory;
 use App\Services\Notifications\WalletNotificationHandler;
+use App\Services\Wallet\WalletProvisioningService;
 use Exception;
 use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +24,12 @@ class Creation extends Component
 {
     public $notification;
     protected $userName;
+    protected WalletProvisioningService $walletProvisioningService;
+
+    public function boot(WalletProvisioningService $walletProvisioningService)
+    {
+        $this->walletProvisioningService = $walletProvisioningService;
+    }
 
     public function mount($notification)
     {
@@ -195,6 +202,54 @@ class Creation extends Component
             'wallet' => $wallet,
         ]);
 
+        // 🔗 NUOVO: Verifica e crea wallet Algorand reale se necessario
+        $receiver = User::findOrFail($receiver_id);
+        $realWalletAddress = $wallet; // Default: usa il wallet dalla proposta
+
+        // Se l'utente non ha un wallet reale o è PENDING, crealo
+        if (!$receiver->wallet || $receiver->wallet === 'PENDING' || str_starts_with($receiver->wallet, 'pending_wallet_')) {
+            try {
+                Log::channel('florenceegi')->info('User does not have real Algorand wallet, creating one', [
+                    'user_id' => $receiver_id,
+                    'current_wallet' => $receiver->wallet,
+                ]);
+
+                // Crea il wallet Algorand con encryption (senza IBAN per ora)
+                $algorandWallet = $this->walletProvisioningService->provisionUserWallet($receiver, [
+                    'iban' => null,
+                    'wallet_passphrase' => null,
+                    'accept_custody_seed' => true,
+                ]);
+
+                // Aggiorna il wallet address reale
+                $realWalletAddress = $algorandWallet->wallet;
+                
+                // Aggiorna il wallet dell'utente nella tabella users
+                $receiver->update(['wallet' => $realWalletAddress]);
+
+                Log::channel('florenceegi')->info('Real Algorand wallet created for user', [
+                    'user_id' => $receiver_id,
+                    'wallet_address' => $realWalletAddress,
+                ]);
+            } catch (Exception $e) {
+                Log::channel('florenceegi')->error('Failed to create real Algorand wallet', [
+                    'user_id' => $receiver_id,
+                    'error' => $e->getMessage(),
+                ]);
+                
+                // Se fallisce, usa il wallet dalla proposta (fallback al comportamento precedente)
+                // Questo evita di bloccare tutto il flusso se c'è un problema con AWS KMS
+            }
+        } else {
+            // L'utente ha già un wallet reale, usalo
+            $realWalletAddress = $receiver->wallet;
+            
+            Log::channel('florenceegi')->info('User already has real Algorand wallet', [
+                'user_id' => $receiver_id,
+                'wallet_address' => $realWalletAddress,
+            ]);
+        }
+
         // Recupera il wallet del creator per poter aggiornare le quote di mint e rebind
         $creatorWallet = Wallet::where('collection_id', $collection_id)
                             ->where('user_id', $proposer_id)
@@ -210,13 +265,14 @@ class Creation extends Component
             'outcome' => NotificationStatus::ACCEPTED->value,
         ]);
 
+        // Crea il record wallet con il wallet address reale
         Wallet::create([
             'collection_id' => $collection_id,
             'user_id' => $receiver_id,
-            'wallet' => $wallet,
+            'wallet' => $realWalletAddress, // 🔗 USA IL WALLET REALE
             'royalty_mint' => $newMint,
             'royalty_rebind' => $newRebind,
-            'platform_role' => PlatformRole::STAFF_MEMBER->value,
+            'platform_role' => null, // Membri collection non hanno platform_role specifico
         ]);
 
         // $this->dispatch('load-notifications');

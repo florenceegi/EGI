@@ -53,7 +53,7 @@ class PadminController extends Controller {
                 context: [
                     'route' => 'superadmin.padmin.dashboard',
                 ],
-                category: GdprActivityCategory::ADMIN_ACCESS
+                category: GdprActivityCategory::SYSTEM_INTERACTION
             );
 
             return view('superadmin.padmin.dashboard', [
@@ -65,7 +65,7 @@ class PadminController extends Controller {
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
-            
+
             return redirect()->route('superadmin.dashboard');
         }
     }
@@ -86,7 +86,7 @@ class PadminController extends Controller {
                 user: auth()->user(),
                 action: 'superadmin_padmin_violations_access',
                 context: [],
-                category: GdprActivityCategory::ADMIN_ACCESS
+                category: GdprActivityCategory::SYSTEM_INTERACTION
             );
 
             return view('superadmin.padmin.violations', [
@@ -98,7 +98,7 @@ class PadminController extends Controller {
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
-            
+
             return redirect()->route('superadmin.dashboard');
         }
     }
@@ -119,7 +119,7 @@ class PadminController extends Controller {
                 user: auth()->user(),
                 action: 'superadmin_padmin_symbols_access',
                 context: [],
-                category: GdprActivityCategory::ADMIN_ACCESS
+                category: GdprActivityCategory::SYSTEM_INTERACTION
             );
 
             return view('superadmin.padmin.symbols', [
@@ -131,7 +131,7 @@ class PadminController extends Controller {
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
-            
+
             return redirect()->route('superadmin.dashboard');
         }
     }
@@ -152,7 +152,7 @@ class PadminController extends Controller {
                 user: auth()->user(),
                 action: 'superadmin_padmin_search_access',
                 context: [],
-                category: GdprActivityCategory::ADMIN_ACCESS
+                category: GdprActivityCategory::SYSTEM_INTERACTION
             );
 
             return view('superadmin.padmin.search', [
@@ -164,7 +164,7 @@ class PadminController extends Controller {
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
-            
+
             return redirect()->route('superadmin.dashboard');
         }
     }
@@ -185,7 +185,7 @@ class PadminController extends Controller {
                 user: auth()->user(),
                 action: 'superadmin_padmin_statistics_access',
                 context: [],
-                category: GdprActivityCategory::ADMIN_ACCESS
+                category: GdprActivityCategory::SYSTEM_INTERACTION
             );
 
             return view('superadmin.padmin.stats', [
@@ -197,7 +197,7 @@ class PadminController extends Controller {
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
-            
+
             return redirect()->route('superadmin.dashboard');
         }
     }

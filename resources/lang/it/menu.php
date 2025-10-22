@@ -109,7 +109,7 @@ return [
     'superadmin_platform_management' => 'Gestione Piattaforma',
     'superadmin_roles' => 'Ruoli & Permessi',
     'superadmin_feature_pricing' => 'Pricing Features',
-    
+
     // Padmin Analyzer Menu
     'superadmin_padmin' => 'Padmin Analyzer',
     'superadmin_padmin_dashboard' => 'Dashboard Padmin',
