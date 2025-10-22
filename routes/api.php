@@ -255,3 +255,28 @@ Route::prefix('pa/acts')->name('api.pa.acts.')->middleware(['natan.agent', 'thro
     Route::get('/jobs/{jobId}/status', [App\Http\Controllers\Api\PaActApiController::class, 'getJobStatus'])
         ->name('jobs.status');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Wallet Welcome Modal API Routes
+|--------------------------------------------------------------------------
+|
+| API endpoints for wallet welcome modal interaction after registration.
+| Authentication: Session-based (web middleware)
+| Rate limiting: Standard throttle
+|
+*/
+
+Route::prefix('wallet/welcome')->name('api.wallet.welcome.')->middleware(['web'])->group(function () {
+    // Get wallet welcome modal data
+    Route::get('/data', [App\Http\Controllers\WalletWelcomeController::class, 'getData'])
+        ->name('data');
+
+    // Add IBAN to user's wallet
+    Route::post('/add-iban', [App\Http\Controllers\WalletWelcomeController::class, 'addIban'])
+        ->name('add-iban');
+
+    // Skip IBAN and close modal
+    Route::post('/skip-iban', [App\Http\Controllers\WalletWelcomeController::class, 'skipIban'])
+        ->name('skip-iban');
+});
