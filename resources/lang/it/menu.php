@@ -106,4 +106,13 @@ return [
     'superadmin_egi_management' => 'Gestione EGI',
     'superadmin_user_management' => 'Gestione Utenti',
     'superadmin_platform_statistics' => 'Statistiche Piattaforma',
+    'superadmin_platform_management' => 'Gestione Piattaforma',
+    'superadmin_roles' => 'Ruoli & Permessi',
+    'superadmin_feature_pricing' => 'Pricing Features',
+    
+    // Padmin Analyzer Menu
+    'superadmin_padmin' => 'Padmin Analyzer',
+    'superadmin_padmin_dashboard' => 'Dashboard Padmin',
+    'superadmin_padmin_violations' => 'Violazioni OS3',
+    'superadmin_padmin_symbols' => 'Registro Simboli',
 ];

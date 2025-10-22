@@ -6281,5 +6281,118 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // ====================================================
+        // SUPERADMIN ERRORS - AI & Platform Management
+        // ====================================================
+        'SUPERADMIN_AI_CONSULTATIONS_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_consultations_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_consultations_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'SUPERADMIN_AI_CONSULTATIONS_SHOW_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_consultations_show_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_consultations_show_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'SUPERADMIN_AI_CREDITS_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_credits_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_credits_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'SUPERADMIN_AI_FEATURES_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_features_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_features_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'SUPERADMIN_AI_STATISTICS_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_statistics_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_statistics_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'SUPERADMIN_EGILI_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_egili_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_egili_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'SUPERADMIN_EQUILIBRIUM_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_equilibrium_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_equilibrium_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'SUPERADMIN_PRICING_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_pricing_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_pricing_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'SUPERADMIN_PERMISSIONS_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_permissions_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_permissions_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'SUPERADMIN_ROLES_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_roles_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.superadmin_roles_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
     ]
 ];
