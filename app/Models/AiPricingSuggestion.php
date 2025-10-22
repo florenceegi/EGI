@@ -328,8 +328,8 @@ class AiPricingSuggestion extends Model
         $timeTolerance = 0.30;
 
         $priceAccurate = abs($salePrice - $this->suggested_price_optimal) / $this->suggested_price_optimal <= $priceTolerance;
-        $timeAccurate = $this->estimated_time_to_sell_days ? 
-            abs($daysToSell - $this->estimated_time_to_sell_days) / $this->estimated_time_to_sell_days <= $timeTolerance : 
+        $timeAccurate = $this->estimated_time_to_sell_days ?
+            abs($daysToSell - $this->estimated_time_to_sell_days) / $this->estimated_time_to_sell_days <= $timeTolerance :
             true;
 
         return $priceAccurate && $timeAccurate;
