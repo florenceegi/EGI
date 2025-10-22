@@ -184,7 +184,8 @@ class RegisteredUserController extends Controller
                 ->with('success', $successMessage)
                 ->with('user_type', $validated['user_type'])
                 ->with('ecosystem_created', $result['ecosystem_created'])
-                ->with('algorand_wallet', $result['user']->wallet);
+                ->with('algorand_wallet', $result['user']->wallet)
+                ->with('show_wallet_welcome', true); // Show wallet welcome modal after registration
         } catch (\Exception $e) {
             $errorContext = [
                 ...$logContext,
