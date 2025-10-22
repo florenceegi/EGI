@@ -20,6 +20,31 @@
                 <p>{!! __('wallet_welcome.intro') !!}</p>
             </div>
 
+            {{-- IBAN Form (Priority: shown first) --}}
+            <div id="ibanFormSection" class="wallet-iban-form">
+                <h3 class="wallet-form-title">
+                    <span class="material-icons">account_balance</span>
+                    {{ __('wallet_welcome.payments_iban_title') }}
+                </h3>
+                <p class="wallet-form-description">{!! __('wallet_welcome.payments_iban_intro') !!}</p>
+
+                <form id="ibanForm">
+                    <div class="wallet-form-group">
+                        <label for="ibanInput" class="wallet-form-label">IBAN</label>
+                        <input type="text" id="ibanInput" name="iban" class="wallet-form-input"
+                            placeholder="IT00 A000 0000 0000 0000 0000 000" maxlength="34" autocomplete="off">
+                        <span id="ibanError" class="wallet-form-error hidden"></span>
+                    </div>
+
+                    <div class="wallet-form-checkbox">
+                        <input type="checkbox" id="dontShowAgain" name="dont_show_again" class="wallet-checkbox">
+                        <label for="dontShowAgain" class="wallet-checkbox-label">
+                            {{ __('wallet_welcome.dont_show_again') }}
+                        </label>
+                    </div>
+                </form>
+            </div>
+
             {{-- Collapsible Sections --}}
             <div class="wallet-sections">
                 {{-- Section 1: Security --}}
@@ -186,31 +211,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {{-- IBAN Form --}}
-            <div id="ibanFormSection" class="wallet-iban-form">
-                <h3 class="wallet-form-title">
-                    <span class="material-icons">account_balance</span>
-                    {{ __('wallet_welcome.payments_iban_title') }}
-                </h3>
-                <p class="wallet-form-description">{{ __('wallet_welcome.payments_iban_intro') }}</p>
-
-                <form id="ibanForm">
-                    <div class="wallet-form-group">
-                        <label for="ibanInput" class="wallet-form-label">IBAN</label>
-                        <input type="text" id="ibanInput" name="iban" class="wallet-form-input"
-                            placeholder="IT00 A000 0000 0000 0000 0000 000" maxlength="34" autocomplete="off">
-                        <span id="ibanError" class="wallet-form-error hidden"></span>
-                    </div>
-
-                    <div class="wallet-form-checkbox">
-                        <input type="checkbox" id="dontShowAgain" name="dont_show_again" class="wallet-checkbox">
-                        <label for="dontShowAgain" class="wallet-checkbox-label">
-                            {{ __('wallet_welcome.dont_show_again') }}
-                        </label>
-                    </div>
-                </form>
             </div>
 
             {{-- Warning Box (hidden by default) --}}

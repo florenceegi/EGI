@@ -135,9 +135,11 @@
         }
 
         .wallet-section-title {
-            font-size: 1.125rem;
+            font-family: 'Segoe UI', -apple-system, system-ui, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            font-size: 1.0625rem;
             font-weight: 600;
             color: #1f2937;
+            letter-spacing: -0.02em;
         }
 
         .wallet-section-icon {
@@ -351,6 +353,7 @@
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
+            font-family: 'Segoe UI', -apple-system, system-ui, BlinkMacSystemFont, sans-serif;
         }
 
         .wallet-form-title {
@@ -360,6 +363,7 @@
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
+            letter-spacing: -0.015em;
         }
 
         .wallet-form-title .material-icons {
@@ -367,9 +371,10 @@
         }
 
         .wallet-form-description {
-            color: #6b7280;
+            color: #4b5563;
             margin-bottom: 1.5rem;
-            line-height: 1.6;
+            line-height: 1.65;
+            font-size: 0.9375rem;
         }
 
         .wallet-form-group {
@@ -378,9 +383,11 @@
 
         .wallet-form-label {
             display: block;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 0.5rem;
-            color: #374151;
+            color: #1f2937;
+            font-size: 0.9375rem;
+            letter-spacing: -0.01em;
         }
 
         .wallet-form-input {
@@ -388,7 +395,9 @@
             padding: 0.75rem 1rem;
             border: 2px solid #d1d5db;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
             transition: all 0.2s;
         }
 
@@ -427,8 +436,10 @@
 
         .wallet-checkbox-label {
             font-size: 0.875rem;
-            color: #6b7280;
+            font-weight: 500;
+            color: #4b5563;
             cursor: pointer;
+            letter-spacing: -0.01em;
         }
 
         /* Warning Box */
