@@ -5,6 +5,7 @@ use App\Http\Middleware\CheckCollectionPermission;
 use App\Http\Middleware\CheckPendingWallet;
 use App\Http\Middleware\CreatorNicknameRedirect;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\EnsureSuperadmin;
 use App\Http\Middleware\SetLanguage;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -29,7 +30,8 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__ . '/../routes/gdpr_legal.php',
             __DIR__ . '/../routes/creator.php',
             __DIR__ . '/../routes/biography.php',
-            __DIR__ . '/../routes/archetips.php'
+            __DIR__ . '/../routes/archetips.php',
+            __DIR__ . '/../routes/superadmin.php'
         ],
         api: __DIR__ . '/../routes/api.php',
         commands: __DIR__ . '/../routes/console.php',
@@ -44,6 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.pending.wallet' => CheckPendingWallet::class,
             'creator.nickname'     => CreatorNicknameRedirect::class,
             'natan.agent'          => AuthenticateNatanAgent::class,
+            'superadmin'           => EnsureSuperadmin::class,
         ]);
 
         $middleware->web(replace: [
