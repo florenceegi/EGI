@@ -34,6 +34,18 @@ return [
             'retention_period' => 365,
             'privacy_level' => 'standard'
         ],
+        'admin_access' => [
+            'name' => 'Administrative Access',
+            'description' => 'Accesso al pannello amministrativo (superadmin/admin)',
+            'retention_period' => 1095, // 3 anni
+            'privacy_level' => 'high'
+        ],
+        'admin_action' => [
+            'name' => 'Administrative Actions',
+            'description' => 'Azioni e modifiche effettuate nel back-office (superadmin/admin)',
+            'retention_period' => 1095, // 3 anni
+            'privacy_level' => 'high'
+        ],
         'gdpr_actions' => [
             'name' => 'GDPR Actions',
             'description' => 'Data requests, consent changes, deletions',
