@@ -167,25 +167,20 @@ class RegisteredUserController extends Controller
             event(new Registered($result['user']));
             Auth::login($result['user']);
 
-            $successMessage = $result['ecosystem_created']
-                ? __('Welcome to your Digital Renaissance! Your creative ecosystem is ready.')
-                : __('Welcome to FlorenceEGI! Complete your profile to get started.');
-
             $this->logger->info('[Registration] Registration completed successfully', [
                 ...$logContext,
                 'success' => true,
                 'ecosystem_created' => $result['ecosystem_created']
             ]);
 
-            // Use AuthRedirectService for usertype-based redirect
-            $redirectRoute = $this->authRedirectService->getRedirectRoute($result['user']);
-
-            return redirect()->route($redirectRoute)
-                ->with('success', $successMessage)
-                ->with('user_type', $validated['user_type'])
-                ->with('ecosystem_created', $result['ecosystem_created'])
-                ->with('algorand_wallet', $result['user']->wallet)
-                ->with('show_wallet_welcome', true); // Show wallet welcome modal after registration
+            // Instead of redirecting immediately, return to register view with modal open
+            // This allows user to configure IBAN before being redirected to home
+            return view('auth.register-wallet-setup', [
+                'user' => $result['user'],
+                'wallet' => $result['user']->fresh()->wallets()->whereNotNull('secret_ciphertext')->first(),
+                'ecosystem_created' => $result['ecosystem_created'],
+                'user_type' => $validated['user_type'],
+            ]);
         } catch (\Exception $e) {
             $errorContext = [
                 ...$logContext,

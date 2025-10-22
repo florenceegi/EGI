@@ -41,7 +41,7 @@ class WalletWelcomeController extends Controller
             }
 
             $user = Auth::user();
-            
+
             // Get user's wallet
             $wallet = Wallet::where('user_id', $user->id)
                 ->whereNotNull('secret_ciphertext')
@@ -53,6 +53,11 @@ class WalletWelcomeController extends Controller
                     'error' => 'Wallet not found'
                 ], 404);
             }
+
+            // Check both session and flash data for show_wallet_welcome flag
+            $shouldShow = session()->has('show_wallet_welcome') || 
+                         session()->get('show_wallet_welcome') === true ||
+                         old('show_wallet_welcome') === true;
 
             return response()->json([
                 'success' => true,
@@ -68,10 +73,14 @@ class WalletWelcomeController extends Controller
                         'has_iban' => $wallet->hasIban(),
                         'masked_iban' => $wallet->getMaskedIbanAttribute(),
                     ],
-                    'should_show' => session()->has('show_wallet_welcome'),
+                    'should_show' => $shouldShow,
+                    'debug' => [
+                        'session_has' => session()->has('show_wallet_welcome'),
+                        'session_get' => session()->get('show_wallet_welcome'),
+                        'all_session' => session()->all(),
+                    ]
                 ]
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to load wallet welcome data', [
                 'user_id' => Auth::id(),
@@ -104,7 +113,7 @@ class WalletWelcomeController extends Controller
             }
 
             $user = Auth::user();
-            
+
             // Get user's wallet
             $wallet = Wallet::where('user_id', $user->id)
                 ->whereNotNull('secret_ciphertext')
@@ -140,14 +149,12 @@ class WalletWelcomeController extends Controller
                     'masked_iban' => $wallet->fresh()->getMaskedIbanAttribute(),
                 ]
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'error' => __('register.invalid_iban'),
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to add IBAN to wallet', [
                 'user_id' => Auth::id(),
@@ -196,7 +203,6 @@ class WalletWelcomeController extends Controller
                 'success' => true,
                 'message' => __('register.wallet_welcome_completed')
             ]);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to skip IBAN setup', [
                 'user_id' => Auth::id(),
@@ -210,4 +216,3 @@ class WalletWelcomeController extends Controller
         }
     }
 }
-
