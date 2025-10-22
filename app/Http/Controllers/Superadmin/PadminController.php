@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
@@ -36,7 +37,7 @@ class PadminController extends Controller {
     /**
      * Padmin Analyzer - Dashboard
      */
-    public function dashboard(Request $request): View|JsonResponse {
+    public function dashboard(Request $request): View|JsonResponse|RedirectResponse {
         try {
             $this->logger->info('[SuperAdmin] Padmin Dashboard accessed', [
                 'admin_id' => auth()->id(),
@@ -59,18 +60,20 @@ class PadminController extends Controller {
                 'pageTitle' => 'Padmin Analyzer',
             ]);
         } catch (\Exception $e) {
-            return $this->errorManager->handle('UNEXPECTED_ERROR', [
+            $this->errorManager->handle('UNEXPECTED_ERROR', [
                 'controller' => self::class,
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
+            
+            return redirect()->route('superadmin.dashboard');
         }
     }
 
     /**
      * Padmin Analyzer - Violations list
      */
-    public function violations(Request $request): View|JsonResponse {
+    public function violations(Request $request): View|JsonResponse|RedirectResponse {
         try {
             $this->logger->info('[SuperAdmin] Padmin Violations viewed', [
                 'admin_id' => auth()->id(),
@@ -90,18 +93,20 @@ class PadminController extends Controller {
                 'pageTitle' => 'Violazioni Padmin',
             ]);
         } catch (\Exception $e) {
-            return $this->errorManager->handle('UNEXPECTED_ERROR', [
+            $this->errorManager->handle('UNEXPECTED_ERROR', [
                 'controller' => self::class,
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
+            
+            return redirect()->route('superadmin.dashboard');
         }
     }
 
     /**
      * Padmin Analyzer - Symbols registry
      */
-    public function symbols(Request $request): View|JsonResponse {
+    public function symbols(Request $request): View|JsonResponse|RedirectResponse {
         try {
             $this->logger->info('[SuperAdmin] Padmin Symbols viewed', [
                 'admin_id' => auth()->id(),
@@ -121,18 +126,20 @@ class PadminController extends Controller {
                 'pageTitle' => 'Simboli Padmin',
             ]);
         } catch (\Exception $e) {
-            return $this->errorManager->handle('UNEXPECTED_ERROR', [
+            $this->errorManager->handle('UNEXPECTED_ERROR', [
                 'controller' => self::class,
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
+            
+            return redirect()->route('superadmin.dashboard');
         }
     }
 
     /**
      * Padmin Analyzer - Semantic search UI
      */
-    public function search(Request $request): View|JsonResponse {
+    public function search(Request $request): View|JsonResponse|RedirectResponse {
         try {
             $this->logger->info('[SuperAdmin] Padmin Search viewed', [
                 'admin_id' => auth()->id(),
@@ -152,18 +159,20 @@ class PadminController extends Controller {
                 'pageTitle' => 'Ricerca Semantica',
             ]);
         } catch (\Exception $e) {
-            return $this->errorManager->handle('UNEXPECTED_ERROR', [
+            $this->errorManager->handle('UNEXPECTED_ERROR', [
                 'controller' => self::class,
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
+            
+            return redirect()->route('superadmin.dashboard');
         }
     }
 
     /**
      * Padmin Analyzer - Statistics UI
      */
-    public function statistics(Request $request): View|JsonResponse {
+    public function statistics(Request $request): View|JsonResponse|RedirectResponse {
         try {
             $this->logger->info('[SuperAdmin] Padmin Statistics viewed', [
                 'admin_id' => auth()->id(),
@@ -183,11 +192,13 @@ class PadminController extends Controller {
                 'pageTitle' => 'Statistiche Padmin',
             ]);
         } catch (\Exception $e) {
-            return $this->errorManager->handle('UNEXPECTED_ERROR', [
+            $this->errorManager->handle('UNEXPECTED_ERROR', [
                 'controller' => self::class,
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
             ], $e);
+            
+            return redirect()->route('superadmin.dashboard');
         }
     }
 }
