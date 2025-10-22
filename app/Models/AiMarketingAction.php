@@ -391,22 +391,22 @@ class AiMarketingAction extends Model
 
         $confidenceScore = ($this->confidence_score / 100) * 30;
 
-        return $priorityScores[$this->priority] + 
-               $impactScores[$this->expected_impact] + 
-               $confidenceScore;
+        return $priorityScores[$this->priority] +
+            $impactScores[$this->expected_impact] +
+            $confidenceScore;
     }
 
     public function isOverdue(): bool
     {
-        return $this->suggested_start_date && 
-               $this->suggested_start_date->isPast() && 
-               $this->isPending();
+        return $this->suggested_start_date &&
+            $this->suggested_start_date->isPast() &&
+            $this->isPending();
     }
 
     public function getDaysUntilStart(): ?int
     {
-        return $this->suggested_start_date ? 
-            now()->diffInDays($this->suggested_start_date, false) : 
+        return $this->suggested_start_date ?
+            now()->diffInDays($this->suggested_start_date, false) :
             null;
     }
 
