@@ -211,3 +211,6 @@ class AiTraitGeneration extends Model
         return round(($approved / $total) * 100, 2);
     }
 }
+
+
+

@@ -389,3 +389,6 @@ class TraitCreationService
         return $slug;
     }
 }
+
+
+
