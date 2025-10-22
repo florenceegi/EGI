@@ -52,6 +52,12 @@ enum GdprActivityCategory: string {
 /** Security-related activities */
     case SECURITY_EVENTS = 'security_events';
 
+/** Administrative access to back-office (superadmin/admin) */
+    case ADMIN_ACCESS = 'admin_access';
+
+/** Administrative actions and changes in back-office */
+    case ADMIN_ACTION = 'admin_action';
+
 /** Blockchain/NFT activities */
     case BLOCKCHAIN_ACTIVITY = 'blockchain_activity';
 
@@ -66,6 +72,12 @@ enum GdprActivityCategory: string {
 
 /** Wallet and financial operations */
     case WALLET_MANAGEMENT = 'wallet_management';
+
+/** Wallet creation (registration) */
+    case WALLET_CREATED = 'wallet_created';
+
+/** Wallet secret accessed (mnemonic export) */
+    case WALLET_SECRET_ACCESSED = 'wallet_secret_accessed';
 
 /** Notification management and interactions */
     case NOTIFICATION_MANAGEMENT = 'notification_management';
@@ -93,11 +105,15 @@ enum GdprActivityCategory: string {
             self::PLATFORM_USAGE => 'General Platform Usage/Interaction',
             self::SYSTEM_INTERACTION => 'System Interactions and UI Operations',
             self::SECURITY_EVENTS => 'Security-related Events or Incidents',
+            self::ADMIN_ACCESS => 'Administrative Panel Access (Superadmin/Admin)',
+            self::ADMIN_ACTION => 'Administrative Actions and Configuration Changes',
             self::BLOCKCHAIN_ACTIVITY => 'Blockchain or NFT Related Activity',
             self::MEDIA_MANAGEMENT => 'File Upload, Media and Asset Management',
             self::PRIVACY_MANAGEMENT => 'Privacy Settings and Consent Management',
             self::PERSONAL_DATA_UPDATE => 'Personal Data Updates and Modifications',
             self::WALLET_MANAGEMENT => 'Wallet and Financial Operations Management',
+            self::WALLET_CREATED => 'Wallet Creation During Registration',
+            self::WALLET_SECRET_ACCESSED => 'Wallet Secret Accessed (Mnemonic Export)',
             self::NOTIFICATION_MANAGEMENT => 'Notification Management and User Interactions',
             self::AI_PROCESSING => 'AI Processing and Analysis Activities',
             self::EGI_TRAIT_MANAGEMENT => 'EGI Trait Management (Creation, Modification)',
@@ -116,14 +132,18 @@ enum GdprActivityCategory: string {
             self::DATA_DELETION,
             self::PRIVACY_MANAGEMENT,
             self::PERSONAL_DATA_UPDATE,
-            self::WALLET_MANAGEMENT => PrivacyLevel::CRITICAL,
+            self::WALLET_MANAGEMENT,
+            self::WALLET_CREATED,
+            self::WALLET_SECRET_ACCESSED => PrivacyLevel::CRITICAL,
 
             // HIGH - Security and authentication (3 years retention)
             self::AUTHENTICATION,
             self::AUTHENTICATION_LOGIN,
             self::AUTHENTICATION_LOGOUT,
             self::SECURITY_EVENTS,
-            self::REGISTRATION => PrivacyLevel::HIGH,
+            self::REGISTRATION,
+            self::ADMIN_ACCESS,
+            self::ADMIN_ACTION => PrivacyLevel::HIGH,
 
             // STANDARD - General activities (2 years retention)
             self::CONTENT_CREATION,
