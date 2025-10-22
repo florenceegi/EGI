@@ -6,18 +6,26 @@
  * @purpose Entry point principale per OS3 Guardian / Padmin Analyzer
  */
 
-// Export modulo principale
-export { PadminDB, padminDB } from './core/db.js';
+// Export database module
+export {
+  PadminDB,
+  createPadminDB,
+  getPadminDB,
+  resetPadminDBInstance,
+} from './db';
 
 // Export types
 export type {
-    SymbolData,
-    Violation,
-    RedisConfig,
-    SearchOptions,
-    SearchResult,
-    DBStats
-} from './types/index.js';
+  RedisConfig,
+  CodeSymbol,
+  Violation,
+  ViolationStats,
+  SearchQuery,
+} from './db';
+
+// Export configuration
+export { loadConfig, validateConfig } from './config';
+export type { PadminConfig } from './config';
 
 // Version info
 export const VERSION = '1.0.0';
