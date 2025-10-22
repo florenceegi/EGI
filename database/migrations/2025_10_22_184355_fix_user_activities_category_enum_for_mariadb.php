@@ -4,17 +4,22 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * @purpose Add 'wallet_created' and 'wallet_secret_accessed' values to user_activities.category enum
+ * @purpose FIX: Add ALL missing category values to user_activities.category enum (MariaDB compatible)
  * @package Database\Migrations
  * @author Padmin D. Curtis
  * @date 2025-10-22
+ * 
+ * Previous migrations used `if (DB::getDriverName() === 'mysql')` which failed on MariaDB.
+ * This migration fixes the enum once and for all with both mysql and mariadb support.
  */
 return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void {
-        if (DB::getDriverName() === 'mysql') {
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'mysql' || $driver === 'mariadb') {
             DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
                 'authentication',
                 'authentication_login',
@@ -40,7 +45,7 @@ return new class extends Migration {
                 'admin_action',
                 'wallet_created',
                 'wallet_secret_accessed'
-            )");
+            ) NOT NULL");
         }
     }
 
@@ -48,7 +53,9 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-        if (DB::getDriverName() === 'mysql') {
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'mysql' || $driver === 'mariadb') {
             DB::statement("ALTER TABLE user_activities MODIFY COLUMN category ENUM(
                 'authentication',
                 'authentication_login',
@@ -69,10 +76,8 @@ return new class extends Migration {
                 'wallet_management',
                 'notification_management',
                 'ai_processing',
-                'egi_trait_management',
-                'admin_access',
-                'admin_action'
-            )");
+                'egi_trait_management'
+            ) NOT NULL");
         }
     }
 };
