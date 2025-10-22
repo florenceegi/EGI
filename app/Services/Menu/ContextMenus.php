@@ -39,6 +39,14 @@ use App\Services\Menu\Items\PAInspectorsMenu;
 use App\Services\Menu\Items\PAActsMenu;
 use App\Services\Menu\Items\PAStatisticsMenu;
 use App\Services\Menu\Items\PABatchProcessorMenu;
+// SuperAdmin Menu Items
+use App\Services\Menu\Items\SuperadminDashboardMenu;
+use App\Services\Menu\Items\SuperadminAiConsultationsMenu;
+use App\Services\Menu\Items\SuperadminAiCreditsMenu;
+use App\Services\Menu\Items\SuperadminAiFeaturesMenu;
+use App\Services\Menu\Items\SuperadminAiStatisticsMenu;
+use App\Services\Menu\Items\SuperadminEgiliManagementMenu;
+use App\Services\Menu\Items\SuperadminEquilibriumManagementMenu;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -257,6 +265,39 @@ class ContextMenus
                     // new PAInspectorsMenu(),
                 ]);
                 $menus[] = $paMainMenu;
+                break;
+
+            case 'superadmin':
+            case 'superadmin.dashboard':
+            case 'superadmin.ai':
+            case 'superadmin.egili':
+            case 'superadmin.equilibrium':
+                // SuperAdmin Context - AI & Platform Management
+                Log::channel('upload')->info('🔍 CONTEXT MENUS - SUPERADMIN CONTEXT', [
+                    'context' => $context,
+                ]);
+
+                // Dashboard
+                $superadminDashboardMenu = new MenuGroup(__('menu.superadmin_overview'), 'superadmin-dashboard', [
+                    new SuperadminDashboardMenu(),
+                ]);
+                $menus[] = $superadminDashboardMenu;
+
+                // AI Management Group
+                $aiManagementMenu = new MenuGroup(__('menu.superadmin_ai_management'), 'superadmin-ai-brain', [
+                    new SuperadminAiConsultationsMenu(),
+                    new SuperadminAiCreditsMenu(),
+                    new SuperadminAiFeaturesMenu(),
+                    new SuperadminAiStatisticsMenu(),
+                ]);
+                $menus[] = $aiManagementMenu;
+
+                // Tokenomics Management Group
+                $tokenomicsMenu = new MenuGroup(__('menu.superadmin_tokenomics'), 'superadmin-egili-token', [
+                    new SuperadminEgiliManagementMenu(),
+                    new SuperadminEquilibriumManagementMenu(),
+                ]);
+                $menus[] = $tokenomicsMenu;
                 break;
         }
 
