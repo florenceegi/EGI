@@ -77,7 +77,7 @@ class WalletProvisioningService
 
                 // 4. Add IBAN if provided (same wallet record)
                 if (!empty($data['iban'])) {
-                    $this->addIbanToWallet($algorandWallet, $data['iban']);
+                    $this->addIbanToWalletInternal($algorandWallet, $data['iban']);
                 }
 
                 // 5. GDPR: Log wallet creation
@@ -85,7 +85,7 @@ class WalletProvisioningService
                     $user,
                     'wallet_provisioned',
                     [
-                        'algorand_address' => $algorandWallet->address,
+                        'algorand_address' => $algorandWallet->wallet,
                         'has_iban' => !empty($data['iban']),
                         'usertype' => $user->usertype
                     ],
@@ -96,7 +96,7 @@ class WalletProvisioningService
                 $this->logger->info('WalletProvisioning: Wallet created successfully', [
                     'user_id' => $user->id,
                     'wallet_id' => $algorandWallet->id,
-                    'address' => $algorandWallet->address,
+                    'address' => $algorandWallet->wallet,
                     'log_category' => 'WALLET_PROVISION_SUCCESS'
                 ]);
 
@@ -199,7 +199,7 @@ class WalletProvisioningService
     }
 
     /**
-     * Add IBAN to existing wallet
+     * Add IBAN to existing wallet (internal method)
      *
      * Security:
      * - Stores encrypted IBAN using Laravel cast encryption
@@ -211,7 +211,7 @@ class WalletProvisioningService
      * @return Wallet
      * @throws \Exception
      */
-    protected function addIbanToWallet(Wallet $wallet, string $iban): Wallet
+    protected function addIbanToWalletInternal(Wallet $wallet, string $iban): Wallet
     {
         try {
             // 1. Normalize IBAN (remove spaces, uppercase)
@@ -303,6 +303,38 @@ class WalletProvisioningService
         }
 
         return bcmod($numeric, '97') === '1';
+    }
+
+    /**
+     * Add IBAN to wallet by wallet ID (public method for controllers)
+     *
+     * @param int $walletId The ID of the wallet
+     * @param string $iban The IBAN to add
+     * @return Wallet The updated wallet
+     * @throws \Exception
+     */
+    public function addIbanToWallet(int $walletId, string $iban): Wallet
+    {
+        try {
+            // 1. Find wallet by ID
+            $wallet = Wallet::findOrFail($walletId);
+
+            // 2. Call protected method with wallet object
+            return $this->addIbanToWalletInternal($wallet, $iban);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to add IBAN to wallet', [
+                'wallet_id' => $walletId,
+                'error' => $e->getMessage(),
+                'log_category' => 'IBAN_ADD_ERROR'
+            ]);
+
+            $this->errorManager->handle('IBAN_ADD_FAILED', [
+                'wallet_id' => $walletId,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
     }
 
     /**
