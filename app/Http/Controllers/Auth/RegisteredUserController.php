@@ -16,7 +16,9 @@ use App\Services\Gdpr\AuditLogService;
 use App\Services\Gdpr\LegalContentService;
 use App\Services\CollectionService;
 use App\Services\Auth\AuthRedirectService;
+use App\Services\Wallet\WalletProvisioningService;
 use Ultra\EgiModule\Contracts\WalletServiceInterface;
+use App\Models\Wallet;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -54,8 +56,8 @@ class RegisteredUserController extends Controller
         protected WalletServiceInterface $walletService,
         protected UserRoleServiceInterface $userRoleService,
         protected LegalContentService $legalContentService,
-        protected AuthRedirectService $authRedirectService
-
+        protected AuthRedirectService $authRedirectService,
+        protected WalletProvisioningService $walletProvisioningService
     ) {}
 
     /**
@@ -253,15 +255,15 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Create user with valid Algorand wallet address
+     * Create user with REAL Algorand wallet (secure envelope encryption)
      * @oracode-pillar: Esplicitamente Intenzionale
+     * @version 2.0.0 - REAL BLOCKCHAIN WALLET with KMS encryption
      */
     protected function createUserWithAlgorandWallet(array $validated): User
     {
         try {
-            $algorandAddress = $this->generateValidAlgorandAddress();
-
-            return User::create([
+            // 1. Create user without wallet first
+            $user = User::create([
                 // ═══ CORE FIELDS ═══
                 'name' => $validated['name'],
                 'nick_name' => $validated['nick_name'] ?? null,
@@ -269,8 +271,8 @@ class RegisteredUserController extends Controller
                 'password' => Hash::make($validated['password']),
                 'usertype' => $validated['user_type'],
 
-                // ═══ ALGORAND INTEGRATION ═══
-                'wallet' => $algorandAddress,
+                // ═══ ALGORAND INTEGRATION (temporary placeholder) ═══
+                'wallet' => 'PENDING', // Will be updated with real address
                 'wallet_balance' => 0.0000,
 
                 // ═══ SYSTEM FIELDS ═══
@@ -285,14 +287,37 @@ class RegisteredUserController extends Controller
 
                 'created_via' => 'web_form_permission_based',
             ]);
-        } catch (\Exception $e) {
-            $this->logger->error('[Registration] Failed to create user with Algorand wallet', [
-                'error' => $e->getMessage(),
-                'user_type' => $validated['user_type'],
-                'email' => $validated['email']
+
+            // 2. Provision REAL wallet with envelope encryption
+            $walletData = [
+                'iban' => $validated['iban'] ?? null,
+                'wallet_passphrase' => $validated['wallet_passphrase'] ?? null
+            ];
+
+            $algorandWallet = $this->walletProvisioningService->provisionUserWallet($user, $walletData);
+
+            // 3. Update user with real Algorand address
+            $user->update([
+                'wallet' => $algorandWallet->wallet
             ]);
 
-            throw new \Exception('Failed to create user with Algorand wallet: ' . $e->getMessage(), 0, $e);
+            $this->logger->info('[Registration] REAL Algorand wallet provisioned', [
+                'user_id' => $user->id,
+                'address' => $algorandWallet->wallet,
+                'has_iban' => !empty($walletData['iban']),
+                'wallet_id' => $algorandWallet->id
+            ]);
+
+            return $user->fresh(); // Reload to get updated wallet address
+
+        } catch (\Exception $e) {
+            $this->logger->error('[Registration] Failed to create user with REAL Algorand wallet', [
+                'error' => $e->getMessage(),
+                'user_type' => $validated['user_type'] ?? 'unknown',
+                'email' => $validated['email'] ?? 'unknown'
+            ]);
+
+            throw new \Exception('Failed to create user with REAL Algorand wallet: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -461,7 +486,25 @@ class RegisteredUserController extends Controller
                 'is_owner' => $collectionRole === 'creator'
             ]);
 
-            // 4. Setup Wallets for Collection using WalletService
+            // 4. Link User's Algorand Wallet to Collection
+            // The wallet was created during user registration without collection_id
+            // Now we link it to the collection before attaching default wallets
+            $userWallet = Wallet::where('user_id', $user->id)
+                ->where('wallet', $user->wallet)
+                ->whereNull('collection_id')
+                ->first();
+
+            if ($userWallet) {
+                $userWallet->update(['collection_id' => $collection->id]);
+                $this->logger->info('[Registration] User wallet linked to collection', [
+                    ...$logContext,
+                    'wallet_id' => $userWallet->id,
+                    'collection_id' => $collection->id
+                ]);
+            }
+
+            // 5. Setup Wallets for Collection using WalletService
+            // This will now UPDATE the existing user wallet with royalties instead of creating a duplicate
             $this->walletService->attachDefaultWalletsToCollection($collection, $user);
 
             $this->logger->info('[Registration] Wallets attached to collection', [
@@ -469,7 +512,7 @@ class RegisteredUserController extends Controller
                 'collection_id' => $collection->id
             ]);
 
-            // 5. Set as Current Collection
+            // 6. Set as Current Collection
             $user->update(['current_collection_id' => $collection->id]);
 
             $this->logger->info('[Registration] Full ecosystem created successfully', [

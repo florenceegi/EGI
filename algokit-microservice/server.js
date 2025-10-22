@@ -256,6 +256,36 @@ app.post("/anchor-document", async (req, res) => {
     }
 });
 
+// CREATE NEW ALGORAND ACCOUNT ENDPOINT
+app.post("/create-account", async (req, res) => {
+    try {
+        console.log("🔐 CREATE ACCOUNT REQUEST");
+
+        // Generate new account using algosdk
+        const account = algosdk.generateAccount();
+        const mnemonic = algosdk.secretKeyToMnemonic(account.sk);
+
+        console.log("✅ NEW ACCOUNT GENERATED");
+        console.log("   Address:", account.addr);
+
+        res.json({
+            success: true,
+            data: {
+                address: account.addr,
+                mnemonic: mnemonic,
+                privateKeyBase64: Buffer.from(account.sk).toString("base64"),
+            },
+        });
+    } catch (error) {
+        console.error("❌ CREATE ACCOUNT FAILED:", error);
+
+        res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+});
+
 // Get account information endpoint
 app.get("/account/:address", async (req, res) => {
     try {
