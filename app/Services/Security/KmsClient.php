@@ -26,7 +26,8 @@ use App\Models\User;
  * @date 2025-10-21
  * @purpose Enterprise envelope encryption for PA/Enterprise compliance
  */
-class KmsClient {
+class KmsClient
+{
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -57,7 +58,7 @@ class KmsClient {
         $this->auditService = $auditService;
 
         // Environment configuration
-    $this->developmentMode = config('app.env') !== 'production';
+        $this->developmentMode = config('app.env') !== 'production';
         $this->kekId = config('kms.kek_id', 'egi-wallet-master-key');
 
         // Initialize mock KEK for development
@@ -72,207 +73,269 @@ class KmsClient {
     }
 
     /**
-     * Generate new Data Encryption Key (DEK)
-     *
-     * Creates cryptographically secure 256-bit key for data encryption.
-     * Each DEK is unique per operation for maximum security.
-     *
-     * @return string Base64-encoded 256-bit DEK
-     * @throws \Exception If random_bytes fails
-     */
-    public function generateDEK(): string {
-        try {
-            // Generate 256-bit (32 bytes) random key
-            $dek = \random_bytes(32);
-            $dekBase64 = base64_encode($dek);
-
-            // Clear original key from memory
-            sodium_memzero($dek);
-
-            $this->logger->debug('DEK generated successfully', [
-                'dek_length' => 32,
-                'encoding' => 'base64'
-            ]);
-
-            return $dekBase64;
-        } catch (\Exception $e) {
-            $this->errorManager->handle('KMS_DEK_GENERATION_FAILED', [
-                'error' => $e->getMessage(),
-                'sodium_available' => extension_loaded('sodium')
-            ], $e);
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Encrypt DEK using Key Encryption Key (KEK)
-     *
-     * Encrypts the DEK with the master KEK stored in KMS.
-     * Uses envelope encryption pattern for secure key management.
-     *
-     * @param string $dekBase64 Base64-encoded DEK to encrypt
-     * @param User|null $user Optional user context for audit logging
-     * @return array Encrypted DEK data with metadata
-     * @throws \Exception If encryption fails
-     */
-    public function encryptDEK(string $dekBase64, ?User $user = null): array {
-        try {
-            $this->logger->info('Encrypting DEK', [
-                'user_id' => $user?->id,
-                'dek_length' => strlen($dekBase64)
-            ]);
-
-            // Decode DEK from base64
-            $dek = base64_decode($dekBase64);
-            if ($dek === false) {
-                throw new \InvalidArgumentException('Invalid DEK base64 encoding');
-            }
-
-            if ($this->developmentMode) {
-                $result = $this->encryptDEKMock($dek);
-            } else {
-                $result = $this->encryptDEKProduction($dek);
-            }
-
-            // Clear DEK from memory
-            sodium_memzero($dek);
-
-            // Audit log for GDPR compliance
-            if ($user) {
-                $this->auditService->logUserAction(
-                    $user,
-                    'DEK encrypted',
-                    ['kek_id' => $this->kekId],
-                    GdprActivityCategory::ENCRYPTION_KEY_MANAGEMENT
-                );
-            }
-
-            $this->logger->info('DEK encrypted successfully');
-
-            return $result;
-        } catch (\Exception $e) {
-            $this->errorManager->handle('KMS_DEK_ENCRYPTION_FAILED', [
-                'error' => $e->getMessage(),
-                'user_id' => $user?->id,
-                'kek_id' => $this->kekId
-            ], $e);
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Decrypt DEK using Key Encryption Key (KEK)
-     *
-     * Decrypts the DEK using the master KEK from KMS.
-     * Returns the plain DEK for data decryption operations.
-     *
-     * @param array $encryptedDekData Encrypted DEK data from encryptDEK()
-     * @param User|null $user Optional user context for audit logging
-     * @return string Base64-encoded plain DEK
-     * @throws \Exception If decryption fails
-     */
-    public function decryptDEK(array $encryptedDekData, ?User $user = null): string {
-        try {
-            $this->logger->info('Decrypting DEK', [
-                'user_id' => $user?->id,
-                'kek_id' => $encryptedDekData['kek_id'] ?? 'unknown'
-            ]);
-
-            if ($this->developmentMode) {
-                $dek = $this->decryptDEKMock($encryptedDekData);
-            } else {
-                $dek = $this->decryptDEKProduction($encryptedDekData);
-            }
-
-            $dekBase64 = base64_encode($dek);
-
-            // Clear DEK from memory
-            sodium_memzero($dek);
-
-            // Audit log for GDPR compliance
-            if ($user) {
-                $this->auditService->logUserAction(
-                    $user,
-                    'DEK decrypted',
-                    ['kek_id' => $encryptedDekData['kek_id'] ?? 'unknown'],
-                    GdprActivityCategory::ENCRYPTION_KEY_MANAGEMENT
-                );
-            }
-
-            $this->logger->info('DEK decrypted successfully');
-
-            return $dekBase64;
-        } catch (\Exception $e) {
-            $this->errorManager->handle('KMS_DEK_DECRYPTION_FAILED', [
-                'error' => $e->getMessage(),
-                'user_id' => $user?->id,
-                'kek_id' => $encryptedDekData['kek_id'] ?? 'unknown'
-            ], $e);
-
-            throw $e;
-        }
-    }
-
-    /**
-     * High-level secure encrypt operation
-     *
-     * Combines DEK generation, KEK encryption, and data encryption
-     * in a single operation. Returns complete envelope encryption result.
+     * High-level secure encrypt operation with envelope encryption
      *
      * @param string $plaintext Data to encrypt
-     * @param string $additionalData Optional additional authenticated data
      * @param User|null $user Optional user context for audit logging
      * @return array Complete envelope encryption result
      * @throws \Exception If encryption fails
      */
-    public function secureEncrypt(string $plaintext, string $additionalData = '', ?User $user = null): array {
+    public function secureEncrypt(string $plaintext, ?User $user = null): array
+    {
         try {
             $this->logger->info('Starting secure encryption', [
                 'user_id' => $user?->id,
-                'plaintext_length' => strlen($plaintext),
-                'additional_data_length' => strlen($additionalData)
+                'data_size' => strlen($plaintext)
             ]);
 
             // Step 1: Generate DEK
-            $dekBase64 = $this->generateDEK();
+            $dek = random_bytes(32); // 256-bit key
+            $nonce = random_bytes(SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES);
 
-            // Step 2: Encrypt DEK with KEK
-            $encryptedDekData = $this->encryptDEK($dekBase64, $user);
-
-            // Step 3: Encrypt data with DEK using XChaCha20-Poly1305
-            $dek = base64_decode($dekBase64);
-            $nonce = \random_bytes(24); // XChaCha20-Poly1305 requires 24-byte nonce
-
+            // Step 2: Encrypt data with DEK
             $ciphertext = sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(
                 $plaintext,
-                $additionalData,
+                '',
                 $nonce,
                 $dek
             );
 
-            // Clear DEK from memory
+            // Step 3: Encrypt DEK with KEK
+            $encryptedDekData = $this->encryptDEK($dek, $user);
+
+            // Step 4: Wipe DEK from memory
             sodium_memzero($dek);
 
             $result = [
                 'ciphertext' => base64_encode($ciphertext),
                 'nonce' => base64_encode($nonce),
-                'additional_data' => $additionalData,
                 'encrypted_dek' => $encryptedDekData,
                 'algorithm' => 'xchacha20poly1305',
-                'created_at' => now()->toISOString()
+                'additional_data' => ''
             ];
 
-            $this->logger->info('Secure encryption completed successfully');
+            $this->logger->info('Secure encryption completed', [
+                'user_id' => $user?->id
+            ]);
 
             return $result;
+
         } catch (\Exception $e) {
+            $this->logger->error('Secure encryption failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $user?->id
+            ]);
+
             $this->errorManager->handle('KMS_SECURE_ENCRYPTION_FAILED', [
                 'error' => $e->getMessage(),
                 'user_id' => $user?->id
             ], $e);
 
+            throw $e;
+        }
+    }
+
+    /**
+     * Encrypt DEK with KEK (router method)
+     *
+     * @param string $dek Raw DEK bytes
+     * @param User|null $user Optional user context for audit logging
+     * @return array Encrypted DEK data
+     * @throws \Exception
+     */
+    private function encryptDEK(string $dek, ?User $user = null): array
+    {
+        if ($this->developmentMode) {
+            return $this->encryptDEKMock($dek);
+        }
+
+        return $this->encryptDEKProduction($dek);
+    }
+
+    /**
+     * Decrypt DEK with KEK (router method)
+     *
+     * @param array $encryptedDekData Encrypted DEK data
+     * @param User|null $user Optional user context for audit logging
+     * @return string Raw DEK bytes (base64 encoded)
+     * @throws \Exception
+     */
+    private function decryptDEK(array $encryptedDekData, ?User $user = null): string
+    {
+        $provider = $encryptedDekData['provider'] ?? 'mock';
+
+        if ($provider === 'mock' || $this->developmentMode) {
+            $dek = $this->decryptDEKMock($encryptedDekData);
+            return base64_encode($dek);
+        }
+
+        $dek = $this->decryptDEKProduction($encryptedDekData);
+        return base64_encode($dek);
+    }
+
+    /**
+     * AWS KMS DEK encryption
+     *
+     * @param string $dek Raw DEK bytes
+     * @return array Encrypted DEK data
+     * @throws \Exception If AWS KMS encryption fails
+     */
+    private function encryptDEKAwsKms(string $dek): array
+    {
+        try {
+            $config = config('kms.aws');
+            if (!$config) {
+                throw new \RuntimeException('Missing kms.aws configuration');
+            }
+
+            $region = $config['region'] ?? null;
+            $kekArn = $config['kek_arn'] ?? null;
+            if (!$kekArn) {
+                throw new \InvalidArgumentException('Missing AWS KMS KEK ARN (config kms.aws.kek_arn)');
+            }
+
+            $credentials = [
+                'key' => $config['key'] ?? null,
+                'secret' => $config['secret'] ?? null,
+            ];
+            if (!empty($config['token'])) {
+                $credentials['token'] = $config['token'];
+            }
+
+            $kms = new \Aws\Kms\KmsClient([
+                'version' => 'latest',
+                'region' => $region,
+                'credentials' => $credentials,
+            ]);
+
+            $result = $kms->encrypt([
+                'KeyId' => $kekArn,
+                'Plaintext' => $dek,
+                'EncryptionContext' => [
+                    'application' => 'FlorenceEGI',
+                    'purpose' => 'wallet_mnemonic_dek',
+                ],
+            ]);
+
+            $ciphertextBlob = $result['CiphertextBlob'] ?? ($result->get('CiphertextBlob') ?? null);
+            $keyId = $result['KeyId'] ?? ($result->get('KeyId') ?? $kekArn);
+
+            return [
+                'encrypted_dek' => base64_encode($ciphertextBlob),
+                'nonce' => null,
+                'kek_id' => (string) $keyId,
+                'provider' => 'aws',
+                'created_at' => now()->toISOString(),
+            ];
+        } catch (\Exception $e) {
+            $this->errorManager->handle('KMS_DEK_ENCRYPTION_FAILED', [
+                'provider' => 'aws',
+                'key_id' => $config['kek_arn'] ?? 'unknown',
+                'error' => $e->getMessage()
+            ], $e);
+            throw $e;
+        }
+    }
+
+    /**
+     * AWS KMS DEK decryption
+     *
+     * @param array $encryptedDekData Encrypted DEK data
+     * @return string Raw DEK bytes
+     * @throws \Exception If AWS KMS decryption fails
+     */
+    private function decryptDEKAwsKms(array $encryptedDekData): string
+    {
+        try {
+            $config = config('kms.aws');
+            if (!$config) {
+                throw new \RuntimeException('Missing kms.aws configuration');
+            }
+
+            $credentials = [
+                'key' => $config['key'] ?? null,
+                'secret' => $config['secret'] ?? null,
+            ];
+            if (!empty($config['token'])) {
+                $credentials['token'] = $config['token'];
+            }
+
+            $kms = new \Aws\Kms\KmsClient([
+                'version' => 'latest',
+                'region' => $config['region'] ?? null,
+                'credentials' => $credentials,
+            ]);
+
+            $result = $kms->decrypt([
+                'CiphertextBlob' => base64_decode($encryptedDekData['encrypted_dek']),
+                'EncryptionContext' => [
+                    'application' => 'FlorenceEGI',
+                    'purpose' => 'wallet_mnemonic_dek',
+                ],
+            ]);
+
+            $plaintext = $result['Plaintext'] ?? ($result->get('Plaintext') ?? null);
+            if ($plaintext === null) {
+                throw new \RuntimeException('AWS KMS did not return Plaintext');
+            }
+            return $plaintext;
+        } catch (\Exception $e) {
+            $this->errorManager->handle('KMS_DEK_DECRYPTION_FAILED', [
+                'provider' => 'aws',
+                'key_id' => $encryptedDekData['kek_id'] ?? 'unknown',
+                'error' => $e->getMessage()
+            ], $e);
+            throw $e;
+        }
+    }
+
+    /**
+     * Azure Key Vault DEK encryption
+     *
+     * @param string $dek Raw DEK bytes
+     * @return array Encrypted DEK data
+     * @throws \Exception If Azure Key Vault encryption fails
+     */
+    private function encryptDEKAzureKeyVault(string $dek): array
+    {
+        try {
+            $config = config('kms.azure');
+
+            // TODO: Integrate Azure Key Vault SDK
+            // composer require azure/azure-key-vault
+            
+            throw new \Exception('Azure Key Vault integration requires Azure SDK installation');
+        } catch (\Exception $e) {
+            $this->errorManager->handle('KMS_DEK_ENCRYPTION_FAILED', [
+                'provider' => 'azure',
+                'key_id' => $config['vault_url'] ?? 'unknown',
+                'error' => $e->getMessage()
+            ], $e);
+            throw $e;
+        }
+    }
+
+    /**
+     * Azure Key Vault DEK decryption
+     *
+     * @param array $encryptedDekData Encrypted DEK data
+     * @return string Raw DEK bytes
+     * @throws \Exception If Azure Key Vault decryption fails
+     */
+    private function decryptDEKAzureKeyVault(array $encryptedDekData): string
+    {
+        try {
+            $config = config('kms.azure');
+
+            // TODO: Integrate Azure Key Vault SDK
+            
+            throw new \Exception('Azure Key Vault integration requires Azure SDK installation');
+        } catch (\Exception $e) {
+            $this->errorManager->handle('KMS_DEK_DECRYPTION_FAILED', [
+                'provider' => 'azure',
+                'key_id' => $encryptedDekData['kek_id'] ?? 'unknown',
+                'error' => $e->getMessage()
+            ], $e);
             throw $e;
         }
     }
@@ -288,7 +351,8 @@ class KmsClient {
      * @return string Original plaintext
      * @throws \Exception If decryption fails
      */
-    public function secureDecrypt(array $encryptedData, ?User $user = null): string {
+    public function secureDecrypt(array $encryptedData, ?User $user = null): string
+    {
         try {
             $this->logger->info('Starting secure decryption', [
                 'user_id' => $user?->id,
@@ -351,7 +415,8 @@ class KmsClient {
      *
      * @return void
      */
-    private function initializeMockKek(): void {
+    private function initializeMockKek(): void
+    {
         $configKey = 'kms.mock_kek';
 
         // Use existing mock KEK or generate new one
@@ -382,7 +447,8 @@ class KmsClient {
      * @return array Encrypted DEK data
      * @throws \Exception If mock encryption fails
      */
-    private function encryptDEKMock(string $dek): array {
+    private function encryptDEKMock(string $dek): array
+    {
         $kek = base64_decode($this->mockKek);
         $nonce = \random_bytes(24);
 
@@ -414,7 +480,8 @@ class KmsClient {
      * @return string Raw DEK bytes
      * @throws \Exception If mock decryption fails
      */
-    private function decryptDEKMock(array $encryptedDekData): string {
+    private function decryptDEKMock(array $encryptedDekData): string
+    {
         $kek = base64_decode($this->mockKek);
         $encryptedDek = base64_decode($encryptedDekData['encrypted_dek']);
         $nonce = base64_decode($encryptedDekData['nonce']);
@@ -446,7 +513,8 @@ class KmsClient {
      * @return array Encrypted DEK data
      * @throws \Exception If production KMS encryption fails
      */
-    private function encryptDEKProduction(string $dek): array {
+    private function encryptDEKProduction(string $dek): array
+    {
         // Read provider from config/kms.php ('provider')
         $provider = config('kms.provider');
 
@@ -478,7 +546,8 @@ class KmsClient {
      * @return string Raw DEK bytes
      * @throws \Exception If production KMS decryption fails
      */
-    private function decryptDEKProduction(array $encryptedDekData): string {
+    private function decryptDEKProduction(array $encryptedDekData): string
+    {
         $provider = $encryptedDekData['provider'] ?? config('kms.provider');
 
         switch ($provider) {
@@ -500,203 +569,14 @@ class KmsClient {
     }
 
     /**
-     * AWS KMS DEK encryption
-     *
-     * @param string $dek Raw DEK bytes
-     * @return array Encrypted DEK data
-     * @throws \Exception If AWS KMS encryption fails
-     */
-    private function encryptDEKAwsKms(string $dek): array {
-        try {
-            $config = config('kms.providers.aws');
-
-            // TODO: Integrate AWS SDK
-            // $kms = new Aws\Kms\KmsClient([
-            //     'version' => 'latest',
-            //     'region' => $config['region'],
-            //     'credentials' => [
-            //         'key' => $config['access_key_id'],
-            //         'secret' => $config['secret_access_key']
-            //     ]
-            // ]);
-            //
-            // $result = $kms->encrypt([
-            //     'KeyId' => $config['kek_key_id'],
-            //     'Plaintext' => $dek,
-            //     'EncryptionContext' => [
-            //         'application' => 'FlorenceEGI',
-            //         'purpose' => 'wallet_mnemonic_dek'
-            //     ]
-            // ]);
-
-            throw new \Exception('AWS KMS integration requires AWS SDK installation: composer require aws/aws-sdk-php');
-        } catch (\Exception $e) {
-            $this->errorManager->handle('KMS_DEK_ENCRYPTION_FAILED', [
-                'provider' => 'aws',
-                'key_id' => $config['kek_key_id'] ?? 'unknown',
-                'error' => $e->getMessage()
-            ], $e);
-            throw $e;
-        }
-    }
-
-    /**
-     * AWS KMS DEK decryption
-     *
-     * @param array $encryptedDekData Encrypted DEK data
-     * @return string Raw DEK bytes
-     * @throws \Exception If AWS KMS decryption fails
-     */
-    private function decryptDEKAwsKms(array $encryptedDekData): string {
-        try {
-            $config = config('kms.providers.aws');
-
-            // TODO: Integrate AWS SDK
-            // $kms = new Aws\Kms\KmsClient([
-            //     'version' => 'latest',
-            //     'region' => $config['region'],
-            //     'credentials' => [
-            //         'key' => $config['access_key_id'],
-            //         'secret' => $config['secret_access_key']
-            //     ]
-            // ]);
-            //
-            // $result = $kms->decrypt([
-            //     'CiphertextBlob' => base64_decode($encryptedDekData['encrypted_dek']),
-            //     'EncryptionContext' => [
-            //         'application' => 'FlorenceEGI',
-            //         'purpose' => 'wallet_mnemonic_dek'
-            //     ]
-            // ]);
-            //
-            // return $result['Plaintext'];
-
-            throw new \Exception('AWS KMS integration requires AWS SDK installation');
-        } catch (\Exception $e) {
-            $this->errorManager->handle('KMS_DEK_DECRYPTION_FAILED', [
-                'provider' => 'aws',
-                'key_id' => $encryptedDekData['kek_id'] ?? 'unknown',
-                'error' => $e->getMessage()
-            ], $e);
-            throw $e;
-        }
-    }
-
-    /**
-     * Azure Key Vault DEK encryption
-     *
-     * @param string $dek Raw DEK bytes
-     * @return array Encrypted DEK data
-     * @throws \Exception If Azure Key Vault encryption fails
-     */
-    private function encryptDEKAwsKms(string $dek): array {
-        try {
-            $config = config('kms.aws');
-            if (!$config) {
-                throw new \RuntimeException('Missing kms.aws configuration');
-            }
-
-            // Validate region vs key ARN region (best-effort parse)
-            $region = $config['region'] ?? null;
-            $kekArn = $config['kek_arn'] ?? null;
-            if (!$kekArn) {
-                throw new \InvalidArgumentException('Missing AWS KMS KEK ARN (config kms.aws.kek_arn)');
-            }
-
-            // Build AWS KMS client
-            $credentials = [
-                'key' => $config['key'] ?? null,
-                'secret' => $config['secret'] ?? null,
-            ];
-            if (!empty($config['token'])) {
-                $credentials['token'] = $config['token'];
-            }
-
-            $kms = new \Aws\Kms\KmsClient([
-                'version' => 'latest',
-                'region' => $region,
-                'credentials' => $credentials,
-            ]);
-
-            $result = $kms->encrypt([
-                'KeyId' => $kekArn,
-                'Plaintext' => $dek,
-                'EncryptionContext' => [
-                    'application' => 'FlorenceEGI',
-                    'purpose' => 'wallet_mnemonic_dek',
-                ],
-            ]);
-
-            $ciphertextBlob = $result['CiphertextBlob'] ?? ($result->get('CiphertextBlob') ?? null);
-            $keyId = $result['KeyId'] ?? ($result->get('KeyId') ?? $kekArn);
-
-            return [
-                'encrypted_dek' => base64_encode($ciphertextBlob),
-                'nonce' => null, // not used with AWS KMS
-                'kek_id' => (string) $keyId,
-                'provider' => 'aws',
-                'created_at' => now()->toISOString(),
-            ];
-            ], $e);
-            throw $e;
-        }
-    }
-                'key_id' => $config['kek_arn'] ?? 'unknown',
-    /**
-     * Azure Key Vault DEK decryption
-     *
-     * @param array $encryptedDekData Encrypted DEK data
-     * @return string Raw DEK bytes
-     * @throws \Exception If Azure Key Vault decryption fails
-     */
-    private function decryptDEKAwsKms(array $encryptedDekData): string {
-        try {
-            $config = config('kms.aws');
-            if (!$config) {
-                throw new \RuntimeException('Missing kms.aws configuration');
-            }
-
-            $credentials = [
-                'key' => $config['key'] ?? null,
-                'secret' => $config['secret'] ?? null,
-            ];
-            if (!empty($config['token'])) {
-                $credentials['token'] = $config['token'];
-            }
-
-            $kms = new \Aws\Kms\KmsClient([
-                'version' => 'latest',
-                'region' => $config['region'] ?? null,
-                'credentials' => $credentials,
-            ]);
-
-            $result = $kms->decrypt([
-                'CiphertextBlob' => base64_decode($encryptedDekData['encrypted_dek']),
-                'EncryptionContext' => [
-                    'application' => 'FlorenceEGI',
-                    'purpose' => 'wallet_mnemonic_dek',
-                ],
-            ]);
-
-            $plaintext = $result['Plaintext'] ?? ($result->get('Plaintext') ?? null);
-            if ($plaintext === null) {
-                throw new \RuntimeException('AWS KMS did not return Plaintext');
-            }
-            return $plaintext;
-                'error' => $e->getMessage()
-            ], $e);
-            throw $e;
-        }
-    }
-
-    /**
      * HashiCorp Vault DEK encryption
      *
      * @param string $dek Raw DEK bytes
      * @return array Encrypted DEK data
      * @throws \Exception If Vault encryption fails
      */
-    private function encryptDEKHashiCorpVault(string $dek): array {
+    private function encryptDEKHashiCorpVault(string $dek): array
+    {
         try {
             $config = config('kms.providers.vault');
 
@@ -730,7 +610,8 @@ class KmsClient {
      * @return string Raw DEK bytes
      * @throws \Exception If Vault decryption fails
      */
-    private function decryptDEKHashiCorpVault(array $encryptedDekData): string {
+    private function decryptDEKHashiCorpVault(array $encryptedDekData): string
+    {
         try {
             $config = config('kms.providers.vault');
 
@@ -766,7 +647,8 @@ class KmsClient {
      * @return array Encrypted DEK data
      * @throws \Exception If GCP KMS encryption fails
      */
-    private function encryptDEKGoogleCloudKms(string $dek): array {
+    private function encryptDEKGoogleCloudKms(string $dek): array
+    {
         try {
             $config = config('kms.providers.gcp');
 
@@ -802,7 +684,8 @@ class KmsClient {
      * @return string Raw DEK bytes
      * @throws \Exception If GCP KMS decryption fails
      */
-    private function decryptDEKGoogleCloudKms(array $encryptedDekData): string {
+    private function decryptDEKGoogleCloudKms(array $encryptedDekData): string
+    {
         try {
             $config = config('kms.providers.gcp');
 
