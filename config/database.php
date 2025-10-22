@@ -168,6 +168,13 @@ return [
             'database' => env('REDIS_CACHE_DB', '1'),
         ],
 
+        'padmin' => [
+            'host' => env('PADMIN_REDIS_HOST', '127.0.0.1'),
+            'password' => env('PADMIN_REDIS_PASSWORD'),
+            'port' => env('PADMIN_REDIS_PORT', '6381'),
+            'database' => env('PADMIN_REDIS_DB', '0'),
+        ],
+
     ],
 
 ];

@@ -18,6 +18,8 @@ volumes:
     driver: local
   redis_data:
     driver: local
+  redis_padmin_data:
+    driver: local
 
 services:
 
@@ -140,6 +142,35 @@ services:
       timeout: 3s
       retries: 5
       start_period: 10s
+
+  # ========================================
+  # 🧠 REDIS STACK FOR PADMIN ANALYZER (OPZIONE B)
+  # ========================================
+  redis_padmin:
+    image: redis/redis-stack:latest
+    container_name: florence_redis_padmin
+    restart: unless-stopped
+    ports:
+      - "6381:6379"  # Redis Stack porta separata
+      - "8002:8001"  # RedisInsight UI
+    command: >
+      redis-stack-server
+      --appendonly yes
+      --requirepass ${PADMIN_REDIS_PASSWORD:-padmin_redis_2025}
+      --loadmodule /opt/redis-stack/lib/redisearch.so
+      --loadmodule /opt/redis-stack/lib/rejson.so
+      --loadmodule /opt/redis-stack/lib/redisbloom.so
+      --loadmodule /opt/redis-stack/lib/redistimeseries.so
+    volumes:
+      - redis_padmin_data:/data
+    networks:
+      - florence_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${PADMIN_REDIS_PASSWORD:-padmin_redis_2025}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
 
   # ========================================
   # ⚡ QUEUE WORKER CONTAINER
