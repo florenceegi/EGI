@@ -7,6 +7,9 @@ use App\Http\Controllers\Superadmin\SuperadminAiFeaturesController;
 use App\Http\Controllers\Superadmin\SuperadminAiStatisticsController;
 use App\Http\Controllers\Superadmin\SuperadminEgiliController;
 use App\Http\Controllers\Superadmin\SuperadminEquilibriumController;
+use App\Http\Controllers\Superadmin\PadminController;
+use App\Http\Controllers\Superadmin\SuperadminFeaturePricingController;
+use App\Http\Controllers\Superadmin\SuperadminRolesController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -65,6 +68,17 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
     });
 
     // ═══════════════════════════════════════════════════════════════
+    // PADMIN ANALYZER (OS3 Guardian)
+    // ═══════════════════════════════════════════════════════════════
+    Route::prefix('padmin')->name('padmin.')->group(function () {
+        Route::get('/', [PadminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/violations', [PadminController::class, 'violations'])->name('violations');
+        Route::get('/symbols', [PadminController::class, 'symbols'])->name('symbols');
+        Route::get('/search', [PadminController::class, 'search'])->name('search');
+        Route::get('/statistics', [PadminController::class, 'statistics'])->name('statistics');
+    });
+
+    // ═══════════════════════════════════════════════════════════════
     // TOKENOMICS MANAGEMENT
     // ═══════════════════════════════════════════════════════════════
 
@@ -83,6 +97,14 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
         Route::get('/{equilibrium}', [SuperadminEquilibriumController::class, 'show'])->name('show');
         Route::get('/analytics', [SuperadminEquilibriumController::class, 'analytics'])->name('analytics');
     });
+
+    // ═══════════════════════════════════════════════════════════════
+    // PLATFORM MANAGEMENT
+    // ═══════════════════════════════════════════════════════════════
+
+    // Roles & Permissions Management (Enterprise RBAC Center)
+    Route::resource('roles', SuperadminRolesController::class)->except(['show']);
+
+    // Feature Pricing Management (CRUD completo)
+    Route::resource('pricing', SuperadminFeaturePricingController::class)->except(['show']);
 });
-
-
