@@ -28,17 +28,18 @@ use Illuminate\Support\Facades\Log;
 /**
  * Service per la gestione delle operazioni sui wallet
  */
-class ResponseWalletService {
+class ResponseWalletService
+{
     public function __construct(
         private readonly NotificationHandlerFactory $notificationFactory
-    ) {
-    }
+    ) {}
 
 
     /**
      * Gestisce l'accettazione di un wallet
      */
-    public function acceptCreateWallet(WalletAcceptRequest $request): void {
+    public function acceptCreateWallet(WalletAcceptRequest $request): void
+    {
 
         Log::channel('florenceegi')->info('WalletService:Accepting create wallet', [
             'request' => $request,
@@ -84,7 +85,8 @@ class ResponseWalletService {
         }
     }
 
-    public function acceptUpdateWallet(WalletAcceptRequest $request): void {
+    public function acceptUpdateWallet(WalletAcceptRequest $request): void
+    {
 
         Log::channel('florenceegi')->info('WalletService:Accepting updating wallet', [
             'request' => $request,
@@ -127,7 +129,8 @@ class ResponseWalletService {
         }
     }
 
-    private function createWallet(array $validation) {
+    private function createWallet(array $validation)
+    {
 
         Log::channel('florenceegi')->info('Validation wallet', [
             'validation' => $validation,
@@ -160,7 +163,8 @@ class ResponseWalletService {
         );
     }
 
-    private function requestNotification($walletPayload, $request): void {
+    private function requestNotification($walletPayload, $request): void
+    {
         // Preparare i dati per la notifica
         $notificationData = new NotificationData(
             model_type: $walletPayload::class,
@@ -202,7 +206,8 @@ class ResponseWalletService {
         ]);
     }
 
-    private function acceptNotification($walletPayload, $request) {
+    private function acceptNotification($walletPayload, $request)
+    {
 
         $notification = CustomDatabaseNotification::findOrFail($request->notification_id);
 
@@ -240,7 +245,8 @@ class ResponseWalletService {
     /**
      * Gestisce il rifiuto di un wallet
      */
-    public function rejectWallet(WalletRejectRequest $request): void {
+    public function rejectWallet(WalletRejectRequest $request): void
+    {
         try {
             DB::transaction(function () use ($request) {
                 // Recupero gli oggetti dal database
@@ -289,7 +295,8 @@ class ResponseWalletService {
     /**
      * Gestisce il rifiuto di un wallet
      */
-    public function expiredWallet(WalletExpireResponse $request): void {
+    public function expiredWallet(WalletExpireResponse $request): void
+    {
         try {
             DB::transaction(function () use ($request) {
 
@@ -369,7 +376,8 @@ class ResponseWalletService {
      * @param array $validation
      * @throws \Exception
      */
-    private function updateWallet(array $validation) {
+    private function updateWallet(array $validation)
+    {
         Log::channel('florenceegi')->info('WalletService: Updating wallet', [
             'validation' => (array) $validation,
         ]);
@@ -419,7 +427,8 @@ class ResponseWalletService {
     /**
      * Ottiene lo stato di una notifica
      */
-    public function getNotificationStatus(CustomDatabaseNotification $notification): string {
+    public function getNotificationStatus(CustomDatabaseNotification $notification): string
+    {
         return match ($notification->outcome) {
             'pending_create', 'pending_update', 'pending' => 'pending',
             'Accepted' => 'accepted',
@@ -432,7 +441,8 @@ class ResponseWalletService {
     /**
      * Ottiene la classe CSS per uno stato di notifica
      */
-    public function getNotificationStatusClass(string $status): string {
+    public function getNotificationStatusClass(string $status): string
+    {
         return match ($status) {
             'pending' => 'text-yellow-500',
             'Accepted' => 'text-green-500',
