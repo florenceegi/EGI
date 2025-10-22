@@ -4,10 +4,10 @@ return [
     // Modal Header
     'title' => 'Willkommen bei FlorenceEGI!',
     'subtitle' => 'Ihre Digitale Wallet ist bereit',
-    
+
     // Intro
     'intro' => 'Bei der Registrierung haben wir automatisch eine <strong>Algorand Digital Wallet</strong> erstellt, die mit Ihrem Konto verknüpft ist. Diese Wallet ist notwendig, um Ihre <strong>Digitalen Echtheitszertifikate (EGI)</strong> zu erhalten, wenn Sie Kunstwerke auf der Plattform kaufen.',
-    
+
     // Section 1: Security
     'security_title' => '🔒 Sicherheit und DSGVO-Datenschutz',
     'security_items' => [
@@ -19,7 +19,7 @@ return [
         'Sie können die <strong>endgültige Löschung</strong> der Wallet aus unseren Systemen beantragen',
     ],
     'security_note' => '<strong>Hinweis:</strong> Sobald Sie die geheime Phrase exportiert und die Wallet von unseren Servern gelöscht haben, wird die Verwaltung vollständig <strong>nicht-verwahrend</strong> und liegt in Ihrer alleinigen Verantwortung.',
-    
+
     // Section 2: Content
     'content_title' => '💎 Was Ihre Wallet enthält',
     'content_has_title' => '✅ Enthält:',
@@ -35,7 +35,7 @@ return [
         'Geldmittel oder finanzielle Vermögenswerte',
     ],
     'content_note' => 'Die Wallet ist <strong>ausschließlich</strong> digitalen Zertifikaten gewidmet. Sie kann nicht für Finanzoperationen verwendet werden.',
-    
+
     // Section 3: Payments
     'payments_title' => '💶 Zahlungen und FIAT-Quittungen',
     'payments_how_title' => 'So funktionieren Zahlungen:',
@@ -54,7 +54,7 @@ return [
         'In vollständiger DSGVO-Konformität verwaltet',
         'Nur die letzten 4 Zeichen für UI gespeichert',
     ],
-    
+
     // Section 4: Compliance
     'compliance_title' => '🔐 Regulierungskonformität (MiCA-safe)',
     'compliance_intro' => 'Diese Modalität stellt <strong>"begrenzte technische Verwahrung nicht-finanzieller digitaler Vermögenswerte"</strong> dar und:',
@@ -71,7 +71,7 @@ return [
         '❌ Verwahrt KEINE Gelder oder Kryptowährungen',
         '❌ Vermittelt KEINE Finanztransaktionen',
     ],
-    
+
     // Section 5: Options
     'options_title' => '📱 Was Sie tun können',
     'option1_title' => '✨ Option 1 - Automatische Verwaltung',
@@ -90,7 +90,7 @@ return [
         'Verwalten Sie Ihre Zertifikate unabhängig',
         'Beantragen Sie Wallet-Löschung von unseren Servern',
     ],
-    
+
     // Section 6: Glossary
     'glossary_title' => '📖 Glossar Technischer Begriffe',
     'glossary' => [
@@ -127,7 +127,7 @@ return [
             'definition' => 'Krypto-Asset-Dienstleister. Entität, die Wechsel-, Verwahrungs- oder Übertragungsdienste für Kryptowährungen anbietet. FlorenceEGI ist kein CASP.',
         ],
     ],
-    
+
     // Section 7: Help
     'help_title' => '🆘 Fragen?',
     'help_whitepaper' => 'White Paper',
@@ -136,10 +136,11 @@ return [
     'help_support_desc' => '24/7 Unterstützung',
     'help_faq' => 'FAQ',
     'help_faq_desc' => 'Schnelle Antworten',
-    
+
     // Footer
     'dont_show_again' => 'Diese Nachricht nicht mehr anzeigen',
     'btn_add_iban' => 'IBAN hinzufügen',
     'btn_continue' => 'Verstanden, fortfahren',
 ];
+
 

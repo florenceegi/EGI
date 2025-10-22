@@ -4,10 +4,10 @@ return [
     // Modal Header
     'title' => 'Benvenuto su FlorenceEGI!',
     'subtitle' => 'Il tuo Wallet Digitale è pronto',
-    
+
     // Intro
     'intro' => 'Durante la registrazione, abbiamo generato automaticamente un <strong>wallet digitale Algorand</strong> associato al tuo account. Questo wallet è necessario per ricevere i tuoi <strong>Certificati Digitali di Autenticità (EGI)</strong> quando acquisti opere d\'arte sulla piattaforma.',
-    
+
     // Section 1: Sicurezza
     'security_title' => '🔒 Sicurezza e Privacy GDPR',
     'security_items' => [
@@ -19,7 +19,7 @@ return [
         'Puoi <strong>richiedere la cancellazione definitiva</strong> del wallet dai nostri sistemi',
     ],
     'security_note' => '<strong>Nota:</strong> Una volta esportata la frase segreta e cancellato il wallet dai nostri server, la gestione diventa completamente <strong>non-custodial</strong> e sarà tua esclusiva responsabilità.',
-    
+
     // Section 2: Contenuto
     'content_title' => '💎 Cosa contiene il tuo wallet',
     'content_has_title' => '✅ Contiene:',
@@ -35,7 +35,7 @@ return [
         'Fondi o asset finanziari',
     ],
     'content_note' => 'Il wallet è dedicato <strong>esclusivamente</strong> ai certificati digitali. Non può essere utilizzato per operazioni finanziarie.',
-    
+
     // Section 3: Pagamenti
     'payments_title' => '💶 Pagamenti e Ricevute FIAT',
     'payments_how_title' => 'Come funzionano i pagamenti:',
@@ -54,7 +54,7 @@ return [
         'Gestito nel pieno rispetto del GDPR',
         'Memorizzati solo gli ultimi 4 caratteri per UI',
     ],
-    
+
     // Section 4: Conformità
     'compliance_title' => '🔐 Conformità Normativa (MiCA-safe)',
     'compliance_intro' => 'Questa modalità costituisce <strong>"custodia tecnica limitata di asset digitali non finanziari"</strong> e:',
@@ -71,7 +71,7 @@ return [
         '❌ NON custodisce fondi o criptovalute',
         '❌ NON intermedia transazioni finanziarie',
     ],
-    
+
     // Section 5: Opzioni
     'options_title' => '📱 Cosa puoi fare',
     'option1_title' => '✨ Opzione 1 - Gestione Automatica',
@@ -90,7 +90,7 @@ return [
         'Gestisci i tuoi certificati in autonomia',
         'Richiedi la cancellazione del wallet dai nostri server',
     ],
-    
+
     // Section 6: Glossario
     'glossary_title' => '📖 Glossario Termini Tecnici',
     'glossary' => [
@@ -127,7 +127,7 @@ return [
             'definition' => 'Crypto-Asset Service Provider. Soggetto che offre servizi di cambio, custodia o trasferimento di criptovalute. FlorenceEGI non è un CASP.',
         ],
     ],
-    
+
     // Section 7: Help
     'help_title' => '🆘 Hai domande?',
     'help_whitepaper' => 'White Paper',
@@ -136,10 +136,11 @@ return [
     'help_support_desc' => 'Assistenza 24/7',
     'help_faq' => 'FAQ',
     'help_faq_desc' => 'Risposte rapide',
-    
+
     // Footer
     'dont_show_again' => 'Non mostrare più questo messaggio',
     'btn_add_iban' => 'Aggiungi IBAN',
     'btn_continue' => 'Ho capito, procedi',
 ];
+
 

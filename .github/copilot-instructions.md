@@ -904,9 +904,9 @@ python3 bash_files/egi_productivity_v3.py
 
 ### **Target:**
 
--   ULTRA ECCELLENZA: 1000+ righe nette
--   ECCELLENTE: 500+ righe nette
--   BUONA: 200+ righe nette
+-   ULTRA ECCELLENZA: 15.000+ righe nette
+-   ECCELLENTE: 10.000+ righe nette
+-   BUONA: 5.000+ righe nette
 
 ---
 

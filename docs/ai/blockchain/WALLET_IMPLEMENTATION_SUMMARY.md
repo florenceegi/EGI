@@ -285,3 +285,5 @@ Per ruotare le DEK quando necessario:
 **Date**: 2025-10-22  
 **Version**: 1.0.0  
 **Author**: Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
+
+

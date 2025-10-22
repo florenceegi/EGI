@@ -19,10 +19,10 @@ return new class extends Migration
         Schema::table('wallets', function (Blueprint $table) {
             // 1. Drop existing foreign key constraint
             $table->dropForeign(['collection_id']);
-            
+
             // 2. Make collection_id nullable
             $table->unsignedBigInteger('collection_id')->nullable()->change();
-            
+
             // 3. Re-add foreign key constraint with nullable support
             $table->foreign('collection_id')
                 ->references('id')
@@ -39,10 +39,10 @@ return new class extends Migration
         Schema::table('wallets', function (Blueprint $table) {
             // 1. Drop the nullable foreign key
             $table->dropForeign(['collection_id']);
-            
+
             // 2. Make collection_id NOT NULL again
             $table->unsignedBigInteger('collection_id')->nullable(false)->change();
-            
+
             // 3. Re-add foreign key constraint
             $table->foreign('collection_id')
                 ->references('id')

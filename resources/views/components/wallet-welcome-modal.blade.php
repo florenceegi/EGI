@@ -173,12 +173,12 @@
                                 <h5 class="wallet-help-title">{{ __('wallet_welcome.help_whitepaper') }}</h5>
                                 <p class="wallet-help-desc">{{ __('wallet_welcome.help_whitepaper_desc') }}</p>
                             </a>
-                            <a href="{{ route('support') }}" class="wallet-help-card">
+                            <a href="mailto:support@florenceegi.it" class="wallet-help-card">
                                 <span class="material-icons wallet-help-icon">support_agent</span>
                                 <h5 class="wallet-help-title">{{ __('wallet_welcome.help_support') }}</h5>
                                 <p class="wallet-help-desc">{{ __('wallet_welcome.help_support_desc') }}</p>
                             </a>
-                            <a href="{{ route('faq') }}" class="wallet-help-card">
+                            <a href="{{ route('info.white-paper-finanziario') }}#faq" class="wallet-help-card">
                                 <span class="material-icons wallet-help-icon">help_outline</span>
                                 <h5 class="wallet-help-title">{{ __('wallet_welcome.help_faq') }}</h5>
                                 <p class="wallet-help-desc">{{ __('wallet_welcome.help_faq_desc') }}</p>

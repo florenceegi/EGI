@@ -98,10 +98,10 @@ class RegisteredUserController extends Controller
     /**
      * Handle complete permission-based registration with ecosystem setup
      *
-     * @param Request $request
-     * @return RedirectResponse
+     * @param RegistrationRequest $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function store(RegistrationRequest $request): RedirectResponse
+    public function store(RegistrationRequest $request): \Illuminate\Http\RedirectResponse|\Illuminate\View\View
     {
         $userId = null;
         $collectionId = null;

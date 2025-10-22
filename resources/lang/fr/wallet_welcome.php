@@ -4,10 +4,10 @@ return [
     // Modal Header
     'title' => 'Bienvenue sur FlorenceEGI !',
     'subtitle' => 'Votre Portefeuille Numérique est prêt',
-    
+
     // Intro
     'intro' => 'Lors de l\'inscription, nous avons généré automatiquement un <strong>portefeuille numérique Algorand</strong> associé à votre compte. Ce portefeuille est nécessaire pour recevoir vos <strong>Certificats Numériques d\'Authenticité (EGI)</strong> lorsque vous achetez des œuvres d\'art sur la plateforme.',
-    
+
     // Section 1: Security
     'security_title' => '🔒 Sécurité et Confidentialité RGPD',
     'security_items' => [
@@ -19,7 +19,7 @@ return [
         'Vous pouvez <strong>demander la suppression définitive</strong> du portefeuille de nos systèmes',
     ],
     'security_note' => '<strong>Note :</strong> Une fois la phrase secrète exportée et le portefeuille supprimé de nos serveurs, la gestion devient complètement <strong>non-custodiale</strong> et sera votre seule responsabilité.',
-    
+
     // Section 2: Content
     'content_title' => '💎 Contenu de votre portefeuille',
     'content_has_title' => '✅ Contient :',
@@ -35,7 +35,7 @@ return [
         'Fonds ou actifs financiers',
     ],
     'content_note' => 'Le portefeuille est dédié <strong>exclusivement</strong> aux certificats numériques. Il ne peut pas être utilisé pour des opérations financières.',
-    
+
     // Section 3: Payments
     'payments_title' => '💶 Paiements et Reçus FIAT',
     'payments_how_title' => 'Comment fonctionnent les paiements :',
@@ -54,7 +54,7 @@ return [
         'Géré dans le respect complet du RGPD',
         'Seuls les 4 derniers caractères stockés pour UI',
     ],
-    
+
     // Section 4: Compliance
     'compliance_title' => '🔐 Conformité Réglementaire (MiCA-safe)',
     'compliance_intro' => 'Cette modalité constitue une <strong>"garde technique limitée d\'actifs numériques non financiers"</strong> et :',
@@ -71,7 +71,7 @@ return [
         '❌ Ne garde PAS de fonds ou cryptomonnaies',
         '❌ N\'intermédie PAS de transactions financières',
     ],
-    
+
     // Section 5: Options
     'options_title' => '📱 Ce que vous pouvez faire',
     'option1_title' => '✨ Option 1 - Gestion Automatique',
@@ -90,7 +90,7 @@ return [
         'Gérez vos certificats de manière indépendante',
         'Demandez suppression du portefeuille de nos serveurs',
     ],
-    
+
     // Section 6: Glossary
     'glossary_title' => '📖 Glossaire des Termes Techniques',
     'glossary' => [
@@ -127,7 +127,7 @@ return [
             'definition' => 'Prestataire de Services sur Crypto-actifs. Entité offrant services d\'échange, garde ou transfert de cryptomonnaies. FlorenceEGI n\'est pas CASP.',
         ],
     ],
-    
+
     // Section 7: Help
     'help_title' => '🆘 Des questions ?',
     'help_whitepaper' => 'White Paper',
@@ -136,10 +136,11 @@ return [
     'help_support_desc' => 'Assistance 24/7',
     'help_faq' => 'FAQ',
     'help_faq_desc' => 'Réponses rapides',
-    
+
     // Footer
     'dont_show_again' => 'Ne plus afficher ce message',
     'btn_add_iban' => 'Ajouter IBAN',
     'btn_continue' => 'J\'ai compris, continuer',
 ];
+
 
