@@ -66,7 +66,8 @@ use Throwable;
  *                                   Added structured error handling with UEM error codes.
  *                                   Updated documentation to Oracode v1.5 standard.
  */
-class WalletService implements WalletServiceInterface {
+class WalletService implements WalletServiceInterface
+{
     /**
      * 🧱 @dependency UltraErrorManager instance.
      * Used for standardized error handling.
@@ -132,7 +133,8 @@ class WalletService implements WalletServiceInterface {
      * 
      * @see WalletRoleEnum For immutable tokenomics definitions
      */
-    public function attachDefaultWalletsToCollection(Collection $collection, User $user): void {
+    public function attachDefaultWalletsToCollection(Collection $collection, User $user): void
+    {
         // Create context for logging and error handling
         $context = [
             'collection_id' => $collection->id,
@@ -469,7 +471,8 @@ class WalletService implements WalletServiceInterface {
      *
      * @return void
      */
-    protected function defineWalletErrorCodes(): void {
+    protected function defineWalletErrorCodes(): void
+    {
         // Define error for wallet creation failure
         $this->errorManager->defineError('WALLET_CREATION_FAILED', [
             'type' => 'critical',

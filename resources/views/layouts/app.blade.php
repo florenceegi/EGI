@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="user-authenticated" content="{{ auth()->check() ? 'true' : 'false' }}">
     <meta name="user-preferred-currency"
-        content="{{ auth()->check() ? (auth()->user()->preferred_currency ?? 'USD') : 'USD' }}">
+        content="{{ auth()->check() ? auth()->user()->preferred_currency ?? 'USD' : 'USD' }}">
 
     {{--
     @oracode-dimension technical
@@ -34,10 +34,12 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="{{ config('app.name') }}">
     @if (isset($ogImage))
-    <meta property="og:image" content="{{ $ogImage }}">
+        <meta property="og:image" content="{{ $ogImage }}">
     @endif
 
-    <script>console.log('resources/views/layouts/app.blade.php');</script>
+    <script>
+        console.log('resources/views/layouts/app.blade.php');
+    </script>
 
     {{-- Twitter Card Meta Tags --}}
     <meta name="twitter:card" content="summary_large_image">
@@ -65,8 +67,7 @@
         media="print" onload="this.media='all'">
 
     {{-- Application Assets --}}
-    @vite(['resources/css/app.css', 'resources/css/gdpr.css', 'resources/css/reservation-history.css',
-    'resources/js/app.js', 'resources/js/collection.js', 'resources/js/components/create-collection-modal.js', 'resources/js/reservation-history.js'])
+    @vite(['resources/css/app.css', 'resources/css/gdpr.css', 'resources/css/reservation-history.css', 'resources/js/app.js', 'resources/js/collection.js', 'resources/js/components/create-collection-modal.js', 'resources/js/reservation-history.js'])
 
     {{-- Oracode 3.0: Allow child views to inject custom styles (Pillar #5 - Predisposed to Variation) --}}
     @stack('styles')
@@ -76,11 +77,11 @@
 
     {{-- Schema.org Structured Data (Pillar #2 - Semantically Coherent) --}}
     @if (isset($schemaData))
-    <script type="application/ld+json">
+        <script type="application/ld+json">
         {!! json_encode($schemaData, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
     </script>
     @else
-    <script type="application/ld+json">
+        <script type="application/ld+json">
         {
                     "@context": "https://schema.org",
                     "@type": "WebApplication",
@@ -105,7 +106,7 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
 --}}
 {{-- MODIFICHE AL BODY: font-body per Source Sans Pro, text-base-content e bg-base-100 dal tema DaisyUI --}}
 
-<body class="antialiased bg-base-100 font-body text-base-content" itemscope itemtype="https://schema.org/WebPage">
+<body class="bg-base-100 font-body text-base-content antialiased" itemscope itemtype="https://schema.org/WebPage">
     {{-- Skip to main content for accessibility (WCAG 2.1) --}}
     <a href="#main-content"
         class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-content">
@@ -116,24 +117,24 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
     Main Application Container
     Oracode 3.0: Simplified structure without drawer/sidebar
     --}}
-    <div class="flex flex-col min-h-screen" role="application" aria-label="FlorenceEGI Application Interface">
+    <div class="flex min-h-screen flex-col" role="application" aria-label="FlorenceEGI Application Interface">
 
         {{-- Main Content Area --}}
-        <div class="flex flex-col min-h-screen">
+        <div class="flex min-h-screen flex-col">
             {{-- Navigation Header --}}
             {{-- MODIFICA: Aggiunto stile base per header, i componenti Livewire interni dovranno adattarsi --}}
             @include('layouts.partials.header-navbar')
 
             {{-- Page Header Section (Optional) --}}
             @if (isset($header))
-            {{-- MODIFICA: Stile base per la sezione header, il contenuto $header userà font-display e colori chiari
+                {{-- MODIFICA: Stile base per la sezione header, il contenuto $header userà font-display e colori chiari
             --}}
-            <section class="shadow bg-base-200" role="complementary" aria-label="Page header">
-                <div class="px-4 py-6 mx-auto max-w-7xl text-base-content sm:px-6 lg:px-8"> {{-- Usare text-base-content
+                <section class="bg-base-200 shadow" role="complementary" aria-label="Page header">
+                    <div class="mx-auto max-w-7xl px-4 py-6 text-base-content sm:px-6 lg:px-8"> {{-- Usare text-base-content
                     per coerenza --}}
-                    {{ $header }}
-                </div>
-            </section>
+                        {{ $header }}
+                    </div>
+                </section>
             @endif
 
             {{--
@@ -196,7 +197,7 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
 
     <!-- OS1 User Collection Data for Dashboard Context -->
     @auth
-    <script type="application/json" id="user-collection-data">
+        <script type="application/json" id="user-collection-data">
         {
             "total_collections": {{ auth()->user()->collections()->count() }},
             "max_allowed": {{ config('egi.max_collections_per_user', 10) }},
