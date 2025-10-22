@@ -4,10 +4,10 @@ return [
     // Modal Header
     'title' => 'Bem-vindo ao FlorenceEGI!',
     'subtitle' => 'Sua Carteira Digital está pronta',
-    
+
     // Intro
     'intro' => 'Durante o registro, geramos automaticamente uma <strong>carteira digital Algorand</strong> associada à sua conta. Esta carteira é necessária para receber seus <strong>Certificados Digitais de Autenticidade (EGI)</strong> quando você comprar obras de arte na plataforma.',
-    
+
     // Section 1: Security
     'security_title' => '🔒 Segurança e Privacidade LGPD/GDPR',
     'security_items' => [
@@ -19,7 +19,7 @@ return [
         'Você pode <strong>solicitar a exclusão definitiva</strong> da carteira de nossos sistemas',
     ],
     'security_note' => '<strong>Nota:</strong> Uma vez exportada a frase secreta e excluída a carteira de nossos servidores, o gerenciamento se torna completamente <strong>não custodial</strong> e será sua exclusiva responsabilidade.',
-    
+
     // Section 2: Content
     'content_title' => '💎 O que sua carteira contém',
     'content_has_title' => '✅ Contém:',
@@ -35,7 +35,7 @@ return [
         'Fundos ou ativos financeiros',
     ],
     'content_note' => 'A carteira é dedicada <strong>exclusivamente</strong> a certificados digitais. Não pode ser usada para operações financeiras.',
-    
+
     // Section 3: Payments
     'payments_title' => '💶 Pagamentos e Recibos FIAT',
     'payments_how_title' => 'Como funcionam os pagamentos:',
@@ -54,7 +54,7 @@ return [
         'Gerenciado em total conformidade com LGPD/GDPR',
         'Apenas os últimos 4 caracteres armazenados para UI',
     ],
-    
+
     // Section 4: Compliance
     'compliance_title' => '🔐 Conformidade Regulatória (MiCA-safe)',
     'compliance_intro' => 'Esta modalidade constitui <strong>"custódia técnica limitada de ativos digitais não financeiros"</strong> e:',
@@ -71,7 +71,7 @@ return [
         '❌ NÃO custodia fundos ou criptomoedas',
         '❌ NÃO intermedeia transações financeiras',
     ],
-    
+
     // Section 5: Options
     'options_title' => '📱 O que você pode fazer',
     'option1_title' => '✨ Opção 1 - Gerenciamento Automático',
@@ -90,7 +90,7 @@ return [
         'Gerencie seus certificados independentemente',
         'Solicite exclusão da carteira de nossos servidores',
     ],
-    
+
     // Section 6: Glossary
     'glossary_title' => '📖 Glossário de Termos Técnicos',
     'glossary' => [
@@ -127,7 +127,7 @@ return [
             'definition' => 'Provedor de Serviços de Cripto-ativos. Entidade que oferece serviços de câmbio, custódia ou transferência de criptomoedas. FlorenceEGI não é CASP.',
         ],
     ],
-    
+
     // Section 7: Help
     'help_title' => '🆘 Tem dúvidas?',
     'help_whitepaper' => 'White Paper',
@@ -136,10 +136,11 @@ return [
     'help_support_desc' => 'Assistência 24/7',
     'help_faq' => 'FAQ',
     'help_faq_desc' => 'Respostas rápidas',
-    
+
     // Footer
     'dont_show_again' => 'Não mostrar esta mensagem novamente',
     'btn_add_iban' => 'Adicionar IBAN',
     'btn_continue' => 'Entendi, continuar',
 ];
+
 

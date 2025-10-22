@@ -78,28 +78,28 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 # Analisi multifattoriale
 if [ $commits_today -eq 0 ]; then
     echo -e "${BOLD}${YELLOW}😴 GIORNO DI RIPOSO${NC}"
-elif [ $total_net -lt -1000 ]; then
+elif [ $total_net -lt -15000 ]; then
     echo -e "${BOLD}${CYAN}🧹 REFACTORING MASSICCIO (-$((total_net * -1)) righe)${NC}"
     echo -e "   ${CYAN}Ottimo lavoro di pulizia e riorganizzazione!${NC}"
 elif [ $total_net -lt 0 ]; then
     echo -e "${BOLD}${BLUE}♻️  REFACTORING ($commits_today commit)${NC}"
     echo -e "   ${BLUE}Codice più pulito e manutenibile${NC}"
-elif [ $total_net -gt 3000 ] && [ $commits_today -gt 20 ]; then
+elif [ $total_net -gt 15000 ] && [ $commits_today -gt 20 ]; then
     echo -e "${BOLD}${GREEN}🚀 GIORNATA EPICA! (+$total_net righe, $commits_today commit)${NC}"
     echo -e "   ${GREEN}Produttività eccezionale su feature complesse!${NC}"
-elif [ $total_net -gt 2000 ]; then
-    echo -e "${BOLD}${GREEN}💪 ULTRA PRODUTTIVITÀ! (+$total_net righe)${NC}"
+elif [ $total_net -gt 10000 ]; then
+    echo -e "${BOLD}${GREEN}💪 ULTRA ECCELLENZA! (+$total_net righe)${NC}"
     echo -e "   ${GREEN}Feature major o integrazioni importanti${NC}"
-elif [ $total_net -gt 1000 ]; then
+elif [ $total_net -gt 5000 ]; then
     echo -e "${BOLD}${GREEN}⚡ ECCELLENTE! (+$total_net righe)${NC}"
     echo -e "   ${GREEN}Ottimo progresso su feature significative${NC}"
-elif [ $total_net -gt 500 ]; then
+elif [ $total_net -gt 2500 ]; then
     echo -e "${BOLD}${YELLOW}👍 MOLTO BUONA (+$total_net righe)${NC}"
     echo -e "   ${YELLOW}Solido avanzamento del progetto${NC}"
-elif [ $total_net -gt 200 ]; then
+elif [ $total_net -gt 1000 ]; then
     echo -e "${BOLD}${CYAN}📈 BUONA (+$total_net righe)${NC}"
     echo -e "   ${CYAN}Progressi costanti e stabili${NC}"
-elif [ $total_net -gt 50 ]; then
+elif [ $total_net -gt 200 ]; then
     echo -e "${BOLD}${CYAN}📝 STANDARD (+$total_net righe)${NC}"
     echo -e "   ${CYAN}Modifiche mirate e precise${NC}"
 else
@@ -109,11 +109,11 @@ fi
 
 # Suggerimenti intelligenti basati sui pattern
 echo ""
-if [ $commits_today -gt 30 ] && [ $total_net -lt 500 ]; then
+if [ $commits_today -gt 30 ] && [ $total_net -lt 2500 ]; then
     echo -e "${YELLOW}💡 Molti commit piccoli: considera di raggruppare modifiche correlate${NC}"
-elif [ $commits_today -lt 5 ] && [ $total_net -gt 2000 ]; then
+elif [ $commits_today -lt 5 ] && [ $total_net -gt 10000 ]; then
     echo -e "${YELLOW}💡 Pochi commit grandi: considera commit più frequenti per migliore tracciabilità${NC}"
-elif [ $commits_today -gt 0 ] && [ $total_net -gt 500 ]; then
+elif [ $commits_today -gt 0 ] && [ $total_net -gt 2500 ]; then
     echo -e "${GREEN}✅ Ottimo bilanciamento tra commit e codice prodotto!${NC}"
 fi
 

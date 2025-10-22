@@ -82,7 +82,8 @@ class AppServiceProvider extends ServiceProvider {
                 $app->make(WalletServiceInterface::class),
                 $app->make(UserRoleServiceInterface::class),
                 $app->make(LegalContentService::class),
-                $app->make(\App\Services\Auth\AuthRedirectService::class)
+                $app->make(\App\Services\Auth\AuthRedirectService::class),
+                $app->make(\App\Services\Wallet\WalletProvisioningService::class)
             );
         });
 
