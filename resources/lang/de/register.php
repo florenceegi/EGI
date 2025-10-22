@@ -24,4 +24,12 @@ return [
 
     'label_password_confirmation' => 'Passwort bestätigen',
     'password_confirmation_help' => 'Wiederholen Sie das Passwort zur Bestätigung',
+
+    // Wallet Welcome Modal Messages
+    'wallet_iban_added_success' => 'IBAN erfolgreich zu Ihrer Wallet hinzugefügt.',
+    'wallet_iban_add_failed' => 'Fehler beim Hinzufügen der IBAN. Bitte versuchen Sie es erneut.',
+    'wallet_welcome_completed' => 'Wallet-Einrichtung abgeschlossen.',
+    'wallet_not_found' => 'Wallet für diesen Benutzer nicht gefunden.',
+    'invalid_iban' => 'Ungültige IBAN. Überprüfen Sie das Format.',
+    'unauthenticated' => 'Sie müssen für diese Operation authentifiziert sein.',
 ];

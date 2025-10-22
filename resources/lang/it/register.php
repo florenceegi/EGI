@@ -197,4 +197,12 @@ return [
     // Enterprise Specific Content
     'enterprise_notice' => 'Per account aziendali, contatta il nostro team per configurazioni personalizzate.',
     'enterprise_contact' => 'Contatta il supporto enterprise',
+
+    // Wallet Welcome Modal Messages
+    'wallet_iban_added_success' => 'IBAN aggiunto con successo al tuo wallet.',
+    'wallet_iban_add_failed' => 'Errore durante l\'aggiunta dell\'IBAN. Riprova.',
+    'wallet_welcome_completed' => 'Configurazione wallet completata.',
+    'wallet_not_found' => 'Wallet non trovato per questo utente.',
+    'invalid_iban' => 'IBAN non valido. Controlla il formato.',
+    'unauthenticated' => 'Devi essere autenticato per questa operazione.',
 ];
