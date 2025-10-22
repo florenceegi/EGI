@@ -161,12 +161,25 @@
                                 <h4 class="font-semibold text-gray-900 dark:text-gray-100">{{ __('menu.admin_tools') }}</h4>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
+                                {{-- SuperAdmin Dashboard - Only for superadmin role --}}
+                                @if(Auth::check() && Auth::user()->hasRole('superadmin'))
+                                    <a href="{{ route('superadmin.dashboard') }}" 
+                                        class="col-span-2 flex items-center gap-2 rounded-lg bg-gradient-to-r from-yellow-500/10 to-amber-500/10 px-3 py-2 text-sm font-semibold text-yellow-600 ring-1 ring-yellow-500/20 transition-all duration-200 hover:from-yellow-500/20 hover:to-amber-500/20 hover:ring-yellow-500/30 dark:text-yellow-400">
+                                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+                                            <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
+                                        </svg>
+                                        🌟 SuperAdmin Dashboard
+                                    </a>
+                                @endif
+                                
                                 <a href="{{ route('admin.roles.index') }}" class="block text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200">
                                     {{ __('menu.permissions_roles') }}
                                 </a>
-                                <a href="{{ route('admin.users.index') }}" class="block text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200">
+                                {{-- TODO: Implementare route admin.users.index --}}
+                                {{-- <a href="{{ route('admin.users.index') }}" class="block text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200">
                                     {{ __('menu.user_management') }}
-                                </a>
+                                </a> --}}
                                 @can('view_statistics')
                                     <a href="{{ route('statistics.index') }}" class="block text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200">
                                         {{ __('menu.statistics') }}
