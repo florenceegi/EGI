@@ -123,10 +123,24 @@
          */
         async function handleTraitsGenerate(event, egiId) {
             event.preventDefault();
+            
+            console.log('[AI Traits] Generate clicked', { egiId });
 
             const form = document.getElementById(`ai-traits-generate-form-${egiId}`);
+            if (!form) {
+                console.error('[AI Traits] Form not found', `ai-traits-generate-form-${egiId}`);
+                Swal.fire({
+                    title: 'Errore',
+                    text: 'Form non trovato. Ricarica la pagina.',
+                    icon: 'error',
+                    confirmButtonColor: '#dc2626',
+                });
+                return false;
+            }
+            
             const formData = new FormData(form);
             const requestedCount = formData.get('requested_count');
+            console.log('[AI Traits] Request count:', requestedCount);
 
             // Confirm
             const result = await Swal.fire({
@@ -156,11 +170,20 @@
             });
 
             try {
-                const response = await fetch(`/egi/${egiId}/dual-arch/traits/generate`, {
+                const url = `/egi/${egiId}/dual-arch/traits/generate`;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                
+                console.log('[AI Traits] Preparing request', { url, hasCsrfToken: !!csrfToken });
+                
+                if (!csrfToken) {
+                    throw new Error('CSRF token not found in page');
+                }
+                
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': csrfToken.content,
                         'X-Requested-With': 'XMLHttpRequest',
                     },
                     body: JSON.stringify({
@@ -168,7 +191,10 @@
                     }),
                 });
 
+                console.log('[AI Traits] Response received', { status: response.status, ok: response.ok });
+
                 const data = await response.json();
+                console.log('[AI Traits] Data parsed', data);
 
                 if (data.success) {
                     // Success - show proposals

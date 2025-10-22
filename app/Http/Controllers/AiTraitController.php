@@ -52,12 +52,32 @@ class AiTraitController extends Controller
                 ], 401);
             }
 
+            // Load EGI first to check constraints
+            $egi = \App\Models\Egi::findOrFail($egiId);
+
+            // Check if EGI is NOT minted (blockchain immutability)
+            if (!is_null($egi->token_EGI)) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'egi_minted',
+                    'message' => 'Impossibile generare traits: questo EGI è già stato mintato su blockchain. I traits sono immutabili.',
+                ], 403);
+            }
+
+            // Check ownership (only creator can generate traits)
+            $userId = FegiAuth::id();
+            if ($egi->user_id !== $userId) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'not_owner',
+                    'message' => 'Solo il creator dell\'EGI può generare traits.',
+                ], 403);
+            }
+
             // Validation
             $validated = $request->validate([
                 'requested_count' => 'required|integer|min:1|max:10',
             ]);
-
-            $userId = FegiAuth::id();
             $ipAddress = $request->ip();
             $userAgent = $request->userAgent();
 

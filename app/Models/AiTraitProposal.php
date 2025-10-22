@@ -273,3 +273,6 @@ class AiTraitProposal extends Model
         );
     }
 }
+
+
+

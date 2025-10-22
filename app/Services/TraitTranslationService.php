@@ -244,3 +244,6 @@ class TraitTranslationService
         return isset($translations[$section][$key]);
     }
 }
+
+
+
