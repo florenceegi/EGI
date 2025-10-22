@@ -155,7 +155,7 @@ class ResponseWalletService {
                 'royalty_mint' => $validation['required_mint_quota'],
                 'royalty_rebind' => $validation['required_rebind_quota'],
                 'metadata' => $validation['metadata'],
-                'platform_role' => PlatformRole::STAFF_MEMBER->value,
+                'platform_role' => null, // Membri collection non hanno platform_role specifico
             ]
         );
     }
