@@ -1,143 +1,187 @@
-<x-enterprise-sidebar logo="FlorenceEGI" badge="SuperAdmin" theme="superadmin">
-    <div class="p-6">
-        {{-- Header --}}
-        <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">
-                🧠 Gestione Consulenze AI
-            </h1>
-            <p class="mt-2 text-sm text-gray-600">
-                Monitora e analizza tutte le richieste AI della piattaforma
-            </p>
-        </div>
+<x-layouts.superadmin pageTitle="Consulenze AI">
+    {{-- Header --}}
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-base-content">Consulenze AI</h1>
+        <p class="mt-2 text-lg text-base-content/70">Monitora e gestisci tutte le generazioni AI della piattaforma</p>
+    </div>
 
-        {{-- Stats Cards --}}
-        <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
-            <div class="rounded-lg bg-white p-4 shadow">
-                <div class="text-sm font-medium text-gray-600">Totale Consulenze</div>
-                <div class="mt-2 text-3xl font-bold text-gray-900">{{ $consultations->total() }}</div>
-            </div>
-            <div class="rounded-lg bg-white p-4 shadow">
-                <div class="text-sm font-medium text-gray-600">Completate</div>
-                <div class="mt-2 text-3xl font-bold text-green-600">
-                    {{ $consultations->where('status', 'completed')->count() }}
-                </div>
-            </div>
-            <div class="rounded-lg bg-white p-4 shadow">
-                <div class="text-sm font-medium text-gray-600">In Attesa</div>
-                <div class="mt-2 text-3xl font-bold text-yellow-600">
-                    {{ $consultations->where('status', 'pending')->count() }}
-                </div>
-            </div>
-            <div class="rounded-lg bg-white p-4 shadow">
-                <div class="text-sm font-medium text-gray-600">Fallite</div>
-                <div class="mt-2 text-3xl font-bold text-red-600">
-                    {{ $consultations->where('status', 'failed')->count() }}
+    {{-- Stats Cards --}}
+    <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {{-- Total Generations --}}
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-base-content/60">Generazioni Totali</p>
+                        <h3 class="text-3xl font-bold text-base-content">{{ $totalGenerations ?? 0 }}</h3>
+                    </div>
+                    <div class="text-4xl">🤖</div>
                 </div>
             </div>
         </div>
 
-        {{-- Filters --}}
-        <div class="mb-6 rounded-lg bg-white p-4 shadow">
-            <form method="GET" class="grid grid-cols-1 gap-4 md:grid-cols-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Status</label>
-                    <select name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        {{-- Pending --}}
+        <div class="card bg-warning/10 shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-warning">In Attesa</p>
+                        <h3 class="text-3xl font-bold text-warning">{{ $pendingGenerations ?? 0 }}</h3>
+                    </div>
+                    <div class="text-4xl">⏳</div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Completed --}}
+        <div class="card bg-success/10 shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-success">Completate</p>
+                        <h3 class="text-3xl font-bold text-success">{{ $completedGenerations ?? 0 }}</h3>
+                    </div>
+                    <div class="text-4xl">✅</div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Failed --}}
+        <div class="card bg-error/10 shadow-xl">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-error">Fallite</p>
+                        <h3 class="text-3xl font-bold text-error">{{ $failedGenerations ?? 0 }}</h3>
+                    </div>
+                    <div class="text-4xl">❌</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Filters --}}
+    <div class="card mb-6 bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h3 class="mb-4 text-lg font-semibold">Filtri</h3>
+            <form method="GET" action="{{ route('superadmin.ai.consultations.index') }}"
+                class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Status</span></label>
+                    <select name="status" class="select select-bordered">
                         <option value="">Tutti</option>
-                        <option value="pending">Pending</option>
-                        <option value="completed">Completed</option>
-                        <option value="failed">Failed</option>
+                        <option value="pending">In Attesa</option>
+                        <option value="processing">In Elaborazione</option>
+                        <option value="completed">Completate</option>
+                        <option value="failed">Fallite</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">User ID</label>
-                    <input type="number" name="user_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Feature</span></label>
+                    <select name="feature" class="select select-bordered">
+                        <option value="">Tutte</option>
+                        <option value="traits">Traits</option>
+                        <option value="analysis">Analysis</option>
+                        <option value="pricing">Pricing</option>
+                    </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Da</label>
-                    <input type="date" name="date_from"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Data Da</span></label>
+                    <input type="date" name="date_from" class="input input-bordered" />
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">A</label>
-                    <input type="date" name="date_to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text">Data A</span></label>
+                    <input type="date" name="date_to" class="input input-bordered" />
                 </div>
-                <div class="md:col-span-4">
-                    <button type="submit" class="rounded-md bg-yellow-600 px-4 py-2 text-white hover:bg-yellow-700">
-                        Applica Filtri
-                    </button>
+
+                <div class="col-span-full">
+                    <button type="submit" class="btn btn-primary">Applica Filtri</button>
+                    <a href="{{ route('superadmin.ai.consultations.index') }}" class="btn btn-ghost">Reset</a>
                 </div>
             </form>
         </div>
+    </div>
 
-        {{-- Table --}}
-        <div class="overflow-hidden rounded-lg bg-white shadow">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">ID
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">EGI
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">User
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                            Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Data
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                            Azioni</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                    @forelse($consultations as $consultation)
-                        <tr>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">#{{ $consultation->id }}</td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                                @if ($consultation->egi)
-                                    <a href="{{ route('egis.show', $consultation->egi) }}"
-                                        class="text-blue-600 hover:text-blue-900">
-                                        {{ Str::limit($consultation->egi->title, 30) }}
-                                    </a>
-                                @else
-                                    <span class="text-gray-400">N/A</span>
-                                @endif
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                                {{ $consultation->user->name ?? 'N/A' }}
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm">
-                                <span
-                                    class="@if ($consultation->status === 'completed') bg-green-100 text-green-800
-                                    @elseif($consultation->status === 'pending') bg-yellow-100 text-yellow-800
-                                    @elseif($consultation->status === 'failed') bg-red-100 text-red-800
-                                    @else bg-gray-100 text-gray-800 @endif inline-flex rounded-full px-2 text-xs font-semibold leading-5">
-                                    {{ $consultation->status }}
-                                </span>
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                                {{ $consultation->created_at->format('d/m/Y H:i') }}
-                            </td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                                <a href="{{ route('superadmin.ai.consultations.show', $consultation) }}"
-                                    class="text-yellow-600 hover:text-yellow-900">
-                                    Dettagli
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
-                                Nessuna consulenza trovata
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+    {{-- Consultations Table --}}
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h3 class="mb-4 text-lg font-semibold">Elenco Consulenze</h3>
 
-        {{-- Pagination --}}
-        <div class="mt-6">
-            {{ $consultations->links() }}
+            @if (isset($generations) && $generations->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Utente</th>
+                                <th>EGI</th>
+                                <th>Feature</th>
+                                <th>Status</th>
+                                <th>Data</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($generations as $generation)
+                                <tr>
+                                    <td>{{ $generation->id }}</td>
+                                    <td>{{ $generation->user->name ?? 'N/A' }}</td>
+                                    <td>
+                                        <a href="{{ route('egi.dual-arch.show', $generation->egi_id) }}"
+                                            class="link link-primary" target="_blank">
+                                            EGI #{{ $generation->egi_id }}
+                                        </a>
+                                    </td>
+                                    <td><span
+                                            class="badge badge-outline">{{ ucfirst($generation->feature_type ?? 'N/A') }}</span>
+                                    </td>
+                                    <td>
+                                        @switch($generation->status)
+                                            @case('completed')
+                                                <span class="badge badge-success">Completata</span>
+                                            @break
+
+                                            @case('pending')
+                                                <span class="badge badge-warning">In Attesa</span>
+                                            @break
+
+                                            @case('processing')
+                                                <span class="badge badge-info">In Elaborazione</span>
+                                            @break
+
+                                            @case('failed')
+                                                <span class="badge badge-error">Fallita</span>
+                                            @break
+
+                                            @default
+                                                <span class="badge">{{ $generation->status }}</span>
+                                        @endswitch
+                                    </td>
+                                    <td>{{ $generation->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <a href="{{ route('superadmin.ai.consultations.show', $generation->id) }}"
+                                            class="btn btn-ghost btn-xs">
+                                            Dettagli
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Pagination --}}
+                <div class="mt-6">
+                    {{ $generations->links() }}
+                </div>
+            @else
+                <div class="py-8 text-center text-base-content/60">
+                    <p>Nessuna consulenza trovata.</p>
+                </div>
+            @endif
         </div>
     </div>
-</x-enterprise-sidebar>
+</x-layouts.superadmin>

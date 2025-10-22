@@ -47,6 +47,11 @@ use App\Services\Menu\Items\SuperadminAiFeaturesMenu;
 use App\Services\Menu\Items\SuperadminAiStatisticsMenu;
 use App\Services\Menu\Items\SuperadminEgiliManagementMenu;
 use App\Services\Menu\Items\SuperadminEquilibriumManagementMenu;
+use App\Services\Menu\Items\SuperadminFeaturePricingMenu;
+use App\Services\Menu\Items\SuperadminRolesMenu;
+use App\Services\Menu\Items\SuperadminPadminDashboardMenu;
+use App\Services\Menu\Items\SuperadminPadminViolationsMenu;
+use App\Services\Menu\Items\SuperadminPadminSymbolsMenu;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -57,16 +62,14 @@ use Illuminate\Support\Facades\Log;
  * @package App\Services\Menu
  * @version 2.0
  */
-class ContextMenus
-{
+class ContextMenus {
     /**
      * Get menu groups for specific application context
      *
      * @param string $context The current application context
      * @return array Array of MenuGroup objects for the context
      */
-    public static function getMenusForContext(string $context): array
-    {
+    public static function getMenusForContext(string $context): array {
         $menus = [];
 
         Log::channel('upload')->info('🔍 CONTEXT MENUS - PA CONTEXT DETECTED', [
@@ -298,6 +301,21 @@ class ContextMenus
                     new SuperadminEquilibriumManagementMenu(),
                 ]);
                 $menus[] = $tokenomicsMenu;
+
+                // Platform Management Group
+                $platformMenu = new MenuGroup(__('menu.superadmin_platform_management'), 'superadmin-dashboard', [
+                    new SuperadminRolesMenu(),
+                    new SuperadminFeaturePricingMenu(),
+                ]);
+                $menus[] = $platformMenu;
+
+                // Padmin Analyzer Group (SuperAdmin)
+                $padminMenu = new MenuGroup(__('menu.superadmin_padmin'), 'superadmin-ai-brain', [
+                    new SuperadminPadminDashboardMenu(),
+                    new SuperadminPadminViolationsMenu(),
+                    new SuperadminPadminSymbolsMenu(),
+                ]);
+                $menus[] = $padminMenu;
                 break;
         }
 
