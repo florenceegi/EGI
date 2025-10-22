@@ -487,25 +487,9 @@ class RegisteredUserController extends Controller
                 'is_owner' => $collectionRole === 'creator'
             ]);
 
-            // 4. Link User's Algorand Wallet to Collection
-            // The wallet was created during user registration without collection_id
-            // Now we link it to the collection before attaching default wallets
-            $userWallet = Wallet::where('user_id', $user->id)
-                ->where('wallet', $user->wallet)
-                ->whereNull('collection_id')
-                ->first();
-
-            if ($userWallet) {
-                $userWallet->update(['collection_id' => $collection->id]);
-                $this->logger->info('[Registration] User wallet linked to collection', [
-                    ...$logContext,
-                    'wallet_id' => $userWallet->id,
-                    'collection_id' => $collection->id
-                ]);
-            }
-
-            // 5. Setup Wallets for Collection using WalletService
-            // This will now UPDATE the existing user wallet with royalties instead of creating a duplicate
+            // 4. Setup Wallets for Collection using WalletService
+            // This will find the user's wallet (created with collection_id = NULL during registration)
+            // and UPDATE it with collection_id, royalties, and platform_role instead of creating a duplicate
             $this->walletService->attachDefaultWalletsToCollection($collection, $user);
 
             $this->logger->info('[Registration] Wallets attached to collection', [

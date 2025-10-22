@@ -270,15 +270,25 @@ class WalletService implements WalletServiceInterface {
                 $address = $walletAddress;
             }
 
-            // Check if wallet already exists for this collection/user/address combination
+            // Check if wallet already exists for this user/address combination
+            // First check: exact match with collection_id
             $existingWallet = Wallet::where('collection_id', $collectionId)
                 ->where('user_id', $userId)
                 ->where('wallet', $address)
                 ->first();
 
+            // Second check: wallet exists for this user with NULL collection_id (from registration)
+            if (!$existingWallet) {
+                $existingWallet = Wallet::where('user_id', $userId)
+                    ->where('wallet', $address)
+                    ->whereNull('collection_id')
+                    ->first();
+            }
+
             if ($existingWallet) {
                 // Update existing wallet with new values
                 $existingWallet->update([
+                    'collection_id' => $collectionId, // Set collection_id if it was NULL
                     'royalty_mint' => $royaltyMint,
                     'royalty_rebind' => $royaltyRebind,
                     'platform_role' => $platform_role,
@@ -287,7 +297,8 @@ class WalletService implements WalletServiceInterface {
                 // Log wallet update
                 $this->logger->info('Existing wallet updated for collection', array_merge($context, [
                     'wallet_id' => $existingWallet->id,
-                    'action' => 'updated_existing'
+                    'action' => 'updated_existing',
+                    'was_null_collection' => $existingWallet->wasChanged('collection_id')
                 ]));
 
                 return $existingWallet;
