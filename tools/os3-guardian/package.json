@@ -1,0 +1,44 @@
+{
+  "name": "@florenceegi/os3-guardian",
+  "version": "1.0.0",
+  "description": "Padmin Analyzer - OS3 Guardian Cognitive Database for FlorenceEGI",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Padmin D. Curtis (AI Partner OS3.0)",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "dev": "tsx watch src/index.ts",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "ioredis": "^5.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "padmin",
+    "os3",
+    "guardian",
+    "cognitive-database",
+    "florenceegi",
+    "semantic-search",
+    "code-analysis"
+  ]
+}
