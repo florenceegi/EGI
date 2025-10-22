@@ -90,4 +90,20 @@ return [
     'pa_natan_acts' => 'Atti Analizzati',
     'pa_natan_search' => 'Ricerca N.A.T.A.N.',
     'pa_natan_stats' => 'Statistiche AI',
+
+    // SuperAdmin Menu - AI & Platform Management
+    'superadmin' => 'Gestione SuperAdmin',
+    'superadmin_overview' => 'Dashboard SuperAdmin',
+    'superadmin_dashboard' => 'Dashboard',
+    'superadmin_ai_management' => 'Gestione AI',
+    'superadmin_ai_consultations' => 'Consulenze AI',
+    'superadmin_ai_credits' => 'Crediti AI',
+    'superadmin_ai_features' => 'Configurazione AI',
+    'superadmin_ai_statistics' => 'Statistiche AI',
+    'superadmin_tokenomics' => 'Tokenomics',
+    'superadmin_egili_management' => 'Gestione Egili',
+    'superadmin_equilibrium_management' => 'Gestione Equilibrium',
+    'superadmin_egi_management' => 'Gestione EGI',
+    'superadmin_user_management' => 'Gestione Utenti',
+    'superadmin_platform_statistics' => 'Statistiche Piattaforma',
 ];
