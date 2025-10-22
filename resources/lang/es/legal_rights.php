@@ -209,3 +209,6 @@ return [
         'enforcement' => 'Smart contract impide evasión de royalties (ejecución sin confianza)',
     ],
 ];
+
+
+

@@ -209,3 +209,6 @@ return [
         'enforcement' => 'Smart contract impedisce elusione royalty (trustless enforcement)',
     ],
 ];
+
+
+

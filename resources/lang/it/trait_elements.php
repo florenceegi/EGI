@@ -4,7 +4,7 @@
  * Trait Elements Translations (Italian)
  *
  * This file is auto-updated by TraitTranslationService
- * Last updated: 2025-10-21 17:51:09
+ * Last updated: 2025-10-22 08:08:01
  */
 
 return [
@@ -247,10 +247,10 @@ return [
         'Labradorite' => 'Labradorite',
         'Lampworking' => 'Lavorazione a Lume',
         'Lapis Lazuli' => 'Lapislazzuli',
-        'Laptop 13\"' => 'Laptop 13\"',
-        'Laptop 14\"' => 'Laptop 14\"',
-        'Laptop 15\"' => 'Laptop 15\"',
-        'Laptop 16\"' => 'Laptop 16\"',
+        'Laptop 13\\\"' => 'Laptop 13\\\"',
+        'Laptop 14\\\"' => 'Laptop 14\\\"',
+        'Laptop 15\\\"' => 'Laptop 15\\\"',
+        'Laptop 16\\\"' => 'Laptop 16\\\"',
         'Laptop Sleeve' => 'Custodia Laptop',
         'Large' => 'Grande',
         'Laser Cut' => 'Taglio Laser',
@@ -351,6 +351,7 @@ return [
         'Pop Art' => 'Pop Art',
         'Porcelain Casting' => 'Colaggio in Porcellana',
         'Pottery Wheel' => 'Tornio da Vasaio',
+        'Profile View' => 'Dramatic Profile View',
         'Prototype' => 'Prototipo',
         'Purple' => 'Viola',
         'Pyrography' => 'Pirografia',
