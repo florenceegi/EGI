@@ -216,3 +216,5 @@ class AiTraitGeneration extends Model
 
 
 
+
+

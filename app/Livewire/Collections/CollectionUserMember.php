@@ -10,8 +10,12 @@ use App\Models\WalletChangeApproval;
 use App\Models\NotificationPayloadWallet;
 use App\Services\Notifications\InvitationService;
 use App\Services\Wallet\WalletProvisioningService;
+use App\Services\Blockchain\AlgorandClient;
+use App\Services\Gdpr\AuditLogService;
+use App\Enums\Gdpr\GdprActivityCategory;
 use Livewire\Component;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Traits\HasPermissionTrait;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -20,10 +24,13 @@ use Spatie\Permission\Models\Role; // Importiamo i ruoli di Spatie
 use App\Enums\UserRoleForInvite; // Importiamo l'enum per i ruoli di invito
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\Layout;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 
 #[Layout('layouts.app')]
-class CollectionUserMember extends Component {
+class CollectionUserMember extends Component
+{
 
     use HasPermissionTrait;
 
@@ -47,18 +54,38 @@ class CollectionUserMember extends Component {
     #[Validate('required|string')]
     public string $role = '';
 
+    // External Wallet Form Properties
+    public bool $showExternalWalletModal = false;
+    public string $externalWalletAddress = '';
+    public string $externalWalletName = '';
+    public float $externalWalletRoyaltyMint = 0;
+    public float $externalWalletRoyaltyRebind = 0;
+
     private InvitationService $invitationService;
     private WalletProvisioningService $walletProvisioningService;
+    private AlgorandClient $algorandClient;
+    private AuditLogService $auditService;
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
 
     public function boot(
         InvitationService $invitationService,
-        WalletProvisioningService $walletProvisioningService
+        WalletProvisioningService $walletProvisioningService,
+        AlgorandClient $algorandClient,
+        AuditLogService $auditService,
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
     ) {
         $this->invitationService = $invitationService;
         $this->walletProvisioningService = $walletProvisioningService;
+        $this->algorandClient = $algorandClient;
+        $this->auditService = $auditService;
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
     }
 
-    public function mount($id) {
+    public function mount($id)
+    {
         Log::channel('florenceegi')->info('CollectionUserMember: Collection id', [
             'collectionId' => $id
         ]);
@@ -95,7 +122,8 @@ class CollectionUserMember extends Component {
         $this->loadTeamUsers();
     }
 
-    public function loadCollectionData() {
+    public function loadCollectionData()
+    {
         $this->collection = Collection::findOrFail($this->collectionId);
 
         $this->collectionName = $this->collection->collection_name;
@@ -103,7 +131,8 @@ class CollectionUserMember extends Component {
         $this->collectionOwner = $this->collection->creator;
     }
 
-    public function loadTeamUsers() {
+    public function loadTeamUsers()
+    {
         $this->collectionUsers = CollectionUser::where('collection_id', $this->collectionId)->get();
 
         $this->wallets = Wallet::where('collection_id', '=', $this->collectionId)->get();
@@ -121,7 +150,8 @@ class CollectionUserMember extends Component {
         ]);
     }
 
-    public function deleteProposalWallet(Request $request, $id, $walletId) {
+    public function deleteProposalWallet(Request $request, $id, $walletId)
+    {
 
         Log::channel('florenceegi')->info('DeleteProposalWallet', [
             'walletId' => $walletId
@@ -151,7 +181,8 @@ class CollectionUserMember extends Component {
         }
     }
 
-    public function deleteProposalInvitation(Request $request, $id, $invitationId) {
+    public function deleteProposalInvitation(Request $request, $id, $invitationId)
+    {
         Log::channel('florenceegi')->info('DeleteProposalInvitation', [
             'invitationId' => $invitationId
         ]);
@@ -187,7 +218,8 @@ class CollectionUserMember extends Component {
         }
     }
 
-    public function invite() {
+    public function invite()
+    {
         $this->validate();
 
         try {
@@ -275,7 +307,8 @@ class CollectionUserMember extends Component {
         }
     }
 
-    public function openInviteModal() {
+    public function openInviteModal()
+    {
 
         Log::channel('florenceegi')->info('OpenInviteModal', [
             'collectionId' => $this->collectionId
@@ -284,25 +317,369 @@ class CollectionUserMember extends Component {
         $this->show = true; // Mostra la modale
     }
 
-    public function resetFields() {
+    public function resetFields()
+    {
         $this->email = '';
         $this->role = '';
     }
 
-    public function closeModal() {
+    public function closeModal()
+    {
         $this->show = false;
     }
 
     /**
-     * Creates a new Algorand wallet for the collection (not necessarily tied to a user).
+     * Open modal to add external Algorand wallet
+     */
+    public function openExternalWalletModal()
+    {
+        // ULM: Log modal open
+        $this->logger->info('[CollectionUserMember] Opening external wallet modal', [
+            'collection_id' => $this->collectionId,
+            'user_id' => Auth::id()
+        ]);
+
+        $this->resetExternalWalletFields();
+        $this->showExternalWalletModal = true;
+    }
+
+    /**
+     * Close external wallet modal
+     */
+    public function closeExternalWalletModal()
+    {
+        $this->showExternalWalletModal = false;
+        $this->resetExternalWalletFields();
+    }
+
+    /**
+     * Reset external wallet form fields
+     */
+    protected function resetExternalWalletFields()
+    {
+        $this->externalWalletAddress = '';
+        $this->externalWalletName = '';
+        $this->externalWalletRoyaltyMint = 0;
+        $this->externalWalletRoyaltyRebind = 0;
+        $this->resetErrorBag();
+    }
+
+    /**
+     * Add external Algorand wallet to collection
      * 
+     * ULTRA + GDPR Compliant:
+     * - ULM: Full logging
+     * - UEM: Error handling
+     * - GDPR: Audit trail
+     * 
+     * Workflow:
+     * 1. Validate Algorand address format
+     * 2. Verify address exists on-chain
+     * 3. Check for duplicates in collection
+     * 4. Verify creator has sufficient royalty quota
+     * 5. Subtract quota from creator
+     * 6. Create wallet record
+     * 7. Audit log
+     */
+    public function addExternalWallet()
+    {
+        // ULM: Log start
+        $logContext = [
+            'collection_id' => $this->collectionId,
+            'user_id' => Auth::id(),
+            'address' => $this->externalWalletAddress,
+            'royalty_mint' => $this->externalWalletRoyaltyMint,
+            'royalty_rebind' => $this->externalWalletRoyaltyRebind,
+            'wallet_name' => $this->externalWalletName,
+            'log_category' => 'EXTERNAL_WALLET_ADD_START'
+        ];
+        $this->logger->info('[CollectionUserMember] Adding external wallet', $logContext);
+
+        try {
+            // 1. Permission check
+            if (!$this->canCreateWallet) {
+                $this->logger->warning('[CollectionUserMember] Unauthorized external wallet creation', $logContext);
+                session()->flash('error', __('collection.wallet.creation_denied'));
+                return;
+            }
+
+            // 2. Validate inputs
+            $this->validateExternalWallet();
+
+            // 3. Normalize address
+            $address = trim($this->externalWalletAddress);
+            $logContext['address_normalized'] = $address;
+
+            // 4. DB Transaction with all operations
+            DB::transaction(function () use ($address, $logContext) {
+                // 4a. Verify address exists on-chain
+                $this->verifyAddressOnChain($address, $logContext);
+
+                // 4b. Check duplicates
+                $this->checkDuplicateAddress($address, $logContext);
+
+                // 4c. Get creator wallet and verify quota
+                $creatorWallet = $this->getCreatorWalletAndVerifyQuota($logContext);
+
+                // 4d. Subtract quota from creator
+                $this->subtractCreatorQuota($creatorWallet, $logContext);
+
+                // 4e. Create wallet record
+                $newWallet = $this->createExternalWalletRecord($address, $logContext);
+
+                // 4f. GDPR Audit Log
+                $this->logWalletCreationAudit($newWallet, $logContext);
+            });
+
+            // 5. Success feedback
+            $this->logger->info('[CollectionUserMember] External wallet added successfully', [
+                ...$logContext,
+                'log_category' => 'EXTERNAL_WALLET_ADD_SUCCESS'
+            ]);
+
+            session()->flash('success', __('collection.wallet.external_added_successfully', [
+                'address' => substr($address, 0, 8) . '...' . substr($address, -8)
+            ]));
+
+            // 6. Reload and close modal
+            $this->loadTeamUsers();
+            $this->closeExternalWalletModal();
+
+        } catch (\Exception $e) {
+            // ULM: Log error
+            $this->logger->error('[CollectionUserMember] External wallet add failed', [
+                ...$logContext,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'log_category' => 'EXTERNAL_WALLET_ADD_ERROR'
+            ]);
+
+            // UEM: Handle error
+            $this->errorManager->handle('EXTERNAL_WALLET_ADD_FAILED', [
+                'collection_id' => $this->collectionId,
+                'user_id' => Auth::id(),
+                'address' => $this->externalWalletAddress,
+                'error' => $e->getMessage()
+            ], $e);
+
+            session()->flash('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Validate external wallet inputs
+     */
+    protected function validateExternalWallet()
+    {
+        // Basic validation
+        if (empty($this->externalWalletAddress)) {
+            throw new \Exception(__('collection.wallet.validation.address_required'));
+        }
+
+        // Algorand address format: 58 characters, Base32
+        $address = trim($this->externalWalletAddress);
+        if (strlen($address) !== 58) {
+            throw new \Exception(__('collection.wallet.validation.address_invalid_length'));
+        }
+
+        if (!preg_match('/^[A-Z2-7]+$/', $address)) {
+            throw new \Exception(__('collection.wallet.validation.address_invalid_format'));
+        }
+
+        // Royalty validation
+        if ($this->externalWalletRoyaltyMint < 0 || $this->externalWalletRoyaltyMint > 100) {
+            throw new \Exception(__('collection.wallet.validation.mint_invalid'));
+        }
+
+        if ($this->externalWalletRoyaltyRebind < 0 || $this->externalWalletRoyaltyRebind > 100) {
+            throw new \Exception(__('collection.wallet.validation.rebind_invalid'));
+        }
+    }
+
+    /**
+     * Verify address exists on Algorand blockchain
+     */
+    protected function verifyAddressOnChain(string $address, array &$logContext)
+    {
+        $this->logger->debug('[CollectionUserMember] Verifying address on-chain', [
+            ...$logContext,
+            'address' => $address
+        ]);
+
+        try {
+            $accountInfo = $this->algorandClient->getAccountInfo($address);
+            
+            $logContext['on_chain_verified'] = true;
+            $logContext['account_balance'] = $accountInfo['amount'] ?? null;
+            
+            $this->logger->info('[CollectionUserMember] Address verified on-chain', $logContext);
+        } catch (\Exception $e) {
+            $this->logger->error('[CollectionUserMember] Address not found on-chain', [
+                ...$logContext,
+                'error' => $e->getMessage()
+            ]);
+            
+            throw new \Exception(__('collection.wallet.validation.address_not_found_onchain'));
+        }
+    }
+
+    /**
+     * Check for duplicate address in collection
+     */
+    protected function checkDuplicateAddress(string $address, array $logContext)
+    {
+        $exists = Wallet::where('collection_id', $this->collectionId)
+            ->where('wallet', $address)
+            ->exists();
+
+        if ($exists) {
+            $this->logger->warning('[CollectionUserMember] Duplicate address detected', [
+                ...$logContext,
+                'address' => $address
+            ]);
+            
+            throw new \Exception(__('collection.wallet.validation.address_already_exists'));
+        }
+    }
+
+    /**
+     * Get creator wallet and verify sufficient quota
+     */
+    protected function getCreatorWalletAndVerifyQuota(array $logContext): Wallet
+    {
+        // Find creator wallet (user who is adding the wallet)
+        $creatorWallet = Wallet::where('collection_id', $this->collectionId)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$creatorWallet) {
+            $this->logger->error('[CollectionUserMember] Creator wallet not found', $logContext);
+            throw new \Exception(__('collection.wallet.creator_wallet_not_found'));
+        }
+
+        // Get thresholds
+        $thresholdMint = config('app.creator_royalty_mint_threshold', 0);
+        $thresholdRebind = config('app.creator_royalty_rebind_threshold', 0);
+
+        $logContext['creator_wallet_id'] = $creatorWallet->id;
+        $logContext['creator_current_mint'] = $creatorWallet->royalty_mint;
+        $logContext['creator_current_rebind'] = $creatorWallet->royalty_rebind;
+        $logContext['threshold_mint'] = $thresholdMint;
+        $logContext['threshold_rebind'] = $thresholdRebind;
+
+        // Verify sufficient quota with threshold
+        $hasQuota = (
+            $creatorWallet->royalty_mint >= $this->externalWalletRoyaltyMint &&
+            $creatorWallet->royalty_rebind >= $this->externalWalletRoyaltyRebind &&
+            ($creatorWallet->royalty_mint - $this->externalWalletRoyaltyMint) >= $thresholdMint &&
+            ($creatorWallet->royalty_rebind - $this->externalWalletRoyaltyRebind) >= $thresholdRebind
+        );
+
+        if (!$hasQuota) {
+            $this->logger->warning('[CollectionUserMember] Insufficient quota', $logContext);
+            throw new \Exception(__('collection.wallet.creator_does_not_have_enough_quota_to_allocate'));
+        }
+
+        $this->logger->info('[CollectionUserMember] Creator has sufficient quota', $logContext);
+
+        return $creatorWallet;
+    }
+
+    /**
+     * Subtract quota from creator wallet
+     */
+    protected function subtractCreatorQuota(Wallet $creatorWallet, array $logContext)
+    {
+        $oldMint = $creatorWallet->royalty_mint;
+        $oldRebind = $creatorWallet->royalty_rebind;
+
+        $creatorWallet->update([
+            'royalty_mint' => $oldMint - $this->externalWalletRoyaltyMint,
+            'royalty_rebind' => $oldRebind - $this->externalWalletRoyaltyRebind,
+        ]);
+
+        $this->logger->info('[CollectionUserMember] Creator quota subtracted', [
+            ...$logContext,
+            'old_mint' => $oldMint,
+            'old_rebind' => $oldRebind,
+            'new_mint' => $creatorWallet->royalty_mint,
+            'new_rebind' => $creatorWallet->royalty_rebind
+        ]);
+    }
+
+    /**
+     * Create external wallet record (NON-custodial)
+     */
+    protected function createExternalWalletRecord(string $address, array $logContext): Wallet
+    {
+        $wallet = Wallet::create([
+            // Relationships
+            'collection_id' => $this->collectionId,
+            'user_id' => null, // External wallet not tied to platform user
+
+            // Address
+            'wallet' => $address,
+
+            // Royalties
+            'royalty_mint' => $this->externalWalletRoyaltyMint,
+            'royalty_rebind' => $this->externalWalletRoyaltyRebind,
+
+            // Business logic
+            'platform_role' => null,
+            'is_anonymous' => false,
+
+            // NO encryption fields - this is NON-custodial external wallet
+            'wallet_type' => 'algorand_external',
+            'version' => 1,
+            'metadata' => [
+                'created_via' => 'external_wallet_add',
+                'created_by_user_id' => Auth::id(),
+                'wallet_name' => $this->externalWalletName ?: null,
+                'added_at' => now()->toISOString()
+            ]
+        ]);
+
+        $this->logger->info('[CollectionUserMember] External wallet record created', [
+            ...$logContext,
+            'wallet_id' => $wallet->id
+        ]);
+
+        return $wallet;
+    }
+
+    /**
+     * GDPR Audit log for wallet creation
+     */
+    protected function logWalletCreationAudit(Wallet $wallet, array $logContext)
+    {
+        $this->auditService->logUserAction(
+            Auth::user(),
+            'external_wallet_added_to_collection',
+            [
+                'wallet_id' => $wallet->id,
+                'collection_id' => $this->collectionId,
+                'algorand_address' => $wallet->wallet,
+                'royalty_mint' => $wallet->royalty_mint,
+                'royalty_rebind' => $wallet->royalty_rebind,
+                'wallet_name' => $this->externalWalletName ?: null
+            ],
+            GdprActivityCategory::WALLET_CREATED
+        );
+
+        $this->logger->debug('[CollectionUserMember] GDPR audit logged', $logContext);
+    }
+
+    /**
+     * Creates a new Algorand wallet for the collection (not necessarily tied to a user).
+     *
      * This method provisions a secure Algorand wallet using WalletProvisioningService
      * with AWS KMS encryption for the mnemonic phrase. The wallet will be associated
      * with the current collection but can exist independently of any user.
      *
      * @return void
      */
-    public function createNewWallet() {
+    public function createNewWallet()
+    {
         Log::channel('florenceegi')->info('[CollectionUserMember] Create new wallet request', [
             'collection_id' => $this->collectionId,
             'user_id' => Auth::id(),
@@ -316,7 +693,7 @@ class CollectionUserMember extends Component {
                     'collection_id' => $this->collectionId,
                     'user_id' => Auth::id()
                 ]);
-                
+
                 session()->flash('error', __('collection.wallet.creation_denied'));
                 return;
             }
@@ -349,7 +726,6 @@ class CollectionUserMember extends Component {
             session()->flash('success', __('collection.wallet.created_successfully', [
                 'address' => $wallet->address
             ]));
-
         } catch (\Exception $e) {
             Log::channel('florenceegi')->error('[CollectionUserMember] Wallet creation failed', [
                 'collection_id' => $this->collectionId,
@@ -362,7 +738,8 @@ class CollectionUserMember extends Component {
         }
     }
 
-    public function render() {
+    public function render()
+    {
         return view('livewire.collections.collection-user-member');
     }
 }

@@ -45,6 +45,16 @@
                             {{ __('collection.wallet.creating') }}...
                         </span>
                     </button>
+                    <!-- Bottone per aggiungere wallet esterno -->
+                    <button 
+                        id="addExternalWallet" 
+                        wire:click="openExternalWalletModal" 
+                        class="w-full btn btn-secondary sm:w-auto {{ !$canCreateWallet ? 'opacity-50 cursor-not-allowed' : '' }}">
+                        <span class="flex items-center">
+                            <span class="mr-2 material-symbols-outlined">wallet</span>
+                            {{ __('collection.wallet.add_external') }}
+                        </span>
+                    </button>
                 </div>
             
         </div>
@@ -198,5 +208,132 @@
             'collectionId' => $collectionId,
         ])
     @endif
+
+    {{-- Modal: Aggiungi Wallet Esterno --}}
+    @if ($showExternalWalletModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+            <div class="w-full max-w-2xl p-6 bg-gray-800 rounded-lg shadow-xl">
+                {{-- Header --}}
+                <div class="flex items-center justify-between pb-4 mb-4 border-b border-gray-700">
+                    <h3 class="text-2xl font-bold text-white">
+                        <span class="mr-2 material-symbols-outlined">wallet</span>
+                        {{ __('collection.wallet.add_external_title') }}
+                    </h3>
+                    <button wire:click="closeExternalWalletModal" class="text-gray-400 hover:text-white">
+                        <span class="text-2xl material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                {{-- Description --}}
+                <div class="p-4 mb-6 bg-blue-900 border border-blue-700 rounded-lg bg-opacity-30">
+                    <p class="text-sm text-blue-200">
+                        <span class="mr-2 material-symbols-outlined">info</span>
+                        {{ __('collection.wallet.add_external_description') }}
+                    </p>
+                </div>
+
+                {{-- Form --}}
+                <div class="space-y-4">
+                    {{-- Algorand Address --}}
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-200">
+                            {{ __('collection.wallet.address_label') }} <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            wire:model="externalWalletAddress"
+                            placeholder="GABC...XYZ (58 caratteri)"
+                            class="w-full px-4 py-2 text-white placeholder-gray-500 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            maxlength="58">
+                        <p class="mt-1 text-xs text-gray-400">
+                            {{ __('collection.wallet.address_hint') }}
+                        </p>
+                    </div>
+
+                    {{-- Wallet Name (Optional) --}}
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-200">
+                            {{ __('collection.wallet.name_label') }} <span class="text-gray-500">({{ __('label.optional') }})</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            wire:model="externalWalletName"
+                            placeholder="{{ __('collection.wallet.name_placeholder') }}"
+                            class="w-full px-4 py-2 text-white placeholder-gray-500 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    {{-- Royalties Grid --}}
+                    <div class="grid grid-cols-2 gap-4">
+                        {{-- Royalty Mint --}}
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.royalty_mint_label') }} <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    wire:model="externalWalletRoyaltyMint"
+                                    min="0" 
+                                    max="100" 
+                                    step="0.01"
+                                    class="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg pr-9 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <span class="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2">%</span>
+                            </div>
+                        </div>
+
+                        {{-- Royalty Rebind --}}
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-200">
+                                {{ __('collection.wallet.royalty_rebind_label') }} <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    wire:model="externalWalletRoyaltyRebind"
+                                    min="0" 
+                                    max="100" 
+                                    step="0.01"
+                                    class="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded-lg pr-9 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <span class="absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Warning: Royalty Deduction --}}
+                    <div class="p-4 border border-yellow-600 rounded-lg bg-yellow-900 bg-opacity-20">
+                        <p class="text-sm text-yellow-200">
+                            <span class="mr-2 material-symbols-outlined">warning</span>
+                            {{ __('collection.wallet.royalty_deduction_warning') }}
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Actions --}}
+                <div class="flex justify-end gap-3 mt-6">
+                    <button 
+                        wire:click="closeExternalWalletModal"
+                        class="px-6 py-2 text-gray-300 transition-colors bg-gray-700 rounded-lg hover:bg-gray-600">
+                        {{ __('label.cancel') }}
+                    </button>
+                    <button 
+                        wire:click="addExternalWallet"
+                        wire:loading.attr="disabled"
+                        class="px-6 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                        <span wire:loading.remove wire:target="addExternalWallet">
+                            {{ __('collection.wallet.add_button') }}
+                        </span>
+                        <span wire:loading wire:target="addExternalWallet" class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            {{ __('collection.wallet.adding') }}...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- </x-slot> --}}
 </div>

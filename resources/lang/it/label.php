@@ -100,6 +100,7 @@ return [
     'save' => 'Salva',
     'edit' => 'Modifica',
     'delete' => 'Elimina',
+    'optional' => 'Facoltativo',
     'utilities_image_file' => 'Utility, immagine e caricamento file',
     'file_upload' => 'Caricamento file',
     'select_files' => 'Seleziona i file',
