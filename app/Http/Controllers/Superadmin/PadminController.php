@@ -289,16 +289,81 @@ class PadminController extends Controller {
                 'section' => 'statistics',
             ]);
 
+            // Get comprehensive stats
+            $violationStats = $this->padminService->getViolationStats(auth()->user());
+            $symbolCount = $this->padminService->getSymbolCount(auth()->user());
+            
+            // Get all violations for trend analysis
+            $allViolations = $this->padminService->getViolations([], auth()->user());
+            
+            // Calculate additional metrics
+            $totalViolations = $violationStats['total'];
+            $fixedViolations = count(array_filter($allViolations, fn($v) => $v['isFixed'] ?? false));
+            $fixRate = $totalViolations > 0 ? round(($fixedViolations / $totalViolations) * 100, 1) : 0;
+            
+            // Priority distribution percentages
+            $priorityPercentages = [
+                'P0' => $totalViolations > 0 ? round(($violationStats['byPriority']['P0'] / $totalViolations) * 100, 1) : 0,
+                'P1' => $totalViolations > 0 ? round(($violationStats['byPriority']['P1'] / $totalViolations) * 100, 1) : 0,
+                'P2' => $totalViolations > 0 ? round(($violationStats['byPriority']['P2'] / $totalViolations) * 100, 1) : 0,
+                'P3' => $totalViolations > 0 ? round(($violationStats['byPriority']['P3'] / $totalViolations) * 100, 1) : 0,
+            ];
+            
+            // Severity distribution percentages
+            $severityPercentages = [
+                'critical' => $totalViolations > 0 ? round(($violationStats['bySeverity']['critical'] / $totalViolations) * 100, 1) : 0,
+                'error' => $totalViolations > 0 ? round(($violationStats['bySeverity']['error'] / $totalViolations) * 100, 1) : 0,
+                'warning' => $totalViolations > 0 ? round(($violationStats['bySeverity']['warning'] / $totalViolations) * 100, 1) : 0,
+                'info' => $totalViolations > 0 ? round(($violationStats['bySeverity']['info'] / $totalViolations) * 100, 1) : 0,
+            ];
+            
+            // Group violations by type (top 5)
+            $violationsByType = [];
+            foreach ($allViolations as $violation) {
+                $type = $violation['type'] ?? 'unknown';
+                if (!isset($violationsByType[$type])) {
+                    $violationsByType[$type] = 0;
+                }
+                $violationsByType[$type]++;
+            }
+            arsort($violationsByType);
+            $topViolationTypes = array_slice($violationsByType, 0, 5, true);
+            
+            // Group violations by file (top 5 most problematic files)
+            $violationsByFile = [];
+            foreach ($allViolations as $violation) {
+                $file = basename($violation['filePath'] ?? 'unknown');
+                if (!isset($violationsByFile[$file])) {
+                    $violationsByFile[$file] = 0;
+                }
+                $violationsByFile[$file]++;
+            }
+            arsort($violationsByFile);
+            $topProblematicFiles = array_slice($violationsByFile, 0, 5, true);
+
             // Log admin access (middleware 'auth' guarantees user is authenticated)
             $this->auditLogService->logUserAction(
                 user: auth()->user(),
                 action: 'superadmin_padmin_statistics_access',
-                context: [],
+                context: [
+                    'total_violations' => $totalViolations,
+                    'symbol_count' => $symbolCount,
+                    'fix_rate' => $fixRate,
+                ],
                 category: GdprActivityCategory::SYSTEM_INTERACTION
             );
 
             return view('superadmin.padmin.stats', [
                 'pageTitle' => 'Statistiche Padmin',
+                'violationStats' => $violationStats,
+                'symbolCount' => $symbolCount,
+                'totalViolations' => $totalViolations,
+                'fixedViolations' => $fixedViolations,
+                'fixRate' => $fixRate,
+                'priorityPercentages' => $priorityPercentages,
+                'severityPercentages' => $severityPercentages,
+                'topViolationTypes' => $topViolationTypes,
+                'topProblematicFiles' => $topProblematicFiles,
             ]);
         } catch (\Exception $e) {
             $this->errorManager->handle('UNEXPECTED_ERROR', [
