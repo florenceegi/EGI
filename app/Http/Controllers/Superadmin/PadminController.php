@@ -610,7 +610,7 @@ class PadminController extends Controller {
                 context: [
                     'violation_id' => $violationId,
                     'violation_type' => $violation['rule'] ?? 'unknown',
-                    'file' => $violation['file'] ?? 'unknown',
+                    'file' => $violation['filePath'] ?? 'unknown',
                 ],
                 category: GdprActivityCategory::SYSTEM_INTERACTION
             );
@@ -715,7 +715,7 @@ PROMPT;
 
             // 2. Generate fix using AI
             $this->logger->debug('[Padmin] Generating AI fix', [
-                'file' => $violation['file'],
+                'file' => $violation['filePath'] ?? 'unknown',
                 'rule' => $violation['rule'],
                 'line' => $violation['line']
             ]);
@@ -731,12 +731,19 @@ PROMPT;
 
             // 3. Apply fix to file
             $this->logger->debug('[Padmin] Applying fix to file', [
-                'file' => $violation['file'],
+                'file' => $violation['filePath'] ?? 'unknown',
                 'has_fixed_code' => !empty($fixResult['fixed_code'])
             ]);
 
+            // Ensure relative path for FileEditorService
+            $absolutePath = $violation['filePath'] ?? '';
+            $base = base_path();
+            $relativePath = str_starts_with((string)$absolutePath, $base)
+                ? ltrim(substr((string)$absolutePath, strlen($base)), DIRECTORY_SEPARATOR)
+                : (string)$absolutePath;
+
             $applyResult = $this->fileEditorService->applyFix(
-                $violation['file'],
+                $relativePath,
                 $fixResult['original_code'],
                 $fixResult['fixed_code']
             );
@@ -750,20 +757,33 @@ PROMPT;
             }
 
             // 4. Verify fix by re-scanning file
-            $verifyResult = $this->padminService->scanSingleFile($violation['file']);
+            // Re-scan the single file using RuleEngineService (no invented methods)
+            $ruleEngine = app(\App\Services\Padmin\RuleEngine\RuleEngineService::class);
+            $reViolations = $ruleEngine->scanDirectory($absolutePath, []);
 
             $isFixed = true;
-            if (!empty($verifyResult['violations'])) {
-                // Check if same violation still exists
-                foreach ($verifyResult['violations'] as $v) {
+            if (!empty($reViolations)) {
+                foreach ($reViolations as $v) {
                     if (
-                        $v['rule'] === $violation['rule'] &&
-                        $v['line'] === $violation['line']
+                        ($v['rule'] ?? null) === ($violation['rule'] ?? null) &&
+                        ($v['line'] ?? null) === ($violation['line'] ?? null)
                     ) {
                         $isFixed = false;
                         break;
                     }
                 }
+            }
+
+            // 4b. Update in-session violations for UI feedback (temporary storage)
+            if ($isFixed) {
+                $updated = [];
+                foreach ($violations as $vv) {
+                    if (($vv['id'] ?? null) === $id) {
+                        $vv['is_fixed'] = true;
+                    }
+                    $updated[] = $vv;
+                }
+                session(['padmin_violations' => $updated]);
             }
 
             // 5. Log success
@@ -772,7 +792,7 @@ PROMPT;
                 'padmin_ai_fix_applied',
                 [
                     'violation_id' => $id,
-                    'file' => $violation['file'],
+                    'file' => $violation['filePath'] ?? 'unknown',
                     'rule' => $violation['rule'],
                     'line' => $violation['line'],
                     'is_fixed' => $isFixed,
@@ -797,7 +817,7 @@ PROMPT;
                 'admin_id' => auth()->id(),
                 'violation_id' => $id,
                 'context' => [
-                    'file' => $violation['file'] ?? 'unknown',
+                    'file' => $violation['filePath'] ?? 'unknown',
                     'rule' => $violation['rule'] ?? 'unknown'
                 ]
             ];
@@ -860,7 +880,7 @@ PROMPT;
                 'original_code' => $fixResult['original_code'],
                 'fixed_code' => $fixResult['fixed_code'],
                 'explanation' => $fixResult['explanation'] ?? '',
-                'file' => $violation['file'],
+                'file' => $violation['filePath'] ?? 'unknown',
                 'line' => $violation['line'],
                 'rule' => $violation['rule']
             ]);
@@ -869,7 +889,7 @@ PROMPT;
                 'admin_id' => auth()->id(),
                 'violation_id' => $id,
                 'context' => [
-                    'file' => $violation['file'] ?? 'unknown',
+                    'file' => $violation['filePath'] ?? 'unknown',
                     'rule' => $violation['rule'] ?? 'unknown'
                 ]
             ];

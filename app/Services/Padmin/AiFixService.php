@@ -124,7 +124,7 @@ PROMPT;
      * Build user prompt con violation details
      */
     private function buildUserPrompt(array $violation): string {
-        $file = basename($violation['file'] ?? 'unknown');
+        $file = basename($violation['filePath'] ?? ($violation['file'] ?? 'unknown'));
         $line = $violation['line'] ?? 'unknown';
         $rule = $violation['rule'] ?? 'unknown';
         $message = $violation['message'] ?? 'unknown';

@@ -7,12 +7,10 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 
-class PadminAiPreviewTest extends TestCase
-{
+class PadminAiPreviewTest extends TestCase {
     use WithFaker;
 
-    public function test_preview_ai_fix_returns_structure()
-    {
+    public function test_preview_ai_fix_returns_structure() {
         // Ensure an application encryption key is present for the test runtime
         if (empty(config('app.key'))) {
             config(['app.key' => 'base64:' . base64_encode(random_bytes(32))]);
@@ -26,18 +24,18 @@ class PadminAiPreviewTest extends TestCase
             'rule' => 'REGOLA_ZERO',
         ];
 
-    $this->withSession(['padmin_violations' => [$violation]]);
-    // Disable middleware to avoid DB calls (roles, auth) in CI/test environment
-    $this->withoutMiddleware();
+        $this->withSession(['padmin_violations' => [$violation]]);
+        // Disable middleware to avoid DB calls (roles, auth) in CI/test environment
+        $this->withoutMiddleware();
 
-    // Authenticate a user (bypass superadmin middleware by using an existing or freshly created user)
-    // Create a lightweight User instance without touching DB
-    $userClass = collect(app()->make('config')->get('auth.providers.users.model'))->first() ?? \App\Models\User::class;
-    $user = new $userClass();
-    $user->id = 1;
-    $this->actingAs($user);
+        // Authenticate a user (bypass superadmin middleware by using an existing or freshly created user)
+        // Create a lightweight User instance without touching DB
+        $userClass = collect(app()->make('config')->get('auth.providers.users.model'))->first() ?? \App\Models\User::class;
+        $user = new $userClass();
+        $user->id = 1;
+        $this->actingAs($user);
 
-    // Mock AiFixService to avoid calling Anthropic
+        // Mock AiFixService to avoid calling Anthropic
         $mock = Mockery::mock('App\Services\Padmin\AiFixService');
         $mock->shouldReceive('generateFix')->once()->with($violation)->andReturn([
             'success' => true,
@@ -49,7 +47,7 @@ class PadminAiPreviewTest extends TestCase
         $this->app->instance('App\Services\Padmin\AiFixService', $mock);
 
         // Act
-    $response = $this->postJson(route('superadmin.padmin.violations.ai-preview', ['id' => 'test-1']));
+        $response = $this->postJson(route('superadmin.padmin.violations.ai-preview', ['id' => 'test-1']));
 
         // Assert
         $response->assertStatus(200);

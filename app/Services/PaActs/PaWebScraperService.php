@@ -159,6 +159,7 @@ class PaWebScraperService
                 'acts_saved' => $saveResult['saved'],
                 'acts_skipped' => $saveResult['skipped'],
                 'acts_errors' => count($saveResult['errors']),
+                'errors_sample' => $saveResult['errors_sample'] ?? [],  // Sample errori per debugging
                 'execution_time' => round($executionTime, 2),
                 'data_source' => $scraper->getFullUrl(),
                 'scraped_at' => now()->toIso8601String(),
@@ -595,8 +596,8 @@ class PaWebScraperService
                     'collection_id' => $collection->id,
                     'user_id' => $user->id,
                     'owner_id' => $user->id,
-                    'title' => $act['title'],
-                    'description' => $act['description'] ?? null,
+                    'title' => mb_substr($act['title'], 0, 60),  // Tronca a 60 char (limite DB)
+                    'description' => $act['description'] ?? null,  // description è TEXT, nessun limite
                     'type' => 'pa_act',
                     'status' => 'published',
                     'is_published' => true,
@@ -634,7 +635,10 @@ class PaWebScraperService
 
                 $this->logger->error('[PaWebScraperService] Error saving act', [
                     'protocol_number' => $act['protocol_number'] ?? 'N/A',
-                    'error' => $e->getMessage()
+                    'title' => $act['title'] ?? 'N/A',
+                    'doc_type' => $act['doc_type'] ?? 'N/A',
+                    'error' => $e->getMessage(),
+                    'act_data' => $act  // Log dell'atto completo per debugging
                 ]);
             }
         }
@@ -648,7 +652,8 @@ class PaWebScraperService
         return [
             'saved' => $saved,
             'skipped' => $skipped,
-            'errors' => $errors
+            'errors' => $errors,
+            'errors_sample' => array_slice($errors, 0, 5)  // Primi 5 errori per debugging
         ];
     }
 

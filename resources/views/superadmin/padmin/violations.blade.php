@@ -166,7 +166,10 @@
 
                                     {{-- Status --}}
                                     <td>
-                                        @if ($violation['isFixed'] ?? false)
+                                        @php
+                                            $statusFixed = $violation['isFixed'] ?? ($violation['is_fixed'] ?? false);
+                                        @endphp
+                                        @if ($statusFixed)
                                             <span class="badge badge-success badge-sm gap-1">
                                                 <svg class="h-3 w-3" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -189,7 +192,7 @@
                                     {{-- Actions --}}
                                     <td>
                                         <div class="flex gap-1">
-                                            @if (!($violation['isFixed'] ?? false))
+                                            @if (!$statusFixed)
                                                 <button onclick="openAiFixModal('{{ $violation['id'] }}')"
                                                     class="btn btn-primary btn-xs gap-1" title="Fix with AI">
                                                     <svg class="h-3 w-3" fill="none" stroke="currentColor"
@@ -522,11 +525,11 @@
                                         📄 ${v.file}:${v.line}
                                     </p>
                                     ${v.codeSnippet ? `
-                                                                        <details class="mt-2">
-                                                                            <summary class="cursor-pointer text-xs text-primary">Vedi codice</summary>
-                                                                            <pre class="mt-2 p-2 bg-base-300 rounded text-xs overflow-x-auto"><code>${escapeHtml(v.codeSnippet)}</code></pre>
-                                                                        </details>
-                                                                    ` : ''}
+                                                                                <details class="mt-2">
+                                                                                    <summary class="cursor-pointer text-xs text-primary">Vedi codice</summary>
+                                                                                    <pre class="mt-2 p-2 bg-base-300 rounded text-xs overflow-x-auto"><code>${escapeHtml(v.codeSnippet)}</code></pre>
+                                                                                </details>
+                                                                            ` : ''}
                                 </div>
                             </div>
                         </div>
