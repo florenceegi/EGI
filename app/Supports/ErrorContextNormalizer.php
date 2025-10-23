@@ -6,15 +6,13 @@ namespace App\Supports;
  * Small utility to normalize context payloads passed to ErrorManager->handle()
  * Ensures there are no nested arrays that can break translation replacements.
  */
-class ErrorContextNormalizer
-{
+class ErrorContextNormalizer {
     /**
      * Normalize payload by converting nested arrays to JSON/string and trimming long values.
      * @param array $payload
      * @return array
      */
-    public static function normalize(array $payload): array
-    {
+    public static function normalize(array $payload): array {
         $normalized = [];
 
         foreach ($payload as $key => $value) {
@@ -32,8 +30,7 @@ class ErrorContextNormalizer
         return $normalized;
     }
 
-    protected static function toString($v): string
-    {
+    protected static function toString($v): string {
         if (is_string($v)) {
             return $v;
         }
