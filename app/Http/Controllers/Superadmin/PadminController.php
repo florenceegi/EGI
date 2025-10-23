@@ -207,16 +207,65 @@ class PadminController extends Controller {
                 'section' => 'search',
             ]);
 
+            // Build advanced search query
+            $query = [];
+            $results = [];
+            $searchPerformed = false;
+
+            if ($request->has('q') && !empty($request->input('q'))) {
+                $searchPerformed = true;
+
+                // Multi-field search query
+                if ($request->has('searchField')) {
+                    $field = $request->input('searchField');
+                    $query[$field] = $request->input('q');
+                } else {
+                    // Default: search in name
+                    $query['text'] = $request->input('q');
+                }
+
+                // Additional filters
+                if ($request->has('type') && !empty($request->input('type'))) {
+                    $query['type'] = $request->input('type');
+                }
+
+                if ($request->has('filePath') && !empty($request->input('filePath'))) {
+                    $query['filePath'] = $request->input('filePath');
+                }
+
+                if ($request->has('namespace') && !empty($request->input('namespace'))) {
+                    $query['namespace'] = $request->input('namespace');
+                }
+
+                // Limit
+                $query['limit'] = (int) $request->input('limit', 100);
+
+                // Execute search
+                $results = $this->padminService->searchSymbols($query, auth()->user());
+
+                $this->logger->info('[SuperAdmin] Padmin semantic search executed', [
+                    'admin_id' => auth()->id(),
+                    'query' => $query,
+                    'results_count' => count($results),
+                ]);
+            }
+
             // Log admin access (middleware 'auth' guarantees user is authenticated)
             $this->auditLogService->logUserAction(
                 user: auth()->user(),
                 action: 'superadmin_padmin_search_access',
-                context: [],
+                context: [
+                    'query' => $query,
+                    'results_count' => count($results),
+                ],
                 category: GdprActivityCategory::SYSTEM_INTERACTION
             );
 
             return view('superadmin.padmin.search', [
                 'pageTitle' => 'Ricerca Semantica',
+                'results' => $results,
+                'query' => $query,
+                'searchPerformed' => $searchPerformed,
             ]);
         } catch (\Exception $e) {
             $this->errorManager->handle('UNEXPECTED_ERROR', [
