@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\PaWebScraper;
-use App\Models\Business;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -23,33 +22,28 @@ class PaWebScraperSeeder extends Seeder
     {
         $this->command->info('🌱 Seeding PA Web Scrapers...');
 
-        // Find first PA business (or create demo one)
-        $paBusiness = Business::where('type', 'pa_entity')->first();
+        // Find first PA user (assume first user or user with pa_entity role)
+        $paUser = User::whereHas('roles', function($q) {
+            $q->where('name', 'pa_entity');
+        })->first();
 
-        if (!$paBusiness) {
-            $this->command->warn('⚠️  No PA business found. Creating demo business...');
-            $paBusiness = Business::create([
-                'type' => 'pa_entity',
-                'name' => 'Comune di Firenze (Demo)',
-                'is_active' => true,
-            ]);
+        if (!$paUser) {
+            $this->command->warn('⚠️  No PA user found with role pa_entity. Using first user...');
+            $paUser = User::first();
         }
 
-        // Find or create demo user
-        $user = User::where('business_id', $paBusiness->id)->first();
-
-        if (!$user) {
-            $this->command->warn('⚠️  No user found for PA business. Skipping user assignment.');
-            $userId = null;
-        } else {
-            $userId = $user->id;
+        if (!$paUser) {
+            $this->command->error('❌ No users found in database. Please create a user first.');
+            return;
         }
+
+        $userId = $paUser->id;
 
         // Scraper 1: Deliberazioni Firenze
         $firenze_delibere = PaWebScraper::updateOrCreate(
             [
                 'name' => 'Delibere Comune di Firenze',
-                'business_id' => $paBusiness->id,
+                'user_id' => $userId,
             ],
             [
                 'type' => 'api',
@@ -95,7 +89,7 @@ class PaWebScraperSeeder extends Seeder
         $firenze_albo = PaWebScraper::updateOrCreate(
             [
                 'name' => 'Albo Pretorio Comune di Firenze',
-                'business_id' => $paBusiness->id,
+                'user_id' => $userId,
             ],
             [
                 'type' => 'html',
@@ -142,13 +136,13 @@ class PaWebScraperSeeder extends Seeder
 
         $this->command->info("\n🎉 Seeding completed!");
         $this->command->info("📊 Total scrapers created: 2");
-        $this->command->info("🏛️  Business: {$paBusiness->name} (#{$paBusiness->id})");
+        $this->command->info("👤 PA User: {$paUser->name} (#{$paUser->id})");
 
         $this->command->info("\n💡 To activate scrapers:");
-        $this->command->info("   1. Login as PA user");
+        $this->command->info("   1. Login as PA user ({$paUser->email})");
         $this->command->info("   2. Visit /pa/scrapers");
         $this->command->info("   3. Click 'Attiva' on desired scraper");
         $this->command->info("\n💡 To test scraper from CLI:");
-        $this->command->info("   php artisan pa:scraper:run {$firenze_delibere->id} --user_id={$userId} --year=2024");
+        $this->command->info("   php artisan pa:run-scraper {$firenze_delibere->id} --year=2024");
     }
 }

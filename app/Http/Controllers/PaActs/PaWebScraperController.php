@@ -71,12 +71,11 @@ class PaWebScraperController extends Controller
             $user = Auth::user();
 
             $this->logger->info('[PaWebScraperController] Loading scrapers index', [
-                'user_id' => $user->id,
-                'business_id' => $user->business_id
+                'user_id' => $user->id
             ]);
 
-            // Query scrapers del business corrente
-            $query = PaWebScraper::where('business_id', $user->business_id)
+            // Query scrapers dell'utente corrente
+            $query = PaWebScraper::where('user_id', $user->id)
                 ->with('createdBy')
                 ->orderBy('created_at', 'desc');
 
@@ -94,9 +93,9 @@ class PaWebScraperController extends Controller
 
             // Stats
             $stats = [
-                'total' => PaWebScraper::where('business_id', $user->business_id)->count(),
-                'active' => PaWebScraper::where('business_id', $user->business_id)->where('is_active', true)->count(),
-                'total_items' => PaWebScraper::where('business_id', $user->business_id)->sum('total_items_scraped'),
+                'total' => PaWebScraper::where('user_id', $user->id)->count(),
+                'active' => PaWebScraper::where('user_id', $user->id)->where('is_active', true)->count(),
+                'total_items' => PaWebScraper::where('user_id', $user->id)->sum('total_items_scraped'),
             ];
 
             return view('pa.scrapers.index', compact('scrapers', 'stats'));
@@ -149,7 +148,7 @@ class PaWebScraperController extends Controller
                 'schedule_frequency' => 'nullable|in:manual,hourly,daily,weekly,monthly',
             ]);
 
-            $validated['business_id'] = Auth::user()->business_id;
+            $validated['user_id'] = Auth::user()->id;
             $validated['created_by_user_id'] = Auth::id();
             $validated['status'] = 'draft';
 
@@ -208,7 +207,7 @@ class PaWebScraperController extends Controller
     {
         try {
             // Authorization
-            if ($scraper->business_id !== Auth::user()->business_id) {
+            if ($scraper->user_id !== Auth::id()) {
                 abort(403);
             }
 
@@ -229,7 +228,7 @@ class PaWebScraperController extends Controller
     {
         try {
             // Authorization
-            if ($scraper->business_id !== Auth::user()->business_id) {
+            if ($scraper->user_id !== Auth::id()) {
                 abort(403);
             }
 
@@ -269,7 +268,7 @@ class PaWebScraperController extends Controller
     {
         try {
             // Authorization
-            if ($scraper->business_id !== Auth::user()->business_id) {
+            if ($scraper->user_id !== Auth::id()) {
                 abort(403);
             }
 
@@ -290,7 +289,7 @@ class PaWebScraperController extends Controller
     {
         try {
             // Authorization
-            if ($scraper->business_id !== Auth::user()->business_id) {
+            if ($scraper->user_id !== Auth::id()) {
                 abort(403);
             }
 
@@ -313,7 +312,7 @@ class PaWebScraperController extends Controller
     {
         try {
             // Authorization
-            if ($scraper->business_id !== Auth::user()->business_id) {
+            if ($scraper->user_id !== Auth::id()) {
                 abort(403);
             }
 
@@ -337,7 +336,7 @@ class PaWebScraperController extends Controller
     {
         try {
             // Authorization
-            if ($scraper->business_id !== Auth::user()->business_id) {
+            if ($scraper->user_id !== Auth::id()) {
                 abort(403);
             }
 

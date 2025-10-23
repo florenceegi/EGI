@@ -29,7 +29,7 @@ class PaWebScraper extends Model
         'last_run_at',
         'next_run_at',
         'total_items_scraped',
-        'business_id',
+        'user_id',
         'created_by_user_id',
         'status',
         'last_error',
@@ -59,9 +59,9 @@ class PaWebScraper extends Model
     ];
 
     // Relationships
-    public function business()
+    public function user()
     {
-        return $this->belongsTo(Business::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function createdBy()

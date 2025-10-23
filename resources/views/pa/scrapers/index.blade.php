@@ -67,7 +67,8 @@
     {{-- Subtitle --}}
     <div class="mb-8 flex items-center justify-between">
         <p class="text-gray-600">
-            Configura e gestisci l'acquisizione automatica di atti pubblici da fonti web esterne (API, Albo Pretorio, Portali Trasparenza).
+            Configura e gestisci l'acquisizione automatica di atti pubblici da fonti web esterne (API, Albo Pretorio,
+            Portali Trasparenza).
         </p>
         <a href="{{ route('pa.scrapers.create') }}"
             class="inline-flex transform items-center rounded-lg bg-[#D4A574] px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-[#C39563]"
@@ -158,7 +159,8 @@
                                         <div>
                                             <p class="font-semibold text-gray-900">{{ $scraper->name }}</p>
                                             <p class="text-xs text-gray-500">
-                                                <span class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                                                <span
+                                                    class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
                                                     {{ strtoupper($scraper->type) }}
                                                 </span>
                                             </p>
@@ -175,12 +177,14 @@
                                 {{-- Status --}}
                                 <td class="px-6 py-4 text-center">
                                     @if ($scraper->is_active)
-                                        <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+                                        <span
+                                            class="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
                                             <span class="material-symbols-outlined text-sm">check_circle</span>
                                             Attivo
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+                                        <span
+                                            class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
                                             <span class="material-symbols-outlined text-sm">pause_circle</span>
                                             Inattivo
                                         </span>
@@ -216,7 +220,8 @@
                                         </a>
 
                                         {{-- Run Manually --}}
-                                        <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}" class="inline-block">
+                                        <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}"
+                                            class="inline-block">
                                             @csrf
                                             <button type="submit"
                                                 class="inline-flex items-center rounded-lg bg-[#2D5016] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#1F3810]"
@@ -233,7 +238,8 @@
                                         </a>
 
                                         {{-- Delete --}}
-                                        <form method="POST" action="{{ route('pa.scrapers.destroy', $scraper) }}" class="inline-block"
+                                        <form method="POST" action="{{ route('pa.scrapers.destroy', $scraper) }}"
+                                            class="inline-block"
                                             onsubmit="return confirm('Sei sicuro di voler eliminare questo scraper?')">
                                             @csrf
                                             @method('DELETE')
@@ -255,7 +261,8 @@
             <div class="px-6 py-12 text-center">
                 <span class="material-symbols-outlined mb-4 text-6xl text-gray-300">cloud_download</span>
                 <p class="mb-2 text-lg font-semibold text-gray-600">Nessun Scraper Configurato</p>
-                <p class="mb-6 text-sm text-gray-500">Inizia configurando il tuo primo scraper per acquisire automaticamente atti pubblici dal web.</p>
+                <p class="mb-6 text-sm text-gray-500">Inizia configurando il tuo primo scraper per acquisire
+                    automaticamente atti pubblici dal web.</p>
                 <a href="{{ route('pa.scrapers.create') }}"
                     class="inline-flex items-center rounded-lg bg-[#D4A574] px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:bg-[#C39563]">
                     <span class="material-symbols-outlined mr-2">add</span>
@@ -272,13 +279,15 @@
             <div>
                 <h3 class="mb-2 text-lg font-bold text-blue-900">GDPR Compliance</h3>
                 <p class="text-sm text-blue-800">
-                    Tutti gli scraper configurati operano esclusivamente su dati <strong>pubblici</strong> resi disponibili dalle PA
-                    ai sensi del D.Lgs 33/2013 (Trasparenza Amministrativa) e art. 22 CAD (Documenti amministrativi informatici).
-                    I campi PII vengono automaticamente sanitizzati prima del salvataggio. Ogni esecuzione è tracciata tramite
+                    Tutti gli scraper configurati operano esclusivamente su dati <strong>pubblici</strong> resi
+                    disponibili dalle PA
+                    ai sensi del D.Lgs 33/2013 (Trasparenza Amministrativa) e art. 22 CAD (Documenti amministrativi
+                    informatici).
+                    I campi PII vengono automaticamente sanitizzati prima del salvataggio. Ogni esecuzione è tracciata
+                    tramite
                     <strong>audit trail completo</strong> per conformità GDPR Art. 5 (responsabilità e tracciabilità).
                 </p>
             </div>
         </div>
     </div>
 </x-pa-layout>
-

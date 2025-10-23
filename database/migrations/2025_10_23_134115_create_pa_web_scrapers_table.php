@@ -40,8 +40,8 @@ return new class extends Migration
             $table->timestamp('next_run_at')->nullable();
             $table->integer('total_items_scraped')->default(0);
 
-            // Business logic
-            $table->foreignId('business_id')->constrained('businesses')->onDelete('cascade');
+            // User ownership (PA Entity)
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('created_by_user_id')->nullable()->constrained('users')->onDelete('set null');
 
             // Status e logging
@@ -61,7 +61,7 @@ return new class extends Migration
             $table->softDeletes();
 
             // Indexes
-            $table->index(['business_id', 'is_active']);
+            $table->index(['user_id', 'is_active']);
             $table->index('next_run_at');
         });
     }

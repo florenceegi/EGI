@@ -26,12 +26,14 @@
         <div class="flex items-center gap-3">
             {{-- Status Badge --}}
             @if ($scraper->is_active)
-                <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-800">
+                <span
+                    class="inline-flex items-center gap-1 rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-800">
                     <span class="material-symbols-outlined text-base">check_circle</span>
                     Attivo
                 </span>
             @else
-                <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
+                <span
+                    class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
                     <span class="material-symbols-outlined text-base">pause_circle</span>
                     Inattivo
                 </span>
@@ -103,7 +105,7 @@
         </div>
         <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <p class="text-sm font-medium text-gray-600">Frequenza</p>
-            <p class="mt-2 text-lg font-semibold text-gray-900 capitalize">
+            <p class="mt-2 text-lg font-semibold capitalize text-gray-900">
                 {{ $scraper->schedule_frequency ?? 'N/A' }}
             </p>
         </div>
@@ -136,7 +138,7 @@
                 </div>
                 <div>
                     <dt class="text-sm font-semibold text-gray-600">Metodo HTTP</dt>
-                    <dd class="text-base font-mono text-gray-900">{{ $scraper->method }}</dd>
+                    <dd class="font-mono text-base text-gray-900">{{ $scraper->method }}</dd>
                 </div>
                 <div>
                     <dt class="text-sm font-semibold text-gray-600">Tipo Paginazione</dt>
@@ -154,7 +156,7 @@
             <dl class="space-y-3">
                 <div>
                     <dt class="text-sm font-semibold text-green-700">Tipo Fonte Dati</dt>
-                    <dd class="text-base font-semibold text-green-900 uppercase">{{ $scraper->data_source_type }}</dd>
+                    <dd class="text-base font-semibold uppercase text-green-900">{{ $scraper->data_source_type }}</dd>
                 </div>
                 <div>
                     <dt class="text-sm font-semibold text-green-700">Base Giuridica</dt>
@@ -188,12 +190,14 @@
                     <dt class="text-sm font-semibold text-green-700">Status GDPR</dt>
                     <dd>
                         @if ($scraper->gdpr_compliant)
-                            <span class="inline-flex items-center gap-1 rounded-full bg-green-600 px-3 py-1 text-xs font-semibold text-white">
+                            <span
+                                class="inline-flex items-center gap-1 rounded-full bg-green-600 px-3 py-1 text-xs font-semibold text-white">
                                 <span class="material-symbols-outlined text-sm">check_circle</span>
                                 Conforme
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1 rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white">
+                            <span
+                                class="inline-flex items-center gap-1 rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white">
                                 <span class="material-symbols-outlined text-sm">warning</span>
                                 Non Conforme
                             </span>
@@ -221,7 +225,8 @@
                 </div>
                 <div>
                     <span class="text-sm text-gray-600">Tempo Esecuzione:</span>
-                    <span class="ml-2 text-xl font-bold text-gray-900">{{ $results['stats']['execution_time'] }}s</span>
+                    <span
+                        class="ml-2 text-xl font-bold text-gray-900">{{ $results['stats']['execution_time'] }}s</span>
                 </div>
             </div>
 
@@ -232,7 +237,8 @@
                         @foreach (array_slice(session('scraper_data'), 0, 10) as $act)
                             <li class="rounded-lg bg-white p-3 shadow-sm">
                                 <p class="font-semibold text-gray-900">{{ $act['title'] ?? 'N/A' }}</p>
-                                <p class="text-sm text-gray-600">Protocollo: {{ $act['protocol_number'] ?? 'N/A' }} | Data: {{ $act['protocol_date'] ?? 'N/A' }}</p>
+                                <p class="text-sm text-gray-600">Protocollo: {{ $act['protocol_number'] ?? 'N/A' }} |
+                                    Data: {{ $act['protocol_date'] ?? 'N/A' }}</p>
                                 <p class="text-xs text-gray-500">Tipo: {{ $act['doc_type'] ?? 'N/A' }}</p>
                             </li>
                         @endforeach
@@ -280,4 +286,3 @@
         </div>
     </details>
 </x-pa-layout>
-
