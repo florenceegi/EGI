@@ -1,0 +1,2656 @@
+[
+  {
+    "id": 2275,
+    "numeroAdozione": "00001",
+    "dataAdozione": 1610924400000,
+    "dataEsecutivita": 1613084400000,
+    "dataPubblicazione": 1612220400000,
+    "dataApprovazione": 1611059190000,
+    "dataScadenza": 1611270000000,
+    "ufficio": "Direzione del Consiglio comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Riqualificazione e ampliamento polo scolastico Istituti Superiori Meucci e Galilei. Adozione variante al Regolamento Urbanistico. Riduzione zona di rispetto Cimitero di Soffiano.",
+    "allegati": [
+      {
+        "id": 9538,
+        "nome": "Log prop. Delib. 637-20.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/8290/Log prop. Delib. 637-20.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Log prop. Delib. 637-20.pdf"
+      },
+      {
+        "id": 9539,
+        "nome": "All_A_RelaUrbaVarMeucciGalilei_signed_signed_2020gp332453.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/8290/All_A_RelaUrbaVarMeucciGalilei_signed_signed_2020gp332453.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "All_A_RelaUrbaVarMeucciGalilei_signed_signed_2020gp332453.pdf"
+      },
+      {
+        "id": 9540,
+        "nome": "All_B_RelaGeolVarMeucciGalileiADOZ.zip",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/8290/All_B_RelaGeolVarMeucciGalileiADOZ.zip",
+        "contentType": "application/x-zip-compressed",
+        "principale": false,
+        "riservato": false,
+        "titolo": "All_B_RelaGeolVarMeucciGalileiADOZ.zip"
+      },
+      {
+        "id": 9541,
+        "nome": "All_C_RiduzVincCimMeucciGalilei_signed_signed_2020gp332719.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/8290/All_C_RiduzVincCimMeucciGalilei_signed_signed_2020gp332719.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "All_C_RiduzVincCimMeucciGalilei_signed_signed_2020gp332719.pdf"
+      },
+      {
+        "id": 9542,
+        "nome": "All_D_RelaRespProcVarMeucciGalileiADOZ_signed_2020gp332895.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/8290/All_D_RelaRespProcVarMeucciGalileiADOZ_signed_2020gp332895.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "All_D_RelaRespProcVarMeucciGalileiADOZ_signed_2020gp332895.pdf"
+      },
+      {
+        "id": 9543,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2021_00005_00001.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/8290/Deliberazione_di_Consiglio_Completa-DC_2021_00005_00001.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Adottato - Firmato Segretario Seduta",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 8290,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 4,
+        "nome": "Commissione Consiliare 3",
+        "testo": "Proposta di Delibera n. 637-20 proveniente dall'applicativo ODE. Parere Favorevole in data 13.1.21",
+        "dataInvio": 1610665200000,
+        "dataScadenza": 1611961200000,
+        "dataParere": 1610492400000
+      },
+      {
+        "id": 5,
+        "nome": "Consiglio di Quartiere 4",
+        "testo": "Prop. di Delibera n. 637-20 proveniente dall'applicativo ODE. Parere Favorevole con raccomandazioni",
+        "dataInvio": 1609974000000,
+        "dataScadenza": 1611270000000,
+        "dataParere": 1610406000000
+      },
+      {
+        "id": 6,
+        "nome": "Direzione Urbanistica",
+        "dataInvio": 1610578800000,
+        "dataParere": 1610578800000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 35,
+      "numAstenuti": 10,
+      "nomiAstenuti": "Asciuti Andrea, Bocci Ubaldo, Bussolin Federico, Cellai Jacopo, Cocollini Emanuele, Draghi Alessandro Emanuele, Monaco Michela, Moro Bundu Antonella, Palagi Dmitrij, Tani Luca",
+      "numNpv": 3,
+      "nomiNpv": "Di Puccio Stefano, Masi Lorenzo, Montelatici Antonio",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 22,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Bianchi Donata, Bonanni Patrizia, Calì Francesca, Calistri Leonardo, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Giuliani Maria Federica, Innocenti Alessandra, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 3735,
+    "numeroAdozione": "00008",
+    "dataAdozione": 1615158000000,
+    "dataEsecutivita": 1617660000000,
+    "dataPubblicazione": 1616799600000,
+    "dataApprovazione": 1615292157000,
+    "dataScadenza": 1615293199000,
+    "ufficio": "Direzione del Consiglio comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Approvazione Regolamento quadro delle Consulte",
+    "allegati": [
+      {
+        "id": 14483,
+        "nome": "RegolamentoConsulte 12.02.2021testo coordinato.odt",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/13206/RegolamentoConsulte 12.02.2021testo coordinato.odt",
+        "contentType": "application/vnd.oasis.opendocument.text",
+        "principale": false,
+        "riservato": false,
+        "titolo": "RegolamentoConsulte 12.02.2021testo coordinato.odt"
+      },
+      {
+        "id": 14484,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2021_00014_00008.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/13206/Deliberazione_di_Consiglio_Completa-DC_2021_00014_00008.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Adottato - Firmato Segretario Seduta",
+    "esito": "Approvata Emendata",
+    "proponente": "",
+    "attoId": 13206,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 58,
+        "nome": "Commissione Consiliare Affari Istituzionali",
+        "testo": "Favorevole di tutti i presenti con raccomandazione",
+        "dataInvio": 1614034800000,
+        "dataScadenza": 1615244400000,
+        "dataParere": 1614207600000
+      },
+      {
+        "id": 59,
+        "nome": "Direzione del Consiglio comunale",
+        "testo": "parere_resp_tecnico",
+        "dataInvio": 1613948400000,
+        "dataParere": 1613948400000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 34,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 2,
+      "nomiContrari": "Moro Bundu Antonella, Palagi Dmitrij",
+      "numFavorevoli": 32,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bocci Ubaldo, Bonanni Patrizia, Bussolin Federico, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Cocollini Emanuele, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Di Puccio Stefano, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Giuliani Maria Federica, Innocenti Alessandra, Monaco Michela, Montelatici Antonio, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura, Tani Luca"
+    }
+  },
+  {
+    "id": 8850,
+    "numeroAdozione": "00043",
+    "dataAdozione": 1633903200000,
+    "dataEsecutivita": 1635199200000,
+    "dataPubblicazione": 1634335200000,
+    "dataApprovazione": 1634030746000,
+    "dataScadenza": 1633471200000,
+    "ufficio": "Direzione del Consiglio comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Conferimento della cittadinanza onoraria al Milite Ignoto",
+    "allegati": [
+      {
+        "id": 38964,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2021_00058_00043.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/39523/Deliberazione_di_Consiglio_Completa-DC_2021_00058_00043.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Adottato - Firmato Segretario Seduta",
+    "esito": "Approvata Emendata",
+    "proponente": "",
+    "attoId": 39523,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 456,
+        "nome": "Commissione Consiliare 5",
+        "testo": "Favorevole",
+        "dataInvio": 1632175200000,
+        "dataScadenza": 1633471200000,
+        "dataParere": 1633557600000
+      },
+      {
+        "id": 457,
+        "nome": "Commissione Consiliare 7",
+        "testo": "Favorevole con raccomandazioni",
+        "dataInvio": 1632175200000,
+        "dataScadenza": 1633471200000,
+        "dataParere": 1633471200000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 33,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 33,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bocci Ubaldo, Bonanni Patrizia, Bussolin Federico, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Cocollini Emanuele, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Di Puccio Stefano, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Giuliani Maria Federica, Innocenti Alessandra, Masi Lorenzo, Monaco Michela, Montelatici Antonio, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura, Tani Luca"
+    }
+  },
+  {
+    "id": 9211,
+    "numeroAdozione": "00046",
+    "dataAdozione": 1634508000000,
+    "dataEsecutivita": 1636758000000,
+    "dataPubblicazione": 1635894000000,
+    "dataApprovazione": 1634636118000,
+    "dataScadenza": 1634680800000,
+    "ufficio": "Direzione del Consiglio comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Collegio dei Revisori dei Conti - Nomina triennio 2021 - 2024",
+    "allegati": [
+      {
+        "id": 40534,
+        "nome": "ALL. 1  -procedura rinnovo collegio revisori_signed.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/42688/ALL. 1  -procedura rinnovo collegio revisori_signed.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "ALL. 1  -procedura rinnovo collegio revisori_signed.pdf"
+      },
+      {
+        "id": 40535,
+        "nome": "All. 2 - Verbale sorteggio Prefettura.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/42688/All. 2 - Verbale sorteggio Prefettura.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "All. 2 - Verbale sorteggio Prefettura.pdf"
+      },
+      {
+        "id": 40536,
+        "nome": "LOMBARDI Luca Adelmo - Dichiarazione .pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/42688/LOMBARDI Luca Adelmo - Dichiarazione .pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "LOMBARDI Luca Adelmo - Dichiarazione .pdf"
+      },
+      {
+        "id": 40537,
+        "nome": "GIACINTI Roberto - Dichiarazione.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/42688/GIACINTI Roberto - Dichiarazione.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "GIACINTI Roberto - Dichiarazione.pdf"
+      },
+      {
+        "id": 40538,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2021_00062_00046.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/42688/Deliberazione_di_Consiglio_Completa-DC_2021_00062_00046.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Adottato - Firmato Segretario Seduta",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 42688,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 469,
+        "nome": "Commissione Consiliare 1",
+        "testo": "Favorevole",
+        "dataInvio": 1633384800000,
+        "dataScadenza": 1634680800000,
+        "dataParere": 1633989600000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 31,
+      "numAstenuti": 2,
+      "nomiAstenuti": "De Blasi Roberto, Masi Lorenzo",
+      "numNpv": 3,
+      "nomiNpv": "Asciuti Andrea, Moro Bundu Antonella, Palagi Dmitrij",
+      "numContrari": 6,
+      "nomiContrari": "Bocci Ubaldo, Cocollini Emanuele, Draghi Alessandro Emanuele, Monaco Michela, Montelatici Antonio, Tani Luca",
+      "numFavorevoli": 20,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Bonanni Patrizia, Calì Francesca, Calistri Leonardo, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, Di Puccio Stefano, Felleca Barbara, Giorgetti Fabio, Giuliani Maria Federica, Innocenti Alessandra, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 10043,
+    "numeroAdozione": "00052",
+    "dataAdozione": 1637535600000,
+    "dataEsecutivita": 1638745200000,
+    "dataPubblicazione": 1637881200000,
+    "dataApprovazione": 1637665400000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Collegio dei Revisori dei Conti - Sostituzione componente triennio 2021-2024",
+    "allegati": [
+      {
+        "id": 45101,
+        "nome": "Prot. 0307027 27.9.2021 verbale Prefettura estrazione a sorte rinnovo sindaci revisori 2021_2024.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/51247/Prot. 0307027 27.9.2021 verbale Prefettura estrazione a sorte rinnovo sindaci revisori 2021_2024.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Prot. 0307027 27.9.2021 verbale Prefettura estrazione a sorte rinnovo sindaci revisori 2021_2024.pdf"
+      },
+      {
+        "id": 45102,
+        "nome": "Prot  n 354760 del 04112021 mancata accettazione Giacinti Roberto.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/51247/Prot  n 354760 del 04112021 mancata accettazione Giacinti Roberto.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Prot  n 354760 del 04112021 mancata accettazione Giacinti Roberto.pdf"
+      },
+      {
+        "id": 45103,
+        "nome": "Prot . 360625 del 10 11 2021 rinuncia incarico Paris.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/51247/Prot . 360625 del 10 11 2021 rinuncia incarico Paris.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Prot . 360625 del 10 11 2021 rinuncia incarico Paris.pdf"
+      },
+      {
+        "id": 45104,
+        "nome": "Prot 362496 dell'11.11.2021 RINUNCIA INCARICO REVISORE(25)Bonini  .pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/51247/Prot 362496 dell'11.11.2021 RINUNCIA INCARICO REVISORE(25)Bonini  .pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Prot 362496 dell'11.11.2021 RINUNCIA INCARICO REVISORE(25)Bonini  .pdf"
+      },
+      {
+        "id": 45105,
+        "nome": "Prot 363770 12.11.2021Accettazione Vigiani Pietro.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/51247/Prot 363770 12.11.2021Accettazione Vigiani Pietro.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Prot 363770 12.11.2021Accettazione Vigiani Pietro.pdf"
+      },
+      {
+        "id": 45106,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2021_00077_00052.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/51247/Deliberazione_di_Consiglio_Completa-DC_2021_00077_00052.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Adottato - Firmato Segretario Seduta",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 51247,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 29,
+      "numAstenuti": 3,
+      "nomiAstenuti": "Asciuti Andrea, Bussolin Federico, Monaco Michela",
+      "numNpv": 3,
+      "nomiNpv": "Draghi Alessandro Emanuele, Moro Bundu Antonella, Palagi Dmitrij",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 23,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Bianchi Donata, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, Di Puccio Stefano, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Giuliani Maria Federica, Innocenti Alessandra, Masi Lorenzo, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Razzanelli Mario, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 10044,
+    "numeroAdozione": "00051",
+    "dataAdozione": 1637535600000,
+    "dataEsecutivita": 1638745200000,
+    "dataPubblicazione": 1637881200000,
+    "dataApprovazione": 1637665384000,
+    "dataScadenza": 1637708400000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Istituzione della “CONSULTA PER IL CONTRASTO AD OGNI TIPO DI DISCRIMINAZIONE E PER I DIRITTI DELLE PERSONE LGBTQI+”",
+    "allegati": [
+      {
+        "id": 45109,
+        "nome": "Regolamento consulta LGBTQI+ rev02.docx RIVISTO.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/48142/Regolamento consulta LGBTQI+ rev02.docx RIVISTO.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Regolamento consulta LGBTQI+ rev02.docx RIVISTO.pdf"
+      },
+      {
+        "id": 45110,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2021_00070_00051.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/48142/Deliberazione_di_Consiglio_Completa-DC_2021_00070_00051.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Adottato - Firmato Segretario Seduta",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 48142,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 486,
+        "nome": "Commissione Consiliare 7",
+        "testo": "Favorevole",
+        "dataInvio": 1636412400000,
+        "dataScadenza": 1637708400000,
+        "dataParere": 1637103600000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 34,
+      "numAstenuti": 3,
+      "nomiAstenuti": "Bocci Ubaldo, Cocollini Emanuele, Montelatici Antonio",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 6,
+      "nomiContrari": "Asciuti Andrea, Bussolin Federico, Cellai Jacopo, Draghi Alessandro Emanuele, Monaco Michela, Razzanelli Mario",
+      "numFavorevoli": 25,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Bianchi Donata, Calì Francesca, Calistri Leonardo, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Di Puccio Stefano, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Giuliani Maria Federica, Innocenti Alessandra, Masi Lorenzo, Moro Bundu Antonella, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 13890,
+    "numeroAdozione": "00011",
+    "dataAdozione": 1648418400000,
+    "dataEsecutivita": 1649714400000,
+    "dataPubblicazione": 1648850400000,
+    "dataApprovazione": 1648550862000,
+    "dataScadenza": 1649196000000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "MODIFICHE AL REGOLAMENTO DEL CONSIGLIO COMUNALE CONCERNENTI LE MODALITA’ DI RIUNIONE CON PARTECIPAZIONE IN TUTTO O IN PARTE A DISTANZA CON SISTEMI DI VIDEOCONFERENZA ED IMPLEMENTAZIONE DELLE MODALITA’ DI ACCESSO DA PARTE DEL PUBBLICO",
+    "allegati": [
+      {
+        "id": 63777,
+        "nome": "Regolamento del Consiglio Comunale testo a fronte (2).pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/72508/Regolamento%20del%20Consiglio%20Comunale%20testo%20a%20fronte%20(2).pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Regolamento del Consiglio Comunale testo a fronte (2).pdf"
+      },
+      {
+        "id": 63778,
+        "nome": "Regolamento del Consiglio Comunale - def _1_.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/72508/Regolamento%20del%20Consiglio%20Comunale%20-%20def%20_1_.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Regolamento del Consiglio Comunale - def _1_.pdf"
+      },
+      {
+        "id": 63779,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2022_00018_00011.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/72508/Deliberazione_di_Consiglio_Completa-DC_2022_00018_00011.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 72508,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 568,
+        "nome": "Commissione Consiliare Affari Istituzionali",
+        "testo": "Favorevole di tutti i presenti",
+        "dataInvio": 1647903600000,
+        "dataScadenza": 1649196000000,
+        "dataParere": 1648076400000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 31,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 31,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bocci Ubaldo, Bonanni Patrizia, Bussolin Federico, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Cocollini Emanuele, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Di Puccio Stefano, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Giuliani Maria Federica, Monaco Michela, Moro Bundu Antonella, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Razzanelli Mario, Santarelli Luca, Sparavigna Laura, Tani Luca"
+    }
+  },
+  {
+    "id": 17390,
+    "numeroAdozione": "00026",
+    "dataAdozione": 1657490400000,
+    "dataEsecutivita": 1659391200000,
+    "dataPubblicazione": 1658527200000,
+    "dataApprovazione": 1657618530000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Nomina del Sig. Franco Nutini  alla carica di consigliere comunale in surroga della consigliera Maria Federica Giuliani",
+    "allegati": [
+      {
+        "id": 79779,
+        "nome": "Decreto del Sindaco n. 59 del 4.7.2022.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/91828/Decreto%20del%20Sindaco%20n.%2059%20del%204.7.2022.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Decreto del Sindaco n. 59 del 4.7.2022.pdf"
+      },
+      {
+        "id": 79780,
+        "nome": "Giuliani - accettazione - Prot. n. 232535 del 6.7.22.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/91828/Giuliani%20-%20accettazione%20-%20Prot.%20n.%20232535%20del%206.7.22.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Giuliani - accettazione - Prot. n. 232535 del 6.7.22.pdf"
+      },
+      {
+        "id": 79781,
+        "nome": "Paolieri - rinuncia Prot. 231656 del 5.7.22.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/91828/Paolieri%20-%20rinuncia%20Prot.%20231656%20del%205.7.22.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Paolieri - rinuncia Prot. 231656 del 5.7.22.pdf"
+      },
+      {
+        "id": 79782,
+        "nome": "Nutini Franco - dichiarazione.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/91828/Nutini%20Franco%20-%20dichiarazione.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Nutini Franco - dichiarazione.pdf"
+      },
+      {
+        "id": 79783,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2022_00041_00026.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/91828/Deliberazione_di_Consiglio_Completa-DC_2022_00041_00026.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 91828,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 25,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 25,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Bocci Ubaldo, Bonanni Patrizia, Bussolin Federico, Calì Francesca, Calistri Leonardo, Cocollini Emanuele, Conti Enrico, Dardano Mimma, Di Puccio Stefano, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Masi Lorenzo, Moro Bundu Antonella, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca"
+    }
+  },
+  {
+    "id": 17461,
+    "numeroAdozione": "00027",
+    "dataAdozione": 1657490400000,
+    "dataEsecutivita": 1659650400000,
+    "dataPubblicazione": 1658786400000,
+    "dataApprovazione": 1657618910000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Elezione di un Vice Presidente del Consiglio comunale a seguito di cessazione dalla carica di consigliere comunale per la nomina ad assessore.",
+    "allegati": [
+      {
+        "id": 80073,
+        "nome": "Decreto del Sindaco n. 59 del 4.7.2022.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/91846/Decreto%20del%20Sindaco%20n.%2059%20del%204.7.2022.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Decreto del Sindaco n. 59 del 4.7.2022.pdf"
+      },
+      {
+        "id": 80074,
+        "nome": "Giuliani - accettazione - Prot. n. 232535 del 6.7.22.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/91846/Giuliani%20-%20accettazione%20-%20Prot.%20n.%20232535%20del%206.7.22.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Giuliani - accettazione - Prot. n. 232535 del 6.7.22.pdf"
+      },
+      {
+        "id": 80075,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2022_00042_00027.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/91846/Deliberazione_di_Consiglio_Completa-DC_2022_00042_00027.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 91846,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 33,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 33,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Bianchi Donata, Bocci Ubaldo, Bonanni Patrizia, Bussolin Federico, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Cocollini Emanuele, Conti Enrico, Dardano Mimma, Di Puccio Stefano, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Masi Lorenzo, Monaco Michela, Montelatici Antonio, Moro Bundu Antonella, Nardella Dario, Nutini Franco, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura, Tani Luca"
+    }
+  },
+  {
+    "id": 18789,
+    "numeroAdozione": "00037",
+    "dataAdozione": 1662328800000,
+    "dataEsecutivita": 1663884000000,
+    "dataPubblicazione": 1663020000000,
+    "dataApprovazione": 1662456735000,
+    "dataScadenza": 1659564000000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Conferimento del Giglio d’Oro del Comune di Firenze a Nadia Murad e alla memoria di Hevrin Khalaf",
+    "allegati": [
+      {
+        "id": 85776,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2022_00046_00037.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/93676/Deliberazione_di_Consiglio_Completa-DC_2022_00046_00037.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 93676,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 684,
+        "nome": "Commissione Consiliare 7",
+        "testo": "Favorevole",
+        "dataInvio": 1658268000000,
+        "dataScadenza": 1659564000000,
+        "dataParere": 1658872800000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 32,
+      "numAstenuti": 5,
+      "nomiAstenuti": "Asciuti Andrea, Bocci Ubaldo, Cocollini Emanuele, Draghi Alessandro Emanuele, Montelatici Antonio",
+      "numNpv": 4,
+      "nomiNpv": "Cellai Jacopo, Monaco Michela, Razzanelli Mario, Tani Luca",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 23,
+      "nomiFavorevoli": "Milani Luca, Bianchi Donata, Bonanni Patrizia, Calì Francesca, Calistri Leonardo, Dardano Mimma, De Blasi Roberto, Di Puccio Stefano, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Masi Lorenzo, Moro Bundu Antonella, Nutini Franco, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 19718,
+    "numeroAdozione": "00039",
+    "dataAdozione": 1663538400000,
+    "dataEsecutivita": 1666303200000,
+    "dataPubblicazione": 1665439200000,
+    "dataApprovazione": 1663667985000,
+    "dataScadenza": 1663020000000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Modifiche al Regolamento  dei Consigli di Quartiere",
+    "allegati": [
+      {
+        "id": 89848,
+        "nome": "Allegato A).pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/97648/Allegato%20A).pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Allegato A).pdf"
+      },
+      {
+        "id": 89849,
+        "nome": "Allegato B) - Copia emendata.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/97648/Allegato%20B)%20-%20Copia%20emendata.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Allegato B) - Copia emendata.pdf"
+      },
+      {
+        "id": 89850,
+        "nome": "Allegato C) - TABELLA EMENDAMENTI ALLA DELIB. 48.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/97648/Allegato%20C)%20-%20TABELLA%20EMENDAMENTI%20ALLA%20DELIB.%2048.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Allegato C) - TABELLA EMENDAMENTI ALLA DELIB. 48.pdf"
+      },
+      {
+        "id": 89851,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2022_00048_00039.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/97648/Deliberazione_di_Consiglio_Completa-DC_2022_00048_00039.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata Emendata",
+    "proponente": "",
+    "attoId": 97648,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 726,
+        "nome": "Commissione Consiliare 8",
+        "testo": "Favorevole",
+        "dataInvio": 1661292000000,
+        "dataScadenza": 1663020000000,
+        "dataParere": 1662588000000
+      },
+      {
+        "id": 727,
+        "nome": "Commissione Consiliare Affari Istituzionali",
+        "testo": "Favorevole di tutti i presenti con osservazione",
+        "dataInvio": 1661292000000,
+        "dataScadenza": 1663020000000,
+        "dataParere": 1662588000000
+      },
+      {
+        "id": 728,
+        "nome": "Consiglio di Quartiere 5",
+        "testo": "Delibera 50012-22 - Favorevole",
+        "dataInvio": 1661292000000,
+        "dataScadenza": 1663020000000,
+        "dataParere": 1662933600000
+      },
+      {
+        "id": 729,
+        "nome": "Consiglio di Quartiere 4",
+        "testo": "Delib. 40014/2022 - Favorevole",
+        "dataInvio": 1661292000000,
+        "dataScadenza": 1663020000000,
+        "dataParere": 1663020000000
+      },
+      {
+        "id": 730,
+        "nome": "Consiglio di Quartiere 3",
+        "testo": "Delib. n. 30007-22 - Favorevole di tutti i presenti",
+        "dataInvio": 1661292000000,
+        "dataScadenza": 1663020000000,
+        "dataParere": 1662588000000
+      },
+      {
+        "id": 731,
+        "nome": "Consiglio di Quartiere 2",
+        "testo": "Delib. 20010/2022 - Favorevole di tutti i presenti",
+        "dataInvio": 1661292000000,
+        "dataScadenza": 1663020000000,
+        "dataParere": 1663106400000
+      },
+      {
+        "id": 732,
+        "nome": "Consiglio di Quartiere 1",
+        "testo": "Delibera 20/22 - Favorevole",
+        "dataInvio": 1661292000000,
+        "dataScadenza": 1663020000000,
+        "dataParere": 1662933600000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 26,
+      "numAstenuti": 1,
+      "nomiAstenuti": "Cellai Jacopo",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 25,
+      "nomiFavorevoli": "Milani Luca, Bianchi Donata, Bonanni Patrizia, Calì Francesca, Calistri Leonardo, Cocollini Emanuele, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Di Puccio Stefano, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Montelatici Antonio, Moro Bundu Antonella, Nutini Franco, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 19957,
+    "numeroAdozione": "00046",
+    "dataAdozione": 1664748000000,
+    "dataEsecutivita": 1666908000000,
+    "dataPubblicazione": 1666044000000,
+    "dataApprovazione": 1664878471000,
+    "dataScadenza": 1663884000000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Pastorelli Francesco, Armentano Nicola, Bussolin Federico, Cocollini Emanuele, Draghi Alessandro Emanuele, Razzanelli Mario, De Blasi Roberto",
+    "oggetto": "Istituzione del “Garante dei diritti degli anziani”",
+    "allegati": [
+      {
+        "id": 91045,
+        "nome": "REg del 4 mod 29.04.2022.doc",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/61649/REg%20del%204%20mod%2029.04.2022.doc",
+        "contentType": "application/msword",
+        "principale": false,
+        "riservato": false,
+        "titolo": "REg del 4 mod 29.04.2022.doc"
+      },
+      {
+        "id": 91046,
+        "nome": "ALL. 1 -Tabella emendamenti.doc",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/61649/ALL.%201%20-Tabella%20emendamenti.doc",
+        "contentType": "application/msword",
+        "principale": false,
+        "riservato": false,
+        "titolo": "ALL. 1 -Tabella emendamenti.doc"
+      },
+      {
+        "id": 91047,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2022_00004_00046.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/61649/Deliberazione_di_Consiglio_Completa-DC_2022_00004_00046.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Adottato - Firmato Segretario Seduta",
+    "esito": "Approvata Emendata",
+    "proponente": "",
+    "attoId": 61649,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 810,
+        "nome": "Commissione Consiliare 4",
+        "testo": "Favorevole di tutti i presenti",
+        "dataInvio": 1662588000000,
+        "dataScadenza": 1663884000000,
+        "dataParere": 1664229600000
+      },
+      {
+        "id": 811,
+        "nome": "Commissione Consiliare Affari Istituzionali",
+        "testo": "Favorevole di tutti i presenti",
+        "dataInvio": 1662588000000,
+        "dataScadenza": 1663884000000,
+        "dataParere": 1663192800000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 34,
+      "numAstenuti": 2,
+      "nomiAstenuti": "Moro Bundu Antonella, Palagi Dmitrij",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 32,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bocci Ubaldo, Bonanni Patrizia, Bussolin Federico, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Cocollini Emanuele, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Di Puccio Stefano, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Monaco Michela, Montelatici Antonio, Nutini Franco, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Razzanelli Mario, Rufilli Mirco, Santarelli Luca, Sparavigna Laura, Tani Luca"
+    }
+  },
+  {
+    "id": 20386,
+    "numeroAdozione": "00047",
+    "dataAdozione": 1665352800000,
+    "dataEsecutivita": 1667689200000,
+    "dataPubblicazione": 1666821600000,
+    "dataApprovazione": 1665481016000,
+    "dataScadenza": 1663711200000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Cellai Jacopo, Draghi Alessandro Emanuele, Razzanelli Mario, D'Ambrisi Angelo, Asciuti Andrea, Dardano Mimma, Masi Lorenzo, De Blasi Roberto",
+    "oggetto": "CONFERIMENTO DELLA CITTADINANZA ONORARIA A NICOLA GRATTERI",
+    "allegati": [
+      {
+        "id": 93131,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2022_00049_00047.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/100645/Deliberazione_di_Consiglio_Completa-DC_2022_00049_00047.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 100645,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 825,
+        "nome": "Commissione Consiliare 7",
+        "testo": "Favorevole",
+        "dataInvio": 1662415200000,
+        "dataScadenza": 1663711200000,
+        "dataParere": 1664920800000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 30,
+      "numAstenuti": 3,
+      "nomiAstenuti": "Bocci Ubaldo, Montelatici Antonio, Tani Luca",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 1,
+      "nomiContrari": "Cocollini Emanuele",
+      "numFavorevoli": 26,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bonanni Patrizia, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Masi Lorenzo, Monaco Michela, Nutini Franco, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Razzanelli Mario, Rufilli Mirco"
+    }
+  },
+  {
+    "id": 25203,
+    "numeroAdozione": "00005",
+    "dataAdozione": 1678057200000,
+    "dataEsecutivita": 1679612400000,
+    "dataPubblicazione": 1678748400000,
+    "dataApprovazione": 1678182825000,
+    "dataScadenza": 1677020400000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Modifica Regolamento Consiglio comunale: esposizione bandiera della Pace",
+    "allegati": [
+      {
+        "id": 117911,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2023_00002_00005.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/130531/Deliberazione_di_Consiglio_Completa-DC_2023_00002_00005.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 130531,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 875,
+        "nome": "Commissione Consiliare Affari Istituzionali",
+        "testo": "Favorevole",
+        "dataInvio": 1675724400000,
+        "dataScadenza": 1677020400000,
+        "dataParere": 1677711600000
+      },
+      {
+        "id": 876,
+        "nome": "Commissione Consiliare 7",
+        "testo": "Favorevole",
+        "dataInvio": 1675724400000,
+        "dataScadenza": 1677020400000,
+        "dataParere": 1677711600000
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 32,
+      "numAstenuti": 1,
+      "nomiAstenuti": "Felleca Barbara",
+      "numNpv": 2,
+      "nomiNpv": "De Blasi Roberto, Masi Lorenzo",
+      "numContrari": 7,
+      "nomiContrari": "Asciuti Andrea, Bocci Ubaldo, Cellai Jacopo, Cocollini Emanuele, Draghi Alessandro Emanuele, Monaco Michela, Razzanelli Mario",
+      "numFavorevoli": 22,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Bianchi Donata, Bonanni Patrizia, Calì Francesca, Calistri Leonardo, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, Di Puccio Stefano, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Moro Bundu Antonella, Nutini Franco, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 25977,
+    "numeroAdozione": "00007",
+    "numeroArgomento": "243",
+    "dataAdozione": 1678662000000,
+    "dataEsecutivita": 1681077600000,
+    "dataPubblicazione": 1680213600000,
+    "dataApprovazione": 1678787403000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "REFERENDUM CONSULTIVO- AMMISSIBILITA’ QUESITI - NOMINA COLLEGIO DI ESPERTI EX ART. 93 STATUTO DEL COMUNE DI FIRENZE",
+    "allegati": [
+      {
+        "id": 121079,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2023_00011_00007.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/139591/Deliberazione_di_Consiglio_Completa-DC_2023_00011_00007.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 139591,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 34,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 34,
+      "nomiFavorevoli": ""
+    }
+  },
+  {
+    "id": 26471,
+    "numeroAdozione": "00008",
+    "numeroArgomento": "258",
+    "dataAdozione": 1679266800000,
+    "dataEsecutivita": 1682200800000,
+    "dataPubblicazione": 1681336800000,
+    "dataApprovazione": 1679396090000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "REFERENDUM CONSULTIVO- AMMISSIBILITA’ QUESITI.  NOMINA TERZO COMPONENTE DEL COLLEGIO DI ESPERTI EX ART. 93 STATUTO DEL COMUNE DI FIRENZE",
+    "allegati": [
+      {
+        "id": 123677,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2023_00013_00008.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/141067/Deliberazione_di_Consiglio_Completa-DC_2023_00013_00008.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 141067,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 33,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 33,
+      "nomiFavorevoli": ""
+    }
+  },
+  {
+    "id": 26514,
+    "numeroAdozione": "00016",
+    "numeroArgomento": "290",
+    "dataAdozione": 1680472800000,
+    "dataEsecutivita": 1682287200000,
+    "dataPubblicazione": 1681423200000,
+    "dataApprovazione": 1680601984000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Bianchi Donata",
+    "oggetto": "Sottoscrizione del Patto di solidarietà con l'Associazione di Promozione Sociale \"APS Società Operaia di Mutuo Soccorso Insorgiamo\"",
+    "allegati": [
+      {
+        "id": 123886,
+        "nome": "STATUTO SOMS INSORGIAMO.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/142813/STATUTO%20SOMS%20INSORGIAMO.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "STATUTO SOMS INSORGIAMO.pdf"
+      },
+      {
+        "id": 123887,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2023_00015_00016.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/142813/Deliberazione_di_Consiglio_Completa-DC_2023_00015_00016.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 142813,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 29,
+      "numAstenuti": 1,
+      "nomiAstenuti": "Razzanelli Mario",
+      "numNpv": 1,
+      "nomiNpv": "Draghi Alessandro Emanuele",
+      "numContrari": 6,
+      "nomiContrari": "Bocci Ubaldo, Bussolin Federico, Cellai Jacopo, Cocollini Emanuele, Felleca Barbara, Sabatini Massimo",
+      "numFavorevoli": 21,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bonanni Patrizia, Calì Francesca, Calistri Leonardo, Conti Enrico, D'Ambrisi Angelo, De Blasi Roberto, Di Puccio Stefano, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Masi Lorenzo, Moro Bundu Antonella, Nutini Franco, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 26515,
+    "numeroAdozione": "00015",
+    "numeroArgomento": "288",
+    "dataAdozione": 1680472800000,
+    "dataEsecutivita": 1682287200000,
+    "dataPubblicazione": 1681423200000,
+    "dataApprovazione": 1680600208000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Convalida del Sig. Massimo Sabatini alla carica di consigliere comunale in surroga del consigliere Antonio Montelatici",
+    "allegati": [
+      {
+        "id": 123891,
+        "nome": "Dimissioni Montelatici.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/144697/Dimissioni%20Montelatici.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Dimissioni Montelatici.pdf"
+      },
+      {
+        "id": 123892,
+        "nome": "Dichiarazione possesso requisiti Sabatini.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/144697/Dichiarazione%20possesso%20requisiti%20Sabatini.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Dichiarazione possesso requisiti Sabatini.pdf"
+      },
+      {
+        "id": 123893,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2023_00019_00015.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/144697/Deliberazione_di_Consiglio_Completa-DC_2023_00019_00015.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 144697,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 26,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 26,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bocci Ubaldo, Bonanni Patrizia, Bussolin Federico, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Cocollini Emanuele, Conti Enrico, Dardano Mimma, De Blasi Roberto, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Innocenti Alessandra, Moro Bundu Antonella, Nutini Franco, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Rufilli Mirco, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 29562,
+    "numeroAdozione": "00027",
+    "numeroArgomento": "585",
+    "dataAdozione": 1688335200000,
+    "dataEsecutivita": 1689631200000,
+    "dataPubblicazione": 1688767200000,
+    "dataApprovazione": 1688544654000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Bianchi Donata",
+    "oggetto": "Conferimento cittadinanza onoraria a Toomaj Salehi",
+    "allegati": [
+      {
+        "id": 138100,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2023_00029_00027.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/161203/Deliberazione_di_Consiglio_Completa-DC_2023_00029_00027.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 161203,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 34,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 34,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bocci Ubaldo, Bonanni Patrizia, Bussolin Federico, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Cocollini Emanuele, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, Di Puccio Stefano, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Masi Lorenzo, Monaco Michela, Moro Bundu Antonella, Nardella Dario, Nutini Franco, Palagi Dmitrij, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Razzanelli Mario, Rufilli Mirco, Sabatini Massimo, Sparavigna Laura, Tani Luca"
+    }
+  },
+  {
+    "id": 30412,
+    "numeroAdozione": "00030",
+    "numeroArgomento": "681",
+    "dataAdozione": 1690149600000,
+    "dataEsecutivita": 1692309600000,
+    "dataPubblicazione": 1691445600000,
+    "dataApprovazione": 1690274188000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Bocci Ubaldo, Felleca Barbara, Bussolin Federico, Sabatini Massimo, Razzanelli Mario, Milani Luca, Armentano Nicola, Nutini Franco, Pastorelli Francesco",
+    "oggetto": "Modifiche allo Statuto del Comune di Firenze",
+    "allegati": [
+      {
+        "id": 142057,
+        "nome": "allegato_1_schema_22_06_23.odt",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/165379/allegato_1_schema_22_06_23.odt",
+        "contentType": "application/vnd.oasis.opendocument.text",
+        "principale": false,
+        "riservato": false,
+        "titolo": "allegato_1_schema_22_06_23.odt"
+      },
+      {
+        "id": 142058,
+        "nome": "allegato_2_Statuto testo a fronte completo.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/165379/allegato_2_Statuto%20testo%20a%20fronte%20completo.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "allegato_2_Statuto testo a fronte completo.pdf"
+      },
+      {
+        "id": 142059,
+        "nome": "STATUTO completo def.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/165379/STATUTO%20completo%20def.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "STATUTO completo def.pdf"
+      },
+      {
+        "id": 142060,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2023_00035_00030.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/165379/Deliberazione_di_Consiglio_Completa-DC_2023_00035_00030.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 165379,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 35,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 35,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bonanni Patrizia, Bussolin Federico, Calì Francesca, Calistri Leonardo, Cellai Jacopo, Cocollini Emanuele, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Di Puccio Stefano, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Masi Lorenzo, Monaco Michela, Moro Bundu Antonella, Nardella Dario, Nutini Franco, Palagi Dmitrij, Pampaloni Renzo, Pastorelli Francesco, Perini Letizia, Piccioli Massimiliano, Razzanelli Mario, Rufilli Mirco, Sabatini Massimo, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 37356,
+    "numeroAdozione": "00010",
+    "numeroArgomento": "157/A",
+    "dataAdozione": 1709506800000,
+    "dataEsecutivita": 1711407600000,
+    "dataPubblicazione": 1710543600000,
+    "dataPresentazione": 1710543600000,
+    "dataApprovazione": 1709632630000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Convalida della Sig.ra Susanna Della Felice alla carica di Consigliera comunale in surroga del Consigliere Francesco Pastorelli",
+    "allegati": [
+      {
+        "id": 175794,
+        "nome": "73805_- Modello Dichiarazione possesso requisiti Susanna Della Felice.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/211093/73805_-%20Modello%20Dichiarazione%20possesso%20requisiti%20Susanna%20Della%20Felice.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "73805_- Modello Dichiarazione possesso requisiti Susanna Della Felice.pdf"
+      },
+      {
+        "id": 175795,
+        "nome": "Dimissioni Consigliere Pastorelli Francesco.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/211093/Dimissioni%20Consigliere%20Pastorelli%20Francesco.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Dimissioni Consigliere Pastorelli Francesco.pdf"
+      },
+      {
+        "id": 175796,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00016_00010.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/211093/Deliberazione_di_Consiglio_Completa-DC_2024_00016_00010.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 211093,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 28,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 3,
+      "nomiNpv": "Bussolin Federico, De Blasi Roberto, Masi Lorenzo",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 25,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Bonanni Patrizia, Calì Francesca, Calistri Leonardo, Cocollini Emanuele, Conti Enrico, Dardano Mimma, Di Puccio Stefano, Draghi Alessandro Emanuele, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Moro Bundu Antonella, Nutini Franco, Palagi Dmitrij, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Sabatini Massimo, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 39360,
+    "numeroAdozione": "00028",
+    "numeroArgomento": "240/A",
+    "dataAdozione": 1712700000000,
+    "dataEsecutivita": 1715551200000,
+    "dataPubblicazione": 1714687200000,
+    "dataPresentazione": 1714687200000,
+    "dataApprovazione": 1712747902000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Bianchi Donata",
+    "oggetto": "Impegni  del COMUNE DI FIRENZE  come città operatrice di pace e solidarietà",
+    "allegati": [
+      {
+        "id": 184860,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00030_00028.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/216037/Deliberazione_di_Consiglio_Completa-DC_2024_00030_00028.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 216037,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 1434,
+        "nome": "Commissione Consiliare 7",
+        "testo": "Favorevole NOTE: Favorevole",
+        "dataInvio": 1710975600000,
+        "dataScadenza": 1712268000000,
+        "dataParere": 1711062000000,
+        "idParereAttico": 748987
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 28,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 1,
+      "nomiNpv": "Monaco Michela",
+      "numContrari": 6,
+      "nomiContrari": "Bocci Ubaldo, Bussolin Federico, Cellai Jacopo, Cocollini Emanuele, Draghi Alessandro Emanuele, Sabatini Massimo",
+      "numFavorevoli": 21,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Bianchi Donata, Bonanni Patrizia, Calì Francesca, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Della Felice Susanna, Di Puccio Stefano, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Masi Lorenzo, Moro Bundu Antonella, Nutini Franco, Palagi Dmitrij, Pampaloni Renzo, Perini Letizia, Rufilli Mirco, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 39578,
+    "numeroAdozione": "00036",
+    "numeroArgomento": "288/A",
+    "dataAdozione": 1713736800000,
+    "dataEsecutivita": 1716069600000,
+    "dataPubblicazione": 1715205600000,
+    "dataPresentazione": 1715205600000,
+    "dataApprovazione": 1713866465000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Milani Luca",
+    "oggetto": "Garante Comunale dei diritti delle persone private della libertà personale – Abrogazione e contestuale approvazione del Regolamento comunale",
+    "allegati": [
+      {
+        "id": 186257,
+        "nome": "regolamento_garante.docx",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/219379/regolamento_garante.docx",
+        "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "principale": false,
+        "riservato": false,
+        "titolo": "regolamento_garante.docx"
+      },
+      {
+        "id": 186258,
+        "nome": "Tabelle emendamenti .doc",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/219379/Tabelle%20emendamenti%20.doc",
+        "contentType": "application/msword",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Tabella emendamenti .doc"
+      },
+      {
+        "id": 186259,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00037_00036.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/219379/Deliberazione_di_Consiglio_Completa-DC_2024_00037_00036.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 219379,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 1542,
+        "nome": "Commissione Consiliare 7",
+        "testo": "Favorevole NOTE: Favorevole",
+        "dataInvio": 1712786400000,
+        "dataScadenza": 1714082400000,
+        "dataParere": 1713304800000,
+        "idParereAttico": 763753
+      },
+      {
+        "id": 1543,
+        "nome": "Commissione Consiliare 4",
+        "testo": "Favorevole NOTE: Favorevole",
+        "dataInvio": 1712786400000,
+        "dataScadenza": 1714082400000,
+        "dataParere": 1713304800000,
+        "idParereAttico": 763453
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 30,
+      "numAstenuti": 2,
+      "nomiAstenuti": "Bussolin Federico, Draghi Alessandro Emanuele",
+      "numNpv": 2,
+      "nomiNpv": "Cellai Jacopo, Cocollini Emanuele",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 26,
+      "nomiFavorevoli": "Milani Luca, Armentano Nicola, Asciuti Andrea, Bianchi Donata, Calì Francesca, Calistri Leonardo, Conti Enrico, D'Ambrisi Angelo, Dardano Mimma, De Blasi Roberto, Della Felice Susanna, Di Puccio Stefano, Felleca Barbara, Fratini Massimo, Giorgetti Fabio, Innocenti Alessandra, Monaco Michela, Moro Bundu Antonella, Nutini Franco, Palagi Dmitrij, Pampaloni Renzo, Perini Letizia, Piccioli Massimiliano, Rufilli Mirco, Santarelli Luca, Sparavigna Laura"
+    }
+  },
+  {
+    "id": 42349,
+    "numeroAdozione": "00046",
+    "numeroArgomento": "303",
+    "dataAdozione": 1721080800000,
+    "dataEsecutivita": 1723845600000,
+    "dataPubblicazione": 1722981600000,
+    "dataPresentazione": 1722981600000,
+    "dataApprovazione": 1721289769000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Funaro Sara",
+    "oggetto": "Elezioni amministrative dell’8 e 9 giugno 2024 – Ballottaggio 23 e 24 giugno 2024. Convalida degli eletti.",
+    "allegati": [
+      {
+        "id": 200390,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00049_00046.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/237538/Deliberazione_di_Consiglio_Completa-DC_2024_00049_00046.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 237538,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 35,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 35,
+      "nomiFavorevoli": "Milani Luca, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Funaro Sara, Gandolfo Giovanni, Giorgetti Fabio, Graziani Giovanni, Guccione Cosimo, Locchi Alberto, Masi Lorenzo, Monaco Michela, Mori Marzio, Mossuto Guglielmo, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Schmidt Erik Dieter, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 42350,
+    "numeroAdozione": "00047",
+    "numeroArgomento": "304",
+    "dataAdozione": 1721080800000,
+    "dataEsecutivita": 1723845600000,
+    "dataPubblicazione": 1722981600000,
+    "dataPresentazione": 1722981600000,
+    "dataApprovazione": 1721289983000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Funaro Sara",
+    "oggetto": "Surroga del Signor Francesco Grazzini alla carica di consigliere comunale",
+    "allegati": [
+      {
+        "id": 200392,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00050_00047.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/237544/Deliberazione_di_Consiglio_Completa-DC_2024_00050_00047.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 237544,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 35,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 35,
+      "nomiFavorevoli": "Milani Luca, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Funaro Sara, Gandolfo Giovanni, Giorgetti Fabio, Graziani Giovanni, Guccione Cosimo, Locchi Alberto, Masi Lorenzo, Monaco Michela, Mori Marzio, Mossuto Guglielmo, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Schmidt Erik Dieter, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 42351,
+    "numeroAdozione": "00048",
+    "numeroArgomento": "305",
+    "dataAdozione": 1721080800000,
+    "dataEsecutivita": 1723845600000,
+    "dataPubblicazione": 1722981600000,
+    "dataPresentazione": 1722981600000,
+    "dataApprovazione": 1721291254000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Funaro Sara",
+    "oggetto": "Elezione del Presidente del Consiglio Comunale.",
+    "allegati": [
+      {
+        "id": 200391,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00051_00048.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/237547/Deliberazione_di_Consiglio_Completa-DC_2024_00051_00048.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 237547,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 36,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 5,
+      "nomiNpv": "Del Re Cecilia, Monaco Michela, Mossuto Guglielmo, Schmidt Erik Dieter, Sirello Angela",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 31,
+      "nomiFavorevoli": "Milani Luca, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Funaro Sara, Gandolfo Giovanni, Giorgetti Fabio, Graziani Giovanni, Grazzini Francesco, Guccione Cosimo, Locchi Alberto, Masi Lorenzo, Mori Marzio, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Semplici Marco"
+    }
+  },
+  {
+    "id": 42465,
+    "numeroAdozione": "00050",
+    "numeroArgomento": "311",
+    "dataAdozione": 1721080800000,
+    "dataEsecutivita": 1724104800000,
+    "dataPubblicazione": 1723240800000,
+    "dataPresentazione": 1723240800000,
+    "dataApprovazione": 1721298418000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Funaro Sara",
+    "oggetto": "Commissione Elettorale Comunale – Nomina componenti.",
+    "allegati": [
+      {
+        "id": 201072,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00053_00050.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/237562/Deliberazione_di_Consiglio_Completa-DC_2024_00053_00050.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Pubblicato",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 237562,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 33,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 2,
+      "nomiNpv": "Bambagioni Paolo, Casini Francesco",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 31,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Barbieri Beatrice, Burgassi Marco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Gandolfo Giovanni, Giorgetti Fabio, Graziani Giovanni, Grazzini Francesco, Masi Lorenzo, Milani Luca, Monaco Michela, Mori Marzio, Mossuto Guglielmo, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Schmidt Erik Dieter, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 42467,
+    "numeroAdozione": "00056",
+    "numeroArgomento": "333",
+    "dataAdozione": 1722290400000,
+    "dataEsecutivita": 1724104800000,
+    "dataPubblicazione": 1723240800000,
+    "dataPresentazione": 1723240800000,
+    "dataApprovazione": 1722423039000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Commissione comunale per la formazione degli elenchi dei Giudici Popolari. Nomina membri.",
+    "allegati": [
+      {
+        "id": 201062,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00058_00056.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/239827/Deliberazione_di_Consiglio_Completa-DC_2024_00058_00056.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Pubblicato",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 239827,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 33,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 33,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Gandolfo Giovanni, Giorgetti Fabio, Graziani Giovanni, Grazzini Francesco, Locchi Alberto, Masi Lorenzo, Milani Luca, Monaco Michela, Mori Marzio, Mossuto Guglielmo, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Schmidt Erik Dieter, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 42971,
+    "numeroAdozione": "00049",
+    "numeroArgomento": "307",
+    "dataAdozione": 1721080800000,
+    "dataEsecutivita": 1726351200000,
+    "dataPubblicazione": 1725487200000,
+    "dataPresentazione": 1725487200000,
+    "dataApprovazione": 1721298154000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Funaro Sara",
+    "oggetto": "Elezione di due Vice Presidenti del Consiglio",
+    "allegati": [
+      {
+        "id": 204021,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00052_00049.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/237559/Deliberazione_di_Consiglio_Completa-DC_2024_00052_00049.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 237559,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 36,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 36,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Funaro Sara, Gandolfo Giovanni, Giorgetti Fabio, Graziani Giovanni, Grazzini Francesco, Locchi Alberto, Masi Lorenzo, Milani Luca, Monaco Michela, Mori Marzio, Mossuto Guglielmo, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Schmidt Eike Dieter, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 45472,
+    "numeroAdozione": "00067",
+    "numeroArgomento": "428",
+    "dataAdozione": 1727647200000,
+    "dataEsecutivita": 1732402800000,
+    "dataPubblicazione": 1731538800000,
+    "dataPresentazione": 1731538800000,
+    "dataApprovazione": 1727779376000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Convalida del Sig. Luca Santarelli alla carica di consigliere comunale in surroga del consigliere Marzio Mori",
+    "allegati": [
+      {
+        "id": 258291,
+        "nome": "Dimissioni consigliere Mori.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/251104/Dimissioni%20consigliere%20Mori.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Dimissioni consigliere Mori.pdf"
+      },
+      {
+        "id": 258292,
+        "nome": "All. B.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/251104/All.%20B.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "All. B.pdf"
+      },
+      {
+        "id": 258293,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00069_00067.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/251104/Deliberazione_di_Consiglio_Completa-DC_2024_00069_00067.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 251104,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 25,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 25,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Draghi Alessandro Emanuele, Gandolfo Giovanni, Graziani Giovanni, Grazzini Francesco, Locchi Alberto, Masi Lorenzo, Milani Luca, Palagi Dmitrij, Pampaloni Renzo, Ricci Enrico, Sabatini Massimo, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 45807,
+    "numeroAdozione": "00074",
+    "numeroArgomento": "533",
+    "dataAdozione": 1730070000000,
+    "dataEsecutivita": 1732402800000,
+    "dataPubblicazione": 1731538800000,
+    "dataPresentazione": 1731538800000,
+    "dataApprovazione": 1730210158000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Collegio dei Revisori dei conti - Nomina Triennio 2024-2027",
+    "allegati": [
+      {
+        "id": 258386,
+        "nome": "342869 _dichiarazione Romoli.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/256078/342869%20_dichiarazione%20Romoli.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "342869 _dichiarazione Romoli.pdf"
+      },
+      {
+        "id": 258387,
+        "nome": "241014 ACCETTAZIONE REVISORE COMUNE FIRENZE.pdf.p7m",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/256078/241014%20ACCETTAZIONE%20REVISORE%20COMUNE%20FIRENZE.pdf.p7m",
+        "contentType": "application/pkcs7-mime",
+        "principale": false,
+        "riservato": false,
+        "titolo": "241014 ACCETTAZIONE REVISORE COMUNE FIRENZE.pdf.p7m"
+      },
+      {
+        "id": 258388,
+        "nome": "325587 _ verbale temp_1666008341455126435.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/256078/325587%20_%20verbale%20temp_1666008341455126435.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "325587 _ verbale temp_1666008341455126435.pdf"
+      },
+      {
+        "id": 258389,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2024_00077_00074.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/256078/Deliberazione_di_Consiglio_Completa-DC_2024_00077_00074.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Pubblicato",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 256078,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 5085,
+        "nome": "Commissione Consiliare 1",
+        "testo": "PARERE FAVOREVOLE DI TUTTI I PRESENTI NOTE: PARERE FAVOREVOLE DI TUTTI I PRESENTI",
+        "dataInvio": 1729548000000,
+        "dataScadenza": 1730847600000,
+        "dataParere": 1730070000000,
+        "idParereAttico": 888835
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 30,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 30,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Giorgetti Fabio, Graziani Giovanni, Grazzini Francesco, Innocenti Alessandra, Locchi Alberto, Milani Luca, Monaco Michela, Palagi Dmitrij, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Santarelli Luca, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 49793,
+    "numeroAdozione": "00006",
+    "numeroArgomento": "111",
+    "dataAdozione": 1738537200000,
+    "dataEsecutivita": 1740870000000,
+    "dataPubblicazione": 1740006000000,
+    "dataPresentazione": 1740006000000,
+    "dataApprovazione": 1738667144000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Convalida della Sig.ra Patrizia Bonanni alla carica di Consigliera comunale in surroga del Consigliere Fabio Giorgetti",
+    "allegati": [
+      {
+        "id": 382292,
+        "nome": "dimissioni Consigliere Giorgetti.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/279514/dimissioni%20Consigliere%20Giorgetti.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "dimissioni Consigliere Giorgetti - Prot. 39228.pdf"
+      },
+      {
+        "id": 382293,
+        "nome": "Dichiarazione possesso dei requisiti Bonanni Patrizia - Prot. 40429.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/279514/Dichiarazione%20possesso%20dei%20requisiti%20Bonanni%20Patrizia%20-%20Prot.%2040429.pdf",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": false,
+        "titolo": "Dichiarazione possesso dei requisiti Bonanni Patrizia - Prot. 40429.pdf"
+      },
+      {
+        "id": 382294,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2025_00005_00006.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/279514/Deliberazione_di_Consiglio_Completa-DC_2025_00005_00006.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 279514,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 34,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 34,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Funaro Sara, Gandolfo Giovanni, Graziani Giovanni, Grazzini Francesco, Innocenti Alessandra, Locchi Alberto, Masi Lorenzo, Milani Luca, Monaco Michela, Mossuto Guglielmo, Palagi Dmitrij, Pampaloni Renzo, Ricci Enrico, Sabatini Massimo, Santarelli Luca, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 50979,
+    "numeroAdozione": "00015",
+    "numeroArgomento": "298",
+    "dataAdozione": 1742166000000,
+    "dataEsecutivita": 1743458400000,
+    "dataPubblicazione": 1742598000000,
+    "dataPresentazione": 1742598000000,
+    "dataApprovazione": 1742298515000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Modifica dell’art. 3 del “Regolamento Garante Comunale dei diritti delle persone private della libertà personale”",
+    "allegati": [
+      {
+        "id": 387879,
+        "nome": "ALL. 2 regolamento testo afronte EME.odt",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/289174/ALL.%202%20regolamento%20testo%20afronte%20EME.odt",
+        "contentType": "application/vnd.oasis.opendocument.text",
+        "principale": false,
+        "riservato": false,
+        "titolo": "ALL. 2 regolamento testo afronte EME.odt"
+      },
+      {
+        "id": 387880,
+        "nome": "ALL. 1 regolamento garante a pulito EME.docx",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/289174/ALL.%201%20regolamento%20garante%20a%20pulito%20EME.docx",
+        "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "principale": false,
+        "riservato": false,
+        "titolo": "ALL. 1 regolamento garante a pulito EME.docx"
+      },
+      {
+        "id": 387881,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2025_00016_00015.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/289174/Deliberazione_di_Consiglio_Completa-DC_2025_00016_00015.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Pubblicato",
+    "esito": "Approvata Emendata",
+    "proponente": "",
+    "attoId": 289174,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 10290,
+        "nome": "Commissione Consiliare Affari Istituzionali",
+        "testo": "Favorevole di tutti i presenti NOTE: Favorevole di tutti i presenti",
+        "dataInvio": 1741561200000,
+        "dataScadenza": 1742857200000,
+        "dataParere": 1741820400000,
+        "idParereAttico": 992131
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 27,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 27,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bonanni Patrizia, Barbieri Beatrice, Burgassi Marco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Gandolfo Giovanni, Graziani Giovanni, Innocenti Alessandra, Masi Lorenzo, Milani Luca, Palagi Dmitrij, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 52404,
+    "numeroAdozione": "00021",
+    "numeroArgomento": "416",
+    "dataAdozione": 1744581600000,
+    "dataEsecutivita": 1746741600000,
+    "dataPubblicazione": 1745877600000,
+    "dataPresentazione": 1745877600000,
+    "dataApprovazione": 1744706123000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Conferimento cittadinanza onoraria Pakhshan Azizi",
+    "allegati": [
+      {
+        "id": 394846,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2025_00024_00021.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/293584/Deliberazione_di_Consiglio_Completa-DC_2025_00024_00021.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 293584,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 11912,
+        "nome": "Commissione Consiliare 7",
+        "testo": "Favorevole di tutti i presenti. NOTE: Favorevole di tutti i presenti.",
+        "dataInvio": 1743458400000,
+        "dataScadenza": 1744754400000,
+        "dataParere": 1744149600000,
+        "idParereAttico": 1011883
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 33,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 33,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bonanni Patrizia, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fratini Massimo, Funaro Sara, Gandolfo Giovanni, Graziani Giovanni, Grazzini Francesco, Innocenti Alessandra, Locchi Alberto, Masi Lorenzo, Milani Luca, Mossuto Guglielmo, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Santarelli Luca, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 52965,
+    "numeroAdozione": "00023",
+    "numeroArgomento": "429",
+    "dataAdozione": 1745791200000,
+    "dataEsecutivita": 1748210400000,
+    "dataPubblicazione": 1747346400000,
+    "dataPresentazione": 1747346400000,
+    "dataApprovazione": 1745918154000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Conferimento del Giglio d'Oro del Comune di Firenze a Mario Primicerio",
+    "allegati": [
+      {
+        "id": 398191,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2025_00020_00023.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/290737/Deliberazione_di_Consiglio_Completa-DC_2025_00020_00023.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 290737,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 12918,
+        "nome": "Commissione Consiliare 7",
+        "testo": "Favorevole NOTE: Favorevole",
+        "dataInvio": 1742511600000,
+        "dataScadenza": 1743804000000,
+        "dataParere": 1742943600000,
+        "idParereAttico": 1001914
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 34,
+      "numAstenuti": 7,
+      "nomiAstenuti": "Chelli Matteo, Draghi Alessandro Emanuele, Gandolfo Giovanni, Locchi Alberto, Mossuto Guglielmo, Santarelli Luca, Sirello Angela",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 27,
+      "nomiFavorevoli": "Guccione Cosimo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bonanni Patrizia, Bambagioni Paolo, Barbieri Beatrice, Casini Francesco, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Fabiani Valerio, Fratini Massimo, Funaro Sara, Graziani Giovanni, Grazzini Francesco, Innocenti Alessandra, Masi Lorenzo, Milani Luca, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Schmidt Eike Dieter, Semplici Marco"
+    }
+  },
+  {
+    "id": 53311,
+    "numeroAdozione": "00033",
+    "numeroArgomento": "520",
+    "dataAdozione": 1747605600000,
+    "dataEsecutivita": 1748901600000,
+    "dataPubblicazione": 1748037600000,
+    "dataPresentazione": 1748037600000,
+    "dataApprovazione": 1747734411000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Nomina del Garante dei diritti delle persone private della libertà personale",
+    "allegati": [
+      {
+        "id": 400086,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2025_00033_00033.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/302791/Deliberazione_di_Consiglio_Completa-DC_2025_00033_00033.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Pubblicato",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 302791,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 30,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 1,
+      "nomiNpv": "Mossuto Guglielmo",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 29,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bonanni Patrizia, Bambagioni Paolo, Burgassi Marco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Graziani Giovanni, Grazzini Francesco, Innocenti Alessandra, Masi Lorenzo, Milani Luca, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Schmidt Eike Dieter, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 55805,
+    "numeroAdozione": "00039",
+    "numeroArgomento": "605",
+    "dataAdozione": 1750024800000,
+    "dataEsecutivita": 1754949600000,
+    "dataPubblicazione": 1754085600000,
+    "dataPresentazione": 1754085600000,
+    "dataApprovazione": 1750153934000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Nomina componenti aggiuntivi senza diritto di voto ai sensi dell’art. 8 dello Statuto della Società della Salute di Firenze",
+    "allegati": [
+      {
+        "id": 416588,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2025_00040_00039.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/308098/Deliberazione_di_Consiglio_Completa-DC_2025_00040_00039.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 308098,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 31,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 31,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bonanni Patrizia, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Gandolfo Giovanni, Graziani Giovanni, Innocenti Alessandra, Locchi Alberto, Milani Luca, Mossuto Guglielmo, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Schmidt Eike Dieter, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 55806,
+    "numeroAdozione": "00046",
+    "numeroArgomento": "721",
+    "dataAdozione": 1752444000000,
+    "dataEsecutivita": 1754949600000,
+    "dataPubblicazione": 1754085600000,
+    "dataPresentazione": 1754085600000,
+    "dataApprovazione": 1752571404000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Conferma delle Consulte in essere ai sensi dell’art. 4, comma 9, del Regolamento quadro delle Consulte",
+    "allegati": [
+      {
+        "id": 416573,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2025_00054_00046.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/314527/Deliberazione_di_Consiglio_Completa-DC_2025_00054_00046.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 314527,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 31,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 31,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bonanni Patrizia, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Gandolfo Giovanni, Graziani Giovanni, Grazzini Francesco, Innocenti Alessandra, Locchi Alberto, Milani Luca, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Schmidt Eike Dieter, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 56256,
+    "numeroAdozione": "00055",
+    "numeroArgomento": "780",
+    "dataAdozione": 1753826400000,
+    "dataEsecutivita": 1756764000000,
+    "dataPubblicazione": 1755900000000,
+    "dataPresentazione": 1755900000000,
+    "dataApprovazione": 1753955758000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Masi Lorenzo",
+    "oggetto": "Revisione del Regolamento del Consiglio comunale riguardante la partecipazione alle Commissioni e le modalità di svolgimento delle sedute in presenza, da remoto e in forma mista",
+    "allegati": [
+      {
+        "id": 419079,
+        "nome": "ALL. B) Regolamento del Consiglio Comunale testo coordinato (1).doc",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/316729/ALL.%20B)%20Regolamento%20del%20Consiglio%20Comunale%20testo%20coordinato%20(1).doc",
+        "contentType": "application/msword",
+        "principale": false,
+        "riservato": false,
+        "titolo": "ALL. B) Regolamento del Consiglio Comunale testo coordinato (1).doc"
+      },
+      {
+        "id": 419080,
+        "nome": "ALL. A) Regolamento_modifica testo a fronte (1).docx",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/316729/ALL.%20A)%20Regolamento_modifica%20testo%20a%20fronte%20(1).docx",
+        "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "principale": false,
+        "riservato": false,
+        "titolo": "ALL. A) Regolamento_modifica testo a fronte (1).docx"
+      },
+      {
+        "id": 419081,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2025_00058_00055.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/316729/Deliberazione_di_Consiglio_Completa-DC_2025_00058_00055.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto Pubblicato",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 316729,
+    "riservato": false,
+    "scaduto": false,
+    "pareri": [
+      {
+        "id": 19829,
+        "nome": "Commissione Consiliare Affari Istituzionali",
+        "testo": "Favorevole di tutti i presenti NOTE: Favorevole di tutti i presenti",
+        "dataInvio": 1753048800000,
+        "dataScadenza": 1757023200000,
+        "dataParere": 1753308000000,
+        "idParereAttico": 1080364
+      }
+    ],
+    "risposte": [],
+    "votazioni": {
+      "numPresenti": 32,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 1,
+      "nomiNpv": "Palagi Dmitrij",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 31,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bonanni Patrizia, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Del Re Cecilia, Draghi Alessandro Emanuele, Fabiani Valerio, Fratini Massimo, Gandolfo Giovanni, Graziani Giovanni, Grazzini Francesco, Innocenti Alessandra, Locchi Alberto, Masi Lorenzo, Milani Luca, Mossuto Guglielmo, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Semplici Marco, Sirello Angela"
+    }
+  },
+  {
+    "id": 57170,
+    "numeroAdozione": "00057",
+    "numeroArgomento": "826",
+    "dataAdozione": 1757282400000,
+    "dataEsecutivita": 1759528800000,
+    "dataPubblicazione": 1758664800000,
+    "dataPresentazione": 1758664800000,
+    "dataApprovazione": 1757415403000,
+    "ufficio": "Struttura Autonoma del Consiglio Comunale",
+    "relatore": "Guccione Cosimo",
+    "oggetto": "Collegio dei Revisori dei Conti - Nomina nuovo componente triennio 2024-2027",
+    "allegati": [
+      {
+        "id": 425136,
+        "nome": "293859_2025_0145564_ Verbale estrazione Prefettura.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegatinull",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": true,
+        "titolo": "293859_2025_0145564_ Verbale estrazione Prefettura.pdf"
+      },
+      {
+        "id": 425137,
+        "nome": "296840 _Mascarucci - rinuncia - comune - firenze.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegatinull",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": true,
+        "titolo": "296840 _Mascarucci - rinuncia - comune - firenze.pdf"
+      },
+      {
+        "id": 425138,
+        "nome": "302668_dichiarazione Rosticci.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegatinull",
+        "contentType": "application/pdf",
+        "principale": false,
+        "riservato": true,
+        "titolo": "302668_dichiarazione Rosticci.pdf"
+      },
+      {
+        "id": 425139,
+        "nome": "Deliberazione_di_Consiglio_Completa-DC_2025_00065_00057.pdf",
+        "descrizione": "Deliberazione di Consiglio",
+        "link": "/trasparenza-atti-allegati/322888/Deliberazione_di_Consiglio_Completa-DC_2025_00065_00057.pdf",
+        "contentType": "application/pdf",
+        "principale": true,
+        "riservato": false
+      }
+    ],
+    "tipoAttoDto": {
+      "id": 3,
+      "codice": "DC",
+      "nome": "Delibere di Consiglio"
+    },
+    "stato": "Atto pronto per la pubblicazione",
+    "esito": "Approvata",
+    "proponente": "",
+    "attoId": 322888,
+    "riservato": false,
+    "scaduto": false,
+    "votazioni": {
+      "numPresenti": 30,
+      "numAstenuti": 0,
+      "nomiAstenuti": "",
+      "numNpv": 0,
+      "nomiNpv": "",
+      "numContrari": 0,
+      "nomiContrari": "",
+      "numFavorevoli": 30,
+      "nomiFavorevoli": "Guccione Cosimo, Amato Edoardo, Arciprete Caterina, Armentano Nicola, Balli Cristiano, Bonanni Patrizia, Bambagioni Paolo, Barbieri Beatrice, Burgassi Marco, Casini Francesco, Chelli Matteo, Ciulli Andrea, Collesei Stefania, Conti Enrico, Fabiani Valerio, Fratini Massimo, Gandolfo Giovanni, Graziani Giovanni, Innocenti Alessandra, Locchi Alberto, Milani Luca, Monaco Michela, Palagi Dmitrij, Pampaloni Renzo, Pizzolo Vincenzo Maria, Ricci Enrico, Sabatini Massimo, Santarelli Luca, Semplici Marco, Sirello Angela"
+    }
+  }
+]
