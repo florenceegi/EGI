@@ -74,17 +74,23 @@ export class RequestCreateNotificationWallet {
                 return;
             }
             const result = await window.Swal.fire({
-                title: this.translate('collection.wallet.create_the_wallet'),
+                title: this.translate('collection.wallet.create_the_wallet', 'Aggiungi Wallet Utente'),
                 html: modalHtml,
                 showCancelButton: true,
-                confirmButtonText: this.translate('wallet_create'),
-                cancelButtonText: 'Annulla',
-                width: 600,
+                confirmButtonText: this.translate('wallet_create', 'Aggiungi Wallet'),
+                cancelButtonText: this.translate('label.cancel', 'Annulla'),
+                width: 700,
+                padding: '2rem',
+                background: '#1f2937',
+                color: '#fff',
                 customClass: {
-                    popup: 'bg-gray-800 text-white',
-                    title: 'text-white',
-                    content: 'text-white'
+                    popup: 'rounded-2xl shadow-2xl border border-gray-700',
+                    title: 'text-2xl font-bold text-white mb-6',
+                    htmlContainer: 'text-left',
+                    confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:scale-[1.02]',
+                    cancelButton: 'bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold px-6 py-2.5 rounded-lg transition-all duration-200'
                 },
+                buttonsStyling: false,
                 preConfirm: () => this.validateAndCollectData(collectionId, userId)
             });
 
@@ -123,43 +129,109 @@ export class RequestCreateNotificationWallet {
         console.log("🔍 Caricamento HTML del modale...", this.translate('wallet_address', 'Address'));
 
         return `
-            <form id="wallet-modal-form" class="space-y-4">
-                <div class="mb-3">
-                    <label for="walletAddress" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('wallet_address', 'Address')}
-                    </label>
-                    <input type="text"
-                           id="walletAddress"
-                           class="swal2-input bg-gray-700 text-white"
-                           style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
-                           value="${walletAddress}"
-                           placeholder="${this.translate('wallet_address_placeholder')}">
+            <div class="text-left">
+                <!-- Header Info Box -->
+                <div class="mb-6 rounded-lg border border-blue-600/30 bg-blue-900/20 p-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="h-5 w-5 flex-shrink-0 text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-sm text-blue-200 leading-relaxed">
+                            ${this.translate('collection.wallet.add_external_description', 'Aggiungi un wallet Algorand esistente per questo utente. Puoi incollare manualmente l\'indirizzo o connettere tramite PeraWallet.')}
+                        </p>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="royaltyMint" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('wallet_royalty_mint')}
-                    </label>
-                    <input type="number"
-                           id="royaltyMint"
-                           class="swal2-input bg-gray-700 text-white"
-                           style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
-                           step="0.01"
-                           placeholder="${this.translate('wallet_royalty_mint_placeholder')}">
+                <!-- Connection Methods -->
+                <div class="mb-6 grid grid-cols-2 gap-3">
+                    <!-- Manual Input (Active) -->
+                    <button type="button" id="manualInputBtn" 
+                        class="flex flex-col items-center gap-2 rounded-lg border-2 border-blue-500 bg-blue-900/30 px-4 py-3 text-center transition-all hover:bg-blue-900/50">
+                        <svg class="h-8 w-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        <span class="text-sm font-semibold text-blue-300">Incolla Address</span>
+                    </button>
+
+                    <!-- PeraWallet (Coming Soon) -->
+                    <button type="button" id="peraWalletBtn" disabled
+                        class="flex flex-col items-center gap-2 rounded-lg border-2 border-gray-600 bg-gray-700/30 px-4 py-3 text-center opacity-50 cursor-not-allowed">
+                        <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                        </svg>
+                        <span class="text-sm font-semibold text-gray-400">Connetti PeraWallet</span>
+                        <span class="text-xs text-gray-500">(Prossimamente)</span>
+                    </button>
                 </div>
 
-                <div class="mb-3">
-                    <label for="royaltyRebind" class="block text-sm font-medium text-gray-300">
-                        ${this.translate('wallet_royalty_rebind')}
-                    </label>
-                    <input type="number"
-                           id="royaltyRebind"
-                           class="swal2-input bg-gray-700 text-white"
-                           style="width: 90%; max-width: 350px; margin: auto; padding: 8px;"
-                           step="0.01"
-                           placeholder="${this.translate('wallet_royalty_rebind_placeholder')}">
-                </div>
-            </form>
+                <!-- Form -->
+                <form id="wallet-modal-form" class="space-y-4">
+                    <!-- Wallet Address -->
+                    <div>
+                        <label for="walletAddress" class="mb-2 block text-sm font-semibold text-gray-200">
+                            ${this.translate('wallet_address', 'Indirizzo Wallet')} <span class="text-red-400">*</span>
+                        </label>
+                        <input type="text"
+                               id="walletAddress"
+                               class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 font-mono text-sm text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50"
+                               value="${walletAddress}"
+                               placeholder="GABC...XYZ (58 caratteri)"
+                               maxlength="58">
+                        <p class="mt-1.5 text-xs text-gray-400">
+                            ${this.translate('collection.wallet.address_hint', 'Inserisci l\'indirizzo completo di 58 caratteri')}
+                        </p>
+                    </div>
+
+                    <!-- Royalties Grid -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Royalty Mint -->
+                        <div>
+                            <label for="royaltyMint" class="mb-2 block text-sm font-semibold text-gray-200">
+                                ${this.translate('wallet_royalty_mint', 'Royalty Mint')} <span class="text-red-400">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number"
+                                       id="royaltyMint"
+                                       class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 pr-10 text-white transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50"
+                                       step="0.01"
+                                       min="0"
+                                       max="100"
+                                       placeholder="0.00">
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
+                            </div>
+                        </div>
+
+                        <!-- Royalty Rebind -->
+                        <div>
+                            <label for="royaltyRebind" class="mb-2 block text-sm font-semibold text-gray-200">
+                                ${this.translate('wallet_royalty_rebind', 'Royalty Resale')} <span class="text-red-400">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number"
+                                       id="royaltyRebind"
+                                       class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 pr-10 text-white transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50"
+                                       step="0.01"
+                                       min="0"
+                                       max="100"
+                                       placeholder="0.00">
+                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning: Royalty Deduction -->
+                    <div class="rounded-lg border border-yellow-600/40 bg-yellow-900/20 p-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="h-5 w-5 flex-shrink-0 text-yellow-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <p class="text-sm text-yellow-200 leading-relaxed">
+                                ${this.translate('collection.wallet.royalty_deduction_warning', 'Le royalty assegnate verranno sottratte dalla quota disponibile del Creator che aggiunge questo wallet.')}
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
         `;
     }
 
