@@ -9,6 +9,7 @@ use App\Models\Wallet;
 use App\Models\WalletChangeApproval;
 use App\Models\NotificationPayloadWallet;
 use App\Services\Notifications\InvitationService;
+use App\Services\Wallet\WalletProvisioningService;
 use Livewire\Component;
 use Illuminate\Support\Facades\Log;
 use App\Traits\HasPermissionTrait;
@@ -47,9 +48,14 @@ class CollectionUserMember extends Component {
     public string $role = '';
 
     private InvitationService $invitationService;
+    private WalletProvisioningService $walletProvisioningService;
 
-    public function boot(InvitationService $invitationService) {
+    public function boot(
+        InvitationService $invitationService,
+        WalletProvisioningService $walletProvisioningService
+    ) {
         $this->invitationService = $invitationService;
+        $this->walletProvisioningService = $walletProvisioningService;
     }
 
     public function mount($id) {
@@ -287,6 +293,74 @@ class CollectionUserMember extends Component {
         $this->show = false;
     }
 
+    /**
+     * Creates a new Algorand wallet for the collection (not necessarily tied to a user).
+     * 
+     * This method provisions a secure Algorand wallet using WalletProvisioningService
+     * with AWS KMS encryption for the mnemonic phrase. The wallet will be associated
+     * with the current collection but can exist independently of any user.
+     *
+     * @return void
+     */
+    public function createNewWallet() {
+        Log::channel('florenceegi')->info('[CollectionUserMember] Create new wallet request', [
+            'collection_id' => $this->collectionId,
+            'user_id' => Auth::id(),
+            'canCreateWallet' => $this->canCreateWallet
+        ]);
+
+        try {
+            // OS2: Security check - verify user has permission
+            if (!$this->canCreateWallet) {
+                Log::channel('florenceegi')->warning('[CollectionUserMember] Unauthorized wallet creation attempt', [
+                    'collection_id' => $this->collectionId,
+                    'user_id' => Auth::id()
+                ]);
+                
+                session()->flash('error', __('collection.wallet.creation_denied'));
+                return;
+            }
+
+            // OS2: Verify collection exists
+            $collection = Collection::findOrFail($this->collectionId);
+
+            Log::channel('florenceegi')->info('[CollectionUserMember] Provisioning new Algorand wallet', [
+                'collection_id' => $this->collectionId,
+                'collection_name' => $collection->collection_name
+            ]);
+
+            // OS3: Provision wallet using WalletProvisioningService
+            // Creates Algorand wallet + encrypts mnemonic with AWS KMS + stores in DB
+            $wallet = $this->walletProvisioningService->provisionWallet(
+                userId: null, // Collection wallet without specific user
+                collectionId: $this->collectionId
+            );
+
+            Log::channel('florenceegi')->info('[CollectionUserMember] Wallet created successfully', [
+                'wallet_id' => $wallet->id,
+                'wallet_address' => $wallet->address,
+                'collection_id' => $this->collectionId
+            ]);
+
+            // Reload wallets to show the new one
+            $this->loadTeamUsers();
+
+            // Success feedback with wallet address
+            session()->flash('success', __('collection.wallet.created_successfully', [
+                'address' => $wallet->address
+            ]));
+
+        } catch (\Exception $e) {
+            Log::channel('florenceegi')->error('[CollectionUserMember] Wallet creation failed', [
+                'collection_id' => $this->collectionId,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            session()->flash('error', __('collection.wallet.creation_failed'));
+        }
+    }
 
     public function render() {
         return view('livewire.collections.collection-user-member');
