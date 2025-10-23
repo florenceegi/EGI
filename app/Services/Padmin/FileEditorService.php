@@ -14,13 +14,11 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @version 1.0.0
  * @date 2025-10-23
  */
-class FileEditorService
-{
+class FileEditorService {
     protected UltraLogManager $logger;
     protected string $backupDir;
 
-    public function __construct(UltraLogManager $logger)
-    {
+    public function __construct(UltraLogManager $logger) {
         $this->logger = $logger;
         $this->backupDir = storage_path('app/padmin-backups');
 
@@ -33,8 +31,7 @@ class FileEditorService
     /**
      * Applica fix a un file con backup automatico
      */
-    public function applyFix(string $filePath, string $oldCode, string $newCode): array
-    {
+    public function applyFix(string $filePath, string $oldCode, string $newCode): array {
         $absolutePath = base_path($filePath);
 
         $this->logger->info('[FileEditorService] Applying fix', [
@@ -84,7 +81,6 @@ class FileEditorService
                 'backup_path' => $backupPath,
                 'message' => 'Fix applied successfully'
             ];
-
         } catch (\Exception $e) {
             // Rollback
             $this->restoreBackup($backupPath, $absolutePath);
@@ -105,8 +101,7 @@ class FileEditorService
     /**
      * Crea backup di un file
      */
-    private function createBackup(string $filePath): string
-    {
+    private function createBackup(string $filePath): string {
         $timestamp = date('Y-m-d_H-i-s');
         $filename = basename($filePath);
         $backupPath = $this->backupDir . '/' . $filename . '.' . $timestamp . '.backup';
@@ -119,8 +114,7 @@ class FileEditorService
     /**
      * Ripristina backup
      */
-    private function restoreBackup(string $backupPath, string $originalPath): void
-    {
+    private function restoreBackup(string $backupPath, string $originalPath): void {
         if (file_exists($backupPath)) {
             copy($backupPath, $originalPath);
         }
@@ -129,8 +123,7 @@ class FileEditorService
     /**
      * Valida sintassi PHP
      */
-    private function validatePhpSyntax(string $code): bool
-    {
+    private function validatePhpSyntax(string $code): bool {
         // Scrivi temporaneamente il codice in un file temp
         $tempFile = tempnam(sys_get_temp_dir(), 'padmin_syntax_check_');
         file_put_contents($tempFile, $code);
@@ -150,8 +143,7 @@ class FileEditorService
     /**
      * Lista tutti i backup disponibili
      */
-    public function listBackups(): array
-    {
+    public function listBackups(): array {
         $backups = [];
         $files = glob($this->backupDir . '/*.backup');
 
@@ -173,8 +165,7 @@ class FileEditorService
     /**
      * Pulisci backup vecchi (> 7 giorni)
      */
-    public function cleanOldBackups(int $daysToKeep = 7): int
-    {
+    public function cleanOldBackups(int $daysToKeep = 7): int {
         $deleted = 0;
         $cutoffTime = time() - ($daysToKeep * 24 * 60 * 60);
         $files = glob($this->backupDir . '/*.backup');

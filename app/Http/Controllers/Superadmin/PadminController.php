@@ -683,7 +683,7 @@ PROMPT;
 
     /**
      * Apply AI-generated fix to violation
-     * 
+     *
      * @param Request $request
      * @param string $id Violation ID from session
      * @return JsonResponse
@@ -751,13 +751,15 @@ PROMPT;
 
             // 4. Verify fix by re-scanning file
             $verifyResult = $this->padminService->scanSingleFile($violation['file']);
-            
+
             $isFixed = true;
             if (!empty($verifyResult['violations'])) {
                 // Check if same violation still exists
                 foreach ($verifyResult['violations'] as $v) {
-                    if ($v['rule'] === $violation['rule'] && 
-                        $v['line'] === $violation['line']) {
+                    if (
+                        $v['rule'] === $violation['rule'] &&
+                        $v['line'] === $violation['line']
+                    ) {
                         $isFixed = false;
                         break;
                     }
@@ -785,11 +787,10 @@ PROMPT;
                 'backup_path' => $applyResult['backup_path'],
                 'explanation' => $fixResult['explanation'] ?? '',
                 'fixed_code' => $fixResult['fixed_code'],
-                'message' => $isFixed 
+                'message' => $isFixed
                     ? 'Fix applied successfully and verified'
                     : 'Fix applied but violation may still exist'
             ]);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('PADMIN_AI_FIX_FAILED', [
                 'admin_id' => auth()->id(),
@@ -809,7 +810,7 @@ PROMPT;
 
     /**
      * Preview AI-generated fix without applying
-     * 
+     *
      * @param Request $request
      * @param string $id Violation ID from session
      * @return JsonResponse
@@ -858,7 +859,6 @@ PROMPT;
                 'line' => $violation['line'],
                 'rule' => $violation['rule']
             ]);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('PADMIN_AI_PREVIEW_FAILED', [
                 'admin_id' => auth()->id(),

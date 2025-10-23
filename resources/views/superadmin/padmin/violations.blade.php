@@ -457,11 +457,11 @@
                                         📄 ${v.file}:${v.line}
                                     </p>
                                     ${v.codeSnippet ? `
-                                                        <details class="mt-2">
-                                                            <summary class="cursor-pointer text-xs text-primary">Vedi codice</summary>
-                                                            <pre class="mt-2 p-2 bg-base-300 rounded text-xs overflow-x-auto"><code>${escapeHtml(v.codeSnippet)}</code></pre>
-                                                        </details>
-                                                    ` : ''}
+                                                                <details class="mt-2">
+                                                                    <summary class="cursor-pointer text-xs text-primary">Vedi codice</summary>
+                                                                    <pre class="mt-2 p-2 bg-base-300 rounded text-xs overflow-x-auto"><code>${escapeHtml(v.codeSnippet)}</code></pre>
+                                                                </details>
+                                                            ` : ''}
                                 </div>
                             </div>
                         </div>
