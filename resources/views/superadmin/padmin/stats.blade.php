@@ -1,14 +1,15 @@
 <x-layouts.superadmin :pageTitle="$pageTitle ?? 'Statistiche Padmin'">
     {{-- Header --}}
-    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
             <h1 class="text-2xl font-bold text-base-content">📊 Statistiche Padmin</h1>
-            <p class="text-sm text-base-content/70 mt-1">Metriche aggregate e analisi qualità del codice</p>
+            <p class="mt-1 text-sm text-base-content/70">Metriche aggregate e analisi qualità del codice</p>
         </div>
         <div class="flex gap-2">
             <a href="{{ route('superadmin.padmin.violations') }}" class="btn btn-outline btn-sm">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 Violazioni
             </a>
@@ -19,14 +20,14 @@
     </div>
 
     {{-- KPI Cards Row --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {{-- Total Violations --}}
         <div class="card bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-xl">
             <div class="card-body p-5">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm opacity-90">Violazioni Totali</p>
-                        <h3 class="text-3xl font-bold mt-1">{{ $totalViolations }}</h3>
+                        <h3 class="mt-1 text-3xl font-bold">{{ $totalViolations }}</h3>
                     </div>
                     <div class="text-4xl opacity-80">⚠️</div>
                 </div>
@@ -39,7 +40,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm opacity-90">Violazioni Risolte</p>
-                        <h3 class="text-3xl font-bold mt-1">{{ $fixedViolations }}</h3>
+                        <h3 class="mt-1 text-3xl font-bold">{{ $fixedViolations }}</h3>
                     </div>
                     <div class="text-4xl opacity-80">✅</div>
                 </div>
@@ -52,7 +53,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm opacity-90">Tasso di Risoluzione</p>
-                        <h3 class="text-3xl font-bold mt-1">{{ $fixRate }}%</h3>
+                        <h3 class="mt-1 text-3xl font-bold">{{ $fixRate }}%</h3>
                     </div>
                     <div class="text-4xl opacity-80">📈</div>
                 </div>
@@ -65,7 +66,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm opacity-90">Simboli Indicizzati</p>
-                        <h3 class="text-3xl font-bold mt-1">{{ $symbolCount }}</h3>
+                        <h3 class="mt-1 text-3xl font-bold">{{ $symbolCount }}</h3>
                     </div>
                     <div class="text-4xl opacity-80">💻</div>
                 </div>
@@ -74,65 +75,73 @@
     </div>
 
     {{-- Charts Row --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {{-- Priority Distribution --}}
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
-                <h3 class="card-title text-base mb-4">🎯 Distribuzione per Priorità</h3>
+                <h3 class="card-title mb-4 text-base">🎯 Distribuzione per Priorità</h3>
                 <div class="space-y-3">
                     {{-- P0 --}}
                     <div>
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="badge badge-error badge-sm">P0</span>
                                 <span class="text-sm font-semibold">BLOCKING</span>
                             </div>
-                            <span class="text-sm text-base-content/70">{{ $violationStats['byPriority']['P0'] }} ({{ $priorityPercentages['P0'] }}%)</span>
+                            <span class="text-sm text-base-content/70">{{ $violationStats['byPriority']['P0'] }}
+                                ({{ $priorityPercentages['P0'] }}%)</span>
                         </div>
-                        <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
-                            <div class="bg-error h-full rounded-full transition-all duration-500" style="width: {{ $priorityPercentages['P0'] }}%"></div>
+                        <div class="h-3 w-full overflow-hidden rounded-full bg-base-300">
+                            <div class="h-full rounded-full bg-error transition-all duration-500"
+                                style="width: {{ $priorityPercentages['P0'] }}%"></div>
                         </div>
                     </div>
 
                     {{-- P1 --}}
                     <div>
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="badge badge-warning badge-sm">P1</span>
                                 <span class="text-sm font-semibold">High</span>
                             </div>
-                            <span class="text-sm text-base-content/70">{{ $violationStats['byPriority']['P1'] }} ({{ $priorityPercentages['P1'] }}%)</span>
+                            <span class="text-sm text-base-content/70">{{ $violationStats['byPriority']['P1'] }}
+                                ({{ $priorityPercentages['P1'] }}%)</span>
                         </div>
-                        <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
-                            <div class="bg-warning h-full rounded-full transition-all duration-500" style="width: {{ $priorityPercentages['P1'] }}%"></div>
+                        <div class="h-3 w-full overflow-hidden rounded-full bg-base-300">
+                            <div class="h-full rounded-full bg-warning transition-all duration-500"
+                                style="width: {{ $priorityPercentages['P1'] }}%"></div>
                         </div>
                     </div>
 
                     {{-- P2 --}}
                     <div>
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="badge badge-info badge-sm">P2</span>
                                 <span class="text-sm font-semibold">Medium</span>
                             </div>
-                            <span class="text-sm text-base-content/70">{{ $violationStats['byPriority']['P2'] }} ({{ $priorityPercentages['P2'] }}%)</span>
+                            <span class="text-sm text-base-content/70">{{ $violationStats['byPriority']['P2'] }}
+                                ({{ $priorityPercentages['P2'] }}%)</span>
                         </div>
-                        <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
-                            <div class="bg-info h-full rounded-full transition-all duration-500" style="width: {{ $priorityPercentages['P2'] }}%"></div>
+                        <div class="h-3 w-full overflow-hidden rounded-full bg-base-300">
+                            <div class="h-full rounded-full bg-info transition-all duration-500"
+                                style="width: {{ $priorityPercentages['P2'] }}%"></div>
                         </div>
                     </div>
 
                     {{-- P3 --}}
                     <div>
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="badge badge-neutral badge-sm">P3</span>
                                 <span class="text-sm font-semibold">Low</span>
                             </div>
-                            <span class="text-sm text-base-content/70">{{ $violationStats['byPriority']['P3'] }} ({{ $priorityPercentages['P3'] }}%)</span>
+                            <span class="text-sm text-base-content/70">{{ $violationStats['byPriority']['P3'] }}
+                                ({{ $priorityPercentages['P3'] }}%)</span>
                         </div>
-                        <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
-                            <div class="bg-neutral h-full rounded-full transition-all duration-500" style="width: {{ $priorityPercentages['P3'] }}%"></div>
+                        <div class="h-3 w-full overflow-hidden rounded-full bg-base-300">
+                            <div class="h-full rounded-full bg-neutral transition-all duration-500"
+                                style="width: {{ $priorityPercentages['P3'] }}%"></div>
                         </div>
                     </div>
                 </div>
@@ -142,57 +151,65 @@
         {{-- Severity Distribution --}}
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
-                <h3 class="card-title text-base mb-4">🔥 Distribuzione per Severità</h3>
+                <h3 class="card-title mb-4 text-base">🔥 Distribuzione per Severità</h3>
                 <div class="space-y-3">
                     {{-- Critical --}}
                     <div>
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="badge badge-error badge-sm">Critical</span>
                             </div>
-                            <span class="text-sm text-base-content/70">{{ $violationStats['bySeverity']['critical'] }} ({{ $severityPercentages['critical'] }}%)</span>
+                            <span class="text-sm text-base-content/70">{{ $violationStats['bySeverity']['critical'] }}
+                                ({{ $severityPercentages['critical'] }}%)</span>
                         </div>
-                        <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
-                            <div class="bg-gradient-to-r from-red-600 to-red-400 h-full rounded-full transition-all duration-500" style="width: {{ $severityPercentages['critical'] }}%"></div>
+                        <div class="h-3 w-full overflow-hidden rounded-full bg-base-300">
+                            <div class="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-500"
+                                style="width: {{ $severityPercentages['critical'] }}%"></div>
                         </div>
                     </div>
 
                     {{-- Error --}}
                     <div>
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="badge badge-warning badge-sm">Error</span>
                             </div>
-                            <span class="text-sm text-base-content/70">{{ $violationStats['bySeverity']['error'] }} ({{ $severityPercentages['error'] }}%)</span>
+                            <span class="text-sm text-base-content/70">{{ $violationStats['bySeverity']['error'] }}
+                                ({{ $severityPercentages['error'] }}%)</span>
                         </div>
-                        <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full transition-all duration-500" style="width: {{ $severityPercentages['error'] }}%"></div>
+                        <div class="h-3 w-full overflow-hidden rounded-full bg-base-300">
+                            <div class="h-full rounded-full bg-gradient-to-r from-orange-600 to-orange-400 transition-all duration-500"
+                                style="width: {{ $severityPercentages['error'] }}%"></div>
                         </div>
                     </div>
 
                     {{-- Warning --}}
                     <div>
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="badge badge-info badge-sm">Warning</span>
                             </div>
-                            <span class="text-sm text-base-content/70">{{ $violationStats['bySeverity']['warning'] }} ({{ $severityPercentages['warning'] }}%)</span>
+                            <span class="text-sm text-base-content/70">{{ $violationStats['bySeverity']['warning'] }}
+                                ({{ $severityPercentages['warning'] }}%)</span>
                         </div>
-                        <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
-                            <div class="bg-gradient-to-r from-yellow-600 to-yellow-400 h-full rounded-full transition-all duration-500" style="width: {{ $severityPercentages['warning'] }}%"></div>
+                        <div class="h-3 w-full overflow-hidden rounded-full bg-base-300">
+                            <div class="h-full rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 transition-all duration-500"
+                                style="width: {{ $severityPercentages['warning'] }}%"></div>
                         </div>
                     </div>
 
                     {{-- Info --}}
                     <div>
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="mb-1 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="badge badge-neutral badge-sm">Info</span>
                             </div>
-                            <span class="text-sm text-base-content/70">{{ $violationStats['bySeverity']['info'] }} ({{ $severityPercentages['info'] }}%)</span>
+                            <span class="text-sm text-base-content/70">{{ $violationStats['bySeverity']['info'] }}
+                                ({{ $severityPercentages['info'] }}%)</span>
                         </div>
-                        <div class="w-full bg-base-300 rounded-full h-3 overflow-hidden">
-                            <div class="bg-gradient-to-r from-blue-600 to-blue-400 h-full rounded-full transition-all duration-500" style="width: {{ $severityPercentages['info'] }}%"></div>
+                        <div class="h-3 w-full overflow-hidden rounded-full bg-base-300">
+                            <div class="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-500"
+                                style="width: {{ $severityPercentages['info'] }}%"></div>
                         </div>
                     </div>
                 </div>
@@ -201,12 +218,12 @@
     </div>
 
     {{-- Top Tables Row --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {{-- Top Violation Types --}}
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
-                <h3 class="card-title text-base mb-4">🏆 Top 5 Tipi di Violazione</h3>
-                @if(count($topViolationTypes) > 0)
+                <h3 class="card-title mb-4 text-base">🏆 Top 5 Tipi di Violazione</h3>
+                @if (count($topViolationTypes) > 0)
                     <div class="overflow-x-auto">
                         <table class="table table-sm">
                             <thead>
@@ -218,14 +235,11 @@
                             </thead>
                             <tbody>
                                 @php $rank = 1; @endphp
-                                @foreach($topViolationTypes as $type => $count)
+                                @foreach ($topViolationTypes as $type => $count)
                                     <tr class="hover">
                                         <td>
-                                            <span class="badge badge-sm 
-                                                {{ $rank === 1 ? 'badge-error' : '' }}
-                                                {{ $rank === 2 ? 'badge-warning' : '' }}
-                                                {{ $rank === 3 ? 'badge-info' : '' }}
-                                                {{ $rank > 3 ? 'badge-neutral' : '' }}">
+                                            <span
+                                                class="{{ $rank === 1 ? 'badge-error' : '' }} {{ $rank === 2 ? 'badge-warning' : '' }} {{ $rank === 3 ? 'badge-info' : '' }} {{ $rank > 3 ? 'badge-neutral' : '' }} badge badge-sm">
                                                 {{ $rank }}
                                             </span>
                                         </td>
@@ -240,8 +254,8 @@
                         </table>
                     </div>
                 @else
-                    <div class="text-center py-6 text-base-content/60">
-                        <div class="text-3xl mb-2">🎉</div>
+                    <div class="py-6 text-center text-base-content/60">
+                        <div class="mb-2 text-3xl">🎉</div>
                         <p class="text-sm">Nessuna violazione registrata!</p>
                     </div>
                 @endif
@@ -251,8 +265,8 @@
         {{-- Top Problematic Files --}}
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
-                <h3 class="card-title text-base mb-4">🔴 Top 5 File Problematici</h3>
-                @if(count($topProblematicFiles) > 0)
+                <h3 class="card-title mb-4 text-base">🔴 Top 5 File Problematici</h3>
+                @if (count($topProblematicFiles) > 0)
                     <div class="overflow-x-auto">
                         <table class="table table-sm">
                             <thead>
@@ -264,14 +278,11 @@
                             </thead>
                             <tbody>
                                 @php $rank = 1; @endphp
-                                @foreach($topProblematicFiles as $file => $count)
+                                @foreach ($topProblematicFiles as $file => $count)
                                     <tr class="hover">
                                         <td>
-                                            <span class="badge badge-sm 
-                                                {{ $rank === 1 ? 'badge-error' : '' }}
-                                                {{ $rank === 2 ? 'badge-warning' : '' }}
-                                                {{ $rank === 3 ? 'badge-info' : '' }}
-                                                {{ $rank > 3 ? 'badge-neutral' : '' }}">
+                                            <span
+                                                class="{{ $rank === 1 ? 'badge-error' : '' }} {{ $rank === 2 ? 'badge-warning' : '' }} {{ $rank === 3 ? 'badge-info' : '' }} {{ $rank > 3 ? 'badge-neutral' : '' }} badge badge-sm">
                                                 {{ $rank }}
                                             </span>
                                         </td>
@@ -286,8 +297,8 @@
                         </table>
                     </div>
                 @else
-                    <div class="text-center py-6 text-base-content/60">
-                        <div class="text-3xl mb-2">🎉</div>
+                    <div class="py-6 text-center text-base-content/60">
+                        <div class="mb-2 text-3xl">🎉</div>
                         <p class="text-sm">Nessun file problematico!</p>
                     </div>
                 @endif
@@ -299,25 +310,27 @@
     <div class="mt-6">
         <div class="card bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-xl">
             <div class="card-body">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <h3 class="text-2xl font-bold mb-2">🏥 Code Health Score</h3>
+                        <h3 class="mb-2 text-2xl font-bold">🏥 Code Health Score</h3>
                         <p class="text-sm opacity-90">
-                            Basato su: Fix Rate ({{ $fixRate }}%), P0 Violations ({{ $violationStats['byPriority']['P0'] }}), Critical Issues ({{ $violationStats['bySeverity']['critical'] }})
+                            Basato su: Fix Rate ({{ $fixRate }}%), P0 Violations
+                            ({{ $violationStats['byPriority']['P0'] }}), Critical Issues
+                            ({{ $violationStats['bySeverity']['critical'] }})
                         </p>
                     </div>
                     <div class="text-center">
                         @php
                             // Simple health score calculation
                             $healthScore = 100;
-                            $healthScore -= ($violationStats['byPriority']['P0'] * 5); // -5 per P0
-                            $healthScore -= ($violationStats['bySeverity']['critical'] * 3); // -3 per critical
+                            $healthScore -= $violationStats['byPriority']['P0'] * 5; // -5 per P0
+                            $healthScore -= $violationStats['bySeverity']['critical'] * 3; // -3 per critical
                             $healthScore = max(0, min(100, $healthScore)); // Clamp between 0-100
                         @endphp
                         <div class="text-6xl font-bold">{{ round($healthScore) }}</div>
                         <div class="text-sm opacity-90">su 100</div>
                         <div class="mt-2">
-                            @if($healthScore >= 80)
+                            @if ($healthScore >= 80)
                                 <span class="badge badge-success badge-lg">Eccellente</span>
                             @elseif($healthScore >= 60)
                                 <span class="badge badge-warning badge-lg">Buono</span>

@@ -292,15 +292,15 @@ class PadminController extends Controller {
             // Get comprehensive stats
             $violationStats = $this->padminService->getViolationStats(auth()->user());
             $symbolCount = $this->padminService->getSymbolCount(auth()->user());
-            
+
             // Get all violations for trend analysis
             $allViolations = $this->padminService->getViolations([], auth()->user());
-            
+
             // Calculate additional metrics
             $totalViolations = $violationStats['total'];
             $fixedViolations = count(array_filter($allViolations, fn($v) => $v['isFixed'] ?? false));
             $fixRate = $totalViolations > 0 ? round(($fixedViolations / $totalViolations) * 100, 1) : 0;
-            
+
             // Priority distribution percentages
             $priorityPercentages = [
                 'P0' => $totalViolations > 0 ? round(($violationStats['byPriority']['P0'] / $totalViolations) * 100, 1) : 0,
@@ -308,7 +308,7 @@ class PadminController extends Controller {
                 'P2' => $totalViolations > 0 ? round(($violationStats['byPriority']['P2'] / $totalViolations) * 100, 1) : 0,
                 'P3' => $totalViolations > 0 ? round(($violationStats['byPriority']['P3'] / $totalViolations) * 100, 1) : 0,
             ];
-            
+
             // Severity distribution percentages
             $severityPercentages = [
                 'critical' => $totalViolations > 0 ? round(($violationStats['bySeverity']['critical'] / $totalViolations) * 100, 1) : 0,
@@ -316,7 +316,7 @@ class PadminController extends Controller {
                 'warning' => $totalViolations > 0 ? round(($violationStats['bySeverity']['warning'] / $totalViolations) * 100, 1) : 0,
                 'info' => $totalViolations > 0 ? round(($violationStats['bySeverity']['info'] / $totalViolations) * 100, 1) : 0,
             ];
-            
+
             // Group violations by type (top 5)
             $violationsByType = [];
             foreach ($allViolations as $violation) {
@@ -328,7 +328,7 @@ class PadminController extends Controller {
             }
             arsort($violationsByType);
             $topViolationTypes = array_slice($violationsByType, 0, 5, true);
-            
+
             // Group violations by file (top 5 most problematic files)
             $violationsByFile = [];
             foreach ($allViolations as $violation) {
