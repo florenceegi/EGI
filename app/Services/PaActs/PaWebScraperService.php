@@ -160,9 +160,9 @@ class PaWebScraperService
             $this->auditLog->logUserAction(
                 $user,
                 'web_scraper_executed',
-                'pa_web_scrapers',
-                $scraper->id,
                 [
+                    'table' => 'pa_web_scrapers',
+                    'record_id' => $scraper->id,
                     'scraper_name' => $scraper->name,
                     'source_entity' => $scraper->source_entity,
                     'acts_scraped' => count($paFormatActs),
