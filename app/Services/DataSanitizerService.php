@@ -180,10 +180,10 @@ class DataSanitizerService
      * @param Collection $acts Collezione di atti
      * @return array Statistiche pubbliche
      */
-    public function createStatsContext(Collection $acts): array
+    public function createStatsContext(Collection $acts, ?int $userId = null): array
     {
         $stats = [
-            'total_acts' => $acts->count(),
+            'total_acts_in_sample' => $acts->count(),  // Atti nel campione recuperato
             'anchored_acts' => $acts->where('pa_anchored', true)->count(),
             'by_type' => $acts->groupBy('pa_act_type')->map(fn($group) => $group->count())->toArray(),
             'total_amount' => $acts->sum(fn($act) => $act->jsonMetadata['amount'] ?? 0),
@@ -192,6 +192,13 @@ class DataSanitizerService
                 'last' => $acts->max('pa_protocol_date')?->format('Y-m-d'),
             ],
         ];
+
+        // Aggiungi conteggio totale in database (se userId fornito)
+        if ($userId) {
+            $stats['total_acts_in_database'] = Egi::where('user_id', $userId)
+                ->whereNotNull('pa_protocol_number')
+                ->count();
+        }
 
         $this->logger->info('[DataSanitizer] Stats context created', [
             'stats' => $stats,

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Traits\HasPermissionTrait;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role; // Importiamo i ruoli di Spatie
@@ -158,25 +159,32 @@ class CollectionUserMember extends Component
         ]);
 
         try {
-
+            // Recupero sicuro; se non esiste, gestito dal catch specifico
             $wallet = NotificationPayloadWallet::findOrFail($walletId);
             $notification = $wallet->notifications()->first();
 
-            if (!$wallet) {
-                Log::channel('florenceegi')->error('Proposta Wallet non trovata', [
-                    'walletId' => $walletId
-                ]);
-                return response()->json(['message' => 'Proposta Wallet non trovata'], 404);
+            // Elimina risorse collegate con controlli di esistenza
+            $wallet->delete();
+            if ($notification) {
+                $notification->delete();
             }
 
-            $wallet->delete();
-            $notification->delete();
             return response()->json(['message' => 'Proposta Wallet eliminata con successo'], 200);
+        } catch (ModelNotFoundException $e) {
+            // UEM-FIRST: wallet non trovato
+            $this->errorManager->handle('WALLET_NOT_FOUND', [
+                'wallet_id' => $walletId,
+                'route' => 'collections.members.delete_proposal_wallet'
+            ], $e);
+
+            return response()->json(['message' => 'Proposta Wallet non trovata'], 404);
         } catch (Exception $e) {
-            Log::channel('florenceegi')->error('Errore durante l\'eliminazione della proposta wallet', [
-                'walletId' => $walletId,
+            // UEM-FIRST: altri errori applicativi
+            $this->errorManager->handle('WALLET_DELETE_ERROR', [
+                'wallet_id' => $walletId,
                 'error' => $e->getMessage()
-            ]);
+            ], $e);
+
             return response()->json(['message' => 'Errore durante l\'eliminazione'], 500);
         }
     }
@@ -186,7 +194,6 @@ class CollectionUserMember extends Component
         Log::channel('florenceegi')->info('DeleteProposalInvitation', [
             'invitationId' => $invitationId
         ]);
-
         try {
             $invitation = NotificationPayloadInvitation::findOrFail($invitationId);
             $collection = Collection::findOrFail($id);

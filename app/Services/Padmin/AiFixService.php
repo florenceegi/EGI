@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Padmin;
 
+use function preg_match;
+use function preg_split;
+
 use App\Services\AnthropicService;
 use Ultra\UltraLogManager\UltraLogManager;
 
@@ -40,8 +43,18 @@ class AiFixService {
             // Build system prompt con regole OS3.0
             $systemPrompt = $this->buildSystemPrompt();
 
-            // Build user prompt con violation details
-            $userPrompt = $this->buildUserPrompt($violation);
+            // Prepara snippet originale: usa codeSnippet, altrimenti estrai dal filePath
+            $originalCode = $violation['codeSnippet'] ?? '';
+            if ($originalCode === '' && !empty($violation['filePath'] ?? null) && !empty($violation['line'] ?? null)) {
+                $originalCode = $this->extractContextSnippet(
+                    (string)$violation['filePath'],
+                    (int)$violation['line'],
+                    14
+                );
+            }
+
+            // Build user prompt con violation details e snippet
+            $userPrompt = $this->buildUserPrompt($violation, $originalCode);
 
             // Context per Claude
             $context = [
@@ -60,7 +73,7 @@ class AiFixService {
                 'success' => true,
                 'fixed_code' => $fixedCode,
                 'explanation' => $this->extractExplanation($response),
-                'original_code' => $violation['codeSnippet'] ?? ''
+                'original_code' => $originalCode
             ];
         } catch (\Exception $e) {
             $this->logger->error('[AiFixService] Fix generation failed', [
@@ -123,12 +136,11 @@ PROMPT;
     /**
      * Build user prompt con violation details
      */
-    private function buildUserPrompt(array $violation): string {
+    private function buildUserPrompt(array $violation, string $code): string {
         $file = basename($violation['filePath'] ?? ($violation['file'] ?? 'unknown'));
         $line = $violation['line'] ?? 'unknown';
         $rule = $violation['rule'] ?? 'unknown';
         $message = $violation['message'] ?? 'unknown';
-        $code = $violation['codeSnippet'] ?? '';
 
         return <<<PROMPT
 Fix this code quality violation:
@@ -163,13 +175,24 @@ PROMPT;
      */
     private function extractCodeFromResponse(string $response): string {
         // Extract code between ```php and ```
-        if (preg_match('/```php\s*(.*?)\s*```/s', $response, $matches)) {
-            return trim($matches[1]);
+        // Preferred: between ```php and ```
+        $startTag = '```php';
+        $endTag = '```';
+        $start = stripos($response, $startTag);
+        if ($start !== false) {
+            $start += strlen($startTag);
+            $end = stripos($response, $endTag, $start);
+            if ($end !== false) {
+                return trim(substr($response, $start, $end - $start));
+            }
         }
 
-        // Fallback: extract code between FIXED CODE: and EXPLANATION:
-        if (preg_match('/FIXED CODE:\s*(.*?)\s*EXPLANATION:/s', $response, $matches)) {
-            return trim($matches[1]);
+        // Fallback: between FIXED CODE: and EXPLANATION:
+        $fc = stripos($response, 'FIXED CODE:');
+        $ex = stripos($response, 'EXPLANATION:');
+        if ($fc !== false && $ex !== false && $ex > $fc) {
+            $fc += strlen('FIXED CODE:');
+            return trim(substr($response, $fc, $ex - $fc));
         }
 
         // Last resort: return full response
@@ -181,15 +204,54 @@ PROMPT;
      */
     private function extractExplanation(string $response): string {
         // Extract text after EXPLANATION:
-        if (preg_match('/EXPLANATION:\s*(.*)/s', $response, $matches)) {
-            return trim($matches[1]);
+        $pos = stripos($response, 'EXPLANATION:');
+        if ($pos !== false) {
+            return trim(substr($response, $pos + strlen('EXPLANATION:')));
         }
 
         // Fallback: extract text before code block
-        if (preg_match('/(.*?)```php/s', $response, $matches)) {
-            return trim($matches[1]);
+        $codePos = stripos($response, '```php');
+        if ($codePos !== false) {
+            return trim(substr($response, 0, $codePos));
         }
 
         return 'Fix applied by AI.';
+    }
+
+    /**
+     * Estrae uno snippet di contesto attorno alla linea indicata.
+     * Ritorna stringa vuota se il file non è leggibile.
+     */
+    private function extractContextSnippet(string $filePath, int $line, int $radius = 12): string {
+        try {
+            if (!is_file($filePath) || !is_readable($filePath)) {
+                return '';
+            }
+
+            $contents = file_get_contents($filePath);
+            if ($contents === false) {
+                return '';
+            }
+
+            $normalized = str_replace(["\r\n", "\r"], "\n", $contents);
+            $lines = explode("\n", $normalized);
+            if (!$lines) {
+                return '';
+            }
+
+            $idx = max(1, $line);
+            $start = max(1, $idx - $radius);
+            $end = min(count($lines), $idx + $radius);
+
+            $slice = array_slice($lines, $start - 1, $end - $start + 1);
+            return implode("\n", $slice);
+        } catch (\Throwable $e) {
+            $this->logger->warning('[AiFixService] Failed to extract context snippet', [
+                'file' => $filePath,
+                'line' => $line,
+                'error' => $e->getMessage(),
+            ]);
+            return '';
+        }
     }
 }

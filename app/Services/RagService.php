@@ -60,8 +60,8 @@ class RagService
         // Crea riassunto testuale
         $actsSummary = $this->sanitizer->createActsSummary($relevantActs);
 
-        // Crea statistiche
-        $stats = $this->sanitizer->createStatsContext($relevantActs);
+        // Crea statistiche (include total_acts_in_database)
+        $stats = $this->sanitizer->createStatsContext($relevantActs, $user->id);
 
         $context = [
             'acts' => $sanitizedActs,
