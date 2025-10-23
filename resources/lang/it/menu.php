@@ -62,6 +62,7 @@ return [
     'pa_dashboard' => 'Dashboard',
     'pa_heritage' => 'Documenti Certificati',
     'pa_acts' => 'N.A.T.A.N. Intelligence',
+    'pa_scrapers' => 'Agente Web Scraping',
     'pa_statistics' => 'Statistiche Atti',
     'pa_batch_processor' => 'Elaborazione Batch',
     'pa_coa' => 'Certificati CoA',

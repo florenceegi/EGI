@@ -39,6 +39,7 @@ use App\Services\Menu\Items\PAInspectorsMenu;
 use App\Services\Menu\Items\PAActsMenu;
 use App\Services\Menu\Items\PAStatisticsMenu;
 use App\Services\Menu\Items\PABatchProcessorMenu;
+use App\Services\Menu\Items\PAScrapersMenu;
 // SuperAdmin Menu Items
 use App\Services\Menu\Items\SuperadminDashboardMenu;
 use App\Services\Menu\Items\SuperadminAiConsultationsMenu;
@@ -264,6 +265,7 @@ class ContextMenus {
                 $paMainMenu = new MenuGroup(__('menu.pa_management'), 'pa-building', [
                     // new PAHeritageMenu(),
                     new PAActsMenu(),
+                    new PAScrapersMenu(),
                     new PAStatisticsMenu(),
                     new PABatchProcessorMenu(),
                     // new PACoAMenu(),
