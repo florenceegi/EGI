@@ -414,9 +414,15 @@ class PaWebScraperController extends Controller
             $result = $this->scraperService->execute($scraper, Auth::user(), $options);
 
             if ($result['success']) {
+                $actsSaved = $result['stats']['acts_saved'] ?? 0;
+                $actsSkipped = $result['stats']['acts_skipped'] ?? 0;
+                $actsCount = $result['stats']['acts_count'] ?? 0;
+                
                 $message = sprintf(
-                    'Scraping completato! %d atti estratti in %s secondi',
-                    $result['stats']['acts_count'],
+                    'Scraping completato! %d atti estratti, %d salvati, %d già presenti. Tempo: %s secondi',
+                    $actsCount,
+                    $actsSaved,
+                    $actsSkipped,
                     $result['stats']['execution_time']
                 );
 
