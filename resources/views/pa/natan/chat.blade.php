@@ -74,6 +74,11 @@
                         </div>
                     </div>
 
+                    {{-- Persona Selector --}}
+                    <div class="border-t border-gray-200 p-4">
+                        <x-natan-persona-selector />
+                    </div>
+
                     {{-- Input Area --}}
                     <div class="rounded-b-2xl border-t border-gray-200 bg-gray-50 p-4">
                         <form id="chatForm" class="flex gap-2">
@@ -208,7 +213,7 @@
                 /**
                  * Add message to chat
                  */
-                addMessage(role, content, sources = null) {
+                addMessage(role, content, sources = null, persona = null) {
                     const timestamp = new Date().toLocaleTimeString('it-IT', {
                         hour: '2-digit',
                         minute: '2-digit'
@@ -218,6 +223,7 @@
                         role,
                         content,
                         sources,
+                        persona, // Persona info for assistant messages
                         timestamp
                     };
 
@@ -237,6 +243,40 @@
                     bubbleDiv.className = message.role === 'user' ?
                         'bg-[#2D5016] text-white rounded-2xl rounded-tr-sm max-w-md px-4 py-3 shadow-sm' :
                         'bg-white rounded-2xl rounded-tl-sm max-w-2xl px-4 py-3 shadow-md border border-gray-200';
+
+                    // Persona Badge (for assistant messages)
+                    if (message.role === 'assistant' && message.persona) {
+                        const personaBadgeDiv = document.createElement('div');
+                        personaBadgeDiv.className = 'mb-2 flex items-center gap-2 text-xs';
+                        
+                        // Get persona data from global window.personasData
+                        const personaData = window.personasData ? window.personasData[message.persona.id] : null;
+                        const personaIcon = personaData ? personaData.icon : '🎯';
+                        const personaColor = personaData ? personaData.color : '#2563eb';
+                        
+                        personaBadgeDiv.innerHTML = `
+                            <span style="background-color: ${personaColor};" 
+                                  class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
+                                <span>${personaIcon}</span>
+                                <span>${message.persona.name}</span>
+                            </span>
+                            ${message.persona.confidence ? `
+                                <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
+                                    ${Math.round(message.persona.confidence * 100)}%
+                                </span>
+                            ` : ''}
+                            ${message.persona.method === 'manual' ? `
+                                <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
+                                    ✓ Manuale
+                                </span>
+                            ` : message.persona.method === 'default' ? `
+                                <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
+                                    Auto (Default)
+                                </span>
+                            ` : ''}
+                        `;
+                        bubbleDiv.appendChild(personaBadgeDiv);
+                    }
 
                     // Message content
                     const contentDiv = document.createElement('div');
@@ -305,7 +345,9 @@
                             },
                             body: JSON.stringify({
                                 message: message,
-                                conversation_history: this.getConversationHistory()
+                                conversation_history: this.getConversationHistory(),
+                                persona_id: window.selectedPersona || null, // From persona selector
+                                session_id: this.config.sessionId || null
                             })
                         });
 
@@ -315,7 +357,18 @@
                         this.hideLoadingIndicator();
 
                         if (data.success) {
-                            this.addMessage('assistant', data.response, data.sources);
+                            // Pass persona info to message renderer
+                            this.addMessage('assistant', data.response, data.sources, data.persona);
+                            
+                            // Update session ID if provided
+                            if (data.session_id) {
+                                this.config.sessionId = data.session_id;
+                            }
+                            
+                            // Show persona suggestion if available
+                            if (data.persona && data.persona.suggestion) {
+                                this.showPersonaSuggestion(data.persona.suggestion);
+                            }
                         } else {
                             this.addMessage('assistant', 'Mi dispiace, si è verificato un errore: ' + (data.message ||
                                 'Errore sconosciuto'));
@@ -400,6 +453,48 @@
                     setTimeout(() => {
                         this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
                     }, 100);
+                },
+
+                /**
+                 * Show persona suggestion
+                 * Displays a suggestion banner when a different persona might be better
+                 */
+                showPersonaSuggestion(suggestionText) {
+                    // Remove any existing suggestion
+                    const existing = document.getElementById('personaSuggestionBanner');
+                    if (existing) existing.remove();
+
+                    // Create suggestion banner
+                    const suggestionDiv = document.createElement('div');
+                    suggestionDiv.id = 'personaSuggestionBanner';
+                    suggestionDiv.className = 'mx-4 mb-4 animate-fade-in rounded-lg border border-blue-300 bg-blue-50 p-3 shadow-sm';
+                    suggestionDiv.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <span class="material-icons text-blue-600">lightbulb</span>
+                            <div class="flex-1">
+                                <p class="text-sm text-blue-800">${suggestionText}</p>
+                            </div>
+                            <button onclick="document.getElementById('personaSuggestionBanner').remove()" 
+                                    class="text-blue-400 hover:text-blue-600">
+                                <span class="material-icons text-sm">close</span>
+                            </button>
+                        </div>
+                    `;
+
+                    // Insert before chat messages
+                    const chatWindow = document.querySelector('.rounded-2xl.bg-white.shadow-xl');
+                    if (chatWindow) {
+                        chatWindow.insertAdjacentElement('beforebegin', suggestionDiv);
+                        
+                        // Auto-remove after 10 seconds
+                        setTimeout(() => {
+                            const banner = document.getElementById('personaSuggestionBanner');
+                            if (banner) {
+                                banner.classList.add('animate-fade-out');
+                                setTimeout(() => banner.remove(), 300);
+                            }
+                        }, 10000);
+                    }
                 }
             };
 
