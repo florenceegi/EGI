@@ -138,13 +138,14 @@ class RuleEngineService {
 
     /**
      * Parse PHP code into AST
-     *
+     * 
      * @param string $code PHP code to parse
      * @return array AST nodes
      */
-    protected function parsePhpCode(string $code): array {
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
-
+    protected function parsePhpCode(string $code): array
+    {
+        $parser = (new ParserFactory())->createForHostVersion();
+        
         try {
             $ast = $parser->parse($code);
             return $ast ?? [];
@@ -154,9 +155,7 @@ class RuleEngineService {
             ]);
             return [];
         }
-    }
-
-    /**
+    }    /**
      * Get rules to check based on names
      *
      * @param array $ruleNames Rule names to filter (empty = all)
