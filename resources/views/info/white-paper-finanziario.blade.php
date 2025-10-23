@@ -775,6 +775,22 @@
                                     class="glossary-link">fee</a> e donazioni di un utente in un determinato periodo,
                                 facilitando la dichiarazione fiscale.</dd>
                         </div>
+                        <div>
+                            <dt id="glossary-ammk" class="text-xl font-bold text-emerald-700">AMMk (Asset Market Maker)</dt>
+                            <dd class="mt-1 text-gray-700">Motore centrale di FlorenceEGI che origina, certifica, valuta e rende liquidi gli <a href="#glossary-egi" class="glossary-link">EGI</a>. Diverso da AMM DeFi. Composto da 5 engine: Valuation, Liquidity, Distribution, Activation (NATAN), Compliance.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-natan" class="text-xl font-bold text-emerald-700">NATAN (Neural Assistant)</dt>
+                            <dd class="mt-1 text-gray-700">Guida AI che analizza comportamenti e suggerisce azioni: prezzi ottimali, timing vendita, campagne. Attivata da trigger smart contract intelligenti.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-drops" class="text-xl font-bold text-emerald-700">Drops (Trimestrali)</dt>
+                            <dd class="mt-1 text-gray-700">Eventi trimestrali che selezionano opere eccellenti e culminano in una Serata Memorabile, concentrando attenzione e liquidità.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-collection-tenant" class="text-xl font-bold text-emerald-700">Collection (Tenant)</dt>
+                            <dd class="mt-1 text-gray-700">Workspace collaborativo multi-tenant in FlorenceEGI. Ogni collection ha ruoli locali (Owner, Admin, Editor, Viewer) distinti dai ruoli globali account.</dd>
+                        </div>
                     </dl>
                 </div>
             </section>

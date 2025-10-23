@@ -245,6 +245,8 @@
                         class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_problem') }}</a>
                     <a href="#egi"
                         class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_egi') }}</a>
+                    <a href="#ammk"
+                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">AMMk</a>
                     <a href="#soluzione"
                         class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_solution') }}</a>
                     <a href="#tecnologia"
@@ -280,6 +282,10 @@
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
                             class="fas fa-gem text-oro-fiorentino mr-3 text-lg"></i>
                         {{ __('info_florence_egi.nav_egi') }}</a>
+                    <a href="#ammk"
+                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
+                            class="fas fa-cog text-oro-fiorentino mr-3 text-lg"></i>
+                        AMMk</a>
                     <a href="#soluzione"
                         class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
                             class="fas fa-lightbulb text-oro-fiorentino mr-3 text-lg"></i>
@@ -458,6 +464,164 @@
                                 <i class="fas fa-handshake text-oro-fiorentino text-4xl"></i>
                             </div>
                             <p class="font-body text-grigio-pietra">{!! __('info_florence_egi.egi.cocreation_p3') !!}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- Asset Market Maker Section --}}
+        <section id="ammk" class="bg-white py-16 sm:py-24" aria-label="Asset Market Maker">
+            <div class="golden-ratio-container px-4 sm:px-6">
+                <div class="mb-12 text-center sm:mb-16">
+                    <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                        Asset Market Maker (AMMk)</h2>
+                    <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                        Il cuore pulsante di FlorenceEGI: un motore che origina, certifica, valuta e rende liquidi gli EGI con prove on-chain e automazioni guidate da NATAN
+                    </p>
+                </div>
+
+                {{-- AMMk Core Functions --}}
+                <div class="mb-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div class="renaissance-card elegant-hover p-6">
+                        <div class="mb-4 flex items-center justify-center">
+                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-viola-innovazione/20">
+                                <i class="fas fa-certificate text-2xl text-viola-innovazione"></i>
+                            </div>
+                        </div>
+                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Valuation</h3>
+                        <p class="text-center font-body text-sm text-grigio-pietra">
+                            Sistema intelligente di valutazione che analizza qualità artistica, storico transazioni e domanda di mercato
+                        </p>
+                    </div>
+
+                    <div class="renaissance-card elegant-hover p-6">
+                        <div class="mb-4 flex items-center justify-center">
+                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
+                                <i class="fas fa-water text-2xl text-blu-algoritmo"></i>
+                            </div>
+                        </div>
+                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Liquidity</h3>
+                        <p class="text-center font-body text-sm text-grigio-pietra">
+                            Garantisce liquidità attraverso meccanismi di prezzo dinamici e marketplace integrato
+                        </p>
+                    </div>
+
+                    <div class="renaissance-card elegant-hover p-6">
+                        <div class="mb-4 flex items-center justify-center">
+                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
+                                <i class="fas fa-network-wired text-2xl text-verde-rinascita"></i>
+                            </div>
+                        </div>
+                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Distribution</h3>
+                        <p class="text-center font-body text-sm text-grigio-pietra">
+                            Gestisce distribuzione automatica di royalty, fee e contributi EPP in modo trasparente
+                        </p>
+                    </div>
+
+                    <div class="renaissance-card elegant-hover p-6">
+                        <div class="mb-4 flex items-center justify-center">
+                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-arancio-energia/20">
+                                <i class="fas fa-robot text-2xl text-arancio-energia"></i>
+                            </div>
+                        </div>
+                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Activation (NATAN)</h3>
+                        <p class="text-center font-body text-sm text-grigio-pietra">
+                            Guida AI che attiva campagne mirate, suggerisce prezzi e genera notifiche intelligenti basate su eventi on-chain
+                        </p>
+                    </div>
+
+                    <div class="renaissance-card elegant-hover p-6">
+                        <div class="mb-4 flex items-center justify-center">
+                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-oro-fiorentino/20">
+                                <i class="fas fa-shield-alt text-2xl text-oro-fiorentino"></i>
+                            </div>
+                        </div>
+                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Compliance</h3>
+                        <p class="text-center font-body text-sm text-grigio-pietra">
+                            GDPR by design, audit trail completo e conformità MiCA integrata in ogni operazione
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Modalità di vendita --}}
+                <div class="mb-16">
+                    <h3 class="renaissance-title mb-8 text-center text-2xl font-bold text-grigio-pietra">
+                        Modalità di Vendita Flessibili
+                    </h3>
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div class="renaissance-card border-l-4 border-verde-rinascita p-6">
+                            <div class="mb-4 flex items-center">
+                                <div class="mr-3 flex h-12 w-12 items-center justify-center rounded-full bg-verde-rinascita font-bold text-white">
+                                    1
+                                </div>
+                                <h4 class="renaissance-title text-lg font-bold">Acquisto Diretto</h4>
+                            </div>
+                            <p class="font-body text-sm text-grigio-pietra">
+                                <strong>Mint immediato</strong> al prezzo fissato dal Creator. Transazione istantanea con certificazione blockchain in tempo reale.
+                            </p>
+                        </div>
+
+                        <div class="renaissance-card border-l-4 border-oro-fiorentino p-6">
+                            <div class="mb-4 flex items-center">
+                                <div class="mr-3 flex h-12 w-12 items-center justify-center rounded-full bg-oro-fiorentino font-bold text-white">
+                                    2
+                                </div>
+                                <h4 class="renaissance-title text-lg font-bold">Asta a Tempo</h4>
+                            </div>
+                            <p class="font-body text-sm text-grigio-pietra">
+                                <strong>Soglia minima (reserve)</strong> con durata definita. Il miglior offerente riceve l'EGI al termine dell'asta.
+                            </p>
+                        </div>
+
+                        <div class="renaissance-card border-l-4 border-viola-innovazione p-6">
+                            <div class="mb-4 flex items-center">
+                                <div class="mr-3 flex h-12 w-12 items-center justify-center rounded-full bg-viola-innovazione font-bold text-white">
+                                    3
+                                </div>
+                                <h4 class="renaissance-title text-lg font-bold">Modalità Mista</h4>
+                            </div>
+                            <p class="font-body text-sm text-grigio-pietra">
+                                <strong>Asta + buy-now</strong> combinati. Gli interessati possono scegliere se partecipare all'asta o acquistare immediatamente.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- NATAN & Drops --}}
+                <div class="rounded-2xl bg-gradient-to-br from-viola-innovazione/5 to-blu-algoritmo/5 p-8 md:p-12">
+                    <div class="grid items-center gap-8 md:grid-cols-2">
+                        <div>
+                            <div class="mb-4 flex items-center">
+                                <div class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-arancio-energia/20">
+                                    <i class="fas fa-brain text-2xl text-arancio-energia"></i>
+                                </div>
+                                <h3 class="renaissance-title text-2xl font-bold text-grigio-pietra">NATAN</h3>
+                            </div>
+                            <p class="font-body mb-4 text-grigio-pietra">
+                                La guida AI di FlorenceEGI analizza comportamenti, preferenze e trend per suggerirti azioni mirate: 
+                                prezzi ottimali, timing di vendita, campagne promozionali personalizzate.
+                            </p>
+                            <p class="font-body text-grigio-pietra">
+                                Gli <strong>smart contract intelligenti</strong> emettono trigger che attivano NATAN in tempo reale, 
+                                creando un ecosistema vivo e reattivo.
+                            </p>
+                        </div>
+                        <div>
+                            <div class="mb-4 flex items-center">
+                                <div class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-oro-fiorentino/20">
+                                    <i class="fas fa-star text-2xl text-oro-fiorentino"></i>
+                                </div>
+                                <h3 class="renaissance-title text-2xl font-bold text-grigio-pietra">Drops Trimestrali</h3>
+                            </div>
+                            <p class="font-body mb-4 text-grigio-pietra">
+                                Quattro volte l'anno, le <strong>Drop</strong> selezionano opere eccellenti e culminano in una 
+                                <strong>Serata Memorabile</strong> che concentra attenzione, incentivi e liquidità.
+                            </p>
+                            <p class="font-body text-sm text-oro-fiorentino">
+                                <i class="fas fa-trophy mr-2"></i>
+                                Un evento che celebra i Creator e valorizza le opere più significative
                             </p>
                         </div>
                     </div>
