@@ -92,16 +92,15 @@ class NatanChatService
      * @throws \Exception
      */
     public function processQuery(
-        string $userQuery, 
-        User $user, 
+        string $userQuery,
+        User $user,
         array $conversationHistory = [],
         ?string $manualPersonaId = null,
         ?string $sessionId = null
-    ): array
-    {
+    ): array {
         $startTime = microtime(true);
         $sessionId = $sessionId ?? uniqid('natan_', true);
-        
+
         $logContext = [
             'service' => 'NatanChatService',
             'user_id' => $user->id,

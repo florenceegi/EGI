@@ -42,11 +42,26 @@ class NatanPersonas
                 'color' => '#2563eb', // blue-600
                 'description' => 'Esperto McKinsey/BCG/Bain - Strategia, governance, ROI e ottimizzazione',
                 'keywords' => [
-                    'strategia', 'strategy', 'piano', 'roadmap', 'governance',
-                    'priorità', 'prioritizzazione', 'roi', 'investimento',
-                    'ottimizzazione', 'efficienza', 'trasformazione',
-                    'migliorare', 'suggerimenti', 'consigli', 'raccomandazioni',
-                    'visione', 'obiettivi', 'kpi', 'performance'
+                    'strategia',
+                    'strategy',
+                    'piano',
+                    'roadmap',
+                    'governance',
+                    'priorità',
+                    'prioritizzazione',
+                    'roi',
+                    'investimento',
+                    'ottimizzazione',
+                    'efficienza',
+                    'trasformazione',
+                    'migliorare',
+                    'suggerimenti',
+                    'consigli',
+                    'raccomandazioni',
+                    'visione',
+                    'obiettivi',
+                    'kpi',
+                    'performance'
                 ],
                 'expertise' => [
                     'Strategic planning & execution',
@@ -76,11 +91,25 @@ class NatanPersonas
                 'color' => '#dc2626', // red-600
                 'description' => 'Ingegnere senior - Infrastrutture, progetti tecnici, normative e fattibilità',
                 'keywords' => [
-                    'tecnico', 'technical', 'infrastruttura', 'progetto',
-                    'lavori', 'cantiere', 'costruzione', 'manutenzione',
-                    'normativa tecnica', 'sicurezza', 'fattibilità',
-                    'appalto', 'gara', 'bando', 'specifiche tecniche',
-                    'impianto', 'sistema', 'rete', 'hardware'
+                    'tecnico',
+                    'technical',
+                    'infrastruttura',
+                    'progetto',
+                    'lavori',
+                    'cantiere',
+                    'costruzione',
+                    'manutenzione',
+                    'normativa tecnica',
+                    'sicurezza',
+                    'fattibilità',
+                    'appalto',
+                    'gara',
+                    'bando',
+                    'specifiche tecniche',
+                    'impianto',
+                    'sistema',
+                    'rete',
+                    'hardware'
                 ],
                 'expertise' => [
                     'Infrastructure design & planning',
@@ -109,12 +138,27 @@ class NatanPersonas
                 'color' => '#7c3aed', // violet-600
                 'description' => 'Esperto diritto pubblico - Normative, compliance, procedimenti amministrativi',
                 'keywords' => [
-                    'legale', 'legal', 'norma', 'legge', 'decreto',
-                    'regolamento', 'compliance', 'procedimento',
-                    'amministrativo', 'giuridico', 'diritto',
-                    'autorizzazione', 'concessione', 'permesso',
-                    'ricorso', 'contenzioso', 'privacy', 'gdpr',
-                    'trasparenza', 'anticorruzione', 'codice'
+                    'legale',
+                    'legal',
+                    'norma',
+                    'legge',
+                    'decreto',
+                    'regolamento',
+                    'compliance',
+                    'procedimento',
+                    'amministrativo',
+                    'giuridico',
+                    'diritto',
+                    'autorizzazione',
+                    'concessione',
+                    'permesso',
+                    'ricorso',
+                    'contenzioso',
+                    'privacy',
+                    'gdpr',
+                    'trasparenza',
+                    'anticorruzione',
+                    'codice'
                 ],
                 'expertise' => [
                     'Public law & administrative procedures',
@@ -142,12 +186,26 @@ class NatanPersonas
                 'color' => '#059669', // green-600
                 'description' => 'CFO pubblico - Budget, costi-benefici, PNRR, funding e rendicontazione',
                 'keywords' => [
-                    'budget', 'costo', 'finanziamento', 'funding',
-                    'pnrr', 'fondi', 'investimento', 'spesa',
-                    'bilancio', 'economico', 'finanziario',
-                    'rendicontazione', 'contabilità', 'euro',
-                    'costi-benefici', 'roi', 'npv', 'payback',
-                    'risparmio', 'efficienza economica'
+                    'budget',
+                    'costo',
+                    'finanziamento',
+                    'funding',
+                    'pnrr',
+                    'fondi',
+                    'investimento',
+                    'spesa',
+                    'bilancio',
+                    'economico',
+                    'finanziario',
+                    'rendicontazione',
+                    'contabilità',
+                    'euro',
+                    'costi-benefici',
+                    'roi',
+                    'npv',
+                    'payback',
+                    'risparmio',
+                    'efficienza economica'
                 ],
                 'expertise' => [
                     'Budget planning & allocation',
@@ -176,12 +234,26 @@ class NatanPersonas
                 'color' => '#ea580c', // orange-600
                 'description' => 'Urbanista senior - Territorio, impatto sociale, partecipazione e inclusione',
                 'keywords' => [
-                    'urbanistica', 'urban', 'territorio', 'città',
-                    'cittadini', 'sociale', 'comunità', 'quartiere',
-                    'partecipazione', 'inclusione', 'accessibilità',
-                    'impatto sociale', 'equità', 'periferia',
-                    'rigenerazione', 'spazi pubblici', 'verde',
-                    'mobilità', 'vivibilità', 'qualità vita'
+                    'urbanistica',
+                    'urban',
+                    'territorio',
+                    'città',
+                    'cittadini',
+                    'sociale',
+                    'comunità',
+                    'quartiere',
+                    'partecipazione',
+                    'inclusione',
+                    'accessibilità',
+                    'impatto sociale',
+                    'equità',
+                    'periferia',
+                    'rigenerazione',
+                    'spazi pubblici',
+                    'verde',
+                    'mobilità',
+                    'vivibilità',
+                    'qualità vita'
                 ],
                 'expertise' => [
                     'Urban planning & design',
@@ -210,12 +282,27 @@ class NatanPersonas
                 'color' => '#db2777', // pink-600
                 'description' => 'PR strategico - Comunicazione istituzionale, media relations, engagement',
                 'keywords' => [
-                    'comunicazione', 'communication', 'messaggio',
-                    'media', 'stampa', 'giornalisti', 'pr',
-                    'campagna', 'evento', 'immagine', 'reputazione',
-                    'engagement', 'partecipazione', 'coinvolgimento',
-                    'social media', 'web', 'newsletter',
-                    'presentazione', 'pitch', 'narrativa', 'storytelling'
+                    'comunicazione',
+                    'communication',
+                    'messaggio',
+                    'media',
+                    'stampa',
+                    'giornalisti',
+                    'pr',
+                    'campagna',
+                    'evento',
+                    'immagine',
+                    'reputazione',
+                    'engagement',
+                    'partecipazione',
+                    'coinvolgimento',
+                    'social media',
+                    'web',
+                    'newsletter',
+                    'presentazione',
+                    'pitch',
+                    'narrativa',
+                    'storytelling'
                 ],
                 'expertise' => [
                     'Strategic communication planning',
@@ -289,7 +376,7 @@ class NatanPersonas
     public static function getKeywordMap(): array
     {
         $map = [];
-        
+
         foreach (self::getAll() as $personaId => $persona) {
             foreach ($persona['keywords'] as $keyword) {
                 if (!isset($map[$keyword])) {
@@ -299,8 +386,7 @@ class NatanPersonas
                 $map[$keyword][$personaId] = 1.0;
             }
         }
-        
+
         return $map;
     }
 }
-
