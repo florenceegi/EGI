@@ -183,11 +183,11 @@ class RuleEngineService
 {
     private ParserFactory $parserFactory;
     private array $rules = [];
-    
+
     public function __construct()
     {
         $this->parserFactory = new ParserFactory();
-        
+
         // Carica regole disponibili
         $this->rules = [
             'REGOLA_ZERO' => new RegolaZeroRule(),
@@ -197,10 +197,10 @@ class RuleEngineService
             'GDPR_COMPLIANCE' => new GdprComplianceRule(),
         ];
     }
-    
+
     /**
      * Scansiona directory ricorsivamente
-     * 
+     *
      * @param string $path Path relativo da /home/fabio/EGI
      * @param array $rules Nomi regole da applicare (default: tutte)
      * @return array Violations trovate
@@ -209,20 +209,20 @@ class RuleEngineService
     {
         $violations = [];
         $filesToScan = $this->getPhpFiles($path);
-        
+
         foreach ($filesToScan as $file) {
             $violations = array_merge(
                 $violations,
                 $this->scanFile($file, $rules)
             );
         }
-        
+
         return $violations;
     }
-    
+
     /**
      * Scansiona singolo file
-     * 
+     *
      * @param string $filePath Path assoluto file
      * @param array $rules Regole da applicare
      * @return array Violations nel file
@@ -231,7 +231,7 @@ class RuleEngineService
     {
         $content = file_get_contents($filePath);
         $parser = $this->parserFactory->create(ParserFactory::PREFER_PHP8);
-        
+
         try {
             $ast = $parser->parse($content);
         } catch (Error $e) {
@@ -245,15 +245,15 @@ class RuleEngineService
                 'codeSnippet' => '',
             ]];
         }
-        
+
         $violations = [];
-        $rulesToApply = empty($rules) 
-            ? $this->rules 
+        $rulesToApply = empty($rules)
+            ? $this->rules
             : array_intersect_key($this->rules, array_flip($rules));
-        
+
         foreach ($rulesToApply as $ruleName => $rule) {
             $ruleViolations = $rule->check($ast);
-            
+
             foreach ($ruleViolations as $violation) {
                 $violations[] = [
                     'rule' => $ruleName,
@@ -265,20 +265,22 @@ class RuleEngineService
                 ];
             }
         }
-        
+
         return $violations;
     }
 }
 ```
 
 **Dependencies:**
-- `nikic/php-parser ^5.6.2`
-- Rule classes implementing `RuleInterface`
+
+-   `nikic/php-parser ^5.6.2`
+-   Rule classes implementing `RuleInterface`
 
 **Performance:**
-- ~100-200ms per file (dipende da dimensione)
-- AST parsing è CPU-intensive
-- Cache AST planned per re-scans
+
+-   ~100-200ms per file (dipende da dimensione)
+-   AST parsing è CPU-intensive
+-   Cache AST planned per re-scans
 
 ---
 
@@ -291,22 +293,22 @@ interface RuleInterface
 {
     /**
      * Check AST nodes per violazioni
-     * 
+     *
      * @param array $nodes AST nodes da nikic/php-parser
      * @return array Violations trovate
      */
     public function check(array $nodes): array;
-    
+
     /**
      * Nome regola
      */
     public function getName(): string;
-    
+
     /**
      * Descrizione regola
      */
     public function getDescription(): string;
-    
+
     /**
      * Severità default (P0-P3)
      */
@@ -325,27 +327,27 @@ class RegolaZeroRule implements RuleInterface
         'logError',           // AuditLogService - inventato
         'logActivity',        // AuditLogService - deprecato
     ];
-    
+
     public function check(array $nodes): array
     {
         $violations = [];
         $traverser = new NodeTraverser();
-        
+
         $visitor = new class($this->blacklistedMethods) extends NodeVisitorAbstract {
             private array $blacklist;
             public array $violations = [];
-            
+
             public function __construct(array $blacklist) {
                 $this->blacklist = $blacklist;
             }
-            
+
             public function enterNode(Node $node) {
                 // Cerca MethodCall nodes
                 if ($node instanceof Node\Expr\MethodCall) {
-                    $methodName = $node->name instanceof Node\Identifier 
-                        ? $node->name->toString() 
+                    $methodName = $node->name instanceof Node\Identifier
+                        ? $node->name->toString()
                         : null;
-                    
+
                     if ($methodName && in_array($methodName, $this->blacklist)) {
                         $this->violations[] = [
                             'message' => "Using blacklisted method {$methodName}()",
@@ -356,27 +358,27 @@ class RegolaZeroRule implements RuleInterface
                     }
                 }
             }
-            
+
             private function getCodeSnippet(Node $node): string {
                 // Extract 1-2 lines di codice intorno al node
                 // ...implementazione...
             }
         };
-        
+
         $traverser->addVisitor($visitor);
         $traverser->traverse($nodes);
-        
+
         return $visitor->violations;
     }
-    
+
     public function getName(): string {
         return 'REGOLA_ZERO';
     }
-    
+
     public function getDescription(): string {
         return 'Prevents use of non-existent methods (anti-invention)';
     }
-    
+
     public function getDefaultSeverity(): string {
         return 'P0';
     }
@@ -384,9 +386,10 @@ class RegolaZeroRule implements RuleInterface
 ```
 
 **Rule Performance:**
-- Visitor pattern = single AST traversal per rule
-- ~20-50ms per rule per file medio
-- Parallelizzazione planned (multi-threading)
+
+-   Visitor pattern = single AST traversal per rule
+-   ~20-50ms per rule per file medio
+-   Parallelizzazione planned (multi-threading)
 
 ---
 
@@ -483,17 +486,19 @@ User → See violation badge green "Risolta"
 #### Current: Session Storage
 
 **Pros:**
-- ✅ Zero setup (Laravel built-in)
-- ✅ Per-user isolation automatica
-- ✅ No external dependencies
-- ✅ Fast per single-user
+
+-   ✅ Zero setup (Laravel built-in)
+-   ✅ Per-user isolation automatica
+-   ✅ No external dependencies
+-   ✅ Fast per single-user
 
 **Cons:**
-- ❌ Non persistent (logout = perdi tutto)
-- ❌ No historical tracking
-- ❌ No multi-session sync
-- ❌ Limited to ~4KB data (cookie) o ~10MB (file/redis session)
-- ❌ No advanced queries
+
+-   ❌ Non persistent (logout = perdi tutto)
+-   ❌ No historical tracking
+-   ❌ No multi-session sync
+-   ❌ Limited to ~4KB data (cookie) o ~10MB (file/redis session)
+-   ❌ No advanced queries
 
 **Implementation:**
 
@@ -701,18 +706,18 @@ public function runScan(Request $request)
         'path' => 'required|string',
         // ...
     ]);
-    
+
     $basePath = base_path();
     $requestedPath = $basePath . '/' . ltrim($validated['path'], '/');
-    
+
     // Resolve symlinks e '..' attacks
     $realPath = realpath($requestedPath);
-    
+
     // Verifica che il path sia dentro base_path()
     if ($realPath === false || strpos($realPath, $basePath) !== 0) {
         throw new \InvalidArgumentException('Invalid path');
     }
-    
+
     // Safe to scan
     $violations = $this->ruleEngine->scanDirectory($realPath, ...);
 }
@@ -729,14 +734,14 @@ class PadminService
     {
         // Whitelist commands
         $allowedCommands = ['violations:create', 'symbols:index', 'symbols:search'];
-        
+
         if (!in_array($command, $allowedCommands)) {
             throw new \InvalidArgumentException('Command not allowed');
         }
-        
+
         // Escape arguments
         $escapedArgs = array_map('escapeshellarg', $args);
-        
+
         // Execute with timeout
         $process = new Process(
             ['node', 'padmin-cli.js', $command, ...$escapedArgs],
@@ -745,13 +750,13 @@ class PadminService
             null,
             30 // 30s timeout
         );
-        
+
         $process->run();
-        
+
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
-        
+
         return json_decode($process->getOutput(), true);
     }
 }
@@ -806,27 +811,27 @@ $this->auditService->logUserAction(
 class RuleEngineService
 {
     private CacheInterface $astCache;
-    
+
     public function scanFile(string $filePath, array $rules = []): array
     {
         $fileHash = md5_file($filePath);
         $cacheKey = "ast:{$fileHash}";
-        
+
         // Check cache
         $ast = $this->astCache->get($cacheKey);
-        
+
         if ($ast === null) {
             // Parse e cache
             $content = file_get_contents($filePath);
             $parser = $this->parserFactory->create(ParserFactory::PREFER_PHP8);
             $ast = $parser->parse($content);
-            
+
             // Cache for 1 hour
             $this->astCache->set($cacheKey, serialize($ast), 3600);
         } else {
             $ast = unserialize($ast);
         }
-        
+
         // Apply rules...
     }
 }
@@ -842,7 +847,7 @@ use Spatie\Fork\Fork;
 public function scanFile(string $filePath, array $rules = []): array
 {
     $ast = $this->parseFile($filePath);
-    
+
     // Execute rules in parallel (separate processes)
     $results = Fork::new()
         ->before(fn() => $this->setupChildProcess())
@@ -853,7 +858,7 @@ public function scanFile(string $filePath, array $rules = []): array
             fn() => $this->rules['MICA_SAFE']->check($ast),
             fn() => $this->rules['GDPR_COMPLIANCE']->check($ast),
         );
-    
+
     // Merge results
     return array_merge(...$results);
 }
@@ -870,7 +875,7 @@ class IncrementalScanner
     {
         // Get git status
         $changedFiles = $this->getGitChangedFiles($basePath);
-        
+
         // Scan only changed files
         $violations = [];
         foreach ($changedFiles as $file) {
@@ -881,15 +886,15 @@ class IncrementalScanner
                 );
             }
         }
-        
+
         return $violations;
     }
-    
+
     private function getGitChangedFiles(string $basePath): array
     {
         $process = new Process(['git', 'diff', '--name-only', 'HEAD'], $basePath);
         $process->run();
-        
+
         return explode("\n", trim($process->getOutput()));
     }
 }
@@ -950,34 +955,34 @@ class IncrementalScanner
 
 ```json
 {
-  "type": "method",
-  "class": "App\\Services\\Gdpr\\ConsentService",
-  "name": "hasConsent",
-  "signature": "hasConsent(User $user, string $consentType): bool",
-  "parameters": [
-    {"name": "user", "type": "User", "nullable": false},
-    {"name": "consentType", "type": "string", "nullable": false}
-  ],
-  "return_type": "bool",
-  "file": "app/Services/Gdpr/ConsentService.php",
-  "line": 42,
-  "docblock": {
-    "description": "Check if user has given specific consent",
-    "params": ["@param User $user", "@param string $consentType"],
-    "return": "@return bool"
-  },
-  "visibility": "public",
-  "static": false,
-  "used_by": [
-    "App\\Http\\Controllers\\UserController::update",
-    "App\\Http\\Controllers\\ProfileController::store",
-    "App\\Services\\User\\UserService::updateProfile"
-  ],
-  "calls": [
-    "App\\Models\\User::consents",
-    "Illuminate\\Database\\Eloquent\\Collection::contains"
-  ],
-  "indexed_at": "2025-10-23T13:45:00Z"
+    "type": "method",
+    "class": "App\\Services\\Gdpr\\ConsentService",
+    "name": "hasConsent",
+    "signature": "hasConsent(User $user, string $consentType): bool",
+    "parameters": [
+        { "name": "user", "type": "User", "nullable": false },
+        { "name": "consentType", "type": "string", "nullable": false }
+    ],
+    "return_type": "bool",
+    "file": "app/Services/Gdpr/ConsentService.php",
+    "line": 42,
+    "docblock": {
+        "description": "Check if user has given specific consent",
+        "params": ["@param User $user", "@param string $consentType"],
+        "return": "@return bool"
+    },
+    "visibility": "public",
+    "static": false,
+    "used_by": [
+        "App\\Http\\Controllers\\UserController::update",
+        "App\\Http\\Controllers\\ProfileController::store",
+        "App\\Services\\User\\UserService::updateProfile"
+    ],
+    "calls": [
+        "App\\Models\\User::consents",
+        "Illuminate\\Database\\Eloquent\\Collection::contains"
+    ],
+    "indexed_at": "2025-10-23T13:45:00Z"
 }
 ```
 
@@ -1051,24 +1056,21 @@ class IncrementalScanner
 ### Key Metrics to Track
 
 1. **Scan Performance**
-   - Files scanned per second
-   - Average scan time per file
-   - Rule execution time breakdown
-   
+    - Files scanned per second
+    - Average scan time per file
+    - Rule execution time breakdown
 2. **Violation Metrics**
-   - Violations per 1000 LOC
-   - P0 violations ratio
-   - Time to fix (detected → marked fixed)
-   
+    - Violations per 1000 LOC
+    - P0 violations ratio
+    - Time to fix (detected → marked fixed)
 3. **System Health**
-   - AST parse success rate
-   - Error rate per rule
-   - Session storage usage
-   
+    - AST parse success rate
+    - Error rate per rule
+    - Session storage usage
 4. **User Engagement**
-   - Scans per day
-   - AI Fix usage rate
-   - Violations marked fixed rate
+    - Scans per day
+    - AI Fix usage rate
+    - Violations marked fixed rate
 
 ### Logging Strategy
 

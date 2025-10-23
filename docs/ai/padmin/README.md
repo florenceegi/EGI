@@ -23,21 +23,22 @@
 
 Padmin Analyzer è un **sistema di analisi codice intelligente** che:
 
-- ✅ **Scansiona** il codebase PHP/Laravel per violazioni regole OS3.0
-- ✅ **Valida** in real-time rispetto a standard enterprise PA
-- ✅ **Suggerisce** fix tramite AI (GitHub Copilot integration)
-- ✅ **Traccia** violations con metadata completi
-- ✅ **Previene** code smells e anti-patterns
-- 🚧 **Indicizza** simboli per search semantica (in sviluppo)
-- 🚧 **Genera** codice AI-assisted (in sviluppo)
+-   ✅ **Scansiona** il codebase PHP/Laravel per violazioni regole OS3.0
+-   ✅ **Valida** in real-time rispetto a standard enterprise PA
+-   ✅ **Suggerisce** fix tramite AI (GitHub Copilot integration)
+-   ✅ **Traccia** violations con metadata completi
+-   ✅ **Previene** code smells e anti-patterns
+-   🚧 **Indicizza** simboli per search semantica (in sviluppo)
+-   🚧 **Genera** codice AI-assisted (in sviluppo)
 
 ### Perché Padmin?
 
 **Contesto PA/Enterprise:**
-- Pubbliche Amministrazioni richiedono **zero errori**
-- GDPR compliance **obbligatoria**
-- Audit trail **completo**
-- Code quality **mission-critical**
+
+-   Pubbliche Amministrazioni richiedono **zero errori**
+-   GDPR compliance **obbligatoria**
+-   Audit trail **completo**
+-   Code quality **mission-critical**
 
 **Un bug = Fiducia persa = Contratto a rischio**
 
@@ -53,23 +54,23 @@ Padmin garantisce che ogni riga di codice rispetti gli standard OS3.0 prima del 
 
 #### Implementazioni:
 
-| Componente | Stato | Descrizione |
-|------------|-------|-------------|
-| **RuleEngineService** | ✅ | Motore scansione AST con nikic/php-parser v5.6.2 |
-| **5 Regole Attive** | ✅ | REGOLA_ZERO, UEM_FIRST, STATISTICS, MiCA_SAFE, GDPR_COMPLIANCE |
-| **CLI Scanner** | ✅ | `php artisan padmin:scan` operativo |
-| **Web UI Dashboard** | ✅ | 5 pagine Blade: Dashboard, Violations, Symbols, Search, Statistics |
-| **Scan Workflow** | ✅ | Modal scan → Store → Display → AI Fix → Mark Fixed |
-| **AI Fix Prompts** | ✅ | Generazione prompt contestuali per GitHub Copilot |
-| **UEM Integration** | ✅ | Error codes PADMIN_SCAN_FAILED, PADMIN_AI_FIX_FAILED |
-| **Session Storage** | ✅ | Violations salvate in sessione Laravel (temp) |
+| Componente            | Stato | Descrizione                                                        |
+| --------------------- | ----- | ------------------------------------------------------------------ |
+| **RuleEngineService** | ✅    | Motore scansione AST con nikic/php-parser v5.6.2                   |
+| **5 Regole Attive**   | ✅    | REGOLA_ZERO, UEM_FIRST, STATISTICS, MiCA_SAFE, GDPR_COMPLIANCE     |
+| **CLI Scanner**       | ✅    | `php artisan padmin:scan` operativo                                |
+| **Web UI Dashboard**  | ✅    | 5 pagine Blade: Dashboard, Violations, Symbols, Search, Statistics |
+| **Scan Workflow**     | ✅    | Modal scan → Store → Display → AI Fix → Mark Fixed                 |
+| **AI Fix Prompts**    | ✅    | Generazione prompt contestuali per GitHub Copilot                  |
+| **UEM Integration**   | ✅    | Error codes PADMIN_SCAN_FAILED, PADMIN_AI_FIX_FAILED               |
+| **Session Storage**   | ✅    | Violations salvate in sessione Laravel (temp)                      |
 
 #### Metriche:
 
-- **Linee codice:** ~2,500 righe PHP + Blade
-- **Test scan:** 15 P0 violations trovate su app/Livewire/Collections
-- **Performance:** ~2-3s per directory scan
-- **Accuratezza:** 100% detection rate su test violations
+-   **Linee codice:** ~2,500 righe PHP + Blade
+-   **Test scan:** 15 P0 violations trovate su app/Livewire/Collections
+-   **Performance:** ~2-3s per directory scan
+-   **Accuratezza:** 100% detection rate su test violations
 
 ### 🚧 FASE 2: Symbol Registry (PROSSIMA)
 
@@ -205,58 +206,64 @@ php artisan padmin:scan --path=app --store --user-id=1
 #### Tabella Violations
 
 **Colonne:**
-- **Priorità:** Badge P0 (rosso), P1 (giallo), P2 (blu), P3 (grigio)
-- **Severità:** critical, error, warning, info
-- **Tipo Violazione:** Nome regola + messaggio
-- **File:** Basename file problematico
-- **Linea:** Numero linea esatto
-- **Data:** Timestamp scan
-- **Stato:** Attiva (rosso) / Risolta (verde)
-- **Azioni:** 2 pulsanti
+
+-   **Priorità:** Badge P0 (rosso), P1 (giallo), P2 (blu), P3 (grigio)
+-   **Severità:** critical, error, warning, info
+-   **Tipo Violazione:** Nome regola + messaggio
+-   **File:** Basename file problematico
+-   **Linea:** Numero linea esatto
+-   **Data:** Timestamp scan
+-   **Stato:** Attiva (rosso) / Risolta (verde)
+-   **Azioni:** 2 pulsanti
 
 #### Azioni Disponibili
 
 **1. Fix with AI (pulsante blu ⚡)**
-- Click → Modal si apre
-- Genera prompt contestuale per GitHub Copilot
-- Include:
-  - Descrizione violazione
-  - Codice problematico
-  - File e linea
-  - Regola violata
-  - Context architettura FlorenceEGI
-- Pulsante "Copia" → clipboard
-- Incolla in GitHub Copilot Chat
-- Applica fix suggerito
-- Torna e marca come risolta
+
+-   Click → Modal si apre
+-   Genera prompt contestuale per GitHub Copilot
+-   Include:
+    -   Descrizione violazione
+    -   Codice problematico
+    -   File e linea
+    -   Regola violata
+    -   Context architettura FlorenceEGI
+-   Pulsante "Copia" → clipboard
+-   Incolla in GitHub Copilot Chat
+-   Applica fix suggerito
+-   Torna e marca come risolta
 
 **2. Mark as Fixed (pulsante verde ✓)**
-- Click → Conferma
-- Violation diventa verde
-- Badge cambia: Attiva → Risolta
-- Audit log registrato
+
+-   Click → Conferma
+-   Violation diventa verde
+-   Badge cambia: Attiva → Risolta
+-   Audit log registrato
 
 ### 3. Filters
 
 **Disponibili:**
-- **Priorità:** P0, P1, P2, P3
-- **Severità:** critical, error, warning, info
-- **Stato:** Attive, Risolte
-- **Risultati:** 50, 100, 500
+
+-   **Priorità:** P0, P1, P2, P3
+-   **Severità:** critical, error, warning, info
+-   **Stato:** Attive, Risolte
+-   **Risultati:** 50, 100, 500
 
 ### 4. Statistics (Dashboard)
 
 **KPI Cards:**
-- Total Violations
-- P0 Blocking Issues
-- Symbols Indexed
-- System Health
+
+-   Total Violations
+-   P0 Blocking Issues
+-   Symbols Indexed
+-   System Health
 
 **Metriche:**
-- Violations per rule
-- Violations per severity
-- Violations per file
-- Trend temporale
+
+-   Violations per rule
+-   Violations per severity
+-   Violations per file
+-   Trend temporale
 
 ---
 
@@ -301,31 +308,35 @@ php artisan padmin:scan --path=app/Services/Test/TestViolationsService.php
 ### First Scan via Web UI
 
 1. **Login come SuperAdmin**
-   ```
-   URL: http://localhost:8004/superadmin/login
-   ```
+
+    ```
+    URL: http://localhost:8004/superadmin/login
+    ```
 
 2. **Vai a Padmin Analyzer**
-   ```
-   Sidebar → Padmin Analyzer → Violations
-   ```
+
+    ```
+    Sidebar → Padmin Analyzer → Violations
+    ```
 
 3. **Run First Scan**
-   - Click "Run Scan"
-   - Path: `app/Services/Test`
-   - Regole: Tutte selezionate
-   - Click "Avvia Scansione"
+
+    - Click "Run Scan"
+    - Path: `app/Services/Test`
+    - Regole: Tutte selezionate
+    - Click "Avvia Scansione"
 
 4. **View Results**
-   - Modal si chiude
-   - Pagina ricarica
-   - Violations in tabella
+
+    - Modal si chiude
+    - Pagina ricarica
+    - Violations in tabella
 
 5. **Test AI Fix**
-   - Click "⚡ AI" su una violation
-   - Modal con prompt
-   - Click "Copia"
-   - Testa in Copilot Chat
+    - Click "⚡ AI" su una violation
+    - Modal con prompt
+    - Click "Copia"
+    - Testa in Copilot Chat
 
 ---
 
@@ -336,6 +347,7 @@ php artisan padmin:scan --path=app/Services/Test/TestViolationsService.php
 **Obiettivo:** Prevenire uso di metodi/classi inesistenti
 
 **Rileva:**
+
 ```php
 // ❌ VIOLAZIONE
 $this->consentService->hasConsentFor('profile-update');
@@ -347,10 +359,11 @@ $this->consentService->hasConsent($user, 'allow-personal-data-processing');
 ```
 
 **Blacklist:**
-- `hasConsentFor()` → usa `hasConsent()`
-- `handleException()` → usa `errorManager->handle()`
-- `logError()` → usa `errorManager->handle()`
-- `logActivity()` → usa `auditLogService->logUserAction()`
+
+-   `hasConsentFor()` → usa `hasConsent()`
+-   `handleException()` → usa `errorManager->handle()`
+-   `logError()` → usa `errorManager->handle()`
+-   `logActivity()` → usa `auditLogService->logUserAction()`
 
 **Impatto:** BLOCKING - Code non può andare in production
 
@@ -359,6 +372,7 @@ $this->consentService->hasConsent($user, 'allow-personal-data-processing');
 **Obiettivo:** Garantire error handling enterprise con UEM
 
 **Rileva:**
+
 ```php
 // ❌ VIOLAZIONE
 try {
@@ -379,9 +393,10 @@ try {
 ```
 
 **Checks:**
-- Ogni `catch` block deve chiamare `errorManager->handle()`
-- Non sostituire UEM con ULM (logger)
-- ErrorManager deve essere iniettato nel controller/service
+
+-   Ogni `catch` block deve chiamare `errorManager->handle()`
+-   Non sostituire UEM con ULM (logger)
+-   ErrorManager deve essere iniettato nel controller/service
 
 **Impatto:** BLOCKING - Team non riceve alert su errori
 
@@ -390,6 +405,7 @@ try {
 **Obiettivo:** Prevenire dati incompleti mostrati come completi
 
 **Rileva:**
+
 ```php
 // ❌ VIOLAZIONE (in StatisticsService)
 public function getTopEgis(): Collection
@@ -402,11 +418,11 @@ public function getTopEgis(): Collection
 public function getTopEgis(?int $limit = null): Collection
 {
     $query = Egi::orderBy('likes');
-    
+
     if ($limit !== null) {
         $query->limit($limit);
     }
-    
+
     return $query->get(); // Tutti i record di default
 }
 ```
@@ -421,6 +437,7 @@ Un dirigente PA che vede "4 likes" invece di "6 reali" perde fiducia nella piatt
 **Obiettivo:** Prevenire operazioni che richiedono licenza CASP/EMI
 
 **Rileva:**
+
 ```php
 // ❌ VIOLAZIONE
 public function storeUserCrypto($userId, $amount, $currency)
@@ -444,10 +461,11 @@ public function mintNftForUser($userId, $metadata)
 ```
 
 **Keywords bloccati:**
-- `custody`, `custodial`, `store_crypto`
-- `exchange`, `swap`, `convert_crypto`
-- `wallet_balance`, `crypto_holdings`
-- `manage_keys`, `private_key`
+
+-   `custody`, `custodial`, `store_crypto`
+-   `exchange`, `swap`, `convert_crypto`
+-   `wallet_balance`, `crypto_holdings`
+-   `manage_keys`, `private_key`
 
 **Impatto:** BLOCKING - Violazione MiCA = Sanzioni EU
 
@@ -456,6 +474,7 @@ public function mintNftForUser($userId, $metadata)
 **Obiettivo:** Garantire GDPR compliance su operazioni User
 
 **Rileva:**
+
 ```php
 // ❌ VIOLAZIONE
 public function updateProfile(Request $request)
@@ -469,15 +488,15 @@ public function updateProfile(Request $request)
 public function updateProfile(Request $request)
 {
     $user = Auth::user();
-    
+
     // 1. Check consent
     if (!$this->consentService->hasConsent($user, 'allow-personal-data-processing')) {
         return redirect()->back()->withErrors(['consent' => 'Missing']);
     }
-    
+
     // 2. Update
     $user->update($request->validated());
-    
+
     // 3. Audit trail
     $this->auditLogService->logUserAction(
         $user,
@@ -489,9 +508,10 @@ public function updateProfile(Request $request)
 ```
 
 **Checks:**
-- User model update/save senza `ConsentService->hasConsent()`
-- User model update/save senza `AuditLogService->logUserAction()`
-- Dependency injection mancante (ConsentService, AuditLogService)
+
+-   User model update/save senza `ConsentService->hasConsent()`
+-   User model update/save senza `AuditLogService->logUserAction()`
+-   Dependency injection mancante (ConsentService, AuditLogService)
 
 **Impatto:** BLOCKING - Violazione GDPR = Sanzioni EU
 
@@ -500,34 +520,38 @@ public function updateProfile(Request $request)
 ## 🗺️ Roadmap
 
 ### ✅ FASE 1: Rule Engine (COMPLETATA)
+
 **Timeline:** Settimane 1-2  
 **Status:** ✅ 100% Completato (23 Ottobre 2025)
 
-- [x] RuleEngineService con nikic/php-parser
-- [x] 5 regole implementate e testate
-- [x] CLI scanner funzionante
-- [x] Web UI completa (5 pagine)
-- [x] Scan → Store → Display workflow
-- [x] AI Fix prompts generation
-- [x] Mark as fixed functionality
-- [x] UEM error codes registrati
+-   [x] RuleEngineService con nikic/php-parser
+-   [x] 5 regole implementate e testate
+-   [x] CLI scanner funzionante
+-   [x] Web UI completa (5 pagine)
+-   [x] Scan → Store → Display workflow
+-   [x] AI Fix prompts generation
+-   [x] Mark as fixed functionality
+-   [x] UEM error codes registrati
 
 ### 🚧 FASE 2: Symbol Registry
+
 **Timeline:** Settimane 3-4  
 **Status:** 🔴 Not Started  
 **Effort:** ~80 ore
 
 **Obiettivi:**
-- [ ] Scansione completa codebase → Redis
-- [ ] Indicizzazione classi, metodi, funzioni, traits
-- [ ] Signatures complete (params, return types)
-- [ ] DocBlocks parsed e salvati
-- [ ] Dependencies tracking (chi usa cosa)
-- [ ] Call graph (chi chiama chi)
-- [ ] API search: `/api/padmin/symbols/search?q=hasConsent`
-- [ ] Dashboard "Code Explorer" con search UI
+
+-   [ ] Scansione completa codebase → Redis
+-   [ ] Indicizzazione classi, metodi, funzioni, traits
+-   [ ] Signatures complete (params, return types)
+-   [ ] DocBlocks parsed e salvati
+-   [ ] Dependencies tracking (chi usa cosa)
+-   [ ] Call graph (chi chiama chi)
+-   [ ] API search: `/api/padmin/symbols/search?q=hasConsent`
+-   [ ] Dashboard "Code Explorer" con search UI
 
 **Deliverables:**
+
 ```bash
 # Comando indexing
 php artisan padmin:index --full
@@ -550,19 +574,22 @@ Response: {
 ```
 
 ### 🔮 FASE 3: AI Copilot Integration
+
 **Timeline:** Settimane 5-6  
 **Status:** 🔴 Not Started  
 **Effort:** ~60 ore
 
 **Obiettivi:**
-- [ ] OpenAI API integration (GPT-4)
-- [ ] Context builder che legge symbol registry
-- [ ] Prompt engineering per code generation
-- [ ] Chat interface stile ChatGPT
-- [ ] Code completion endpoint
-- [ ] Copy-paste workflow ottimizzato
+
+-   [ ] OpenAI API integration (GPT-4)
+-   [ ] Context builder che legge symbol registry
+-   [ ] Prompt engineering per code generation
+-   [ ] Chat interface stile ChatGPT
+-   [ ] Code completion endpoint
+-   [ ] Copy-paste workflow ottimizzato
 
 **Use Case:**
+
 ```
 User: "Crea metodo per salvare profilo utente con GDPR compliance"
 
@@ -580,19 +607,22 @@ Output:
 ```
 
 ### 🔮 FASE 4: Web Terminal
+
 **Timeline:** Settimane 7-8  
 **Status:** 🔴 Not Started  
 **Effort:** ~40 ore
 
 **Obiettivi:**
-- [ ] xterm.js integration
-- [ ] WebSocket Laravel backend
-- [ ] Safe commands whitelist
-- [ ] Output streaming
-- [ ] Command history
-- [ ] Tab completion
+
+-   [ ] xterm.js integration
+-   [ ] WebSocket Laravel backend
+-   [ ] Safe commands whitelist
+-   [ ] Output streaming
+-   [ ] Command history
+-   [ ] Tab completion
 
 **Comandi Safe:**
+
 ```bash
 php artisan list
 php artisan route:list
@@ -603,32 +633,36 @@ git log --oneline -10
 ```
 
 ### 🔮 FASE 5: Monaco Editor
+
 **Timeline:** Settimane 9-11  
 **Status:** 🔴 Not Started  
 **Effort:** ~120 ore
 
 **Obiettivi:**
-- [ ] Monaco Editor embedded
-- [ ] File tree browser
-- [ ] Syntax highlighting (PHP/JS/Blade)
-- [ ] Real-time rule validation
-- [ ] Inline errors/warnings display
-- [ ] Quick-fix actions
-- [ ] AI code completion
-- [ ] File save con metadata update
+
+-   [ ] Monaco Editor embedded
+-   [ ] File tree browser
+-   [ ] Syntax highlighting (PHP/JS/Blade)
+-   [ ] Real-time rule validation
+-   [ ] Inline errors/warnings display
+-   [ ] Quick-fix actions
+-   [ ] AI code completion
+-   [ ] File save con metadata update
 
 ### 🔮 FASE 6: Closed-Loop Development
+
 **Timeline:** Settimane 12-13  
 **Status:** 🔴 Not Started  
 **Effort:** ~60 ore
 
 **Obiettivi:**
-- [ ] On-save hooks
-- [ ] Incremental symbol indexing
-- [ ] Call graph auto-update
-- [ ] Code versioning system
-- [ ] Rollback capability
-- [ ] Conflict resolution
+
+-   [ ] On-save hooks
+-   [ ] Incremental symbol indexing
+-   [ ] Call graph auto-update
+-   [ ] Code versioning system
+-   [ ] Rollback capability
+-   [ ] Conflict resolution
 
 ---
 
@@ -641,35 +675,37 @@ git log --oneline -10
 **Esegue scansione code quality**
 
 **Request:**
+
 ```json
 {
-  "path": "app/Http/Controllers",
-  "rules": ["REGOLA_ZERO", "UEM_FIRST", "GDPR_COMPLIANCE"],
-  "store": true
+    "path": "app/Http/Controllers",
+    "rules": ["REGOLA_ZERO", "UEM_FIRST", "GDPR_COMPLIANCE"],
+    "store": true
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Scansione completata",
-  "violations": [
-    {
-      "id": "v_6720abc123",
-      "rule": "REGOLA_ZERO",
-      "severity": "P0",
-      "message": "Using blacklisted method hasConsentFor()",
-      "file": "app/Http/Controllers/UserController.php",
-      "line": 42,
-      "codeSnippet": "if ($this->consentService->hasConsentFor('profile')) {",
-      "scanned_at": "2025-10-23T13:45:00.000000Z",
-      "scanned_by": 1,
-      "is_fixed": false
-    }
-  ],
-  "count": 1,
-  "stored": true
+    "success": true,
+    "message": "Scansione completata",
+    "violations": [
+        {
+            "id": "v_6720abc123",
+            "rule": "REGOLA_ZERO",
+            "severity": "P0",
+            "message": "Using blacklisted method hasConsentFor()",
+            "file": "app/Http/Controllers/UserController.php",
+            "line": 42,
+            "codeSnippet": "if ($this->consentService->hasConsentFor('profile')) {",
+            "scanned_at": "2025-10-23T13:45:00.000000Z",
+            "scanned_by": 1,
+            "is_fixed": false
+        }
+    ],
+    "count": 1,
+    "stored": true
 }
 ```
 
@@ -680,10 +716,11 @@ git log --oneline -10
 **Lista violations con filtri**
 
 **Query Params:**
-- `priority` (optional): P0, P1, P2, P3
-- `severity` (optional): critical, error, warning, info
-- `isFixed` (optional): 0 (attive), 1 (risolte)
-- `limit` (optional): 50, 100, 500
+
+-   `priority` (optional): P0, P1, P2, P3
+-   `severity` (optional): critical, error, warning, info
+-   `isFixed` (optional): 0 (attive), 1 (risolte)
+-   `limit` (optional): 50, 100, 500
 
 **Response:** Blade view con tabella violations
 
@@ -692,10 +729,11 @@ git log --oneline -10
 **Marca violation come risolta**
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Violazione marcata come risolta"
+    "success": true,
+    "message": "Violazione marcata come risolta"
 }
 ```
 
@@ -704,6 +742,7 @@ git log --oneline -10
 **Genera prompt AI per fix**
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -730,7 +769,7 @@ class TestViolationsService
     {
         $this->consentService->hasConsentFor('test'); // Metodo inesistente!
     }
-    
+
     // ❌ UEM_FIRST violation
     public function testUemFirst()
     {
@@ -763,6 +802,7 @@ php artisan padmin:scan --path=app/Services/Test/TestViolationsService.php
 **Causa:** File PHP con syntax error
 
 **Soluzione:**
+
 ```bash
 php -l app/Http/Controllers/ProblematicController.php
 # Fix syntax errors prima di scan
@@ -773,6 +813,7 @@ php -l app/Http/Controllers/ProblematicController.php
 **Causa:** Rules filter troppo restrittivo
 
 **Soluzione:**
+
 ```bash
 # Scan con tutte le regole
 php artisan padmin:scan --path=app/Services
@@ -783,6 +824,7 @@ php artisan padmin:scan --path=app/Services
 **Causa:** Session driver configurato male
 
 **Soluzione:**
+
 ```bash
 # Verifica .env
 SESSION_DRIVER=file
@@ -798,6 +840,7 @@ php artisan config:clear
 **Causa:** JavaScript error o conflitto librerie
 
 **Soluzione:**
+
 1. Apri Browser Console (F12)
 2. Cerca errori JavaScript
 3. Verifica che `meta[name="csrf-token"]` esista
@@ -809,24 +852,24 @@ php artisan config:clear
 
 ### Documentation
 
-- [Architecture Deep Dive](./ARCHITECTURE.md)
-- [Rules Specification](./RULES.md)
-- [Development Roadmap](./ROADMAP.md)
-- [API Reference](./API.md)
-- [Contributing Guidelines](./CONTRIBUTING.md)
+-   [Architecture Deep Dive](./ARCHITECTURE.md)
+-   [Rules Specification](./RULES.md)
+-   [Development Roadmap](./ROADMAP.md)
+-   [API Reference](./API.md)
+-   [Contributing Guidelines](./CONTRIBUTING.md)
 
 ### External Resources
 
-- [nikic/php-parser Documentation](https://github.com/nikic/PHP-Parser/tree/master/doc)
-- [Laravel AST Parsing Best Practices](https://laravel.com)
-- [OpenAI GPT-4 API](https://platform.openai.com/docs)
-- [Monaco Editor Documentation](https://microsoft.github.io/monaco-editor/)
+-   [nikic/php-parser Documentation](https://github.com/nikic/PHP-Parser/tree/master/doc)
+-   [Laravel AST Parsing Best Practices](https://laravel.com)
+-   [OpenAI GPT-4 API](https://platform.openai.com/docs)
+-   [Monaco Editor Documentation](https://microsoft.github.io/monaco-editor/)
 
 ### FlorenceEGI Context
 
-- [OS3.0 Instructions](../../copilot-instructions.md)
-- [Brand Guidelines](../../marketing/FlorenceEGI_Brand_Guidelines.md)
-- [PA Enterprise TODO Master](../../context/PA_ENTERPRISE_TODO_MASTER.md)
+-   [OS3.0 Instructions](../../copilot-instructions.md)
+-   [Brand Guidelines](../../marketing/FlorenceEGI_Brand_Guidelines.md)
+-   [PA Enterprise TODO Master](../../context/PA_ENTERPRISE_TODO_MASTER.md)
 
 ---
 
