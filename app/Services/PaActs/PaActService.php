@@ -504,6 +504,21 @@ class PaActService
             'user_id' => $user->id
         ]);
 
+        // AUTO-GENERATE EMBEDDING for semantic search
+        try {
+            $embeddingService = app(\App\Services\EmbeddingService::class);
+            $embeddingService->generateForAct($egi);
+            $this->logger->info('[PaActService] Embedding auto-generated', [
+                'egi_id' => $egi->id
+            ]);
+        } catch (\Exception $embErr) {
+            // Non-blocking: embedding generation failure doesn't fail the upload
+            $this->logger->warning('[PaActService] Embedding generation failed', [
+                'egi_id' => $egi->id,
+                'error' => $embErr->getMessage()
+            ]);
+        }
+
         return $egi;
     }
 

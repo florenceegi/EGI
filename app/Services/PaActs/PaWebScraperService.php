@@ -627,6 +627,21 @@ class PaWebScraperService
                     'egi_id' => $egi->id,
                     'protocol_number' => $act['protocol_number']
                 ]);
+
+                // AUTO-GENERATE EMBEDDING for semantic search
+                try {
+                    $embeddingService = app(\App\Services\EmbeddingService::class);
+                    $embeddingService->generateForAct($egi);
+                    $this->logger->debug('[PaWebScraperService] Embedding generated', [
+                        'egi_id' => $egi->id
+                    ]);
+                } catch (\Exception $embErr) {
+                    // Non-blocking: embedding generation failure doesn't fail the scraping
+                    $this->logger->warning('[PaWebScraperService] Embedding generation failed', [
+                        'egi_id' => $egi->id,
+                        'error' => $embErr->getMessage()
+                    ]);
+                }
             } catch (\Exception $e) {
                 $errors[] = [
                     'protocol_number' => $act['protocol_number'] ?? 'N/A',
