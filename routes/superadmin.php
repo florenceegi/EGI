@@ -79,6 +79,8 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
 
         // API Endpoints
         Route::post('/violations/{violationId}/fix', [PadminController::class, 'markViolationFixed'])->name('violations.fix');
+        Route::post('/scan/run', [PadminController::class, 'runScan'])->name('scan.run');
+        Route::post('/violations/{violationId}/ai-fix', [PadminController::class, 'requestAiFix'])->name('violations.ai-fix');
     });
 
     // ═══════════════════════════════════════════════════════════════

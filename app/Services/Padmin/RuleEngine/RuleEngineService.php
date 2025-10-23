@@ -54,6 +54,7 @@ class RuleEngineService {
             'UEM_FIRST' => new Rules\UemFirstRule(),
             'STATISTICS' => new Rules\StatisticsRule(),
             'MICA_SAFE' => new Rules\MicaSafeRule(),
+            'GDPR_COMPLIANCE' => new Rules\GdprComplianceRule(),
         ];
     }
 
@@ -123,6 +124,7 @@ class RuleEngineService {
                         'priority' => $violation['priority'] ?? 'P2',
                         'severity' => $violation['severity'] ?? 'warning',
                         'context' => $violation['context'] ?? [],
+                        'codeSnippet' => $violation['code_snippet'] ?? '',
                     ];
                 }
             }
@@ -206,6 +208,17 @@ class RuleEngineService {
      */
     protected function getPhpFiles(string $directory, array $excludePatterns): array {
         $files = [];
+        
+        // Se è un file singolo, ritorna array con quel file
+        if (is_file($directory) && pathinfo($directory, PATHINFO_EXTENSION) === 'php') {
+            return [$directory];
+        }
+        
+        // Altrimenti scansiona directory
+        if (!is_dir($directory)) {
+            return [];
+        }
+        
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS)
         );
@@ -244,18 +257,22 @@ class RuleEngineService {
 
         foreach ($violations as $violation) {
             try {
-                // Create violation via PadminService
-                $this->padminService->createViolation([
-                    'type' => $violation['type'],
-                    'message' => $violation['message'],
-                    'filePath' => $violation['filePath'],
-                    'line' => $violation['line'],
-                    'priority' => $violation['priority'],
-                    'severity' => $violation['severity'],
-                    'rule' => $violation['rule'],
-                    'context' => $violation['context'],
+                // Map violation structure to match createViolation expected format
+                $violationData = [
+                    'type' => $violation['type'] ?? 'UNKNOWN',
+                    'message' => $violation['message'] ?? '',
+                    'filePath' => $violation['filePath'] ?? '',
+                    'line' => $violation['line'] ?? 0,
+                    'priority' => $violation['priority'] ?? 'P2',
+                    'severity' => $violation['severity'] ?? 'warning',
+                    'rule' => $violation['rule'] ?? 'UNKNOWN',
+                    'context' => json_encode($violation['context'] ?? []),
+                    'codeSnippet' => $violation['codeSnippet'] ?? '',
                     'isFixed' => false,
-                ], $user);
+                ];
+
+                // Create violation via PadminService
+                $this->padminService->createViolation($violationData, $user);
 
                 $stored++;
             } catch (\Exception $e) {
