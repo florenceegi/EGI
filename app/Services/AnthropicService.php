@@ -138,7 +138,7 @@ class AnthropicService
     private function buildSystemPrompt(array $context, string $personaId = 'strategic'): string
     {
         // Select the appropriate persona prompt
-        $basePrompt = match($personaId) {
+        $basePrompt = match ($personaId) {
             'strategic' => $this->buildStrategicPrompt(),
             'technical' => $this->buildTechnicalPrompt(),
             'legal' => $this->buildLegalPrompt(),
@@ -147,7 +147,7 @@ class AnthropicService
             'communication' => $this->buildCommunicationPrompt(),
             default => $this->buildStrategicPrompt(), // fallback to strategic
         };
-        
+
         return $basePrompt . $this->buildCommonContext($context);
     }
 
