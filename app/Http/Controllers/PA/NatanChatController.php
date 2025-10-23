@@ -64,16 +64,26 @@ class NatanChatController extends Controller
      *   "conversation_history": [
      *     {"role": "user", "content": "..."},
      *     {"role": "assistant", "content": "..."}
-     *   ]
+     *   ],
+     *   "persona_id": "strategic" | "technical" | "legal" | "financial" | "urban_social" | "communication" | null,
+     *   "session_id": "optional_session_id"
      * }
      *
      * RESPONSE:
      * {
      *   "success": true,
      *   "response": "Ecco il riassunto dell'ultimo atto...",
-     *   "sources": [
-     *     {"id": 123, "protocol_number": "12345/2025", "title": "...", "url": "..."}
-     *   ]
+     *   "sources": [...],
+     *   "persona": {
+     *     "id": "strategic",
+     *     "name": "Consulente Strategico",
+     *     "confidence": 0.85,
+     *     "method": "auto" | "manual" | "keyword" | "ai" | "default",
+     *     "reasoning": "...",
+     *     "alternatives": [...],
+     *     "suggestion": "..."
+     *   },
+     *   "session_id": "natan_xxxx"
      * }
      *
      * @param Request $request
@@ -91,21 +101,27 @@ class NatanChatController extends Controller
             // Validate input
             $validated = $request->validate([
                 'message' => ['required', 'string', 'min:3', 'max:1000'],
-                'conversation_history' => ['nullable', 'array', 'max:10'] // Max 10 previous messages
+                'conversation_history' => ['nullable', 'array', 'max:10'], // Max 10 previous messages
+                'persona_id' => ['nullable', 'string', 'in:strategic,technical,legal,financial,urban_social,communication'],
+                'session_id' => ['nullable', 'string', 'max:100']
             ]);
 
             $user = auth()->user();
             $message = $validated['message'];
             $history = $validated['conversation_history'] ?? [];
+            $personaId = $validated['persona_id'] ?? null;
+            $sessionId = $validated['session_id'] ?? null;
 
             $this->logger->info('[NatanChatController] Processing user message', [
                 ...$logContext,
                 'message_length' => strlen($message),
-                'history_length' => count($history)
+                'history_length' => count($history),
+                'persona_id' => $personaId,
+                'session_id' => $sessionId
             ]);
 
-            // Process query with N.A.T.A.N. service
-            $result = $this->chatService->processQuery($message, $user, $history);
+            // Process query with N.A.T.A.N. service (with persona support)
+            $result = $this->chatService->processQuery($message, $user, $history, $personaId, $sessionId);
 
             if (!$result['success']) {
                 return response()->json([
@@ -118,13 +134,16 @@ class NatanChatController extends Controller
             $this->logger->info('[NatanChatController] AI response generated successfully', [
                 ...$logContext,
                 'response_length' => strlen($result['response']),
-                'sources_count' => count($result['sources'] ?? [])
+                'sources_count' => count($result['sources'] ?? []),
+                'persona_used' => $result['persona']['id'] ?? null
             ]);
 
             return response()->json([
                 'success' => true,
                 'response' => $result['response'],
                 'sources' => $result['sources'] ?? [],
+                'persona' => $result['persona'] ?? null,
+                'session_id' => $result['session_id'] ?? null,
                 'timestamp' => now()->toIso8601String()
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
