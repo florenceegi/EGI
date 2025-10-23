@@ -15,8 +15,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @version 1.0.0
  * @date 2025-10-23
  */
-class AiFixService
-{
+class AiFixService {
     protected AnthropicService $anthropic;
     protected UltraLogManager $logger;
 
@@ -31,8 +30,7 @@ class AiFixService
     /**
      * Genera fix per una violation usando Claude
      */
-    public function generateFix(array $violation): array
-    {
+    public function generateFix(array $violation): array {
         $this->logger->info('[AiFixService] Generating fix', [
             'violation_id' => $violation['id'] ?? 'unknown',
             'rule' => $violation['rule'] ?? 'unknown'
@@ -64,7 +62,6 @@ class AiFixService
                 'explanation' => $this->extractExplanation($response),
                 'original_code' => $violation['codeSnippet'] ?? ''
             ];
-
         } catch (\Exception $e) {
             $this->logger->error('[AiFixService] Fix generation failed', [
                 'error' => $e->getMessage(),
@@ -81,8 +78,7 @@ class AiFixService
     /**
      * Build system prompt con regole OS3.0
      */
-    private function buildSystemPrompt(): string
-    {
+    private function buildSystemPrompt(): string {
         return <<<PROMPT
 You are a senior Laravel developer fixing code quality violations in FlorenceEGI platform.
 
@@ -127,8 +123,7 @@ PROMPT;
     /**
      * Build user prompt con violation details
      */
-    private function buildUserPrompt(array $violation): string
-    {
+    private function buildUserPrompt(array $violation): string {
         $file = basename($violation['file'] ?? 'unknown');
         $line = $violation['line'] ?? 'unknown';
         $rule = $violation['rule'] ?? 'unknown';
@@ -166,8 +161,7 @@ PROMPT;
     /**
      * Extract fixed code from Claude response
      */
-    private function extractCodeFromResponse(string $response): string
-    {
+    private function extractCodeFromResponse(string $response): string {
         // Extract code between ```php and ```
         if (preg_match('/```php\s*(.*?)\s*```/s', $response, $matches)) {
             return trim($matches[1]);
@@ -185,8 +179,7 @@ PROMPT;
     /**
      * Extract explanation from Claude response
      */
-    private function extractExplanation(string $response): string
-    {
+    private function extractExplanation(string $response): string {
         // Extract text after EXPLANATION:
         if (preg_match('/EXPLANATION:\s*(.*)/s', $response, $matches)) {
             return trim($matches[1]);

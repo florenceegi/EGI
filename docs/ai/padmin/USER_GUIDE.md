@@ -7,10 +7,11 @@
 ## 🎯 What is Padmin Analyzer?
 
 Padmin Analyzer è il tuo **quality guardian** che:
-- ✅ Controlla il codice per violazioni OS3.0
-- ⚡ Suggerisce fix tramite AI
-- 📊 Traccia violations nel tempo
-- 🛡️ Previene errori prima del deployment
+
+-   ✅ Controlla il codice per violazioni OS3.0
+-   ⚡ Suggerisce fix tramite AI
+-   📊 Traccia violations nel tempo
+-   🛡️ Previene errori prima del deployment
 
 **Think of it as:** Your personal code reviewer that knows FlorenceEGI rules.
 
@@ -39,6 +40,7 @@ Richiede: SuperAdmin login
 **Hai trovato violations? Due opzioni:**
 
 #### Opzione A: Fix with AI ⚡
+
 1. Click **"⚡ AI"** sulla violation
 2. Modal mostra prompt AI
 3. Click **"Copia"**
@@ -48,6 +50,7 @@ Richiede: SuperAdmin login
 7. Torna e click **"✓ Mark as Fixed"**
 
 #### Opzione B: Fix Manuale
+
 1. Leggi violation message
 2. Apri file indicato
 3. Vai a linea indicata
@@ -60,19 +63,19 @@ Richiede: SuperAdmin login
 
 ### Priority Levels
 
-| Priority | Significato | Azione |
-|----------|-------------|--------|
-| **P0** 🔴 | **BLOCKING** - Non può andare in production | Fix SUBITO |
-| **P1** 🟡 | **HIGH** - Rischio medio, fix presto | Fix entro 1 settimana |
-| **P2** 🔵 | **MEDIUM** - Migliora qualità | Fix quando possibile |
-| **P3** ⚪ | **LOW** - Nice to have | Opzionale |
+| Priority  | Significato                                 | Azione                |
+| --------- | ------------------------------------------- | --------------------- |
+| **P0** 🔴 | **BLOCKING** - Non può andare in production | Fix SUBITO            |
+| **P1** 🟡 | **HIGH** - Rischio medio, fix presto        | Fix entro 1 settimana |
+| **P2** 🔵 | **MEDIUM** - Migliora qualità               | Fix quando possibile  |
+| **P3** ⚪ | **LOW** - Nice to have                      | Opzionale             |
 
 ### Severity Types
 
-- **critical:** Errore grave, sistema a rischio
-- **error:** Errore significativo, funzionalità broken
-- **warning:** Possibile problema, richiede attenzione
-- **info:** Informazione, best practice suggestion
+-   **critical:** Errore grave, sistema a rischio
+-   **error:** Errore significativo, funzionalità broken
+-   **warning:** Possibile problema, richiede attenzione
+-   **info:** Informazione, best practice suggestion
 
 ---
 
@@ -81,12 +84,14 @@ Richiede: SuperAdmin login
 ### REGOLA_ZERO: Method Doesn't Exist
 
 **Violation:**
+
 ```
 Using blacklisted method hasConsentFor()
 File: UserController.php, Line: 42
 ```
 
 **Problema:**
+
 ```php
 // ❌ SBAGLIATO
 if ($this->consentService->hasConsentFor('profile-update')) {
@@ -95,6 +100,7 @@ if ($this->consentService->hasConsentFor('profile-update')) {
 ```
 
 **Fix:**
+
 ```php
 // ✅ CORRETTO
 use App\Models\User;
@@ -105,6 +111,7 @@ if ($this->consentService->hasConsent($user, 'allow-personal-data-processing')) 
 ```
 
 **Come verificare metodi corretti:**
+
 1. Cerca nel repo: `grep -r "public function hasConsent" app/`
 2. Leggi classe: `app/Services/Gdpr/ConsentService.php`
 3. Usa AI Fix per suggerimento automatico
@@ -114,12 +121,14 @@ if ($this->consentService->hasConsent($user, 'allow-personal-data-processing')) 
 ### UEM_FIRST: Missing Error Handling
 
 **Violation:**
+
 ```
 Catch block without errorManager->handle()
 File: ProfileController.php, Line: 89
 ```
 
 **Problema:**
+
 ```php
 // ❌ SBAGLIATO
 try {
@@ -130,6 +139,7 @@ try {
 ```
 
 **Fix:**
+
 ```php
 // ✅ CORRETTO
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -147,27 +157,30 @@ try {
         'user_id' => $user->id,
         'context' => $data
     ], $e);
-    
+
     return redirect()->back()->withErrors(['error' => 'Update failed']);
 }
 ```
 
 **Perché importante:**
-- Team riceve notifica dell'errore
-- Utente vede messaggio user-friendly
-- Errore tracciato per monitoring
+
+-   Team riceve notifica dell'errore
+-   Utente vede messaggio user-friendly
+-   Errore tracciato per monitoring
 
 ---
 
 ### STATISTICS: Hidden Data Limits
 
 **Violation:**
+
 ```
 Using ->take() without explicit parameter in StatisticsService
 File: EgiStatisticsService.php, Line: 54
 ```
 
 **Problema:**
+
 ```php
 // ❌ SBAGLIATO
 public function getTopEgis(): Collection
@@ -178,17 +191,18 @@ public function getTopEgis(): Collection
 ```
 
 **Fix:**
+
 ```php
 // ✅ CORRETTO
 public function getTopEgis(?int $limit = null): Collection
 {
     $query = Egi::orderBy('likes');
-    
+
     // Limit SOLO se esplicitamente richiesto
     if ($limit !== null) {
         $query->limit($limit);
     }
-    
+
     return $query->get(); // Default: tutti i record
 }
 ```
@@ -201,12 +215,14 @@ Un dirigente PA che vede dati incompleti perde fiducia. Per clienti istituzional
 ### GDPR_COMPLIANCE: Missing Consent/Audit
 
 **Violation:**
+
 ```
 User model update without consent check
 File: ProfileController.php, Line: 76
 ```
 
 **Problema:**
+
 ```php
 // ❌ SBAGLIATO
 public function update(Request $request)
@@ -218,6 +234,7 @@ public function update(Request $request)
 ```
 
 **Fix:**
+
 ```php
 // ✅ CORRETTO
 use App\Services\Gdpr\ConsentService;
@@ -238,16 +255,16 @@ public function __construct(
 public function update(Request $request)
 {
     $user = Auth::user();
-    
+
     // 1. Check consent
     if (!$this->consentService->hasConsent($user, 'allow-personal-data-processing')) {
         return redirect()->back()->withErrors(['consent' => 'Consent required']);
     }
-    
+
     // 2. Update
     $validated = $request->validated();
     $user->update($validated);
-    
+
     // 3. Audit trail
     $this->auditService->logUserAction(
         $user,
@@ -255,15 +272,16 @@ public function update(Request $request)
         ['fields' => array_keys($validated)],
         GdprActivityCategory::PERSONAL_DATA_UPDATE
     );
-    
+
     return redirect()->back()->with('success', 'Profile updated');
 }
 ```
 
 **GDPR Requirements:**
-- Consent check obbligatorio prima di update dati personali
-- Audit trail completo di ogni modifica
-- Dependency injection corretto
+
+-   Consent check obbligatorio prima di update dati personali
+-   Audit trail completo di ogni modifica
+-   Dependency injection corretto
 
 ---
 
@@ -291,7 +309,7 @@ public function update(Request $request)
 
 1. Priorità: **P0**
 2. Stato: **Attive**
-3. *(FASE 2: Filter by user)*
+3. _(FASE 2: Filter by user)_
 
 ---
 
@@ -300,15 +318,17 @@ public function update(Request $request)
 ### When to Use AI Fix
 
 ✅ **Use AI when:**
-- Violation è chiara ma non sai come fixare
-- Hai bisogno di codice boilerplate (dependency injection, etc.)
-- Vuoi vedere pattern corretto da replicare
-- Prima volta che fissi questo tipo di violation
+
+-   Violation è chiara ma non sai come fixare
+-   Hai bisogno di codice boilerplate (dependency injection, etc.)
+-   Vuoi vedere pattern corretto da replicare
+-   Prima volta che fissi questo tipo di violation
 
 ❌ **Don't use AI when:**
-- Fix è ovvio (typo, import mancante)
-- Hai già fixato violations simili
-- Problema richiede context business logic
+
+-   Fix è ovvio (typo, import mancante)
+-   Hai già fixato violations simili
+-   Problema richiede context business logic
 
 ### How to Use AI Prompts
 
@@ -323,23 +343,27 @@ public function update(Request $request)
 7. **Mark as Fixed** in Padmin
 
 **Pro Tip:** AI prompt include:
-- Context file e linea
-- Regola violata
-- Architettura FlorenceEGI
-- Pattern OS3.0 da seguire
+
+-   Context file e linea
+-   Regola violata
+-   Architettura FlorenceEGI
+-   Pattern OS3.0 da seguire
 
 ---
 
 ## 📊 Dashboard Metrics
 
 ### Total Violations
+
 Numero totale violations trovate (tutte le scansioni)
 
 **What to track:**
-- Trend: In calo? ✅ Good!
-- Spike improvvisi? Investigate!
+
+-   Trend: In calo? ✅ Good!
+-   Spike improvvisi? Investigate!
 
 ### P0 Blocking Issues
+
 Numero violations P0 (BLOCKING)
 
 **Goal:** Zero P0 prima di deployment
@@ -347,15 +371,17 @@ Numero violations P0 (BLOCKING)
 **Action:** Se >0 → Fix SUBITO
 
 ### Symbols Indexed
-*(FASE 2)* Numero simboli (classi, metodi) indicizzati
+
+_(FASE 2)_ Numero simboli (classi, metodi) indicizzati
 
 **What it means:** Più simboli = più context per AI
 
 ### System Health
+
 Status generale scanner
 
-- **100%:** ✅ Tutto OK
-- **<100%:** ⚠️ Check errori parsing
+-   **100%:** ✅ Tutto OK
+-   **<100%:** ⚠️ Check errori parsing
 
 ---
 
@@ -425,23 +451,26 @@ Dopo 3-4 AI fixes dello stesso tipo, impari il pattern. Poi fai manuale più vel
 ### Q: Quante violations sono "normali"?
 
 **A:** Dipende da size repo:
-- Small project (<50 files): 0-10 violations OK
-- Medium project (50-200 files): 10-50 violations acceptable
-- Large project (>200 files): <100 violations good
+
+-   Small project (<50 files): 0-10 violations OK
+-   Medium project (50-200 files): 10-50 violations acceptable
+-   Large project (>200 files): <100 violations good
 
 **Goal:** Zero P0 violations sempre.
 
 ### Q: Quanto tempo ci vuole per fixare una violation?
 
 **A:** Dipende da tipo:
-- **P0 method inesistente:** 2-5 minuti (find correct method, replace)
-- **P0 missing UEM:** 5-10 minuti (add dependency injection + handle call)
-- **P0 GDPR compliance:** 10-20 minuti (add consent + audit)
-- **P1-P3:** Varia molto
+
+-   **P0 method inesistente:** 2-5 minuti (find correct method, replace)
+-   **P0 missing UEM:** 5-10 minuti (add dependency injection + handle call)
+-   **P0 GDPR compliance:** 10-20 minuti (add consent + audit)
+-   **P1-P3:** Varia molto
 
 ### Q: AI Fix genera sempre codice corretto?
 
 **A:** No, AI è tool non oracle. Sempre:
+
 1. Review codice generato
 2. Test che funzioni
 3. Verifica rispetta OS3.0
@@ -454,13 +483,15 @@ Dopo 3-4 AI fixes dello stesso tipo, impari il pattern. Poi fai manuale più vel
 ### Q: Scan rallenta sviluppo?
 
 **A:** No se usi strategicamente:
-- Scan incrementale (solo file modificati)
-- Scan pre-commit (catch early)
-- Dashboard per monitoring trend
+
+-   Scan incrementale (solo file modificati)
+-   Scan pre-commit (catch early)
+-   Dashboard per monitoring trend
 
 ### Q: Come faccio training per team?
 
-**A:** 
+**A:**
+
 1. Mostra questa User Guide
 2. Live demo: Run Scan → Fix → AI → Mark Fixed
 3. Let them try su test file
@@ -473,11 +504,13 @@ Dopo 3-4 AI fixes dello stesso tipo, impari il pattern. Poi fai manuale più vel
 ### Scan Non Trova Violations (ma dovrebbero esserci)
 
 **Cause:**
+
 1. Path errato → Check che file esista
 2. Rules filter troppo restrittivo → Usa "Tutte"
 3. File ha syntax error → Fix syntax prima
 
 **Solution:**
+
 ```bash
 # Verifica file PHP valido
 php -l app/Http/Controllers/ProblematicFile.php
@@ -489,10 +522,12 @@ php artisan padmin:scan --path=app/Services
 ### Modal Non Si Apre
 
 **Cause:**
+
 1. JavaScript error → Check browser console (F12)
 2. CSRF token mancante → Hard reload (Ctrl+Shift+R)
 
 **Solution:**
+
 1. F12 → Console → Check errori
 2. Verifica `<meta name="csrf-token">` in `<head>`
 3. Hard reload pagina
@@ -500,43 +535,50 @@ php artisan padmin:scan --path=app/Services
 ### AI Fix Genera Codice Non Valido
 
 **Cause:**
+
 1. Context insufficiente → AI non ha tutti i dettagli
 2. Prompt ambiguo → Specifica meglio nel prompt
 
 **Solution:**
+
 1. Aggiungi context manualmente al prompt:
-   ```
-   Context: Working on FlorenceEGI User profile update.
-   Need to use ConsentService and AuditLogService.
-   ```
+    ```
+    Context: Working on FlorenceEGI User profile update.
+    Need to use ConsentService and AuditLogService.
+    ```
 2. Rigenera con più context
 
 ### Session Violations Persi
 
 **Cause:**
+
 1. Logout → Session cleared
 2. Session expired → Timeout
 
 **Solution:**
+
 1. Re-run scan (2-3 secondi)
-2. *(FASE 2: Redis storage)* → No more session loss
+2. _(FASE 2: Redis storage)_ → No more session loss
 
 ---
 
 ## 📚 Learn More
 
 ### Documentation
-- [README.md](./README.md) - Project overview
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
-- [ROADMAP.md](./ROADMAP.md) - Future plans
+
+-   [README.md](./README.md) - Project overview
+-   [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
+-   [ROADMAP.md](./ROADMAP.md) - Future plans
 
 ### OS3.0 Rules
-- Read: `docs/ai/copilot-instructions.md`
-- Sections: P0, P1, P2 rules
+
+-   Read: `docs/ai/copilot-instructions.md`
+-   Sections: P0, P1, P2 rules
 
 ### FlorenceEGI Context
-- [Brand Guidelines](../../marketing/FlorenceEGI_Brand_Guidelines.md)
-- [PA Enterprise TODO](../../context/PA_ENTERPRISE_TODO_MASTER.md)
+
+-   [Brand Guidelines](../../marketing/FlorenceEGI_Brand_Guidelines.md)
+-   [PA Enterprise TODO](../../context/PA_ENTERPRISE_TODO_MASTER.md)
 
 ---
 
@@ -544,42 +586,47 @@ php artisan padmin:scan --path=app/Services
 
 **New Developer Onboarding:**
 
-- [ ] Leggi questa User Guide (15 min)
-- [ ] Watch demo video *(coming soon)*
-- [ ] Run first scan on test file
-- [ ] Fix 1 violation manualmente
-- [ ] Fix 1 violation con AI
-- [ ] Mark both as Fixed
-- [ ] Explore dashboard metrics
-- [ ] Setup pre-commit hook *(optional)*
+-   [ ] Leggi questa User Guide (15 min)
+-   [ ] Watch demo video _(coming soon)_
+-   [ ] Run first scan on test file
+-   [ ] Fix 1 violation manualmente
+-   [ ] Fix 1 violation con AI
+-   [ ] Mark both as Fixed
+-   [ ] Explore dashboard metrics
+-   [ ] Setup pre-commit hook _(optional)_
 
 **After 1 Week:**
-- [ ] Fixed 10+ violations
-- [ ] Comfortable with AI Fix workflow
-- [ ] Know when to use manual vs AI
-- [ ] Understand all 5 P0 rules
+
+-   [ ] Fixed 10+ violations
+-   [ ] Comfortable with AI Fix workflow
+-   [ ] Know when to use manual vs AI
+-   [ ] Understand all 5 P0 rules
 
 **After 1 Month:**
-- [ ] Zero P0 violations in your code
-- [ ] Mentor new developer
-- [ ] Suggest improvements to Padmin
+
+-   [ ] Zero P0 violations in your code
+-   [ ] Mentor new developer
+-   [ ] Suggest improvements to Padmin
 
 ---
 
 ## 📞 Support
 
 **Questions?**
-- Check this guide first
-- Ask in team Slack: `#padmin-support`
-- Create issue in repo
+
+-   Check this guide first
+-   Ask in team Slack: `#padmin-support`
+-   Create issue in repo
 
 **Bug Report:**
-- Include: screenshot, steps to reproduce, expected vs actual
-- Tag: `bug`, `padmin-analyzer`
+
+-   Include: screenshot, steps to reproduce, expected vs actual
+-   Tag: `bug`, `padmin-analyzer`
 
 **Feature Request:**
-- Include: use case, why needed, proposed solution
-- Tag: `enhancement`, `padmin-analyzer`
+
+-   Include: use case, why needed, proposed solution
+-   Tag: `enhancement`, `padmin-analyzer`
 
 ---
 

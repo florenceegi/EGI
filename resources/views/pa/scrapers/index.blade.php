@@ -221,7 +221,7 @@
 
                                         {{-- Run Manually --}}
                                         <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}"
-                                            class="inline-block">
+                                            class="inline-block" onsubmit="showLoadingModal('run', '{{ $scraper->source_entity }}')">
                                             @csrf
                                             <button type="submit"
                                                 class="inline-flex items-center rounded-lg bg-[#2D5016] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#1F3810]"
@@ -290,4 +290,142 @@
             </div>
         </div>
     </div>
+
+    {{-- Loading Modal - Enterprise Style --}}
+    <div id="loadingModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
+        <div class="relative mx-4 w-full max-w-md transform rounded-2xl bg-white p-8 shadow-2xl transition-all">
+            {{-- Logo/Icon Area --}}
+            <div class="mb-6 flex justify-center">
+                <div class="relative">
+                    {{-- Animated Ring --}}
+                    <div class="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-[#1B365D] border-l-[#D4A574]"></div>
+                    {{-- Icon --}}
+                    <div class="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#1B365D] to-[#2D5016]">
+                        <span class="material-symbols-outlined animate-pulse text-5xl text-white" id="modalIcon">cloud_sync</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Title --}}
+            <h3 class="mb-3 text-center text-2xl font-bold text-[#1B365D]" id="modalTitle">
+                Esecuzione in corso...
+            </h3>
+
+            {{-- Message --}}
+            <p class="mb-6 text-center text-gray-600" id="modalMessage">
+                Stiamo estraendo gli atti pubblici. L'operazione potrebbe richiedere alcuni minuti.
+            </p>
+
+            {{-- Progress Indicators --}}
+            <div class="space-y-2">
+                <div class="flex items-center gap-3 text-sm text-gray-700">
+                    <span class="material-symbols-outlined animate-pulse text-[#1B365D]">check_circle</span>
+                    <span>Preparazione richiesta...</span>
+                </div>
+                <div class="flex items-center gap-3 text-sm text-gray-700">
+                    <span class="material-symbols-outlined animate-pulse text-[#1B365D]">cloud_upload</span>
+                    <span>Invio dati all'API...</span>
+                </div>
+                <div class="flex items-center gap-3 text-sm text-gray-700">
+                    <span class="material-symbols-outlined animate-pulse text-[#1B365D]">shield</span>
+                    <span>Verifica GDPR compliance...</span>
+                </div>
+            </div>
+
+            {{-- Progress Bar --}}
+            <div class="mt-6 h-2 overflow-hidden rounded-full bg-gray-200">
+                <div class="h-full animate-progress rounded-full bg-gradient-to-r from-[#1B365D] via-[#D4A574] to-[#2D5016]"></div>
+            </div>
+
+            {{-- Institutional Footer --}}
+            <div class="mt-6 border-t border-gray-200 pt-4 text-center">
+                <p class="text-xs text-gray-500">
+                    <span class="material-symbols-outlined mr-1 inline-block align-middle text-sm">verified_user</span>
+                    Sistema certificato N.A.T.A.N. - Conformità GDPR garantita
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {{-- JavaScript for Modal --}}
+    <script>
+        function showLoadingModal(type, sourceEntity = '') {
+            const modal = document.getElementById('loadingModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalIcon = document.getElementById('modalIcon');
+
+            if (type === 'test') {
+                modalTitle.textContent = 'Test Connessione in corso...';
+                modalMessage.innerHTML = `Stiamo verificando la connessione con <strong>${sourceEntity}</strong>. L'operazione potrebbe richiedere alcuni secondi.`;
+                modalIcon.textContent = 'electrical_services';
+            } else if (type === 'run') {
+                modalTitle.textContent = 'Esecuzione Scraper in corso...';
+                modalMessage.innerHTML = `Stiamo estraendo gli atti da <strong>${sourceEntity}</strong>. L'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.`;
+                modalIcon.textContent = 'play_arrow';
+            }
+
+            // Show modal with fade-in
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Prevent accidental double-submit
+            return true;
+        }
+
+        // Hide modal if page loads with errors (form will not have been processed)
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const modal = document.getElementById('loadingModal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    // Check if there are any success/error messages (meaning page reloaded)
+                    const hasMessages = document.querySelector('.alert-success, .alert-error');
+                    if (hasMessages) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }
+                }
+            }, 100);
+        });
+    </script>
+
+    {{-- CSS for Animations --}}
+    <style>
+        @keyframes progress {
+            0% {
+                width: 0%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        .animate-progress {
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        /* Backdrop blur support */
+        .backdrop-blur-sm {
+            backdrop-filter: blur(4px);
+        }
+
+        /* Smooth transitions */
+        #loadingModal {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        /* Pulse animation for icons */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
 </x-pa-layout>

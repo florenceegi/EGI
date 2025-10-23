@@ -117,25 +117,28 @@
 ## 💰 Budget Overview
 
 ### FASE 1 (Completata)
-- **Development:** ~€2,000 (40h × €50/h AI-assisted)
-- **Infrastructure:** €0 (uses existing Laravel + Session)
-- **Status:** ✅ Speso
+
+-   **Development:** ~€2,000 (40h × €50/h AI-assisted)
+-   **Infrastructure:** €0 (uses existing Laravel + Session)
+-   **Status:** ✅ Speso
 
 ### FASE 2-6 (Future)
-- **Development:** €16,000 (320h × €50/h)
-  - FASE 2: Symbol Registry (€4,000)
-  - FASE 3: AI Copilot (€3,000)
-  - FASE 4: Web Terminal (€2,000)
-  - FASE 5: Monaco Editor (€6,000)
-  - FASE 6: Closed-Loop (€3,000)
-- **OpenAI API:** €100-200/mese (recurring)
-- **Redis Cloud:** €0 (free tier)
-- **Total Investment:** €18,000 + €100-200/mese
+
+-   **Development:** €16,000 (320h × €50/h)
+    -   FASE 2: Symbol Registry (€4,000)
+    -   FASE 3: AI Copilot (€3,000)
+    -   FASE 4: Web Terminal (€2,000)
+    -   FASE 5: Monaco Editor (€6,000)
+    -   FASE 6: Closed-Loop (€3,000)
+-   **OpenAI API:** €100-200/mese (recurring)
+-   **Redis Cloud:** €0 (free tier)
+-   **Total Investment:** €18,000 + €100-200/mese
 
 ### ROI Estimation
-- **Time Saved:** ~20h/settimana sviluppo
-- **Quality Improvement:** ~80% riduzione P0 violations
-- **Break-Even:** ~18 settimane (4.5 mesi)
+
+-   **Time Saved:** ~20h/settimana sviluppo
+-   **Quality Improvement:** ~80% riduzione P0 violations
+-   **Break-Even:** ~18 settimane (4.5 mesi)
 
 ---
 
@@ -192,6 +195,7 @@
 ## 📋 Decision Matrix
 
 ### Option A: MVP Approach (Recommended)
+
 **Scope:** FASE 2 + FASE 3 (Symbol Registry + AI Copilot)  
 **Timeline:** 4 settimane  
 **Budget:** €7,000 dev + €100-200/mese OpenAI  
@@ -199,18 +203,21 @@
 **ROI:** High - Immediate productivity boost
 
 **Pros:**
-- ✅ Quick time-to-value (4 weeks)
-- ✅ Lower initial investment
-- ✅ Validates hypothesis before full commitment
-- ✅ Can iterate based on real usage
+
+-   ✅ Quick time-to-value (4 weeks)
+-   ✅ Lower initial investment
+-   ✅ Validates hypothesis before full commitment
+-   ✅ Can iterate based on real usage
 
 **Cons:**
-- ⚠️ No full IDE experience yet
-- ⚠️ Still need copy-paste for AI code
+
+-   ⚠️ No full IDE experience yet
+-   ⚠️ Still need copy-paste for AI code
 
 ---
 
 ### Option B: Full System
+
 **Scope:** FASE 2-6 (everything)  
 **Timeline:** 11 settimane  
 **Budget:** €18,000 + €100-200/mese  
@@ -218,19 +225,22 @@
 **ROI:** Very High - Complete internal IDE
 
 **Pros:**
-- ✅ Complete vision realized
-- ✅ Full AI-powered IDE
-- ✅ No external dependencies
-- ✅ Maximum differentiation
+
+-   ✅ Complete vision realized
+-   ✅ Full AI-powered IDE
+-   ✅ No external dependencies
+-   ✅ Maximum differentiation
 
 **Cons:**
-- ⚠️ Longer timeline
-- ⚠️ Higher upfront investment
-- ⚠️ More moving parts
+
+-   ⚠️ Longer timeline
+-   ⚠️ Higher upfront investment
+-   ⚠️ More moving parts
 
 ---
 
 ### Option C: Proof-of-Concept Only
+
 **Scope:** FASE 2 only (Symbol Registry)  
 **Timeline:** 2 settimane  
 **Budget:** €4,000  
@@ -238,14 +248,16 @@
 **ROI:** Medium - Foundation only
 
 **Pros:**
-- ✅ Fastest to test (2 weeks)
-- ✅ Lowest investment
-- ✅ Solid foundation for future
-- ✅ Immediate utility (code search)
+
+-   ✅ Fastest to test (2 weeks)
+-   ✅ Lowest investment
+-   ✅ Solid foundation for future
+-   ✅ Immediate utility (code search)
 
 **Cons:**
-- ⚠️ No AI integration yet
-- ⚠️ Limited immediate value
+
+-   ⚠️ No AI integration yet
+-   ⚠️ Limited immediate value
 
 ---
 
@@ -254,12 +266,14 @@
 ### Padmin's Recommendation: **Option A (MVP)**
 
 **Rationale:**
+
 1. **Quick Validation:** 4 weeks to see if AI Copilot adds real value
 2. **Lower Risk:** €7k investment vs €18k full system
 3. **Iterative:** Can adjust FASE 4-6 based on FASE 2-3 learnings
 4. **High Impact:** Symbol Registry + AI Copilot = 80% of value
 
 **Next Steps if Option A:**
+
 1. **Week 0:** Setup (Redis Stack, OpenAI API key)
 2. **Week 1-2:** Implement Symbol Registry
 3. **Week 3-4:** Integrate AI Copilot
@@ -270,17 +284,19 @@
 ## ✅ What's Working Now (FASE 1)
 
 ### Success Stories
-- ✅ Found 15 P0 violations in app/Livewire/Collections
-- ✅ AI Fix workflow tested and working
-- ✅ Session storage functional for single-user
-- ✅ UEM integration complete
-- ✅ GDPR audit trail operational
+
+-   ✅ Found 15 P0 violations in app/Livewire/Collections
+-   ✅ AI Fix workflow tested and working
+-   ✅ Session storage functional for single-user
+-   ✅ UEM integration complete
+-   ✅ GDPR audit trail operational
 
 ### Known Limitations (to fix in FASE 2+)
-- ⚠️ Session storage = data lost on logout
-- ⚠️ No search for existing methods (manual grep needed)
-- ⚠️ AI prompts generic (no codebase context)
-- ⚠️ Manual copy-paste workflow
+
+-   ⚠️ Session storage = data lost on logout
+-   ⚠️ No search for existing methods (manual grep needed)
+-   ⚠️ AI prompts generic (no codebase context)
+-   ⚠️ Manual copy-paste workflow
 
 ---
 
@@ -289,23 +305,27 @@
 ### For Questions About:
 
 **Documentation:**
-- Check [INDEX.md](./INDEX.md) first
-- Search in relevant doc file
-- Create issue if not found
+
+-   Check [INDEX.md](./INDEX.md) first
+-   Search in relevant doc file
+-   Create issue if not found
 
 **FASE 1 (Current System):**
-- [USER_GUIDE.md](./USER_GUIDE.md) - Usage questions
-- [README.md](./README.md) - Rules questions
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - Technical questions
+
+-   [USER_GUIDE.md](./USER_GUIDE.md) - Usage questions
+-   [README.md](./README.md) - Rules questions
+-   [ARCHITECTURE.md](./ARCHITECTURE.md) - Technical questions
 
 **FASE 2-6 (Future):**
-- [ROADMAP.md](./ROADMAP.md) - Vision/timeline questions
-- Direct discussion with Fabio
+
+-   [ROADMAP.md](./ROADMAP.md) - Vision/timeline questions
+-   Direct discussion with Fabio
 
 **Bugs/Issues:**
-- Create GitHub issue
-- Tag: `padmin-analyzer`
-- Include: screenshot, steps, expected vs actual
+
+-   Create GitHub issue
+-   Tag: `padmin-analyzer`
+-   Include: screenshot, steps, expected vs actual
 
 ---
 
@@ -341,23 +361,26 @@ Status: FASE 1 COMPLETED ✅
 ## 🌟 Key Achievements
 
 ### Technical
-- ✅ AST parsing con nikic/php-parser operational
-- ✅ 5 P0 rules implemented and tested
-- ✅ Web UI con scan + AI fix workflow
-- ✅ UEM error handling integration
-- ✅ GDPR audit trail compliance
+
+-   ✅ AST parsing con nikic/php-parser operational
+-   ✅ 5 P0 rules implemented and tested
+-   ✅ Web UI con scan + AI fix workflow
+-   ✅ UEM error handling integration
+-   ✅ GDPR audit trail compliance
 
 ### Documentation
-- ✅ 3,810 lines comprehensive documentation
-- ✅ Multiple audience paths (dev, tech lead, stakeholder)
-- ✅ Practical examples in every section
-- ✅ Clear next steps for each role
+
+-   ✅ 3,810 lines comprehensive documentation
+-   ✅ Multiple audience paths (dev, tech lead, stakeholder)
+-   ✅ Practical examples in every section
+-   ✅ Clear next steps for each role
 
 ### Business Value
-- ✅ Foundation per evolution a AI IDE
-- ✅ PA/Enterprise quality compliance ready
-- ✅ Clear ROI path (4.5 months break-even)
-- ✅ Roadmap completo per stakeholder decisions
+
+-   ✅ Foundation per evolution a AI IDE
+-   ✅ PA/Enterprise quality compliance ready
+-   ✅ Clear ROI path (4.5 months break-even)
+-   ✅ Roadmap completo per stakeholder decisions
 
 ---
 
