@@ -8,7 +8,8 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('egis', function (Blueprint $table) {
             $table->id();
 
@@ -30,7 +31,7 @@ return new class extends Migration {
             $table->string('creator', 255)->nullable();
             $table->string('owner_wallet', 255)->nullable();
             $table->string('drop_title', 255)->nullable();
-            $table->string('title', 60)->index()->nullable();
+            $table->string('title', 255)->index()->nullable();
             $table->text('description')->nullable();
             $table->string('extension', 10)->nullable();
             $table->boolean('media')->default(false)->nullable();
@@ -67,7 +68,8 @@ return new class extends Migration {
     /**
      * Reverse the migrations.
      */
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('egi');
     }
 };
