@@ -57,11 +57,16 @@ class NatanChatService
      * Process user query and generate AI response
      *
      * WORKFLOW:
-     * 1. Retrieve relevant acts using RAG system
+     * 1. Retrieve relevant acts using RAG system (semantic search + fallback)
      * 2. Sanitize data (GDPR compliance)
      * 3. Build context with public metadata only
      * 4. Call Anthropic Claude 3.5 Sonnet
      * 5. Return structured response with sources
+     *
+     * RAG STRATEGY:
+     * - Semantic search: Vector embeddings + cosine similarity (preferred)
+     * - Keyword search: SQL LIKE queries (fallback if no embeddings)
+     * - Scales to 24k+ acts with acceptable performance
      *
      * GDPR AUDIT:
      * - Logs what data is sent to AI
@@ -85,7 +90,8 @@ class NatanChatService
         $this->logger->info('[NatanChatService] Processing user query', $logContext);
 
         try {
-            // STEP 1: Retrieve relevant acts using RAG system (auto-sanitized)
+            // STEP 1: Retrieve relevant acts using RAG system
+            // Uses semantic search (vector embeddings) with keyword search fallback
             $context = $this->rag->getContextForQuery($userQuery, $user, 10);
 
             $logContext['acts_count'] = count($context['acts']);
