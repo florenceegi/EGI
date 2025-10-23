@@ -202,6 +202,7 @@ return [
         'unassigned' => 'Non assegnato',
         'wallets' => 'Wallet della collection',
         'copy_address' => 'Copia indirizzo',
+        'address_copied' => 'Indirizzo copiato!',
         'donation' => 'Donazione',
         'donation_success' => 'Donazione effettuata con successo',
         'insufficient_quota' => 'Non hai sufficiente quota per creare un wallet',

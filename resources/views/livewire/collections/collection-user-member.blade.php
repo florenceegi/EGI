@@ -159,7 +159,21 @@
                     </p>
                     <p class="text-sm text-gray-400">
                         <strong>{{ __('collection.wallet.address') }}:</strong>
-                        {{ substr($wallet->wallet, 0, 15) }}...{{ substr($wallet->wallet, -4) }}
+                        <span class="inline-flex items-center gap-2">
+                            {{-- Mobile: abbreviated --}}
+                            <span class="font-mono md:hidden">{{ substr($wallet->wallet, 0, 15) }}...{{ substr($wallet->wallet, -4) }}</span>
+                            {{-- Desktop: full address --}}
+                            <span class="hidden font-mono md:inline break-all">{{ $wallet->wallet }}</span>
+                            <button 
+                                onclick="copyWalletAddress('{{ $wallet->wallet }}')"
+                                class="text-gray-400 transition-colors hover:text-blue-400 focus:outline-none"
+                                aria-label="{{ __('collection.wallet.copy_address') }}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </button>
+                        </span>
                     </p>
                     <p class="text-sm text-gray-400">
                         <strong>{{ __('collection.wallet.royalty_mint') }}:</strong> {{ $wallet->royalty_mint }}%
@@ -337,3 +351,88 @@
 
     {{-- </x-slot> --}}
 </div>
+
+@push('scripts')
+<script>
+/**
+ * Copy wallet address to clipboard
+ * @param {string} address - Algorand wallet address
+ */
+function copyWalletAddress(address) {
+    // Use modern Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(address)
+            .then(() => {
+                // Show success feedback
+                showCopyFeedback(event.target, true);
+            })
+            .catch(err => {
+                console.error('Failed to copy address:', err);
+                // Fallback to old method
+                fallbackCopy(address);
+            });
+    } else {
+        // Fallback for older browsers
+        fallbackCopy(address);
+    }
+}
+
+/**
+ * Fallback copy method for older browsers
+ */
+function fallbackCopy(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        showCopyFeedback(event.target, successful);
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+        showCopyFeedback(event.target, false);
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+/**
+ * Show visual feedback when copying
+ */
+function showCopyFeedback(element, success) {
+    // Find the button element (might be SVG child)
+    const button = element.closest('button');
+    if (!button) return;
+    
+    // Store original colors
+    const originalClasses = button.className;
+    
+    if (success) {
+        // Green flash for success
+        button.classList.remove('text-gray-400', 'hover:text-blue-400');
+        button.classList.add('text-green-400');
+        
+        // Show tooltip (optional - using native title for simplicity)
+        const originalTitle = button.getAttribute('aria-label');
+        button.setAttribute('aria-label', '{{ __("collection.wallet.address_copied") }}');
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            button.className = originalClasses;
+            button.setAttribute('aria-label', originalTitle);
+        }, 2000);
+    } else {
+        // Red flash for error
+        button.classList.remove('text-gray-400', 'hover:text-blue-400');
+        button.classList.add('text-red-400');
+        
+        setTimeout(() => {
+            button.className = originalClasses;
+        }, 2000);
+    }
+}
+</script>
+@endpush

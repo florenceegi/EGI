@@ -6394,5 +6394,62 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        // ===== PADMIN ANALYZER (OS3 Guardian) =====
+        
+        'PADMIN_CLI_NOT_FOUND' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.padmin_cli_not_found',
+            'user_message_key' => 'error-manager::errors_2.user.padmin_cli_not_found',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'PADMIN_NODE_EXECUTION_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.padmin_node_execution_failed',
+            'user_message_key' => 'error-manager::errors_2.user.padmin_node_execution_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'PADMIN_INVALID_JSON_RESPONSE' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.padmin_invalid_json_response',
+            'user_message_key' => 'error-manager::errors_2.user.padmin_invalid_json_response',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'PADMIN_NODE_TIMEOUT' => [
+            'type' => 'warning',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.padmin_node_timeout',
+            'user_message_key' => 'error-manager::errors_2.user.padmin_node_timeout',
+            'http_status_code' => 504,
+            'devTeam_email_need' => false,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'PADMIN_MARK_FIXED_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.padmin_mark_fixed_failed',
+            'user_message_key' => 'error-manager::errors_2.user.padmin_mark_fixed_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];

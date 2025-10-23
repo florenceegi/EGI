@@ -76,6 +76,9 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
         Route::get('/symbols', [PadminController::class, 'symbols'])->name('symbols');
         Route::get('/search', [PadminController::class, 'search'])->name('search');
         Route::get('/statistics', [PadminController::class, 'statistics'])->name('statistics');
+        
+        // API Endpoints
+        Route::post('/violations/{violationId}/fix', [PadminController::class, 'markViolationFixed'])->name('violations.fix');
     });
 
     // ═══════════════════════════════════════════════════════════════

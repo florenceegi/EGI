@@ -366,12 +366,12 @@ class CollectionUserMember extends Component
 
     /**
      * Add external Algorand wallet to collection
-     * 
+     *
      * ULTRA + GDPR Compliant:
      * - ULM: Full logging
      * - UEM: Error handling
      * - GDPR: Audit trail
-     * 
+     *
      * Workflow:
      * 1. Validate Algorand address format
      * 2. Verify address exists on-chain
@@ -444,7 +444,6 @@ class CollectionUserMember extends Component
             // 6. Reload and close modal
             $this->loadTeamUsers();
             $this->closeExternalWalletModal();
-
         } catch (\Exception $e) {
             // ULM: Log error
             $this->logger->error('[CollectionUserMember] External wallet add failed', [
@@ -508,17 +507,17 @@ class CollectionUserMember extends Component
 
         try {
             $accountInfo = $this->algorandClient->getAccountInfo($address);
-            
+
             $logContext['on_chain_verified'] = true;
             $logContext['account_balance'] = $accountInfo['amount'] ?? null;
-            
+
             $this->logger->info('[CollectionUserMember] Address verified on-chain', $logContext);
         } catch (\Exception $e) {
             $this->logger->error('[CollectionUserMember] Address not found on-chain', [
                 ...$logContext,
                 'error' => $e->getMessage()
             ]);
-            
+
             throw new \Exception(__('collection.wallet.validation.address_not_found_onchain'));
         }
     }
@@ -537,7 +536,7 @@ class CollectionUserMember extends Component
                 ...$logContext,
                 'address' => $address
             ]);
-            
+
             throw new \Exception(__('collection.wallet.validation.address_already_exists'));
         }
     }
