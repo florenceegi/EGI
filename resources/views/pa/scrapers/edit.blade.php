@@ -46,8 +46,10 @@
                 </label>
                 <select name="type" id="type" required
                     class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]">
-                    <option value="api" {{ old('type', $scraper->type) == 'api' ? 'selected' : '' }}>API (JSON/XML)</option>
-                    <option value="html" {{ old('type', $scraper->type) == 'html' ? 'selected' : '' }}>HTML Scraping</option>
+                    <option value="api" {{ old('type', $scraper->type) == 'api' ? 'selected' : '' }}>API (JSON/XML)
+                    </option>
+                    <option value="html" {{ old('type', $scraper->type) == 'html' ? 'selected' : '' }}>HTML Scraping
+                    </option>
                 </select>
             </div>
 
@@ -56,7 +58,8 @@
                 <label for="source_entity" class="mb-2 block text-sm font-semibold text-gray-700">
                     Ente Fonte <span class="text-red-600">*</span>
                 </label>
-                <input type="text" name="source_entity" id="source_entity" value="{{ old('source_entity', $scraper->source_entity) }}" required
+                <input type="text" name="source_entity" id="source_entity"
+                    value="{{ old('source_entity', $scraper->source_entity) }}" required
                     class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]"
                     placeholder="Es: Comune di Firenze">
             </div>
@@ -76,7 +79,8 @@
                 <label for="base_url" class="mb-2 block text-sm font-semibold text-gray-700">
                     Base URL <span class="text-red-600">*</span>
                 </label>
-                <input type="url" name="base_url" id="base_url" value="{{ old('base_url', $scraper->base_url) }}" required
+                <input type="url" name="base_url" id="base_url" value="{{ old('base_url', $scraper->base_url) }}"
+                    required
                     class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]"
                     placeholder="https://example.com">
             </div>
@@ -86,7 +90,8 @@
                 <label for="api_endpoint" class="mb-2 block text-sm font-semibold text-gray-700">
                     API Endpoint
                 </label>
-                <input type="text" name="api_endpoint" id="api_endpoint" value="{{ old('api_endpoint', $scraper->api_endpoint) }}"
+                <input type="text" name="api_endpoint" id="api_endpoint"
+                    value="{{ old('api_endpoint', $scraper->api_endpoint) }}"
                     class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]"
                     placeholder="/api/atti">
             </div>
@@ -98,8 +103,10 @@
                 </label>
                 <select name="method" id="method" required
                     class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]">
-                    <option value="GET" {{ old('method', $scraper->method) == 'GET' ? 'selected' : '' }}>GET</option>
-                    <option value="POST" {{ old('method', $scraper->method) == 'POST' ? 'selected' : '' }}>POST</option>
+                    <option value="GET" {{ old('method', $scraper->method) == 'GET' ? 'selected' : '' }}>GET
+                    </option>
+                    <option value="POST" {{ old('method', $scraper->method) == 'POST' ? 'selected' : '' }}>POST
+                    </option>
                 </select>
             </div>
 
@@ -121,8 +128,9 @@
                 </label>
                 <textarea name="payload_template" id="payload_template" rows="6"
                     class="w-full rounded-lg border border-gray-300 px-4 py-3 font-mono text-sm focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]"
-                    placeholder='{"year": "{{year}}", "tipo": "DG"}'>{{ old('payload_template', json_encode($scraper->payload_template, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) }}</textarea>
-                <p class="mt-1 text-xs text-gray-500">Supporta variabili: {{year}}, {{month}}, {{tipo}}, ecc.</p>
+                    placeholder='{"year": "{{ year }}", "tipo": "DG"}'>{{ old('payload_template', json_encode($scraper->payload_template, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) }}</textarea>
+                <p class="mt-1 text-xs text-gray-500">Supporta variabili: {{ year }}, {{ month }},
+                    {{ tipo }}, ecc.</p>
             </div>
 
             {{-- Schedule Frequency --}}
@@ -132,9 +140,15 @@
                 </label>
                 <select name="schedule_frequency" id="schedule_frequency"
                     class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]">
-                    <option value="daily" {{ old('schedule_frequency', $scraper->schedule_frequency) == 'daily' ? 'selected' : '' }}>Giornaliera</option>
-                    <option value="weekly" {{ old('schedule_frequency', $scraper->schedule_frequency) == 'weekly' ? 'selected' : '' }}>Settimanale</option>
-                    <option value="monthly" {{ old('schedule_frequency', $scraper->schedule_frequency) == 'monthly' ? 'selected' : '' }}>Mensile</option>
+                    <option value="daily"
+                        {{ old('schedule_frequency', $scraper->schedule_frequency) == 'daily' ? 'selected' : '' }}>
+                        Giornaliera</option>
+                    <option value="weekly"
+                        {{ old('schedule_frequency', $scraper->schedule_frequency) == 'weekly' ? 'selected' : '' }}>
+                        Settimanale</option>
+                    <option value="monthly"
+                        {{ old('schedule_frequency', $scraper->schedule_frequency) == 'monthly' ? 'selected' : '' }}>
+                        Mensile</option>
                 </select>
             </div>
 
@@ -194,4 +208,3 @@
         </form>
     </div>
 </x-pa-layout>
-

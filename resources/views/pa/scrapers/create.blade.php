@@ -40,10 +40,12 @@
                         class="w-full rounded-lg border-2 border-blue-300 bg-white p-4 text-left transition-all hover:border-blue-500 hover:shadow-md">
                         <h4 class="mb-1 font-bold text-blue-900">{{ $template['name'] }}</h4>
                         <p class="mb-2 text-sm text-gray-600">{{ $template['description'] }}</p>
-                        <span class="inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
+                        <span
+                            class="inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
                             {{ strtoupper($template['type']) }}
                         </span>
-                        <span class="ml-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+                        <span
+                            class="ml-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
                             {{ $template['source_entity'] }}
                         </span>
                     </button>
@@ -92,7 +94,8 @@
                 <label for="source_entity" class="mb-2 block text-sm font-semibold text-gray-700">
                     Ente Fonte <span class="text-red-600">*</span>
                 </label>
-                <input type="text" name="source_entity" id="source_entity" value="{{ old('source_entity') }}" required
+                <input type="text" name="source_entity" id="source_entity" value="{{ old('source_entity') }}"
+                    required
                     class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]"
                     placeholder="Es: Comune di Firenze">
             </div>
@@ -146,9 +149,12 @@
                 </label>
                 <select name="schedule_frequency" id="schedule_frequency"
                     class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]">
-                    <option value="daily" {{ old('schedule_frequency') == 'daily' ? 'selected' : '' }}>Giornaliera</option>
-                    <option value="weekly" {{ old('schedule_frequency') == 'weekly' ? 'selected' : '' }}>Settimanale</option>
-                    <option value="monthly" {{ old('schedule_frequency') == 'monthly' ? 'selected' : '' }}>Mensile</option>
+                    <option value="daily" {{ old('schedule_frequency') == 'daily' ? 'selected' : '' }}>Giornaliera
+                    </option>
+                    <option value="weekly" {{ old('schedule_frequency') == 'weekly' ? 'selected' : '' }}>Settimanale
+                    </option>
+                    <option value="monthly" {{ old('schedule_frequency') == 'monthly' ? 'selected' : '' }}>Mensile
+                    </option>
                 </select>
             </div>
 
@@ -174,7 +180,8 @@
 
             {{-- Active Status --}}
             <div class="flex items-center gap-3">
-                <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active') ? 'checked' : '' }}
+                <input type="checkbox" name="is_active" id="is_active" value="1"
+                    {{ old('is_active') ? 'checked' : '' }}
                     class="h-5 w-5 rounded border-gray-300 text-[#D4A574] focus:ring-2 focus:ring-[#D4A574]">
                 <label for="is_active" class="text-sm font-semibold text-gray-700">
                     Attiva subito lo scraper
@@ -196,4 +203,3 @@
         </form>
     </div>
 </x-pa-layout>
-
