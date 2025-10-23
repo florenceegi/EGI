@@ -287,6 +287,13 @@ return [
         'superadmin_pricing_index_error' => 'SuperAdmin Feature Pricing index failed. Admin: :admin_id, Error: :error_message',
         'superadmin_permissions_index_error' => 'SuperAdmin Permissions index failed. Admin: :admin_id, Error: :error_message',
         'superadmin_roles_index_error' => 'SuperAdmin Roles index failed. Admin: :admin_id, Error: :error_message',
+
+        // Padmin Analyzer (OS3 Guardian) Errors (Dev Messages)
+        'padmin_cli_not_found' => 'Padmin CLI script not found at :cli_path. Command attempted: :command. Run: npm run build in tools/os3-guardian',
+        'padmin_node_execution_failed' => 'Node.js execution failed for command :command. Exit code: :exit_code, Error: :error',
+        'padmin_invalid_json_response' => 'Invalid JSON response from Padmin CLI. Command: :command, JSON error: :json_error',
+        'padmin_node_timeout' => 'Node.js execution timeout (:timeout seconds) for command :command',
+        'padmin_mark_fixed_failed' => 'Failed to mark violation :violation_id as fixed. User: :user_id, Error: :error',
     ],
 
     'user' => [
@@ -357,6 +364,13 @@ return [
         'superadmin_pricing_index_error' => 'Errore durante il caricamento della gestione prezzi features. Riprova più tardi.',
         'superadmin_permissions_index_error' => 'Errore durante il caricamento della gestione permessi. Riprova più tardi.',
         'superadmin_roles_index_error' => 'Errore durante il caricamento della gestione ruoli. Riprova più tardi.',
+
+        // Padmin Analyzer (OS3 Guardian) Errors (User Messages)
+        'padmin_cli_not_found' => 'Il sistema Padmin Analyzer non è configurato correttamente. Contatta l\'amministratore.',
+        'padmin_node_execution_failed' => 'Errore durante l\'esecuzione dell\'analisi del codice. Riprova più tardi.',
+        'padmin_invalid_json_response' => 'Risposta non valida dal sistema di analisi. Riprova più tardi.',
+        'padmin_node_timeout' => 'L\'operazione ha impiegato troppo tempo. Riprova con parametri più restrittivi.',
+        'padmin_mark_fixed_failed' => 'Errore durante l\'aggiornamento dello stato della violazione. Riprova più tardi.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

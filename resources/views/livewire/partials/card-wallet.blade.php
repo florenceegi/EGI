@@ -32,11 +32,16 @@
             <div class="mb-4">
                 <div class="flex items-center gap-2">
                     <span itemprop="identifier"
-                        class="font-mono text-lg font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">
-                        {{ substr($wallet->wallet, 0, 6) }}...{{ substr($wallet->wallet, -4) }}
+                        class="font-mono text-lg font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text break-all">
+                        {{-- Mobile: abbreviated --}}
+                        <span class="md:hidden">{{ substr($wallet->wallet, 0, 6) }}...{{ substr($wallet->wallet, -4) }}</span>
+                        {{-- Desktop: full address --}}
+                        <span class="hidden md:inline">{{ $wallet->wallet }}</span>
                     </span>
-                    <button class="text-gray-400 transition-colors hover:text-blue-400"
-                        aria-label="{{ __('Copia indirizzo wallet') }}">
+                    <button 
+                        onclick="copyWalletAddress('{{ $wallet->wallet }}')"
+                        class="text-gray-400 transition-colors hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                        aria-label="{{ __('collection.wallet.copy_address') }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
