@@ -166,6 +166,42 @@ Route::prefix('pa')
         });
 
         /**
+         * WEB SCRAPERS - PA Acts Scraping Management
+         *
+         * GET  /pa/scrapers            → Lista scraper configurati
+         * GET  /pa/scrapers/create     → Form nuovo scraper
+         * POST /pa/scrapers            → Salva nuovo scraper
+         * GET  /pa/scrapers/{scraper}  → Dettaglio scraper
+         * GET  /pa/scrapers/{scraper}/edit → Form modifica
+         * PUT  /pa/scrapers/{scraper}  → Aggiorna scraper
+         * DELETE /pa/scrapers/{scraper} → Elimina scraper
+         * POST /pa/scrapers/{scraper}/test → Test connessione
+         * POST /pa/scrapers/{scraper}/run  → Esegui scraping manuale
+         * POST /pa/scrapers/{scraper}/toggle → Attiva/Disattiva
+         *
+         * Features:
+         * - Configurazione scraper via UI (URL, payload, headers, mapping)
+         * - Test connessione API/HTML
+         * - Esecuzione manuale o schedulata
+         * - GDPR compliance: sanitizzazione PII, audit trail
+         * - Template pre-configurati (Firenze, altri comuni)
+         *
+         * Authorization: auth + role:pa_entity + business scope
+         */
+        Route::prefix('/scrapers')->name('scrapers.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'store'])->name('store');
+            Route::get('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'show'])->name('show');
+            Route::get('/{scraper}/edit', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'edit'])->name('edit');
+            Route::put('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'update'])->name('update');
+            Route::delete('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'destroy'])->name('destroy');
+            Route::post('/{scraper}/test', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'test'])->name('test');
+            Route::post('/{scraper}/run', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'run'])->name('run');
+            Route::post('/{scraper}/toggle', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'toggle'])->name('toggle');
+        });
+
+        /**
          * FUTURE ROUTES (FASE 2-3)
          *
          * Commented out - implement in POST-MVP phases:

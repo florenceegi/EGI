@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use App\Services\PaActs\PaWebScraperService;
 
 /**
  * PA Web Scraper Controller
@@ -49,13 +50,16 @@ class PaWebScraperController extends Controller
 {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
+    protected PaWebScraperService $scraperService;
 
     public function __construct(
         UltraLogManager $logger,
-        ErrorManagerInterface $errorManager
+        ErrorManagerInterface $errorManager,
+        PaWebScraperService $scraperService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
+        $this->scraperService = $scraperService;
     }
 
     /**
@@ -323,6 +327,55 @@ class PaWebScraperController extends Controller
             return back()->with('success', $message);
         } catch (\Exception $e) {
             return back()->with('error', 'Errore: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Execute scraper manually
+     */
+    public function run(Request $request, PaWebScraper $scraper): RedirectResponse
+    {
+        try {
+            // Authorization
+            if ($scraper->business_id !== Auth::user()->business_id) {
+                abort(403);
+            }
+
+            $this->logger->info('[PaWebScraperController] Manual scraper execution', [
+                'scraper_id' => $scraper->id,
+                'user_id' => Auth::id()
+            ]);
+
+            // Get options from request (year, filters, etc.)
+            $options = $request->only(['year', 'month', 'tipo', 'limit']);
+
+            // Execute scraper with GDPR compliance
+            $result = $this->scraperService->execute($scraper, Auth::user(), $options);
+
+            if ($result['success']) {
+                $message = sprintf(
+                    'Scraping completato! %d atti estratti in %s secondi',
+                    $result['stats']['acts_count'],
+                    $result['stats']['execution_time']
+                );
+
+                // Store results in session for display/import
+                session(['scraper_results' => $result]);
+
+                return redirect()
+                    ->route('pa.scrapers.show', $scraper)
+                    ->with('success', $message)
+                    ->with('scraper_data', $result['acts']);
+            } else {
+                return back()->with('error', 'Scraping fallito: ' . $result['error']);
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('[PaWebScraperController] Scraper execution error', [
+                'scraper_id' => $scraper->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Errore esecuzione scraper: ' . $e->getMessage());
         }
     }
 
