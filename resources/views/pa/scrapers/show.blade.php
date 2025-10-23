@@ -47,8 +47,7 @@
 
         <div class="flex items-center gap-2">
             {{-- Test Connection --}}
-            <form method="POST" action="{{ route('pa.scrapers.test', $scraper) }}" 
-                onsubmit="showLoadingModal('test')">
+            <form method="POST" action="{{ route('pa.scrapers.test', $scraper) }}" onsubmit="showLoadingModal('test')">
                 @csrf
                 <button type="submit"
                     class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-blue-700">
@@ -58,8 +57,7 @@
             </form>
 
             {{-- Run Manually --}}
-            <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}"
-                onsubmit="showLoadingModal('run')">
+            <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}" onsubmit="showLoadingModal('run')">
                 @csrf
                 <button type="submit"
                     class="inline-flex items-center gap-2 rounded-lg bg-[#2D5016] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#1F3810]">
@@ -289,16 +287,21 @@
     </details>
 
     {{-- Loading Modal - Enterprise Style --}}
-    <div id="loadingModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
+    <div id="loadingModal"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
         <div class="relative mx-4 w-full max-w-md transform rounded-2xl bg-white p-8 shadow-2xl transition-all">
             {{-- Logo/Icon Area --}}
             <div class="mb-6 flex justify-center">
                 <div class="relative">
                     {{-- Animated Ring --}}
-                    <div class="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-[#1B365D] border-l-[#D4A574]"></div>
+                    <div
+                        class="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-l-[#D4A574] border-t-[#1B365D]">
+                    </div>
                     {{-- Icon --}}
-                    <div class="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#1B365D] to-[#2D5016]">
-                        <span class="material-symbols-outlined animate-pulse text-5xl text-white" id="modalIcon">cloud_sync</span>
+                    <div
+                        class="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#1B365D] to-[#2D5016]">
+                        <span class="material-symbols-outlined animate-pulse text-5xl text-white"
+                            id="modalIcon">cloud_sync</span>
                     </div>
                 </div>
             </div>
@@ -310,7 +313,7 @@
 
             {{-- Message --}}
             <p class="mb-6 text-center text-gray-600" id="modalMessage">
-                Stiamo verificando la connessione con <strong>{{ $scraper->source_entity }}</strong>. 
+                Stiamo verificando la connessione con <strong>{{ $scraper->source_entity }}</strong>.
                 L'operazione potrebbe richiedere alcuni secondi.
             </p>
 
@@ -332,7 +335,9 @@
 
             {{-- Progress Bar --}}
             <div class="mt-6 h-2 overflow-hidden rounded-full bg-gray-200">
-                <div class="h-full animate-progress rounded-full bg-gradient-to-r from-[#1B365D] via-[#D4A574] to-[#2D5016]"></div>
+                <div
+                    class="animate-progress h-full rounded-full bg-gradient-to-r from-[#1B365D] via-[#D4A574] to-[#2D5016]">
+                </div>
             </div>
 
             {{-- Institutional Footer --}}
@@ -355,18 +360,20 @@
 
             if (type === 'test') {
                 modalTitle.textContent = 'Test Connessione in corso...';
-                modalMessage.innerHTML = 'Stiamo verificando la connessione con <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni secondi.';
+                modalMessage.innerHTML =
+                    'Stiamo verificando la connessione con <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni secondi.';
                 modalIcon.textContent = 'electrical_services';
             } else if (type === 'run') {
                 modalTitle.textContent = 'Esecuzione Scraper in corso...';
-                modalMessage.innerHTML = 'Stiamo estraendo gli atti da <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.';
+                modalMessage.innerHTML =
+                    'Stiamo estraendo gli atti da <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.';
                 modalIcon.textContent = 'play_arrow';
             }
 
             // Show modal with fade-in
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            
+
             // Prevent accidental double-submit
             return true;
         }
@@ -393,6 +400,7 @@
             0% {
                 width: 0%;
             }
+
             100% {
                 width: 100%;
             }
@@ -414,9 +422,12 @@
 
         /* Pulse animation for icons */
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 1;
             }
+
             50% {
                 opacity: 0.5;
             }

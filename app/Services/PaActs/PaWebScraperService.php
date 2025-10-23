@@ -6,6 +6,8 @@ namespace App\Services\PaActs;
 
 use App\Models\PaWebScraper;
 use App\Models\User;
+use App\Models\Egi;
+use App\Models\Collection;
 use App\Services\DataSanitizerService;
 use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
@@ -147,16 +149,22 @@ class PaWebScraperService
             // STEP 6: Validate output (no PII)
             $this->validateSanitizedData($paFormatActs);
 
+            // STEP 7: Save acts to database (for N.A.T.A.N. querying)
+            $saveResult = $this->saveScrapedActsToDatabase($paFormatActs, $scraper, $user);
+
             // Stats
             $executionTime = microtime(true) - $startTime;
             $stats = [
                 'acts_count' => count($paFormatActs),
+                'acts_saved' => $saveResult['saved'],
+                'acts_skipped' => $saveResult['skipped'],
+                'acts_errors' => count($saveResult['errors']),
                 'execution_time' => round($executionTime, 2),
                 'data_source' => $scraper->getFullUrl(),
                 'scraped_at' => now()->toIso8601String(),
             ];
 
-            // STEP 7: GDPR Audit Trail
+            // STEP 8: GDPR Audit Trail
             $this->auditLog->logUserAction(
                 $user,
                 'web_scraper_executed',
@@ -508,5 +516,133 @@ class PaWebScraperService
             'acts_count' => count($acts),
             'no_pii_detected' => true
         ]);
+    }
+
+    /**
+     * Save scraped acts to database (egis table) for N.A.T.A.N. querying
+     *
+     * @param array $acts Sanitized PA acts
+     * @param PaWebScraper $scraper
+     * @param User $user
+     * @return array ['saved' => int, 'skipped' => int, 'errors' => array]
+     */
+    protected function saveScrapedActsToDatabase(array $acts, PaWebScraper $scraper, User $user): array
+    {
+        $this->logger->info('[PaWebScraperService] Saving scraped acts to database', [
+            'acts_count' => count($acts),
+            'scraper_id' => $scraper->id,
+            'user_id' => $user->id
+        ]);
+
+        $saved = 0;
+        $skipped = 0;
+        $errors = [];
+
+        // Get or create Collection for web scraped acts
+        $collection = $this->getOrCreateWebScrapedCollection($user);
+
+        foreach ($acts as $act) {
+            try {
+                // Check if act already exists (by protocol number + date)
+                $exists = Egi::where('user_id', $user->id)
+                    ->where('pa_protocol_number', $act['protocol_number'])
+                    ->where('pa_protocol_date', $act['protocol_date'])
+                    ->exists();
+
+                if ($exists) {
+                    $skipped++;
+                    $this->logger->debug('[PaWebScraperService] Act already exists, skipping', [
+                        'protocol_number' => $act['protocol_number']
+                    ]);
+                    continue;
+                }
+
+                // Create EGI record
+                $egi = Egi::create([
+                    'collection_id' => $collection->id,
+                    'user_id' => $user->id,
+                    'owner_id' => $user->id,
+                    'title' => $act['title'],
+                    'description' => $act['description'] ?? null,
+                    'type' => 'pa_act',
+                    'status' => 'published',
+                    'is_published' => true,
+                    // PA specific fields
+                    'pa_act_type' => $act['doc_type'],
+                    'pa_protocol_number' => $act['protocol_number'],
+                    'pa_protocol_date' => $act['protocol_date'],
+                    'pa_public_code' => 'WEB-' . strtoupper(substr(md5($act['protocol_number'] . $act['protocol_date']), 0, 10)),
+                    'pa_anchored' => false,
+                    'pa_anchored_at' => null,
+                    // Metadata
+                    'jsonMetadata' => [
+                        'source' => 'web_scraper',
+                        'scraper_id' => $scraper->id,
+                        'scraper_name' => $scraper->name,
+                        'source_entity' => $scraper->source_entity,
+                        'scraped_at' => now()->toIso8601String(),
+                        'original_data' => $act,
+                        'legal_basis' => $scraper->legal_basis,
+                        'data_source_type' => $scraper->data_source_type,
+                    ]
+                ]);
+
+                $saved++;
+
+                $this->logger->debug('[PaWebScraperService] Act saved to database', [
+                    'egi_id' => $egi->id,
+                    'protocol_number' => $act['protocol_number']
+                ]);
+            } catch (\Exception $e) {
+                $errors[] = [
+                    'protocol_number' => $act['protocol_number'] ?? 'N/A',
+                    'error' => $e->getMessage()
+                ];
+
+                $this->logger->error('[PaWebScraperService] Error saving act', [
+                    'protocol_number' => $act['protocol_number'] ?? 'N/A',
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
+        $this->logger->info('[PaWebScraperService] Acts saved to database', [
+            'saved' => $saved,
+            'skipped' => $skipped,
+            'errors' => count($errors)
+        ]);
+
+        return [
+            'saved' => $saved,
+            'skipped' => $skipped,
+            'errors' => $errors
+        ];
+    }
+
+    /**
+     * Get or create Collection for web scraped acts
+     *
+     * @param User $user
+     * @return Collection
+     */
+    protected function getOrCreateWebScrapedCollection(User $user): Collection
+    {
+        $collectionName = 'Atti Web (Acquisizione Automatica)';
+
+        $collection = Collection::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'name' => $collectionName
+            ],
+            [
+                'description' => 'Atti PA acquisiti automaticamente tramite web scraping da fonti pubbliche. ' .
+                    'Questi atti sono disponibili per l\'interrogazione con N.A.T.A.N. AI.',
+                'type' => 'institutional',
+                'status' => 'active',
+                'visibility' => 'private'
+            ]
+        );
+
+        return $collection;
     }
 }
