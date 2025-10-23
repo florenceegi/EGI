@@ -294,6 +294,8 @@ return [
         'padmin_invalid_json_response' => 'Invalid JSON response from Padmin CLI. Command: :command, JSON error: :json_error',
         'padmin_node_timeout' => 'Node.js execution timeout (:timeout seconds) for command :command',
         'padmin_mark_fixed_failed' => 'Failed to mark violation :violation_id as fixed. User: :user_id, Error: :error',
+        'padmin_scan_failed' => 'Code quality scan failed for path :path with rules :rules. Error: :error',
+        'padmin_ai_fix_failed' => 'AI fix prompt generation failed for violation :violation_id. Error: :error',
     ],
 
     'user' => [
@@ -371,6 +373,8 @@ return [
         'padmin_invalid_json_response' => 'Risposta non valida dal sistema di analisi. Riprova più tardi.',
         'padmin_node_timeout' => 'L\'operazione ha impiegato troppo tempo. Riprova con parametri più restrittivi.',
         'padmin_mark_fixed_failed' => 'Errore durante l\'aggiornamento dello stato della violazione. Riprova più tardi.',
+        'padmin_scan_failed' => 'Errore durante la scansione del codice. Verifica il percorso e riprova.',
+        'padmin_ai_fix_failed' => 'Impossibile generare suggerimenti AI per questa violazione. Riprova più tardi.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

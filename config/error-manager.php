@@ -6451,5 +6451,27 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'PADMIN_SCAN_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.padmin_scan_failed',
+            'user_message_key' => 'error-manager::errors_2.user.padmin_scan_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'PADMIN_AI_FIX_FAILED' => [
+            'type' => 'warning',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.padmin_ai_fix_failed',
+            'user_message_key' => 'error-manager::errors_2.user.padmin_ai_fix_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];

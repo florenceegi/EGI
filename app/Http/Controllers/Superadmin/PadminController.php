@@ -114,8 +114,12 @@ class PadminController extends Controller {
                 $filters['limit'] = (int) $request->input('limit');
             }
 
-            // Get violations from Padmin Analyzer
-            $violations = $this->padminService->getViolations($filters, auth()->user());
+            // Get violations from session (temporary until Redis storage ready)
+            // TODO: Use $this->padminService->getViolations($filters, auth()->user()) when Node.js CLI ready
+            $allViolations = session('padmin_violations', []);
+            
+            // Apply filters
+            $violations = $this->applyFilters($allViolations, $filters);
 
             // Log admin access
             $this->auditLogService->logUserAction(
@@ -139,6 +143,28 @@ class PadminController extends Controller {
 
             return redirect()->route('superadmin.dashboard');
         }
+    }
+
+    /**
+     * Apply filters to violations array
+     */
+    private function applyFilters(array $violations, array $filters): array
+    {
+        $filtered = $violations;
+        
+        if (isset($filters['priority'])) {
+            $filtered = array_filter($filtered, fn($v) => ($v['severity'] ?? '') === $filters['priority']);
+        }
+        
+        if (isset($filters['isFixed'])) {
+            $filtered = array_filter($filtered, fn($v) => ($v['is_fixed'] ?? false) === $filters['isFixed']);
+        }
+        
+        if (isset($filters['limit'])) {
+            $filtered = array_slice($filtered, 0, $filters['limit']);
+        }
+        
+        return array_values($filtered);
     }
 
     /**
@@ -427,19 +453,20 @@ class PadminController extends Controller {
         try {
             $validated = $request->validate([
                 'path' => 'required|string',
-                'rules' => 'nullable|string',
+                'rules' => 'nullable|array',
+                'rules.*' => 'string',
+                'store' => 'nullable|boolean',
             ]);
 
             $this->logger->info('[SuperAdmin] Running Padmin scan', [
                 'admin_id' => auth()->id(),
                 'path' => $validated['path'],
-                'rules' => $validated['rules'] ?? 'all',
+                'rules' => $validated['rules'] ?? [],
+                'store' => $validated['store'] ?? false,
             ]);
 
-            // Parse rules
-            $rules = !empty($validated['rules']) 
-                ? explode(',', $validated['rules']) 
-                : [];
+            // Get rules array
+            $rules = $validated['rules'] ?? [];
 
             // Inject RuleEngineService
             $ruleEngine = app(\App\Services\Padmin\RuleEngine\RuleEngineService::class);
@@ -455,6 +482,30 @@ class PadminController extends Controller {
                 'violations_found' => count($violations),
             ]);
 
+            // Store violations in session if requested
+            // TODO: Store in Redis via Node.js CLI when violations:create command is implemented
+            if ($validated['store'] ?? false) {
+                $existingViolations = session('padmin_violations', []);
+                
+                // Add scan metadata to each violation
+                foreach ($violations as &$violation) {
+                    $violation['id'] = uniqid('v_', true);
+                    $violation['scanned_at'] = now()->toIso8601String();
+                    $violation['scanned_by'] = auth()->id();
+                    $violation['is_fixed'] = false;
+                }
+                
+                // Merge with existing violations (keep unique by file+line+rule)
+                $merged = $this->mergeViolations($existingViolations, $violations);
+                session(['padmin_violations' => $merged]);
+                
+                $this->logger->info('[SuperAdmin] Violations stored in session', [
+                    'admin_id' => auth()->id(),
+                    'total_violations' => count($merged),
+                    'new_violations' => count($violations),
+                ]);
+            }
+
             // Audit log
             $this->auditLogService->logUserAction(
                 user: auth()->user(),
@@ -463,6 +514,7 @@ class PadminController extends Controller {
                     'path' => $validated['path'],
                     'rules' => $validated['rules'] ?? 'all',
                     'violations_count' => count($violations),
+                    'stored' => $validated['store'] ?? false,
                 ],
                 category: GdprActivityCategory::SYSTEM_INTERACTION
             );
@@ -472,6 +524,7 @@ class PadminController extends Controller {
                 'message' => 'Scansione completata',
                 'violations' => $violations,
                 'count' => count($violations),
+                'stored' => $validated['store'] ?? false,
             ]);
         } catch (\Exception $e) {
             $this->errorManager->handle('PADMIN_SCAN_FAILED', [
@@ -479,14 +532,44 @@ class PadminController extends Controller {
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
                 'path' => $validated['path'] ?? 'unknown',
+                'rules' => isset($validated['rules']) ? implode(', ', $validated['rules']) : 'none',
+                'error' => $e->getMessage(),
             ], $e);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Errore durante la scansione. Riprova più tardi.',
-                'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Merge violations avoiding duplicates
+     */
+    private function mergeViolations(array $existing, array $new): array
+    {
+        $merged = $existing;
+        
+        foreach ($new as $newViolation) {
+            $isDuplicate = false;
+            
+            foreach ($existing as $existingViolation) {
+                if (
+                    $existingViolation['file'] === $newViolation['file'] &&
+                    $existingViolation['line'] === $newViolation['line'] &&
+                    $existingViolation['rule'] === $newViolation['rule']
+                ) {
+                    $isDuplicate = true;
+                    break;
+                }
+            }
+            
+            if (!$isDuplicate) {
+                $merged[] = $newViolation;
+            }
+        }
+        
+        return $merged;
     }
 
     /**
@@ -499,8 +582,10 @@ class PadminController extends Controller {
                 'violation_id' => $violationId,
             ]);
 
-            // Get violation details
-            $violation = $this->padminService->getViolationById($violationId, auth()->user());
+            // Get violation from session (temporary until Redis ready)
+            // TODO: Use $this->padminService->getViolationById() when Node.js CLI ready
+            $violations = session('padmin_violations', []);
+            $violation = collect($violations)->firstWhere('id', $violationId);
 
             if (!$violation) {
                 return response()->json([
@@ -518,8 +603,8 @@ class PadminController extends Controller {
                 action: 'padmin_ai_fix_requested',
                 context: [
                     'violation_id' => $violationId,
-                    'violation_type' => $violation['type'] ?? 'unknown',
-                    'file' => $violation['filePath'] ?? 'unknown',
+                    'violation_type' => $violation['rule'] ?? 'unknown',
+                    'file' => $violation['file'] ?? 'unknown',
                 ],
                 category: GdprActivityCategory::SYSTEM_INTERACTION
             );
@@ -536,12 +621,12 @@ class PadminController extends Controller {
                 'method' => __METHOD__,
                 'admin_id' => auth()->id(),
                 'violation_id' => $violationId,
+                'error' => $e->getMessage(),
             ], $e);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Errore durante la richiesta AI fix. Riprova più tardi.',
-                'error' => $e->getMessage(),
             ], 500);
         }
     }
