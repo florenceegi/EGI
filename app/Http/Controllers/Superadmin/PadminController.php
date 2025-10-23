@@ -152,16 +152,38 @@ class PadminController extends Controller {
                 'section' => 'symbols',
             ]);
 
-            // Log admin access (middleware 'auth' guarantees user is authenticated)
+            // Build search query from request
+            $query = [];
+            if ($request->has('text')) {
+                $query['text'] = $request->input('text');
+            }
+            if ($request->has('type')) {
+                $query['type'] = $request->input('type');
+            }
+            if ($request->has('filePath')) {
+                $query['filePath'] = $request->input('filePath');
+            }
+            if ($request->has('limit')) {
+                $query['limit'] = (int) $request->input('limit');
+            }
+
+            // Get symbols from Padmin Analyzer
+            $symbols = $this->padminService->searchSymbols($query, auth()->user());
+            $symbolCount = $this->padminService->getSymbolCount(auth()->user());
+
+            // Log admin access
             $this->auditLogService->logUserAction(
                 user: auth()->user(),
                 action: 'superadmin_padmin_symbols_access',
-                context: [],
+                context: ['query' => $query, 'result_count' => count($symbols)],
                 category: GdprActivityCategory::SYSTEM_INTERACTION
             );
 
             return view('superadmin.padmin.symbols', [
                 'pageTitle' => 'Simboli Padmin',
+                'symbols' => $symbols,
+                'symbolCount' => $symbolCount,
+                'query' => $query,
             ]);
         } catch (\Exception $e) {
             $this->errorManager->handle('UNEXPECTED_ERROR', [
@@ -269,7 +291,6 @@ class PadminController extends Controller {
                 'success' => true,
                 'message' => 'Violazione marcata come risolta.',
             ]);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('UNEXPECTED_ERROR', [
                 'controller' => self::class,
