@@ -52,6 +52,8 @@ use App\Services\Menu\Items\SuperadminRolesMenu;
 use App\Services\Menu\Items\SuperadminPadminDashboardMenu;
 use App\Services\Menu\Items\SuperadminPadminViolationsMenu;
 use App\Services\Menu\Items\SuperadminPadminSymbolsMenu;
+use App\Services\Menu\Items\SuperadminPadminSearchMenu;
+use App\Services\Menu\Items\SuperadminPadminStatisticsMenu;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -275,6 +277,7 @@ class ContextMenus {
             case 'superadmin.ai':
             case 'superadmin.egili':
             case 'superadmin.equilibrium':
+            case 'superadmin.padmin':
                 // SuperAdmin Context - AI & Platform Management
                 Log::channel('upload')->info('🔍 CONTEXT MENUS - SUPERADMIN CONTEXT', [
                     'context' => $context,
@@ -314,6 +317,8 @@ class ContextMenus {
                     new SuperadminPadminDashboardMenu(),
                     new SuperadminPadminViolationsMenu(),
                     new SuperadminPadminSymbolsMenu(),
+                    new SuperadminPadminSearchMenu(),
+                    new SuperadminPadminStatisticsMenu(),
                 ]);
                 $menus[] = $padminMenu;
                 break;

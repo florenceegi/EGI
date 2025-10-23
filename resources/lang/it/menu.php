@@ -115,4 +115,6 @@ return [
     'superadmin_padmin_dashboard' => 'Dashboard Padmin',
     'superadmin_padmin_violations' => 'Violazioni OS3',
     'superadmin_padmin_symbols' => 'Registro Simboli',
+    'superadmin_padmin_search' => 'Ricerca Semantica',
+    'superadmin_padmin_statistics' => 'Statistiche',
 ];
