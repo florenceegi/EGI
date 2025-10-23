@@ -192,8 +192,10 @@
                                             @if (!($violation['isFixed'] ?? false))
                                                 <button onclick="openAiFixModal('{{ $violation['id'] }}')"
                                                     class="btn btn-primary btn-xs gap-1" title="Fix with AI">
-                                                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                    <svg class="h-3 w-3" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                                     </svg>
                                                     AI
                                                 </button>
@@ -298,7 +300,7 @@
                 document.getElementById('aiFixModal').showModal();
                 document.getElementById('aiFixLoading').classList.remove('hidden');
                 document.getElementById('aiFixContent').classList.add('hidden');
-                
+
                 fetchAiFixPrompt(violationId);
             }
 
@@ -341,10 +343,8 @@
                 const textarea = document.getElementById('aiPromptText');
                 textarea.select();
                 document.execCommand('copy');
-                
+
                 showToast('✅ Prompt copiato! Incollalo in GitHub Copilot Chat', 'success');
-            }
-                setTimeout(() => toast.remove(), 3000);
             }
 
             // Scan Modal Functions
@@ -395,7 +395,7 @@
                         body: JSON.stringify({
                             path: path,
                             rules: selectedRules,
-                            store: true  // Salva violazioni automaticamente
+                            store: true // Salva violazioni automaticamente
                         })
                     });
 
@@ -405,7 +405,7 @@
 
                     if (response.ok && data.success) {
                         showToast(`✅ ${data.violations.length} violazioni trovate e salvate!`, 'success');
-                        
+
                         // Close modal dopo 1.5 secondi
                         setTimeout(() => {
                             closeScanModal();
@@ -457,11 +457,11 @@
                                         📄 ${v.file}:${v.line}
                                     </p>
                                     ${v.codeSnippet ? `
-                                                <details class="mt-2">
-                                                    <summary class="cursor-pointer text-xs text-primary">Vedi codice</summary>
-                                                    <pre class="mt-2 p-2 bg-base-300 rounded text-xs overflow-x-auto"><code>${escapeHtml(v.codeSnippet)}</code></pre>
-                                                </details>
-                                            ` : ''}
+                                                        <details class="mt-2">
+                                                            <summary class="cursor-pointer text-xs text-primary">Vedi codice</summary>
+                                                            <pre class="mt-2 p-2 bg-base-300 rounded text-xs overflow-x-auto"><code>${escapeHtml(v.codeSnippet)}</code></pre>
+                                                        </details>
+                                                    ` : ''}
                                 </div>
                             </div>
                         </div>
@@ -569,14 +569,15 @@
     {{-- AI Fix Modal --}}
     <dialog id="aiFixModal" class="modal">
         <div class="modal-box max-w-4xl">
-            <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+            <h3 class="mb-4 flex items-center gap-2 text-lg font-bold">
                 <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 Fix con AI Assistant
             </h3>
-            
-            <div id="aiFixLoading" class="hidden mb-4">
+
+            <div id="aiFixLoading" class="mb-4 hidden">
                 <div class="alert alert-info">
                     <span class="loading loading-spinner loading-sm"></span>
                     <span>Generazione prompt AI in corso...</span>
@@ -589,23 +590,24 @@
                         <span class="label-text font-medium">📋 Prompt per GitHub Copilot Chat</span>
                         <button onclick="copyAiPrompt()" class="btn btn-ghost btn-xs gap-1">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                             </svg>
                             Copia
                         </button>
                     </label>
-                    <textarea id="aiPromptText" 
-                              class="textarea textarea-bordered w-full h-96 font-mono text-sm" 
-                              readonly></textarea>
+                    <textarea id="aiPromptText" class="textarea textarea-bordered h-96 w-full font-mono text-sm" readonly></textarea>
                 </div>
 
                 <div class="alert alert-warning">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                     <div>
                         <strong>Come usare:</strong>
-                        <ol class="list-decimal list-inside mt-2 text-sm">
+                        <ol class="mt-2 list-inside list-decimal text-sm">
                             <li>Copia il prompt con il pulsante sopra</li>
                             <li>Apri GitHub Copilot Chat in VS Code (Ctrl+Shift+I)</li>
                             <li>Incolla il prompt e premi Invio</li>
@@ -622,12 +624,6 @@
         </div>
         <form method="dialog" class="modal-backdrop">
             <button onclick="closeAiFixModal()">close</button>
-        </form>
-    </dialog>
-            </form>
-        </div>
-        <form method="dialog" class="modal-backdrop">
-            <button onclick="closeScanModal()">close</button>
         </form>
     </dialog>
 </x-layouts.superadmin>
