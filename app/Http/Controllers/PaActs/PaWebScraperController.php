@@ -1,0 +1,380 @@
+<?php
+
+namespace App\Http\Controllers\PaActs;
+
+use App\Http\Controllers\Controller;
+use App\Models\PaWebScraper;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+
+/**
+ * PA Web Scraper Controller
+ *
+ * ============================================================================
+ * CONTESTO - GESTIONE WEB SCRAPER PER ATTI PA
+ * ============================================================================
+ *
+ * Controller per configurare e gestire scraper web che recuperano atti PA
+ * da fonti esterne (es: albo pretorio online, amministrazione trasparente)
+ *
+ * FUNZIONALITÀ:
+ * - Configurazione scraper (URL, headers, payload, mapping)
+ * - Test connessione API
+ * - Esecuzione manuale scraping
+ * - Visualizzazione log e statistiche
+ * - Scheduling automatico
+ *
+ * ============================================================================
+ * ROUTES
+ * ============================================================================
+ *
+ * GET /pa/scrapers - Lista scraper configurati
+ * GET /pa/scrapers/create - Form nuovo scraper
+ * POST /pa/scrapers - Salva nuovo scraper
+ * GET /pa/scrapers/{scraper} - Dettaglio scraper
+ * GET /pa/scrapers/{scraper}/edit - Form modifica
+ * PUT /pa/scrapers/{scraper} - Aggiorna scraper
+ * DELETE /pa/scrapers/{scraper} - Elimina scraper
+ * POST /pa/scrapers/{scraper}/test - Test connessione
+ * POST /pa/scrapers/{scraper}/run - Esegui scraping manuale
+ * POST /pa/scrapers/{scraper}/toggle - Attiva/Disattiva
+ *
+ * ============================================================================
+ */
+class PaWebScraperController extends Controller
+{
+    protected UltraLogManager $logger;
+    protected ErrorManagerInterface $errorManager;
+
+    public function __construct(
+        UltraLogManager $logger,
+        ErrorManagerInterface $errorManager
+    ) {
+        $this->logger = $logger;
+        $this->errorManager = $errorManager;
+    }
+
+    /**
+     * Display list of web scrapers
+     */
+    public function index(Request $request): View
+    {
+        try {
+            $user = Auth::user();
+
+            $this->logger->info('[PaWebScraperController] Loading scrapers index', [
+                'user_id' => $user->id,
+                'business_id' => $user->business_id
+            ]);
+
+            // Query scrapers del business corrente
+            $query = PaWebScraper::where('business_id', $user->business_id)
+                ->with('createdBy')
+                ->orderBy('created_at', 'desc');
+
+            // Filter by status
+            if ($status = $request->input('status')) {
+                $query->where('status', $status);
+            }
+
+            // Filter by active
+            if ($request->has('is_active')) {
+                $query->where('is_active', $request->boolean('is_active'));
+            }
+
+            $scrapers = $query->paginate(10)->withQueryString();
+
+            // Stats
+            $stats = [
+                'total' => PaWebScraper::where('business_id', $user->business_id)->count(),
+                'active' => PaWebScraper::where('business_id', $user->business_id)->where('is_active', true)->count(),
+                'total_items' => PaWebScraper::where('business_id', $user->business_id)->sum('total_items_scraped'),
+            ];
+
+            return view('pa.scrapers.index', compact('scrapers', 'stats'));
+        } catch (\Exception $e) {
+            $this->logger->error('[PaWebScraperController] Error loading scrapers', [
+                'error' => $e->getMessage()
+            ]);
+
+            return view('pa.scrapers.index', [
+                'scrapers' => collect(),
+                'stats' => ['total' => 0, 'active' => 0, 'total_items' => 0],
+                'error' => 'Errore nel caricamento degli scraper'
+            ]);
+        }
+    }
+
+    /**
+     * Show form for creating new scraper
+     */
+    public function create(): View
+    {
+        $this->logger->info('[PaWebScraperController] Show create form');
+
+        // Template pre-configurati (Firenze, ecc.)
+        $templates = $this->getScraperTemplates();
+
+        return view('pa.scrapers.create', compact('templates'));
+    }
+
+    /**
+     * Store new scraper
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'type' => 'required|in:api,html,hybrid',
+                'source_entity' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'base_url' => 'required|url',
+                'api_endpoint' => 'nullable|string',
+                'method' => 'required|in:GET,POST',
+                'headers' => 'nullable|json',
+                'payload_template' => 'nullable|json',
+                'query_params' => 'nullable|json',
+                'data_mapping' => 'nullable|json',
+                'pagination_type' => 'nullable|in:none,offset,page,cursor',
+                'pagination_config' => 'nullable|json',
+                'schedule_frequency' => 'nullable|in:manual,hourly,daily,weekly,monthly',
+            ]);
+
+            $validated['business_id'] = Auth::user()->business_id;
+            $validated['created_by_user_id'] = Auth::id();
+            $validated['status'] = 'draft';
+
+            $scraper = PaWebScraper::create($validated);
+
+            $this->logger->info('[PaWebScraperController] Scraper created', [
+                'scraper_id' => $scraper->id,
+                'name' => $scraper->name
+            ]);
+
+            return redirect()
+                ->route('pa.scrapers.show', $scraper)
+                ->with('success', 'Scraper creato con successo');
+        } catch (\Exception $e) {
+            $this->logger->error('[PaWebScraperController] Error creating scraper', [
+                'error' => $e->getMessage()
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Errore nella creazione dello scraper: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Display scraper details
+     */
+    public function show(PaWebScraper $scraper): View|RedirectResponse
+    {
+        try {
+            // Authorization check
+            if ($scraper->business_id !== Auth::user()->business_id) {
+                abort(403, 'Non autorizzato ad accedere a questo scraper');
+            }
+
+            $this->logger->info('[PaWebScraperController] Show scraper details', [
+                'scraper_id' => $scraper->id
+            ]);
+
+            return view('pa.scrapers.show', compact('scraper'));
+        } catch (\Exception $e) {
+            $this->logger->error('[PaWebScraperController] Error showing scraper', [
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->route('pa.scrapers.index')
+                ->with('error', 'Errore nel caricamento del scraper');
+        }
+    }
+
+    /**
+     * Show form for editing scraper
+     */
+    public function edit(PaWebScraper $scraper): View|RedirectResponse
+    {
+        try {
+            // Authorization
+            if ($scraper->business_id !== Auth::user()->business_id) {
+                abort(403);
+            }
+
+            $templates = $this->getScraperTemplates();
+
+            return view('pa.scrapers.edit', compact('scraper', 'templates'));
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('pa.scrapers.index')
+                ->with('error', 'Errore: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update scraper
+     */
+    public function update(Request $request, PaWebScraper $scraper): RedirectResponse
+    {
+        try {
+            // Authorization
+            if ($scraper->business_id !== Auth::user()->business_id) {
+                abort(403);
+            }
+
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'type' => 'required|in:api,html,hybrid',
+                'source_entity' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'base_url' => 'required|url',
+                'api_endpoint' => 'nullable|string',
+                'method' => 'required|in:GET,POST',
+                'headers' => 'nullable|json',
+                'payload_template' => 'nullable|json',
+                'query_params' => 'nullable|json',
+                'data_mapping' => 'nullable|json',
+                'pagination_type' => 'nullable|in:none,offset,page,cursor',
+                'pagination_config' => 'nullable|json',
+                'schedule_frequency' => 'nullable|in:manual,hourly,daily,weekly,monthly',
+            ]);
+
+            $scraper->update($validated);
+
+            return redirect()
+                ->route('pa.scrapers.show', $scraper)
+                ->with('success', 'Scraper aggiornato con successo');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'Errore: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete scraper
+     */
+    public function destroy(PaWebScraper $scraper): RedirectResponse
+    {
+        try {
+            // Authorization
+            if ($scraper->business_id !== Auth::user()->business_id) {
+                abort(403);
+            }
+
+            $scraper->delete();
+
+            return redirect()
+                ->route('pa.scrapers.index')
+                ->with('success', 'Scraper eliminato con successo');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Errore: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Test scraper connection
+     */
+    public function test(PaWebScraper $scraper): RedirectResponse
+    {
+        try {
+            // Authorization
+            if ($scraper->business_id !== Auth::user()->business_id) {
+                abort(403);
+            }
+
+            $result = $scraper->testConnection();
+
+            if ($result['success']) {
+                return back()->with('success', 'Connessione testata con successo! Status: ' . $result['status_code']);
+            } else {
+                return back()->with('error', 'Test connessione fallito: ' . $result['message']);
+            }
+        } catch (\Exception $e) {
+            return back()->with('error', 'Errore nel test: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Toggle scraper active status
+     */
+    public function toggle(PaWebScraper $scraper): RedirectResponse
+    {
+        try {
+            // Authorization
+            if ($scraper->business_id !== Auth::user()->business_id) {
+                abort(403);
+            }
+
+            $scraper->update([
+                'is_active' => !$scraper->is_active,
+                'status' => $scraper->is_active ? 'paused' : 'active'
+            ]);
+
+            $message = $scraper->is_active ? 'Scraper attivato' : 'Scraper disattivato';
+
+            return back()->with('success', $message);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Errore: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get scraper templates (Firenze, ecc.)
+     */
+    protected function getScraperTemplates(): array
+    {
+        return [
+            'firenze_delibere' => [
+                'name' => 'Delibere Comune di Firenze',
+                'type' => 'api',
+                'source_entity' => 'Comune di Firenze',
+                'description' => 'Scraper per deliberazioni di giunta e consiglio dal portale trasparenza',
+                'base_url' => 'https://accessoconcertificato.comune.fi.it',
+                'api_endpoint' => '/trasparenza-atti-cat/searchAtti',
+                'method' => 'POST',
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ],
+                'payload_template' => [
+                    'oggetto' => '',
+                    'notLoadIniziale' => 'ok',
+                    'numeroAdozione' => '',
+                    'competenza' => 'DG',
+                    'annoAdozione' => '{{year}}',
+                    'tipiAtto' => ['DG', 'DC']
+                ],
+                'pagination_type' => 'none',
+                // GDPR
+                'data_source_type' => 'public',
+                'legal_basis' => 'Art. 23 D.Lgs 33/2013 - Obblighi pubblicazione atti PA + Art. 32 D.Lgs 33/2013 - Trasparenza amministrativa',
+                'data_retention_policy' => 'Conservazione permanente come da CAD Art. 22 - Documenti amministrativi informatici',
+                'gdpr_compliant' => true,
+                'pii_fields_to_exclude' => ['email', 'telefono', 'indirizzo', 'codice_fiscale'],
+            ],
+            'firenze_albo' => [
+                'name' => 'Albo Pretorio Comune di Firenze',
+                'type' => 'html',
+                'source_entity' => 'Comune di Firenze',
+                'description' => 'Scraper per atti dall\'albo pretorio online',
+                'base_url' => 'https://accessoconcertificato.comune.fi.it',
+                'api_endpoint' => '/AOL/Affissione/ComuneFi/Page',
+                'method' => 'GET',
+                'pagination_type' => 'page',
+                'pagination_config' => [
+                    'param_name' => 'page',
+                    'start' => 1,
+                    'max_pages' => 50
+                ]
+            ],
+        ];
+    }
+}
