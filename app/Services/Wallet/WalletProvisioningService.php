@@ -121,6 +121,163 @@ class WalletProvisioningService
     }
 
     /**
+     * Provision wallet with flexible parameters (support non-user wallets for collections)
+     *
+     * Use cases:
+     * - User wallet: provisionWallet(userId: 123, collectionId: null)
+     * - Collection wallet WITH user: provisionWallet(userId: 123, collectionId: 456)
+     * - Collection wallet WITHOUT user: provisionWallet(userId: null, collectionId: 456)
+     *
+     * @param int|null $userId Optional user ID (can be null for collection-only wallets)
+     * @param int|null $collectionId Optional collection ID
+     * @param array $data Additional data (iban, etc.)
+     * @return Wallet The created wallet
+     * @throws \Exception
+     */
+    public function provisionWallet(?int $userId = null, ?int $collectionId = null, array $data = []): Wallet
+    {
+        try {
+            // 1. ULM: Log start
+            $this->logger->info('WalletProvisioning: Starting flexible wallet creation', [
+                'user_id' => $userId,
+                'collection_id' => $collectionId,
+                'has_iban' => !empty($data['iban']),
+                'log_category' => 'WALLET_PROVISION_FLEXIBLE_START'
+            ]);
+
+            // 2. Start database transaction
+            return DB::transaction(function () use ($userId, $collectionId, $data) {
+                // 3. Create Algorand wallet
+                $algorandWallet = $this->createAlgorandWalletFlexible($userId, $collectionId);
+
+                // 4. Add IBAN if provided
+                if (!empty($data['iban'])) {
+                    $this->addIbanToWalletInternal($algorandWallet, $data['iban']);
+                }
+
+                // 5. GDPR: Log wallet creation (only if user is present)
+                if ($userId) {
+                    $user = User::findOrFail($userId);
+                    $this->auditService->logUserAction(
+                        $user,
+                        'wallet_provisioned',
+                        [
+                            'algorand_address' => $algorandWallet->wallet,
+                            'has_iban' => !empty($data['iban']),
+                            'collection_id' => $collectionId
+                        ],
+                        GdprActivityCategory::WALLET_CREATED
+                    );
+                }
+
+                // 6. ULM: Log success
+                $this->logger->info('WalletProvisioning: Flexible wallet created successfully', [
+                    'user_id' => $userId,
+                    'collection_id' => $collectionId,
+                    'wallet_id' => $algorandWallet->id,
+                    'address' => $algorandWallet->wallet,
+                    'log_category' => 'WALLET_PROVISION_FLEXIBLE_SUCCESS'
+                ]);
+
+                return $algorandWallet;
+            });
+        } catch (\Exception $e) {
+            // 7. ULM: Log error
+            $this->logger->error('WalletProvisioning: Flexible wallet creation failed', [
+                'user_id' => $userId,
+                'collection_id' => $collectionId,
+                'error' => $e->getMessage(),
+                'log_category' => 'WALLET_PROVISION_FLEXIBLE_ERROR'
+            ]);
+
+            // 8. UEM: Handle error
+            $this->errorManager->handle('WALLET_PROVISION_FLEXIBLE_FAILED', [
+                'user_id' => $userId,
+                'collection_id' => $collectionId,
+                'error' => $e->getMessage()
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Create Algorand wallet with flexible user/collection parameters
+     *
+     * @param int|null $userId Can be null for collection-only wallets
+     * @param int|null $collectionId Optional collection association
+     * @return Wallet
+     * @throws \Exception
+     */
+    protected function createAlgorandWalletFlexible(?int $userId, ?int $collectionId): Wallet
+    {
+        try {
+            // 1. Generate real Algorand account
+            $accountData = $this->algorandClient->createAccount();
+            $address = $accountData['address'];
+            $mnemonic = $accountData['mnemonic'];
+
+            // 2. Encrypt mnemonic using KMS envelope encryption
+            $encrypted = $this->kms->secureEncrypt($mnemonic);
+
+            // 3. Wipe mnemonic from memory
+            if (function_exists('sodium_memzero')) {
+                sodium_memzero($mnemonic);
+            }
+
+            // 4. Create wallet record in wallets table
+            $wallet = Wallet::create([
+                // Relationships
+                'collection_id' => $collectionId,
+                'user_id' => $userId, // Can be NULL for collection-only wallets
+
+                // Business logic
+                'wallet' => $address,
+                'platform_role' => null,
+                'royalty_mint' => null,
+                'royalty_rebind' => null,
+                'is_anonymous' => false,
+
+                // Encryption fields
+                'secret_ciphertext' => base64_decode($encrypted['ciphertext']),
+                'secret_nonce' => base64_decode($encrypted['nonce']),
+                'dek_encrypted' => json_encode($encrypted['encrypted_dek']),
+                'cipher_algo' => $encrypted['algorithm'],
+
+                // Metadata
+                'wallet_type' => 'algorand',
+                'version' => 1,
+                'metadata' => [
+                    'created_via' => 'provisioning_service_flexible',
+                    'network' => config('algorand.network', 'sandbox'),
+                    'created_at' => now()->toISOString(),
+                    'has_user' => $userId !== null,
+                    'has_collection' => $collectionId !== null
+                ]
+            ]);
+
+            $this->logger->info('Algorand wallet created (flexible)', [
+                'user_id' => $userId,
+                'collection_id' => $collectionId,
+                'wallet_id' => $wallet->id,
+                'address' => $address,
+                'log_category' => 'ALGORAND_WALLET_CREATED_FLEXIBLE'
+            ]);
+
+            return $wallet;
+        } catch (\Exception $e) {
+            $this->logger->error('Algorand wallet creation failed (flexible)', [
+                'user_id' => $userId,
+                'collection_id' => $collectionId,
+                'error' => $e->getMessage(),
+                'log_category' => 'ALGORAND_WALLET_FLEXIBLE_ERROR'
+            ]);
+
+            throw new \Exception("Failed to create Algorand wallet: " . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
      * Create Algorand wallet with envelope encryption
      *
      * Security:

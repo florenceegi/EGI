@@ -303,6 +303,12 @@ return [
         'creation_success' => 'Wallet creato con successo.',
         'creation_success_detail' => 'Il wallet è stato creato con successo.',
         'permission_denied' => 'Non hai il permesso di eseguire questa azione.',
+        
+        // Wallet Creation (Algorand + KMS)
+        'creating' => 'Creazione wallet in corso',
+        'created_successfully' => 'Wallet Algorand creato con successo! Indirizzo: :address',
+        'creation_failed' => 'Errore durante la creazione del wallet. Riprova.',
+        'creation_denied' => 'Non hai i permessi per creare wallet in questa collection.',
 
         // === FEGI SYSTEM TRANSLATIONS ===
 
