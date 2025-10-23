@@ -16,6 +16,7 @@
         "laravel/vapor-core": "^2.39",
         "league/flysystem-aws-s3-v3": "^3.29",
         "livewire/livewire": "^3.0",
+        "nikic/php-parser": "^5.6",
         "smalot/pdfparser": "^2.12",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-medialibrary": "^11.0",

@@ -464,6 +464,75 @@ class PadminService {
     }
 
     /**
+     * Create new violation in Redis Stack.
+     *
+     * @param array $violationData Violation data
+     * @param User $user User creating the violation
+     * @return array Created violation with ID
+     *
+     * @example
+     * $violation = $service->createViolation([
+     *   'type' => 'REGOLA_ZERO_BLACKLIST',
+     *   'message' => 'Method hasConsentFor() does not exist',
+     *   'filePath' => 'app/Services/MyService.php',
+     *   'line' => 42,
+     *   'priority' => 'P0',
+     *   'severity' => 'critical',
+     *   'rule' => 'REGOLA_ZERO',
+     *   'context' => ['method' => 'hasConsentFor'],
+     *   'isFixed' => false,
+     * ], $user);
+     */
+    public function createViolation(array $violationData, User $user): array {
+        $this->logger->info('[PadminService] Creating violation', [
+            'type' => $violationData['type'] ?? 'unknown',
+            'user_id' => $user->id,
+        ]);
+
+        try {
+            // Validate required fields
+            $required = ['type', 'message', 'filePath', 'priority', 'severity'];
+            foreach ($required as $field) {
+                if (!isset($violationData[$field])) {
+                    throw new \InvalidArgumentException("Missing required field: {$field}");
+                }
+            }
+
+            // Add timestamp if not provided
+            if (!isset($violationData['createdAt'])) {
+                $violationData['createdAt'] = now()->toIso8601String();
+            }
+
+            // Execute Node.js command
+            $result = $this->executeNodeScript('violations:create', [
+                'data' => json_encode($violationData),
+            ], $user);
+
+            // GDPR audit
+            $this->auditService->logUserAction(
+                user: $user,
+                action: 'padmin_violation_created',
+                context: [
+                    'violation_type' => $violationData['type'],
+                    'file' => basename($violationData['filePath']),
+                    'priority' => $violationData['priority'],
+                ],
+                category: GdprActivityCategory::SYSTEM_INTERACTION
+            );
+
+            return $result['data'] ?? [];
+        } catch (\Exception $e) {
+            $this->errorManager->handle('PADMIN_CREATE_VIOLATION_FAILED', [
+                'violation_type' => $violationData['type'] ?? 'unknown',
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
      * Get Padmin Analyzer health status.
      *
      * @return array Health status with Redis, Node.js, CLI availability
