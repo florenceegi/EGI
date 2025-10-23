@@ -10,18 +10,16 @@ use PhpParser\NodeVisitorAbstract;
 
 /**
  * UEM_FIRST Rule Checker
- * 
+ *
  * Detects violations of "Never replace ErrorManager with Logger" rule:
  * - ALL catch blocks must use errorManager->handle()
  * - Catches with only logger->error() or Log::error() violate the rule
  * - Empty catches without ErrorManager also violate the rule
- * 
+ *
  * @package App\Services\Padmin\RuleEngine\Rules
  */
-class UemFirstRule implements RuleInterface
-{
-    public function check(array $ast, string $filePath, string $code): array
-    {
+class UemFirstRule implements RuleInterface {
+    public function check(array $ast, string $filePath, string $code): array {
         $violations = [];
 
         $traverser = new NodeTraverser();
@@ -29,13 +27,11 @@ class UemFirstRule implements RuleInterface
             protected string $filePath;
             public array $violations = [];
 
-            public function __construct(string $filePath)
-            {
+            public function __construct(string $filePath) {
                 $this->filePath = $filePath;
             }
 
-            public function enterNode(Node $node)
-            {
+            public function enterNode(Node $node) {
                 // Detect try-catch blocks
                 if ($node instanceof Node\Stmt\TryCatch) {
                     foreach ($node->catches as $catch) {
@@ -64,8 +60,7 @@ class UemFirstRule implements RuleInterface
                 return null;
             }
 
-            protected function containsErrorManagerHandle($node): bool
-            {
+            protected function containsErrorManagerHandle($node): bool {
                 if ($node instanceof Node\Expr\MethodCall) {
                     if ($node->var instanceof Node\Expr\PropertyFetch) {
                         $property = $node->var->name;
@@ -109,13 +104,11 @@ class UemFirstRule implements RuleInterface
         return $visitor->violations;
     }
 
-    public function getName(): string
-    {
+    public function getName(): string {
         return 'UEM_FIRST';
     }
 
-    public function getDescription(): string
-    {
+    public function getDescription(): string {
         return 'Ensures ErrorManager is used for ALL error handling in catch blocks';
     }
 }

@@ -140,14 +140,13 @@ class RuleEngineService {
 
     /**
      * Parse PHP code into AST
-     * 
+     *
      * @param string $code PHP code to parse
      * @return array AST nodes
      */
-    protected function parsePhpCode(string $code): array
-    {
+    protected function parsePhpCode(string $code): array {
         $parser = (new ParserFactory())->createForHostVersion();
-        
+
         try {
             $ast = $parser->parse($code);
             return $ast ?? [];
@@ -157,7 +156,8 @@ class RuleEngineService {
             ]);
             return [];
         }
-    }    /**
+    }
+    /**
      * Get rules to check based on names
      *
      * @param array $ruleNames Rule names to filter (empty = all)
@@ -208,17 +208,17 @@ class RuleEngineService {
      */
     protected function getPhpFiles(string $directory, array $excludePatterns): array {
         $files = [];
-        
+
         // Se è un file singolo, ritorna array con quel file
         if (is_file($directory) && pathinfo($directory, PATHINFO_EXTENSION) === 'php') {
             return [$directory];
         }
-        
+
         // Altrimenti scansiona directory
         if (!is_dir($directory)) {
             return [];
         }
-        
+
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS)
         );
