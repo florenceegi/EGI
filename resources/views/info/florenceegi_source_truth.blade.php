@@ -530,6 +530,34 @@
                             <dd class="mt-1 text-gray-700">Registrazione cronologica completa e immutabile di tutte le
                                 operazioni per verifiche e tracciabilità.</dd>
                         </div>
+                        <div>
+                            <dt id="glossary-ammk" class="text-xl font-bold text-emerald-700">AMMk (Asset Market Maker)</dt>
+                            <dd class="mt-1 text-gray-700">Il cuore di FlorenceEGI: motore che origina, certifica, valuta e rende liquidi gli <a href="#glossary-egi" class="glossary-link">EGI</a>. Composto da 5 engine: Valuation, Liquidity, Distribution, Activation (<a href="#glossary-natan" class="glossary-link">NATAN</a>), Compliance. <strong>Nota</strong>: diverso da AMM (Automated Market Maker) della DeFi.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-collection-tenant" class="text-xl font-bold text-emerald-700">Collection (Tenant)</dt>
+                            <dd class="mt-1 text-gray-700">Workspace collaborativo multi-tenant. Ogni collection ha ruoli locali (Owner, Admin, Editor, Viewer) distinti dai ruoli globali account. Enforcement tramite <code>collection_id</code> Global Scope Laravel.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-event-bus" class="text-xl font-bold text-emerald-700">Event Bus</dt>
+                            <dd class="mt-1 text-gray-700">Sistema che riceve trigger on-chain e off-chain e attiva azioni <a href="#glossary-natan" class="glossary-link">NATAN</a>: campagne, notifiche, suggerimenti prezzo. Collega smart contract intelligenti alle azioni della piattaforma.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-drops" class="text-xl font-bold text-emerald-700">Drops (Trimestrali)</dt>
+                            <dd class="mt-1 text-gray-700">Eventi trimestrali che selezionano opere eccellenti e culminano in una <a href="#glossary-serata-memorabile" class="glossary-link">Serata Memorabile</a>, concentrando attenzione, incentivi e liquidità.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-serata-memorabile" class="text-xl font-bold text-emerald-700">Serata Memorabile</dt>
+                            <dd class="mt-1 text-gray-700">Evento finale di ogni <a href="#glossary-drops" class="glossary-link">Drop</a> trimestrale. Celebra Creator e valorizza le opere più significative con esposizione, liquidità e premi.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-smart-contract-intelligenti" class="text-xl font-bold text-emerald-700">Smart Contract Intelligenti</dt>
+                            <dd class="mt-1 text-gray-700">Smart contract che emettono hook/trigger verso <a href="#glossary-event-bus" class="glossary-link">Event Bus</a> per attivare <a href="#glossary-natan" class="glossary-link">NATAN</a>. Non solo eseguono logica on-chain, ma dialogano con layer applicativo.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-rbac" class="text-xl font-bold text-emerald-700">RBAC (Role-Based Access Control)</dt>
+                            <dd class="mt-1 text-gray-700">Sistema di controllo accessi basato su ruoli. FlorenceEGI ha ruoli <strong>globali</strong> (account: User, Creator, Collector, Admin) e ruoli <strong>locali</strong> (collection: Owner, Admin, Editor, Viewer).</dd>
+                        </div>
                     </dl>
                 </div>
             </section>
@@ -641,6 +669,150 @@
                 parent: 'sistema',
                 intro: 'La tecnologia che garantisce immutabilità, sicurezza e sostenibilità.',
                 content: `<div class="p-6 mb-6 rounded-lg bg-emerald-50">
+                    <h3 class="mb-3 text-2xl font-bold text-emerald-700">Stack Tecnologico FlorenceEGI</h3>
+                    <p class="text-gray-700">SaaS collaborativo multi-tenant a collection con marketplace pubblico e protocol layer su <a href="#glossary-algorand" class="glossary-link">Algorand</a>.</p>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="mb-4 text-xl font-bold text-emerald-700">🏗️ Componenti Principali</h3>
+                    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <div class="p-4 rounded-lg bg-blue-50 border-l-4 border-blue-500">
+                            <h4 class="font-bold text-blue-800 mb-2">App Web</h4>
+                            <p class="text-sm text-gray-700">Laravel + TypeScript + Tailwind CSS</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-purple-50 border-l-4 border-purple-500">
+                            <h4 class="font-bold text-purple-800 mb-2">AMMk Core</h4>
+                            <p class="text-sm text-gray-700">Asset Market Maker: Valuation, Liquidity, Distribution, Activation, Compliance</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-green-50 border-l-4 border-green-500">
+                            <h4 class="font-bold text-green-800 mb-2">Marketplace Pubblico</h4>
+                            <p class="text-sm text-gray-700">Discovery, listing, transazioni P2P</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-orange-50 border-l-4 border-orange-500">
+                            <h4 class="font-bold text-orange-800 mb-2">Protocol Layer</h4>
+                            <p class="text-sm text-gray-700">Algorand: ASA/SC, Proof, Fee Routing</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-500">
+                            <h4 class="font-bold text-yellow-800 mb-2">Event Bus</h4>
+                            <p class="text-sm text-gray-700">Trigger on/off-chain → azioni <a href="#glossary-natan" class="glossary-link">NATAN</a></p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-red-50 border-l-4 border-red-500">
+                            <h4 class="font-bold text-red-800 mb-2">Observability</h4>
+                            <p class="text-sm text-gray-700"><a href="#glossary-ulm" class="glossary-link">ULM</a>, UEM, AuditTrail, GDPR</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8 p-6 rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-300">
+                    <h3 class="mb-4 text-2xl font-bold text-purple-800">🎯 Asset Market Maker (AMMk) Core</h3>
+                    <p class="mb-4 text-gray-700">Il cuore di FlorenceEGI: un motore che origina, certifica, valuta e rende liquidi gli <a href="#glossary-egi" class="glossary-link">EGI</a>.</p>
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <h4 class="font-bold text-purple-700 mb-2">📊 Valuation Engine</h4>
+                            <p class="text-sm text-gray-700">Analizza qualità artistica, storico transazioni, domanda mercato → suggerisce prezzo ottimale</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-purple-700 mb-2">💧 Liquidity Engine</h4>
+                            <p class="text-sm text-gray-700">Meccanismi di prezzo dinamici, marketplace integrato, floor price tracking</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-purple-700 mb-2">🔄 Distribution Engine</h4>
+                            <p class="text-sm text-gray-700">Royalty automatiche (4.5%), split EPP (20%), fee piattaforma, settlement immediato</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-purple-700 mb-2">🤖 Activation Engine (<a href="#glossary-natan" class="glossary-link">NATAN</a>)</h4>
+                            <p class="text-sm text-gray-700">Campagne mirate, notifiche intelligenti, suggerimenti timing vendita</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-purple-700 mb-2">🛡️ Compliance Engine</h4>
+                            <p class="text-sm text-gray-700">GDPR by design, audit trail, consent management, MiCA-safe</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="mb-4 text-xl font-bold text-emerald-700">👥 Tenancy & RBAC (Role-Based Access Control)</h3>
+                    <div class="p-6 rounded-lg bg-blue-50">
+                        <p class="mb-4 text-gray-700"><strong>Tenant = Collection</strong>. Ogni collection è un workspace collaborativo multi-tenant.</p>
+                        <div class="grid gap-4 md:grid-cols-2">
+                            <div>
+                                <h4 class="font-bold text-blue-800 mb-2">Ruoli Globali (Account)</h4>
+                                <ul class="text-sm text-gray-700 list-disc list-inside space-y-1">
+                                    <li>User (standard)</li>
+                                    <li>Creator (artista verificato)</li>
+                                    <li>Collector (acquirente attivo)</li>
+                                    <li>Admin (gestione piattaforma)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-blue-800 mb-2">Ruoli Locali (Collection)</h4>
+                                <ul class="text-sm text-gray-700 list-disc list-inside space-y-1">
+                                    <li>Owner (creatore collection)</li>
+                                    <li>Admin (gestione inviti/policy)</li>
+                                    <li>Editor (pubblicazione EGI)</li>
+                                    <li>Viewer (sola visualizzazione)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="mt-4 text-sm text-blue-700"><strong>Enforcement</strong>: Global Scope Laravel, Policy, Resolver (subdomain/header/JWT)</p>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="mb-4 text-xl font-bold text-emerald-700">🔗 On-chain & Smart Contract Intelligenti</h3>
+                    <div class="p-6 rounded-lg bg-green-50">
+                        <ul class="space-y-3 text-gray-700">
+                            <li><strong>Mint ASA</strong>: Creazione token <a href="#glossary-egi" class="glossary-link">EGI</a> su Algorand</li>
+                            <li><strong>Smart Contract per CoA</strong>: Certificato di autenticità immutabile</li>
+                            <li><strong>Escrow</strong>: Gestione sicura fondi durante transazioni</li>
+                            <li><strong>Smart Contract "Intelligenti"</strong>: Emettono <strong>hook/trigger</strong> → Event Bus → <a href="#glossary-natan" class="glossary-link">NATAN</a></li>
+                            <li><strong>Attestazioni</strong>: Provenance, ownership, EPP allocation on-chain</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mb-8 p-6 rounded-lg bg-gray-50 border-2 border-gray-300">
+                    <h3 class="mb-4 text-xl font-bold text-gray-800">📊 Diagramma Architetturale</h3>
+                    <pre class="p-4 bg-white rounded text-xs overflow-auto border border-gray-300"><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Users / Companies                            │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              Collections (tenant - workspace)                   │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     AMMk Core                                   │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ Valuation | Liquidity | Distribution | Activation(NATAN)│  │
+│  │ Compliance                                               │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└──┬────────────┬──────────────────┬───────────────────────────┬─┘
+   │            │                  │                           │
+   ▼            ▼                  ▼                           ▼
+┌──────┐  ┌─────────────┐   ┌───────────┐         ┌──────────────────┐
+│Market│  │  Event Bus  │   │ Algorand  │         │ Observability &  │
+│place │  │             │   │ ASA/SC    │         │ Compliance       │
+│      │  │ Triggers    │   │ Mint      │         │ ULM | UEM        │
+│Public│  │ On/Off-chain│   │ Escrow    │         │ AuditTrail|GDPR  │
+└──────┘  └──────┬──────┘   │ Proof     │         └──────────────────┘
+                 │          │ Fee Route │
+                 │          └─────┬─────┘
+                 │                │
+                 │          On-chain Events
+                 │                │
+                 └────────────────┘
+                         │
+                         ▼
+                  NATAN Actions
+         (Campagne, Notifiche, Suggerimenti)
+</code></pre>
+                    <p class="mt-4 text-sm text-gray-600 italic">Per visualizzazione interattiva: integra Mermaid.js o esporta come SVG</p>
+                </div>
+
+                <div class="p-6 mb-6 rounded-lg bg-emerald-50">
                     <h3 class="mb-3 text-2xl font-bold text-emerald-700">Perché <a href="#glossary-algorand" class="glossary-link">Algorand</a>?</h3>
                     <p class="text-gray-700">Blockchain sostenibile e <a href="#glossary-carbon-negative" class="glossary-link">carbon-negative</a> basata su <a href="#glossary-proof-of-stake" class="glossary-link">Proof-of-Stake</a> pura.</p>
                 </div>
