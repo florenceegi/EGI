@@ -419,4 +419,174 @@ class PadminController extends Controller {
             ], 500);
         }
     }
+
+    /**
+     * API: Run code quality scan
+     */
+    public function runScan(Request $request): JsonResponse {
+        try {
+            $validated = $request->validate([
+                'path' => 'required|string',
+                'rules' => 'nullable|string',
+            ]);
+
+            $this->logger->info('[SuperAdmin] Running Padmin scan', [
+                'admin_id' => auth()->id(),
+                'path' => $validated['path'],
+                'rules' => $validated['rules'] ?? 'all',
+            ]);
+
+            // Parse rules
+            $rules = !empty($validated['rules']) 
+                ? explode(',', $validated['rules']) 
+                : [];
+
+            // Inject RuleEngineService
+            $ruleEngine = app(\App\Services\Padmin\RuleEngine\RuleEngineService::class);
+
+            // Run scan
+            $violations = $ruleEngine->scanDirectory(
+                directory: base_path($validated['path']),
+                ruleNames: $rules
+            );
+
+            $this->logger->info('[SuperAdmin] Scan completed', [
+                'admin_id' => auth()->id(),
+                'violations_found' => count($violations),
+            ]);
+
+            // Audit log
+            $this->auditLogService->logUserAction(
+                user: auth()->user(),
+                action: 'padmin_scan_executed',
+                context: [
+                    'path' => $validated['path'],
+                    'rules' => $validated['rules'] ?? 'all',
+                    'violations_count' => count($violations),
+                ],
+                category: GdprActivityCategory::SYSTEM_INTERACTION
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Scansione completata',
+                'violations' => $violations,
+                'count' => count($violations),
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('PADMIN_SCAN_FAILED', [
+                'controller' => self::class,
+                'method' => __METHOD__,
+                'admin_id' => auth()->id(),
+                'path' => $validated['path'] ?? 'unknown',
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Errore durante la scansione. Riprova più tardi.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Request AI-assisted fix for violation
+     */
+    public function requestAiFix(Request $request, string $violationId): JsonResponse {
+        try {
+            $this->logger->info('[SuperAdmin] Requesting AI fix for violation', [
+                'admin_id' => auth()->id(),
+                'violation_id' => $violationId,
+            ]);
+
+            // Get violation details
+            $violation = $this->padminService->getViolationById($violationId, auth()->user());
+
+            if (!$violation) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Violazione non trovata.',
+                ], 404);
+            }
+
+            // Build AI context prompt
+            $aiPrompt = $this->buildAiFixPrompt($violation);
+
+            // Audit log
+            $this->auditLogService->logUserAction(
+                user: auth()->user(),
+                action: 'padmin_ai_fix_requested',
+                context: [
+                    'violation_id' => $violationId,
+                    'violation_type' => $violation['type'] ?? 'unknown',
+                    'file' => $violation['filePath'] ?? 'unknown',
+                ],
+                category: GdprActivityCategory::SYSTEM_INTERACTION
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Contesto AI generato. Copia e incolla in GitHub Copilot Chat.',
+                'ai_prompt' => $aiPrompt,
+                'violation' => $violation,
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('PADMIN_AI_FIX_FAILED', [
+                'controller' => self::class,
+                'method' => __METHOD__,
+                'admin_id' => auth()->id(),
+                'violation_id' => $violationId,
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Errore durante la richiesta AI fix. Riprova più tardi.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Build AI-ready prompt for fixing violation
+     */
+    protected function buildAiFixPrompt(array $violation): string {
+        $rule = $violation['rule'] ?? 'UNKNOWN';
+        $type = $violation['type'] ?? 'UNKNOWN';
+        $file = $violation['filePath'] ?? 'unknown file';
+        $line = $violation['line'] ?? 0;
+        $message = $violation['message'] ?? 'No message';
+        $snippet = $violation['codeSnippet'] ?? '';
+
+        return <<<PROMPT
+🚨 VIOLATION DETECTED - FIX REQUIRED
+
+Rule: {$rule}
+Type: {$type}
+File: {$file}
+Line: {$line}
+
+Message:
+{$message}
+
+Code Snippet:
+```php
+{$snippet}
+```
+
+TASK:
+1. Read the file: {$file}
+2. Locate line {$line}
+3. Apply the appropriate fix according to rule {$rule}
+4. Verify the fix follows FlorenceEGI Copilot Instructions
+5. Test and commit changes
+
+CONTEXT:
+- Follow P0 rules strictly
+- Maintain GDPR compliance
+- Use ErrorManager (UEM) for error handling
+- Document all changes with OS2.0 standards
+
+Procedi con la correzione.
+PROMPT;
+    }
 }

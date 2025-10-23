@@ -130,7 +130,6 @@ class PadminService {
             $this->logger->info('[PadminService] Node.js execution completed', [
                 'command' => $command,
                 'exit_code' => $result->exitCode(),
-                'duration_ms' => $result->runningTime() * 1000,
             ]);
 
             // Check exit code

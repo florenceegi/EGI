@@ -10,18 +10,16 @@ use PhpParser\NodeVisitorAbstract;
 
 /**
  * UEM_FIRST Rule Checker
- *
+ * 
  * Detects violations of "Never replace ErrorManager with Logger" rule:
- * - Catches replaced with logger->error() instead of errorManager->handle()
- * - Missing ErrorManager injection in classes that should have it
- *
+ * - ALL catch blocks must use errorManager->handle()
+ * - Catches with only logger->error() or Log::error() violate the rule
+ * - Empty catches without ErrorManager also violate the rule
+ * 
  * @package App\Services\Padmin\RuleEngine\Rules
- * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Rule Engine)
- * @date 2025-10-23
- * @purpose Protect UEM error handling architecture
  */
-class UemFirstRule implements RuleInterface {
+class UemFirstRule implements RuleInterface
+{
     public function check(array $ast, string $filePath, string $code): array
     {
         $violations = [];
@@ -50,13 +48,13 @@ class UemFirstRule implements RuleInterface {
                         if (!$hasErrorManager) {
                             $this->violations[] = [
                                 'type' => 'UEM_FIRST_VIOLATION',
-                                'message' => 'Catch block without errorManager->handle() - This violates UEM_FIRST rule',
+                                'message' => 'Catch block without errorManager->handle() - UEM must be used for ALL error handling',
                                 'line' => $catchLine,
                                 'priority' => 'P0',
                                 'severity' => 'critical',
                                 'context' => [
                                     'file' => $this->filePath,
-                                    'rule' => 'UEM must be used for ALL error handling in catch blocks',
+                                    'rule' => 'UEM_FIRST: Every catch block must call errorManager->handle()',
                                 ],
                             ];
                         }
@@ -119,56 +117,5 @@ class UemFirstRule implements RuleInterface {
     public function getDescription(): string
     {
         return 'Ensures ErrorManager is used for ALL error handling in catch blocks';
-    }
-}            protected function containsLoggerError($node): bool {
-                if ($node instanceof Node\Expr\MethodCall) {
-                    if ($node->var instanceof Node\Expr\PropertyFetch) {
-                        $property = $node->var->name;
-                        $method = $node->name;
-
-                        if (
-                            $property instanceof Node\Identifier &&
-                            $method instanceof Node\Identifier &&
-                            $property->toString() === 'logger' &&
-                            $method->toString() === 'error'
-                        ) {
-                            return true;
-                        }
-                    }
-                }
-
-                // Check all child nodes recursively
-                foreach ($node->getSubNodeNames() as $name) {
-                    $subNode = $node->$name;
-                    
-                    if ($subNode instanceof Node) {
-                        if ($this->containsLoggerError($subNode)) {
-                            return true;
-                        }
-                    } elseif (is_array($subNode)) {
-                        foreach ($subNode as $item) {
-                            if ($item instanceof Node && $this->containsLoggerError($item)) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-
-                return false;
-            }
-        };
-
-        $traverser->addVisitor($visitor);
-        $traverser->traverse($ast);
-
-        return $visitor->violations;
-    }
-
-    public function getName(): string {
-        return 'UEM_FIRST';
-    }
-
-    public function getDescription(): string {
-        return 'Ensures ErrorManager is used for error handling, not replaced by Logger';
     }
 }
