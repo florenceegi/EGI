@@ -11,6 +11,8 @@ use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
 use App\Services\Padmin\PadminService;
+use App\Services\Padmin\AiFixService;
+use App\Services\Padmin\FileEditorService;
 use App\Enums\Gdpr\GdprActivityCategory;
 
 /**
@@ -25,17 +27,23 @@ class PadminController extends Controller {
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditLogService;
     protected PadminService $padminService;
+    protected AiFixService $aiFixService;
+    protected FileEditorService $fileEditorService;
 
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
         AuditLogService $auditLogService,
-        PadminService $padminService
+        PadminService $padminService,
+        AiFixService $aiFixService,
+        FileEditorService $fileEditorService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditLogService = $auditLogService;
         $this->padminService = $padminService;
+        $this->aiFixService = $aiFixService;
+        $this->fileEditorService = $fileEditorService;
         $this->middleware(['auth', 'superadmin']);
     }
     /**
@@ -671,5 +679,200 @@ CONTEXT:
 
 Procedi con la correzione.
 PROMPT;
+    }
+
+    /**
+     * Apply AI-generated fix to violation
+     * 
+     * @param Request $request
+     * @param string $id Violation ID from session
+     * @return JsonResponse
+     */
+    public function applyAiFix(Request $request, string $id): JsonResponse {
+        try {
+            $this->logger->info('[SuperAdmin] Padmin AI Fix requested', [
+                'admin_id' => auth()->id(),
+                'violation_id' => $id,
+                'action' => 'apply_ai_fix'
+            ]);
+
+            // 1. Get violation from session
+            $violations = session('padmin_violations', []);
+            $violation = null;
+            foreach ($violations as $v) {
+                if (($v['id'] ?? null) === $id) {
+                    $violation = $v;
+                    break;
+                }
+            }
+
+            if (!$violation) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Violation not found in session'
+                ], 404);
+            }
+
+            // 2. Generate fix using AI
+            $this->logger->debug('[Padmin] Generating AI fix', [
+                'file' => $violation['file'],
+                'rule' => $violation['rule'],
+                'line' => $violation['line']
+            ]);
+
+            $fixResult = $this->aiFixService->generateFix($violation);
+
+            if (!$fixResult['success']) {
+                return response()->json([
+                    'success' => false,
+                    'error' => $fixResult['error'] ?? 'Failed to generate fix'
+                ], 500);
+            }
+
+            // 3. Apply fix to file
+            $this->logger->debug('[Padmin] Applying fix to file', [
+                'file' => $violation['file'],
+                'has_fixed_code' => !empty($fixResult['fixed_code'])
+            ]);
+
+            $applyResult = $this->fileEditorService->applyFix(
+                $violation['file'],
+                $fixResult['original_code'],
+                $fixResult['fixed_code']
+            );
+
+            if (!$applyResult['success']) {
+                return response()->json([
+                    'success' => false,
+                    'error' => $applyResult['error'] ?? 'Failed to apply fix',
+                    'rolled_back' => $applyResult['rolled_back'] ?? false
+                ], 500);
+            }
+
+            // 4. Verify fix by re-scanning file
+            $verifyResult = $this->padminService->scanSingleFile($violation['file']);
+            
+            $isFixed = true;
+            if (!empty($verifyResult['violations'])) {
+                // Check if same violation still exists
+                foreach ($verifyResult['violations'] as $v) {
+                    if ($v['rule'] === $violation['rule'] && 
+                        $v['line'] === $violation['line']) {
+                        $isFixed = false;
+                        break;
+                    }
+                }
+            }
+
+            // 5. Log success
+            $this->auditLogService->logUserAction(
+                auth()->user(),
+                'padmin_ai_fix_applied',
+                [
+                    'violation_id' => $id,
+                    'file' => $violation['file'],
+                    'rule' => $violation['rule'],
+                    'line' => $violation['line'],
+                    'is_fixed' => $isFixed,
+                    'backup_path' => $applyResult['backup_path']
+                ],
+                GdprActivityCategory::CONTENT_MODIFICATION
+            );
+
+            return response()->json([
+                'success' => true,
+                'is_fixed' => $isFixed,
+                'backup_path' => $applyResult['backup_path'],
+                'explanation' => $fixResult['explanation'] ?? '',
+                'fixed_code' => $fixResult['fixed_code'],
+                'message' => $isFixed 
+                    ? 'Fix applied successfully and verified'
+                    : 'Fix applied but violation may still exist'
+            ]);
+
+        } catch (\Exception $e) {
+            $this->errorManager->handle('PADMIN_AI_FIX_FAILED', [
+                'admin_id' => auth()->id(),
+                'violation_id' => $id,
+                'context' => [
+                    'file' => $violation['file'] ?? 'unknown',
+                    'rule' => $violation['rule'] ?? 'unknown'
+                ]
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while applying the fix'
+            ], 500);
+        }
+    }
+
+    /**
+     * Preview AI-generated fix without applying
+     * 
+     * @param Request $request
+     * @param string $id Violation ID from session
+     * @return JsonResponse
+     */
+    public function previewAiFix(Request $request, string $id): JsonResponse {
+        try {
+            $this->logger->info('[SuperAdmin] Padmin AI Fix preview requested', [
+                'admin_id' => auth()->id(),
+                'violation_id' => $id,
+                'action' => 'preview_ai_fix'
+            ]);
+
+            // Get violation from session
+            $violations = session('padmin_violations', []);
+            $violation = null;
+            foreach ($violations as $v) {
+                if (($v['id'] ?? null) === $id) {
+                    $violation = $v;
+                    break;
+                }
+            }
+
+            if (!$violation) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Violation not found in session'
+                ], 404);
+            }
+
+            // Generate fix using AI
+            $fixResult = $this->aiFixService->generateFix($violation);
+
+            if (!$fixResult['success']) {
+                return response()->json([
+                    'success' => false,
+                    'error' => $fixResult['error'] ?? 'Failed to generate fix preview'
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'original_code' => $fixResult['original_code'],
+                'fixed_code' => $fixResult['fixed_code'],
+                'explanation' => $fixResult['explanation'] ?? '',
+                'file' => $violation['file'],
+                'line' => $violation['line'],
+                'rule' => $violation['rule']
+            ]);
+
+        } catch (\Exception $e) {
+            $this->errorManager->handle('PADMIN_AI_PREVIEW_FAILED', [
+                'admin_id' => auth()->id(),
+                'violation_id' => $id,
+                'context' => [
+                    'file' => $violation['file'] ?? 'unknown',
+                    'rule' => $violation['rule'] ?? 'unknown'
+                ]
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while generating preview'
+            ], 500);
+        }
     }
 }
