@@ -43,6 +43,7 @@ return [
     'pa_dashboard' => 'Dashboard',
     'pa_heritage' => 'Certified Documents',
     'pa_acts' => 'Tokenized Acts',
+    'pa_scrapers' => 'Web Scraping Agent',
     'pa_coa' => 'CoA Certificates',
     'pa_inspectors' => 'Assigned Inspectors',
 

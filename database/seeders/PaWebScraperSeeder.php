@@ -55,7 +55,7 @@ class PaWebScraperSeeder extends Seeder
                 'type' => 'api',
                 'source_entity' => 'Comune di Firenze',
                 'description' => 'Scraper per deliberazioni di giunta e consiglio dal portale amministrazione trasparente. ' .
-                                'Recupera automaticamente atti PA con metadati completi, allegati PDF, votazioni e relatori.',
+                    'Recupera automaticamente atti PA con metadati completi, allegati PDF, votazioni e relatori.',
                 'base_url' => 'https://accessoconcertificato.comune.fi.it',
                 'api_endpoint' => '/trasparenza-atti-cat/searchAtti',
                 'method' => 'POST',
@@ -101,7 +101,7 @@ class PaWebScraperSeeder extends Seeder
                 'type' => 'html',
                 'source_entity' => 'Comune di Firenze',
                 'description' => 'Scraper per atti in pubblicazione sull\'albo pretorio online. ' .
-                                'Include ordinanze, avvisi, bandi, concorsi e altri atti amministrativi in fase di pubblicazione legale.',
+                    'Include ordinanze, avvisi, bandi, concorsi e altri atti amministrativi in fase di pubblicazione legale.',
                 'base_url' => 'https://accessoconcertificato.comune.fi.it',
                 'api_endpoint' => '/AOL/Affissione/ComuneFi/Page',
                 'method' => 'GET',

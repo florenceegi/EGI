@@ -117,7 +117,7 @@ class PadminController extends Controller {
             // Get violations from session (temporary until Redis storage ready)
             // TODO: Use $this->padminService->getViolations($filters, auth()->user()) when Node.js CLI ready
             $allViolations = session('padmin_violations', []);
-            
+
             // Apply filters
             $violations = $this->applyFilters($allViolations, $filters);
 
@@ -148,22 +148,21 @@ class PadminController extends Controller {
     /**
      * Apply filters to violations array
      */
-    private function applyFilters(array $violations, array $filters): array
-    {
+    private function applyFilters(array $violations, array $filters): array {
         $filtered = $violations;
-        
+
         if (isset($filters['priority'])) {
             $filtered = array_filter($filtered, fn($v) => ($v['severity'] ?? '') === $filters['priority']);
         }
-        
+
         if (isset($filters['isFixed'])) {
             $filtered = array_filter($filtered, fn($v) => ($v['is_fixed'] ?? false) === $filters['isFixed']);
         }
-        
+
         if (isset($filters['limit'])) {
             $filtered = array_slice($filtered, 0, $filters['limit']);
         }
-        
+
         return array_values($filtered);
     }
 
@@ -486,7 +485,7 @@ class PadminController extends Controller {
             // TODO: Store in Redis via Node.js CLI when violations:create command is implemented
             if ($validated['store'] ?? false) {
                 $existingViolations = session('padmin_violations', []);
-                
+
                 // Add scan metadata to each violation
                 foreach ($violations as &$violation) {
                     $violation['id'] = uniqid('v_', true);
@@ -494,11 +493,11 @@ class PadminController extends Controller {
                     $violation['scanned_by'] = auth()->id();
                     $violation['is_fixed'] = false;
                 }
-                
+
                 // Merge with existing violations (keep unique by file+line+rule)
                 $merged = $this->mergeViolations($existingViolations, $violations);
                 session(['padmin_violations' => $merged]);
-                
+
                 $this->logger->info('[SuperAdmin] Violations stored in session', [
                     'admin_id' => auth()->id(),
                     'total_violations' => count($merged),
@@ -546,13 +545,12 @@ class PadminController extends Controller {
     /**
      * Merge violations avoiding duplicates
      */
-    private function mergeViolations(array $existing, array $new): array
-    {
+    private function mergeViolations(array $existing, array $new): array {
         $merged = $existing;
-        
+
         foreach ($new as $newViolation) {
             $isDuplicate = false;
-            
+
             foreach ($existing as $existingViolation) {
                 if (
                     $existingViolation['file'] === $newViolation['file'] &&
@@ -563,12 +561,12 @@ class PadminController extends Controller {
                     break;
                 }
             }
-            
+
             if (!$isDuplicate) {
                 $merged[] = $newViolation;
             }
         }
-        
+
         return $merged;
     }
 

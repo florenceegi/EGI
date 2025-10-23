@@ -88,7 +88,6 @@ class RunWebScraperCommand extends Command
             }
 
             return $this->runSingleScraper($scraper, $user);
-
         } catch (\Exception $e) {
             $this->error("❌ Errore: {$e->getMessage()}");
             $this->logger->error('[RunWebScraperCommand] Command execution failed', [
