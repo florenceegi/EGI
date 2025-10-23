@@ -6395,7 +6395,7 @@ return [
         ],
 
         // ===== PADMIN ANALYZER (OS3 Guardian) =====
-        
+
         'PADMIN_CLI_NOT_FOUND' => [
             'type' => 'error',
             'blocking' => 'blocking',
