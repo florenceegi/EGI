@@ -428,7 +428,7 @@ class PaWebScraperService
         $numeroAtto = $act['numeroAdozione'] ?? $act['numero'] ?? 'N/A';
         $dataAtto = $this->parseDate($act['dataAdozione'] ?? $act['data'] ?? null);
         $tipoAttoCompleto = $act['tipoAttoDto']['nome'] ?? $act['tipo'] ?? 'Atto Generico';
-        
+
         return [
             'numero_atto' => $numeroAtto,
             'tipo_atto' => $tipoAttoCompleto,
@@ -465,7 +465,7 @@ class PaWebScraperService
     protected function normalizePaActType(string $tipoAtto): string
     {
         $tipoLower = strtolower($tipoAtto);
-        
+
         if (str_contains($tipoLower, 'deliber')) {
             return 'delibera';
         } elseif (str_contains($tipoLower, 'determin')) {
@@ -596,8 +596,8 @@ class PaWebScraperService
                     'collection_id' => $collection->id,
                     'user_id' => $user->id,
                     'owner_id' => $user->id,
-                    'title' => mb_substr($act['title'], 0, 60),  // Tronca a 60 char (limite DB)
-                    'description' => $act['description'] ?? null,  // description è TEXT, nessun limite
+                    'title' => $act['title'],  // Title completo (VARCHAR 255)
+                    'description' => $act['description'] ?? null,
                     'type' => 'pa_act',
                     'status' => 'published',
                     'is_published' => true,
