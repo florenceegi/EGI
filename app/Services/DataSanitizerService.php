@@ -32,6 +32,7 @@ class DataSanitizerService
         'pa_date',
         'pa_type',
         'pa_title',
+        'pa_direction',              // Direzione comunale (es: "Direzione Servizi Tecnici")
         'pa_amount',
         'pa_anchored',
         'pa_anchored_at',
@@ -68,12 +69,19 @@ class DataSanitizerService
      */
     public function sanitizeAct(Egi $act): array
     {
+        // Estrai direzione da original_data se disponibile
+        $direzione = null;
+        if (isset($act->jsonMetadata['original_data']['direzione'])) {
+            $direzione = $act->jsonMetadata['original_data']['direzione'];
+        }
+
         $publicData = [
             'id' => $act->id,
             'protocol_number' => $act->pa_protocol_number,
             'date' => $act->pa_protocol_date?->format('Y-m-d'),
             'type' => $act->pa_act_type,
             'title' => $this->sanitizeTitle($act->title),
+            'direction' => $direzione,  // Direzione comunale che ha emesso l'atto
             'amount' => $act->jsonMetadata['amount'] ?? null,
             'blockchain_anchored' => $act->pa_anchored,
             'blockchain_txid' => $act->jsonMetadata['algorand_txid'] ?? null,
@@ -155,20 +163,40 @@ class DataSanitizerService
             return "Nessun atto PA presente nel sistema.";
         }
 
-        $summary = "ATTI PA PRESENTI NEL SISTEMA:\n\n";
+        $count = $acts->count();
+        $summary = "ATTI PA PRESENTI NEL SISTEMA (totale: {$count}):\n\n";
 
-        foreach ($acts as $index => $act) {
-            $sanitized = $this->sanitizeAct($act);
-            $summary .= sprintf(
-                "%d. [%s] %s\n   Protocollo: %s | Data: %s | Importo: %s€\n   Blockchain: %s\n\n",
-                $index + 1,
-                $sanitized['type'] ?? 'N/D',
-                $sanitized['title'] ?? 'Senza titolo',
-                $sanitized['protocol_number'] ?? 'N/D',
-                $sanitized['date'] ?? 'N/D',
-                $sanitized['amount'] ? number_format((float)$sanitized['amount'], 2, ',', '.') : 'N/D',
-                $sanitized['blockchain_anchored'] ? '✓ Certificato' : '✗ Non certificato'
-            );
+        // Se ci sono molti atti (>50), usa formato compatto
+        if ($count > 50) {
+            $summary .= "[FORMATO COMPATTO - {$count} atti]\n\n";
+            foreach ($acts as $index => $act) {
+                $sanitized = $this->sanitizeAct($act);
+                $summary .= sprintf(
+                    "%d. [%s] %s - Prot.%s (%s) - Dir: %s\n",
+                    $index + 1,
+                    $sanitized['type'] ?? 'N/D',
+                    mb_substr($sanitized['title'] ?? 'Senza titolo', 0, 60),
+                    $sanitized['protocol_number'] ?? 'N/D',
+                    $sanitized['date'] ?? 'N/D',
+                    $sanitized['direction'] ?? 'N/D'
+                );
+            }
+        } else {
+            // Formato esteso per pochi atti
+            foreach ($acts as $index => $act) {
+                $sanitized = $this->sanitizeAct($act);
+                $summary .= sprintf(
+                    "%d. [%s] %s\n   Protocollo: %s | Data: %s | Direzione: %s\n   Importo: %s€ | Blockchain: %s\n\n",
+                    $index + 1,
+                    $sanitized['type'] ?? 'N/D',
+                    $sanitized['title'] ?? 'Senza titolo',
+                    $sanitized['protocol_number'] ?? 'N/D',
+                    $sanitized['date'] ?? 'N/D',
+                    $sanitized['direction'] ?? 'N/D',
+                    $sanitized['amount'] ? number_format((float)$sanitized['amount'], 2, ',', '.') : 'N/D',
+                    $sanitized['blockchain_anchored'] ? '✓ Certificato' : '✗ Non certificato'
+                );
+            }
         }
 
         return $summary;
@@ -182,26 +210,62 @@ class DataSanitizerService
      */
     public function createStatsContext(Collection $acts, ?int $userId = null): array
     {
+        // Stats BASE dal campione
         $stats = [
             'total_acts_in_sample' => $acts->count(),  // Atti nel campione recuperato
-            'anchored_acts' => $acts->where('pa_anchored', true)->count(),
-            'by_type' => $acts->groupBy('pa_act_type')->map(fn($group) => $group->count())->toArray(),
-            'total_amount' => $acts->sum(fn($act) => $act->jsonMetadata['amount'] ?? 0),
-            'date_range' => [
+            'anchored_acts_in_sample' => $acts->where('pa_anchored', true)->count(),
+            'date_range_sample' => [
                 'first' => $acts->min('pa_protocol_date')?->format('Y-m-d'),
                 'last' => $acts->max('pa_protocol_date')?->format('Y-m-d'),
             ],
         ];
 
-        // Aggiungi conteggio totale in database (se userId fornito)
+        // Se userId fornito, calcola STATS COMPLETE su TUTTO il database
         if ($userId) {
+            // Totale atti
             $stats['total_acts_in_database'] = Egi::where('user_id', $userId)
                 ->whereNotNull('pa_protocol_number')
                 ->count();
+
+            // Conta per TIPO (su TUTTI gli atti)
+            $byTypeDb = Egi::where('user_id', $userId)
+                ->whereNotNull('pa_protocol_number')
+                ->selectRaw('pa_act_type, COUNT(*) as count')
+                ->groupBy('pa_act_type')
+                ->pluck('count', 'pa_act_type')
+                ->toArray();
+            $stats['by_type_database'] = $byTypeDb;
+
+            // Conta per DIREZIONE (su TUTTI gli atti - estrae da jsonMetadata)
+            $allActs = Egi::where('user_id', $userId)
+                ->whereNotNull('pa_protocol_number')
+                ->select('jsonMetadata')
+                ->get();
+            
+            $byDirectionDb = [];
+            foreach ($allActs as $act) {
+                $direzione = $act->jsonMetadata['original_data']['direzione'] ?? 'Non specificata';
+                $byDirectionDb[$direzione] = ($byDirectionDb[$direzione] ?? 0) + 1;
+            }
+            arsort($byDirectionDb);
+            $stats['by_direction_database'] = $byDirectionDb;
+
+            // Range date REALE (su TUTTI gli atti)
+            $dateRange = Egi::where('user_id', $userId)
+                ->whereNotNull('pa_protocol_number')
+                ->whereNotNull('pa_protocol_date')
+                ->selectRaw('MIN(pa_protocol_date) as first, MAX(pa_protocol_date) as last')
+                ->first();
+            
+            $stats['date_range_database'] = [
+                'first' => $dateRange->first ? date('Y-m-d', strtotime($dateRange->first)) : null,
+                'last' => $dateRange->last ? date('Y-m-d', strtotime($dateRange->last)) : null,
+            ];
         }
 
         $this->logger->info('[DataSanitizer] Stats context created', [
-            'stats' => $stats,
+            'sample_size' => $stats['total_acts_in_sample'],
+            'database_total' => $stats['total_acts_in_database'] ?? 'N/A',
         ]);
 
         return $stats;
