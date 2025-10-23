@@ -424,14 +424,24 @@ class PaWebScraperService
     protected function convertSingleActToPaFormat(array $act, PaWebScraper $scraper): array
     {
         // Map common fields (adapt based on source)
+        $numeroAtto = $act['numeroAdozione'] ?? $act['numero'] ?? 'N/A';
+        $dataAtto = $this->parseDate($act['dataAdozione'] ?? $act['data'] ?? null);
+        $tipoAttoCompleto = $act['tipoAttoDto']['nome'] ?? $act['tipo'] ?? 'Atto Generico';
+        
         return [
-            'numero_atto' => $act['numeroAdozione'] ?? $act['numero'] ?? 'N/A',
-            'tipo_atto' => $act['tipoAttoDto']['nome'] ?? $act['tipo'] ?? 'Atto Generico',
-            'data_atto' => $this->parseDate($act['dataAdozione'] ?? $act['data'] ?? null),
+            'numero_atto' => $numeroAtto,
+            'tipo_atto' => $tipoAttoCompleto,
+            'data_atto' => $dataAtto,
             'data_pubblicazione' => $this->parseDate($act['dataPubblicazione'] ?? null),
             'oggetto' => $act['oggetto'] ?? $act['titolo'] ?? '',
             'ente' => $scraper->source_entity,
             'direzione' => $act['ufficio'] ?? null,
+            // Add protocol fields for duplicate check and DB storage
+            'protocol_number' => $numeroAtto,
+            'protocol_date' => $dataAtto,
+            'doc_type' => $this->normalizePaActType($tipoAttoCompleto), // Normalize for DB enum
+            'title' => $act['oggetto'] ?? $act['titolo'] ?? '',
+            'description' => $act['oggetto'] ?? $act['titolo'] ?? '',
             'metadata' => [
                 'source_id' => $act['id'] ?? null,
                 'relatore' => $act['relatore'] ?? null,
@@ -443,6 +453,29 @@ class PaWebScraperService
             ],
             'allegati' => $this->convertAllegati($act['allegati'] ?? []),
         ];
+    }
+
+    /**
+     * Normalize PA act type to DB enum values
+     * 
+     * @param string $tipoAtto Full act type name (e.g. "Delibera di Giunta", "Determinazione Dirigenziale")
+     * @return string Normalized enum value ('delibera', 'determina', 'ordinanza', 'decreto', 'atto')
+     */
+    protected function normalizePaActType(string $tipoAtto): string
+    {
+        $tipoLower = strtolower($tipoAtto);
+        
+        if (str_contains($tipoLower, 'deliber')) {
+            return 'delibera';
+        } elseif (str_contains($tipoLower, 'determin')) {
+            return 'determina';
+        } elseif (str_contains($tipoLower, 'ordinanza')) {
+            return 'ordinanza';
+        } elseif (str_contains($tipoLower, 'decreto')) {
+            return 'decreto';
+        } else {
+            return 'atto'; // Default fallback
+        }
     }
 
     /**

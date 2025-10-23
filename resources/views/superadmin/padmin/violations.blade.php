@@ -335,7 +335,8 @@
 
                     if (response.ok && data.success) {
                         // Build a prompt text for Copilot (keeps backward compatibility)
-                        currentAiPrompt = (data.explanation || '') + "\n\n--- ORIGINAL ---\n" + (data.original_code || '') + "\n\n--- FIXED ---\n" + (data.fixed_code || '');
+                        currentAiPrompt = (data.explanation || '') + "\n\n--- ORIGINAL ---\n" + (data.original_code || '') +
+                            "\n\n--- FIXED ---\n" + (data.fixed_code || '');
                         document.getElementById('aiPromptText').value = currentAiPrompt;
 
                         // Fill code preview areas
@@ -521,11 +522,11 @@
                                         📄 ${v.file}:${v.line}
                                     </p>
                                     ${v.codeSnippet ? `
-                                                                <details class="mt-2">
-                                                                    <summary class="cursor-pointer text-xs text-primary">Vedi codice</summary>
-                                                                    <pre class="mt-2 p-2 bg-base-300 rounded text-xs overflow-x-auto"><code>${escapeHtml(v.codeSnippet)}</code></pre>
-                                                                </details>
-                                                            ` : ''}
+                                                                        <details class="mt-2">
+                                                                            <summary class="cursor-pointer text-xs text-primary">Vedi codice</summary>
+                                                                            <pre class="mt-2 p-2 bg-base-300 rounded text-xs overflow-x-auto"><code>${escapeHtml(v.codeSnippet)}</code></pre>
+                                                                        </details>
+                                                                    ` : ''}
                                 </div>
                             </div>
                         </div>
@@ -679,9 +680,11 @@
                 </div>
 
                 <div class="mt-4 flex items-center gap-2">
-                    <button id="aiApplyBtn" type="button" onclick="applyAiFix()" class="btn btn-primary">Applica correzione</button>
+                    <button id="aiApplyBtn" type="button" onclick="applyAiFix()" class="btn btn-primary">Applica
+                        correzione</button>
                     <button type="button" onclick="closeAiFixModal()" class="btn btn-ghost">Chiudi</button>
-                    <div class="ml-auto text-sm text-base-content/60">Nota: verrà creato un backup prima di applicare la modifica.</div>
+                    <div class="ml-auto text-sm text-base-content/60">Nota: verrà creato un backup prima di applicare
+                        la modifica.</div>
                 </div>
             </div>
 
