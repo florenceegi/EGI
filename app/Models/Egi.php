@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes; // Importa SoftDeletes
 use App\Models\EgiSmartContract;
 use App\Models\EgiLivingSubscription;
+use App\Models\PaActEmbedding;
 
 /**
  * 📜 Oracode Eloquent Model: Egi
@@ -359,6 +360,18 @@ class Egi extends Model
     public function blockchain(): HasOne
     {
         return $this->hasOne(EgiBlockchain::class, 'egi_id');
+    }
+
+    /**
+     * 🔗 PA Act Embedding: Get vector embedding for semantic search (1:1 relationship)
+     *
+     * Used for RAG (Retrieval Augmented Generation) system.
+     *
+     * @return HasOne
+     */
+    public function embedding(): HasOne
+    {
+        return $this->hasOne(PaActEmbedding::class, 'egi_id');
     }
 
     /**
