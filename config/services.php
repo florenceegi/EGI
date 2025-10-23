@@ -67,4 +67,22 @@ return [
         'timeout' => env('ANTHROPIC_TIMEOUT', 60), // seconds
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | OpenAI Service (Embeddings for RAG)
+    |--------------------------------------------------------------------------
+    |
+    | OpenAI Embeddings API for semantic search.
+    | Model: text-embedding-ada-002 (1536 dimensions)
+    | Cost: ~$0.0001 per 1K tokens (~$0.02 for 24k acts)
+    | GDPR-COMPLIANT: Processes ONLY public metadata (no PII).
+    |
+    */
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+        'embedding_model' => env('OPENAI_EMBEDDING_MODEL', 'text-embedding-ada-002'),
+        'timeout' => env('OPENAI_TIMEOUT', 30), // seconds
+    ],
+
 ];
