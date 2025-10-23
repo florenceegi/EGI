@@ -141,7 +141,7 @@ class PaWebScraperController extends Controller
                 }
 
                 $templateData = $templates[$templateKey];
-                
+
                 // Add user and status
                 $templateData['user_id'] = Auth::user()->id;
                 $templateData['created_by_user_id'] = Auth::id();
@@ -338,14 +338,31 @@ class PaWebScraperController extends Controller
                 abort(403);
             }
 
-            $result = $scraper->testConnection();
+            $this->logger->info('[PaWebScraperController] Testing scraper connection', [
+                'scraper_id' => $scraper->id,
+                'user_id' => Auth::id()
+            ]);
+
+            // Test with 2024 (known to have data) - will fetch actual data but just to verify connection
+            $testOptions = [
+                'year' => '2024',
+                'month' => '01',
+            ];
+
+            // Use the service to test connection (will fetch real data)
+            $result = $this->scraperService->execute($scraper, Auth::user(), $testOptions);
 
             if ($result['success']) {
-                return back()->with('success', 'Connessione testata con successo! Status: ' . $result['status_code']);
+                $actCount = $result['stats']['acts_count'] ?? 0;
+                return back()->with('success', "Test connessione riuscito! Trovati {$actCount} atti di test.");
             } else {
-                return back()->with('error', 'Test connessione fallito: ' . $result['message']);
+                return back()->with('error', 'Test connessione fallito: ' . $result['error']);
             }
         } catch (\Exception $e) {
+            $this->logger->error('[PaWebScraperController] Test connection error', [
+                'scraper_id' => $scraper->id,
+                'error' => $e->getMessage()
+            ]);
             return back()->with('error', 'Errore nel test: ' . $e->getMessage());
         }
     }
