@@ -42,6 +42,7 @@ class NatanChatMessage extends Model
         'session_id',
         'role',
         'content',
+        'reference_message_id', // Track elaborations/iterations
         'persona_id',
         'persona_name',
         'persona_confidence',
@@ -78,6 +79,22 @@ class NatanChatMessage extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the original message this is elaborating on (if any)
+     */
+    public function referenceMessage(): BelongsTo
+    {
+        return $this->belongsTo(NatanChatMessage::class, 'reference_message_id');
+    }
+
+    /**
+     * Get all elaborations of this message
+     */
+    public function elaborations()
+    {
+        return $this->hasMany(NatanChatMessage::class, 'reference_message_id');
     }
 
     /**
@@ -196,4 +213,3 @@ class NatanChatMessage extends Model
         ];
     }
 }
-

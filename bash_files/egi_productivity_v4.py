@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-📊 EGI Commit Statistics to Excel Converter v3.1.1
+📊 EGI Commit Statistics to Excel Converter v3.1.2
 ==================================================
 
-OPTIMIZED VERSION - Fix critical line counting bug
+OPTIMIZED VERSION - Fix critical line counting bug + DEBUG
 
 Versione ULTRA migliorata con:
 - Lines touched (non solo added)
@@ -25,10 +25,15 @@ Versione ULTRA migliorata con:
 - Excluded deliberazioni_*.json (large datasets)
 - Now counts ONLY real development work
 
+🔧 v3.1.2 DEBUG:
+- Added debug logging to see which files are excluded
+- Shows skipped files count and lines
+- Helps troubleshoot filter issues
+
 @author: Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
-@version: 3.1.1 (FlorenceEGI - Advanced Productivity Analytics)
+@version: 3.1.2 (FlorenceEGI - Advanced Productivity Analytics)
 @date: 2025-10-23
-@purpose: Misurare VALORE REALE, non solo attività (now with accurate line counts)
+@purpose: Misurare VALORE REALE, non solo attività (now with accurate line counts + debug)
 """
 
 import subprocess
@@ -39,12 +44,13 @@ import sys
 import os
 from pathlib import Path
 import json
+import math
 
 class EGICommitStatsExporterV3:
     """
     Versione 3.1 con sistema di misurazione multi-dimensionale
     che distingue tra tipi di lavoro e misura valore reale
-    
+
     FIX v3.1: Conteggio righe accurato escludendo dipendenze
     """
 
@@ -112,43 +118,43 @@ class EGICommitStatsExporterV3:
         'node_modules/',
         'vendor/',
         'bower_components/',
-        
+
         # History and IDE
         '.history/',
         '.vscode/',
         '.idea/',
-        
+
         # Build outputs
         'build/',
         'dist/',
         'out/',
         'coverage/',
         '.next/',
-        
+
         # Lock files (huge and auto-generated)
         'package-lock.json',
         'composer.lock',
         'yarn.lock',
         'pnpm-lock.yaml',
-        
+
         # Minified files
         '.min.js',
         '.min.css',
         '.bundle.js',
-        
+
         # Other auto-generated
         '.map',
         '.cache/',
         'tmp/',
         'temp/',
-        
+
         # Testing data files (JSON datasets, debug HTML)
         'storage/testing/',
         'deliberazioni_',  # Large JSON data files
         'albo_debug_',     # Debug HTML files
         'albo_structure_debug',
         'albo_real_page',
-        
+
         # Data directories
         'storage/data/',
         'storage/logs/',
@@ -171,17 +177,17 @@ class EGICommitStatsExporterV3:
     def should_exclude_file(self, filepath):
         """
         🔧 NEW v3.1: Check if file should be excluded from line counting
-        
+
         @param filepath: Path to check
         @return: True if file should be excluded
         """
         if not filepath:
             return True
-            
+
         for pattern in self.EXCLUDED_PATTERNS:
             if pattern in filepath:
                 return True
-                
+
         return False
 
     def run_git_command(self, command):
@@ -298,51 +304,41 @@ class EGICommitStatsExporterV3:
 
     def estimate_cognitive_load(self, commits_count, files_modified, lines_touched, tag_stats):
         """
-        Stima il cognitive load della giornata
-
-        Fattori che aumentano cognitive load:
-        - Context switching (molti file)
-        - Lines touched elevate (tanto codice da gestire)
-        - Molti FIX (cascata di problemi)
-        - Refactoring profondo
+        v3.1.3 — Cognitive Load (log-scaled, normalized, clamped)
+        Range: 1.0x (normale) → 3.5x (molto alto)
+        - LI: impatto righe (log, satura ~60k)
+        - FM: spread file (log, satura ~200)
+        - DP: defect pressure = (FIX + 1.5*REFACTOR + 1.2*DEBUG) / commits
         """
-        base_load = 1.0
+        # 1) componenti in [0..1] con log-damping
+        li = min(1.0, math.log1p(max(0, lines_touched) / 2000.0) / math.log1p(30.0))   # ~60k → 1.0
+        fm = min(1.0, math.log1p(max(0, files_modified) / 10.0) / math.log1p(20.0))    # ~200 → 1.0
 
-        # Context switching penalty (cambio file frequente)
-        if files_modified > 15:
-            base_load += (files_modified - 15) * 0.05
+        fix = max(0, tag_stats.get('FIX', 0))
+        refa = max(0, tag_stats.get('REFACTOR', 0))
+        debug = max(0, tag_stats.get('DEBUG', 0))
+        commits = max(1, int(commits_count))
 
-        # Lines touched intensity
-        if lines_touched > 3000:
-            base_load += (lines_touched - 3000) / 3000 * 0.5
+        dp_raw = (fix + 1.5*refa + 1.2*debug) / commits
+        dp = max(0.0, min(1.0, dp_raw))  # clamp
 
-        # Fix cascade penalty (ogni FIX è un problema scoperto)
-        fix_count = tag_stats.get('FIX', 0)
-        if fix_count > 10:
-            base_load += (fix_count - 10) * 0.1
+        # 2) pesi (somma ≤ 3.5)
+        cl = 1.0 + 1.2*li + 0.9*fm + 0.7*dp
 
-        # Refactoring depth (refactoring è cognitivamente pesante)
-        refactor_count = tag_stats.get('REFACTOR', 0)
-        if refactor_count > 3:
-            base_load += refactor_count * 0.15
+        # 3) hard clamp globale per evitare outlier
+        return round(min(cl, 3.5), 2)
 
-        # Debug complexity
-        debug_count = tag_stats.get('DEBUG', 0)
-        if debug_count > 0:
-            base_load += debug_count * 0.2
-
-        return round(base_load, 2)
-
-    def get_code_lines_for_date(self, date_str):
+    def get_code_lines_for_date(self, date_str, debug=False):
         """
-        🔧 FIXED v3.1: Calcola le righe di codice per una data specifica
-        
+        🔧 FIXED v3.1.1: Calcola le righe di codice per una data specifica
+
         IMPROVEMENTS:
         - Fixed parsing bug (separate if statements)
         - Excludes node_modules/, vendor/, lock files
         - Accurate line counting for real work
-        
+
         @param date_str: Date in YYYY-MM-DD format
+        @param debug: If True, print debug info about excluded files
         @return: Dict with added, removed, net, touched lines
         """
         today = datetime.now().date()
@@ -363,28 +359,44 @@ class EGICommitStatsExporterV3:
         total_added = 0
         total_removed = 0
         skipped_files = 0
+        skipped_lines = 0
+        processed_files = 0
+
+        # 🔧 DEBUG: Track top excluded files
+        excluded_files_detail = []
 
         for line in output.split('\n'):
             if not line.strip():
                 continue
-                
+
             parts = line.split('\t')
-            
+
             # 🔧 FIXED: Single unified check
             if len(parts) >= 3:
                 filepath = parts[2]
-                
+
                 # Skip excluded files
                 if self.should_exclude_file(filepath):
                     skipped_files += 1
+                    try:
+                        added = int(parts[0]) if parts[0] != '-' else 0
+                        removed = int(parts[1]) if parts[1] != '-' else 0
+                        lines_in_file = added + removed
+                        skipped_lines += lines_in_file
+
+                        if debug and lines_in_file > 1000:
+                            excluded_files_detail.append((filepath, lines_in_file))
+                    except:
+                        pass
                     continue
-                
+
                 # Parse line counts
                 try:
                     added = int(parts[0]) if parts[0] != '-' else 0
                     removed = int(parts[1]) if parts[1] != '-' else 0
                     total_added += added
                     total_removed += removed
+                    processed_files += 1
                 except ValueError:
                     # Binary file or corrupt data
                     continue
@@ -392,18 +404,32 @@ class EGICommitStatsExporterV3:
         net_lines = total_added - total_removed
         touched_lines = total_added + total_removed
 
+        # 🔧 DEBUG output
+        if debug:
+            print(f"\n🔍 DEBUG LINE COUNTING:")
+            print(f"   Files processed: {processed_files}")
+            print(f"   Files skipped: {skipped_files}")
+            print(f"   Lines skipped: {skipped_lines:,}")
+            print(f"   Lines counted: {touched_lines:,}")
+            if excluded_files_detail:
+                print(f"\n   Top excluded files (>1000 lines):")
+                for filepath, lines in sorted(excluded_files_detail, key=lambda x: x[1], reverse=True)[:10]:
+                    print(f"      {lines:>8,} lines: {filepath}")
+
         return {
             'added': total_added,
             'removed': total_removed,
             'net': net_lines,
             'touched': touched_lines,
-            'skipped_files': skipped_files  # For debugging
+            'skipped_files': skipped_files,
+            'skipped_lines': skipped_lines,
+            'processed_files': processed_files
         }
 
     def get_weekly_code_lines(self, start_date, end_date):
         """
         🔧 FIXED v3.1: Calcola le righe di codice totali per una settimana
-        
+
         Now excludes dependencies and auto-generated files
         """
         today = datetime.now().date()
@@ -428,18 +454,18 @@ class EGICommitStatsExporterV3:
         for line in output.split('\n'):
             if not line.strip():
                 continue
-                
+
             parts = line.split('\t')
-            
+
             # 🔧 FIXED: Single unified check
             if len(parts) >= 3:
                 filepath = parts[2]
-                
+
                 # Skip excluded files
                 if self.should_exclude_file(filepath):
                     skipped_files += 1
                     continue
-                
+
                 # Parse line counts
                 try:
                     added = int(parts[0]) if parts[0] != '-' else 0
@@ -759,16 +785,16 @@ class EGICommitStatsExporterV3:
 
             # Get daily data for this week
             daily_data = self.get_daily_commits(week['start_date'], week['end_date'])
-            
+
             # Calcola productivity v3 per ogni giorno
             for day in daily_data:
                 day_stats = self.analyze_commits(day['commits_list'])
                 testing_day = self.get_testing_time_data(day['date'], day['date'])
-                
+
                 day['testing_minutes'] = testing_day['daily_breakdown'].get(day['date'], {}).get('minutes', 0)
                 day['coding_minutes_est'] = day['commits'] * 22
                 day['total_productive_minutes'] = day['testing_minutes'] + day['coding_minutes_est']
-                
+
                 productivity = self.calculate_productivity_index_v3(
                     day['commits_list'],
                     day['lines_touched'],
@@ -776,12 +802,12 @@ class EGICommitStatsExporterV3:
                     day['files_modified'],
                     day_stats['tags']
                 )
-                
+
                 day['productivity_v3'] = productivity['index']
                 day['day_type'] = productivity['day_type_icon'] + ' ' + productivity['day_type_desc']
                 day['cognitive_load'] = productivity['cognitive_load']
                 day['weighted_commits'] = productivity['weighted_commits']
-                
+
                 # Aggiungi dettagli TAG
                 for tag in self.tag_patterns.keys():
                     day[f'tag_{tag.lower()}'] = day_stats['tags'].get(tag, 0)
@@ -882,25 +908,26 @@ class EGICommitStatsExporterV3:
 
         # Scrivi Excel
         with pd.ExcelWriter(self.output_file, engine='openpyxl') as writer:
-            df_summary.to_excel(writer, sheet_name='Riepilogo v3.1.1', index=False)
+            df_summary.to_excel(writer, sheet_name='Riepilogo v3.1.2', index=False)
             df_weekly.to_excel(writer, sheet_name='Statistiche Settimanali v3', index=False)
             df_testing.to_excel(writer, sheet_name='Testing Time Analysis', index=False)
             df_daily.to_excel(writer, sheet_name='Commit Giornalieri v3', index=False)
 
             self.format_excel_sheets(writer)
 
-        print(f"✅ File Excel v3.1.1 creato: {self.output_file}")
+        print(f"✅ File Excel v3.1.2 creato: {self.output_file}")
         print(f"📁 Percorso: {self.output_file.absolute()}")
-        print(f"\n📊 METRICHE v3.1.1:")
+        print(f"\n📊 METRICHE v3.1.2:")
         print(f"   Commit totali: {total_commits}")
         print(f"   Commit pesati: {round(total_weighted, 1)}")
         print(f"   Righe toccate: {total_lines_touched:,}")
         print(f"   Indice Produttività v3: {round(avg_productivity_v3, 2)}")
-        print(f"\n🔧 FIXES v3.1.1:")
+        print(f"\n🔧 FIXES v3.1.2:")
         print(f"   ✅ Fixed line counting bug")
         print(f"   ✅ Excluded node_modules/, vendor/")
         print(f"   ✅ Excluded storage/testing/ (JSON data)")
         print(f"   ✅ Excluded debug HTML files")
+        print(f"   ✅ Debug logging enabled")
         print(f"   ✅ Accurate real work metrics")
 
         return str(self.output_file.absolute())
@@ -951,6 +978,10 @@ class EGICommitStatsExporterV3:
         # Analisi TAG
         day_stats = self.analyze_commits(day['commits_list'])
 
+        # 🔧 DEBUG: Re-run with debug enabled
+        print("\n🔍 ANALISI ESCLUSIONI FILE...")
+        code_stats_debug = self.get_code_lines_for_date(today, debug=True)
+
         # Testing data
         testing_data = self.get_testing_time_data(today, today)
         day['testing_minutes'] = testing_data['daily_breakdown'].get(today, {}).get('minutes', 0)
@@ -968,7 +999,7 @@ class EGICommitStatsExporterV3:
 
         # Terminal output
         print("\n" + "="*70)
-        print("📅 FLORENCE EGI - PRODUTTIVITÀ GIORNALIERA v3.1.1")
+        print("📅 FLORENCE EGI - PRODUTTIVITÀ GIORNALIERA v3.1.2")
         print("="*70)
         print(f"📅 Data: {today}")
         print(f"👤 Autore: fabio cherici")
@@ -1046,15 +1077,15 @@ class EGICommitStatsExporterV3:
 
         print()
         print("━"*70)
-        print(f"🔧 v3.1.1 - Accurate metrics (no deps/testing data) | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"🔧 v3.1.2 DEBUG - See exclusions above | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("━"*70)
 
 
 def main():
     """Funzione principale"""
-    print("🚀 EGI Commit Statistics Excel Exporter v3.1.1")
+    print("🚀 EGI Commit Statistics Excel Exporter v3.1.2 DEBUG")
     print("   Multi-Dimensional Productivity Analytics")
-    print("   🔧 FIXED: Accurate line counting (excludes deps + testing data)")
+    print("   🔍 Shows which files are excluded from line counting")
     print("="*70)
 
     exporter = EGICommitStatsExporterV3()
