@@ -211,9 +211,9 @@ class PaWebScraperService
             $this->auditLog->logUserAction(
                 $user,
                 'web_scraper_failed',
-                'pa_web_scrapers',
-                $scraper->id,
                 [
+                    'table' => 'pa_web_scrapers',
+                    'record_id' => $scraper->id,
                     'scraper_name' => $scraper->name,
                     'error' => $errorMessage,
                 ],
@@ -631,15 +631,17 @@ class PaWebScraperService
 
         $collection = Collection::firstOrCreate(
             [
-                'user_id' => $user->id,
-                'name' => $collectionName
+                'creator_id' => $user->id,
+                'collection_name' => $collectionName
             ],
             [
+                'owner_id' => $user->id,
                 'description' => 'Atti PA acquisiti automaticamente tramite web scraping da fonti pubbliche. ' .
                     'Questi atti sono disponibili per l\'interrogazione con N.A.T.A.N. AI.',
                 'type' => 'institutional',
                 'status' => 'active',
-                'visibility' => 'private'
+                'is_published' => false,
+                'is_default' => false
             ]
         );
 
