@@ -602,6 +602,11 @@
                                 class="checkbox checkbox-sm" checked>
                             <span class="label-text">🔒 GDPR COMPLIANCE (P0)</span>
                         </label>
+                        <label class="label cursor-pointer justify-start gap-2">
+                            <input type="checkbox" name="rules[]" value="ULTRA_LOG_USAGE"
+                                class="checkbox checkbox-sm" checked>
+                            <span class="label-text">📝 ULM USAGE (P1) — evita Facade Log</span>
+                        </label>
                     </div>
                 </div>
 

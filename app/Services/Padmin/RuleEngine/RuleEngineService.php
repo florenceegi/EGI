@@ -10,6 +10,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use PhpParser\ParserFactory;
 use PhpParser\NodeTraverser;
 use PhpParser\Node;
+ 
 
 /**
  * Rule Engine Service - Automated Code Quality Analysis
@@ -55,6 +56,7 @@ class RuleEngineService {
             'STATISTICS' => new Rules\StatisticsRule(),
             'MICA_SAFE' => new Rules\MicaSafeRule(),
             'GDPR_COMPLIANCE' => new Rules\GdprComplianceRule(),
+            'ULTRA_LOG_USAGE' => new Rules\UltraLogUsageRule(),
         ];
     }
 
