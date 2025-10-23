@@ -595,7 +595,33 @@ All data you receive has been pre-validated for GDPR compliance.
 
 PROMPT;
 
-        // Add context with semantic search results
+        // ========================================
+        // REFERENCE MESSAGE (for elaborations)
+        // ========================================
+        if (isset($context['reference_message'])) {
+            $ref = $context['reference_message'];
+            $commonPrompt .= "\n\n# 🔄 ITERATIVE ELABORATION MODE\n\n";
+            $commonPrompt .= "You are being asked to elaborate, refine, or transform a previous analysis.\n\n";
+            $commonPrompt .= "## Original Response to Elaborate On:\n\n";
+            $commonPrompt .= "**From:** {$ref['persona_name']} ({$ref['persona_id']})\n";
+            $commonPrompt .= "**Date:** {$ref['created_at']}\n\n";
+            $commonPrompt .= "---\n\n";
+            $commonPrompt .= $ref['content'];
+            $commonPrompt .= "\n\n---\n\n";
+            $commonPrompt .= "## Your Task:\n\n";
+            $commonPrompt .= "Work with the above analysis according to the user's request. You can:\n";
+            $commonPrompt .= "- **Simplify** it for different audiences (citizens, non-experts, media)\n";
+            $commonPrompt .= "- **Deepen** the analysis with additional strategic considerations\n";
+            $commonPrompt .= "- **Transform** it into actionable steps, roadmaps, or implementation plans\n";
+            $commonPrompt .= "- **Reformat** it for specific purposes (presentation, email, report)\n";
+            $commonPrompt .= "- **Challenge** it constructively with alternative perspectives\n";
+            $commonPrompt .= "- **Expand** on specific aspects the user wants to explore\n\n";
+            $commonPrompt .= "**Important:** Build upon the previous analysis. Don't repeat it verbatim—add value through transformation.\n\n";
+        }
+
+        // ========================================
+        // ACTS DATA (if RAG was used)
+        // ========================================
         if (!empty($context['acts_summary'])) {
             $commonPrompt .= "\n\n# AVAILABLE DATA\n\n";
             $commonPrompt .= "The following acts are relevant to the current query:\n\n";
@@ -616,6 +642,14 @@ PROMPT;
                     $act['title'] ?? 'N/A'
                 );
             }
+        } elseif (!isset($context['reference_message'])) {
+            // No RAG and no reference message = general consulting mode
+            $commonPrompt .= "\n\n# GENERAL CONSULTING MODE\n\n";
+            $commonPrompt .= "No specific acts data is available. Provide general strategic consulting based on:\n";
+            $commonPrompt .= "- Industry best practices\n";
+            $commonPrompt .= "- Standard frameworks (SWOT, Porter, BCG, etc.)\n";
+            $commonPrompt .= "- Your expertise as a top-tier consultant\n";
+            $commonPrompt .= "- Proven methodologies from leading consulting firms\n\n";
         }
 
         if (!empty($context['stats'])) {

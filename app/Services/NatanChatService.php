@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Config\NatanPersonas;
 use App\Models\Egi;
+use App\Models\NatanChatMessage;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Ultra\UltraLogManager\UltraLogManager;
@@ -61,7 +63,7 @@ class NatanChatService
      *
      * WORKFLOW:
      * 1. Select appropriate persona (auto or manual)
-     * 2. Retrieve relevant acts using RAG system (semantic search + fallback)
+     * 2. [OPTIONAL] Retrieve relevant acts using RAG system (semantic search + fallback)
      * 3. Sanitize data (GDPR compliance)
      * 4. Build context with public metadata only
      * 5. Call Anthropic Claude 3.5 Sonnet with selected persona
@@ -78,6 +80,11 @@ class NatanChatService
      * - Keyword search: SQL LIKE queries (fallback if no embeddings)
      * - Scales to 24k+ acts with acceptable performance
      *
+     * ITERATIVE ELABORATION:
+     * - use_rag=false: Skips RAG retrieval (for general consulting or elaborations)
+     * - referenceContext: When provided, Claude elaborates on a previous response
+     * - Use cases: Simplify, Deepen, Transform format, Extract actions, etc.
+     *
      * GDPR AUDIT:
      * - Logs what data is sent to AI
      * - Validates no private fields are present
@@ -88,6 +95,8 @@ class NatanChatService
      * @param array $conversationHistory Previous messages for context
      * @param string|null $manualPersonaId Manual persona selection (null = auto mode)
      * @param string|null $sessionId Session ID for conversation tracking (generated if null)
+     * @param bool $useRag Enable RAG retrieval (default: true)
+     * @param array|null $referenceContext Previous message to elaborate on (null = new query)
      * @return array ['success' => bool, 'response' => string, 'sources' => array, 'persona' => array, 'session_id' => string]
      * @throws \Exception
      */
@@ -96,7 +105,9 @@ class NatanChatService
         User $user,
         array $conversationHistory = [],
         ?string $manualPersonaId = null,
-        ?string $sessionId = null
+        ?string $sessionId = null,
+        bool $useRag = true,
+        ?array $referenceContext = null
     ): array {
         $startTime = microtime(true);
         $sessionId = $sessionId ?? uniqid('natan_', true);
@@ -106,14 +117,16 @@ class NatanChatService
             'user_id' => $user->id,
             'session_id' => $sessionId,
             'query_length' => strlen($userQuery),
-            'manual_persona' => $manualPersonaId
+            'manual_persona' => $manualPersonaId,
+            'use_rag' => $useRag,
+            'has_reference' => $referenceContext !== null,
         ];
 
         $this->logger->info('[NatanChatService] Processing user query', $logContext);
 
         try {
             // STEP 0: Save user message to database
-            $userMessage = \App\Models\NatanChatMessage::create([
+            $userMessage = NatanChatMessage::create([
                 'user_id' => $user->id,
                 'session_id' => $sessionId,
                 'role' => 'user',
@@ -133,16 +146,38 @@ class NatanChatService
 
             $this->logger->info('[NatanChatService] Persona selected', $logContext);
 
-            // STEP 2: Retrieve relevant acts using RAG system
+            // STEP 2: Retrieve relevant acts using RAG system (if enabled)
             // Uses semantic search (vector embeddings) with keyword search fallback
-            $context = $this->rag->getContextForQuery($userQuery, $user, 10);
-            $ragMethod = $context['search_method'] ?? 'unknown';
+            $ragMethod = null;
+            if ($useRag) {
+                $context = $this->rag->getContextForQuery($userQuery, $user, 10);
+                $ragMethod = 'semantic'; // Default to semantic (will be enhanced later with actual detection)
 
-            $logContext['acts_count'] = count($context['acts']);
-            $logContext['context_summary_length'] = strlen($context['acts_summary']);
-            $logContext['rag_method'] = $ragMethod;
+                $logContext['acts_count'] = count($context['acts']);
+                $logContext['context_summary_length'] = strlen($context['acts_summary']);
+                $logContext['rag_method'] = $ragMethod;
 
-            $this->logger->info('[NatanChatService] RAG context retrieved and sanitized', $logContext);
+                $this->logger->info('[NatanChatService] RAG context retrieved and sanitized', $logContext);
+            } else {
+                // No RAG: Empty context (for elaborations or general consulting)
+                $context = [
+                    'acts' => [],
+                    'acts_summary' => '',
+                    'stats' => [],
+                ];
+
+                $logContext['acts_count'] = 0;
+                $logContext['rag_skipped'] = true;
+
+                $this->logger->info('[NatanChatService] RAG skipped (elaboration or general query)', $logContext);
+            }
+
+            // Add reference context if provided (for elaborations)
+            if ($referenceContext) {
+                $context['reference_message'] = $referenceContext;
+                $logContext['reference_message_id'] = $referenceContext['id'];
+                $this->logger->info('[NatanChatService] Reference context included for elaboration', $logContext);
+            }
 
             // STEP 3: GDPR Audit - Log what we're sending to AI
             $this->logger->info('[NatanChatService][GDPR] Data sent to Anthropic AI', [
@@ -184,13 +219,13 @@ class NatanChatService
             }, $context['acts']);
 
             // STEP 6: Save assistant message to database
-            $assistantMessage = \App\Models\NatanChatMessage::create([
+            $assistantMessage = NatanChatMessage::create([
                 'user_id' => $user->id,
                 'session_id' => $sessionId,
                 'role' => 'assistant',
                 'content' => $aiResponse,
                 'persona_id' => $personaSelection['persona_id'],
-                'persona_name' => \App\Config\NatanPersonas::getName($personaSelection['persona_id']),
+                'persona_name' => NatanPersonas::getName($personaSelection['persona_id']),
                 'persona_confidence' => $personaSelection['confidence'],
                 'persona_selection_method' => $personaSelection['method'],
                 'persona_reasoning' => $personaSelection['reasoning'],
@@ -200,6 +235,7 @@ class NatanChatService
                 'rag_method' => $ragMethod,
                 'ai_model' => config('services.anthropic.model'),
                 'response_time_ms' => $responseTime,
+                'reference_message_id' => $referenceContext['id'] ?? null, // Track elaborations
             ]);
 
             return [
@@ -209,7 +245,7 @@ class NatanChatService
                 'relevant_acts_count' => count($context['acts']),
                 'persona' => [
                     'id' => $personaSelection['persona_id'],
-                    'name' => \App\Config\NatanPersonas::getName($personaSelection['persona_id']),
+                    'name' => NatanPersonas::getName($personaSelection['persona_id']),
                     'confidence' => $personaSelection['confidence'],
                     'method' => $personaSelection['method'],
                     'reasoning' => $personaSelection['reasoning'],
