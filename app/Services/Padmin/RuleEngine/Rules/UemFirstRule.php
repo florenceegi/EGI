@@ -22,54 +22,41 @@ use PhpParser\NodeVisitorAbstract;
  * @purpose Protect UEM error handling architecture
  */
 class UemFirstRule implements RuleInterface {
-    public function check(array $ast, string $filePath, string $code): array {
+    public function check(array $ast, string $filePath, string $code): array
+    {
         $violations = [];
 
         $traverser = new NodeTraverser();
         $visitor = new class($filePath) extends NodeVisitorAbstract {
             protected string $filePath;
             public array $violations = [];
-            protected bool $hasCatchBlock = false;
-            protected bool $hasLoggerErrorInCatch = false;
-            protected int $catchLine = 0;
 
-            public function __construct(string $filePath) {
+            public function __construct(string $filePath)
+            {
                 $this->filePath = $filePath;
             }
 
-            public function enterNode(Node $node) {
+            public function enterNode(Node $node)
+            {
                 // Detect try-catch blocks
                 if ($node instanceof Node\Stmt\TryCatch) {
-                    $this->hasCatchBlock = true;
-                    $this->hasLoggerErrorInCatch = false;
-
                     foreach ($node->catches as $catch) {
-                        $this->catchLine = $catch->getLine();
+                        $catchLine = $catch->getLine();
 
-                        // Check if catch block uses logger->error() without errorManager->handle()
-                        $hasErrorManager = false;
-                        $hasLoggerError = false;
+                        // Check if catch block uses errorManager->handle()
+                        $hasErrorManager = $this->containsErrorManagerHandle($catch);
 
-                        foreach ($catch->stmts as $stmt) {
-                            if ($this->containsErrorManagerHandle($stmt)) {
-                                $hasErrorManager = true;
-                            }
-                            if ($this->containsLoggerError($stmt)) {
-                                $hasLoggerError = true;
-                            }
-                        }
-
-                        // Violation: logger->error() without errorManager->handle()
-                        if ($hasLoggerError && !$hasErrorManager) {
+                        // Violation: catch block without errorManager->handle()
+                        if (!$hasErrorManager) {
                             $this->violations[] = [
                                 'type' => 'UEM_FIRST_VIOLATION',
-                                'message' => 'Catch block uses logger->error() without errorManager->handle() - This violates UEM_FIRST rule',
-                                'line' => $this->catchLine,
+                                'message' => 'Catch block without errorManager->handle() - This violates UEM_FIRST rule',
+                                'line' => $catchLine,
                                 'priority' => 'P0',
                                 'severity' => 'critical',
                                 'context' => [
                                     'file' => $this->filePath,
-                                    'rule' => 'UEM must be used for error handling, logger is for debug only',
+                                    'rule' => 'UEM must be used for ALL error handling in catch blocks',
                                 ],
                             ];
                         }
@@ -79,7 +66,8 @@ class UemFirstRule implements RuleInterface {
                 return null;
             }
 
-            protected function containsErrorManagerHandle($node): bool {
+            protected function containsErrorManagerHandle($node): bool
+            {
                 if ($node instanceof Node\Expr\MethodCall) {
                     if ($node->var instanceof Node\Expr\PropertyFetch) {
                         $property = $node->var->name;
@@ -96,19 +84,43 @@ class UemFirstRule implements RuleInterface {
                     }
                 }
 
-                // Check nested nodes
-                if (isset($node->stmts) && is_array($node->stmts)) {
-                    foreach ($node->stmts as $stmt) {
-                        if ($this->containsErrorManagerHandle($stmt)) {
+                // Check all child nodes recursively
+                foreach ($node->getSubNodeNames() as $name) {
+                    $subNode = $node->$name;
+
+                    if ($subNode instanceof Node) {
+                        if ($this->containsErrorManagerHandle($subNode)) {
                             return true;
+                        }
+                    } elseif (is_array($subNode)) {
+                        foreach ($subNode as $item) {
+                            if ($item instanceof Node && $this->containsErrorManagerHandle($item)) {
+                                return true;
+                            }
                         }
                     }
                 }
 
                 return false;
             }
+        };
 
-            protected function containsLoggerError($node): bool {
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($ast);
+
+        return $visitor->violations;
+    }
+
+    public function getName(): string
+    {
+        return 'UEM_FIRST';
+    }
+
+    public function getDescription(): string
+    {
+        return 'Ensures ErrorManager is used for ALL error handling in catch blocks';
+    }
+}            protected function containsLoggerError($node): bool {
                 if ($node instanceof Node\Expr\MethodCall) {
                     if ($node->var instanceof Node\Expr\PropertyFetch) {
                         $property = $node->var->name;
@@ -125,11 +137,19 @@ class UemFirstRule implements RuleInterface {
                     }
                 }
 
-                // Check nested nodes
-                if (isset($node->stmts) && is_array($node->stmts)) {
-                    foreach ($node->stmts as $stmt) {
-                        if ($this->containsLoggerError($stmt)) {
+                // Check all child nodes recursively
+                foreach ($node->getSubNodeNames() as $name) {
+                    $subNode = $node->$name;
+                    
+                    if ($subNode instanceof Node) {
+                        if ($this->containsLoggerError($subNode)) {
                             return true;
+                        }
+                    } elseif (is_array($subNode)) {
+                        foreach ($subNode as $item) {
+                            if ($item instanceof Node && $this->containsLoggerError($item)) {
+                                return true;
+                            }
                         }
                     }
                 }

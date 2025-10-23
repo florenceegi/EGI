@@ -1,12 +1,14 @@
 export class RequestCreateNotificationWallet {
     constructor(options = {}) {
         if (RequestCreateNotificationWallet.instance) {
-            console.warn(`⛔ Tentativo di inizializzazione multipla di RequestCreateNotificationWallet ignorato`);
+            console.warn(
+                `⛔ Tentativo di inizializzazione multipla di RequestCreateNotificationWallet ignorato`
+            );
             return RequestCreateNotificationWallet.instance;
         }
-        this.options = options || { apiBaseUrl: '/notifications' };
-    this.bindEvents();
-        console.log('🚀 RequestCreateNotificationWallet initialized');
+        this.options = options || { apiBaseUrl: "/notifications" };
+        this.bindEvents();
+        console.log("🚀 RequestCreateNotificationWallet initialized");
         RequestCreateNotificationWallet.instance = this;
         return this;
     }
@@ -17,81 +19,112 @@ export class RequestCreateNotificationWallet {
      */
     translate(key, fallback = key) {
         // Usa SOLO il sistema moderno (definito da main/collection.js)
-        if (typeof window !== 'undefined' && typeof window.appTranslate === 'function') {
+        if (
+            typeof window !== "undefined" &&
+            typeof window.appTranslate === "function"
+        ) {
             try {
-                    const result = window.appTranslate(key);
+                const result = window.appTranslate(key);
                 return result ?? fallback;
             } catch (error) {
-                console.warn('appTranslate ha generato un errore per la chiave:', key, error);
+                console.warn(
+                    "appTranslate ha generato un errore per la chiave:",
+                    key,
+                    error
+                );
             }
         } else {
-            console.warn('appTranslate non inizializzato. Chiave:', key);
+            console.warn("appTranslate non inizializzato. Chiave:", key);
         }
         return fallback;
     }
 
     bindEvents() {
-
         console.log("🔍 BindEvent");
 
         // Event delegation: copre pulsanti renderizzati dinamicamente e click su figli (SVG, path)
-        document.addEventListener('click', async (event) => {
+        document.addEventListener("click", async (event) => {
             const target = event.target;
             if (!(target instanceof Element)) return;
-            const btn = target.closest('.create-wallet-btn');
+            const btn = target.closest(".create-wallet-btn");
             if (!btn) return;
 
-            const collectionId = btn.getAttribute('data-collection-id');
-            const userIdStr = btn.getAttribute('data-user-id');
-            const walletAddress = btn.getAttribute('data-wallet-address') || '';
+            const collectionId = btn.getAttribute("data-collection-id");
+            const userIdStr = btn.getAttribute("data-user-id");
+            const walletAddress = btn.getAttribute("data-wallet-address") || "";
 
             const userId = userIdStr ? parseInt(userIdStr, 10) : NaN;
 
-            console.log("🔍 Valori recuperati (delegation):", { collectionId, userId, walletAddress });
+            console.log("🔍 Valori recuperati (delegation):", {
+                collectionId,
+                userId,
+                walletAddress,
+            });
 
             if (!collectionId || isNaN(userId)) {
-                console.error("❌ Errore: Manca collectionId o userId nel dataset!");
+                console.error(
+                    "❌ Errore: Manca collectionId o userId nel dataset!"
+                );
                 return;
             }
 
-            await this.openCreateWalletModal(collectionId, userId, walletAddress);
+            await this.openCreateWalletModal(
+                collectionId,
+                userId,
+                walletAddress
+            );
         });
 
         // Supporto Livewire: logga al termine del render per diagnosticare
-        if (window.Livewire && typeof window.Livewire.hook === 'function') {
-            window.Livewire.hook('message.processed', (message, component) => {
-                console.debug('🔁 Livewire DOM updated for component', component.fingerprint?.name || '', '— handlers are delegated, no rebind needed');
+        if (window.Livewire && typeof window.Livewire.hook === "function") {
+            window.Livewire.hook("message.processed", (message, component) => {
+                console.debug(
+                    "🔁 Livewire DOM updated for component",
+                    component.fingerprint?.name || "",
+                    "— handlers are delegated, no rebind needed"
+                );
             });
         }
     }
-    async openCreateWalletModal(collectionId, userId, walletAddress = '') {
+    async openCreateWalletModal(collectionId, userId, walletAddress = "") {
         const modalHtml = await this.getCreateModalHtml(walletAddress);
 
         try {
             if (!window.Swal) {
-                console.error('❌ SweetAlert2 non trovato su window.Swal. Assicurati che resources/js/app.js sia caricato.');
-                alert('SweetAlert non disponibile');
+                console.error(
+                    "❌ SweetAlert2 non trovato su window.Swal. Assicurati che resources/js/app.js sia caricato."
+                );
+                alert("SweetAlert non disponibile");
                 return;
             }
             const result = await window.Swal.fire({
-                title: this.translate('collection.wallet.create_the_wallet', 'Aggiungi Wallet Utente'),
+                title: this.translate(
+                    "wallet_create_the_wallet",
+                    "Crea un nuovo wallet"
+                ),
                 html: modalHtml,
                 showCancelButton: true,
-                confirmButtonText: this.translate('wallet_create', 'Aggiungi Wallet'),
-                cancelButtonText: this.translate('label.cancel', 'Annulla'),
+                confirmButtonText: this.translate(
+                    "wallet_create",
+                    "Aggiungi Wallet"
+                ),
+                cancelButtonText: this.translate("cancel", "Annulla"),
                 width: 700,
-                padding: '2rem',
-                background: '#1f2937',
-                color: '#fff',
+                padding: "2rem",
+                background: "#1f2937",
+                color: "#fff",
                 customClass: {
-                    popup: 'rounded-2xl shadow-2xl border border-gray-700',
-                    title: 'text-2xl font-bold text-white mb-6',
-                    htmlContainer: 'text-left',
-                    confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:scale-[1.02]',
-                    cancelButton: 'bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold px-6 py-2.5 rounded-lg transition-all duration-200'
+                    popup: "rounded-2xl shadow-2xl border border-gray-700",
+                    title: "text-2xl font-bold text-white mb-6",
+                    htmlContainer: "text-left",
+                    confirmButton:
+                        "bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:scale-[1.02]",
+                    cancelButton:
+                        "bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold px-6 py-2.5 rounded-lg transition-all duration-200",
                 },
                 buttonsStyling: false,
-                preConfirm: () => this.validateAndCollectData(collectionId, userId)
+                preConfirm: () =>
+                    this.validateAndCollectData(collectionId, userId),
             });
 
             if (result.isConfirmed && result.value) {
@@ -103,30 +136,51 @@ export class RequestCreateNotificationWallet {
     }
 
     validateAndCollectData(collectionId, userId) {
-        const form = document.getElementById('wallet-modal-form');
+        const form = document.getElementById("wallet-modal-form");
 
         if (!form) {
-            console.error("❌ Errore: Il form #wallet-modal-form non esiste nel DOM!");
+            console.error(
+                "❌ Errore: Il form #wallet-modal-form non esiste nel DOM!"
+            );
             return null;
         }
 
-        const walletAddress = form.querySelector('#walletAddress')?.value.trim();
-        const royaltyMint = parseFloat(form.querySelector('#royaltyMint')?.value) || 0;
-        const royaltyRebind = parseFloat(form.querySelector('#royaltyRebind')?.value) || 0;
+        const walletAddress = form
+            .querySelector("#walletAddress")
+            ?.value.trim();
+        const royaltyMint =
+            parseFloat(form.querySelector("#royaltyMint")?.value) || 0;
+        const royaltyRebind =
+            parseFloat(form.querySelector("#royaltyRebind")?.value) || 0;
 
         if (!walletAddress) {
             console.error("❌ Errore: Indirizzo wallet mancante!");
-            if (window.Swal) window.Swal.showValidationMessage(this.translate('collection.wallet.validation.address_required'));
+            if (window.Swal)
+                window.Swal.showValidationMessage(
+                    this.translate(
+                        "wallet_validation_address_required",
+                        "L'indirizzo del wallet è obbligatorio."
+                    )
+                );
             return null;
         }
 
-        const data = { receiver_id: userId, collection_id: collectionId, wallet: walletAddress, royaltyMint, royaltyRebind };
+        const data = {
+            receiver_id: userId,
+            collection_id: collectionId,
+            wallet: walletAddress,
+            royaltyMint,
+            royaltyRebind,
+        };
         console.log("✅ Dati raccolti correttamente:", data);
         return data;
     }
 
-    async getCreateModalHtml(walletAddress = '') {
-        console.log("🔍 Caricamento HTML del modale...", this.translate('wallet_address', 'Address'));
+    async getCreateModalHtml(walletAddress = "") {
+        console.log(
+            "🔍 Caricamento HTML del modale...",
+            this.translate("wallet_address_label", "Indirizzo Wallet")
+        );
 
         return `
             <div class="text-left">
@@ -137,7 +191,10 @@ export class RequestCreateNotificationWallet {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <p class="text-sm text-blue-200 leading-relaxed">
-                            ${this.translate('collection.wallet.add_external_description', 'Aggiungi un wallet Algorand esistente per questo utente. Puoi incollare manualmente l\'indirizzo o connettere tramite PeraWallet.')}
+                            ${this.translate(
+                                "wallet_add_external_description",
+                                "Aggiungi un wallet Algorand esistente per questo utente. Puoi incollare manualmente l'indirizzo o connettere tramite PeraWallet."
+                            )}
                         </p>
                     </div>
                 </div>
@@ -169,16 +226,25 @@ export class RequestCreateNotificationWallet {
                     <!-- Wallet Address -->
                     <div>
                         <label for="walletAddress" class="mb-2 block text-sm font-semibold text-gray-200">
-                            ${this.translate('wallet_address', 'Indirizzo Wallet')} <span class="text-red-400">*</span>
+                            ${this.translate(
+                                "wallet_address_label",
+                                "Indirizzo Algorand"
+                            )} <span class="text-red-400">*</span>
                         </label>
                         <input type="text"
                                id="walletAddress"
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2.5 font-mono text-sm text-white placeholder-gray-500 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50"
                                value="${walletAddress}"
-                               placeholder="GABC...XYZ (58 caratteri)"
+                               placeholder="${this.translate(
+                                   "wallet_address_placeholder",
+                                   "Inserisci l'indirizzo del wallet"
+                               )}"
                                maxlength="58">
                         <p class="mt-1.5 text-xs text-gray-400">
-                            ${this.translate('collection.wallet.address_hint', 'Inserisci l\'indirizzo completo di 58 caratteri')}
+                            ${this.translate(
+                                "wallet_address_hint",
+                                "L'indirizzo deve essere di 58 caratteri (formato Base32)"
+                            )}
                         </p>
                     </div>
 
@@ -187,7 +253,10 @@ export class RequestCreateNotificationWallet {
                         <!-- Royalty Mint -->
                         <div>
                             <label for="royaltyMint" class="mb-2 block text-sm font-semibold text-gray-200">
-                                ${this.translate('wallet_royalty_mint', 'Royalty Mint')} <span class="text-red-400">*</span>
+                                ${this.translate(
+                                    "wallet_royalty_mint_label",
+                                    "Royalty Mint"
+                                )} <span class="text-red-400">*</span>
                             </label>
                             <div class="relative">
                                 <input type="number"
@@ -196,7 +265,10 @@ export class RequestCreateNotificationWallet {
                                        step="0.01"
                                        min="0"
                                        max="100"
-                                       placeholder="0.00">
+                                       placeholder="${this.translate(
+                                           "wallet_royalty_mint_placeholder",
+                                           "Inserisci la percentuale"
+                                       )}">
                                 <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
                             </div>
                         </div>
@@ -204,7 +276,10 @@ export class RequestCreateNotificationWallet {
                         <!-- Royalty Rebind -->
                         <div>
                             <label for="royaltyRebind" class="mb-2 block text-sm font-semibold text-gray-200">
-                                ${this.translate('wallet_royalty_rebind', 'Royalty Resale')} <span class="text-red-400">*</span>
+                                ${this.translate(
+                                    "wallet_royalty_rebind_label",
+                                    "Royalty Rebind"
+                                )} <span class="text-red-400">*</span>
                             </label>
                             <div class="relative">
                                 <input type="number"
@@ -213,7 +288,10 @@ export class RequestCreateNotificationWallet {
                                        step="0.01"
                                        min="0"
                                        max="100"
-                                       placeholder="0.00">
+                                       placeholder="${this.translate(
+                                           "wallet_royalty_rebind_placeholder",
+                                           "Inserisci la percentuale"
+                                       )}">
                                 <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
                             </div>
                         </div>
@@ -226,7 +304,10 @@ export class RequestCreateNotificationWallet {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                             <p class="text-sm text-yellow-200 leading-relaxed">
-                                ${this.translate('collection.wallet.royalty_deduction_warning', 'Le royalty assegnate verranno sottratte dalla quota disponibile del Creator che aggiunge questo wallet.')}
+                                ${this.translate(
+                                    "wallet_royalty_deduction_warning",
+                                    "Attenzione: Le royalty verranno sottratte dalla tua quota disponibile. Verifica di avere abbastanza quota prima di procedere."
+                                )}
                             </p>
                         </div>
                     </div>
@@ -236,78 +317,100 @@ export class RequestCreateNotificationWallet {
     }
 
     async handleCreateWallet(data) {
-        console.log('Creating wallet with:', data);
+        console.log("Creating wallet with:", data);
 
         try {
-            const response = await fetch(`/collections/${data.collection_id}/wallets/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
+            const response = await fetch(
+                `/collections/${data.collection_id}/wallets/create`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector(
+                            'meta[name="csrf-token"]'
+                        ).content,
+                        Accept: "application/json",
+                    },
+                    body: JSON.stringify(data),
+                }
+            );
 
             const result = await response.json();
-            console.log('Wallet created successfully, response:', response);
-            console.log('Wallet created successfully, result:', result);
+            console.log("Wallet created successfully, response:", response);
+            console.log("Wallet created successfully, result:", result);
 
             if (!response.ok) {
-                throw new Error(result.message || 'Error creating wallet');
+                throw new Error(result.message || "Error creating wallet");
             } else if (response.ok) {
-                this.showSuccess(this.translate('collection.wallet.creation_success'));
+                this.showSuccess(
+                    this.translate("collection.wallet.creation_success")
+                );
                 this.updateUI(result.data);
             } else {
                 this.showError(result.message);
             }
         } catch (error) {
-            console.error('Error creating wallet:', error);
+            console.error("Error creating wallet:", error);
             this.showError(error);
         }
     }
 
     updateUI(data) {
-        console.log('data', data);
+        console.log("data", data);
 
         // const btn = document.querySelector(`[data-user-id="${data.receiver_id}"].create-wallet-btn`);
         // if (btn) btn.remove();
 
         window.location.reload();
 
-        const msg = this.translate('collection.wallet.creation_success_detail');
+        const msg = this.translate(
+            "wallet_creation_success_detail",
+            "Il wallet è stato creato con successo."
+        );
         if (!window.Swal) return alert(msg);
         window.Swal.fire({
-            icon: 'success',
-            title: this.translate('collection.wallet.creation_success'),
+            icon: "success",
+            title: this.translate(
+                "wallet_creation_success",
+                "Wallet creato con successo."
+            ),
             text: msg,
             timer: 3000,
-            showConfirmButton: false
+            showConfirmButton: false,
         });
     }
 
     showSuccess(message) {
-    if (!window.Swal) return alert(message);
-    window.Swal.fire({
-            icon: 'success',
-            title: this.translate('collection.wallet.creation_success'),
+        if (!window.Swal) return alert(message);
+        window.Swal.fire({
+            icon: "success",
+            title: this.translate(
+                "wallet_creation_success",
+                "Wallet creato con successo."
+            ),
             text: message,
-            timer: 3000
+            timer: 3000,
         });
     }
 
     showError(message) {
         if (!window.Swal) return alert(message);
         window.Swal.fire({
-            icon: 'error',
-            title: this.translate('wallet_validation_check_pending_wallet_title'),
+            icon: "error",
+            title: this.translate(
+                "wallet_validation_check_pending_wallet_title",
+                "Errore di validazione"
+            ),
 
-            text: message
+            text: message,
         });
     }
 
     async ensureTranslationsLoaded() {
-        if (!window.translations || Object.keys(window.translations).length === 0) {
+        if (
+            !window.translations ||
+            Object.keys(window.translations).length === 0
+        ) {
             await this.fetchTranslations();
         }
     }
