@@ -792,12 +792,19 @@ PROMPT;
                     : 'Fix applied but violation may still exist'
             ]);
         } catch (\Exception $e) {
-            $this->errorManager->handle('PADMIN_AI_FIX_FAILED', [
+            // Normalize payload to avoid nested arrays in translations
+            $payload = [
                 'admin_id' => auth()->id(),
                 'violation_id' => $id,
-                'context_file' => $violation['file'] ?? 'unknown',
-                'context_rule' => $violation['rule'] ?? 'unknown'
-            ], $e);
+                'context' => [
+                    'file' => $violation['file'] ?? 'unknown',
+                    'rule' => $violation['rule'] ?? 'unknown'
+                ]
+            ];
+
+            $normalized = \App\Supports\ErrorContextNormalizer::normalize($payload);
+
+            $this->errorManager->handle('PADMIN_AI_FIX_FAILED', $normalized, $e);
 
             return response()->json([
                 'success' => false,
@@ -858,12 +865,17 @@ PROMPT;
                 'rule' => $violation['rule']
             ]);
         } catch (\Exception $e) {
-            $this->errorManager->handle('PADMIN_AI_PREVIEW_FAILED', [
+            $payload = [
                 'admin_id' => auth()->id(),
                 'violation_id' => $id,
-                'context_file' => $violation['file'] ?? 'unknown',
-                'context_rule' => $violation['rule'] ?? 'unknown'
-            ], $e);
+                'context' => [
+                    'file' => $violation['file'] ?? 'unknown',
+                    'rule' => $violation['rule'] ?? 'unknown'
+                ]
+            ];
+
+            $normalized = \App\Supports\ErrorContextNormalizer::normalize($payload);
+            $this->errorManager->handle('PADMIN_AI_PREVIEW_FAILED', $normalized, $e);
 
             return response()->json([
                 'success' => false,
