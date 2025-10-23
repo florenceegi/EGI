@@ -37,8 +37,7 @@ use App\Models\User;
  * - Redis Stack running on port 6381
  * - .env PADMIN_* variables configured
  */
-class PadminService
-{
+class PadminService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
@@ -91,8 +90,7 @@ class PadminService
      * $result = $service->executeNodeScript('violations:list', ['priority' => 'P0']);
      * // Returns: ['success' => true, 'data' => [...violations...]]
      */
-    protected function executeNodeScript(string $command, array $args = [], ?User $user = null): array
-    {
+    protected function executeNodeScript(string $command, array $args = [], ?User $user = null): array {
         // ULM: Trace Node.js call start
         $this->logger->debug('[PadminService] Executing Node.js script', [
             'command' => $command,
@@ -184,7 +182,6 @@ class PadminService
             }
 
             return $data;
-
         } catch (\Symfony\Component\Process\Exception\ProcessTimedOutException $e) {
             $this->logger->error('[PadminService] Node.js timeout', [
                 'command' => $command,
@@ -216,8 +213,7 @@ class PadminService
      * //   'bySeverity' => ['critical' => 5, 'error' => 20, 'warning' => 15, 'info' => 2]
      * // ]
      */
-    public function getViolationStats(?User $user = null): array
-    {
+    public function getViolationStats(?User $user = null): array {
         $this->logger->debug('[PadminService] Getting violation statistics');
 
         try {
@@ -228,7 +224,6 @@ class PadminService
             }
 
             return $result['data'] ?? [];
-
         } catch (\Exception $e) {
             $this->logger->error('[PadminService] Failed to get violation stats', [
                 'error' => $e->getMessage(),
@@ -259,8 +254,7 @@ class PadminService
      * //   ...
      * // ]
      */
-    public function getViolations(array $filters = [], ?User $user = null): array
-    {
+    public function getViolations(array $filters = [], ?User $user = null): array {
         $this->logger->debug('[PadminService] Getting violations list', [
             'filters' => $filters,
         ]);
@@ -273,7 +267,6 @@ class PadminService
             }
 
             return $result['data'] ?? [];
-
         } catch (\Exception $e) {
             $this->logger->error('[PadminService] Failed to get violations', [
                 'filters' => $filters,
@@ -291,8 +284,7 @@ class PadminService
      * @param User|null $user User for audit logging
      * @return array|null Violation data or null if not found
      */
-    public function getViolation(string $violationId, ?User $user = null): ?array
-    {
+    public function getViolation(string $violationId, ?User $user = null): ?array {
         $this->logger->debug('[PadminService] Getting violation by ID', [
             'violation_id' => $violationId,
         ]);
@@ -305,7 +297,6 @@ class PadminService
             }
 
             return $result['data'] ?? null;
-
         } catch (\Exception $e) {
             $this->logger->error('[PadminService] Failed to get violation', [
                 'violation_id' => $violationId,
@@ -323,8 +314,7 @@ class PadminService
      * @param User $user User performing the action (required for GDPR audit)
      * @return bool True if marked successfully
      */
-    public function markViolationFixed(string $violationId, User $user): bool
-    {
+    public function markViolationFixed(string $violationId, User $user): bool {
         $this->logger->info('[PadminService] Marking violation as fixed', [
             'violation_id' => $violationId,
             'user_id' => $user->id,
@@ -342,7 +332,6 @@ class PadminService
             ]);
 
             return true;
-
         } catch (\Exception $e) {
             $this->logger->error('[PadminService] Failed to mark violation as fixed', [
                 'violation_id' => $violationId,
@@ -372,8 +361,7 @@ class PadminService
      * //   ...
      * // ]
      */
-    public function searchSymbols(array $query = [], ?User $user = null): array
-    {
+    public function searchSymbols(array $query = [], ?User $user = null): array {
         $this->logger->debug('[PadminService] Searching symbols', [
             'query' => $query,
         ]);
@@ -386,7 +374,6 @@ class PadminService
             }
 
             return $result['data'] ?? [];
-
         } catch (\Exception $e) {
             $this->logger->error('[PadminService] Failed to search symbols', [
                 'query' => $query,
@@ -404,8 +391,7 @@ class PadminService
      * @param User|null $user User for audit logging
      * @return array|null Symbol data or null if not found
      */
-    public function getSymbol(string $symbolId, ?User $user = null): ?array
-    {
+    public function getSymbol(string $symbolId, ?User $user = null): ?array {
         $this->logger->debug('[PadminService] Getting symbol by ID', [
             'symbol_id' => $symbolId,
         ]);
@@ -418,7 +404,6 @@ class PadminService
             }
 
             return $result['data'] ?? null;
-
         } catch (\Exception $e) {
             $this->logger->error('[PadminService] Failed to get symbol', [
                 'symbol_id' => $symbolId,
@@ -435,8 +420,7 @@ class PadminService
      * @param User|null $user User for audit logging
      * @return int Total symbol count
      */
-    public function getSymbolCount(?User $user = null): int
-    {
+    public function getSymbolCount(?User $user = null): int {
         $this->logger->debug('[PadminService] Getting symbol count');
 
         try {
@@ -447,7 +431,6 @@ class PadminService
             }
 
             return (int) ($result['data']['count'] ?? 0);
-
         } catch (\Exception $e) {
             $this->logger->error('[PadminService] Failed to get symbol count', [
                 'error' => $e->getMessage(),
@@ -462,8 +445,7 @@ class PadminService
      *
      * @return bool True if Redis Stack is reachable
      */
-    public function pingRedisStack(): bool
-    {
+    public function pingRedisStack(): bool {
         if (!$this->redisStackEnabled) {
             return false;
         }
@@ -472,7 +454,6 @@ class PadminService
             $result = $this->executeNodeScript('health:ping', []);
 
             return isset($result['success']) && $result['success'];
-
         } catch (\Exception $e) {
             $this->logger->error('[PadminService] Redis Stack ping failed', [
                 'error' => $e->getMessage(),
@@ -496,8 +477,7 @@ class PadminService
      * //   'version' => '1.0.0'
      * // ]
      */
-    public function getHealthStatus(): array
-    {
+    public function getHealthStatus(): array {
         return [
             'redis_stack' => $this->pingRedisStack(),
             'node_cli' => file_exists($this->cliScriptPath),

@@ -54,14 +54,14 @@ if (!command) {
 const options: Record<string, string | boolean> = {};
 for (let i = 1; i < args.length; i++) {
     const arg = args[i];
-    
+
     if (arg && arg.startsWith('--')) {
         const parts = arg.slice(2).split('=');
         const key = parts[0];
         const value = parts[1];
-        
+
         if (!key) continue;
-        
+
         if (value === undefined) {
             // Flag without value (e.g., --isFixed)
             options[key] = true;

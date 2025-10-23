@@ -112,7 +112,7 @@ $memberWallet = $memberUser ? $memberUser->wallet : '';
 
     <!-- Sezione Wallet -->
     <h3 class="mb-4 mt-8 text-xl font-bold text-white">{{ __('collection.wallet.wallets') }}</h3>
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         @foreach ($wallets as $wallet)
             @include('livewire.partials.card-wallet', [
                 'wallet' => $wallet,
@@ -123,7 +123,7 @@ $memberWallet = $memberUser ? $memberUser->wallet : '';
 
     <!--  Sezione Wallet proposal -->
     <h3 class="mb-4 mt-8 text-xl font-bold text-white">{{ __('collection.wallet.wallets') }}</h3>
-    <div id="wallet-list" class="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div id="wallet-list" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         @foreach ($walletProposals as $wallet)
             @php
                 /** @param string $status */
