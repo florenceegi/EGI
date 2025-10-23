@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             
             // User & Session
-            $table->foreignId('user_id')
-                ->constrained('users')
-                ->cascadeOnDelete()
-                ->index();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id', 'natan_chat_messages_user_id_foreign')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete();
+            $table->index('user_id');
             
             $table->string('session_id', 100)->index(); // Group messages by conversation session
             
