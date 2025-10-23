@@ -236,6 +236,34 @@ return [
         'wallet_change_approved' => 'Il wallet è stato approvato',
         'wallet_change_expired' => 'Il wallet è scaduto',
 
+        // External Wallet
+        'add_external' => 'Aggiungi Wallet Esterno',
+        'add_external_title' => 'Aggiungi Wallet Esterno alla Collection',
+        'add_external_description' => 'Aggiungi un wallet Algorand esistente (non custodial) e assegna le royalty. Il wallet verrà verificato sulla blockchain.',
+        'address_label' => 'Indirizzo Algorand',
+        'address_hint' => 'L\'indirizzo deve essere di 58 caratteri (formato Base32)',
+        'name_label' => 'Nome Wallet',
+        'name_placeholder' => 'Es: Wallet di Fabio',
+        'royalty_mint_label' => 'Royalty Mint',
+        'royalty_rebind_label' => 'Royalty Rebind',
+        'royalty_deduction_warning' => 'Attenzione: Le royalty verranno sottratte dalla tua quota disponibile. Verifica di avere abbastanza quota prima di procedere.',
+        'add_button' => 'Aggiungi Wallet',
+        'adding' => 'Aggiunta in corso',
+        'external_added_successfully' => 'Wallet esterno aggiunto con successo! Indirizzo: :address',
+        'creator_wallet_not_found' => 'Il tuo wallet Creator non è stato trovato in questa collection.',
+        'creator_does_not_have_enough_quota_to_allocate' => 'Non hai abbastanza quota di royalty disponibile per allocare al nuovo wallet.',
+
+        // Validation messages
+        'validation' => [
+            'address_required' => 'L\'indirizzo Algorand è obbligatorio.',
+            'address_invalid_length' => 'L\'indirizzo deve essere lungo esattamente 58 caratteri.',
+            'address_invalid_format' => 'L\'indirizzo Algorand deve contenere solo caratteri Base32 (A-Z, 2-7).',
+            'address_not_found_onchain' => 'L\'indirizzo non esiste sulla blockchain Algorand. Verifica che sia corretto.',
+            'address_already_exists' => 'Questo indirizzo è già presente in questa collection.',
+            'mint_invalid' => 'La royalty mint deve essere tra 0 e 100%.',
+            'rebind_invalid' => 'La royalty rebind deve essere tra 0 e 100%.',
+        ],
+
         // Wallet connection
         'fegi_connect_title' => 'Connetti alla Piattaforma',
         'fegi_modal_subtitle' => 'Accedi con la tua chiave FEGI o crea un nuovo account',

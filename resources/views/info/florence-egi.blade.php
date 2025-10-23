@@ -222,93 +222,93 @@
     </script>
 </head>
 
-<body class="bg-gray-50 pt-20 text-grigio-pietra">
+<body class="pt-20 bg-gray-50 text-grigio-pietra">
 
-    <header class="fixed left-0 right-0 top-0 z-50 bg-blu-algoritmo text-white shadow-lg">
-        <div class="golden-ratio-container px-4 py-4 sm:px-6 sm:py-6">
+    <header class="fixed top-0 left-0 right-0 z-50 text-white shadow-lg bg-blu-algoritmo">
+        <div class="px-4 py-4 golden-ratio-container sm:px-6 sm:py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <i class="fas fa-infinity text-oro-fiorentino text-3xl sm:text-4xl"></i>
+                    <i class="text-3xl fas fa-infinity text-oro-fiorentino sm:text-4xl"></i>
                     <div>
-                        <h1 class="renaissance-title text-xl font-bold sm:text-2xl">
+                        <h1 class="text-xl font-bold renaissance-title sm:text-2xl">
                             {{ __('info_florence_egi.header_brand_name') }}</h1>
-                        <p class="font-body text-sm text-blue-200 sm:text-base">
+                        <p class="text-sm text-blue-200 font-body sm:text-base">
                             {{ __('info_florence_egi.header_brand_slogan') }}</p>
                     </div>
                 </div>
                 <nav class="hidden space-x-3 md:flex" aria-label="{{ __('info_florence_egi.nav_aria_label') }}">
                     <a href="{{ route('home') }}"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_home') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_home') }}</a>
                     <a href="#visione"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_vision') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_vision') }}</a>
                     <a href="#problema"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_problem') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_problem') }}</a>
                     <a href="#egi"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_egi') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_egi') }}</a>
                     <a href="#ammk"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">AMMk</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">AMMk</a>
                     <a href="#soluzione"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_solution') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_solution') }}</a>
                     <a href="#tecnologia"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_technology') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_technology') }}</a>
                     <a href="#gdpr"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_gdpr') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_gdpr') }}</a>
                     <a href="#archetipi"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_archetypes') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_archetypes') }}</a>
                     <a href="#valori"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_values') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_values') }}</a>
                     <a href="#equilibrium"
-                        class="hover:text-oro-fiorentino font-body text-sm transition lg:text-base">{{ __('info_florence_egi.nav_equilibrium') }}</a>
+                        class="text-sm transition hover:text-oro-fiorentino font-body lg:text-base">{{ __('info_florence_egi.nav_equilibrium') }}</a>
                 </nav>
                 <button id="mobile-menu-button"
-                    class="block rounded-md p-2 transition-colors hover:bg-blue-700 md:hidden"><i
-                        class="fas fa-bars text-2xl"></i></button>
+                    class="block p-2 transition-colors rounded-md hover:bg-blue-700 md:hidden"><i
+                        class="text-2xl fas fa-bars"></i></button>
             </div>
-            <div id="mobile-menu" class="mt-4 hidden border-t border-blue-600 pb-4 md:hidden">
-                <div class="space-y-3 pt-4">
+            <div id="mobile-menu" class="hidden pb-4 mt-4 border-t border-blue-600 md:hidden">
+                <div class="pt-4 space-y-3">
                     <a href="{{ route('home') }}"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-home text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-home text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_home') }}</a>
                     <a href="#visione"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-eye text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-eye text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_vision') }}</a>
                     <a href="#problema"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-exclamation-triangle text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-exclamation-triangle text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_problem') }}</a>
                     <a href="#egi"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-gem text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-gem text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_egi') }}</a>
                     <a href="#ammk"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-cog text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-cog text-oro-fiorentino"></i>
                         AMMk</a>
                     <a href="#soluzione"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-lightbulb text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-lightbulb text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_solution') }}</a>
                     <a href="#tecnologia"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-cogs text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-cogs text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_technology') }}</a>
                     <a href="#gdpr"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-shield-alt text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-shield-alt text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_gdpr') }}</a>
                     <a href="#archetipi"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-users text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-users text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_archetypes') }}</a>
                     <a href="#valori"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-heart text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-heart text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_values') }}</a>
                     <a href="#equilibrium"
-                        class="flex items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-blue-700"><i
-                            class="fas fa-atom text-oro-fiorentino mr-3 text-lg"></i>
+                        class="flex items-center px-4 py-2 text-sm transition-colors rounded-md hover:bg-blue-700"><i
+                            class="mr-3 text-lg fas fa-atom text-oro-fiorentino"></i>
                         {{ __('info_florence_egi.nav_equilibrium') }}</a>
                 </div>
             </div>
@@ -316,152 +316,156 @@
     </header>
 
     <main>
-        <section id="visione" class="hero-background text-white"
+        <section id="visione" class="text-white hero-background"
             aria-label="{{ __('info_florence_egi.hero.aria_label') }}">
-            <div class="golden-ratio-container px-4 py-16 sm:px-6 sm:py-24">
-                <div class="mx-auto max-w-5xl text-center">
-                    <h1 class="renaissance-title mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
+            <div class="px-4 py-16 golden-ratio-container sm:px-6 sm:py-24">
+                <div class="max-w-5xl mx-auto text-center">
+                    <h1 class="mb-6 text-4xl font-bold leading-tight renaissance-title sm:text-5xl md:text-6xl">
                         {!! __('info_florence_egi.hero.title_html') !!}</h1>
-                    <p class="mx-auto mb-8 max-w-4xl font-body text-xl text-green-100 sm:text-2xl">
+                    <p class="max-w-4xl mx-auto mb-8 text-xl text-green-100 font-body sm:text-2xl">
                         {!! __('info_florence_egi.hero.subtitle_html') !!}</p>
-                    <div class="mx-auto mb-8 max-w-4xl font-body text-lg">
+                    <div class="max-w-4xl mx-auto mb-8 text-lg font-body">
                         {{ __('info_florence_egi.hero.description') }}
                     </div>
                     <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                         <a href="#soluzione" aria-label="{{ __('info_florence_egi.hero.cta_primary_aria') }}"
-                            class="cta-primary elegant-hover inline-flex items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold text-white"><i
-                                class="fas fa-rocket mr-3"></i> {{ __('info_florence_egi.hero.cta_primary') }}</a>
+                            class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white cta-primary elegant-hover rounded-xl"><i
+                                class="mr-3 fas fa-rocket"></i> {{ __('info_florence_egi.hero.cta_primary') }}</a>
                         <a href="#tecnologia" aria-label="{{ __('info_florence_egi.hero.cta_secondary_aria') }}"
-                            class="border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover inline-flex items-center justify-center rounded-xl border-2 px-8 py-4 text-lg font-semibold transition-all hover:text-blu-algoritmo"><i
-                                class="fas fa-cogs mr-3"></i> {{ __('info_florence_egi.hero.cta_secondary') }}</a>
+                            class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold transition-all border-2 border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover rounded-xl hover:text-blu-algoritmo"><i
+                                class="mr-3 fas fa-cogs"></i> {{ __('info_florence_egi.hero.cta_secondary') }}</a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="problema" class="bg-white py-16 sm:py-24"
+        <section id="problema" class="py-16 bg-white sm:py-24"
             aria-label="{{ __('info_florence_egi.problem.aria_label') }}">
-            <div class="golden-ratio-container px-4 sm:px-6">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                         {!! __('info_florence_egi.problem.title_html') !!}</h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                    <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
                         {{ __('info_florence_egi.problem.subtitle') }}</p>
                 </div>
-                <div class="relative mx-auto mb-16 max-w-4xl">
-                    <div class="flex h-96 items-center justify-center">
+                <div class="relative max-w-4xl mx-auto mb-16">
+                    <div class="flex items-center justify-center h-96">
                         <div class="relative">
-                            <div class="absolute -top-16 left-1/2 -translate-x-1/2 transform">
+                            <div class="absolute transform -translate-x-1/2 -top-16 left-1/2">
                                 <div class="trilemma-point bg-viola-innovazione">
-                                    <div><i class="fas fa-palette mb-2 text-2xl"></i><br>{!! __('info_florence_egi.problem.trilemma_quality') !!}</div>
+                                    <div><i class="mb-2 text-2xl fas fa-palette"></i><br>{!! __('info_florence_egi.problem.trilemma_quality') !!}</div>
                                 </div>
                             </div>
                             <div class="absolute -left-16 top-32">
                                 <div class="trilemma-point bg-blu-algoritmo">
-                                    <div><i class="fas fa-chart-line mb-2 text-2xl"></i><br>{!! __('info_florence_egi.problem.trilemma_liquidity') !!}
+                                    <div><i class="mb-2 text-2xl fas fa-chart-line"></i><br>{!! __('info_florence_egi.problem.trilemma_liquidity') !!}
                                     </div>
                                 </div>
                             </div>
                             <div class="absolute -right-16 top-32">
                                 <div class="trilemma-point bg-verde-rinascita">
-                                    <div><i class="fas fa-leaf mb-2 text-2xl"></i><br>{!! __('info_florence_egi.problem.trilemma_impact') !!}</div>
+                                    <div><i class="mb-2 text-2xl fas fa-leaf"></i><br>{!! __('info_florence_egi.problem.trilemma_impact') !!}</div>
                                 </div>
                             </div>
                             <div
-                                class="flex h-32 w-32 items-center justify-center rounded-full bg-rosso-urgenza text-center font-bold text-white">
-                                <div><i class="fas fa-times mb-2 text-3xl"></i><br>{!! __('info_florence_egi.problem.trilemma_impossible') !!}</div>
+                                class="flex items-center justify-center w-32 h-32 font-bold text-center text-white rounded-full bg-rosso-urgenza">
+                                <div><i class="mb-2 text-3xl fas fa-times"></i><br>{!! __('info_florence_egi.problem.trilemma_impossible') !!}</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="mb-16 grid gap-8 md:grid-cols-3">
-                    <div class="renaissance-card p-6 text-center">
-                        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                            <i class="fas fa-times text-2xl text-rosso-urgenza"></i></div>
-                        <h3 class="renaissance-title mb-2 text-xl font-bold text-grigio-pietra">
+                <div class="grid gap-8 mb-16 md:grid-cols-3">
+                    <div class="p-6 text-center renaissance-card">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full">
+                            <i class="text-2xl fas fa-times text-rosso-urgenza"></i>
+                        </div>
+                        <h3 class="mb-2 text-xl font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.problem.competitor_opensea') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">{!! __('info_florence_egi.problem.competitor_opensea_desc') !!}</p>
+                        <p class="text-sm font-body text-grigio-pietra">{!! __('info_florence_egi.problem.competitor_opensea_desc') !!}</p>
                     </div>
-                    <div class="renaissance-card p-6 text-center">
-                        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                            <i class="fas fa-times text-2xl text-rosso-urgenza"></i></div>
-                        <h3 class="renaissance-title mb-2 text-xl font-bold text-grigio-pietra">
+                    <div class="p-6 text-center renaissance-card">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full">
+                            <i class="text-2xl fas fa-times text-rosso-urgenza"></i>
+                        </div>
+                        <h3 class="mb-2 text-xl font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.problem.competitor_blur') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">{!! __('info_florence_egi.problem.competitor_blur_desc') !!}</p>
+                        <p class="text-sm font-body text-grigio-pietra">{!! __('info_florence_egi.problem.competitor_blur_desc') !!}</p>
                     </div>
-                    <div class="renaissance-card p-6 text-center">
-                        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                            <i class="fas fa-times text-2xl text-rosso-urgenza"></i></div>
-                        <h3 class="renaissance-title mb-2 text-xl font-bold text-grigio-pietra">
+                    <div class="p-6 text-center renaissance-card">
+                        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full">
+                            <i class="text-2xl fas fa-times text-rosso-urgenza"></i>
+                        </div>
+                        <h3 class="mb-2 text-xl font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.problem.competitor_foundation') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">{!! __('info_florence_egi.problem.competitor_foundation_desc') !!}</p>
+                        <p class="text-sm font-body text-grigio-pietra">{!! __('info_florence_egi.problem.competitor_foundation_desc') !!}</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="egi" class="bg-gray-50 py-16 sm:py-24"
+        <section id="egi" class="py-16 bg-gray-50 sm:py-24"
             aria-label="{{ __('info_florence_egi.egi.aria_label') }}">
-            <div class="golden-ratio-container px-4 sm:px-6">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                         {!! __('info_florence_egi.egi.title_html') !!}</h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">{!! __('info_florence_egi.egi.subtitle_html') !!}</p>
+                    <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">{!! __('info_florence_egi.egi.subtitle_html') !!}</p>
                 </div>
-                <div class="mb-16 grid gap-8 md:grid-cols-3">
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center justify-center">
-                            <div class="flex h-20 w-20 items-center justify-center rounded-full bg-verde-rinascita/20">
-                                <i class="fas fa-seedling text-3xl text-verde-rinascita"></i>
+                <div class="grid gap-8 mb-16 md:grid-cols-3">
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center justify-center mb-6">
+                            <div class="flex items-center justify-center w-20 h-20 rounded-full bg-verde-rinascita/20">
+                                <i class="text-3xl fas fa-seedling text-verde-rinascita"></i>
                             </div>
                         </div>
-                        <h3 class="renaissance-title mb-4 text-center text-xl font-bold">
+                        <h3 class="mb-4 text-xl font-bold text-center renaissance-title">
                             {{ __('info_florence_egi.egi.card1_title') }}</h3>
                         <p class="text-center font-body text-grigio-pietra">
                             {{ __('info_florence_egi.egi.card1_desc') }}
                         </p>
                     </div>
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center justify-center">
-                            <div class="bg-oro-fiorentino/20 flex h-20 w-20 items-center justify-center rounded-full">
-                                <i class="fas fa-box text-oro-fiorentino text-3xl"></i></div>
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center justify-center mb-6">
+                            <div class="flex items-center justify-center w-20 h-20 rounded-full bg-oro-fiorentino/20">
+                                <i class="text-3xl fas fa-box text-oro-fiorentino"></i>
+                            </div>
                         </div>
-                        <h3 class="renaissance-title mb-4 text-center text-xl font-bold">
+                        <h3 class="mb-4 text-xl font-bold text-center renaissance-title">
                             {{ __('info_florence_egi.egi.card2_title') }}</h3>
                         <p class="text-center font-body text-grigio-pietra">
                             {{ __('info_florence_egi.egi.card2_desc') }}
                         </p>
                     </div>
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center justify-center">
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center justify-center mb-6">
                             <div
-                                class="flex h-20 w-20 items-center justify-center rounded-full bg-viola-innovazione/20">
-                                <i class="fas fa-lightbulb text-3xl text-viola-innovazione"></i>
+                                class="flex items-center justify-center w-20 h-20 rounded-full bg-viola-innovazione/20">
+                                <i class="text-3xl fas fa-lightbulb text-viola-innovazione"></i>
                             </div>
                         </div>
-                        <h3 class="renaissance-title mb-4 text-center text-xl font-bold">
+                        <h3 class="mb-4 text-xl font-bold text-center renaissance-title">
                             {{ __('info_florence_egi.egi.card3_title') }}</h3>
                         <p class="text-center font-body text-grigio-pietra">
                             {{ __('info_florence_egi.egi.card3_desc') }}
                         </p>
                     </div>
                 </div>
-                <div class="rounded-2xl bg-white p-8 md:p-12">
-                    <h3 class="renaissance-title mb-6 text-center text-2xl font-bold text-grigio-pietra">
+                <div class="p-8 bg-white rounded-2xl md:p-12">
+                    <h3 class="mb-6 text-2xl font-bold text-center renaissance-title text-grigio-pietra">
                         {!! __('info_florence_egi.egi.cocreation_title_html') !!}</h3>
                     <div class="grid items-center gap-8 md:grid-cols-2">
                         <div class="space-y-4 font-body">
                             <p class="text-lg">{!! __('info_florence_egi.egi.cocreation_p1') !!}</p>
                             <p>{{ __('info_florence_egi.egi.cocreation_p2') }}</p>
-                            <div class="bg-oro-fiorentino/10 rounded-lg p-4">
-                                <p class="text-oro-fiorentino font-semibold"><i class="fas fa-star mr-2"></i>
+                            <div class="p-4 rounded-lg bg-oro-fiorentino/10">
+                                <p class="font-semibold text-oro-fiorentino"><i class="mr-2 fas fa-star"></i>
                                     {{ __('info_florence_egi.egi.cocreation_highlight') }}</p>
                             </div>
                         </div>
                         <div class="text-center">
                             <div
-                                class="bg-oro-fiorentino/20 mb-4 inline-flex h-32 w-32 items-center justify-center rounded-full">
-                                <i class="fas fa-handshake text-oro-fiorentino text-4xl"></i>
+                                class="inline-flex items-center justify-center w-32 h-32 mb-4 rounded-full bg-oro-fiorentino/20">
+                                <i class="text-4xl fas fa-handshake text-oro-fiorentino"></i>
                             </div>
                             <p class="font-body text-grigio-pietra">{!! __('info_florence_egi.egi.cocreation_p3') !!}
                             </p>
@@ -472,74 +476,78 @@
         </section>
 
         {{-- Asset Market Maker Section --}}
-        <section id="ammk" class="bg-white py-16 sm:py-24" aria-label="Asset Market Maker">
-            <div class="golden-ratio-container px-4 sm:px-6">
+        <section id="ammk" class="py-16 bg-white sm:py-24" aria-label="Asset Market Maker">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                         Asset Market Maker (AMMk)</h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
-                        Il cuore pulsante di FlorenceEGI: un motore che origina, certifica, valuta e rende liquidi gli EGI con prove on-chain e automazioni guidate da NATAN
+                    <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
+                        Il cuore pulsante di FlorenceEGI: un motore che origina, certifica, valuta e rende liquidi gli
+                        EGI con prove on-chain e automazioni guidate da NATAN
                     </p>
                 </div>
 
                 {{-- AMMk Core Functions --}}
-                <div class="mb-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    <div class="renaissance-card elegant-hover p-6">
-                        <div class="mb-4 flex items-center justify-center">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-viola-innovazione/20">
-                                <i class="fas fa-certificate text-2xl text-viola-innovazione"></i>
+                <div class="grid gap-8 mb-16 md:grid-cols-2 lg:grid-cols-3">
+                    <div class="p-6 renaissance-card elegant-hover">
+                        <div class="flex items-center justify-center mb-4">
+                            <div
+                                class="flex items-center justify-center w-16 h-16 rounded-full bg-viola-innovazione/20">
+                                <i class="text-2xl fas fa-certificate text-viola-innovazione"></i>
                             </div>
                         </div>
-                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Valuation</h3>
-                        <p class="text-center font-body text-sm text-grigio-pietra">
-                            Sistema intelligente di valutazione che analizza qualità artistica, storico transazioni e domanda di mercato
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Valuation</h3>
+                        <p class="text-sm text-center font-body text-grigio-pietra">
+                            Sistema intelligente di valutazione che analizza qualità artistica, storico transazioni e
+                            domanda di mercato
                         </p>
                     </div>
 
-                    <div class="renaissance-card elegant-hover p-6">
-                        <div class="mb-4 flex items-center justify-center">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
-                                <i class="fas fa-water text-2xl text-blu-algoritmo"></i>
+                    <div class="p-6 renaissance-card elegant-hover">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blu-algoritmo/20">
+                                <i class="text-2xl fas fa-water text-blu-algoritmo"></i>
                             </div>
                         </div>
-                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Liquidity</h3>
-                        <p class="text-center font-body text-sm text-grigio-pietra">
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Liquidity</h3>
+                        <p class="text-sm text-center font-body text-grigio-pietra">
                             Garantisce liquidità attraverso meccanismi di prezzo dinamici e marketplace integrato
                         </p>
                     </div>
 
-                    <div class="renaissance-card elegant-hover p-6">
-                        <div class="mb-4 flex items-center justify-center">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
-                                <i class="fas fa-network-wired text-2xl text-verde-rinascita"></i>
+                    <div class="p-6 renaissance-card elegant-hover">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-verde-rinascita/20">
+                                <i class="text-2xl fas fa-network-wired text-verde-rinascita"></i>
                             </div>
                         </div>
-                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Distribution</h3>
-                        <p class="text-center font-body text-sm text-grigio-pietra">
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Distribution</h3>
+                        <p class="text-sm text-center font-body text-grigio-pietra">
                             Gestisce distribuzione automatica di royalty, fee e contributi EPP in modo trasparente
                         </p>
                     </div>
 
-                    <div class="renaissance-card elegant-hover p-6">
-                        <div class="mb-4 flex items-center justify-center">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-arancio-energia/20">
-                                <i class="fas fa-robot text-2xl text-arancio-energia"></i>
+                    <div class="p-6 renaissance-card elegant-hover">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-arancio-energia/20">
+                                <i class="text-2xl fas fa-robot text-arancio-energia"></i>
                             </div>
                         </div>
-                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Activation (NATAN)</h3>
-                        <p class="text-center font-body text-sm text-grigio-pietra">
-                            Guida AI che attiva campagne mirate, suggerisce prezzi e genera notifiche intelligenti basate su eventi on-chain
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Activation (NATAN)</h3>
+                        <p class="text-sm text-center font-body text-grigio-pietra">
+                            Guida AI che attiva campagne mirate, suggerisce prezzi e genera notifiche intelligenti
+                            basate su eventi on-chain
                         </p>
                     </div>
 
-                    <div class="renaissance-card elegant-hover p-6">
-                        <div class="mb-4 flex items-center justify-center">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-oro-fiorentino/20">
-                                <i class="fas fa-shield-alt text-2xl text-oro-fiorentino"></i>
+                    <div class="p-6 renaissance-card elegant-hover">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-oro-fiorentino/20">
+                                <i class="text-2xl fas fa-shield-alt text-oro-fiorentino"></i>
                             </div>
                         </div>
-                        <h3 class="renaissance-title mb-3 text-center text-lg font-bold">Compliance</h3>
-                        <p class="text-center font-body text-sm text-grigio-pietra">
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Compliance</h3>
+                        <p class="text-sm text-center font-body text-grigio-pietra">
                             GDPR by design, audit trail completo e conformità MiCA integrata in ogni operazione
                         </p>
                     </div>
@@ -547,80 +555,92 @@
 
                 {{-- Modalità di vendita --}}
                 <div class="mb-16">
-                    <h3 class="renaissance-title mb-8 text-center text-2xl font-bold text-grigio-pietra">
+                    <h3 class="mb-8 text-2xl font-bold text-center renaissance-title text-grigio-pietra">
                         Modalità di Vendita Flessibili
                     </h3>
                     <div class="grid gap-6 md:grid-cols-3">
-                        <div class="renaissance-card border-l-4 border-verde-rinascita p-6">
-                            <div class="mb-4 flex items-center">
-                                <div class="mr-3 flex h-12 w-12 items-center justify-center rounded-full bg-verde-rinascita font-bold text-white">
+                        <div class="p-6 border-l-4 renaissance-card border-verde-rinascita">
+                            <div class="flex items-center mb-4">
+                                <div
+                                    class="flex items-center justify-center w-12 h-12 mr-3 font-bold text-white rounded-full bg-verde-rinascita">
                                     1
                                 </div>
-                                <h4 class="renaissance-title text-lg font-bold">Acquisto Diretto</h4>
+                                <h4 class="text-lg font-bold renaissance-title">Acquisto Diretto</h4>
                             </div>
-                            <p class="font-body text-sm text-grigio-pietra">
-                                <strong>Mint immediato</strong> al prezzo fissato dal Creator. Transazione istantanea con certificazione blockchain in tempo reale.
+                            <p class="text-sm font-body text-grigio-pietra">
+                                <strong>Mint immediato</strong> al prezzo fissato dal Creator. Transazione istantanea
+                                con certificazione blockchain in tempo reale.
                             </p>
                         </div>
 
-                        <div class="renaissance-card border-l-4 border-oro-fiorentino p-6">
-                            <div class="mb-4 flex items-center">
-                                <div class="mr-3 flex h-12 w-12 items-center justify-center rounded-full bg-oro-fiorentino font-bold text-white">
+                        <div class="p-6 border-l-4 renaissance-card border-oro-fiorentino">
+                            <div class="flex items-center mb-4">
+                                <div
+                                    class="flex items-center justify-center w-12 h-12 mr-3 font-bold text-white rounded-full bg-oro-fiorentino">
                                     2
                                 </div>
-                                <h4 class="renaissance-title text-lg font-bold">Asta a Tempo</h4>
+                                <h4 class="text-lg font-bold renaissance-title">Asta a Tempo</h4>
                             </div>
-                            <p class="font-body text-sm text-grigio-pietra">
-                                <strong>Soglia minima (reserve)</strong> con durata definita. Il miglior offerente riceve l'EGI al termine dell'asta.
+                            <p class="text-sm font-body text-grigio-pietra">
+                                <strong>Soglia minima (reserve)</strong> con durata definita. Il miglior offerente
+                                riceve l'EGI al termine dell'asta.
                             </p>
                         </div>
 
-                        <div class="renaissance-card border-l-4 border-viola-innovazione p-6">
-                            <div class="mb-4 flex items-center">
-                                <div class="mr-3 flex h-12 w-12 items-center justify-center rounded-full bg-viola-innovazione font-bold text-white">
+                        <div class="p-6 border-l-4 renaissance-card border-viola-innovazione">
+                            <div class="flex items-center mb-4">
+                                <div
+                                    class="flex items-center justify-center w-12 h-12 mr-3 font-bold text-white rounded-full bg-viola-innovazione">
                                     3
                                 </div>
-                                <h4 class="renaissance-title text-lg font-bold">Modalità Mista</h4>
+                                <h4 class="text-lg font-bold renaissance-title">Modalità Mista</h4>
                             </div>
-                            <p class="font-body text-sm text-grigio-pietra">
-                                <strong>Asta + buy-now</strong> combinati. Gli interessati possono scegliere se partecipare all'asta o acquistare immediatamente.
+                            <p class="text-sm font-body text-grigio-pietra">
+                                <strong>Asta + buy-now</strong> combinati. Gli interessati possono scegliere se
+                                partecipare all'asta o acquistare immediatamente.
                             </p>
                         </div>
                     </div>
                 </div>
 
                 {{-- NATAN & Drops --}}
-                <div class="rounded-2xl bg-gradient-to-br from-viola-innovazione/5 to-blu-algoritmo/5 p-8 md:p-12">
+                <div class="p-8 rounded-2xl bg-gradient-to-br from-viola-innovazione/5 to-blu-algoritmo/5 md:p-12">
                     <div class="grid items-center gap-8 md:grid-cols-2">
                         <div>
-                            <div class="mb-4 flex items-center">
-                                <div class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-arancio-energia/20">
-                                    <i class="fas fa-brain text-2xl text-arancio-energia"></i>
+                            <div class="flex items-center mb-4">
+                                <div
+                                    class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-arancio-energia/20">
+                                    <i class="text-2xl fas fa-brain text-arancio-energia"></i>
                                 </div>
-                                <h3 class="renaissance-title text-2xl font-bold text-grigio-pietra">NATAN</h3>
+                                <h3 class="text-2xl font-bold renaissance-title text-grigio-pietra">NATAN</h3>
                             </div>
-                            <p class="font-body mb-4 text-grigio-pietra">
-                                La guida AI di FlorenceEGI analizza comportamenti, preferenze e trend per suggerirti azioni mirate: 
+                            <p class="mb-4 font-body text-grigio-pietra">
+                                La guida AI di FlorenceEGI analizza comportamenti, preferenze e trend per suggerirti
+                                azioni mirate:
                                 prezzi ottimali, timing di vendita, campagne promozionali personalizzate.
                             </p>
                             <p class="font-body text-grigio-pietra">
-                                Gli <strong>smart contract intelligenti</strong> emettono trigger che attivano NATAN in tempo reale, 
+                                Gli <strong>smart contract intelligenti</strong> emettono trigger che attivano NATAN in
+                                tempo reale,
                                 creando un ecosistema vivo e reattivo.
                             </p>
                         </div>
                         <div>
-                            <div class="mb-4 flex items-center">
-                                <div class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-oro-fiorentino/20">
-                                    <i class="fas fa-star text-2xl text-oro-fiorentino"></i>
+                            <div class="flex items-center mb-4">
+                                <div
+                                    class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                                    <i class="text-2xl fas fa-star text-oro-fiorentino"></i>
                                 </div>
-                                <h3 class="renaissance-title text-2xl font-bold text-grigio-pietra">Drops Trimestrali</h3>
+                                <h3 class="text-2xl font-bold renaissance-title text-grigio-pietra">Drops Trimestrali
+                                </h3>
                             </div>
-                            <p class="font-body mb-4 text-grigio-pietra">
-                                Quattro volte l'anno, le <strong>Drop</strong> selezionano opere eccellenti e culminano in una 
+                            <p class="mb-4 font-body text-grigio-pietra">
+                                Quattro volte l'anno, le <strong>Drop</strong> selezionano opere eccellenti e culminano
+                                in una
                                 <strong>Serata Memorabile</strong> che concentra attenzione, incentivi e liquidità.
                             </p>
-                            <p class="font-body text-sm text-oro-fiorentino">
-                                <i class="fas fa-trophy mr-2"></i>
+                            <p class="text-sm text-oro-fiorentino font-body">
+                                <i class="mr-2 fas fa-trophy"></i>
                                 Un evento che celebra i Creator e valorizza le opere più significative
                             </p>
                         </div>
@@ -629,24 +649,24 @@
             </div>
         </section>
 
-        <section id="soluzione" class="section-dark py-16 text-white sm:py-24"
+        <section id="soluzione" class="py-16 text-white section-dark sm:py-24"
             aria-label="{{ __('info_florence_egi.solution.aria_label') }}">
-            <div class="golden-ratio-container px-4 sm:px-6">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title sm:text-4xl md:text-5xl">
                         {!! __('info_florence_egi.solution.title_html') !!}</h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-green-100">
+                    <p class="max-w-3xl mx-auto text-xl text-green-100 font-body">
                         {{ __('info_florence_egi.solution.subtitle') }}</p>
                 </div>
-                <div class="mb-16 grid gap-8 lg:grid-cols-2">
+                <div class="grid gap-8 mb-16 lg:grid-cols-2">
                     <div
-                        class="renaissance-card bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5 p-8 text-grigio-pietra">
-                        <div class="mb-6 flex items-center">
+                        class="p-8 renaissance-card bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5 text-grigio-pietra">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-viola-innovazione/20">
-                                <i class="fas fa-gem text-2xl text-viola-innovazione"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-viola-innovazione/20">
+                                <i class="text-2xl fas fa-gem text-viola-innovazione"></i>
                             </div>
-                            <h3 class="renaissance-title text-2xl font-bold">
+                            <h3 class="text-2xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.solution.card_physical_title') }}</h3>
                         </div>
                         <div class="space-y-4 font-body">
@@ -661,13 +681,13 @@
                         </div>
                     </div>
                     <div
-                        class="renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 p-8 text-grigio-pietra">
-                        <div class="mb-6 flex items-center">
+                        class="p-8 renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 text-grigio-pietra">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
-                                <i class="fas fa-bolt text-2xl text-blu-algoritmo"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                                <i class="text-2xl fas fa-bolt text-blu-algoritmo"></i>
                             </div>
-                            <h3 class="renaissance-title text-2xl font-bold">
+                            <h3 class="text-2xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.solution.card_pt_title') }}</h3>
                         </div>
                         <div class="space-y-4 font-body">
@@ -684,25 +704,25 @@
                 </div>
                 <div class="text-center">
                     <div
-                        class="renaissance-card mx-auto max-w-4xl bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5 p-8 text-grigio-pietra">
-                        <div class="mb-6 flex items-center justify-center">
+                        class="max-w-4xl p-8 mx-auto renaissance-card bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5 text-grigio-pietra">
+                        <div class="flex items-center justify-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
-                                <i class="fas fa-infinity text-2xl text-verde-rinascita"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-verde-rinascita/20">
+                                <i class="text-2xl fas fa-infinity text-verde-rinascita"></i>
                             </div>
-                            <h3 class="renaissance-title text-2xl font-bold">
+                            <h3 class="text-2xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.solution.infra_title') }}</h3>
                         </div>
                         <div class="grid gap-6 font-body md:grid-cols-3">
-                            <div><i class="fas fa-leaf mb-2 text-3xl text-verde-rinascita"></i>
+                            <div><i class="mb-2 text-3xl fas fa-leaf text-verde-rinascita"></i>
                                 <p><strong>{{ __('info_florence_egi.solution.infra_f1_b') }}</strong><br>{{ __('info_florence_egi.solution.infra_f1') }}
                                 </p>
                             </div>
-                            <div><i class="fas fa-tachometer-alt mb-2 text-3xl text-verde-rinascita"></i>
+                            <div><i class="mb-2 text-3xl fas fa-tachometer-alt text-verde-rinascita"></i>
                                 <p><strong>{{ __('info_florence_egi.solution.infra_f2_b') }}</strong><br>{{ __('info_florence_egi.solution.infra_f2') }}
                                 </p>
                             </div>
-                            <div><i class="fas fa-shield-alt mb-2 text-3xl text-verde-rinascita"></i>
+                            <div><i class="mb-2 text-3xl fas fa-shield-alt text-verde-rinascita"></i>
                                 <p><strong>{{ __('info_florence_egi.solution.infra_f3_b') }}</strong><br>{{ __('info_florence_egi.solution.infra_f3') }}
                                 </p>
                             </div>
@@ -712,46 +732,46 @@
             </div>
         </section>
 
-        <section id="tecnologia" class="bg-white py-16 sm:py-24"
+        <section id="tecnologia" class="py-16 bg-white sm:py-24"
             aria-label="{{ __('info_florence_egi.tech.aria_label') }}">
-            <div class="golden-ratio-container px-4 sm:px-6">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                         {!! __('info_florence_egi.tech.title_html') !!}</h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                    <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
                         {{ __('info_florence_egi.tech.subtitle') }}</p>
                 </div>
-                <div class="mx-auto max-w-4xl space-y-8">
-                    <div class="renaissance-card border-l-4 border-verde-rinascita p-6">
-                        <div class="mb-4 flex items-center">
+                <div class="max-w-4xl mx-auto space-y-8">
+                    <div class="p-6 border-l-4 renaissance-card border-verde-rinascita">
+                        <div class="flex items-center mb-4">
                             <div
-                                class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-verde-rinascita font-bold text-white">
+                                class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white rounded-full bg-verde-rinascita">
                                 1</div>
-                            <h3 class="renaissance-title text-xl font-bold text-grigio-pietra">
+                            <h3 class="text-xl font-bold renaissance-title text-grigio-pietra">
                                 {{ __('info_florence_egi.tech.layer1_title') }}</h3>
                         </div>
                         <p class="font-body text-grigio-pietra">
                             <strong>{{ __('info_florence_egi.tech.layer1_p1_b') }}</strong><br>{{ __('info_florence_egi.tech.layer1_p1') }}
                         </p>
                     </div>
-                    <div class="renaissance-card border-oro-fiorentino border-l-4 p-6">
-                        <div class="mb-4 flex items-center">
+                    <div class="p-6 border-l-4 renaissance-card border-oro-fiorentino">
+                        <div class="flex items-center mb-4">
                             <div
-                                class="bg-oro-fiorentino mr-4 flex h-12 w-12 items-center justify-center rounded-full font-bold text-white">
+                                class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white rounded-full bg-oro-fiorentino">
                                 2</div>
-                            <h3 class="renaissance-title text-xl font-bold text-grigio-pietra">
+                            <h3 class="text-xl font-bold renaissance-title text-grigio-pietra">
                                 {{ __('info_florence_egi.tech.layer2_title') }}</h3>
                         </div>
                         <p class="font-body text-grigio-pietra">
                             <strong>{{ __('info_florence_egi.tech.layer2_p1_b') }}</strong><br>{{ __('info_florence_egi.tech.layer2_p1') }}
                         </p>
                     </div>
-                    <div class="renaissance-card border-l-4 border-viola-innovazione p-6">
-                        <div class="mb-4 flex items-center">
+                    <div class="p-6 border-l-4 renaissance-card border-viola-innovazione">
+                        <div class="flex items-center mb-4">
                             <div
-                                class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-viola-innovazione font-bold text-white">
+                                class="flex items-center justify-center w-12 h-12 mr-4 font-bold text-white rounded-full bg-viola-innovazione">
                                 3</div>
-                            <h3 class="renaissance-title text-xl font-bold text-grigio-pietra">
+                            <h3 class="text-xl font-bold renaissance-title text-grigio-pietra">
                                 {{ __('info_florence_egi.tech.layer3_title') }}</h3>
                         </div>
                         <p class="font-body text-grigio-pietra">
@@ -760,30 +780,30 @@
                     </div>
                 </div>
                 <div class="mt-16">
-                    <h3 class="renaissance-title mb-8 text-center text-2xl font-bold text-grigio-pietra">
+                    <h3 class="mb-8 text-2xl font-bold text-center renaissance-title text-grigio-pietra">
                         {{ __('info_florence_egi.tech.sc_title') }}</h3>
                     <div class="grid gap-8 md:grid-cols-3">
-                        <div class="renaissance-card p-6 text-center"><i
-                                class="fas fa-chart-line text-oro-fiorentino mb-4 text-3xl"></i>
-                            <h4 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <div class="p-6 text-center renaissance-card"><i
+                                class="mb-4 text-3xl fas fa-chart-line text-oro-fiorentino"></i>
+                            <h4 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                                 {{ __('info_florence_egi.tech.sc1_title') }}</h4>
-                            <p class="font-body text-sm text-grigio-pietra">
+                            <p class="text-sm font-body text-grigio-pietra">
                                 {{ __('info_florence_egi.tech.sc1_desc') }}
                             </p>
                         </div>
-                        <div class="renaissance-card p-6 text-center"><i
-                                class="fas fa-share-alt mb-4 text-3xl text-verde-rinascita"></i>
-                            <h4 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <div class="p-6 text-center renaissance-card"><i
+                                class="mb-4 text-3xl fas fa-share-alt text-verde-rinascita"></i>
+                            <h4 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                                 {{ __('info_florence_egi.tech.sc2_title') }}</h4>
-                            <p class="font-body text-sm text-grigio-pietra">
+                            <p class="text-sm font-body text-grigio-pietra">
                                 {{ __('info_florence_egi.tech.sc2_desc') }}
                             </p>
                         </div>
-                        <div class="renaissance-card p-6 text-center"><i
-                                class="fas fa-infinity mb-4 text-3xl text-viola-innovazione"></i>
-                            <h4 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <div class="p-6 text-center renaissance-card"><i
+                                class="mb-4 text-3xl fas fa-infinity text-viola-innovazione"></i>
+                            <h4 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                                 {{ __('info_florence_egi.tech.sc3_title') }}</h4>
-                            <p class="font-body text-sm text-grigio-pietra">
+                            <p class="text-sm font-body text-grigio-pietra">
                                 {{ __('info_florence_egi.tech.sc3_desc') }}
                             </p>
                         </div>
@@ -792,23 +812,23 @@
             </div>
         </section>
 
-        <section id="coa" class="section-dark py-16 text-white sm:py-24">
-            <div class="golden-ratio-container px-4 sm:px-6">
+        <section id="coa" class="py-16 text-white section-dark sm:py-24">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title sm:text-4xl md:text-5xl">
                         {!! __('info_florence_egi.coa.title_html') !!}</h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-green-100">
+                    <p class="max-w-3xl mx-auto text-xl text-green-100 font-body">
                         {{ __('info_florence_egi.coa.subtitle') }}</p>
                 </div>
-                <div class="mb-16 grid gap-8 lg:grid-cols-2">
+                <div class="grid gap-8 mb-16 lg:grid-cols-2">
                     <div
-                        class="renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br p-8 text-grigio-pietra">
-                        <div class="mb-6 flex items-center">
+                        class="p-8 renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br text-grigio-pietra">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                                <i class="fas fa-certificate text-oro-fiorentino text-2xl"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                                <i class="text-2xl fas fa-certificate text-oro-fiorentino"></i>
                             </div>
-                            <h3 class="renaissance-title text-2xl font-bold">
+                            <h3 class="text-2xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.coa.card1_title') }}</h3>
                         </div>
                         <div class="space-y-4 font-body">
@@ -820,18 +840,18 @@
                             </p>
                             <p><strong>{{ __('info_florence_egi.coa.card1_l4_b') }}</strong>{{ __('info_florence_egi.coa.card1_l4') }}
                             </p>
-                            <p class="text-oro-fiorentino font-semibold">
+                            <p class="font-semibold text-oro-fiorentino">
                                 {{ __('info_florence_egi.coa.card1_highlight') }}</p>
                         </div>
                     </div>
                     <div
-                        class="renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 p-8 text-grigio-pietra">
-                        <div class="mb-6 flex items-center">
+                        class="p-8 renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 text-grigio-pietra">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
-                                <i class="fas fa-building text-2xl text-blu-algoritmo"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                                <i class="text-2xl fas fa-building text-blu-algoritmo"></i>
                             </div>
-                            <h3 class="renaissance-title text-2xl font-bold">
+                            <h3 class="text-2xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.coa.card2_title') }}</h3>
                         </div>
                         <div class="space-y-4 font-body">
@@ -848,13 +868,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="mx-auto max-w-4xl">
-                    <h3 class="renaissance-title mb-8 text-center text-2xl font-bold">
+                <div class="max-w-4xl mx-auto">
+                    <h3 class="mb-8 text-2xl font-bold text-center renaissance-title">
                         {{ __('info_florence_egi.coa.workflow_title') }}</h3>
                     <div class="space-y-6">
                         <div class="flex items-start space-x-4">
                             <div
-                                class="bg-oro-fiorentino flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
+                                class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-oro-fiorentino">
                                 1</div>
                             <div class="font-body">
                                 <h4 class="text-lg font-semibold">{{ __('info_florence_egi.coa.workflow1_title') }}
@@ -864,7 +884,7 @@
                         </div>
                         <div class="flex items-start space-x-4">
                             <div
-                                class="bg-oro-fiorentino flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
+                                class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-oro-fiorentino">
                                 2</div>
                             <div class="font-body">
                                 <h4 class="text-lg font-semibold">{{ __('info_florence_egi.coa.workflow2_title') }}
@@ -874,7 +894,7 @@
                         </div>
                         <div class="flex items-start space-x-4">
                             <div
-                                class="bg-oro-fiorentino flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
+                                class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-oro-fiorentino">
                                 3</div>
                             <div class="font-body">
                                 <h4 class="text-lg font-semibold">{{ __('info_florence_egi.coa.workflow3_title') }}
@@ -884,7 +904,7 @@
                         </div>
                         <div class="flex items-start space-x-4">
                             <div
-                                class="bg-oro-fiorentino flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white">
+                                class="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-oro-fiorentino">
                                 4</div>
                             <div class="font-body">
                                 <h4 class="text-lg font-semibold">{{ __('info_florence_egi.coa.workflow4_title') }}
@@ -897,28 +917,28 @@
             </div>
         </section>
 
-        <section id="gdpr" class="section-dark py-16 text-white sm:py-24">
-            <div class="golden-ratio-container px-4 sm:px-6">
+        <section id="gdpr" class="py-16 text-white section-dark sm:py-24">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title sm:text-4xl md:text-5xl">
                         {!! __('info_florence_egi.gdpr.title_html') !!}</h2>
-                    <p class="mx-auto max-w-4xl font-body text-xl text-green-100">
+                    <p class="max-w-4xl mx-auto text-xl text-green-100 font-body">
                         {{ __('info_florence_egi.gdpr.subtitle') }}</p>
                 </div>
                 <div class="grid gap-8 lg:grid-cols-2">
                     <div
-                        class="renaissance-card elegant-hover bg-gradient-to-br from-blu-algoritmo/20 to-green-800/20 p-8">
-                        <div class="mb-6 flex items-center">
+                        class="p-8 renaissance-card elegant-hover bg-gradient-to-br from-blu-algoritmo/20 to-green-800/20">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                                <i class="fas fa-shield-alt text-oro-fiorentino text-2xl"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                                <i class="text-2xl fas fa-shield-alt text-oro-fiorentino"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.gdpr.card1_title') }}</h3>
                         </div>
-                        <div class="space-y-4 font-body text-green-100">
+                        <div class="space-y-4 text-green-100 font-body">
                             <div class="flex items-start"><i
-                                    class="fas fa-check-circle mr-3 mt-1 text-verde-rinascita"></i>
+                                    class="mt-1 mr-3 fas fa-check-circle text-verde-rinascita"></i>
                                 <div>
                                     <h4 class="font-semibold text-white">
                                         {{ __('info_florence_egi.gdpr.card1_f1_title') }}</h4>
@@ -926,7 +946,7 @@
                                 </div>
                             </div>
                             <div class="flex items-start"><i
-                                    class="fas fa-check-circle mr-3 mt-1 text-verde-rinascita"></i>
+                                    class="mt-1 mr-3 fas fa-check-circle text-verde-rinascita"></i>
                                 <div>
                                     <h4 class="font-semibold text-white">
                                         {{ __('info_florence_egi.gdpr.card1_f2_title') }}</h4>
@@ -934,7 +954,7 @@
                                 </div>
                             </div>
                             <div class="flex items-start"><i
-                                    class="fas fa-check-circle mr-3 mt-1 text-verde-rinascita"></i>
+                                    class="mt-1 mr-3 fas fa-check-circle text-verde-rinascita"></i>
                                 <div>
                                     <h4 class="font-semibold text-white">
                                         {{ __('info_florence_egi.gdpr.card1_f3_title') }}</h4>
@@ -944,18 +964,18 @@
                         </div>
                     </div>
                     <div
-                        class="renaissance-card elegant-hover bg-gradient-to-br from-green-800/20 to-blu-algoritmo/20 p-8">
-                        <div class="mb-6 flex items-center">
+                        class="p-8 renaissance-card elegant-hover bg-gradient-to-br from-green-800/20 to-blu-algoritmo/20">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
-                                <i class="fas fa-cogs text-2xl text-verde-rinascita"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-verde-rinascita/20">
+                                <i class="text-2xl fas fa-cogs text-verde-rinascita"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.gdpr.card2_title') }}</h3>
                         </div>
-                        <div class="space-y-4 font-body text-green-100">
+                        <div class="space-y-4 text-green-100 font-body">
                             <div class="flex items-start"><i
-                                    class="fas fa-check-circle text-oro-fiorentino mr-3 mt-1"></i>
+                                    class="mt-1 mr-3 fas fa-check-circle text-oro-fiorentino"></i>
                                 <div>
                                     <h4 class="font-semibold text-white">
                                         {{ __('info_florence_egi.gdpr.card2_f1_title') }}</h4>
@@ -963,7 +983,7 @@
                                 </div>
                             </div>
                             <div class="flex items-start"><i
-                                    class="fas fa-check-circle text-oro-fiorentino mr-3 mt-1"></i>
+                                    class="mt-1 mr-3 fas fa-check-circle text-oro-fiorentino"></i>
                                 <div>
                                     <h4 class="font-semibold text-white">
                                         {{ __('info_florence_egi.gdpr.card2_f2_title') }}</h4>
@@ -971,7 +991,7 @@
                                 </div>
                             </div>
                             <div class="flex items-start"><i
-                                    class="fas fa-check-circle text-oro-fiorentino mr-3 mt-1"></i>
+                                    class="mt-1 mr-3 fas fa-check-circle text-oro-fiorentino"></i>
                                 <div>
                                     <h4 class="font-semibold text-white">
                                         {{ __('info_florence_egi.gdpr.card2_f3_title') }}</h4>
@@ -982,29 +1002,29 @@
                     </div>
                 </div>
                 <div class="mt-12">
-                    <h3 class="renaissance-title mb-8 text-center text-2xl font-bold">{!! __('info_florence_egi.gdpr.rights_title_html') !!}</h3>
+                    <h3 class="mb-8 text-2xl font-bold text-center renaissance-title">{!! __('info_florence_egi.gdpr.rights_title_html') !!}</h3>
                     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                         <div
-                            class="renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br p-6 text-center">
-                            <i class="fas fa-eye text-oro-fiorentino mb-4 text-3xl"></i>
+                            class="p-6 text-center renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br">
+                            <i class="mb-4 text-3xl fas fa-eye text-oro-fiorentino"></i>
                             <h4 class="mb-2 font-bold">{{ __('info_florence_egi.gdpr.right1_title') }}</h4>
                             <p class="text-sm text-green-100">{{ __('info_florence_egi.gdpr.right1_desc') }}</p>
                         </div>
                         <div
-                            class="renaissance-card bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5 p-6 text-center">
-                            <i class="fas fa-download mb-4 text-3xl text-verde-rinascita"></i>
+                            class="p-6 text-center renaissance-card bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5">
+                            <i class="mb-4 text-3xl fas fa-download text-verde-rinascita"></i>
                             <h4 class="mb-2 font-bold">{{ __('info_florence_egi.gdpr.right2_title') }}</h4>
                             <p class="text-sm text-green-100">{{ __('info_florence_egi.gdpr.right2_desc') }}</p>
                         </div>
                         <div
-                            class="renaissance-card bg-gradient-to-br from-rosso-urgenza/10 to-rosso-urgenza/5 p-6 text-center">
-                            <i class="fas fa-ban mb-4 text-3xl text-rosso-urgenza"></i>
+                            class="p-6 text-center renaissance-card bg-gradient-to-br from-rosso-urgenza/10 to-rosso-urgenza/5">
+                            <i class="mb-4 text-3xl fas fa-ban text-rosso-urgenza"></i>
                             <h4 class="mb-2 font-bold">{{ __('info_florence_egi.gdpr.right3_title') }}</h4>
                             <p class="text-sm text-green-100">{{ __('info_florence_egi.gdpr.right3_desc') }}</p>
                         </div>
                         <div
-                            class="renaissance-card bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5 p-6 text-center">
-                            <i class="fas fa-trash-alt mb-4 text-3xl text-viola-innovazione"></i>
+                            class="p-6 text-center renaissance-card bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5">
+                            <i class="mb-4 text-3xl fas fa-trash-alt text-viola-innovazione"></i>
                             <h4 class="mb-2 font-bold">{{ __('info_florence_egi.gdpr.right4_title') }}</h4>
                             <p class="text-sm text-green-100">{{ __('info_florence_egi.gdpr.right4_desc') }}</p>
                         </div>
@@ -1012,26 +1032,26 @@
                 </div>
                 <div class="mt-12">
                     <div
-                        class="renaissance-card mx-auto max-w-4xl bg-gradient-to-r from-blu-algoritmo/20 to-verde-rinascita/20 p-8">
+                        class="max-w-4xl p-8 mx-auto renaissance-card bg-gradient-to-r from-blu-algoritmo/20 to-verde-rinascita/20">
                         <div class="text-center">
-                            <h3 class="renaissance-title mb-6 text-2xl font-bold">{!! __('info_florence_egi.gdpr.ultra_title_html') !!}</h3>
-                            <p class="mb-6 font-body text-lg text-green-100">
+                            <h3 class="mb-6 text-2xl font-bold renaissance-title">{!! __('info_florence_egi.gdpr.ultra_title_html') !!}</h3>
+                            <p class="mb-6 text-lg text-green-100 font-body">
                                 {{ __('info_florence_egi.gdpr.ultra_desc') }}</p>
                             <div class="grid gap-4 md:grid-cols-3">
                                 <div class="text-center"><i
-                                        class="fas fa-clipboard-list text-oro-fiorentino mb-2 text-2xl"></i>
+                                        class="mb-2 text-2xl fas fa-clipboard-list text-oro-fiorentino"></i>
                                     <h4 class="font-bold">{{ __('info_florence_egi.gdpr.ultra1_title') }}</h4>
                                     <p class="text-sm text-green-100">{{ __('info_florence_egi.gdpr.ultra1_desc') }}
                                     </p>
                                 </div>
                                 <div class="text-center"><i
-                                        class="fas fa-exclamation-triangle mb-2 text-2xl text-verde-rinascita"></i>
+                                        class="mb-2 text-2xl fas fa-exclamation-triangle text-verde-rinascita"></i>
                                     <h4 class="font-bold">{{ __('info_florence_egi.gdpr.ultra2_title') }}</h4>
                                     <p class="text-sm text-green-100">{{ __('info_florence_egi.gdpr.ultra2_desc') }}
                                     </p>
                                 </div>
                                 <div class="text-center"><i
-                                        class="fas fa-chart-line mb-2 text-2xl text-rosso-urgenza"></i>
+                                        class="mb-2 text-2xl fas fa-chart-line text-rosso-urgenza"></i>
                                     <h4 class="font-bold">{{ __('info_florence_egi.gdpr.ultra3_title') }}</h4>
                                     <p class="text-sm text-green-100">{{ __('info_florence_egi.gdpr.ultra3_desc') }}
                                     </p>
@@ -1043,113 +1063,113 @@
             </div>
         </section>
 
-        <section id="archetipi" class="bg-white py-16 sm:py-24">
-            <div class="golden-ratio-container px-4 sm:px-6">
+        <section id="archetipi" class="py-16 bg-white sm:py-24">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                         {!! __('info_florence_egi.archetypes.title_html') !!}</h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                    <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
                         {{ __('info_florence_egi.archetypes.subtitle') }}</p>
                 </div>
                 <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     <a href="{{ route('info.creator') }}"
-                        class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                        class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                         <div
-                            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-viola-innovazione/10">
-                            <i class="fas fa-brush text-2xl text-viola-innovazione"></i>
+                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-viola-innovazione/10">
+                            <i class="text-2xl fas fa-brush text-viola-innovazione"></i>
                         </div>
-                        <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.creator_title') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">
+                        <p class="text-sm font-body text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.creator_desc') }}</p>
                     </a>
                     <a href="{{ route('archetypes.collector') }}"
-                        class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                        class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                         <div
-                            class="bg-oro-fiorentino/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                            <i class="fas fa-gem text-oro-fiorentino text-2xl"></i>
+                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-oro-fiorentino/10">
+                            <i class="text-2xl fas fa-gem text-oro-fiorentino"></i>
                         </div>
-                        <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.collector_title') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">
+                        <p class="text-sm font-body text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.collector_desc') }}</p>
                     </a>
                     <a href="{{ route('archetypes.patron') }}"
-                        class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                        class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                         <div
-                            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rosso-urgenza/10">
-                            <i class="fas fa-heart text-2xl text-rosso-urgenza"></i>
+                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-rosso-urgenza/10">
+                            <i class="text-2xl fas fa-heart text-rosso-urgenza"></i>
                         </div>
-                        <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.patron_title') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">
+                        <p class="text-sm font-body text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.patron_desc') }}</p>
                     </a>
                     <a href="{{ route('info.epp') }}"
-                        class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                        class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                         <div
-                            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/10">
-                            <i class="fas fa-seedling text-2xl text-verde-rinascita"></i>
+                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-verde-rinascita/10">
+                            <i class="text-2xl fas fa-seedling text-verde-rinascita"></i>
                         </div>
-                        <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.epp_title') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">
+                        <p class="text-sm font-body text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.epp_desc') }}</p>
                     </a>
                     <a href="{{ route('info.aziende') }}"
-                        class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                        class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                         <div
-                            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/10">
-                            <i class="fas fa-building text-2xl text-blu-algoritmo"></i>
+                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-blu-algoritmo/10">
+                            <i class="text-2xl fas fa-building text-blu-algoritmo"></i>
                         </div>
-                        <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.companies_title') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">
+                        <p class="text-sm font-body text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.companies_desc') }}</p>
                     </a>
                     <a href="{{ route('archetypes.pa-entity') }}"
-                        class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                        class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                         <div
-                            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-arancio-energia/10">
-                            <i class="fas fa-university text-2xl text-arancio-energia"></i>
+                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-arancio-energia/10">
+                            <i class="text-2xl fas fa-university text-arancio-energia"></i>
                         </div>
-                        <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.pa_title') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">
+                        <p class="text-sm font-body text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.pa_desc') }}
                         </p>
                     </a>
                     <a href="{{ route('info.trader-pro') }}"
-                        class="renaissance-card elegant-hover block p-6 text-center transition-transform hover:scale-105">
+                        class="block p-6 text-center transition-transform renaissance-card elegant-hover hover:scale-105">
                         <div
-                            class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-viola-innovazione/10">
-                            <i class="fas fa-chart-line text-2xl text-viola-innovazione"></i>
+                            class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-viola-innovazione/10">
+                            <i class="text-2xl fas fa-chart-line text-viola-innovazione"></i>
                         </div>
-                        <h3 class="renaissance-title mb-2 text-lg font-bold text-grigio-pietra">
+                        <h3 class="mb-2 text-lg font-bold renaissance-title text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.trader_title') }}</h3>
-                        <p class="font-body text-sm text-grigio-pietra">
+                        <p class="text-sm font-body text-grigio-pietra">
                             {{ __('info_florence_egi.archetypes.trader_desc') }}</p>
                     </a>
                 </div>
             </div>
         </section>
 
-        <section id="impatto" class="section-dark py-16 text-white sm:py-24">
-            <div class="golden-ratio-container px-4 sm:px-6">
+        <section id="impatto" class="py-16 text-white section-dark sm:py-24">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title sm:text-4xl md:text-5xl">
                         {!! __('info_florence_egi.impact.title_html') !!}</h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-green-100">
+                    <p class="max-w-3xl mx-auto text-xl text-green-100 font-body">
                         {{ __('info_florence_egi.impact.subtitle') }}</p>
                 </div>
                 <div class="mb-12 text-center">
                     <div
-                        class="renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 mx-auto max-w-4xl bg-gradient-to-br p-8 text-grigio-pietra">
-                        <h3 class="renaissance-title mb-6 text-2xl font-bold">
+                        class="max-w-4xl p-8 mx-auto renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br text-grigio-pietra">
+                        <h3 class="mb-6 text-2xl font-bold renaissance-title">
                             {{ __('info_florence_egi.impact.card_title') }}</h3>
                         <div class="grid gap-6 font-body md:grid-cols-3">
                             <div class="text-center">
-                                <div class="text-oro-fiorentino text-3xl font-bold">
+                                <div class="text-3xl font-bold text-oro-fiorentino">
                                     {{ __('info_florence_egi.impact.stat1_title') }}</div>
                                 <p class="text-sm">{{ __('info_florence_egi.impact.stat1_desc') }}</p>
                             </div>
@@ -1166,15 +1186,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-16 grid gap-8 md:grid-cols-3">
+                <div class="grid gap-8 mb-16 md:grid-cols-3">
                     <div
-                        class="renaissance-card bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5 p-8 text-grigio-pietra">
-                        <div class="mb-6 flex items-center">
+                        class="p-8 renaissance-card bg-gradient-to-br from-verde-rinascita/10 to-verde-rinascita/5 text-grigio-pietra">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
-                                <i class="fas fa-tree text-2xl text-verde-rinascita"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-verde-rinascita/20">
+                                <i class="text-2xl fas fa-tree text-verde-rinascita"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.impact.epp1_title') }}</h3>
                         </div>
                         <div class="space-y-2 font-body">
@@ -1183,18 +1203,18 @@
                             <p>{{ __('info_florence_egi.impact.epp1_l3') }}</p>
                             <p>{{ __('info_florence_egi.impact.epp1_l4') }}</p>
                             <p class="text-sm text-verde-rinascita"><i
-                                    class="fas fa-exclamation-triangle mr-1"></i>{{ __('info_florence_egi.impact.epp1_highlight') }}
+                                    class="mr-1 fas fa-exclamation-triangle"></i>{{ __('info_florence_egi.impact.epp1_highlight') }}
                             </p>
                         </div>
                     </div>
                     <div
-                        class="renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 p-8 text-grigio-pietra">
-                        <div class="mb-6 flex items-center">
+                        class="p-8 renaissance-card bg-gradient-to-br from-blu-algoritmo/10 to-blu-algoritmo/5 text-grigio-pietra">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
-                                <i class="fas fa-water text-2xl text-blu-algoritmo"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                                <i class="text-2xl fas fa-water text-blu-algoritmo"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.impact.epp2_title') }}</h3>
                         </div>
                         <div class="space-y-2 font-body">
@@ -1203,18 +1223,18 @@
                             <p>{{ __('info_florence_egi.impact.epp2_l3') }}</p>
                             <p>{{ __('info_florence_egi.impact.epp2_l4') }}</p>
                             <p class="text-sm text-blu-algoritmo"><i
-                                    class="fas fa-exclamation-triangle mr-1"></i>{{ __('info_florence_egi.impact.epp2_highlight') }}
+                                    class="mr-1 fas fa-exclamation-triangle"></i>{{ __('info_florence_egi.impact.epp2_highlight') }}
                             </p>
                         </div>
                     </div>
                     <div
-                        class="renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br p-8 text-grigio-pietra">
-                        <div class="mb-6 flex items-center">
+                        class="p-8 renaissance-card from-oro-fiorentino/10 to-oro-fiorentino/5 bg-gradient-to-br text-grigio-pietra">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                                <i class="fas fa-bee text-oro-fiorentino text-2xl"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                                <i class="text-2xl fas fa-bee text-oro-fiorentino"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.impact.epp3_title') }}</h3>
                         </div>
                         <div class="space-y-2 font-body">
@@ -1222,16 +1242,16 @@
                             <p>{{ __('info_florence_egi.impact.epp3_l2') }}</p>
                             <p>{{ __('info_florence_egi.impact.epp3_l3') }}</p>
                             <p>{{ __('info_florence_egi.impact.epp3_l4') }}</p>
-                            <p class="text-oro-fiorentino text-sm"><i
-                                    class="fas fa-check mr-1"></i>{{ __('info_florence_egi.impact.epp3_highlight') }}
+                            <p class="text-sm text-oro-fiorentino"><i
+                                    class="mr-1 fas fa-check"></i>{{ __('info_florence_egi.impact.epp3_highlight') }}
                             </p>
                         </div>
                     </div>
                 </div>
                 <div class="text-center">
                     <div
-                        class="renaissance-card mx-auto max-w-4xl bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5 p-8 text-grigio-pietra">
-                        <h3 class="renaissance-title mb-6 text-2xl font-bold">
+                        class="max-w-4xl p-8 mx-auto renaissance-card bg-gradient-to-br from-viola-innovazione/10 to-viola-innovazione/5 text-grigio-pietra">
+                        <h3 class="mb-6 text-2xl font-bold renaissance-title">
                             {{ __('info_florence_egi.impact.growth_title') }}</h3>
                         <div class="grid gap-6 font-body md:grid-cols-2">
                             <div>
@@ -1246,85 +1266,85 @@
                             </div>
                         </div>
                         <div class="mt-6"><a href="{{ route('info.epp') }}"
-                                class="inline-flex items-center rounded-lg bg-viola-innovazione px-6 py-3 text-white transition-all hover:bg-viola-innovazione/80"><i
-                                    class="fas fa-seedling mr-2"></i> {{ __('info_florence_egi.impact.cta') }}</a>
+                                class="inline-flex items-center px-6 py-3 text-white transition-all rounded-lg bg-viola-innovazione hover:bg-viola-innovazione/80"><i
+                                    class="mr-2 fas fa-seedling"></i> {{ __('info_florence_egi.impact.cta') }}</a>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="valori" class="bg-gray-50 py-16 sm:py-24">
-            <div class="golden-ratio-container px-4 sm:px-6">
+        <section id="valori" class="py-16 bg-gray-50 sm:py-24">
+            <div class="px-4 golden-ratio-container sm:px-6">
                 <div class="mb-12 text-center sm:mb-16">
-                    <h2 class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                    <h2 class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                         {!! __('info_florence_egi.values.title_html') !!}</h2>
-                    <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                    <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
                         {{ __('info_florence_egi.values.subtitle') }}</p>
                 </div>
-                <div class="mb-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center">
+                <div class="grid gap-8 mb-16 md:grid-cols-2 lg:grid-cols-3">
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
-                                <i class="fas fa-seedling text-2xl text-verde-rinascita"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-verde-rinascita/20">
+                                <i class="text-2xl fas fa-seedling text-verde-rinascita"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.values.value1_title') }}</h3>
                         </div>
                         <p class="font-body text-grigio-pietra">{{ __('info_florence_egi.values.value1_desc') }}</p>
                     </div>
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center">
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-viola-innovazione/20">
-                                <i class="fas fa-palette text-2xl text-viola-innovazione"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-viola-innovazione/20">
+                                <i class="text-2xl fas fa-palette text-viola-innovazione"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.values.value2_title') }}</h3>
                         </div>
                         <p class="font-body text-grigio-pietra">{{ __('info_florence_egi.values.value2_desc') }}</p>
                     </div>
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center">
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                                <i class="fas fa-lightbulb text-oro-fiorentino text-2xl"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                                <i class="text-2xl fas fa-lightbulb text-oro-fiorentino"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.values.value3_title') }}</h3>
                         </div>
                         <p class="font-body text-grigio-pietra">{{ __('info_florence_egi.values.value3_desc') }}</p>
                     </div>
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center">
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
-                                <i class="fas fa-shield-alt text-2xl text-blu-algoritmo"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                                <i class="text-2xl fas fa-shield-alt text-blu-algoritmo"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.values.value4_title') }}</h3>
                         </div>
                         <p class="font-body text-grigio-pietra">{{ __('info_florence_egi.values.value4_desc') }}</p>
                     </div>
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center">
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-rosso-urgenza/20">
-                                <i class="fas fa-exchange-alt text-2xl text-rosso-urgenza"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-rosso-urgenza/20">
+                                <i class="text-2xl fas fa-exchange-alt text-rosso-urgenza"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.values.value5_title') }}</h3>
                         </div>
                         <p class="font-body text-grigio-pietra">{{ __('info_florence_egi.values.value5_desc') }}</p>
                     </div>
-                    <div class="renaissance-card elegant-hover p-8">
-                        <div class="mb-6 flex items-center">
+                    <div class="p-8 renaissance-card elegant-hover">
+                        <div class="flex items-center mb-6">
                             <div
-                                class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-arancio-energia/20">
-                                <i class="fas fa-balance-scale text-2xl text-arancio-energia"></i>
+                                class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-arancio-energia/20">
+                                <i class="text-2xl fas fa-balance-scale text-arancio-energia"></i>
                             </div>
-                            <h3 class="renaissance-title text-xl font-bold">
+                            <h3 class="text-xl font-bold renaissance-title">
                                 {{ __('info_florence_egi.values.value6_title') }}</h3>
                         </div>
                         <p class="font-body text-grigio-pietra">{{ __('info_florence_egi.values.value6_desc') }}</p>
@@ -1334,24 +1354,24 @@
         </section>
 
         <section id="equilibrium"
-            class="from-oro-fiorentino/10 bg-gradient-to-br to-verde-rinascita/10 py-16 sm:py-24">
-            <div class="golden-ratio-container px-4 sm:px-6">
-                <div class="mx-auto max-w-6xl">
+            class="py-16 from-oro-fiorentino/10 bg-gradient-to-br to-verde-rinascita/10 sm:py-24">
+            <div class="px-4 golden-ratio-container sm:px-6">
+                <div class="max-w-6xl mx-auto">
                     <div class="mb-12 text-center">
                         <h2
-                            class="renaissance-title mb-4 text-3xl font-bold text-grigio-pietra sm:text-4xl md:text-5xl">
+                            class="mb-4 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl md:text-5xl">
                             {!! __('info_florence_egi.equilibrium.title_html') !!}</h2>
-                        <p class="mx-auto max-w-3xl font-body text-xl text-grigio-pietra">
+                        <p class="max-w-3xl mx-auto text-xl font-body text-grigio-pietra">
                             {{ __('info_florence_egi.equilibrium.subtitle') }}</p>
                     </div>
                     <div class="grid gap-8 lg:grid-cols-2">
-                        <div class="renaissance-card elegant-hover p-8">
-                            <div class="mb-6 flex items-center">
+                        <div class="p-8 renaissance-card elegant-hover">
+                            <div class="flex items-center mb-6">
                                 <div
-                                    class="bg-oro-fiorentino/20 mr-4 flex h-16 w-16 items-center justify-center rounded-full">
-                                    <i class="fas fa-atom text-oro-fiorentino text-2xl"></i>
+                                    class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-oro-fiorentino/20">
+                                    <i class="text-2xl fas fa-atom text-oro-fiorentino"></i>
                                 </div>
-                                <h3 class="renaissance-title text-xl font-bold">
+                                <h3 class="text-xl font-bold renaissance-title">
                                     {{ __('info_florence_egi.equilibrium.card1_title') }}</h3>
                             </div>
                             <p class="mb-4 font-body text-grigio-pietra">
@@ -1360,13 +1380,13 @@
                                 {{ __('info_florence_egi.equilibrium.card1_p2') }}
                             </p>
                         </div>
-                        <div class="renaissance-card elegant-hover p-8">
-                            <div class="mb-6 flex items-center">
+                        <div class="p-8 renaissance-card elegant-hover">
+                            <div class="flex items-center mb-6">
                                 <div
-                                    class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-verde-rinascita/20">
-                                    <i class="fas fa-cogs text-2xl text-verde-rinascita"></i>
+                                    class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-verde-rinascita/20">
+                                    <i class="text-2xl fas fa-cogs text-verde-rinascita"></i>
                                 </div>
-                                <h3 class="renaissance-title text-xl font-bold">
+                                <h3 class="text-xl font-bold renaissance-title">
                                     {{ __('info_florence_egi.equilibrium.card2_title') }}</h3>
                             </div>
                             <p class="mb-4 font-body text-grigio-pietra">
@@ -1375,16 +1395,16 @@
                                 {{ __('info_florence_egi.equilibrium.card2_p2') }}
                             </p>
                         </div>
-                        <div class="renaissance-card elegant-hover p-8 lg:col-span-2">
-                            <div class="mb-6 flex items-center justify-center">
+                        <div class="p-8 renaissance-card elegant-hover lg:col-span-2">
+                            <div class="flex items-center justify-center mb-6">
                                 <div
-                                    class="mr-4 flex h-16 w-16 items-center justify-center rounded-full bg-blu-algoritmo/20">
-                                    <i class="fas fa-heart text-2xl text-blu-algoritmo"></i>
+                                    class="flex items-center justify-center w-16 h-16 mr-4 rounded-full bg-blu-algoritmo/20">
+                                    <i class="text-2xl fas fa-heart text-blu-algoritmo"></i>
                                 </div>
-                                <h3 class="renaissance-title text-xl font-bold">
+                                <h3 class="text-xl font-bold renaissance-title">
                                     {{ __('info_florence_egi.equilibrium.card3_title') }}</h3>
                             </div>
-                            <p class="mx-auto max-w-4xl text-center font-body text-grigio-pietra">
+                            <p class="max-w-4xl mx-auto text-center font-body text-grigio-pietra">
                                 {!! __('info_florence_egi.equilibrium.card3_p1') !!}</p>
                         </div>
                     </div>
@@ -1392,22 +1412,22 @@
             </div>
         </section>
 
-        <section class="bg-white py-16 sm:py-24">
-            <div class="golden-ratio-container px-4 sm:px-6">
-                <div class="mx-auto max-w-4xl text-center">
-                    <h2 class="renaissance-title mb-6 text-3xl font-bold text-grigio-pietra sm:text-4xl">
+        <section class="py-16 bg-white sm:py-24">
+            <div class="px-4 golden-ratio-container sm:px-6">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h2 class="mb-6 text-3xl font-bold renaissance-title text-grigio-pietra sm:text-4xl">
                         {!! __('info_florence_egi.cta.title_html') !!}</h2>
-                    <p class="mb-8 font-body text-xl text-grigio-pietra">
+                    <p class="mb-8 text-xl font-body text-grigio-pietra">
                         <em>"{{ __('info_florence_egi.cta.quote') }}"</em>
                     </p>
                     <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
                         <a href="{{ route('register') }}" aria-label="{{ __('info_florence_egi.cta.cta1_aria') }}"
-                            class="cta-primary elegant-hover inline-flex items-center justify-center rounded-xl px-8 py-4 text-lg font-semibold text-white"><i
-                                class="fas fa-rocket mr-3"></i> {{ __('info_florence_egi.cta.cta1') }}</a>
+                            class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white cta-primary elegant-hover rounded-xl"><i
+                                class="mr-3 fas fa-rocket"></i> {{ __('info_florence_egi.cta.cta1') }}</a>
                         <a href="{{ route('archetypes.patron') }}"
                             aria-label="{{ __('info_florence_egi.cta.cta2_aria') }}"
-                            class="border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover inline-flex items-center justify-center rounded-xl border-2 px-8 py-4 text-lg font-semibold transition-all hover:text-white"><i
-                                class="fas fa-users mr-3"></i> {{ __('info_florence_egi.cta.cta2') }}</a>
+                            class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold transition-all border-2 border-oro-fiorentino text-oro-fiorentino hover:bg-oro-fiorentino elegant-hover rounded-xl hover:text-white"><i
+                                class="mr-3 fas fa-users"></i> {{ __('info_florence_egi.cta.cta2') }}</a>
                     </div>
                 </div>
             </div>

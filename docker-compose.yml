@@ -10,253 +10,269 @@
 # ========================================
 
 networks:
-  florence_network:
-    driver: bridge
+    florence_network:
+        driver: bridge
 
 volumes:
-  mariadb_data:
-    driver: local
-  redis_data:
-    driver: local
-  redis_padmin_data:
-    driver: local
+    mariadb_data:
+        driver: local
+    redis_data:
+        driver: local
+    redis_padmin_data:
+        driver: local
 
 services:
+    # ========================================
+    # 🚀 APPLICATION CONTAINER
+    # ========================================
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                UID: ${UID:-1000}
+                GID: ${GID:-1000}
+        container_name: florence_app
+        restart: unless-stopped
+        working_dir: /var/www/html
+        ports:
+            - "8010:80"
+        environment:
+            # Laravel Environment - TUTTE dalla .env
+            - APP_ENV=${APP_ENV:-local}
+            - APP_DEBUG=${APP_DEBUG:-true}
+            - APP_KEY=${APP_KEY}
+            - APP_URL=${APP_URL:-http://localhost:8010}
 
-  # ========================================
-  # 🚀 APPLICATION CONTAINER
-  # ========================================
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        UID: ${UID:-1000}
-        GID: ${GID:-1000}
-    container_name: florence_app
-    restart: unless-stopped
-    working_dir: /var/www/html
-    ports:
-      - "8010:80"
-    environment:
-      # Laravel Environment - TUTTE dalla .env
-      - APP_ENV=${APP_ENV:-local}
-      - APP_DEBUG=${APP_DEBUG:-true}
-      - APP_KEY=${APP_KEY}
-      - APP_URL=${APP_URL:-http://localhost:8010}
+            # Database Configuration
+            - DB_CONNECTION=mariadb
+            - DB_HOST=mariadb
+            - DB_PORT=3306
+            - DB_DATABASE=${DB_DATABASE:-EGI}
+            - DB_USERNAME=${DB_USERNAME:-fabio}
+            - DB_PASSWORD=${DB_PASSWORD:-Hillbert9#}
 
-      # Database Configuration
-      - DB_CONNECTION=mariadb
-      - DB_HOST=mariadb
-      - DB_PORT=3306
-      - DB_DATABASE=${DB_DATABASE:-EGI}
-      - DB_USERNAME=${DB_USERNAME:-fabio}
-      - DB_PASSWORD=${DB_PASSWORD:-Hillbert9#}
+            # Redis Configuration
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_PASSWORD=${REDIS_PASSWORD:-florence_redis_2025}
 
-      # Redis Configuration
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-florence_redis_2025}
+            # Cache and Session
+            - CACHE_DRIVER=${CACHE_DRIVER:-redis}
+            - SESSION_DRIVER=${SESSION_DRIVER:-database}
+            - QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}
 
-      # Cache and Session
-      - CACHE_DRIVER=${CACHE_DRIVER:-redis}
-      - SESSION_DRIVER=${SESSION_DRIVER:-database}
-      - QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}
+            # Storage
+            - FILESYSTEM_DISK=${FILESYSTEM_DISK:-local}
 
-      # Storage
-      - FILESYSTEM_DISK=${FILESYSTEM_DISK:-local}
+            # Image Processing
+            - IMAGE_DRIVER=${IMAGE_DRIVER:-imagick}
 
-      # Image Processing
-      - IMAGE_DRIVER=${IMAGE_DRIVER:-imagick}
+            # Docker Environment Flag
+            - DOCKER_ENV=true
+        volumes:
+            - .:/var/www/html:delegated
+            # IMPORTANTE: Non sovrascrivere bootstrap/cache
+            - /var/www/html/bootstrap/cache
+            - /var/www/html/storage/framework/cache
+            # IMPORTANTE: Non sovrascrivere i file compilati
+            - /var/www/html/public/build
+            - /var/www/html/node_modules
+        depends_on:
+            mariadb:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - florence_network
+        tmpfs:
+            - /var/lib/nginx/tmp:rw,mode=1777
+        healthcheck:
+            test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
 
-      # Docker Environment Flag
-      - DOCKER_ENV=true
-    volumes:
-      - .:/var/www/html:delegated
-      # IMPORTANTE: Non sovrascrivere bootstrap/cache
-      - /var/www/html/bootstrap/cache
-      - /var/www/html/storage/framework/cache
-      # IMPORTANTE: Non sovrascrivere i file compilati
-      - /var/www/html/public/build
-      - /var/www/html/node_modules
-    depends_on:
-      mariadb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - florence_network
-    tmpfs:
-      - /var/lib/nginx/tmp:rw,mode=1777
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+    # ========================================
+    # 🗄️ DATABASE CONTAINER (MariaDB)
+    # ========================================
+    mariadb:
+        image: mariadb:10.11
+        container_name: florence_mariadb
+        restart: unless-stopped
+        ports:
+            - "3308:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-Hillbert9#}
+            MYSQL_DATABASE: ${DB_DATABASE:-EGI}
+            MYSQL_USER: ${DB_USERNAME:-fabio}
+            MYSQL_PASSWORD: ${DB_PASSWORD:-Hillbert9#}
+            MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+            MYSQL_RANDOM_ROOT_PASSWORD: "no"
+        volumes:
+            - mariadb_data:/var/lib/mysql
+        networks:
+            - florence_network
+        healthcheck:
+            test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
 
-  # ========================================
-  # 🗄️ DATABASE CONTAINER (MariaDB)
-  # ========================================
-  mariadb:
-    image: mariadb:10.11
-    container_name: florence_mariadb
-    restart: unless-stopped
-    ports:
-      - "3308:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-Hillbert9#}
-      MYSQL_DATABASE: ${DB_DATABASE:-EGI}
-      MYSQL_USER: ${DB_USERNAME:-fabio}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-Hillbert9#}
-      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
-      MYSQL_RANDOM_ROOT_PASSWORD: "no"
-    volumes:
-      - mariadb_data:/var/lib/mysql
-    networks:
-      - florence_network
-    healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+    # ========================================
+    # 🔴 REDIS CONTAINER
+    # ========================================
+    redis:
+        image: redis:7-alpine
+        container_name: florence_redis
+        restart: unless-stopped
+        ports:
+            - "6380:6379"
+        command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-florence_redis_2025}
+        volumes:
+            - redis_data:/data
+        networks:
+            - florence_network
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "redis-cli",
+                    "-a",
+                    "${REDIS_PASSWORD:-florence_redis_2025}",
+                    "ping",
+                ]
+            interval: 10s
+            timeout: 3s
+            retries: 5
+            start_period: 10s
 
-  # ========================================
-  # 🔴 REDIS CONTAINER
-  # ========================================
-  redis:
-    image: redis:7-alpine
-    container_name: florence_redis
-    restart: unless-stopped
-    ports:
-      - "6380:6379"
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-florence_redis_2025}
-    volumes:
-      - redis_data:/data
-    networks:
-      - florence_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-florence_redis_2025}", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 10s
+    # ========================================
+    # 🧠 REDIS STACK FOR PADMIN ANALYZER (OPZIONE B)
+    # ========================================
+    redis_padmin:
+        image: redis/redis-stack:latest
+        container_name: florence_redis_padmin
+        restart: unless-stopped
+        ports:
+            - "6381:6379" # Redis Stack porta separata
+            - "8002:8001" # RedisInsight UI
+        command: >
+            redis-stack-server
+            --appendonly yes
+            --requirepass ${PADMIN_REDIS_PASSWORD:-padmin_redis_2025}
+            --loadmodule /opt/redis-stack/lib/redisearch.so
+            --loadmodule /opt/redis-stack/lib/rejson.so
+            --loadmodule /opt/redis-stack/lib/redisbloom.so
+            --loadmodule /opt/redis-stack/lib/redistimeseries.so
+        volumes:
+            - redis_padmin_data:/data
+        networks:
+            - florence_network
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "redis-cli",
+                    "-a",
+                    "${PADMIN_REDIS_PASSWORD:-padmin_redis_2025}",
+                    "ping",
+                ]
+            interval: 10s
+            timeout: 3s
+            retries: 5
+            start_period: 15s
 
-  # ========================================
-  # 🧠 REDIS STACK FOR PADMIN ANALYZER (OPZIONE B)
-  # ========================================
-  redis_padmin:
-    image: redis/redis-stack:latest
-    container_name: florence_redis_padmin
-    restart: unless-stopped
-    ports:
-      - "6381:6379"  # Redis Stack porta separata
-      - "8002:8001"  # RedisInsight UI
-    command: >
-      redis-stack-server
-      --appendonly yes
-      --requirepass ${PADMIN_REDIS_PASSWORD:-padmin_redis_2025}
-      --loadmodule /opt/redis-stack/lib/redisearch.so
-      --loadmodule /opt/redis-stack/lib/rejson.so
-      --loadmodule /opt/redis-stack/lib/redisbloom.so
-      --loadmodule /opt/redis-stack/lib/redistimeseries.so
-    volumes:
-      - redis_padmin_data:/data
-    networks:
-      - florence_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${PADMIN_REDIS_PASSWORD:-padmin_redis_2025}", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 15s
+    # ========================================
+    # ⚡ QUEUE WORKER CONTAINER
+    # ========================================
+    queue:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                UID: ${UID:-1000}
+                GID: ${GID:-1000}
+        container_name: florence_queue
+        restart: unless-stopped
+        working_dir: /var/www/html
+        # Override entrypoint per queue worker
+        entrypoint: ["/bin/sh", "-c"]
+        command:
+            [
+                "sleep 30 && php artisan queue:work ${QUEUE_CONNECTION:-database} --tries=3 --timeout=300",
+            ]
+        environment:
+            # Same environment as app container
+            - APP_ENV=${APP_ENV:-local}
+            - APP_DEBUG=${APP_DEBUG:-true}
+            - APP_KEY=${APP_KEY}
 
-  # ========================================
-  # ⚡ QUEUE WORKER CONTAINER
-  # ========================================
-  queue:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        UID: ${UID:-1000}
-        GID: ${GID:-1000}
-    container_name: florence_queue
-    restart: unless-stopped
-    working_dir: /var/www/html
-    # Override entrypoint per queue worker
-    entrypoint: ["/bin/sh", "-c"]
-    command: ["sleep 30 && php artisan queue:work ${QUEUE_CONNECTION:-database} --tries=3 --timeout=300"]
-    environment:
-      # Same environment as app container
-      - APP_ENV=${APP_ENV:-local}
-      - APP_DEBUG=${APP_DEBUG:-true}
-      - APP_KEY=${APP_KEY}
+            # Database
+            - DB_CONNECTION=mariadb
+            - DB_HOST=mariadb
+            - DB_PORT=3306
+            - DB_DATABASE=${DB_DATABASE:-EGI}
+            - DB_USERNAME=${DB_USERNAME:-fabio}
+            - DB_PASSWORD=${DB_PASSWORD:-Hillbert9#}
 
-      # Database
-      - DB_CONNECTION=mariadb
-      - DB_HOST=mariadb
-      - DB_PORT=3306
-      - DB_DATABASE=${DB_DATABASE:-EGI}
-      - DB_USERNAME=${DB_USERNAME:-fabio}
-      - DB_PASSWORD=${DB_PASSWORD:-Hillbert9#}
+            # Redis
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_PASSWORD=${REDIS_PASSWORD:-florence_redis_2025}
 
-      # Redis
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-florence_redis_2025}
+            # Cache and Session
+            - CACHE_DRIVER=${CACHE_DRIVER:-redis}
+            - SESSION_DRIVER=${SESSION_DRIVER:-database}
+            - QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}
+        volumes:
+            - .:/var/www/html:delegated
+        depends_on:
+            app:
+                condition: service_healthy
+            mariadb:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - florence_network
 
-      # Cache and Session
-      - CACHE_DRIVER=${CACHE_DRIVER:-redis}
-      - SESSION_DRIVER=${SESSION_DRIVER:-database}
-      - QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}
-    volumes:
-      - .:/var/www/html:delegated
-    depends_on:
-      app:
-        condition: service_healthy
-      mariadb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - florence_network
+    # ========================================
+    # 🛠️ ADMINER (Database Management)
+    # ========================================
+    adminer:
+        image: adminer:4
+        container_name: florence_adminer
+        restart: unless-stopped
+        ports:
+            - "8082:8080"
+        depends_on:
+            - mariadb
+        networks:
+            - florence_network
+        environment:
+            - ADMINER_DEFAULT_SERVER=mariadb
+            - ADMINER_DESIGN=hydra
 
-  # ========================================
-  # 🛠️ ADMINER (Database Management)
-  # ========================================
-  adminer:
-    image: adminer:4
-    container_name: florence_adminer
-    restart: unless-stopped
-    ports:
-      - "8082:8080"
-    depends_on:
-      - mariadb
-    networks:
-      - florence_network
-    environment:
-      - ADMINER_DEFAULT_SERVER=mariadb
-      - ADMINER_DESIGN=hydra
-
-  # ========================================
-  # 🎨 VITE DEV SERVER (Optional for development)
-  # ========================================
-  vite:
-    image: node:20-alpine
-    container_name: florence_vite
-    working_dir: /var/www/html
-    ports:
-      - "5173:5173"
-    volumes:
-      - .:/var/www/html:delegated
-      - /var/www/html/node_modules
-    command: sh -c "npm install && npm run dev -- --host"
-    networks:
-      - florence_network
-    environment:
-      - VITE_HOST=0.0.0.0
-      - DOCKER_ENV=true
-    profiles:
-      - dev
+    # ========================================
+    # 🎨 VITE DEV SERVER (Optional for development)
+    # ========================================
+    vite:
+        image: node:20-alpine
+        container_name: florence_vite
+        working_dir: /var/www/html
+        ports:
+            - "5173:5173"
+        volumes:
+            - .:/var/www/html:delegated
+            - /var/www/html/node_modules
+        command: sh -c "npm install && npm run dev -- --host"
+        networks:
+            - florence_network
+        environment:
+            - VITE_HOST=0.0.0.0
+            - DOCKER_ENV=true
+        profiles:
+            - dev

@@ -531,32 +531,56 @@
                                 operazioni per verifiche e tracciabilità.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-ammk" class="text-xl font-bold text-emerald-700">AMMk (Asset Market Maker)</dt>
-                            <dd class="mt-1 text-gray-700">Il cuore di FlorenceEGI: motore che origina, certifica, valuta e rende liquidi gli <a href="#glossary-egi" class="glossary-link">EGI</a>. Composto da 5 engine: Valuation, Liquidity, Distribution, Activation (<a href="#glossary-natan" class="glossary-link">NATAN</a>), Compliance. <strong>Nota</strong>: diverso da AMM (Automated Market Maker) della DeFi.</dd>
+                            <dt id="glossary-ammk" class="text-xl font-bold text-emerald-700">AMMk (Asset Market
+                                Maker)</dt>
+                            <dd class="mt-1 text-gray-700">Il cuore di FlorenceEGI: motore che origina, certifica,
+                                valuta e rende liquidi gli <a href="#glossary-egi" class="glossary-link">EGI</a>.
+                                Composto da 5 engine: Valuation, Liquidity, Distribution, Activation (<a
+                                    href="#glossary-natan" class="glossary-link">NATAN</a>), Compliance.
+                                <strong>Nota</strong>: diverso da AMM (Automated Market Maker) della DeFi.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-collection-tenant" class="text-xl font-bold text-emerald-700">Collection (Tenant)</dt>
-                            <dd class="mt-1 text-gray-700">Workspace collaborativo multi-tenant. Ogni collection ha ruoli locali (Owner, Admin, Editor, Viewer) distinti dai ruoli globali account. Enforcement tramite <code>collection_id</code> Global Scope Laravel.</dd>
+                            <dt id="glossary-collection-tenant" class="text-xl font-bold text-emerald-700">Collection
+                                (Tenant)</dt>
+                            <dd class="mt-1 text-gray-700">Workspace collaborativo multi-tenant. Ogni collection ha
+                                ruoli locali (Owner, Admin, Editor, Viewer) distinti dai ruoli globali account.
+                                Enforcement tramite <code>collection_id</code> Global Scope Laravel.</dd>
                         </div>
                         <div>
                             <dt id="glossary-event-bus" class="text-xl font-bold text-emerald-700">Event Bus</dt>
-                            <dd class="mt-1 text-gray-700">Sistema che riceve trigger on-chain e off-chain e attiva azioni <a href="#glossary-natan" class="glossary-link">NATAN</a>: campagne, notifiche, suggerimenti prezzo. Collega smart contract intelligenti alle azioni della piattaforma.</dd>
+                            <dd class="mt-1 text-gray-700">Sistema che riceve trigger on-chain e off-chain e attiva
+                                azioni <a href="#glossary-natan" class="glossary-link">NATAN</a>: campagne, notifiche,
+                                suggerimenti prezzo. Collega smart contract intelligenti alle azioni della piattaforma.
+                            </dd>
                         </div>
                         <div>
-                            <dt id="glossary-drops" class="text-xl font-bold text-emerald-700">Drops (Trimestrali)</dt>
-                            <dd class="mt-1 text-gray-700">Eventi trimestrali che selezionano opere eccellenti e culminano in una <a href="#glossary-serata-memorabile" class="glossary-link">Serata Memorabile</a>, concentrando attenzione, incentivi e liquidità.</dd>
+                            <dt id="glossary-drops" class="text-xl font-bold text-emerald-700">Drops (Trimestrali)
+                            </dt>
+                            <dd class="mt-1 text-gray-700">Eventi trimestrali che selezionano opere eccellenti e
+                                culminano in una <a href="#glossary-serata-memorabile" class="glossary-link">Serata
+                                    Memorabile</a>, concentrando attenzione, incentivi e liquidità.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-serata-memorabile" class="text-xl font-bold text-emerald-700">Serata Memorabile</dt>
-                            <dd class="mt-1 text-gray-700">Evento finale di ogni <a href="#glossary-drops" class="glossary-link">Drop</a> trimestrale. Celebra Creator e valorizza le opere più significative con esposizione, liquidità e premi.</dd>
+                            <dt id="glossary-serata-memorabile" class="text-xl font-bold text-emerald-700">Serata
+                                Memorabile</dt>
+                            <dd class="mt-1 text-gray-700">Evento finale di ogni <a href="#glossary-drops"
+                                    class="glossary-link">Drop</a> trimestrale. Celebra Creator e valorizza le opere
+                                più significative con esposizione, liquidità e premi.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-smart-contract-intelligenti" class="text-xl font-bold text-emerald-700">Smart Contract Intelligenti</dt>
-                            <dd class="mt-1 text-gray-700">Smart contract che emettono hook/trigger verso <a href="#glossary-event-bus" class="glossary-link">Event Bus</a> per attivare <a href="#glossary-natan" class="glossary-link">NATAN</a>. Non solo eseguono logica on-chain, ma dialogano con layer applicativo.</dd>
+                            <dt id="glossary-smart-contract-intelligenti" class="text-xl font-bold text-emerald-700">
+                                Smart Contract Intelligenti</dt>
+                            <dd class="mt-1 text-gray-700">Smart contract che emettono hook/trigger verso <a
+                                    href="#glossary-event-bus" class="glossary-link">Event Bus</a> per attivare <a
+                                    href="#glossary-natan" class="glossary-link">NATAN</a>. Non solo eseguono logica
+                                on-chain, ma dialogano con layer applicativo.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-rbac" class="text-xl font-bold text-emerald-700">RBAC (Role-Based Access Control)</dt>
-                            <dd class="mt-1 text-gray-700">Sistema di controllo accessi basato su ruoli. FlorenceEGI ha ruoli <strong>globali</strong> (account: User, Creator, Collector, Admin) e ruoli <strong>locali</strong> (collection: Owner, Admin, Editor, Viewer).</dd>
+                            <dt id="glossary-rbac" class="text-xl font-bold text-emerald-700">RBAC (Role-Based Access
+                                Control)</dt>
+                            <dd class="mt-1 text-gray-700">Sistema di controllo accessi basato su ruoli. FlorenceEGI ha
+                                ruoli <strong>globali</strong> (account: User, Creator, Collector, Admin) e ruoli
+                                <strong>locali</strong> (collection: Owner, Admin, Editor, Viewer).</dd>
                         </div>
                     </dl>
                 </div>
@@ -922,7 +946,7 @@
 
                 <div class="mb-10">
                     <h3 class="mb-6 text-2xl font-bold text-center text-emerald-700">🎨 Diritti del Creator (Sempre e Comunque)</h3>
-                    
+
                     <div class="grid gap-6 md:grid-cols-2 mb-8">
                         <div class="p-6 border-l-4 border-emerald-600 rounded-r-lg bg-emerald-50">
                             <h4 class="text-xl font-bold text-emerald-800 mb-3">
@@ -1029,7 +1053,7 @@
 
                 <div class="mb-10">
                     <h3 class="mb-6 text-2xl font-bold text-center text-blue-700">🏠 Diritti dell'Owner (Acquirente)</h3>
-                    
+
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="p-6 border-l-4 border-green-600 rounded-r-lg bg-green-50">
                             <h4 class="text-lg font-bold text-green-800 mb-3">
@@ -1066,7 +1090,7 @@
 
                 <div class="mb-8">
                     <h3 class="mb-6 text-2xl font-bold text-center text-amber-700">⚖️ Normativa di Riferimento</h3>
-                    
+
                     <div class="space-y-4">
                         <div class="p-5 rounded-lg bg-white border-2 border-gray-200">
                             <h4 class="font-bold text-gray-800 mb-2">
@@ -1104,7 +1128,7 @@
 
                 <div class="mb-8">
                     <h3 class="mb-6 text-2xl font-bold text-center text-indigo-700">💰 Come Funziona su FlorenceEGI</h3>
-                    
+
                     <div class="space-y-6">
                         <div class="p-6 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-emerald-300">
                             <h4 class="text-lg font-bold text-emerald-800 mb-3">

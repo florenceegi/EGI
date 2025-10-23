@@ -1,0 +1,170 @@
+<!-- =========================
+About (200 parole) — sezione pronta da incollare in /chi-siamo/index.html
+========================= -->
+<section class="about container mx-auto max-w-4xl px-6 py-12">
+  <h1 class="text-3xl md:text-4xl font-semibold tracking-tight mb-4">FlorenceEGI — Asset Market Maker per EGI</h1>
+  <p class="text-neutral-300 mb-4">
+    FlorenceEGI è un SaaS collaborativo multi‑tenant che unisce marketplace pubblico e protocollo Algorand.
+    Il suo cuore è l’<strong>Asset Market Maker (AMMk)</strong>: un motore che origina, certifica, valuta e rende liquidi gli EGI (Eco Goods Invent),
+    garantendo prove on‑chain, regole di prezzo chiare e flussi sostenibili per Creator, Collezionisti e programmi EPP.
+  </p>
+  <p class="text-neutral-300 mb-4">
+    Lavori in <em>collection</em> (workspace) con ruoli locali e globali, inviti altri utenti, configuri policy e pubblichi i tuoi asset.
+    Puoi vendere con <strong>acquisto diretto</strong> (mint immediato), <strong>asta a tempo con soglia</strong> o modalità <strong>mista</strong>.
+    Gli <strong>smart contract intelligenti</strong> emettono trigger che attivano <strong>NATAN</strong> — la guida AI — per campagne mirate, notifiche e suggerimenti di prezzo.
+  </p>
+  <p class="text-neutral-300 mb-4">
+    Insieme agli EPP, ogni EGI contribuisce a progetti ambientali misurabili. Trasparenza, audit trail e conformità (GDPR/MiCA) sono nativi
+    nell’architettura OS3: logging, gestione errori e consensi sono integrati in ogni operazione.
+    Quattro volte l’anno, le <strong>Drop</strong> selezionano opere eccellenti e culminano in una <strong>Serata Memorabile</strong>,
+    concentrando attenzione, incentivi e liquidità.
+  </p>
+  <p class="text-neutral-300">
+    Se cerchi un luogo dove arte, tecnologia e impatto reale si incontrano, sei nel posto giusto.
+    Leggi il <a class="underline decoration-purple-400 underline-offset-4 hover:text-white" href="/whitepaper/">White Paper</a> per l’architettura completa.
+  </p>
+</section>
+
+<!-- =========================
+White Paper — struttura HTML minima (con ToC sticky e ancore)
+Salva come /whitepaper/index.html
+========================= -->
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlorenceEGI — White Paper</title>
+  <meta name="description" content="White Paper di FlorenceEGI: SaaS collaborativo multi-tenant, Asset Market Maker, Algorand, NATAN, Drops, compliance.">
+  <meta property="og:title" content="FlorenceEGI — White Paper">
+  <meta property="og:description" content="SaaS collaborativo multi‑tenant, Asset Market Maker, Algorand, NATAN, Drops, compliance.">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="it_IT">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Richiede Tailwind CSS caricato globalmente (es. via Vite). Per preview veloce: <script src="https://cdn.tailwindcss.com"></script> -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "FlorenceEGI — White Paper",
+    "about": ["SaaS collaborativo", "Asset Market Maker", "Algorand", "NFT", "EGI"],
+    "author": { "@type": "Organization", "name": "FlorenceEGI" },
+    "dateModified": "2025-10-23",
+    "inLanguage": "it-IT"
+  }
+  </script>
+</head>
+<body class="bg-neutral-950 text-neutral-100">
+  <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-[280px,1fr] gap-8 p-6 md:p-10">
+    <nav class="sticky top-4 self-start hidden md:block" aria-label="Indice">
+      <span class="inline-block border border-neutral-800 text-neutral-400 rounded-full px-2 py-1 text-xs mb-3">Indice</span>
+      <ul class="space-y-1 text-neutral-400">
+        <li><a class="hover:text-white" href="#executive-summary">Executive summary</a></li>
+        <li><a class="hover:text-white" href="#architettura">Architettura</a></li>
+        <li><a class="hover:text-white" href="#tenancy-rbac">Tenancy & RBAC</a></li>
+        <li><a class="hover:text-white" href="#on-chain">On‑chain & smart contract</a></li>
+        <li><a class="hover:text-white" href="#vendite">Modalità di vendita</a></li>
+        <li><a class="hover:text-white" href="#roadmap">Roadmap (Fase 1 → Fase 2)</a></li>
+        <li><a class="hover:text-white" href="#kpi-compliance">KPI & Compliance</a></li>
+        <li><a class="hover:text-white" href="#glossario">Glossario</a></li>
+        <li><a class="hover:text-white" href="#mermaid">Diagramma</a></li>
+      </ul>
+      <div class="text-xs text-neutral-500 mt-3">Ultimo aggiornamento: 23/10/2025</div>
+    </nav>
+    <main>
+      <header class="mb-6">
+        <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">FlorenceEGI — White Paper</h1>
+        <p class="text-neutral-400 text-sm">Versione <span class="font-mono">v1.0</span></p>
+      </header>
+      <section id="executive-summary" class="scroll-mt-20">
+        <h2 class="text-2xl border-l-4 border-purple-500 pl-3 mb-3">Executive summary</h2>
+        <p class="text-neutral-300">FlorenceEGI è un SaaS collaborativo multi‑tenant a collection con marketplace pubblico e layer su Algorand. Il cuore è l’Asset Market Maker (AMMk) che origina, certifica, valuta e rende liquidi gli EGI con prove on‑chain, regole di prezzo e automazioni guidate da NATAN.</p>
+      </section>
+      <section id="architettura" class="scroll-mt-20 mt-8">
+        <h2 class="text-2xl border-l-4 border-purple-500 pl-3 mb-3">Architettura</h2>
+        <ul class="list-disc ml-6 space-y-1 text-neutral-300">
+          <li>App Web (Laravel + TS + Tailwind)</li>
+          <li>AMMk Core: Valuation, Liquidity, Distribution, Activation (NATAN), Compliance</li>
+          <li>Marketplace pubblico</li>
+          <li>Protocol layer Algorand: ASA/SC, proof, fee routing</li>
+          <li>Event Bus: trigger on/off‑chain → azioni NATAN</li>
+          <li>Observability & Compliance: ULM, UEM, AuditTrail, GDPR</li>
+        </ul>
+      </section>
+      <section id="tenancy-rbac" class="scroll-mt-20 mt-8">
+        <h2 class="text-2xl border-l-4 border-purple-500 pl-3 mb-3">Tenancy & RBAC</h2>
+        <p class="text-neutral-300">Tenant = collection. Ruoli globali (account) distinti dai ruoli locali (collection_members). Enforcement tramite <code class="bg-neutral-900 border border-neutral-800 rounded px-1">collection_id</code> (Global Scope, Policy) e resolver (subdomain/header/JWT).</p>
+      </section>
+      <section id="on-chain" class="scroll-mt-20 mt-8">
+        <h2 class="text-2xl border-l-4 border-purple-500 pl-3 mb-3">On‑chain & smart contract</h2>
+        <ul class="list-disc ml-6 space-y-1 text-neutral-300">
+          <li>Mint ASA / Smart Contract per CoA, escrow e regole</li>
+          <li>Smart contract “intelligenti”: hook/trigger → Event Bus → NATAN (campagne, notifiche, suggerimenti)</li>
+          <li>Attestazioni: provenance, ownership, EPP allocation</li>
+        </ul>
+      </section>
+      <section id="vendite" class="scroll-mt-20 mt-8">
+        <h2 class="text-2xl border-l-4 border-purple-500 pl-3 mb-3">Modalità di vendita</h2>
+        <ul class="list-disc ml-6 space-y-1 text-neutral-300">
+          <li>Acquisto diretto con mint immediato (buy‑now)</li>
+          <li>Asta a tempo con soglia minima (reserve)</li>
+          <li>Modalità mista (asta + buy‑now)</li>
+        </ul>
+      </section>
+      <section id="roadmap" class="scroll-mt-20 mt-8">
+        <h2 class="text-2xl border-l-4 border-purple-500 pl-3 mb-3">Roadmap (Fase 1 → Fase 2)</h2>
+        <ul class="list-disc ml-6 space-y-1 text-neutral-300">
+          <li><strong>MVP</strong>: SaaS collaborativo, marketplace, AMMk, ULM/UEM/Audit</li>
+          <li><strong>Fase 1</strong>: integrazione Blockchain (Algorand) + AI operativa (NATAN/Activation)</li>
+          <li><strong>Fase 2</strong>: Explorer Algorand, EGI‑zzazione NFT di terzi, Drop trimestrali + Serata Memorabile</li>
+        </ul>
+      </section>
+      <section id="kpi-compliance" class="scroll-mt-20 mt-8">
+        <h2 class="text-2xl border-l-4 border-purple-500 pl-3 mb-3">KPI & Compliance</h2>
+        <ul class="list-disc ml-6 space-y-1 text-neutral-300">
+          <li>Time‑to‑mint, % listing → deal, liquidità per collection</li>
+          <li>Floor stability, EPP yield, activation lift (CTR/CR post‑trigger)</li>
+          <li>Compliance score (audit pass rate, incidenti=0)</li>
+        </ul>
+      </section>
+      <section id="glossario" class="scroll-mt-20 mt-8">
+        <h2 class="text-2xl border-l-4 border-purple-500 pl-3 mb-3">Glossario</h2>
+        <ul class="list-disc ml-6 space-y-1 text-neutral-300">
+          <li><strong>EGI</strong>: asset ibrido con CoA on‑chain; token rappresentativo</li>
+          <li><strong>AMMk</strong>: Asset Market Maker (≠ AMM DeFi)</li>
+          <li><strong>EPP</strong>: Environmental Protection Program</li>
+          <li><strong>NATAN</strong>: guida AI, Activation Engine</li>
+        </ul>
+      </section>
+      <section id="mermaid" class="scroll-mt-20 mt-8">
+        <h2 class="text-2xl border-l-4 border-purple-500 pl-3 mb-3">Diagramma (Mermaid)</h2>
+        <pre class="bg-neutral-900 border border-neutral-800 rounded p-3 overflow-auto"><code class="language-mermaid">flowchart LR
+  U[Users/Companies] --> C[Collections (tenant)]
+  C --> AMM[AMMk Core
+Valuation | Liquidity | Distribution | Activation(NATAN) | Compliance]
+  AMM --> M[Marketplace Pubblico]
+  AMM --> EB[Event Bus]
+  EB --> NA[NATAN Actions]
+  AMM --> ALG[Algorand ASA/SC
+Mint | Escrow | Proof | Fee Routing]
+  ALG --> EVT[On-chain Events]
+  EVT --> EB
+  subgraph Observability & Compliance
+    ULM[ULM Logs]:::obs
+    UEM[UEM Errors]:::obs
+    AUD[AuditTrail/GDPR]:::obs
+  end
+  AMM --> ULM
+  AMM --> UEM
+  AMM --> AUD
+  classDef obs fill:#1f1f24,stroke:#2a2a30,color:#cbd5e1;</code></pre>
+        <p class="text-neutral-500 text-sm mt-2">Per il rendering, integra Mermaid.js oppure esporta il diagramma come immagine.</p>
+      </section>
+      <footer class="mt-12 pt-6 border-t border-neutral-800 text-neutral-500 text-sm flex items-center justify-between">
+        <span>© FlorenceEGI</span>
+        <span>White Paper <span class="font-mono">v1.0</span> · 23/10/2025</span>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
