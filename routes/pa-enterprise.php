@@ -3,6 +3,7 @@
 use App\Http\Controllers\PA\PADashboardController;
 use App\Http\Controllers\PA\PAHeritageController;
 use App\Http\Controllers\PA\NatanChatController;
+use App\Http\Controllers\PA\PaEmbeddingsController;
 use App\Http\Controllers\PaActs\PaActUploadController;
 use App\Http\Controllers\PaActs\PaActController;
 use App\Http\Controllers\PaActs\PaActPublicController;
@@ -163,6 +164,30 @@ Route::prefix('pa')
             Route::get('/chat', [NatanChatController::class, 'index'])->name('chat');
             Route::post('/chat/message', [NatanChatController::class, 'sendMessage'])->name('chat.message');
             Route::get('/chat/suggestions', [NatanChatController::class, 'getSuggestions'])->name('chat.suggestions');
+        });
+
+        /**
+         * VECTOR EMBEDDINGS MANAGEMENT
+         *
+         * GET  /pa/embeddings             → Dashboard embeddings con statistiche
+         * GET  /pa/embeddings/stats       → API statistiche (JSON)
+         * POST /pa/embeddings/generate    → Genera embeddings batch
+         * DELETE /pa/embeddings           → Elimina tutti gli embeddings
+         *
+         * Features:
+         * - Generazione vector embeddings per semantic search
+         * - Progress monitoring real-time
+         * - Coverage statistics
+         * - Cost estimation
+         * - OpenAI integration
+         *
+         * Authorization: auth + role:pa_entity
+         */
+        Route::prefix('/embeddings')->name('embeddings.')->group(function () {
+            Route::get('/', [PaEmbeddingsController::class, 'index'])->name('index');
+            Route::get('/stats', [PaEmbeddingsController::class, 'stats'])->name('stats');
+            Route::post('/generate', [PaEmbeddingsController::class, 'generate'])->name('generate');
+            Route::delete('/', [PaEmbeddingsController::class, 'deleteAll'])->name('delete');
         });
 
         /**

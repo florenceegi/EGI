@@ -40,6 +40,7 @@ use App\Services\Menu\Items\PAActsMenu;
 use App\Services\Menu\Items\PAStatisticsMenu;
 use App\Services\Menu\Items\PABatchProcessorMenu;
 use App\Services\Menu\Items\PAScrapersMenu;
+use App\Services\Menu\Items\PAEmbeddingsMenu;
 // SuperAdmin Menu Items
 use App\Services\Menu\Items\SuperadminDashboardMenu;
 use App\Services\Menu\Items\SuperadminAiConsultationsMenu;
@@ -65,14 +66,16 @@ use Illuminate\Support\Facades\Log;
  * @package App\Services\Menu
  * @version 2.0
  */
-class ContextMenus {
+class ContextMenus
+{
     /**
      * Get menu groups for specific application context
      *
      * @param string $context The current application context
      * @return array Array of MenuGroup objects for the context
      */
-    public static function getMenusForContext(string $context): array {
+    public static function getMenusForContext(string $context): array
+    {
         $menus = [];
 
         Log::channel('upload')->info('🔍 CONTEXT MENUS - PA CONTEXT DETECTED', [
@@ -266,6 +269,7 @@ class ContextMenus {
                     // new PAHeritageMenu(),
                     new PAActsMenu(),
                     new PAScrapersMenu(),
+                    new PAEmbeddingsMenu(),
                     new PAStatisticsMenu(),
                     new PABatchProcessorMenu(),
                     // new PACoAMenu(),
