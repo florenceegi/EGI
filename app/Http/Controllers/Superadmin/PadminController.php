@@ -795,10 +795,8 @@ PROMPT;
             $this->errorManager->handle('PADMIN_AI_FIX_FAILED', [
                 'admin_id' => auth()->id(),
                 'violation_id' => $id,
-                'context' => [
-                    'file' => $violation['file'] ?? 'unknown',
-                    'rule' => $violation['rule'] ?? 'unknown'
-                ]
+                'context_file' => $violation['file'] ?? 'unknown',
+                'context_rule' => $violation['rule'] ?? 'unknown'
             ], $e);
 
             return response()->json([
@@ -863,10 +861,8 @@ PROMPT;
             $this->errorManager->handle('PADMIN_AI_PREVIEW_FAILED', [
                 'admin_id' => auth()->id(),
                 'violation_id' => $id,
-                'context' => [
-                    'file' => $violation['file'] ?? 'unknown',
-                    'rule' => $violation['rule'] ?? 'unknown'
-                ]
+                'context_file' => $violation['file'] ?? 'unknown',
+                'context_rule' => $violation['rule'] ?? 'unknown'
             ], $e);
 
             return response()->json([
