@@ -293,29 +293,38 @@
                 setTimeout(() => toast.remove(), 3000);
             }
 
-            // AI Fix Modal Functions
+            // AI Fix Modal Functions (Preview + Apply)
             let currentAiPrompt = '';
+            let currentViolationId = null;
 
             function openAiFixModal(violationId) {
+                currentViolationId = violationId;
                 document.getElementById('aiFixModal').showModal();
                 document.getElementById('aiFixLoading').classList.remove('hidden');
                 document.getElementById('aiFixContent').classList.add('hidden');
+                document.getElementById('aiApplyBtn').disabled = false;
+                document.getElementById('aiApplyBtn').classList.remove('loading');
 
-                fetchAiFixPrompt(violationId);
+                fetchAiFixPreview(violationId);
             }
 
             function closeAiFixModal() {
                 document.getElementById('aiFixModal').close();
                 currentAiPrompt = '';
+                currentViolationId = null;
+                // clear fields
+                document.getElementById('aiPromptText').value = '';
+                document.getElementById('originalCodeText').value = '';
+                document.getElementById('fixedCodeText').value = '';
             }
 
-            async function fetchAiFixPrompt(violationId) {
+            async function fetchAiFixPreview(violationId) {
                 try {
-                    const response = await fetch(`/superadmin/padmin/violations/${violationId}/ai-fix`, {
+                    const response = await fetch(`/superadmin/padmin/violations/${violationId}/ai-preview`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                             'Accept': 'application/json'
                         }
                     });
@@ -325,16 +334,22 @@
                     document.getElementById('aiFixLoading').classList.add('hidden');
 
                     if (response.ok && data.success) {
-                        currentAiPrompt = data.ai_prompt;
-                        document.getElementById('aiPromptText').value = data.ai_prompt;
+                        // Build a prompt text for Copilot (keeps backward compatibility)
+                        currentAiPrompt = (data.explanation || '') + "\n\n--- ORIGINAL ---\n" + (data.original_code || '') + "\n\n--- FIXED ---\n" + (data.fixed_code || '');
+                        document.getElementById('aiPromptText').value = currentAiPrompt;
+
+                        // Fill code preview areas
+                        document.getElementById('originalCodeText').value = data.original_code || '';
+                        document.getElementById('fixedCodeText').value = data.fixed_code || '';
+
                         document.getElementById('aiFixContent').classList.remove('hidden');
                     } else {
-                        showToast(data.message || 'Errore generazione prompt AI', 'error');
+                        showToast(data.message || 'Errore generazione anteprima AI', 'error');
                         closeAiFixModal();
                     }
                 } catch (error) {
-                    console.error('AI Fix error:', error);
-                    showToast('Errore di rete durante generazione prompt AI', 'error');
+                    console.error('AI Fix preview error:', error);
+                    showToast('Errore di rete durante generazione anteprima AI', 'error');
                     closeAiFixModal();
                 }
             }
@@ -342,9 +357,58 @@
             function copyAiPrompt() {
                 const textarea = document.getElementById('aiPromptText');
                 textarea.select();
-                document.execCommand('copy');
+                try {
+                    navigator.clipboard.writeText(textarea.value);
+                    showToast('✅ Prompt copiato! Incollalo in GitHub Copilot Chat', 'success');
+                } catch (e) {
+                    // Fallback
+                    textarea.select();
+                    document.execCommand('copy');
+                    showToast('✅ Prompt copiato! Incollalo in GitHub Copilot Chat', 'success');
+                }
+            }
 
-                showToast('✅ Prompt copiato! Incollalo in GitHub Copilot Chat', 'success');
+            async function applyAiFix() {
+                if (!currentViolationId) {
+                    showToast('Violazione non selezionata', 'error');
+                    return;
+                }
+
+                const applyBtn = document.getElementById('aiApplyBtn');
+                applyBtn.disabled = true;
+                applyBtn.classList.add('loading');
+
+                try {
+                    const response = await fetch(`/superadmin/padmin/violations/${currentViolationId}/ai-apply`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        showToast(data.message || 'Fix applicato con successo', 'success');
+                        // Optionally reload to refresh violations
+                        setTimeout(() => location.reload(), 1200);
+                    } else {
+                        showToast(data.error || 'Errore nell\'applicazione della correzione', 'error');
+                        // If available, show backup info
+                        if (data.backup_path) {
+                            showToast('Backup creato: ' + data.backup_path, 'info');
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('Apply AI Fix error:', error);
+                    showToast('Errore di rete durante applicazione fix', 'error');
+                } finally {
+                    applyBtn.disabled = false;
+                    applyBtn.classList.remove('loading');
+                }
             }
 
             // Scan Modal Functions
@@ -566,26 +630,41 @@
         </form>
     </dialog>
 
-    {{-- AI Fix Modal --}}
+    {{-- AI Fix Modal (Preview & Apply) --}}
     <dialog id="aiFixModal" class="modal">
-        <div class="modal-box max-w-4xl">
+        <div class="modal-box max-w-5xl">
             <h3 class="mb-4 flex items-center gap-2 text-lg font-bold">
                 <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                Fix con AI Assistant
+                Fix con AI Assistant — Anteprima
             </h3>
 
             <div id="aiFixLoading" class="mb-4 hidden">
                 <div class="alert alert-info">
                     <span class="loading loading-spinner loading-sm"></span>
-                    <span>Generazione prompt AI in corso...</span>
+                    <span>Generazione anteprima AI in corso...</span>
                 </div>
             </div>
 
             <div id="aiFixContent" class="hidden">
-                <div class="mb-4">
+                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-medium">Originale</span>
+                        </label>
+                        <textarea id="originalCodeText" class="textarea textarea-bordered h-64 w-full font-mono text-sm" readonly></textarea>
+                    </div>
+                    <div>
+                        <label class="label">
+                            <span class="label-text font-medium">Suggerimento (Fix)</span>
+                        </label>
+                        <textarea id="fixedCodeText" class="textarea textarea-bordered h-64 w-full font-mono text-sm" readonly></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-4">
                     <label class="label">
                         <span class="label-text font-medium">📋 Prompt per GitHub Copilot Chat</span>
                         <button onclick="copyAiPrompt()" class="btn btn-ghost btn-xs gap-1">
@@ -596,31 +675,16 @@
                             Copia
                         </button>
                     </label>
-                    <textarea id="aiPromptText" class="textarea textarea-bordered h-96 w-full font-mono text-sm" readonly></textarea>
+                    <textarea id="aiPromptText" class="textarea textarea-bordered h-40 w-full font-mono text-sm" readonly></textarea>
                 </div>
 
-                <div class="alert alert-warning">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <div>
-                        <strong>Come usare:</strong>
-                        <ol class="mt-2 list-inside list-decimal text-sm">
-                            <li>Copia il prompt con il pulsante sopra</li>
-                            <li>Apri GitHub Copilot Chat in VS Code (Ctrl+Shift+I)</li>
-                            <li>Incolla il prompt e premi Invio</li>
-                            <li>Applica le modifiche suggerite</li>
-                            <li>Torna qui e marca la violazione come risolta</li>
-                        </ol>
-                    </div>
+                <div class="mt-4 flex items-center gap-2">
+                    <button id="aiApplyBtn" type="button" onclick="applyAiFix()" class="btn btn-primary">Applica correzione</button>
+                    <button type="button" onclick="closeAiFixModal()" class="btn btn-ghost">Chiudi</button>
+                    <div class="ml-auto text-sm text-base-content/60">Nota: verrà creato un backup prima di applicare la modifica.</div>
                 </div>
             </div>
 
-            <div class="modal-action">
-                <button type="button" onclick="closeAiFixModal()" class="btn btn-outline">Chiudi</button>
-            </div>
         </div>
         <form method="dialog" class="modal-backdrop">
             <button onclick="closeAiFixModal()">close</button>
