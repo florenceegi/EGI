@@ -23,7 +23,7 @@ class PaWebScraperSeeder extends Seeder
         $this->command->info('🌱 Seeding PA Web Scrapers...');
 
         // Find first PA user (assume first user or user with pa_entity role)
-        $paUser = User::whereHas('roles', function($q) {
+        $paUser = User::whereHas('roles', function ($q) {
             $q->where('name', 'pa_entity');
         })->first();
 

@@ -131,6 +131,47 @@ class PaWebScraperController extends Controller
     public function store(Request $request): RedirectResponse
     {
         try {
+            // Check if creating from template
+            if ($request->has('template')) {
+                $templateKey = $request->input('template');
+                $templates = $this->getScraperTemplates();
+
+                if (!isset($templates[$templateKey])) {
+                    return back()->with('error', 'Template non trovato');
+                }
+
+                $templateData = $templates[$templateKey];
+                
+                // Add user and status
+                $templateData['user_id'] = Auth::user()->id;
+                $templateData['created_by_user_id'] = Auth::id();
+                $templateData['status'] = 'draft';
+
+                // Convert arrays to JSON for storage
+                if (isset($templateData['headers']) && is_array($templateData['headers'])) {
+                    $templateData['headers'] = $templateData['headers'];
+                }
+                if (isset($templateData['payload_template']) && is_array($templateData['payload_template'])) {
+                    $templateData['payload_template'] = $templateData['payload_template'];
+                }
+                if (isset($templateData['pii_fields_to_exclude']) && is_array($templateData['pii_fields_to_exclude'])) {
+                    $templateData['pii_fields_to_exclude'] = $templateData['pii_fields_to_exclude'];
+                }
+
+                $scraper = PaWebScraper::create($templateData);
+
+                $this->logger->info('[PaWebScraperController] Scraper created from template', [
+                    'scraper_id' => $scraper->id,
+                    'template' => $templateKey,
+                    'name' => $scraper->name
+                ]);
+
+                return redirect()
+                    ->route('pa.scrapers.show', $scraper)
+                    ->with('success', 'Scraper creato con successo dal template');
+            }
+
+            // Manual creation - validate all fields
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'type' => 'required|in:api,html,hybrid',
@@ -146,15 +187,19 @@ class PaWebScraperController extends Controller
                 'pagination_type' => 'nullable|in:none,offset,page,cursor',
                 'pagination_config' => 'nullable|json',
                 'schedule_frequency' => 'nullable|in:manual,hourly,daily,weekly,monthly',
+                'legal_basis' => 'required|string',
+                'data_retention_policy' => 'nullable|string',
+                'is_active' => 'nullable|boolean',
             ]);
 
             $validated['user_id'] = Auth::user()->id;
             $validated['created_by_user_id'] = Auth::id();
             $validated['status'] = 'draft';
+            $validated['is_active'] = $request->boolean('is_active', false);
 
             $scraper = PaWebScraper::create($validated);
 
-            $this->logger->info('[PaWebScraperController] Scraper created', [
+            $this->logger->info('[PaWebScraperController] Scraper created manually', [
                 'scraper_id' => $scraper->id,
                 'name' => $scraper->name
             ]);
