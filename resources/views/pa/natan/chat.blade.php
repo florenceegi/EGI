@@ -2,22 +2,22 @@
     <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
-            {{-- Header --}}
-            <div class="mb-8">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
+            {{-- Header - Ottimizzato per mobile --}}
+            <div class="mb-4 sm:mb-8">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center gap-3 sm:gap-4">
                         <a href="{{ route('pa.acts.index') }}"
                             class="rounded-lg bg-white p-2 shadow-sm transition-all hover:shadow-md">
                             <span class="material-icons text-[#1B365D]">arrow_back</span>
                         </a>
                         <div>
-                            <h1 class="text-3xl font-bold text-[#1B365D]">N.A.T.A.N. Chat AI</h1>
-                            <p class="text-sm text-gray-600">Assistente intelligente per i tuoi atti amministrativi</p>
+                            <h1 class="text-xl font-bold text-[#1B365D] sm:text-3xl">N.A.T.A.N. Chat AI</h1>
+                            <p class="text-xs text-gray-600 sm:text-sm">Assistente intelligente per i tuoi atti</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 rounded-lg bg-green-100 px-4 py-2">
-                        <span class="material-icons text-sm text-green-600">check_circle</span>
-                        <span class="text-sm font-medium text-green-800">AI Attiva</span>
+                    <div class="flex items-center gap-2 rounded-lg bg-green-100 px-3 py-1.5 sm:px-4 sm:py-2">
+                        <span class="material-icons text-xs text-green-600 sm:text-sm">check_circle</span>
+                        <span class="text-xs font-medium text-green-800 sm:text-sm">AI Attiva</span>
                     </div>
                 </div>
             </div>
@@ -30,99 +30,114 @@
                     {{-- Chat Window --}}
                     <div class="rounded-2xl bg-white shadow-xl">
 
-                        {{-- Chat Header --}}
+                        {{-- Chat Header - Ottimizzato per mobile --}}
                         <div
-                            class="rounded-t-2xl border-b border-gray-200 bg-gradient-to-r from-[#1B365D] to-[#2D5016] p-6">
-                            <div class="flex items-center gap-3">
+                            class="rounded-t-2xl border-b border-gray-200 bg-gradient-to-r from-[#1B365D] to-[#2D5016] p-3 sm:p-6">
+                            <div class="flex items-center gap-2 sm:gap-3">
                                 <div
-                                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                                    <span class="material-icons text-2xl text-white">smart_toy</span>
+                                    class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm sm:h-12 sm:w-12">
+                                    <span class="material-icons text-xl text-white sm:text-2xl">smart_toy</span>
                                 </div>
                                 <div>
-                                    <h2 class="text-lg font-bold text-white">N.A.T.A.N.</h2>
-                                    <p class="text-xs text-white/80">Nodo di Analisi e Tracciamento Atti Notarizzati</p>
+                                    <h2 class="text-base font-bold text-white sm:text-lg">N.A.T.A.N.</h2>
+                                    <p class="text-[10px] text-white/80 sm:text-xs">Nodo di Analisi e Tracciamento Atti Notarizzati</p>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Messages Container --}}
-                        <div id="chatMessages" class="h-[600px] space-y-4 overflow-y-auto p-6">
+                        {{-- Messages Container - Ottimizzato per mobile --}}
+                        <div id="chatMessages" class="h-[400px] space-y-3 overflow-y-auto p-3 sm:h-[600px] sm:space-y-4 sm:p-6">
 
-                            {{-- Welcome Message (will be hidden after first message) --}}
+                            {{-- Welcome Message (will be hidden after first message) - Ottimizzato mobile --}}
                             <div id="welcomeMessage"
-                                class="flex h-full flex-col items-center justify-center text-center">
+                                class="flex h-full flex-col items-center justify-center px-2 text-center">
                                 <div
-                                    class="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#1B365D] to-[#2D5016]">
-                                    <span class="material-icons text-4xl text-white">smart_toy</span>
+                                    class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#1B365D] to-[#2D5016] sm:mb-6 sm:h-20 sm:w-20">
+                                    <span class="material-icons text-3xl text-white sm:text-4xl">smart_toy</span>
                                 </div>
-                                <h3 class="mb-2 text-2xl font-bold text-[#1B365D]">Ciao! Sono N.A.T.A.N.</h3>
-                                <p class="mb-8 max-w-md text-gray-600">
-                                    Posso aiutarti ad analizzare i tuoi atti amministrativi, rispondere a domande
-                                    specifiche
-                                    e fornirti insight strategici. Prova a chiedermi qualcosa!
+                                <h3 class="mb-2 text-lg font-bold text-[#1B365D] sm:text-2xl">Ciao! Sono N.A.T.A.N.</h3>
+                                <p class="mb-4 max-w-md text-sm text-gray-600 sm:mb-8 sm:text-base">
+                                    Posso aiutarti ad analizzare i tuoi atti amministrativi. Prova a chiedermi qualcosa!
                                 </p>
 
-                                {{-- Suggested Questions --}}
+                                {{-- Suggested Questions - Collassabile su mobile --}}
                                 <div class="w-full max-w-2xl">
-                                    <div class="mb-4 flex items-center gap-2">
-                                        <p class="text-sm font-medium text-gray-700">Domande suggerite:</p>
-                                        <span
-                                            class="flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                                            <span class="material-icons text-xs">shuffle</span>
-                                            Random
-                                        </span>
-                                        <span class="text-xs text-gray-400">(cambiano ad ogni ricarico)</span>
-                                    </div>
-                                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                                        @foreach ($suggested_questions as $question)
-                                            <button
-                                                onclick="NatanChat.sendSuggestedMessage('{{ addslashes($question) }}')"
-                                                class="group rounded-lg border-2 border-gray-200 bg-white p-3 text-left text-xs transition-all hover:border-[#2D5016] hover:bg-[#2D5016] hover:text-white hover:shadow-md">
+                                    <button id="toggleSuggestedQuestions" 
+                                        class="mb-2 flex w-full items-center justify-between rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 sm:hidden">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-icons text-sm text-[#2D5016]">auto_awesome</span>
+                                            <span class="text-xs font-medium text-gray-700">Domande suggerite</span>
+                                            <span class="flex items-center gap-1 rounded-full bg-yellow-100 px-1.5 py-0.5 text-[10px] font-medium text-yellow-800">
+                                                <span class="material-icons text-[10px]">shuffle</span>
+                                                Random
+                                            </span>
+                                        </div>
+                                        <span id="toggleIcon" class="material-icons text-sm text-gray-500">expand_more</span>
+                                    </button>
+                                    
+                                    <div id="suggestedQuestionsContent" class="hidden sm:block">
+                                        <div class="mb-2 hidden flex-col gap-1 sm:mb-4 sm:flex sm:flex-row sm:items-center sm:gap-2">
+                                            <p class="text-xs font-medium text-gray-700 sm:text-sm">Domande suggerite:</p>
+                                            <div class="flex items-center gap-1">
                                                 <span
-                                                    class="material-icons mr-2 inline-block text-sm text-[#2D5016] group-hover:text-white">auto_awesome</span>
-                                                <span class="line-clamp-3">{{ Str::limit($question, 120) }}</span>
-                                            </button>
-                                        @endforeach
+                                                    class="flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                                                    <span class="material-icons text-xs">shuffle</span>
+                                                    Random
+                                                </span>
+                                                <span class="text-[10px] text-gray-400 sm:text-xs">(cambiano ad ogni ricarico)</span>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-2 sm:gap-3 md:grid-cols-2">
+                                            @foreach ($suggested_questions as $question)
+                                                <button
+                                                    onclick="NatanChat.sendSuggestedMessage('{{ addslashes($question) }}')"
+                                                    class="group rounded-lg border-2 border-gray-200 bg-white p-2 text-left text-xs transition-all hover:border-[#2D5016] hover:bg-[#2D5016] hover:text-white hover:shadow-md sm:p-3">
+                                                    <span
+                                                        class="material-icons mr-1 inline-block text-xs text-[#2D5016] group-hover:text-white sm:mr-2 sm:text-sm">auto_awesome</span>
+                                                    <span class="line-clamp-3 text-[11px] sm:text-xs">{{ Str::limit($question, 100) }}</span>
+                                                </button>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Persona Selector --}}
-                        <div class="border-t border-gray-200 p-4">
+                        {{-- Persona Selector - Ottimizzato mobile --}}
+                        <div class="border-t border-gray-200 p-2 sm:p-4">
                             <x-natan-persona-selector />
                         </div>
 
-                        {{-- Input Area --}}
-                        <div class="rounded-b-2xl border-t border-gray-200 bg-gray-50 p-4">
-                            <form id="chatForm" class="flex gap-2">
-                                <textarea id="userInput" rows="1" placeholder="Scrivi la tua domanda a N.A.T.A.N... (Shift+Enter per inviare)"
-                                    class="flex-1 resize-none rounded-xl border-2 border-gray-200 px-4 py-3 focus:border-[#2D5016] focus:outline-none focus:ring-2 focus:ring-[#2D5016]/20 disabled:cursor-not-allowed disabled:bg-gray-100"
-                                    style="max-height: 200px; overflow-y: auto;"></textarea>
+                        {{-- Input Area - Ottimizzato mobile --}}
+                        <div class="rounded-b-2xl border-t border-gray-200 bg-gray-50 p-2 sm:p-4">
+                            <form id="chatForm" class="flex gap-1.5 sm:gap-2">
+                                <textarea id="userInput" rows="1" placeholder="Scrivi la tua domanda... (Shift+Enter)"
+                                    class="flex-1 resize-none rounded-xl border-2 border-gray-200 px-3 py-2 text-sm focus:border-[#2D5016] focus:outline-none focus:ring-2 focus:ring-[#2D5016]/20 disabled:cursor-not-allowed disabled:bg-gray-100 sm:px-4 sm:py-3 sm:text-base"
+                                    style="max-height: 150px; overflow-y: auto;"></textarea>
                                 <button type="submit" id="sendBtn"
-                                    class="flex items-center gap-2 self-end rounded-xl bg-[#2D5016] px-6 py-3 font-medium text-white transition-all hover:bg-[#3D6026] disabled:cursor-not-allowed disabled:opacity-50">
-                                    <span id="sendBtnText">Invia</span>
-                                    <span id="sendBtnLoader" class="flex hidden items-center gap-2">
-                                        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    class="flex items-center gap-1 self-end rounded-xl bg-[#2D5016] px-3 py-2 text-sm font-medium text-white transition-all hover:bg-[#3D6026] disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-6 sm:py-3 sm:text-base">
+                                    <span id="sendBtnText" class="hidden sm:inline">Invia</span>
+                                    <span id="sendBtnLoader" class="hidden items-center gap-1 sm:gap-2">
+                                        <svg class="h-3 w-3 animate-spin sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10"
                                                 stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor"
                                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                             </path>
                                         </svg>
-                                        <span>Invio...</span>
+                                        <span class="hidden sm:inline">Invio...</span>
                                     </span>
-                                    <span class="material-icons">send</span>
+                                    <span class="material-icons text-lg sm:text-2xl">send</span>
                                 </button>
                             </form>
                         </div>
                     </div>
 
-                    {{-- Info Footer --}}
-                    <div class="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
-                        <div class="flex items-start gap-2">
-                            <span class="material-icons text-sm text-blue-600">info</span>
-                            <div class="text-xs text-blue-800">
+                    {{-- Info Footer - Ottimizzato mobile --}}
+                    <div class="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-2 sm:mt-4 sm:p-3">
+                        <div class="flex items-start gap-1.5 sm:gap-2">
+                            <span class="material-icons text-xs text-blue-600 sm:text-sm">info</span>
+                            <div class="text-[10px] text-blue-800 sm:text-xs">
                                 <p class="font-medium">N.A.T.A.N. con Claude 3.5 Sonnet</p>
                                 <p class="text-blue-600">Sistema multi-persona · GDPR compliant</p>
                             </div>
@@ -1192,6 +1207,27 @@
             } else {
                 NatanChat.init();
             }
+
+            // Toggle Suggested Questions on Mobile
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggleBtn = document.getElementById('toggleSuggestedQuestions');
+                const content = document.getElementById('suggestedQuestionsContent');
+                const icon = document.getElementById('toggleIcon');
+
+                if (toggleBtn && content && icon) {
+                    toggleBtn.addEventListener('click', function() {
+                        const isHidden = content.classList.contains('hidden');
+                        
+                        if (isHidden) {
+                            content.classList.remove('hidden');
+                            icon.textContent = 'expand_less';
+                        } else {
+                            content.classList.add('hidden');
+                            icon.textContent = 'expand_more';
+                        }
+                    });
+                }
+            });
 
             /**
              * Free Chat - Pure Claude conversation (no RAG)
