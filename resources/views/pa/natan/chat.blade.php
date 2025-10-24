@@ -40,13 +40,15 @@
                                 </div>
                                 <div>
                                     <h2 class="text-base font-bold text-white sm:text-lg">N.A.T.A.N.</h2>
-                                    <p class="text-[10px] text-white/80 sm:text-xs">Nodo di Analisi e Tracciamento Atti Notarizzati</p>
+                                    <p class="text-[10px] text-white/80 sm:text-xs">Nodo di Analisi e Tracciamento Atti
+                                        Notarizzati</p>
                                 </div>
                             </div>
                         </div>
 
                         {{-- Messages Container - Ottimizzato per mobile --}}
-                        <div id="chatMessages" class="h-[400px] space-y-3 overflow-y-auto p-3 sm:h-[600px] sm:space-y-4 sm:p-6">
+                        <div id="chatMessages"
+                            class="h-[400px] space-y-3 overflow-y-auto p-3 sm:h-[600px] sm:space-y-4 sm:p-6">
 
                             {{-- Welcome Message (will be hidden after first message) - Ottimizzato mobile --}}
                             <div id="welcomeMessage"
@@ -62,29 +64,34 @@
 
                                 {{-- Suggested Questions - Collassabile su mobile --}}
                                 <div class="w-full max-w-2xl">
-                                    <button id="toggleSuggestedQuestions" 
+                                    <button id="toggleSuggestedQuestions"
                                         class="mb-2 flex w-full items-center justify-between rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 sm:hidden">
                                         <div class="flex items-center gap-2">
                                             <span class="material-icons text-sm text-[#2D5016]">auto_awesome</span>
                                             <span class="text-xs font-medium text-gray-700">Domande suggerite</span>
-                                            <span class="flex items-center gap-1 rounded-full bg-yellow-100 px-1.5 py-0.5 text-[10px] font-medium text-yellow-800">
+                                            <span
+                                                class="flex items-center gap-1 rounded-full bg-yellow-100 px-1.5 py-0.5 text-[10px] font-medium text-yellow-800">
                                                 <span class="material-icons text-[10px]">shuffle</span>
                                                 Random
                                             </span>
                                         </div>
-                                        <span id="toggleIcon" class="material-icons text-sm text-gray-500">expand_more</span>
+                                        <span id="toggleIcon"
+                                            class="material-icons text-sm text-gray-500">expand_more</span>
                                     </button>
-                                    
+
                                     <div id="suggestedQuestionsContent" class="hidden sm:block">
-                                        <div class="mb-2 hidden flex-col gap-1 sm:mb-4 sm:flex sm:flex-row sm:items-center sm:gap-2">
-                                            <p class="text-xs font-medium text-gray-700 sm:text-sm">Domande suggerite:</p>
+                                        <div
+                                            class="mb-2 hidden flex-col gap-1 sm:mb-4 sm:flex sm:flex-row sm:items-center sm:gap-2">
+                                            <p class="text-xs font-medium text-gray-700 sm:text-sm">Domande suggerite:
+                                            </p>
                                             <div class="flex items-center gap-1">
                                                 <span
                                                     class="flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
                                                     <span class="material-icons text-xs">shuffle</span>
                                                     Random
                                                 </span>
-                                                <span class="text-[10px] text-gray-400 sm:text-xs">(cambiano ad ogni ricarico)</span>
+                                                <span class="text-[10px] text-gray-400 sm:text-xs">(cambiano ad ogni
+                                                    ricarico)</span>
                                             </div>
                                         </div>
                                         <div class="grid grid-cols-1 gap-2 sm:gap-3 md:grid-cols-2">
@@ -94,7 +101,8 @@
                                                     class="group rounded-lg border-2 border-gray-200 bg-white p-2 text-left text-xs transition-all hover:border-[#2D5016] hover:bg-[#2D5016] hover:text-white hover:shadow-md sm:p-3">
                                                     <span
                                                         class="material-icons mr-1 inline-block text-xs text-[#2D5016] group-hover:text-white sm:mr-2 sm:text-sm">auto_awesome</span>
-                                                    <span class="line-clamp-3 text-[11px] sm:text-xs">{{ Str::limit($question, 100) }}</span>
+                                                    <span
+                                                        class="line-clamp-3 text-[11px] sm:text-xs">{{ Str::limit($question, 100) }}</span>
                                                 </button>
                                             @endforeach
                                         </div>
@@ -118,7 +126,8 @@
                                     class="flex items-center gap-1 self-end rounded-xl bg-[#2D5016] px-3 py-2 text-sm font-medium text-white transition-all hover:bg-[#3D6026] disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-6 sm:py-3 sm:text-base">
                                     <span id="sendBtnText" class="hidden sm:inline">Invia</span>
                                     <span id="sendBtnLoader" class="hidden items-center gap-1 sm:gap-2">
-                                        <svg class="h-3 w-3 animate-spin sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24">
+                                        <svg class="h-3 w-3 animate-spin sm:h-4 sm:w-4" fill="none"
+                                            viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10"
                                                 stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor"
@@ -769,29 +778,29 @@
 
                         personaBadgeDiv.innerHTML = `
                             ${message.is_elaboration ? `
-                                                        <span class="elaboration-badge">
-                                                            🔄 Elaborazione
-                                                        </span>
-                                                    ` : ''}
-                            <span style="background-color: ${personaColor};" 
+                                                                <span class="elaboration-badge">
+                                                                    🔄 Elaborazione
+                                                                </span>
+                                                            ` : ''}
+                            <span style="background-color: ${personaColor};"
                                   class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
                                 <span>${personaIcon}</span>
                                 <span>${message.persona.name}</span>
                             </span>
                             ${message.persona.confidence ? `
-                                                                                <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
-                                                                                    ${Math.round(message.persona.confidence * 100)}%
-                                                                                </span>
-                                                                            ` : ''}
+                                                                                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
+                                                                                            ${Math.round(message.persona.confidence * 100)}%
+                                                                                        </span>
+                                                                                    ` : ''}
                             ${message.persona.method === 'manual' ? `
-                                                                                <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
-                                                                                    ✓ Manuale
-                                                                                </span>
-                                                                            ` : message.persona.method === 'default' ? `
-                                                                                <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
-                                                                                    Auto (Default)
-                                                                                </span>
-                                                                            ` : ''}
+                                                                                        <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
+                                                                                            ✓ Manuale
+                                                                                        </span>
+                                                                                    ` : message.persona.method === 'default' ? `
+                                                                                        <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
+                                                                                            Auto (Default)
+                                                                                        </span>
+                                                                                    ` : ''}
                         `;
                         bubbleDiv.appendChild(personaBadgeDiv);
 
@@ -837,13 +846,13 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-1">
                                 ${message.sources.map(source => `
-                                                    <a href="${source.url}" target="_blank"
-                                                       class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
-                                                        <span class="font-medium">${source.protocol_number}</span>
-                                                        <span class="text-gray-600"> - </span>
-                                                        <span>${source.title}</span>
-                                                    </a>
-                                                `).join('')}
+                                                            <a href="${source.url}" target="_blank"
+                                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
+                                                                <span class="font-medium">${source.protocol_number}</span>
+                                                                <span class="text-gray-600"> - </span>
+                                                                <span>${source.title}</span>
+                                                            </a>
+                                                        `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(sourcesDiv);
@@ -878,7 +887,7 @@
                             'mt-3 flex flex-wrap gap-2 border-t border-gray-100 pt-3';
                         quickActionsDiv.innerHTML = `
                             <span class="text-xs font-medium text-gray-500">💬 Elabora questa risposta:</span>
-                            <button class="quick-action-btn" data-action="simplify" data-message-id="${message.message_id}" 
+                            <button class="quick-action-btn" data-action="simplify" data-message-id="${message.message_id}"
                                     title="Semplifica per cittadini o non esperti">
                                 💡 Semplifica
                             </button>
@@ -1177,7 +1186,7 @@
                             <div class="flex-1">
                                 <p class="text-sm text-blue-800">${suggestionText}</p>
                             </div>
-                            <button onclick="document.getElementById('personaSuggestionBanner').remove()" 
+                            <button onclick="document.getElementById('personaSuggestionBanner').remove()"
                                     class="text-blue-400 hover:text-blue-600">
                                 <span class="material-icons text-sm">close</span>
                             </button>
@@ -1217,7 +1226,7 @@
                 if (toggleBtn && content && icon) {
                     toggleBtn.addEventListener('click', function() {
                         const isHidden = content.classList.contains('hidden');
-                        
+
                         if (isHidden) {
                             content.classList.remove('hidden');
                             icon.textContent = 'expand_less';
