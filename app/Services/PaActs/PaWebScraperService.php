@@ -399,7 +399,8 @@ class PaWebScraperService
         $jsonPayload = json_encode($payload);
 
         foreach ($variables as $key => $value) {
-            $jsonPayload = str_replace("{{" . $key . "}}", $value, $jsonPayload);
+            // Cast to string to avoid type errors with integers
+            $jsonPayload = str_replace("{{" . $key . "}}", (string)$value, $jsonPayload);
         }
 
         return json_decode($jsonPayload, true);
