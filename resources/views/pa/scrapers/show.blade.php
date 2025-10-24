@@ -85,6 +85,86 @@
         </div>
     </div>
 
+    {{-- Test/Preview Section --}}
+    <div class="mb-8 rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 p-6">
+        <h3 class="mb-4 flex items-center gap-2 text-lg font-bold text-[#1B365D]">
+            <span class="material-symbols-outlined">science</span>
+            Test Scraper - Anteprima Risultati
+        </h3>
+        <p class="mb-4 text-sm text-gray-700">
+            Testa lo scraper per vedere quanti atti trova <strong>SENZA importarli</strong> nel database.
+            Utile per verificare la configurazione prima di eseguire l'importazione completa.
+        </p>
+
+        <form id="previewForm" class="flex items-end gap-4">
+            <div class="flex-1">
+                <label for="preview_year" class="mb-2 block text-sm font-semibold text-gray-700">Anno da testare</label>
+                <input type="number" id="preview_year" name="year" 
+                    value="{{ date('Y') }}" min="2000" max="{{ date('Y') + 1 }}" 
+                    class="w-full rounded-lg border-2 border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    placeholder="Es: 2024">
+            </div>
+            <button type="submit" id="previewBtn"
+                class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 font-semibold text-white transition-colors hover:bg-blue-700">
+                <span class="material-symbols-outlined">search</span>
+                Testa
+            </button>
+        </form>
+
+        {{-- Preview Results --}}
+        <div id="previewResults" class="mt-4 hidden">
+            <div class="rounded-lg border border-blue-200 bg-white p-4">
+                <div class="mb-3 flex items-center justify-between border-b border-gray-200 pb-3">
+                    <h4 class="text-lg font-bold text-[#1B365D]">
+                        <span id="previewCount">0</span> atti trovati per l'anno <span id="previewYear">-</span>
+                    </h4>
+                    <button id="importBtn" data-year="" data-scraper-id="{{ $scraper->id }}"
+                        class="inline-flex items-center gap-2 rounded-lg bg-[#2D5016] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#1F3810]">
+                        <span class="material-symbols-outlined">download</span>
+                        Importa Questi Atti
+                    </button>
+                </div>
+                
+                <div id="previewActsInfo" class="space-y-2 text-sm">
+                    {{-- First act example --}}
+                    <div id="firstActInfo" class="rounded border border-gray-200 bg-gray-50 p-3">
+                        <p class="mb-1 font-semibold text-gray-700">Primo atto:</p>
+                        <div class="text-gray-600">
+                            <p><strong>N°:</strong> <span id="firstActNumero">-</span></p>
+                            <p><strong>Data:</strong> <span id="firstActData">-</span></p>
+                            <p><strong>Tipo:</strong> <span id="firstActTipo">-</span></p>
+                            <p><strong>Oggetto:</strong> <span id="firstActOggetto">-</span></p>
+                        </div>
+                    </div>
+                    
+                    {{-- Last act example --}}
+                    <div id="lastActInfo" class="rounded border border-gray-200 bg-gray-50 p-3">
+                        <p class="mb-1 font-semibold text-gray-700">Ultimo atto:</p>
+                        <div class="text-gray-600">
+                            <p><strong>N°:</strong> <span id="lastActNumero">-</span></p>
+                            <p><strong>Data:</strong> <span id="lastActData">-</span></p>
+                            <p><strong>Tipo:</strong> <span id="lastActTipo">-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Preview Loading --}}
+        <div id="previewLoading" class="mt-4 hidden text-center">
+            <div class="inline-flex items-center gap-3 rounded-lg bg-white px-6 py-3 shadow">
+                <div class="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+                <span class="text-sm font-medium text-gray-700">Test in corso...</span>
+            </div>
+        </div>
+
+        {{-- Preview Error --}}
+        <div id="previewError" class="mt-4 hidden rounded-lg border border-red-200 bg-red-50 p-4">
+            <p class="font-semibold text-red-800">Errore durante il test:</p>
+            <p id="previewErrorMessage" class="mt-1 text-sm text-red-700"></p>
+        </div>
+    </div>
+
     {{-- Stats Row --}}
     <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
         <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -469,6 +549,105 @@
                     }
                 }
             }, 100);
+        });
+
+        // ============================================
+        // PREVIEW/TEST FUNCTIONALITY
+        // ============================================
+        const previewForm = document.getElementById('previewForm');
+        const previewLoading = document.getElementById('previewLoading');
+        const previewResults = document.getElementById('previewResults');
+        const previewError = document.getElementById('previewError');
+        const importBtn = document.getElementById('importBtn');
+
+        previewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const year = document.getElementById('preview_year').value;
+            
+            // Hide previous results/errors
+            previewResults.classList.add('hidden');
+            previewError.classList.add('hidden');
+            previewLoading.classList.remove('hidden');
+            
+            try {
+                const response = await fetch('{{ route('pa.scrapers.preview', $scraper) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ year: year })
+                });
+                
+                const data = await response.json();
+                
+                previewLoading.classList.add('hidden');
+                
+                if (data.success) {
+                    // Show results
+                    document.getElementById('previewCount').textContent = data.count;
+                    document.getElementById('previewYear').textContent = data.year;
+                    importBtn.dataset.year = data.year;
+                    
+                    // First act
+                    if (data.first_act) {
+                        document.getElementById('firstActNumero').textContent = data.first_act.numero || '-';
+                        document.getElementById('firstActData').textContent = data.first_act.data || '-';
+                        document.getElementById('firstActTipo').textContent = data.first_act.tipo || '-';
+                        document.getElementById('firstActOggetto').textContent = data.first_act.oggetto || '-';
+                    }
+                    
+                    // Last act
+                    if (data.last_act) {
+                        document.getElementById('lastActNumero').textContent = data.last_act.numero || '-';
+                        document.getElementById('lastActData').textContent = data.last_act.data || '-';
+                        document.getElementById('lastActTipo').textContent = data.last_act.tipo || '-';
+                    }
+                    
+                    previewResults.classList.remove('hidden');
+                } else {
+                    // Show error
+                    document.getElementById('previewErrorMessage').textContent = data.error || 'Errore sconosciuto';
+                    previewError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Preview error:', error);
+                previewLoading.classList.add('hidden');
+                document.getElementById('previewErrorMessage').textContent = 'Errore di rete: ' + error.message;
+                previewError.classList.remove('hidden');
+            }
+        });
+
+        // Import button - trigger scraping with specific year
+        importBtn.addEventListener('click', function() {
+            const year = this.dataset.year;
+            const scraperId = this.dataset.scraperId;
+            
+            // Create a hidden form to submit with year parameter
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route('pa.scrapers.run', $scraper) }}';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            
+            const yearInput = document.createElement('input');
+            yearInput.type = 'hidden';
+            yearInput.name = 'year';
+            yearInput.value = year;
+            
+            form.appendChild(csrfInput);
+            form.appendChild(yearInput);
+            
+            // Show loading modal before submit
+            showLoadingModal('run');
+            
+            document.body.appendChild(form);
+            form.submit();
         });
     </script>
 

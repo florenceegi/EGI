@@ -222,6 +222,7 @@ Route::prefix('pa')
             Route::put('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'update'])->name('update');
             Route::delete('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'destroy'])->name('destroy');
             Route::post('/{scraper}/test', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'test'])->name('test');
+            Route::post('/{scraper}/preview', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'preview'])->name('preview');
             Route::post('/{scraper}/run', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'run'])->name('run');
             Route::get('/{scraper}/progress', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'progress'])->name('progress');
             Route::post('/{scraper}/toggle', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'toggle'])->name('toggle');
