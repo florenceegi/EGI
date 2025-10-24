@@ -69,12 +69,13 @@ class PadminService {
         $this->nodeTimeout = (int) env('PADMIN_NODE_TIMEOUT', 30);
         $this->redisStackEnabled = env('PADMIN_REDIS_ENABLED', true);
 
-        $this->logger->debug('[PadminService] Service initialized', [
-            'node' => $this->nodeExecutable,
-            'cli_path' => $this->cliScriptPath,
-            'timeout' => $this->nodeTimeout,
-            'redis_enabled' => $this->redisStackEnabled,
-        ]);
+        // Log disabilitato temporaneamente per evitare spam nei log
+        // $this->logger->debug('[PadminService] Service initialized', [
+        //     'node' => $this->nodeExecutable,
+        //     'cli_path' => $this->cliScriptPath,
+        //     'timeout' => $this->nodeTimeout,
+        //     'redis_enabled' => $this->redisStackEnabled,
+        // ]);
     }
 
     /**
