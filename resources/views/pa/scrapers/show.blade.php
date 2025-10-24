@@ -99,8 +99,8 @@
         <form id="previewForm" class="flex items-end gap-4">
             <div class="flex-1">
                 <label for="preview_year" class="mb-2 block text-sm font-semibold text-gray-700">Anno da testare</label>
-                <input type="number" id="preview_year" name="year" 
-                    value="{{ date('Y') }}" min="2000" max="{{ date('Y') + 1 }}" 
+                <input type="number" id="preview_year" name="year" value="{{ date('Y') }}" min="2000"
+                    max="{{ date('Y') + 1 }}"
                     class="w-full rounded-lg border-2 border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     placeholder="Es: 2024">
             </div>
@@ -124,7 +124,7 @@
                         Importa Questi Atti
                     </button>
                 </div>
-                
+
                 <div id="previewActsInfo" class="space-y-2 text-sm">
                     {{-- First act example --}}
                     <div id="firstActInfo" class="rounded border border-gray-200 bg-gray-50 p-3">
@@ -136,7 +136,7 @@
                             <p><strong>Oggetto:</strong> <span id="firstActOggetto">-</span></p>
                         </div>
                     </div>
-                    
+
                     {{-- Last act example --}}
                     <div id="lastActInfo" class="rounded border border-gray-200 bg-gray-50 p-3">
                         <p class="mb-1 font-semibold text-gray-700">Ultimo atto:</p>
@@ -562,14 +562,14 @@
 
         previewForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const year = document.getElementById('preview_year').value;
-            
+
             // Hide previous results/errors
             previewResults.classList.add('hidden');
             previewError.classList.add('hidden');
             previewLoading.classList.remove('hidden');
-            
+
             try {
                 const response = await fetch('{{ route('pa.scrapers.preview', $scraper) }}', {
                     method: 'POST',
@@ -578,19 +578,21 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ year: year })
+                    body: JSON.stringify({
+                        year: year
+                    })
                 });
-                
+
                 const data = await response.json();
-                
+
                 previewLoading.classList.add('hidden');
-                
+
                 if (data.success) {
                     // Show results
                     document.getElementById('previewCount').textContent = data.count;
                     document.getElementById('previewYear').textContent = data.year;
                     importBtn.dataset.year = data.year;
-                    
+
                     // First act
                     if (data.first_act) {
                         document.getElementById('firstActNumero').textContent = data.first_act.numero || '-';
@@ -598,18 +600,19 @@
                         document.getElementById('firstActTipo').textContent = data.first_act.tipo || '-';
                         document.getElementById('firstActOggetto').textContent = data.first_act.oggetto || '-';
                     }
-                    
+
                     // Last act
                     if (data.last_act) {
                         document.getElementById('lastActNumero').textContent = data.last_act.numero || '-';
                         document.getElementById('lastActData').textContent = data.last_act.data || '-';
                         document.getElementById('lastActTipo').textContent = data.last_act.tipo || '-';
                     }
-                    
+
                     previewResults.classList.remove('hidden');
                 } else {
                     // Show error
-                    document.getElementById('previewErrorMessage').textContent = data.error || 'Errore sconosciuto';
+                    document.getElementById('previewErrorMessage').textContent = data.error ||
+                        'Errore sconosciuto';
                     previewError.classList.remove('hidden');
                 }
             } catch (error) {
@@ -624,28 +627,28 @@
         importBtn.addEventListener('click', function() {
             const year = this.dataset.year;
             const scraperId = this.dataset.scraperId;
-            
+
             // Create a hidden form to submit with year parameter
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '{{ route('pa.scrapers.run', $scraper) }}';
-            
+
             const csrfInput = document.createElement('input');
             csrfInput.type = 'hidden';
             csrfInput.name = '_token';
             csrfInput.value = '{{ csrf_token() }}';
-            
+
             const yearInput = document.createElement('input');
             yearInput.type = 'hidden';
             yearInput.name = 'year';
             yearInput.value = year;
-            
+
             form.appendChild(csrfInput);
             form.appendChild(yearInput);
-            
+
             // Show loading modal before submit
             showLoadingModal('run');
-            
+
             document.body.appendChild(form);
             form.submit();
         });
