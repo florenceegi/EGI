@@ -58,7 +58,7 @@
 
             {{-- Run Manually --}}
             <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}"
-                onsubmit="sessionStorage.setItem('scraperRunning', 'true'); sessionStorage.setItem('scraperId', '{{ $scraper->id }}'); showLoadingModal('run'); return true;">
+                onsubmit="showLoadingModal('run'); return true;">
                 @csrf
                 <button type="submit"
                     class="inline-flex items-center gap-2 rounded-lg bg-[#2D5016] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#1F3810]">
@@ -502,20 +502,14 @@
                         updateProgress(data);
                     } else if (data.status === 'completed') {
                         console.log('[SCRAPER] Status: COMPLETED - Showing final results and stopping polling');
-                        // Show final results before stopping
+                        // Show final results
                         updateProgress(data);
                         clearInterval(progressInterval);
                         
-                        // Clear sessionStorage immediately to avoid loops
-                        sessionStorage.removeItem('scraperRunning');
-                        sessionStorage.removeItem('scraperId');
-                        
-                        // Auto-hide modal after 5 seconds
+                        // Auto-hide modal after 3 seconds and reload to show success message
                         setTimeout(() => {
-                            const modal = document.getElementById('loadingModal');
-                            modal.classList.add('hidden');
-                            modal.classList.remove('flex');
-                        }, 5000);
+                            window.location.reload();
+                        }, 3000);
                     } else {
                         console.log('[SCRAPER] Status: NOT RUNNING');
                     }
@@ -557,73 +551,21 @@
             }
         });
 
-        // Check if scraper was running before page reload
+        // Hide modal if page reloads with success/error messages
         window.addEventListener('load', function() {
-            const scraperRunning = sessionStorage.getItem('scraperRunning');
-            const scraperId = sessionStorage.getItem('scraperId');
-
-            console.log('[SCRAPER] Page loaded. scraperRunning:', scraperRunning, 'scraperId:', scraperId);
-
-            if (scraperRunning === 'true' && scraperId === '{{ $scraper->id }}') {
-                console.log('[SCRAPER] Scraper was running before reload - reactivating modal and polling...');
-
-                // Scraper is running, show modal and start polling
-                const modal = document.getElementById('loadingModal');
-                const modalTitle = document.getElementById('modalTitle');
-                const modalMessage = document.getElementById('modalMessage');
-                const modalIcon = document.getElementById('modalIcon');
-
-                modalTitle.textContent = 'Esecuzione Scraper in corso...';
-                modalMessage.innerHTML =
-                    'Stiamo estraendo gli atti da <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.';
-                modalIcon.textContent = 'play_arrow';
-
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-
-                console.log('[SCRAPER] Modal shown, starting polling...');
-
-                // Start polling immediately
-                startProgressPolling();
-                
-                // Also check immediately (don't wait 1.5s for first poll)
-                fetch('{{ route('pa.scrapers.progress', $scraper) }}')
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('[SCRAPER] Initial check - Progress data:', data);
-                        if (data.status === 'running') {
-                            updateProgress(data);
-                        } else if (data.status === 'completed') {
-                            updateProgress(data);
-                            clearInterval(progressInterval);
-                            // Clear sessionStorage immediately
-                            sessionStorage.removeItem('scraperRunning');
-                            sessionStorage.removeItem('scraperId');
-                            // Auto-hide modal after 5 seconds
-                            setTimeout(() => {
-                                const modal = document.getElementById('loadingModal');
-                                modal.classList.add('hidden');
-                                modal.classList.remove('flex');
-                            }, 5000);
-                        }
-                    })
-                    .catch(error => console.error('[SCRAPER] Initial check error:', error));
-            } else {
-                console.log('[SCRAPER] No active scraper detected or different scraper ID');
-            }
-
-            // Hide modal if page loads with errors (form will not have been processed)
+            console.log('[SCRAPER] Page loaded');
+            
+            // Hide modal if there are success/error messages (scraping completed)
             setTimeout(function() {
                 const modal = document.getElementById('loadingModal');
-                if (modal && !modal.classList.contains('hidden')) {
-                    // Check if there are any success/error messages (meaning scraping completed)
-                    const hasMessages = document.querySelector('.alert-success, .alert-error');
-                    if (hasMessages) {
-                        modal.classList.add('hidden');
-                        modal.classList.remove('flex');
-                        // Clear sessionStorage flags
-                        sessionStorage.removeItem('scraperRunning');
-                        sessionStorage.removeItem('scraperId');
+                const hasMessages = document.querySelector('.alert-success, .alert-error');
+                
+                if (modal && !modal.classList.contains('hidden') && hasMessages) {
+                    console.log('[SCRAPER] Found success/error message, hiding modal');
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    if (progressInterval) {
+                        clearInterval(progressInterval);
                     }
                 }
             }, 100);
@@ -704,33 +646,28 @@
         // Import button - trigger scraping with specific year
         importBtn.addEventListener('click', function() {
             const year = this.dataset.year;
-            const scraperId = this.dataset.scraperId;
-
-            // Set flag in sessionStorage to show modal after page reload
-            sessionStorage.setItem('scraperRunning', 'true');
-            sessionStorage.setItem('scraperId', scraperId);
-
+            
             // Create a hidden form to submit with year parameter
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '{{ route('pa.scrapers.run', $scraper) }}';
-
+            
             const csrfInput = document.createElement('input');
             csrfInput.type = 'hidden';
             csrfInput.name = '_token';
             csrfInput.value = '{{ csrf_token() }}';
-
+            
             const yearInput = document.createElement('input');
             yearInput.type = 'hidden';
             yearInput.name = 'year';
             yearInput.value = year;
-
+            
             form.appendChild(csrfInput);
             form.appendChild(yearInput);
-
+            
             // Show loading modal before submit
             showLoadingModal('run');
-
+            
             document.body.appendChild(form);
             form.submit();
         });
