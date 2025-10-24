@@ -571,11 +571,25 @@ class PaWebScraperService
         $saved = 0;
         $skipped = 0;
         $errors = [];
+        $totalActs = count($acts);
+        $processed = 0;
+
+        // Initialize progress tracking in cache
+        $progressKey = "scraper_progress_{$scraper->id}_{$user->id}";
+        cache()->put($progressKey, [
+            'total' => $totalActs,
+            'processed' => 0,
+            'saved' => 0,
+            'skipped' => 0,
+            'status' => 'running',
+            'started_at' => now()->toIso8601String(),
+        ], now()->addMinutes(30));
 
         // Get or create Collection for web scraped acts
         $collection = $this->getOrCreateWebScrapedCollection($user);
 
-        foreach ($acts as $act) {
+        foreach ($acts as $index => $act) {
+            $processed++;
             try {
                 // Check if act already exists (by protocol number + date)
                 $exists = Egi::where('user_id', $user->id)
@@ -588,6 +602,20 @@ class PaWebScraperService
                     $this->logger->debug('[PaWebScraperService] Act already exists, skipping', [
                         'protocol_number' => $act['protocol_number']
                     ]);
+                    
+                    // Update progress every 5 acts or on last
+                    if ($processed % 5 === 0 || $processed === $totalActs) {
+                        cache()->put($progressKey, [
+                            'total' => $totalActs,
+                            'processed' => $processed,
+                            'saved' => $saved,
+                            'skipped' => $skipped,
+                            'status' => 'running',
+                            'current_title' => $act['title'] ?? '',
+                            'started_at' => cache($progressKey)['started_at'] ?? now()->toIso8601String(),
+                        ], now()->addMinutes(30));
+                    }
+                    
                     continue;
                 }
 
@@ -628,6 +656,19 @@ class PaWebScraperService
                     'protocol_number' => $act['protocol_number']
                 ]);
 
+                // Update progress every 5 acts or on last
+                if ($processed % 5 === 0 || $processed === $totalActs) {
+                    cache()->put($progressKey, [
+                        'total' => $totalActs,
+                        'processed' => $processed,
+                        'saved' => $saved,
+                        'skipped' => $skipped,
+                        'status' => 'running',
+                        'current_title' => $act['title'] ?? '',
+                        'started_at' => cache($progressKey)['started_at'] ?? now()->toIso8601String(),
+                    ], now()->addMinutes(30));
+                }
+
                 // AUTO-GENERATE EMBEDDING for semantic search
                 try {
                     $embeddingService = app(\App\Services\EmbeddingService::class);
@@ -663,6 +704,17 @@ class PaWebScraperService
             'skipped' => $skipped,
             'errors' => count($errors)
         ]);
+
+        // Mark progress as completed
+        cache()->put($progressKey, [
+            'total' => $totalActs,
+            'processed' => $processed,
+            'saved' => $saved,
+            'skipped' => $skipped,
+            'status' => 'completed',
+            'started_at' => cache($progressKey)['started_at'] ?? now()->toIso8601String(),
+            'completed_at' => now()->toIso8601String(),
+        ], now()->addMinutes(30));
 
         return [
             'saved' => $saved,

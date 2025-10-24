@@ -318,7 +318,27 @@
             </p>
 
             {{-- Progress Indicators --}}
-            <div class="space-y-2">
+            <div id="progressStats" class="space-y-3 hidden">
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="rounded-lg bg-blue-50 p-3">
+                        <div class="text-2xl font-bold text-[#1B365D]" id="processedCount">0</div>
+                        <div class="text-xs text-gray-600">Atti elaborati</div>
+                    </div>
+                    <div class="rounded-lg bg-green-50 p-3">
+                        <div class="text-2xl font-bold text-[#2D5016]" id="savedCount">0</div>
+                        <div class="text-xs text-gray-600">Atti salvati</div>
+                    </div>
+                </div>
+                <div class="rounded-lg bg-gray-50 p-3 text-center">
+                    <div class="text-lg font-semibold text-gray-700" id="skippedCount">0</div>
+                    <div class="text-xs text-gray-600">Atti già presenti (skipped)</div>
+                </div>
+                <div class="text-xs text-gray-500 text-center" id="currentTitle">
+                    <!-- Current act title will appear here -->
+                </div>
+            </div>
+
+            <div id="staticProgress" class="space-y-2">
                 <div class="flex items-center gap-3 text-sm text-gray-700">
                     <span class="material-symbols-outlined animate-pulse text-[#1B365D]">check_circle</span>
                     <span>Preparazione richiesta...</span>
@@ -335,10 +355,12 @@
 
             {{-- Progress Bar --}}
             <div class="mt-6 h-2 overflow-hidden rounded-full bg-gray-200">
-                <div
-                    class="animate-progress h-full rounded-full bg-gradient-to-r from-[#1B365D] via-[#D4A574] to-[#2D5016]">
+                <div id="progressBar"
+                    class="h-full rounded-full bg-gradient-to-r from-[#1B365D] via-[#D4A574] to-[#2D5016] transition-all duration-300"
+                    style="width: 0%">
                 </div>
             </div>
+            <div id="progressPercentage" class="mt-2 text-center text-sm text-gray-600 hidden">0%</div>
 
             {{-- Institutional Footer --}}
             <div class="mt-6 border-t border-gray-200 pt-4 text-center">
@@ -352,6 +374,8 @@
 
     {{-- JavaScript for Modal --}}
     <script>
+        let progressInterval = null;
+
         function showLoadingModal(type) {
             const modal = document.getElementById('loadingModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -368,6 +392,9 @@
                 modalMessage.innerHTML =
                     'Stiamo estraendo gli atti da <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.';
                 modalIcon.textContent = 'play_arrow';
+                
+                // Start polling for progress updates
+                startProgressPolling();
             }
 
             // Show modal with fade-in
@@ -377,6 +404,57 @@
             // Prevent accidental double-submit
             return true;
         }
+
+        function startProgressPolling() {
+            // Poll every 1.5 seconds
+            progressInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('{{ route('pa.scrapers.progress', $scraper) }}');
+                    const data = await response.json();
+                    
+                    if (data.status === 'running') {
+                        updateProgress(data);
+                    } else if (data.status === 'completed') {
+                        clearInterval(progressInterval);
+                        // Let the page reload show final results
+                    }
+                } catch (error) {
+                    console.error('Progress polling error:', error);
+                }
+            }, 1500);
+        }
+
+        function updateProgress(data) {
+            // Hide static progress, show dynamic stats
+            document.getElementById('staticProgress').classList.add('hidden');
+            document.getElementById('progressStats').classList.remove('hidden');
+            document.getElementById('progressPercentage').classList.remove('hidden');
+            
+            // Update counters
+            document.getElementById('processedCount').textContent = data.processed || 0;
+            document.getElementById('savedCount').textContent = data.saved || 0;
+            document.getElementById('skippedCount').textContent = data.skipped || 0;
+            
+            // Update progress bar
+            const percentage = data.total > 0 ? Math.round((data.processed / data.total) * 100) : 0;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressPercentage').textContent = percentage + '%';
+            
+            // Update current title (truncated)
+            if (data.current_title) {
+                const truncated = data.current_title.length > 80 
+                    ? data.current_title.substring(0, 80) + '...' 
+                    : data.current_title;
+                document.getElementById('currentTitle').textContent = '📄 ' + truncated;
+            }
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+            }
+        });
 
         // Hide modal if page loads with errors (form will not have been processed)
         window.addEventListener('load', function() {
