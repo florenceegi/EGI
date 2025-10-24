@@ -318,7 +318,7 @@
             </p>
 
             {{-- Progress Indicators --}}
-            <div id="progressStats" class="space-y-3 hidden">
+            <div id="progressStats" class="hidden space-y-3">
                 <div class="grid grid-cols-2 gap-4 text-center">
                     <div class="rounded-lg bg-blue-50 p-3">
                         <div class="text-2xl font-bold text-[#1B365D]" id="processedCount">0</div>
@@ -333,7 +333,7 @@
                     <div class="text-lg font-semibold text-gray-700" id="skippedCount">0</div>
                     <div class="text-xs text-gray-600">Atti già presenti (skipped)</div>
                 </div>
-                <div class="text-xs text-gray-500 text-center" id="currentTitle">
+                <div class="text-center text-xs text-gray-500" id="currentTitle">
                     <!-- Current act title will appear here -->
                 </div>
             </div>
@@ -360,7 +360,7 @@
                     style="width: 0%">
                 </div>
             </div>
-            <div id="progressPercentage" class="mt-2 text-center text-sm text-gray-600 hidden">0%</div>
+            <div id="progressPercentage" class="mt-2 hidden text-center text-sm text-gray-600">0%</div>
 
             {{-- Institutional Footer --}}
             <div class="mt-6 border-t border-gray-200 pt-4 text-center">
@@ -392,7 +392,7 @@
                 modalMessage.innerHTML =
                     'Stiamo estraendo gli atti da <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.';
                 modalIcon.textContent = 'play_arrow';
-                
+
                 // Start polling for progress updates
                 startProgressPolling();
             }
@@ -411,7 +411,7 @@
                 try {
                     const response = await fetch('{{ route('pa.scrapers.progress', $scraper) }}');
                     const data = await response.json();
-                    
+
                     if (data.status === 'running') {
                         updateProgress(data);
                     } else if (data.status === 'completed') {
@@ -429,22 +429,22 @@
             document.getElementById('staticProgress').classList.add('hidden');
             document.getElementById('progressStats').classList.remove('hidden');
             document.getElementById('progressPercentage').classList.remove('hidden');
-            
+
             // Update counters
             document.getElementById('processedCount').textContent = data.processed || 0;
             document.getElementById('savedCount').textContent = data.saved || 0;
             document.getElementById('skippedCount').textContent = data.skipped || 0;
-            
+
             // Update progress bar
             const percentage = data.total > 0 ? Math.round((data.processed / data.total) * 100) : 0;
             document.getElementById('progressBar').style.width = percentage + '%';
             document.getElementById('progressPercentage').textContent = percentage + '%';
-            
+
             // Update current title (truncated)
             if (data.current_title) {
-                const truncated = data.current_title.length > 80 
-                    ? data.current_title.substring(0, 80) + '...' 
-                    : data.current_title;
+                const truncated = data.current_title.length > 80 ?
+                    data.current_title.substring(0, 80) + '...' :
+                    data.current_title;
                 document.getElementById('currentTitle').textContent = '📄 ' + truncated;
             }
         }
