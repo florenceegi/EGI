@@ -353,7 +353,8 @@ class PaWebScraperService
         $this->logger->info('[PaWebScraperService] Fetching data', [
             'method' => $scraper->method,
             'url' => $url,
-            'has_payload' => !empty($payload)
+            'has_payload' => !empty($payload),
+            'payload' => $payload // Log full payload for debugging
         ]);
 
         $response = $this->httpClient->request($scraper->method, $url, $requestOptions);
@@ -375,6 +376,13 @@ class PaWebScraperService
             ]);
             return $data;
         }
+
+        // JSON parsing failed - log the error and body preview
+        $this->logger->warning('[PaWebScraperService] JSON parsing failed', [
+            'error' => json_last_error_msg(),
+            'body_preview' => substr($body, 0, 500),
+            'content_type' => $response->getHeader('Content-Type')
+        ]);
 
         // Otherwise return HTML
         $this->logger->info('[PaWebScraperService] HTML data fetched', [
@@ -426,7 +434,13 @@ class PaWebScraperService
     protected function parseApiData($data, PaWebScraper $scraper): array
     {
         if (!is_array($data)) {
-            throw new \Exception('API response is not an array');
+            // Log what we actually received for debugging
+            $this->logger->error('[PaWebScraperService] API response is not an array', [
+                'scraper_id' => $scraper->id,
+                'data_type' => gettype($data),
+                'data_preview' => is_string($data) ? substr($data, 0, 500) : json_encode($data)
+            ]);
+            throw new \Exception('API response is not an array. Type: ' . gettype($data));
         }
 
         // If data_mapping is configured, apply it
