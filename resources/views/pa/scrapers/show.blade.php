@@ -57,7 +57,8 @@
             </form>
 
             {{-- Run Manually --}}
-            <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}" onsubmit="sessionStorage.setItem('scraperRunning', 'true'); sessionStorage.setItem('scraperId', '{{ $scraper->id }}'); showLoadingModal('run'); return true;">
+            <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}"
+                onsubmit="sessionStorage.setItem('scraperRunning', 'true'); sessionStorage.setItem('scraperId', '{{ $scraper->id }}'); showLoadingModal('run'); return true;">
                 @csrf
                 <button type="submit"
                     class="inline-flex items-center gap-2 rounded-lg bg-[#2D5016] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#1F3810]">
@@ -486,20 +487,28 @@
         }
 
         function startProgressPolling() {
+            console.log('[SCRAPER] Starting progress polling...');
+
             // Poll every 1.5 seconds
             progressInterval = setInterval(async () => {
                 try {
                     const response = await fetch('{{ route('pa.scrapers.progress', $scraper) }}');
                     const data = await response.json();
 
+                    console.log('[SCRAPER] Progress data:', data);
+
                     if (data.status === 'running') {
+                        console.log('[SCRAPER] Status: RUNNING - Updating UI...');
                         updateProgress(data);
                     } else if (data.status === 'completed') {
+                        console.log('[SCRAPER] Status: COMPLETED - Stopping polling');
                         clearInterval(progressInterval);
                         // Let the page reload show final results
+                    } else {
+                        console.log('[SCRAPER] Status: NOT RUNNING');
                     }
                 } catch (error) {
-                    console.error('Progress polling error:', error);
+                    console.error('[SCRAPER] Progress polling error:', error);
                 }
             }, 1500);
         }
@@ -540,25 +549,34 @@
         window.addEventListener('load', function() {
             const scraperRunning = sessionStorage.getItem('scraperRunning');
             const scraperId = sessionStorage.getItem('scraperId');
-            
+
+            console.log('[SCRAPER] Page loaded. scraperRunning:', scraperRunning, 'scraperId:', scraperId);
+
             if (scraperRunning === 'true' && scraperId === '{{ $scraper->id }}') {
+                console.log('[SCRAPER] Scraper was running before reload - reactivating modal and polling...');
+
                 // Scraper is running, show modal and start polling
                 const modal = document.getElementById('loadingModal');
                 const modalTitle = document.getElementById('modalTitle');
                 const modalMessage = document.getElementById('modalMessage');
                 const modalIcon = document.getElementById('modalIcon');
-                
+
                 modalTitle.textContent = 'Esecuzione Scraper in corso...';
-                modalMessage.innerHTML = 'Stiamo estraendo gli atti da <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.';
+                modalMessage.innerHTML =
+                    'Stiamo estraendo gli atti da <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.';
                 modalIcon.textContent = 'play_arrow';
-                
+
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
-                
+
+                console.log('[SCRAPER] Modal shown, starting polling...');
+
                 // Start polling immediately
                 startProgressPolling();
+            } else {
+                console.log('[SCRAPER] No active scraper detected or different scraper ID');
             }
-            
+
             // Hide modal if page loads with errors (form will not have been processed)
             setTimeout(function() {
                 const modal = document.getElementById('loadingModal');
@@ -652,32 +670,32 @@
         importBtn.addEventListener('click', function() {
             const year = this.dataset.year;
             const scraperId = this.dataset.scraperId;
-            
+
             // Set flag in sessionStorage to show modal after page reload
             sessionStorage.setItem('scraperRunning', 'true');
             sessionStorage.setItem('scraperId', scraperId);
-            
+
             // Create a hidden form to submit with year parameter
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '{{ route('pa.scrapers.run', $scraper) }}';
-            
+
             const csrfInput = document.createElement('input');
             csrfInput.type = 'hidden';
             csrfInput.name = '_token';
             csrfInput.value = '{{ csrf_token() }}';
-            
+
             const yearInput = document.createElement('input');
             yearInput.type = 'hidden';
             yearInput.name = 'year';
             yearInput.value = year;
-            
+
             form.appendChild(csrfInput);
             form.appendChild(yearInput);
-            
+
             // Show loading modal before submit
             showLoadingModal('run');
-            
+
             document.body.appendChild(form);
             form.submit();
         });
