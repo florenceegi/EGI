@@ -8,43 +8,67 @@ use Illuminate\Support\Facades\File;
 
 class ImportPaScrapers extends Command
 {
-    protected $signature = 'pa:import-scrapers {--input=scrapers_export.json} {--clean : Delete existing scrapers before import}';
-
+    protected $signature = 'pa:import-scrapers 
+                                {--input=scrapers_export.json} 
+                                {--user-id= : User ID to assign scrapers to (required)}
+                                {--clean : Delete existing scrapers before import}';
+    
     protected $description = 'Import PA web scrapers configuration from JSON file';
 
     public function handle()
     {
         $input = $this->option('input');
         $filePath = storage_path("app/{$input}");
-
+        
         if (!File::exists($filePath)) {
             $this->error("❌ File not found: {$filePath}");
             return 1;
         }
-
+        
+        // Check for user-id option
+        $userId = $this->option('user-id');
+        
+        if (!$userId) {
+            $this->error("❌ --user-id option is required!");
+            $this->info("Example: php artisan pa:import-scrapers --user-id=2");
+            $this->newLine();
+            $this->info("💡 To find your user ID:");
+            $this->info("   php artisan tinker");
+            $this->info("   >>> auth()->id()  // or");
+            $this->info("   >>> User::where('email', 'your@email.com')->first()->id");
+            return 1;
+        }
+        
+        // Verify user exists
+        $user = \App\Models\User::find($userId);
+        if (!$user) {
+            $this->error("❌ User with ID {$userId} not found!");
+            return 1;
+        }
+        
         $this->info("📥 Reading scrapers from: {$input}");
-
+        $this->info("👤 Assigning to user: {$user->name} (ID: {$user->id})");
+        $this->newLine();
+        
         $json = File::get($filePath);
         $scrapers = json_decode($json, true);
-
+        
         if (!is_array($scrapers)) {
             $this->error("❌ Invalid JSON format");
             return 1;
         }
-
+        
         $this->info("📦 Found " . count($scrapers) . " scrapers to import");
-
+        
         if ($this->option('clean')) {
             $this->warn("🗑️  Deleting existing scrapers...");
             PaWebScraper::truncate();
         }
-
+        
         $imported = 0;
-
+        
         foreach ($scrapers as $scraperData) {
             try {
-                // Get authenticated user for user_id
-                $userId = auth()->id() ?? 1; // Fallback to user ID 1 if not authenticated
 
                 PaWebScraper::create([
                     'name' => $scraperData['name'],
