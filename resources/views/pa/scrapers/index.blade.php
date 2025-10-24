@@ -398,7 +398,7 @@
                 modalMessage.innerHTML =
                     `Stiamo estraendo gli atti da <strong>${sourceEntity}</strong>. L'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.`;
                 modalIcon.textContent = 'play_arrow';
-                
+
                 // Store scraper ID and start polling
                 currentScraperId = scraperId;
                 if (scraperId) {

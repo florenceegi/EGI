@@ -231,6 +231,71 @@ class PaWebScraperService
     }
 
     /**
+     * Preview scraper results (DRY-RUN - no database writes)
+     * 
+     * Test how many acts would be scraped without actually saving them.
+     * Useful for testing scraper configuration and estimating data volume.
+     * 
+     * @param PaWebScraper $scraper Configured scraper
+     * @param array $options Options including 'year', 'limit'
+     * @return array ['count' => int, 'first_act' => array|null, 'last_act' => array|null]
+     */
+    public function preview(PaWebScraper $scraper, array $options = []): array
+    {
+        $this->logger->info('[PaWebScraperService] Preview scraper (dry-run)', [
+            'scraper_id' => $scraper->id,
+            'scraper_name' => $scraper->name,
+            'options' => $options
+        ]);
+
+        try {
+            // STEP 1: Validate GDPR compliance
+            $this->validateGdprCompliance($scraper);
+
+            // STEP 2: Execute HTTP request
+            $rawData = $this->fetchData($scraper, $options);
+
+            // STEP 3: Parse and extract acts
+            $extractedActs = $this->parseData($rawData, $scraper);
+
+            $count = count($extractedActs);
+            $firstAct = $count > 0 ? $this->formatActPreview($extractedActs[0]) : null;
+            $lastAct = $count > 1 ? $this->formatActPreview($extractedActs[$count - 1]) : null;
+
+            $this->logger->info('[PaWebScraperService] Preview completed', [
+                'scraper_id' => $scraper->id,
+                'acts_count' => $count
+            ]);
+
+            return [
+                'count' => $count,
+                'first_act' => $firstAct,
+                'last_act' => $lastAct
+            ];
+        } catch (\Exception $e) {
+            $this->logger->error('[PaWebScraperService] Preview failed', [
+                'scraper_id' => $scraper->id,
+                'error' => $e->getMessage()
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Format a single act for preview (summary info only)
+     */
+    protected function formatActPreview(array $act): array
+    {
+        return [
+            'numero' => $act['numeroAdozione'] ?? $act['numero'] ?? 'N/A',
+            'data' => $act['dataAdozione'] ?? $act['data'] ?? 'N/A',
+            'tipo' => $act['tipoAttoDto']['nome'] ?? $act['tipo'] ?? 'N/A',
+            'oggetto' => mb_substr($act['oggetto'] ?? $act['titolo'] ?? '', 0, 100)
+        ];
+    }
+
+    /**
      * Validate GDPR compliance of scraper configuration
      *
      * @throws \Exception if not compliant
@@ -602,7 +667,7 @@ class PaWebScraperService
                     $this->logger->debug('[PaWebScraperService] Act already exists, skipping', [
                         'protocol_number' => $act['protocol_number']
                     ]);
-                    
+
                     // Update progress every 5 acts or on last
                     if ($processed % 5 === 0 || $processed === $totalActs) {
                         cache()->put($progressKey, [
@@ -615,7 +680,7 @@ class PaWebScraperService
                             'started_at' => cache($progressKey)['started_at'] ?? now()->toIso8601String(),
                         ], now()->addMinutes(30));
                     }
-                    
+
                     continue;
                 }
 

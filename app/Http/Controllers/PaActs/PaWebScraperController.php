@@ -419,6 +419,50 @@ class PaWebScraperController extends Controller
     }
 
     /**
+     * Preview scraper results (DRY-RUN - no import)
+     * Test how many acts would be scraped without actually saving them
+     */
+    public function preview(Request $request, PaWebScraper $scraper)
+    {
+        try {
+            // Authorization
+            if ($scraper->user_id !== Auth::id()) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            $this->logger->info('[PaWebScraperController] Preview scraper', [
+                'scraper_id' => $scraper->id,
+                'user_id' => Auth::id(),
+                'year' => $request->input('year')
+            ]);
+
+            // Get preview from service (no DB writes)
+            $result = $this->scraperService->preview($scraper, [
+                'year' => $request->input('year'),
+                'limit' => $request->input('limit', 1000) // Max acts to fetch for preview
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'count' => $result['count'],
+                'first_act' => $result['first_act'] ?? null,
+                'last_act' => $result['last_act'] ?? null,
+                'year' => $request->input('year'),
+                'message' => "Trovati {$result['count']} atti per l'anno " . $request->input('year')
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('[PaWebScraperController] Preview error', [
+                'scraper_id' => $scraper->id,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Execute scraper manually
      */
     public function run(Request $request, PaWebScraper $scraper): RedirectResponse
