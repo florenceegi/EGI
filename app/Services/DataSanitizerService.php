@@ -241,7 +241,7 @@ class DataSanitizerService
                 ->whereNotNull('pa_protocol_number')
                 ->select('jsonMetadata')
                 ->get();
-            
+
             $byDirectionDb = [];
             foreach ($allActs as $act) {
                 $direzione = $act->jsonMetadata['original_data']['direzione'] ?? 'Non specificata';
@@ -256,7 +256,7 @@ class DataSanitizerService
                 ->whereNotNull('pa_protocol_date')
                 ->selectRaw('MIN(pa_protocol_date) as first, MAX(pa_protocol_date) as last')
                 ->first();
-            
+
             $stats['date_range_database'] = [
                 'first' => $dateRange->first ? date('Y-m-d', strtotime($dateRange->first)) : null,
                 'last' => $dateRange->last ? date('Y-m-d', strtotime($dateRange->last)) : null,
