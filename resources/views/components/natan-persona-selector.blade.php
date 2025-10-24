@@ -5,20 +5,17 @@
 @endphp
 
 <div class="natan-persona-selector mb-2 rounded-xl border border-gray-200 bg-white p-2 shadow-sm sm:mb-4 sm:p-4">
-    <button id="personaSelectorToggle" class="mb-2 flex w-full items-center justify-between sm:mb-3 sm:cursor-default">
-        <div class="flex items-center gap-1.5 sm:gap-2">
+    <div class="mb-2 flex w-full items-center justify-between sm:mb-3">
+        <button type="button" id="personaSelectorToggle" class="flex flex-1 items-center gap-1.5 sm:cursor-default sm:gap-2">
             <span class="material-icons text-sm text-[#1B365D] sm:text-lg">psychology</span>
             <h3 class="text-xs font-semibold text-[#1B365D] sm:text-sm">Scegli il Consulente</h3>
-        </div>
-        <div class="flex items-center gap-1">
-            <button id="personaInfoToggle" class="rounded-lg p-0.5 transition-colors hover:bg-gray-100 sm:p-1"
-                title="Maggiori informazioni"
-                onclick="event.stopPropagation()">
-                <span class="material-icons text-xs text-gray-400 sm:text-sm">info</span>
-            </button>
             <span id="personaSelectorIcon" class="material-icons text-sm text-gray-500 sm:hidden">expand_more</span>
-        </div>
-    </button>
+        </button>
+        <button type="button" id="personaInfoToggle" class="rounded-lg p-0.5 transition-colors hover:bg-gray-100 sm:p-1"
+            title="Maggiori informazioni">
+            <span class="material-icons text-xs text-gray-400 sm:text-sm">info</span>
+        </button>
+    </div>
 
     {{-- Collapsible Content - Nascosto su mobile, sempre visibile su desktop --}}
     <div id="personaSelectorContent" class="hidden sm:block">
@@ -112,18 +109,16 @@
         const selectorIcon = document.getElementById('personaSelectorIcon');
         
         if (selectorToggle && selectorContent && selectorIcon) {
-            selectorToggle.addEventListener('click', function() {
-                // Solo su mobile (icona visibile solo su mobile)
-                if (window.innerWidth < 640) {
-                    const isHidden = selectorContent.classList.contains('hidden');
-                    
-                    if (isHidden) {
-                        selectorContent.classList.remove('hidden');
-                        selectorIcon.textContent = 'expand_less';
-                    } else {
-                        selectorContent.classList.add('hidden');
-                        selectorIcon.textContent = 'expand_more';
-                    }
+            selectorToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const isHidden = selectorContent.classList.contains('hidden');
+                
+                if (isHidden) {
+                    selectorContent.classList.remove('hidden');
+                    selectorIcon.textContent = 'expand_less';
+                } else {
+                    selectorContent.classList.add('hidden');
+                    selectorIcon.textContent = 'expand_more';
                 }
             });
         }
