@@ -392,6 +392,33 @@ class PaWebScraperController extends Controller
     }
 
     /**
+     * Get scraper progress (for real-time updates)
+     */
+    public function progress(PaWebScraper $scraper)
+    {
+        try {
+            // Authorization
+            if ($scraper->user_id !== Auth::id()) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            $progressKey = "scraper_progress_{$scraper->id}_" . Auth::id();
+            $progress = cache($progressKey);
+
+            if (!$progress) {
+                return response()->json([
+                    'status' => 'not_running',
+                    'message' => 'No scraping in progress'
+                ]);
+            }
+
+            return response()->json($progress);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Execute scraper manually
      */
     public function run(Request $request, PaWebScraper $scraper): RedirectResponse
