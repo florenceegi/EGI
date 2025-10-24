@@ -57,7 +57,7 @@
             </form>
 
             {{-- Run Manually --}}
-            <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}" onsubmit="showLoadingModal('run')">
+            <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}" onsubmit="sessionStorage.setItem('scraperRunning', 'true'); sessionStorage.setItem('scraperId', '{{ $scraper->id }}'); showLoadingModal('run'); return true;">
                 @csrf
                 <button type="submit"
                     class="inline-flex items-center gap-2 rounded-lg bg-[#2D5016] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#1F3810]">
@@ -536,16 +536,41 @@
             }
         });
 
-        // Hide modal if page loads with errors (form will not have been processed)
+        // Check if scraper was running before page reload
         window.addEventListener('load', function() {
+            const scraperRunning = sessionStorage.getItem('scraperRunning');
+            const scraperId = sessionStorage.getItem('scraperId');
+            
+            if (scraperRunning === 'true' && scraperId === '{{ $scraper->id }}') {
+                // Scraper is running, show modal and start polling
+                const modal = document.getElementById('loadingModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalMessage = document.getElementById('modalMessage');
+                const modalIcon = document.getElementById('modalIcon');
+                
+                modalTitle.textContent = 'Esecuzione Scraper in corso...';
+                modalMessage.innerHTML = 'Stiamo estraendo gli atti da <strong>{{ $scraper->source_entity }}</strong>. L\'operazione potrebbe richiedere alcuni minuti a seconda del volume di dati.';
+                modalIcon.textContent = 'play_arrow';
+                
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+                // Start polling immediately
+                startProgressPolling();
+            }
+            
+            // Hide modal if page loads with errors (form will not have been processed)
             setTimeout(function() {
                 const modal = document.getElementById('loadingModal');
                 if (modal && !modal.classList.contains('hidden')) {
-                    // Check if there are any success/error messages (meaning page reloaded)
+                    // Check if there are any success/error messages (meaning scraping completed)
                     const hasMessages = document.querySelector('.alert-success, .alert-error');
                     if (hasMessages) {
                         modal.classList.add('hidden');
                         modal.classList.remove('flex');
+                        // Clear sessionStorage flags
+                        sessionStorage.removeItem('scraperRunning');
+                        sessionStorage.removeItem('scraperId');
                     }
                 }
             }, 100);
@@ -627,28 +652,32 @@
         importBtn.addEventListener('click', function() {
             const year = this.dataset.year;
             const scraperId = this.dataset.scraperId;
-
+            
+            // Set flag in sessionStorage to show modal after page reload
+            sessionStorage.setItem('scraperRunning', 'true');
+            sessionStorage.setItem('scraperId', scraperId);
+            
             // Create a hidden form to submit with year parameter
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '{{ route('pa.scrapers.run', $scraper) }}';
-
+            
             const csrfInput = document.createElement('input');
             csrfInput.type = 'hidden';
             csrfInput.name = '_token';
             csrfInput.value = '{{ csrf_token() }}';
-
+            
             const yearInput = document.createElement('input');
             yearInput.type = 'hidden';
             yearInput.name = 'year';
             yearInput.value = year;
-
+            
             form.appendChild(csrfInput);
             form.appendChild(yearInput);
-
+            
             // Show loading modal before submit
             showLoadingModal('run');
-
+            
             document.body.appendChild(form);
             form.submit();
         });
