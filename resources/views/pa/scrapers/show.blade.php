@@ -501,9 +501,21 @@
                         console.log('[SCRAPER] Status: RUNNING - Updating UI...');
                         updateProgress(data);
                     } else if (data.status === 'completed') {
-                        console.log('[SCRAPER] Status: COMPLETED - Stopping polling');
+                        console.log('[SCRAPER] Status: COMPLETED - Showing final results and stopping polling');
+                        // Show final results before stopping
+                        updateProgress(data);
                         clearInterval(progressInterval);
-                        // Let the page reload show final results
+                        
+                        // Clear sessionStorage immediately to avoid loops
+                        sessionStorage.removeItem('scraperRunning');
+                        sessionStorage.removeItem('scraperId');
+                        
+                        // Auto-hide modal after 5 seconds
+                        setTimeout(() => {
+                            const modal = document.getElementById('loadingModal');
+                            modal.classList.add('hidden');
+                            modal.classList.remove('flex');
+                        }, 5000);
                     } else {
                         console.log('[SCRAPER] Status: NOT RUNNING');
                     }
@@ -573,6 +585,29 @@
 
                 // Start polling immediately
                 startProgressPolling();
+                
+                // Also check immediately (don't wait 1.5s for first poll)
+                fetch('{{ route('pa.scrapers.progress', $scraper) }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('[SCRAPER] Initial check - Progress data:', data);
+                        if (data.status === 'running') {
+                            updateProgress(data);
+                        } else if (data.status === 'completed') {
+                            updateProgress(data);
+                            clearInterval(progressInterval);
+                            // Clear sessionStorage immediately
+                            sessionStorage.removeItem('scraperRunning');
+                            sessionStorage.removeItem('scraperId');
+                            // Auto-hide modal after 5 seconds
+                            setTimeout(() => {
+                                const modal = document.getElementById('loadingModal');
+                                modal.classList.add('hidden');
+                                modal.classList.remove('flex');
+                            }, 5000);
+                        }
+                    })
+                    .catch(error => console.error('[SCRAPER] Initial check error:', error));
             } else {
                 console.log('[SCRAPER] No active scraper detected or different scraper ID');
             }
