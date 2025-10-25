@@ -35,20 +35,23 @@ $canEdit =
         data-egi-id="{{ $egi ? $egi->id : '' }}" data-can-edit="{{ $canEdit ? 'true' : 'false' }}"
         style="position: relative !important; order: -1 !important; margin-top: 0 !important; margin-bottom: 2rem !important;">
 
-        {{-- Header con counter --}}
-        <div class="traits-header">
-            <h3 class="traits-title">
-                <span class="traits-icon">🎯</span>
-                {{ __('Tratti e Attributi') }}
-            </h3>
-            <div class="traits-meta">
-                <span class="trait-counter">
-                    <span class="traits-count">{{ $egi && $egi->traits ? $egi->traits->count() : 0 }}</span>/30
-                </span>
-            </div>
-        </div>
+        {{-- COLLAPSABILE BOX TRAITS --}}
+        <details class="group" open>
+            <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gradient-to-r from-purple-900/30 to-indigo-900/30 px-4 py-3 text-white transition-colors hover:from-purple-900/40 hover:to-indigo-900/40 border border-purple-700/30">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🎯</span>
+                    <span class="text-sm font-semibold">{{ __('Tratti e Attributi') }}</span>
+                    <span class="trait-counter ml-2">
+                        <span class="traits-count">{{ $egi && $egi->traits ? $egi->traits->count() : 0 }}</span>/30
+                    </span>
+                </div>
+                <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </summary>
 
-        @if ($canEdit)
+            <div class="mt-3">
+                @if ($canEdit)
             {{-- Add Trait Button --}}
             <div class="traits-editor-controls" style="margin-bottom: 1rem;">
                 <button type="button" class="add-trait-btn"
@@ -75,7 +78,7 @@ $canEdit =
             </div>
         @endif
 
-        {{-- Traits Grid (readonly) renderizzato con PHP --}}
+        {{-- Traits Grid (readonly) renderizzato con PHP - 2 COLONNE --}}
         <div class="traits-list readonly">
             <div class="traits-grid" id="traits-grid-viewer">
                 @if ($egi && $egi->traits && $egi->traits->count() > 0)
@@ -222,6 +225,8 @@ $canEdit =
                 @endif
             </div>
         </div>
+            </div>{{-- Fine mt-3 content --}}
+        </details>{{-- Fine details collapsabile --}}
     </div>
 @endif
 
