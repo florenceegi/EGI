@@ -168,7 +168,8 @@ class EgiReservationCertificate extends Model {
         $createdAt = $this->created_at ?? now();
 
         // Different verification data based on certificate type
-        if ($this->certificate_type === 'mint' && $this->egi_blockchain_id) {
+        // Use egi_blockchain_id to determine type (NOT certificate_type)
+        if ($this->egi_blockchain_id !== null) {
             // Blockchain certificate: use blockchain-specific fields
             $blockchain = $this->egiBlockchain;
 
