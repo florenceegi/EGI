@@ -124,7 +124,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                         {{-- Left: Artwork Area - Ridotta per laptop, espansa per desktop --}}
                         <div class="relative p-2 md:col-span-7 md:p-3 lg:col-span-6 lg:p-4 xl:col-span-7 xl:p-6">
 
-                            {{-- Artwork Container - Sempre visibile completamente --}}
+                            {{-- Artwork Container con Floating Card - Sempre visibile completamente --}}
                             <div class="relative mx-auto w-full max-w-full">
 
                                 {{-- Collection Navigation Carousel - OpenSea Style --}}
@@ -135,15 +135,15 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
                                 {{-- Zoom Functionality --}}
 
-                                {{-- Floating Title Card --}}
+                                {{-- Floating Title Card - ancorato ai piedi dell'immagine --}}
                                 @include(
                                     'egis.partials.artwork.floating-title-card',
                                     compact('egi', 'collection', 'isCreator'))
+                            </div>
 
-                                {{-- Description sotto l'immagine --}}
-                                <div class="mt-3 md:mt-4">
-                                    @include('egis.partials.sidebar.description-section', compact('egi'))
-                                </div>
+                            {{-- Description sotto l'immagine (FUORI dal container relative) --}}
+                            <div class="mt-3 md:mt-4">
+                                @include('egis.partials.sidebar.description-section', compact('egi'))
                             </div>
                         </div>
 
