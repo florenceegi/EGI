@@ -70,7 +70,7 @@ class CreatorHomeController extends Controller
         $egis = Egi::with([
             'collection',
             'user', // CRITICAL: for displaying creator name in egi-card-list
-            'blockchain', // CRITICAL: for isMinted() check in egi-card badges
+            'blockchain.buyer', // CRITICAL: for Co-Creator display in egi-card-list
             'traits.category', // eager loading categoria per badge
             'reservations' => function ($q) {
                 $q->where('is_current', true); // Solo prenotazioni attive
