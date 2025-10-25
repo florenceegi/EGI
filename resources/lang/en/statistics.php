@@ -91,6 +91,8 @@ return [
     'likes_analytics' => 'Likes Analytics',
     'total_likes_received' => 'Total Likes Received',
     'likes_received' => 'Likes Received',
+    'likes_received_for_this_egi' => 'Likes Received for this EGI',
+    'no_likes_received_yet' => 'No likes received yet for this EGI.',
     'likes_given' => 'Likes Given',
     'top_liked_egis' => 'Top Liked EGIs',
     'top_liking_users' => 'Most Active Users',

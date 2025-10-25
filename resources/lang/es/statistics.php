@@ -47,4 +47,9 @@ return [
     'sell_collections_description' => 'Colecciones con distribuciones activas',
     'egis_description' => 'Número total de EGIs',
     'sell_egis_description' => 'EGIs con reservas activas',
+
+    // Likes Analytics
+    'likes_received_for_this_egi' => 'Likes Recibidos para este EGI',
+    'no_likes_received_yet' => 'Aún no se han recibido likes para este EGI.',
+    'total_likes' => 'Total de Likes',
 ];

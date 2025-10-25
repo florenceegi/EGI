@@ -5,10 +5,10 @@
     VARIABILI: $egi, $canUpdateEgi, $canDeleteEgi, $isPriceLocked, $canModifyPrice, $displayPrice, $displayUser, $highestPriorityReservation
 --}}
 
-{{-- Center: CRUD Box - Compatto su tablet, normale su desktop --}}
+{{-- Center: CRUD Box - Più largo quando visibile --}}
 @if ($canUpdateEgi)
     <div
-        class="overflow-y-auto border-t border-emerald-700/30 bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl md:col-span-5 md:border-l md:border-r md:border-t-0 lg:col-span-3 xl:col-span-2">
+        class="overflow-y-auto border-t border-emerald-700/30 bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl md:col-span-5 md:border-l md:border-r md:border-t-0 lg:col-span-5 xl:col-span-4">
         {{-- CRUD Box Content - Padding ottimizzato --}}
         <div class="p-3 md:p-2 lg:p-3 xl:p-4">
             <div
@@ -71,32 +71,64 @@
                     </div>
                 @endif
 
-                {{-- Auto-Mint Panel (Solo Creator di EGI non mintati) --}}
+                {{-- Auto-Mint Panel (Solo Creator di EGI non mintati) - COLLAPSABILE --}}
                 @if ($isNotMinted && $isCreatorCheck)
-                    <div class="mb-6">
-                        <x-egi-auto-mint-panel :egi="$egi" :isCreator="$isCreatorCheck" />
-                    </div>
+                    <details class="group mb-4" open>
+                        <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-emerald-800/30 px-3 py-2 text-emerald-300 transition-colors hover:bg-emerald-800/40">
+                            <span class="text-sm font-semibold">Auto-Mint Creator</span>
+                            <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <div class="mt-3">
+                            <x-egi-auto-mint-panel :egi="$egi" :isCreator="$isCreatorCheck" />
+                        </div>
+                    </details>
                 @endif
 
-                {{-- AI Traits Panel (Solo Creator di EGI non mintati) --}}
+                {{-- AI Traits Panel (Solo Creator di EGI non mintati) - COLLAPSABILE --}}
                 @if ($isNotMinted && $isCreatorCheck)
-                    <div class="mb-6">
-                        <x-egi-ai-traits-panel :egi="$egi" :isCreator="$isCreatorCheck" />
-                    </div>
+                    <details class="group mb-4">
+                        <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-purple-800/30 px-3 py-2 text-purple-300 transition-colors hover:bg-purple-800/40">
+                            <span class="text-sm font-semibold">Gestione Traits AI</span>
+                            <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <div class="mt-3">
+                            <x-egi-ai-traits-panel :egi="$egi" :isCreator="$isCreatorCheck" />
+                        </div>
+                    </details>
                 @endif
 
-                {{-- Pre-Mint Panel (EGI non mintati e disponibili sul marketplace) --}}
+                {{-- Pre-Mint Panel (EGI non mintati e disponibili sul marketplace) - COLLAPSABILE --}}
                 @if ($isNotMinted && !$egi->pre_mint_mode)
-                    <div class="mb-6">
-                        <x-egi-pre-mint-panel :egi="$egi" />
-                    </div>
+                    <details class="group mb-4">
+                        <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-blue-800/30 px-3 py-2 text-blue-300 transition-colors hover:bg-blue-800/40">
+                            <span class="text-sm font-semibold">EGI Pre-Mint</span>
+                            <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <div class="mt-3">
+                            <x-egi-pre-mint-panel :egi="$egi" />
+                        </div>
+                    </details>
                 @endif
 
-                {{-- EGI Vivente Panel (Solo SmartContract mintati) --}}
+                {{-- EGI Vivente Panel (Solo SmartContract mintati) - COLLAPSABILE --}}
                 @if ($isSmartContract && $egi->smartContract)
-                    <div class="mb-6">
-                        <x-egi-living-panel :egi="$egi" />
-                    </div>
+                    <details class="group mb-4">
+                        <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-orange-800/30 px-3 py-2 text-orange-300 transition-colors hover:bg-orange-800/40">
+                            <span class="text-sm font-semibold">EGI Vivente</span>
+                            <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <div class="mt-3">
+                            <x-egi-living-panel :egi="$egi" />
+                        </div>
+                    </details>
                 @endif
 
                 {{-- ============================================ --}}
@@ -129,6 +161,16 @@
                         </div>
                     </div>
                 @endif
+
+                {{-- CRUD Dati EGI - COLLAPSABILE --}}
+                <details class="group mb-4" open>
+                    <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-emerald-800/30 px-3 py-2 text-emerald-300 transition-colors hover:bg-emerald-800/40 mb-4">
+                        <span class="text-sm font-semibold">{{ __('egi.crud.edit_egi') }}</span>
+                        <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <div>
 
                 {{-- Edit Form --}}
                 <form id="egi-edit-form" action="{{ route('egis.update', $egi->id) }}" method="POST" class="space-y-4"
@@ -502,6 +544,10 @@
                         {{ __('egi.crud.start_editing') }}
                     </button>
                 </div>
+
+                    </div>{{-- Fine details content --}}
+                </details>{{-- Fine CRUD Dati Collapsabile --}}
+
             </div>
         </div>
     </div>
