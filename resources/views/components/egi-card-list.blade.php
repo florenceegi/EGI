@@ -269,7 +269,8 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
                     </div>
                 @endif
 
-                @if ($config['show_creator'] && $egi->user)
+                {{-- Creator sempre visibile --}}
+                @if ($egi->user)
                     <div class="flex items-center gap-1">
                         <div class="{{ $isHyper ? 'bg-yellow-600' : 'bg-gray-600' }} h-3 w-3 rounded-full"></div>
                         <span class="max-w-[100px] truncate">{{ $egi->user->first_name }}
@@ -305,8 +306,8 @@ $hasCurrentReservation =
                 @endphp
                 <div class="mb-1 flex items-center justify-between gap-2 text-sm">
                     <div class="flex items-center gap-2">
-                        <svg class="{{ $isHyper ? 'text-yellow-400' : 'text-orange-400' }} h-4 w-4"
-                            fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="{{ $isHyper ? 'text-yellow-400' : 'text-orange-400' }} h-4 w-4" fill="currentColor"
+                            viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd" />
