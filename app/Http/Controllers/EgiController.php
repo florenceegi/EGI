@@ -282,8 +282,8 @@ class EgiController extends Controller
                 $egi->is_liked = false;
                 $egi->likes_count = $egi->likes()->count();
 
-                // ✅ CRITICAL: Load blockchain relationship for mint button visibility
-                $egi->load('blockchain');
+                // ✅ CRITICAL: Load relationships for guest view
+                $egi->load(['blockchain', 'utility']);
 
                 $collectionEgis = $egi->collection->egis()
                     ->whereNotNull('key_file')

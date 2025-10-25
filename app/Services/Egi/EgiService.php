@@ -178,6 +178,7 @@ class EgiService {
                 'owner',
                 'likes',
                 'blockchain', // ✅ CRITICAL: Load blockchain for mint button visibility
+                'utility', // ✅ Load utility for display section
                 'coa.files',
                 'coa.signatures.signer',
                 'coa.events',
