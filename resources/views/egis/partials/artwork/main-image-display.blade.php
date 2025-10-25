@@ -5,16 +5,16 @@
     DIPENDENZE: $egi (oggetto con main_image_url, original_image_url, title)
 --}}
 
-{{-- Main Image Display --}}
-<div class="relative w-full max-w-5xl mx-auto">
+{{-- Main Image Display - Ottimizzata per visibilità completa --}}
+<div class="relative w-full mx-auto">
     @if($egi->main_image_url)
     {{-- Trigger per lo zoom --}}
-    <div id="zoom-container" class="overflow-hidden">
+    <div id="zoom-container" class="overflow-hidden rounded-sm md:rounded-md lg:rounded-lg">
         <img id="zoom-image-trigger"
             src="{{ $egi->main_image_url }}"
             data-zoom-src="{{ $egi->original_image_url ?? $egi->main_image_url }}"
             alt="{{ $egi->title ?? __('egi.image_alt_default') }}"
-            class="w-full h-auto cursor-zoom-in"
+            class="w-full h-auto max-h-[60vh] md:max-h-[70vh] lg:max-h-[75vh] object-contain cursor-zoom-in bg-black/20"
             loading="lazy"
             />
     </div>

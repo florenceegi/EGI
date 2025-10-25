@@ -5,18 +5,18 @@
     VARIABILI: $egi, $collection, $isCreator
 --}}
 
-{{-- Floating Title Card - Responsive Positioning --}}
+{{-- Floating Title Card - Compatto e professionale --}}
 <div
-    class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 md:bottom-4 md:left-4 md:right-4 lg:bottom-6 lg:left-6 lg:right-6">
+    class="absolute bottom-2 left-2 right-2 sm:bottom-2 sm:left-2 sm:right-2 md:bottom-3 md:left-3 md:right-3 lg:bottom-4 lg:left-4 lg:right-4">
     <div
-        class="rounded-md border border-white/5 bg-black/10 p-2 shadow-2xl backdrop-blur-sm sm:rounded-lg sm:p-3 md:p-3.5 lg:p-4">
+        class="rounded-md border border-white/5 bg-black/10 p-2 shadow-2xl backdrop-blur-sm sm:p-2 md:p-2.5 lg:p-3">
         <div class="flex items-start justify-between gap-2">
             <div class="min-w-0 flex-1">
                 <h1
-                    class="mb-1 truncate text-base font-bold tracking-tight text-white drop-shadow-2xl sm:text-lg md:text-xl lg:text-2xl xl:text-3xl">
+                    class="mb-0.5 truncate text-sm font-bold tracking-tight text-white drop-shadow-2xl sm:text-base md:text-lg lg:text-xl xl:text-2xl">
                     {{ $egi->title }}</h1>
                 <div
-                    class="flex items-center space-x-1.5 text-[10px] text-gray-100 drop-shadow-lg sm:space-x-2 sm:text-xs md:text-xs lg:text-sm">
+                    class="flex items-center space-x-1 text-[9px] text-gray-100 drop-shadow-lg sm:space-x-1.5 sm:text-[10px] md:text-xs lg:text-sm">
                     <a href="{{ route('home.collections.show', $collection->id) }}"
                         class="max-w-[120px] truncate font-medium transition-colors duration-200 hover:text-white sm:max-w-[150px] md:max-w-none">
                         {{ $collection->collection_name }}
