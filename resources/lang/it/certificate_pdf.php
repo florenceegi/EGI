@@ -25,7 +25,9 @@ return [
     'section_blockchain' => 'Dati Blockchain Verificati (Algorand)',
     'label_asset_id' => 'Asset ID (ASA)',
     'label_transaction_id' => 'Transaction ID',
+    'transaction_not_available' => 'Non disponibile',
     'label_amount_paid' => 'Importo Pagato',
+    'amount_not_available' => 'Non disponibile',
 
     // Section: Verification
     'section_verification' => 'Verifica Autenticità',
