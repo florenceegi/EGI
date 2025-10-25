@@ -305,6 +305,13 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                             <li>• {{ __('egi.coa.professional_pdf') }}</li>
                         </ul>
                     </div>
+
+                    {{-- CoA Traits Management dentro area collassabile --}}
+                    <div class="pt-3 mt-2 border-t border-amber-500/20">
+                        @include('components.coa.traits-management', [
+                            'egi' => $egi
+                        ])
+                    </div>
                 </div>
             </details>
         @else
@@ -316,6 +323,15 @@ $userDerivedLocation = implode(', ', array_filter($parts));
                 <span class="text-sm text-amber-200">{{ __('egi.coa.no_certificate_issued') }}</span>
             </div>
         @endif
+        </div>
+    @endif
+
+    {{-- CoA Traits Management (solo per Creator con CoA attivo) --}}
+    @if($isCreator && $hasActiveCoa)
+        <div class="mt-3 pt-3 border-t border-amber-500/20">
+            @include('components.coa.traits-management', [
+                'egi' => $egi
+            ])
         </div>
     @endif
 
