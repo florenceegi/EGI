@@ -8,7 +8,7 @@
 --}}
 
 <div class="w-full bg-gray-900 py-4">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8">
         <div class="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto sm:gap-4">
             <div class="flex gap-3 px-2 sm:gap-4">
 

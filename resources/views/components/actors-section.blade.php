@@ -11,7 +11,7 @@
 
 <section id="ecosystem-actors" class="border-b border-t border-gray-700 bg-gray-800 py-16 md:py-24"
     aria-labelledby="ecosystem-actors-heading">
-    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <h2 id="ecosystem-actors-heading"
                 class="mb-4 font-display text-3xl font-bold text-white md:text-4xl lg:text-5xl">

@@ -35,35 +35,35 @@
             <x-list-switcher :collections="$featuredCollections" defaultTab="collections" />
         </div>
 
-        <x-desktop-egi-carousel :egis="$hyperEgis" />
+        {{-- <x-desktop-egi-carousel :egis="$hyperEgis" /> --}}
     </x-slot>
 
     {{-- Desktop: EGI Cards Carousel - SOLO desktop --}}
-    <x-slot name="belowHeroContent">
-
-        {{-- Creators carousel (era qui prima) --}}
+    <x-slot name="egiCarousel">
         <div class="hidden lg:block">
             <x-desktop-egi-carousel :egis="$featuredEgis" />
             <x-creators-carousel :creators="$featuredCreators" title="{{ __('guest_home.featured_creators_title') }}"
                 bgClass="bg-gray-900" marginClass="mb-12" />
+            <x-collector-carousel :collectors="$topCollectors" />
+            <x-collections-carousel :collections="$featuredCollections" bgClass="bg-gray-900" marginClass="mb-12" />
         </div>
     </x-slot>
 
     {{-- Carousel Top Collectors - Nuovo slot - NASCOSTO su mobile --}}
-    <x-slot name="belowHeroContent_0_5">
+    {{-- <x-slot name="belowHeroContent_0_5">
         <div class="hidden lg:block">
             <x-collector-carousel :collectors="$topCollectors" />
         </div>
-    </x-slot>
+    </x-slot> --}}
 
     {{-- Nuovo slot per il carousel dei Creator - NASCOSTO su mobile --}}
-    <x-slot name="belowHeroContent_1">
+    {{-- <x-slot name="belowHeroContent_1">
         <div class="hidden lg:block">
 
             <x-collections-carousel :collections="$featuredCollections" bgClass="bg-gray-900" marginClass="mb-12" />
         </div>
     </x-slot>
-
+ --}}
 
     {{-- Sezione: Protagonisti e Attori dell'Ecosistema --}}
     {{-- POPOLIAMO IL NUOVO SLOT $actorContent CON IL NOSTRO COMPONENTE actors-section --}}

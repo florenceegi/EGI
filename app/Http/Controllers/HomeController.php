@@ -40,7 +40,8 @@ use App\Enums\Gdpr\GdprActivityCategory;
  * @seo-purpose Provides dynamic content relevant to FlorenceEGI homepage
  * @schema-type WebPage
  */
-class HomeController extends Controller {
+class HomeController extends Controller
+{
 
     protected CollectorCarouselService $collectorCarouselService;
     protected UltraLogManager $logger;
@@ -100,7 +101,8 @@ class HomeController extends Controller {
      * @return View Homepage view populated with all necessary data
      * @throws \Exception On data retrieval or rendering failures
      */
-    public function index(): View {
+    public function index(): View
+    {
         try {
             // 1. ULM: Log homepage access start
             $this->logger->info('Homepage access initiated', [
@@ -187,16 +189,17 @@ class HomeController extends Controller {
 
     /**
      * @Oracode Method: Get Random EGIs for Carousel
-     * 🎯 Purpose: Retrieve latest published EGIs for homepage carousel display (CREATOR ONLY)
+     * 🎯 Purpose: Retrieve random published EGIs for homepage carousel display (CREATOR ONLY)
      * 🛡️ Privacy: Uses only publicly published EGIs (is_published = true)
-     * ⚡ Performance: Optimized query using latest() instead of inRandomOrder()
+     * 🎲 Random: Uses inRandomOrder() for variety on each page load
      * 🎨 Filter: Only EGIs from creators with usertype = 'creator' (excludes PA fake EGIs)
      *
-     * @return \Illuminate\Database\Eloquent\Collection Collection of latest 5 published EGIs with collection data
+     * @return \Illuminate\Database\Eloquent\Collection Collection of 5 random published EGIs with collection data
      * @privacy-safe Only public published content from creators
      */
-    private function getRandomEgis() {
-        // ⚡ PERFORMANCE: Rimosso inRandomOrder() e prendiamo solo i più recenti
+    private function getRandomEgis()
+    {
+        // 🎲 RANDOM: Ordinamento casuale ad ogni reload
         // 🎯 FILTER: Solo EGI di creator con usertype = 'creator' (NO PA)
         return Egi::where('is_published', true)
             ->whereHas('user', function ($query) {
@@ -212,7 +215,7 @@ class HomeController extends Controller {
                         ->with('user');
                 }
             ])
-            ->latest() // Più veloce di inRandomOrder()
+            ->inRandomOrder() // Random ad ogni reload
             ->take(5)
             ->get();
     }
@@ -232,7 +235,8 @@ class HomeController extends Controller {
      * @return \Illuminate\Database\Eloquent\Collection Featured collections for hero carousel
      * @privacy-safe Only public published collections
      */
-    private function getFeaturedCollections() {
+    private function getFeaturedCollections()
+    {
         // Utilizziamo il service dedicato per la logica complessa di selezione
         $featuredService = app(\App\Services\FeaturedCollectionService::class);
 
@@ -254,7 +258,8 @@ class HomeController extends Controller {
      * @return \Illuminate\Database\Eloquent\Collection Random collections for testing
      * @privacy-safe Only public published collections
      */
-    private function getRandomCollections() {
+    private function getRandomCollections()
+    {
         // Utilizziamo il service dedicato per la selezione random
         $featuredService = app(\App\Services\FeaturedCollectionService::class);
 
@@ -272,14 +277,16 @@ class HomeController extends Controller {
      */
     /**
      * @Oracode Method: Get Featured EGIs for Homepage
-     * 🎯 Purpose: Retrieve featured published EGIs for homepage display (CREATOR ONLY)
+     * 🎯 Purpose: Retrieve random published EGIs for homepage display (CREATOR ONLY)
      * 🛡️ Privacy: Uses only publicly published EGIs (is_published = true)
+     * 🎲 Random: Uses inRandomOrder() for variety on each page load
      * 🎨 Filter: Only EGIs from creators with usertype = 'creator' (excludes PA fake EGIs)
      *
-     * @return \Illuminate\Database\Eloquent\Collection Latest 20 published EGIs from creators
+     * @return \Illuminate\Database\Eloquent\Collection Random 20 published EGIs from creators
      * @privacy-safe Only public published content from creators
      */
-    private function getFeaturedEgis() {
+    private function getFeaturedEgis()
+    {
         return Egi::where('is_published', true)
             ->whereHas('user', function ($query) {
                 $query->where('usertype', 'creator');
@@ -294,7 +301,7 @@ class HomeController extends Controller {
                         ->with('user');
                 }
             ])
-            ->latest()
+            ->inRandomOrder() // Random ad ogni reload
             ->take(20)
             ->get();
     }
@@ -310,7 +317,8 @@ class HomeController extends Controller {
      * @return \Illuminate\Database\Eloquent\Collection Latest 8 published collections with creator and EGI count
      * @privacy-safe Only public published collections
      */
-    private function getLatestCollections($excludeIds) {
+    private function getLatestCollections($excludeIds)
+    {
         return Collection::where('is_published', true)
             ->whereNotIn('id', $excludeIds)
             ->with(['creator'])
@@ -329,7 +337,8 @@ class HomeController extends Controller {
      * @return \Illuminate\Database\Eloquent\Collection Top 3 active environmental projects
      * @privacy-safe Public environmental project data
      */
-    private function getHighlightedEpps() {
+    private function getHighlightedEpps()
+    {
         return Epp::where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->take(3)
@@ -346,7 +355,8 @@ class HomeController extends Controller {
      * @return \Illuminate\Database\Eloquent\Collection Random 50 creators with their EGI and collection counts
      * @privacy-safe Public creator profiles only
      */
-    private function getFeaturedCreators() {
+    private function getFeaturedCreators()
+    {
         return User::where('usertype', 'creator')
             ->withCount(['createdEgis as egis_count', 'createdCollections as collections_count'])
             ->inRandomOrder()
@@ -365,7 +375,8 @@ class HomeController extends Controller {
      * @schema-type QuantitativeValue
      * @todo Future: Calculate sum from transactions or retrieve from dedicated API
      */
-    private function getTotalPlasticRecovered(): float {
+    private function getTotalPlasticRecovered(): float
+    {
         // MVP: Valore hardcoded
         // TODO: In futuro, calcolare somma da transazioni o recuperare da API dedicata
         return 5241.38;
@@ -390,12 +401,14 @@ class HomeController extends Controller {
      * @Oracode Method: Get Hyper EGIs for Homepage
      * 🎯 Purpose: Retrieve hyper-flagged published EGIs for special display (CREATOR ONLY)
      * 🛡️ Privacy: Uses only publicly published hyper EGIs (is_published = true, hyper = true)
+     * 🎲 Random: Uses inRandomOrder() for variety on each page load
      * 🎨 Filter: Only EGIs from creators with usertype = 'creator' (excludes PA fake EGIs)
      *
-     * @return \Illuminate\Database\Eloquent\Collection Hyper-flagged published EGIs from creators
+     * @return \Illuminate\Database\Eloquent\Collection Hyper-flagged published EGIs from creators (random order)
      * @privacy-safe Only public published hyper content from creators
      */
-    private function getHyperEgis() {
+    private function getHyperEgis()
+    {
         return Egi::where('is_published', true)
             ->where('hyper', true)
             ->whereHas('user', function ($query) {
@@ -411,6 +424,7 @@ class HomeController extends Controller {
                         ->with('user');
                 }
             ])
+            ->inRandomOrder() // Random ad ogni reload
             ->get();
     }
 }

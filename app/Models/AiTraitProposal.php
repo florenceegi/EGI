@@ -283,3 +283,4 @@ class AiTraitProposal extends Model
 
 
 
+
