@@ -314,17 +314,27 @@ class CertificateGeneratorService {
     public function generateBlockchainCertificate(\App\Models\Egi $egi, \App\Models\EgiBlockchain $egiBlockchain): EgiReservationCertificate {
         try {
             // ✅ VALIDAZIONE BLOCKING - Certificato SOLO con dati completi
-            // Un certificato senza ASA ID, TX ID o importo NON CERTIFICA NULLA
+            // Un certificato senza ASA ID o importo NON CERTIFICA NULLA
             if (empty($egiBlockchain->asa_id)) {
                 throw new \Exception('Cannot generate certificate: ASA ID missing (mint not completed)');
             }
 
+            // ⚠️ Transaction ID è opzionale (mint vecchi potrebbero non averlo)
+            // Se manca, viene mostrato "N/A" nel certificato
             if (empty($egiBlockchain->blockchain_tx_id)) {
-                throw new \Exception('Cannot generate certificate: Transaction ID missing (mint not completed)');
+                $this->logger->warning('Certificate generated without transaction ID (old mint)', [
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'asa_id' => $egiBlockchain->asa_id
+                ]);
             }
 
+            // ⚠️ Paid Amount è opzionale (mint vecchi potrebbero non averlo)
+            // Se manca, viene mostrato "N/A" nel certificato
             if (empty($egiBlockchain->paid_amount) || $egiBlockchain->paid_amount <= 0) {
-                throw new \Exception('Cannot generate certificate: Payment amount missing or invalid');
+                $this->logger->warning('Certificate generated without payment amount (old mint)', [
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'asa_id' => $egiBlockchain->asa_id
+                ]);
             }
 
             // Generate certificate UUID
@@ -347,13 +357,13 @@ class CertificateGeneratorService {
 
             // Create certificate record in egi_reservation_certificates table
             $certificate = EgiReservationCertificate::create([
-                'certificate_type' => 'mint',
+                'certificate_type' => 'standard', // Blockchain certificate (ENUM: standard/premium/eco/luxury)
                 'egi_blockchain_id' => $egiBlockchain->id,
                 'egi_id' => $egi->id,
                 'user_id' => $egiBlockchain->buyer_user_id,
                 'wallet_address' => $egiBlockchain->buyer_wallet ?? 'Treasury Custody',
                 'reservation_type' => 'strong', // Mint is always strong ownership
-                'offer_amount_fiat' => $egiBlockchain->paid_amount,
+                'offer_amount_fiat' => $egiBlockchain->paid_amount ?? 0, // Default 0 for old mints
                 'offer_amount_algo' => 0, // Not used for mint certificates
                 'certificate_uuid' => $certificateUuid,
                 'signature_hash' => hash('sha256', $signatureData),
@@ -454,16 +464,35 @@ class CertificateGeneratorService {
      */
     private function generateBlockchainCertificatePdf(array $certificateData): string {
         // Dati DEVONO essere presenti (validati in generateBlockchainCertificate)
-        // Se arriviamo qui, ASA ID, TX ID e paid_amount sono garantiti NON NULL
+        // Se arriviamo qui, ASA ID è garantito NON NULL
+        // Transaction ID e paid_amount potrebbero essere null per mint vecchi
         $asaId = htmlspecialchars($certificateData['asa_id']);
-        $txId = htmlspecialchars($certificateData['blockchain_tx_id']);
-        $amount = number_format($certificateData['purchase_amount'], 2, ',', '.') . ' ' . htmlspecialchars($certificateData['purchase_currency'] ?? 'EUR');
+        $txId = !empty($certificateData['blockchain_tx_id']) 
+            ? htmlspecialchars($certificateData['blockchain_tx_id']) 
+            : __('certificate_pdf.transaction_not_available');
+        
+        // Amount con fallback per mint vecchi
+        if (!empty($certificateData['purchase_amount']) && $certificateData['purchase_amount'] > 0) {
+            $amount = number_format($certificateData['purchase_amount'], 2, ',', '.') . ' ' . htmlspecialchars($certificateData['purchase_currency'] ?? 'EUR');
+        } else {
+            $amount = __('certificate_pdf.amount_not_available');
+        }
 
         // Blockchain explorer URLs (network-aware)
         $network = config('algorand.algorand.network', 'testnet');
         $explorerBaseUrl = config("algorand.algorand.{$network}.explorer_url", 'https://testnet.explorer.perawallet.app');
         $asaExplorerUrl = "{$explorerBaseUrl}/asset/{$asaId}";
-        $txExplorerUrl = "{$explorerBaseUrl}/tx/{$txId}";
+        // Transaction URL solo se txId è valido (non N/A)
+        $txExplorerUrl = !empty($certificateData['blockchain_tx_id']) 
+            ? "{$explorerBaseUrl}/tx/{$certificateData['blockchain_tx_id']}" 
+            : '#';
+        
+        // Transaction ID display (con o senza link)
+        if (!empty($certificateData['blockchain_tx_id'])) {
+            $txIdDisplay = '<a href="' . $txExplorerUrl . '" target="_blank" style="color: #1B365D; text-decoration: underline;">' . $txId . '</a>';
+        } else {
+            $txIdDisplay = '<span style="color: #999; font-style: italic;">' . $txId . '</span>';
+        }
 
         // Dati certificato escapati
         $certificateUuid = htmlspecialchars($certificateData['certificate_uuid']);
@@ -777,7 +806,7 @@ class CertificateGeneratorService {
 
                 <div class="info-row">
                     <span class="label" style="color: #6B6B6B; font-weight: 600;">{$t['label_transaction_id']}</span>
-                    <span class="value" style="color: #1B365D; font-weight: 600;"><a href="{$txExplorerUrl}" target="_blank" style="color: #1B365D; text-decoration: underline;">{$txId}</a></span>
+                    <span class="value" style="color: #1B365D; font-weight: 600;">{$txIdDisplay}</span>
                 </div>
                 <div class="info-row">
                     <span class="label" style="color: #6B6B6B; font-weight: 600;">{$t['label_amount_paid']}</span>
