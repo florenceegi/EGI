@@ -634,7 +634,8 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                     </div>
                     <div class="min-w-0 flex-1">
                         <span class="text-xs font-medium text-gray-300">{{ __('egi.creator.co_creator') }}</span>
-                        <span class="ml-1 truncate text-xs font-semibold text-white">{{ $coCreatorDisplay['name'] }}</span>
+                        <span
+                            class="ml-1 truncate text-xs font-semibold text-white">{{ $coCreatorDisplay['name'] }}</span>
                     </div>
                 </div>
             @endif

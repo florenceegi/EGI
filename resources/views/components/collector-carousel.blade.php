@@ -10,7 +10,7 @@
 @props(['collectors' => collect()])
 
 <section class="py-12 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-    <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="px-4 mx-auto sm:px-6 lg:px-8">
 
         {{-- Header Section --}}
         <div class="mb-10 text-center">

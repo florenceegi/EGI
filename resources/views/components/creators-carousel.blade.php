@@ -8,7 +8,7 @@
 ])
 
 <div class="{{ $marginClass }} {{ $bgClass }} w-full py-8 md:py-10 lg:py-12">
-    <div class="container px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="container px-4 mx-auto sm:px-6 lg:px-8">
         @if ($title)
             <h2 class="{{ $titleClass }} mb-6 font-display text-2xl font-bold text-white md:text-3xl lg:text-4xl">
                 {{ $title }}
