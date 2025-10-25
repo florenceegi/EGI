@@ -179,8 +179,8 @@ class EgiReservationCertificateController extends Controller {
             // Verify signature
             $isValid = $certificate->verifySignature($verificationData);
 
-            // Determine certificate type
-            $isBlockchainCertificate = $certificate->certificate_type === 'mint';
+            // Determine certificate type (blockchain cert = ha egi_blockchain_id)
+            $isBlockchainCertificate = $certificate->egi_blockchain_id !== null;
 
             // Variables for reservation certificates
             $isHighestPriority = false;
@@ -343,8 +343,9 @@ class EgiReservationCertificateController extends Controller {
 
             // ✅ Check if certificate already exists (prevent duplicate generation on page reload)
             $certificate = \App\Models\EgiReservationCertificate::where('egi_id', $egi->id)
-                ->where('certificate_type', 'mint')
                 ->where('egi_blockchain_id', $egi->blockchain->id)
+                ->whereNotNull('egi_blockchain_id') // Blockchain cert = ha blockchain_id
+                ->orderBy('created_at', 'desc') // More recent if multiple
                 ->first();
 
             if (!$certificate) {
@@ -470,10 +471,11 @@ class EgiReservationCertificateController extends Controller {
                 ], 404);
             }
 
-            // Find mint certificate
+            // Find blockchain certificate (ANY type with egi_blockchain_id)
             $certificate = \App\Models\EgiReservationCertificate::where('egi_id', $egiId)
-                ->where('certificate_type', 'mint')
                 ->where('egi_blockchain_id', $egi->blockchain->id)
+                ->whereNotNull('egi_blockchain_id') // Blockchain cert = ha blockchain_id
+                ->orderBy('created_at', 'desc') // More recent if multiple
                 ->first();
 
             $this->logger->info('Certificate search result', [

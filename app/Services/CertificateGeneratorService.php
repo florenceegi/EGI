@@ -22,7 +22,8 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @version 1.0.0
  * @date 2025-05-16
  */
-class CertificateGeneratorService {
+class CertificateGeneratorService
+{
     /**
      * @var UltraLogManager
      */
@@ -33,7 +34,8 @@ class CertificateGeneratorService {
      *
      * @param UltraLogManager $logger
      */
-    public function __construct(UltraLogManager $logger) {
+    public function __construct(UltraLogManager $logger)
+    {
         $this->logger = $logger;
     }
 
@@ -47,7 +49,8 @@ class CertificateGeneratorService {
      *
      * @privacy-safe Creates certificates with minimal PII
      */
-    public function generateCertificate(Reservation $reservation, array $additionalData = []): EgiReservationCertificate {
+    public function generateCertificate(Reservation $reservation, array $additionalData = []): EgiReservationCertificate
+    {
         try {
             // Create the certificate record
             $certificate = $reservation->createCertificate($additionalData);
@@ -82,7 +85,8 @@ class CertificateGeneratorService {
      * @param EgiReservationCertificate $certificate The certificate
      * @return bool Whether PDF generation was successful
      */
-    public function generatePdf(EgiReservationCertificate $certificate): bool {
+    public function generatePdf(EgiReservationCertificate $certificate): bool
+    {
         try {
             // Create PDF filename
             $filename = 'certificate_' . $certificate->certificate_uuid . '.pdf';
@@ -122,7 +126,8 @@ class CertificateGeneratorService {
      * @param EgiReservationCertificate $certificate The certificate
      * @return string The PDF content
      */
-    private function createPdfContent(EgiReservationCertificate $certificate): string {
+    private function createPdfContent(EgiReservationCertificate $certificate): string
+    {
         // For MVP, we'll use a simple approach with TCPDF
         // In a real implementation, you might want to use a template with more styling
         // This is a placeholder for the actual PDF generation logic
@@ -183,7 +188,8 @@ class CertificateGeneratorService {
      * @param EgiReservationCertificate $certificate The certificate
      * @return string HTML content
      */
-    private function generateHtmlForCertificate(EgiReservationCertificate $certificate): string {
+    private function generateHtmlForCertificate(EgiReservationCertificate $certificate): string
+    {
         // Load certificate details
         $egi = $certificate->egi;
         $reservation = $certificate->reservation;
@@ -311,7 +317,8 @@ class CertificateGeneratorService {
      *
      * @purpose Creates blockchain certificate after successful mint
      */
-    public function generateBlockchainCertificate(\App\Models\Egi $egi, \App\Models\EgiBlockchain $egiBlockchain): EgiReservationCertificate {
+    public function generateBlockchainCertificate(\App\Models\Egi $egi, \App\Models\EgiBlockchain $egiBlockchain): EgiReservationCertificate
+    {
         try {
             // ✅ VALIDAZIONE BLOCKING - Certificato SOLO con dati completi
             // Un certificato senza ASA ID o importo NON CERTIFICA NULLA
@@ -462,15 +469,16 @@ class CertificateGeneratorService {
      * @param array $certificateData Certificate data
      * @return string Binary PDF content
      */
-    private function generateBlockchainCertificatePdf(array $certificateData): string {
+    private function generateBlockchainCertificatePdf(array $certificateData): string
+    {
         // Dati DEVONO essere presenti (validati in generateBlockchainCertificate)
         // Se arriviamo qui, ASA ID è garantito NON NULL
         // Transaction ID e paid_amount potrebbero essere null per mint vecchi
         $asaId = htmlspecialchars($certificateData['asa_id']);
-        $txId = !empty($certificateData['blockchain_tx_id']) 
-            ? htmlspecialchars($certificateData['blockchain_tx_id']) 
+        $txId = !empty($certificateData['blockchain_tx_id'])
+            ? htmlspecialchars($certificateData['blockchain_tx_id'])
             : __('certificate_pdf.transaction_not_available');
-        
+
         // Amount con fallback per mint vecchi
         if (!empty($certificateData['purchase_amount']) && $certificateData['purchase_amount'] > 0) {
             $amount = number_format($certificateData['purchase_amount'], 2, ',', '.') . ' ' . htmlspecialchars($certificateData['purchase_currency'] ?? 'EUR');
@@ -483,10 +491,10 @@ class CertificateGeneratorService {
         $explorerBaseUrl = config("algorand.algorand.{$network}.explorer_url", 'https://testnet.explorer.perawallet.app');
         $asaExplorerUrl = "{$explorerBaseUrl}/asset/{$asaId}";
         // Transaction URL solo se txId è valido (non N/A)
-        $txExplorerUrl = !empty($certificateData['blockchain_tx_id']) 
-            ? "{$explorerBaseUrl}/tx/{$certificateData['blockchain_tx_id']}" 
+        $txExplorerUrl = !empty($certificateData['blockchain_tx_id'])
+            ? "{$explorerBaseUrl}/tx/{$certificateData['blockchain_tx_id']}"
             : '#';
-        
+
         // Transaction ID display (con o senza link)
         if (!empty($certificateData['blockchain_tx_id'])) {
             $txIdDisplay = '<a href="' . $txExplorerUrl . '" target="_blank" style="color: #1B365D; text-decoration: underline;">' . $txId . '</a>';

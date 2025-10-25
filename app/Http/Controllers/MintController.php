@@ -934,8 +934,9 @@ class MintController extends Controller {
                 ? ($lastReservation->offer_amount_fiat ?? $egi->price)
                 : $egi->price;
 
-            // Get certificate (può essere null se non ancora generato)
+            // Get blockchain certificate (il più recente se ce ne sono più)
             $certificate = \App\Models\EgiReservationCertificate::where('egi_blockchain_id', $blockchain->id)
+                ->orderBy('created_at', 'desc')
                 ->first();
 
             // Get payment breakdown (può essere vuoto)
