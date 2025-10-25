@@ -641,7 +641,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
 
         {{-- 💰 PRICE SECTION - SIMPLIFIED --}}
         <div class="mt-4">
-            @if ($displayPrice && $displayPrice > 0)
+            @if ($displayPrice && $displayPrice > 0 && $saleMode !== 'not_for_sale')
                 {{-- ACTIVE PRICE - From highest reservation or base price --}}
                 <div
                     class="rounded-xl border border-green-500/30 bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-3">
