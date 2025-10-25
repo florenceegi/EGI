@@ -18,6 +18,7 @@ $isHyper = $egi->hyper ?? false;
 
 // 🎯 BADGE STATUS LOGIC (same as egi-card)
 $isMinted = $egi->isMinted();
+$isNotMinted = !$isMinted;
 $hasActiveReservations = $egi->reservations
     ? $egi->reservations->where('is_current', true)->where('status', 'active')->count() > 0
     : false;
@@ -93,7 +94,11 @@ $contextConfig = [
 $config = $contextConfig[$context] ?? $contextConfig['collector'];
 
 // Controllo se l'utente loggato è il creator dell'EGI
-    $isCreator = auth()->check() && auth()->id() === $egi->user_id;
+$isCreator = auth()->check() && auth()->id() === $egi->user_id;
+
+// 🎨 CREATOR INFO (come in egi-card)
+$egiCreator = $egi->user ?? null;
+$imageUrl = $egiCreator->profile_photo_url ?? '';
 
     // Badge logic - può essere sovrascritto dal parametro showBadge
     $showBadge = $showBadge ?? $showOwnershipBadge;
@@ -243,17 +248,29 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
                 @endif
             </div>
 
-            {{-- 🔍 DEBUG CREATOR --}}
-            @if ($egi->user)
-                <div class="mb-1 text-sm font-bold text-green-400">✅ Creator: {{ $egi->user->first_name }} {{ $egi->user->last_name }}</div>
-            @else
-                <div class="mb-1 text-sm font-bold text-red-400">❌ NO CREATOR DATA</div>
+            {{-- 🎨 CREATOR INFO - SEMPRE VISIBILE (esattamente come in egi-card) --}}
+            @if ($egiCreator)
+                <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
+                    data-creator-info>
+                    <div
+                        class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
+                        <img src="{{ $imageUrl }}" alt="{{ $egiCreator->name }}"
+                            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy" decoding="async">
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <span class="text-xs font-medium text-gray-300">{{ __('egi.creator.created_by') }}</span>
+                        <span class="ml-1 truncate text-xs font-semibold text-white">{{ $egiCreator->name }}</span>
+                    </div>
+                </div>
             @endif
 
-            <!-- Collection and Creator Info -->
-            <div class="mb-2 flex flex-wrap items-center gap-4 text-sm text-gray-400">
-                @if ($egi->collection)
-                    <div class="flex items-center gap-1">
+            {{-- 📦 COLLECTION INFO (esattamente come in egi-card) --}}
+            @if ($egi->collection)
+                <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
+                    data-collection-info>
+                    <div
+                        class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-indigo-500">
                         @php
                             $collectionImageUrl = '';
                             if (method_exists($egi->collection, 'getFirstMediaUrl')) {
@@ -262,34 +279,45 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
                         @endphp
                         @if ($collectionImageUrl)
                             <img src="{{ $collectionImageUrl }}" alt="{{ $egi->collection->collection_name }}"
-                                class="h-3 w-3 rounded-full object-cover transition-transform duration-300 hover:scale-110"
+                                class="h-full w-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 loading="lazy" decoding="async">
                         @else
-                            <div
-                                class="{{ $isHyper ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 'bg-gradient-to-r from-purple-500 to-blue-500' }} h-3 w-3 rounded-full">
-                            </div>
+                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                            </svg>
                         @endif
-                        <a href="{{ route('home.collections.show', $egi->collection->id) }}"
-                            class="{{ $isHyper ? 'hover:text-yellow-400' : 'hover:text-purple-400' }} max-w-[120px] truncate transition-colors">
-                            {{ $egi->collection->collection_name }}
-                        </a>
                     </div>
-                @endif
+                    <div class="min-w-0 flex-1">
+                        <span class="text-xs font-medium text-gray-300">{{ __('egi.collection.part_of') }}</span>
+                        <span
+                            class="ml-1 truncate text-xs font-semibold text-white">{{ $egi->collection->collection_name }}</span>
+                    </div>
+                </div>
+            @endif
 
-                {{-- Creator sempre visibile --}}
-                @if ($egi->user)
-                    <div class="flex items-center gap-1">
-                        <div class="{{ $isHyper ? 'bg-yellow-600' : 'bg-gray-600' }} h-3 w-3 rounded-full"></div>
-                        <span class="max-w-[100px] truncate text-gray-300">{{ $egi->user->first_name }}
-                            {{ $egi->user->last_name }}</span>
+            {{-- 🎨 CO-CREATOR (se mintato) - SEMPRE VISIBILE come box separato --}}
+            @if ($isMinted && $egi->blockchain && $egi->blockchain->buyer)
+                @php
+                    $coCreator = $egi->blockchain->buyer;
+                    $coCreatorImageUrl = $coCreator->profile_photo_url ?? '';
+                    $coCreatorDisplay = formatActivatorDisplay($coCreator);
+                @endphp
+                <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
+                    data-co-creator-info>
+                    <div
+                        class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
+                        <img src="{{ $coCreatorImageUrl }}" alt="{{ $coCreatorDisplay['name'] }}"
+                            class="h-full w-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy" decoding="async">
                     </div>
-                @else
-                    {{-- DEBUG: mostra se user è null --}}
-                    <div class="flex items-center gap-1">
-                        <span class="text-xs text-red-400">[DEBUG: No Creator]</span>
+                    <div class="min-w-0 flex-1">
+                        <span class="text-xs font-medium text-gray-300">{{ __('egi.creator.co_creator') }}</span>
+                        <span
+                            class="ml-1 truncate text-xs font-semibold text-white">{{ $coCreatorDisplay['name'] }}</span>
                     </div>
-                @endif
-            </div>
+                </div>
+            @endif
 
             <!-- Base Price Info -->
             @if ($egi->price && $saleMode !== 'not_for_sale')
@@ -318,8 +346,8 @@ $hasCurrentReservation =
                 @endphp
                 <div class="mb-1 flex items-center justify-between gap-2 text-sm">
                     <div class="flex items-center gap-2">
-                        <svg class="{{ $isHyper ? 'text-yellow-400' : 'text-orange-400' }} h-4 w-4" fill="currentColor"
-                            viewBox="0 0 20 20">
+                        <svg class="{{ $isHyper ? 'text-yellow-400' : 'text-orange-400' }} h-4 w-4"
+                            fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd" />

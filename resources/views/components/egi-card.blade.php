@@ -617,6 +617,28 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                 </div>
             @endif
 
+            {{-- 🎨 CO-CREATOR (se mintato) - SEMPRE VISIBILE come box separato --}}
+            @if ($isMinted && $egi->blockchain && $egi->blockchain->buyer)
+                @php
+                    $coCreator = $egi->blockchain->buyer;
+                    $coCreatorImageUrl = $coCreator->profile_photo_url ?? '';
+                    $coCreatorDisplay = formatActivatorDisplay($coCreator);
+                @endphp
+                <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
+                    data-co-creator-info>
+                    <div
+                        class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
+                        <img src="{{ $coCreatorImageUrl }}" alt="{{ $coCreatorDisplay['name'] }}"
+                            class="h-full w-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy" decoding="async">
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <span class="text-xs font-medium text-gray-300">{{ __('egi.creator.co_creator') }}</span>
+                        <span class="ml-1 truncate text-xs font-semibold text-white">{{ $coCreatorDisplay['name'] }}</span>
+                    </div>
+                </div>
+            @endif
+
             {{-- 📊 RESERVATION COUNT --}}
             @if ($egi->reservations && $egi->reservations->count() > 0)
                 <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
