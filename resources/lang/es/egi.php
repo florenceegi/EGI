@@ -51,6 +51,8 @@ return [
         'winning_bid' => 'PUJA GANADORA',
         'outbid' => 'SUPERADO',
         'not_owned' => 'NO POSEÍDO',
+        'not_published' => 'NO PUBLICADO', // Badge para EGI no publicado (solo owner)
+        'not_for_sale' => 'NO A LA VENTA', // Badge para EGI no en venta
         'to_activate' => 'POR ACTIVAR',
         'activated' => 'ACTIVADO',
         'reserved' => 'RESERVADO',

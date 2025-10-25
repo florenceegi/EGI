@@ -318,9 +318,14 @@ class EgiController extends Controller
             $egi->likes_count = $egi->likes()->count();
 
             // Get all EGIs from the same collection for the navigation carousel
+            // Se non sei owner, mostra solo EGI pubblicati
+            $isOwner = $user->id === $egi->collection->creator_id || $user->id === $egi->collection->owner_id;
             $collectionEgis = $egi->collection->egis()
                 ->whereNotNull('key_file')
                 ->whereNotNull('extension')
+                ->when(!$isOwner, function ($query) {
+                    $query->where('is_published', true);
+                })
                 ->orderBy('position')
                 ->orderBy('id')
                 ->get();
