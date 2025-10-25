@@ -178,19 +178,21 @@ const message = "{{ __('js.messages.confirm') }}";
 **PRIMA di scrivere QUALSIASI testo visibile all'utente:**
 
 1. **🔍 CERCA chiave esistente:**
-   ```bash
-   grep -r "testo_simile" resources/lang/
-   ```
+
+    ```bash
+    grep -r "testo_simile" resources/lang/
+    ```
 
 2. **❓ SE NON ESISTE → AGGIUNGI a file traduzioni:**
-   - Aggiungi a `/resources/lang/en/[file].php` (inglese - default)
-   - Aggiungi a `/resources/lang/it/[file].php` (italiano)
-   - Aggiungi a tutte le altre lingue: `de`, `es`, `fr`, `pt`
+
+    - Aggiungi a `/resources/lang/en/[file].php` (inglese - default)
+    - Aggiungi a `/resources/lang/it/[file].php` (italiano)
+    - Aggiungi a tutte le altre lingue: `de`, `es`, `fr`, `pt`
 
 3. **✅ USA la chiave nel codice:**
-   ```blade
-   {{ __('file.section.key') }}
-   ```
+    ```blade
+    {{ __('file.section.key') }}
+    ```
 
 ### **📂 STRUTTURA FILE TRADUZIONI:**
 
@@ -246,6 +248,7 @@ AZIONI IMMEDIATE:
 ### **📚 ESEMPI FILE TRADUZIONI:**
 
 **resources/lang/en/reservation.php:**
+
 ```php
 return [
     'history' => [
@@ -257,6 +260,7 @@ return [
 ```
 
 **resources/lang/it/reservation.php:**
+
 ```php
 return [
     'history' => [
@@ -272,19 +276,21 @@ return [
 Le UNICHE eccezioni permesse sono:
 
 1. **Codici tecnici NON visibili all'utente:**
-   ```php
-   'ERROR_CODE' => 'INTERNAL_ERROR'  // OK - codice interno
-   ```
+
+    ```php
+    'ERROR_CODE' => 'INTERNAL_ERROR'  // OK - codice interno
+    ```
 
 2. **Log di debug:**
-   ```php
-   $this->logger->debug('Technical debug message'); // OK - solo dev
-   ```
+
+    ```php
+    $this->logger->debug('Technical debug message'); // OK - solo dev
+    ```
 
 3. **Commenti codice:**
-   ```php
-   // This is a comment - OK
-   ```
+    ```php
+    // This is a comment - OK
+    ```
 
 **TUTTO IL RESTO = VIETATO**
 
@@ -292,11 +298,11 @@ Le UNICHE eccezioni permesse sono:
 
 **Contesto ENTERPRISE/INTERNAZIONALE:**
 
-- 🌍 FlorenceEGI è per mercato GLOBALE (PA italiane + internazionali)
-- 🏛️ Standard enterprise richiedono i18n completo
-- 💼 Clienti PA richiedono piattaforma nella loro lingua
-- 📊 Manutenzione: traduttori lavorano su file, non cercano nel codice
-- 🔍 Audit: testo hardcoded = violazione best practices internazionali
+-   🌍 FlorenceEGI è per mercato GLOBALE (PA italiane + internazionali)
+-   🏛️ Standard enterprise richiedono i18n completo
+-   💼 Clienti PA richiedono piattaforma nella loro lingua
+-   📊 Manutenzione: traduttori lavorano su file, non cercano nel codice
+-   🔍 Audit: testo hardcoded = violazione best practices internazionali
 
 **Un solo testo hardcoded = piattaforma NON professionale**
 
@@ -1128,7 +1134,7 @@ Errore → Blacklist → Prevenzione futura
 1. ❓ Ho tutte le info? → NO = CHIEDI
 2. ❓ Uso metodi esistenti? → SI = VERIFICA PRIMA
 3. ❓ Esiste pattern simile? → CERCA E REPLICA
-4. ❓ Scrivo TESTO visibile? → SI = USA __('chiave') MAI HARDCODED
+4. ❓ Scrivo TESTO visibile? → SI = USA \_\_('chiave') MAI HARDCODED
 5. ❓ Sto facendo assunzioni? → MARCA ⚠️ E CHIEDI
 6. ❓ Sto aggiungendo limiti? → SE STATISTICS = STOP
 
@@ -1148,7 +1154,7 @@ Errore → Blacklist → Prevenzione futura
 -   ❌ "Suppongo che la tabella abbia..."
 -   ❌ "Il pattern standard sarebbe..." (senza verificare)
 -   ❌ `<h3>Testo hardcoded qui</h3>` (MAI testo visibile hardcoded!)
--   ❌ `'title' => 'Fixed text'` (SEMPRE usare __('chiave'))
+-   ❌ `'title' => 'Fixed text'` (SEMPRE usare \_\_('chiave'))
 
 ---
 
