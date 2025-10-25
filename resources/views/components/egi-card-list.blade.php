@@ -273,8 +273,13 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
                 @if ($egi->user)
                     <div class="flex items-center gap-1">
                         <div class="{{ $isHyper ? 'bg-yellow-600' : 'bg-gray-600' }} h-3 w-3 rounded-full"></div>
-                        <span class="max-w-[100px] truncate">{{ $egi->user->first_name }}
+                        <span class="max-w-[100px] truncate text-gray-300">{{ $egi->user->first_name }}
                             {{ $egi->user->last_name }}</span>
+                    </div>
+                @else
+                    {{-- DEBUG: mostra se user è null --}}
+                    <div class="flex items-center gap-1">
+                        <span class="text-xs text-red-400">[DEBUG: No Creator]</span>
                     </div>
                 @endif
             </div>

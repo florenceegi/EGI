@@ -14,11 +14,13 @@ use Illuminate\Support\Facades\DB;
  * Unifica ricerche su EGIs, Collections, Creators con faccette su trait values.
  * Design: stateless, ogni chiamata riceve parametri e produce risultati + facets.
  */
-class UniversalSearchService {
+class UniversalSearchService
+{
     /**
      * Tokenizza la query testuale in termini (>=2 char)
      */
-    protected function tokenize(?string $q): array {
+    protected function tokenize(?string $q): array
+    {
         if (!$q) return [];
         $normalized = trim(str_replace(["\n", "\r", "\t"], ' ', $q));
         // Collassa spazi multipli
@@ -33,7 +35,8 @@ class UniversalSearchService {
      * Ricerca EGIs con filtri.
      * @param array $params ['q','traits'=>[],'collections'=>[],'per_page'=>int]
      */
-    public function searchEgis(array $params): LengthAwarePaginator {
+    public function searchEgis(array $params): LengthAwarePaginator
+    {
         $qTokens = $this->tokenize($params['q'] ?? null);
         $traits = $params['traits'] ?? [];
         $collectionIds = $params['collections'] ?? [];
@@ -85,7 +88,8 @@ class UniversalSearchService {
     /**
      * Ricerca Collections.
      */
-    public function searchCollections(array $params): LengthAwarePaginator {
+    public function searchCollections(array $params): LengthAwarePaginator
+    {
         $qTokens = $this->tokenize($params['q'] ?? null);
         $perPage = $params['per_page'] ?? config('search.per_page');
 
@@ -170,7 +174,8 @@ class UniversalSearchService {
     /**
      * Ricerca Creators (users) con optional trait filter: selezioniamo creators che hanno EGIs con TUTTI i trait.
      */
-    public function searchCreators(array $params): LengthAwarePaginator {
+    public function searchCreators(array $params): LengthAwarePaginator
+    {
         $qTokens = $this->tokenize($params['q'] ?? null);
         $traits = $params['traits'] ?? [];
         $userTypes = $params['user_types'] ?? [];
@@ -270,7 +275,8 @@ class UniversalSearchService {
     /**
      * Facets per trait value organizzati per trait_type (solo quelli presenti su EGIs pubblicati)
      */
-    public function traitFacets(array $currentFilters = []): array {
+    public function traitFacets(array $currentFilters = []): array
+    {
         // Base query EGIs pubblicati
         $baseEgiIds = Egi::query()->where('is_published', true)->pluck('id');
         if ($baseEgiIds->isEmpty()) return [];
@@ -295,7 +301,8 @@ class UniversalSearchService {
     /**
      * Quick suggestions (union of top matches across entities)
      */
-    public function suggestions(string $q): array {
+    public function suggestions(string $q): array
+    {
         $limit = config('search.suggestions_limit');
         $token = mb_strtolower(trim($q));
         if ($token === '') return [];

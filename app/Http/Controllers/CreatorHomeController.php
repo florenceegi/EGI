@@ -24,7 +24,8 @@ use Illuminate\View\View;
  * @version 2.0.0 (Usertype Architecture Compliant)
  * @date 2025-08-10
  */
-class CreatorHomeController extends Controller {
+class CreatorHomeController extends Controller
+{
 
     /**
      * Risolve un creator da ID numerico o nick_name
@@ -33,7 +34,8 @@ class CreatorHomeController extends Controller {
      * @return User
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    private function resolveCreator($identifier): User {
+    private function resolveCreator($identifier): User
+    {
         if (is_numeric($identifier)) {
             return User::findOrFail($identifier);
         } else {
@@ -51,7 +53,8 @@ class CreatorHomeController extends Controller {
      * - Include statistiche di vendita/prenotazioni per ogni EGI
      * - Differente dal portfolio Collector che mostra EGI acquistati
      */
-    public function portfolio($id, Request $request): View {
+    public function portfolio($id, Request $request): View
+    {
         $creator = $this->resolveCreator($id);
         if (!$creator->hasRole('creator')) {
             abort(404);
@@ -136,7 +139,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Show creator's main showcase page
      * 📤 Output: Creator home view with stats and featured content
      */
-    public function home($id): View {
+    public function home($id): View
+    {
         $creator = $this->resolveCreator($id);
         $creator->load(['collections' => function ($query) {
             $query->where('is_published', true)
@@ -185,7 +189,8 @@ class CreatorHomeController extends Controller {
      * @param Request $request La richiesta HTTP contenente i parametri di filtro.
      * @return View La vista 'creators.index' con i dati dei Creator.
      */
-    public function index(Request $request): View {
+    public function index(Request $request): View
+    {
         $query = $request->input('query');
         $category = $request->input('category'); // Esempio di filtro per categoria
         $sort = $request->input('sort', 'latest'); // Ordine di default: 'latest'
@@ -251,7 +256,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Redirect to the collections index, filtered by this creator.
      * 📤 Output: A redirect response.
      */
-    public function collections($id): \Illuminate\Http\RedirectResponse {
+    public function collections($id): \Illuminate\Http\RedirectResponse
+    {
         $creator = $this->resolveCreator($id);
 
         if (!$creator->hasRole('creator')) {
@@ -270,7 +276,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Display specific collection details
      * 📤 Output: Redirect to existing collection show route
      */
-    public function showCollection($id) {
+    public function showCollection($id)
+    {
         $creator = $this->resolveCreator($id);
 
         // La query ora cerca per ID della collezione, garantendo anche che appartenga al creator corretto.
@@ -288,7 +295,8 @@ class CreatorHomeController extends Controller {
      * 🎯 Purpose: Placeholder for future sections
      * 📤 Output: Coming soon page with back navigation
      */
-    public function underConstruction($id): View {
+    public function underConstruction($id): View
+    {
         $creator = $this->resolveCreator($id);
 
         if (!$creator->hasRole('creator')) {
