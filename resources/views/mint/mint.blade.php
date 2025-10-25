@@ -242,7 +242,7 @@
                             {{ __('mint.post_mint.certificate_description') }}
                         </p>
 
-                        @if ($certificate)
+                        @if ($certificate && $certificate->hasPdf())
                             {{-- Certificate Preview Card --}}
                             <div class="mb-6">
                                 @if ($certificate->hasPdf())
@@ -348,6 +348,39 @@
                                         {{ __('mint.post_mint.my_certificates') }}
                                     </a>
                                 @endif
+                            </div>
+                        @else
+                            {{-- Certificato non ancora generato - Mostra bottone Genera --}}
+                            <div class="rounded-xl border-2 border-dashed border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 p-8">
+                                <div class="text-center">
+                                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+                                        <svg class="h-8 w-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                    <h4 class="mb-2 text-lg font-bold text-gray-900">{{ __('mint.post_mint.certificate_not_generated') }}</h4>
+                                    <p class="mb-6 text-sm text-gray-600">{{ __('mint.post_mint.certificate_not_generated_description') }}</p>
+                                    
+                                    @if ($isOwner)
+                                        {{-- Bottone Genera Certificato - SOLO PER OWNER --}}
+                                        <form id="regenerate-cert-form"
+                                            action="{{ route('mint.regenerate-certificate', $blockchain->id) }}"
+                                            method="POST" class="w-full">
+                                            @csrf
+                                            <button type="button" id="regenerate-cert-btn"
+                                                class="flex w-full cursor-pointer items-center justify-center rounded-xl bg-gradient-to-r from-[#1B365D] to-[#2D5016] px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-[#2a4a7a] hover:to-[#3d6b21] hover:shadow-xl">
+                                                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                                </svg>
+                                                <span id="regenerate-btn-text">{{ __('mint.post_mint.generate_certificate') }}</span>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <p class="text-sm text-gray-500">{{ __('mint.post_mint.owner_can_generate') }}</p>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -563,7 +596,7 @@
                             btnText.textContent = '✅ Rigenerato!';
 
                             // Reload PDF thumbnail - use the actual container ID
-                            const thumbnailContainer = document.querySelector('#coaPdfPreview-{{ $certificate->id }}');
+                            const thumbnailContainer = document.querySelector('#coaPdfPreview-{{ $certificate->id ?? 'none' }}');
                             if (thumbnailContainer) {
                                 const egiId = data.egi_id;
                                 console.log('🔄 Reloading thumbnail for EGI:', egiId);

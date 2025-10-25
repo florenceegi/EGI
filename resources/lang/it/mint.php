@@ -261,6 +261,10 @@ return [
         // Certificate section
         'certificate_title' => 'Certificato di Proprietà Blockchain',
         'certificate_description' => 'Il tuo certificato digitale ufficiale con i dati blockchain verificati.',
+        'certificate_not_generated' => 'Certificato Non Ancora Generato',
+        'certificate_not_generated_description' => 'Il certificato di proprietà blockchain non è ancora stato generato. Clicca sul bottone per generarlo ora.',
+        'generate_certificate' => 'Genera Certificato',
+        'owner_can_generate' => 'Solo il proprietario può generare il certificato.',
         'certificate_blockchain' => 'Certificato Blockchain',
         'certificate_preview' => 'Anteprima Certificato',
         'loading_preview' => 'Caricamento anteprima...',
