@@ -33,29 +33,22 @@ $userDerivedLocation = implode(', ', array_filter($parts));
 @endphp
 
 {{-- CoA Compact Section --}}
-<div class="p-4 space-y-3 border rounded-xl border-amber-500/30 bg-gradient-to-br from-amber-900/20 to-yellow-900/20">
-    {{-- Header --}}
-    <div class="flex items-center justify-between">
-        <h3 class="flex items-center text-sm font-bold text-white">
-            @if ($hasActiveCoa)
+<div class="{{ $hasActiveCoa ? 'space-y-3' : '' }}">
+    @if ($hasActiveCoa)
+        {{-- Header solo se CoA presente --}}
+        <div class="flex items-center justify-between">
+            <h3 class="flex items-center text-sm font-bold text-white">
                 <div class="flex items-center justify-center w-4 h-4 mr-2 rounded-full bg-amber-400">
                     <svg class="h-2.5 w-2.5 text-amber-900" fill="currentColor" viewBox="0 0 8 8">
                         <path
                             d="m2.3 6.73 3.53-4.24c.049-.06.146-.06.195 0L9.6 6.73a.116.116 0 0 1-.096.17H2.4a.116.116 0 0 1-.1-.17Z" />
                     </svg>
                 </div>
-            @else
-                <div class="w-4 h-4 mr-2 bg-gray-600 rounded-full"></div>
-            @endif
-            {{ __('egi.coa.certificate') }}
-        </h3>
-
-        @if ($hasActiveCoa)
+                {{ __('egi.coa.certificate') }}
+            </h3>
             <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">{{ __('egi.coa.active') }}</span>
-        @else
-            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{{ __('egi.coa.none') }}</span>
-        @endif
-    </div>
+        </div>
+    @endif
 
     @if ($hasActiveCoa)
         {{-- Active Certificate Info --}}
@@ -254,67 +247,87 @@ $userDerivedLocation = implode(', ', array_filter($parts));
             </details>
         @endif
     @else
-        {{-- No Certificate --}}
-        <div class="space-y-2 text-center">
-            <p class="text-xs text-gray-300">
-                {{ __('egi.coa.no_certificate_issued') }}
-            </p>
-
+        {{-- No Certificate - Badge Compatto Visibile --}}
+        <div class="space-y-2">
+            <h3 class="text-sm font-semibold text-white">{{ __('egi.coa.certificate') }}</h3>
             @if ($canIssueCoa)
-                {{-- Pre-issuance Location (required) --}}
-                <div class="p-2 mb-2 border rounded border-amber-500/20 bg-amber-900/20">
-                    <label class="mb-1 block text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
-                    <div class="flex items-center space-x-2">
-                        <input type="text" id="preCoaLocationInput-{{ $egi->id }}"
-                            value="{{ $suggestedLocation }}" placeholder="{{ __('egi.coa.location_placeholder') }}"
-                            class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
+                {{-- Creator può emettere - Badge espandibile visibile --}}
+                <details class="group">
+                    <summary class="flex items-center justify-between cursor-pointer select-none rounded-lg bg-amber-900/20 px-3 py-2.5 border border-amber-500/30 hover:bg-amber-900/30 transition-colors">
+                        <div class="flex items-center space-x-2">
+                            <svg class="h-4 w-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span class="text-sm text-amber-200">{{ __('egi.coa.no_certificate_issued') }}</span>
+                        </div>
+                        <svg class="w-3 h-3 text-amber-300 transition-transform transform group-open:rotate-180 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+
+                <div class="mt-3 space-y-2">
+                    {{-- Pre-issuance Location (required) --}}
+                    <div class="p-2 border rounded border-amber-500/20 bg-amber-900/20">
+                        <label class="mb-1 block text-[11px] text-amber-200">{{ __('egi.coa.issue_place') }}</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="preCoaLocationInput-{{ $egi->id }}"
+                                value="{{ $suggestedLocation }}" placeholder="{{ __('egi.coa.location_placeholder') }}"
+                                class="flex-1 px-2 py-1 text-xs text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded" />
+                        </div>
+                        <p class="mt-1 text-[10px] text-gray-400">{{ __('egi.coa.location_hint') }}</p>
                     </div>
-                    <p class="mt-1 text-[10px] text-gray-400">{{ __('egi.coa.location_hint') }}</p>
-                </div>
 
-                @if (config('coa.signature.inspector.enabled'))
-                    <div class="mb-2 text-left">
-                        <label class="inline-flex items-center space-x-2 text-xs text-amber-100">
-                            <input type="checkbox" id="preCoaInspectorFlag-{{ $egi->id }}"
-                                class="bg-gray-800 border-gray-600 rounded">
-                            <span>{{ __('egi.coa.inspector_countersign') }}</span>
-                        </label>
+                    @if (config('coa.signature.inspector.enabled'))
+                        <div class="text-left">
+                            <label class="inline-flex items-center space-x-2 text-xs text-amber-100">
+                                <input type="checkbox" id="preCoaInspectorFlag-{{ $egi->id }}"
+                                    class="bg-gray-800 border-gray-600 rounded">
+                                <span>{{ __('egi.coa.inspector_countersign') }}</span>
+                            </label>
+                        </div>
+                    @endif
+
+                    <button onclick="issueCoaCertificate('{{ $egi->id }}')"
+                        class="w-full px-3 py-2 text-xs font-bold text-white transition-colors bg-green-500 rounded hover:bg-green-600">
+                        <svg class="inline w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        {{ __('egi.coa.issue_certificate') }}
+                    </button>
+
+                    <div class="p-2 border rounded border-blue-500/20 bg-blue-900/30">
+                        <p class="mb-1 text-[10px] font-medium text-blue-300">{{ __('egi.coa.unlock_pro_features') }}:</p>
+                        <ul class="space-y-0.5 text-[10px] text-gray-300">
+                            <li>• {{ __('egi.coa.provenance_docs') }}</li>
+                            <li>• {{ __('egi.coa.condition_reports') }}</li>
+                            <li>• {{ __('egi.coa.exhibition_history') }}</li>
+                            <li>• {{ __('egi.coa.professional_pdf') }}</li>
+                        </ul>
                     </div>
-                @endif
-
-                <button onclick="issueCoaCertificate('{{ $egi->id }}')"
-                    class="w-full px-3 py-2 font-bold text-white transition-colors bg-green-500 rounded hover:bg-green-600">
-                    <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    {{ __('egi.coa.issue_certificate') }}
-                </button>
-
-                <div class="p-2 border rounded border-blue-500/20 bg-blue-900/30">
-                    <p class="mb-1 text-xs font-medium text-blue-300">{{ __('egi.coa.unlock_pro_features') }}:</p>
-                    <ul class="space-y-0.5 text-xs text-gray-300">
-                        <li>• {{ __('egi.coa.provenance_docs') }}</li>
-                        <li>• {{ __('egi.coa.condition_reports') }}</li>
-                        <li>• {{ __('egi.coa.exhibition_history') }}</li>
-                        <li>• {{ __('egi.coa.professional_pdf') }}</li>
-                    </ul>
                 </div>
-            @else
-                <p class="text-xs text-gray-400">
-                    {{ __('egi.coa.only_creator_can_issue') }}
-                </p>
-            @endif
+            </details>
+        @else
+            {{-- Non-creator - Badge semplice visibile --}}
+            <div class="flex items-center space-x-2 rounded-lg bg-amber-900/20 px-3 py-2.5 border border-amber-500/30">
+                <svg class="h-4 w-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="text-sm text-amber-200">{{ __('egi.coa.no_certificate_issued') }}</span>
+            </div>
+        @endif
         </div>
     @endif
 
-    {{-- Public Verification Link --}}
-    <div class="pt-2 border-t border-amber-500/20">
-        <a href="{{ route('coa.verify.page') }}" target="_blank"
-            class="block text-xs text-center transition-colors text-amber-400 hover:text-amber-300">
-            {{ __('egi.coa.verify_any_certificate') }} →
-        </a>
-    </div>
+    {{-- Public Verification Link solo se CoA presente --}}
+    @if ($hasActiveCoa)
+        <div class="pt-2 border-t border-amber-500/20">
+            <a href="{{ route('coa.verify.page') }}" target="_blank"
+                class="block text-xs text-center transition-colors text-amber-400 hover:text-amber-300">
+                {{ __('egi.coa.verify_any_certificate') }} →
+            </a>
+        </div>
+    @endif
 </div>
 
 {{-- Include CoA functionality scripts --}}

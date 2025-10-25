@@ -59,7 +59,8 @@ return [
         'entries' => 'Reservierungseinträge',
         'view_certificate' => 'Zertifikat anzeigen',
         'no_entries' => 'Keine Reservierungen gefunden.',
-        'be_first' => 'Seien Sie der Erste, der dieses EGI reserviert!'
+        'be_first' => 'Seien Sie der Erste, der dieses EGI reserviert!',
+        'purchases_offers_title' => 'Kaufhistorie / Angebote'
     ],
 
     // Fehlermeldungen

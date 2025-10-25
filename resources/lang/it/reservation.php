@@ -59,7 +59,8 @@ return [
         'entries' => 'Voci di Offerta',
         'view_certificate' => 'Visualizza Certificato',
         'no_entries' => 'Nessuna offerta trovata.',
-        'be_first' => 'Sii il primo a fare un\'offerta per questo EGI!'
+        'be_first' => 'Sii il primo a fare un\'offerta per questo EGI!',
+        'purchases_offers_title' => 'Storico Acquisti / Offerte'
     ],
 
     // Messaggi di errore

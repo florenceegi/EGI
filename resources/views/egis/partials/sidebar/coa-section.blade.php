@@ -12,12 +12,26 @@
 --}}
 
 {{-- CoA (Certificate of Authenticity) Section --}}
-<div class="bg-gradient-to-br from-amber-900/20 to-yellow-900/20 rounded-xl border border-amber-500/30 backdrop-blur-sm p-4 space-y-3">
+@php
+    $existingCoa = $egi->coa()->first();
+    $hasActiveCoa = $existingCoa && $existingCoa->status === 'valid';
+@endphp
+
+@if($hasActiveCoa)
+    {{-- Box completo solo se CoA presente --}}
+    <div class="bg-gradient-to-br from-amber-900/20 to-yellow-900/20 rounded-xl border border-amber-500/30 backdrop-blur-sm p-4 space-y-3">
+        @include('components.coa.sidebar-section', [
+            'egi' => $egi,
+            'isCreator' => $isCreator
+        ])
+    </div>
+@else
+    {{-- Solo badge compatto se CoA assente --}}
     @include('components.coa.sidebar-section', [
         'egi' => $egi,
         'isCreator' => $isCreator
     ])
-</div>
+@endif
 
 {{-- CoA Vocabulary Traits Management Section --}}
 @if($isCreator)
