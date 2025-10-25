@@ -31,7 +31,7 @@
         @if ($collections && $collections->count() > 0)
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @foreach ($collections as $collection)
-                    <x-collection-card :id="$collection->id" :collection="$collection" :editable="false" :show_save_button="false" />
+                    <x-home-collection-card :id="$collection->id" :collection="$collection" :editable="false" :show_save_button="false" />
                 @endforeach
             </div>
         @else

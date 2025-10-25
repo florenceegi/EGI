@@ -210,18 +210,18 @@
     transform: translateY(-1px);
 }
 
-/* Traits Grid */
+/* Traits Grid - 2 COLONNE FISSE */
 .traits-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
 }
 
-/* Mobile: 3 colonne compatte */
+/* Mobile: 2 colonne compatte */
 @media (max-width: 768px) {
     .traits-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.5rem !important;
         margin-bottom: 1rem !important;
     }
@@ -727,10 +727,10 @@
     }
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments - 2 COLONNE ANCHE SU MOBILE PICCOLO */
 @media (max-width: 640px) {
     .traits-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .category-selector {
@@ -978,14 +978,14 @@
     border: 1px dashed #ddd;
 }
 
-/* Readonly grid adjustments */
+/* Readonly grid adjustments - 2 COLONNE ANCHE PER READONLY */
 .traits-grid.readonly {
     gap: 0.75rem;
 }
 
 @media (max-width: 768px) {
     .traits-grid.readonly {
-        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.5rem !important;
     }
 }
