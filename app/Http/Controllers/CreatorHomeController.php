@@ -66,6 +66,7 @@ class CreatorHomeController extends Controller {
         // Nota: creator_id identifica CHI HA CREATO la collezione, non chi la possiede
         $egis = Egi::with([
             'collection',
+            'user', // CRITICAL: for displaying creator name in egi-card-list
             'blockchain', // CRITICAL: for isMinted() check in egi-card badges
             'traits.category', // eager loading categoria per badge
             'reservations' => function ($q) {
