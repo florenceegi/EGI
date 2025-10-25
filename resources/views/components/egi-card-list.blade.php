@@ -16,6 +16,42 @@
     // 🔥 HYPER MODE: Leggiamo direttamente dal database il campo hyper dell'EGI
 $isHyper = $egi->hyper ?? false;
 
+// 🎯 BADGE STATUS LOGIC (same as egi-card)
+$isMinted = $egi->isMinted();
+$hasActiveReservations = $egi->reservations ? $egi->reservations->where('is_current', true)->where('status', 'active')->count() > 0 : false;
+$saleMode = $egi->sale_mode ?? null;
+$isNotForSale = $saleMode === 'not_for_sale';
+$egiPrice = $egi->price ?? 0;
+$isAvailable = $egiPrice > 0;
+$isPublished = $egi->is_published ?? true;
+
+// Determina badge status
+if ($isMinted) {
+    $badgeStatus = 'minted';
+    $badgeColor = 'bg-[#8E44AD]/90'; // Viola
+    $badgeLabel = __('egi.badge.minted');
+} elseif ($hasActiveReservations) {
+    $badgeStatus = 'reserved';
+    $badgeColor = 'bg-[#E67E22]/90'; // Arancio
+    $badgeLabel = __('egi.badge.reserved');
+} elseif ($isNotForSale) {
+    $badgeStatus = 'not_for_sale';
+    $badgeColor = 'bg-[#34495E]/90'; // Blu scuro
+    $badgeLabel = __('egi.badge.not_for_sale');
+} elseif (!$isAvailable) {
+    $badgeStatus = 'not_available';
+    $badgeColor = 'bg-[#7F8C8D]/90'; // Grigio
+    $badgeLabel = __('egi.status.not_available');
+} elseif (!$isPublished && auth()->check() && (auth()->id() === $egi->user_id || auth()->id() === ($egi->collection->creator_id ?? null))) {
+    $badgeStatus = 'not_published';
+    $badgeColor = 'bg-[#C13120]/90'; // Rosso
+    $badgeLabel = __('egi.badge.not_published');
+} else {
+    $badgeStatus = 'not_activated';
+    $badgeColor = 'bg-[#2D5016]/90'; // Verde
+    $badgeLabel = __('egi.badge.to_activate');
+}
+
 // Context-specific configurations
 $contextConfig = [
     'collector' => [
@@ -147,17 +183,6 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
                 </span>
             </div>
 
-            {{-- 🎯 Badge Asta (bottom-left) --}}
-            @if (!$egi->isMinted() && $egi->sale_mode === 'auction')
-                <div class="absolute bottom-2 left-2">
-                    <span
-                        class="inline-flex items-center rounded-md bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-lg ring-1 ring-white/20"
-                        title="{{ __('egi.auction.to_mint') }}">
-                        {{ __('egi.auction.to_mint') }}
-                    </span>
-                </div>
-            @endif
-
             <!-- Context Badge -->
             @if ($showOwnershipBadge)
                 <div class="absolute right-2 top-12">
@@ -247,69 +272,52 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
                 @endif
             </div>
 
-            <!-- Activator Info -->
-            @if ($context === 'creator' || $context === 'collection')
-                @php
-                    // Find the current reservation (activated collector)
-                    $currentReservation = $egi->reservations
-                        ? $egi->reservations->where('is_current', true)->first()
-                        : null;
-                @endphp
-                @if ($currentReservation && $currentReservation->user)
-                    @php
-                        // 🎯 Sistema Commissioner: Formattiamo le informazioni dell'attivatore
-                        $activatorDisplay = formatActivatorDisplay($currentReservation->user);
-                    @endphp
-                    <div class="flex items-center gap-2 mb-1 text-sm" data-activation-status>
-                        {{-- Avatar sempre presente dal backend (gestisce automaticamente la privacy) --}}
-                        @if ($activatorDisplay['avatar'])
-                            <img src="{{ $activatorDisplay['avatar'] }}" alt="{{ $activatorDisplay['name'] }}"
-                                class="object-cover w-4 h-4 border rounded-full shadow-sm border-green-400/30">
-                        @else
-                            {{-- Fallback solo se non c'è avatar dal backend (caso molto raro) --}}
-                            <div class="flex items-center justify-center w-4 h-4 bg-green-500 rounded-full shadow-sm">
-                                <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        @endif
-                        <span class="font-medium text-green-300" data-activator-name>
-                            {{ $activatorDisplay['name'] }}
-                        </span>
-                        <span class="text-xs text-gray-400">({{ __('egi.reservation.activator') }})</span>
-                    </div>
-                @elseif ($context === 'creator')
-                    @php
-                        $statusLabel = '';
-                        $statusColor = 'text-gray-400';
-                        if ($egi->isMinted()) {
-                            $statusLabel = __('egi.badge.minted');
-                            $statusColor = 'text-purple-400';
-                        } elseif ($egi->sale_mode === 'auction') {
-                            $statusLabel = __('egi.badge.auction_active');
-                            $statusColor = 'text-amber-400';
-                        } elseif ($egi->activated) {
-                            $statusLabel = __('egi.badge.activated');
-                            $statusColor = 'text-green-400';
-                        } else {
-                            $statusLabel = __('egi.badge.to_activate');
-                            $statusColor = 'text-gray-400';
-                        }
-                    @endphp
-                    <div class="flex items-center gap-2 mb-1 text-sm" data-activation-status="available">
-                        <svg class="{{ $statusColor }} h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+            <!-- 🎯 Badge Status EGI (sempre visibile) -->
+            <div class="flex items-center gap-2 mb-2 text-sm">
+                <span
+                    class="{{ $badgeColor }} inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold text-white shadow-md ring-1 ring-white/10"
+                    title="{{ $badgeLabel }}">
+                    @if ($badgeStatus === 'minted')
+                        <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span class="{{ $statusColor }} text-sm font-medium">{{ $statusLabel }}</span>
-                    </div>
-                @endif
-            @endif
+                    @elseif($badgeStatus === 'reserved')
+                        <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                        </svg>
+                    @elseif($badgeStatus === 'not_for_sale')
+                        <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    @elseif($badgeStatus === 'not_available')
+                        <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    @elseif($badgeStatus === 'not_published')
+                        <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    @else
+                        <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8.108v3.784a1 1 0 001.555.94l3.108-1.892a1 1 0 000-1.688L9.555 7.168z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    @endif
+                    {{ $badgeLabel }}
+                </span>
+            </div>
 
             <!-- Base Price Info -->
-            @if ($egi->price)
+            @if ($egi->price && $saleMode !== 'not_for_sale')
                 @php
                     // 🚀 FIX: Calcola il prezzo da mostrare basato sulla prenotazione più alta
                     $reservationService = app('App\Services\ReservationService');
