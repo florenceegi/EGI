@@ -9,7 +9,7 @@
 
 @php
     $isAvatarDisplay = ($displayType === 'avatar');
-    $logo = config('app.logo_01');
+    $logo = config('app.logo');
     $imageUrl = '';
 
 

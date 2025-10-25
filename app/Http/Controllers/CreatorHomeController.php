@@ -53,7 +53,7 @@ class CreatorHomeController extends Controller
      * - Include statistiche di vendita/prenotazioni per ogni EGI
      * - Differente dal portfolio Collector che mostra EGI acquistati
      */
-    public function portfolio($id, Request $request): View
+    public function portfolio($id, Request $request)
     {
         $creator = $this->resolveCreator($id);
         if (!$creator->hasRole('creator')) {
@@ -66,18 +66,17 @@ class CreatorHomeController extends Controller
         $view = $request->input('view', 'grid');
 
         // Recupera tutti gli EGI pubblicati delle collezioni CREATE dal creator
-        // Nota: creator_id identifica CHI HA CREATO la collezione, non chi la possiede
         $egis = Egi::with([
             'collection',
-            'user', // CRITICAL: for displaying creator name in egi-card-list
-            'blockchain.buyer', // CRITICAL: for Co-Creator display in egi-card-list
-            'traits.category', // eager loading categoria per badge
+            'user',
+            'blockchain.buyer',
+            'traits.category',
             'reservations' => function ($q) {
-                $q->where('is_current', true); // Solo prenotazioni attive
+                $q->where('is_current', true);
             }
         ])
             ->whereHas('collection', function ($q) use ($creator) {
-                $q->where('creator_id', $creator->id); // Collection create dal creator
+                $q->where('creator_id', $creator->id);
             })
             ->where('is_published', true)
             ->when($query, function ($q) use ($query) {
@@ -106,7 +105,7 @@ class CreatorHomeController extends Controller
 
         $egis = $egis->get();
 
-        // Statistiche del Creator Portfolio (opere CREATE, non acquistate)
+        // Statistiche del Creator Portfolio
         $stats = [
             'total_egis' => $egis->count(),
             'total_collections' => $creator->collections()->where('creator_id', $creator->id)->count(),
@@ -116,68 +115,31 @@ class CreatorHomeController extends Controller
             }),
             'highest_offer' => $egis->flatMap->reservations->max('offer_amount_fiat') ?? 0,
             'available_egis' => $egis->filter(function ($egi) {
-                return $egi->reservations->isEmpty(); // EGI senza prenotazioni
+                return $egi->reservations->isEmpty();
             })->count(),
             'reserved_egis' => $egis->filter(function ($egi) {
-                return $egi->reservations->isNotEmpty(); // EGI con prenotazioni
+                return $egi->reservations->isNotEmpty();
             })->count(),
         ];
 
-        // Statistiche avanzate per i widget usando PaymentDistribution
-        $advancedStats = null;
-        try {
-            $advancedStats = \App\Models\PaymentDistribution::getCreatorPortfolioStats($creator->id);
-        } catch (\Exception $e) {
-            // Fallback silenzioso se non ci sono dati PaymentDistribution
-            \Log::warning("Could not load advanced stats for creator {$creator->id}: " . $e->getMessage());
+        // Check if AJAX request
+        if ($request->ajax() || $request->get('partial')) {
+            return view('creator.partials.portfolio-content', compact('creator', 'egis', 'stats', 'query', 'collection_filter', 'sort', 'view'));
         }
 
-        return view('creator.portfolio', compact('creator', 'egis', 'stats', 'advancedStats', 'query', 'collection_filter', 'sort', 'view'));
+        // Full page view with new layout
+        return view('creator.home-spa', compact('creator', 'egis', 'stats', 'query', 'collection_filter', 'sort', 'view'))
+            ->with('activeTab', 'portfolio');
     }
     /**
-     * @Oracode Method: Display Creator Home Page
-     * 🎯 Purpose: Show creator's main showcase page
-     * 📤 Output: Creator home view with stats and featured content
+     * @Oracode Method: Display Creator Home Page - Redirect to Portfolio
+     * 🎯 Purpose: Redirect to portfolio (default section)
+     * 📤 Output: Redirect to creator.portfolio
      */
-    public function home($id): View
+    public function home($id)
     {
-        $creator = $this->resolveCreator($id);
-        $creator->load(['collections' => function ($query) {
-            $query->where('is_published', true)
-                ->latest()
-                ->take(6);
-        }]);
-
-        // Verifica se l'utente è un creator
-        if (!$creator->hasRole('creator')) {
-            abort(404);
-        }
-
-        // Stats del creator con supporto per animazioni
-        $stats = [
-            'total_collections' => $creator->collections()->count(),
-            'total_egis' => Egi::whereHas('collection', function ($q) use ($creator) {
-                $q->where('user_id', $creator->id);
-            })->count(),
-            'total_likes' => 0, // TODO: Implementare quando avremo il sistema di likes
-            'total_supporters' => 0, // TODO: Implementare con il sistema patronage
-            'impact_score' => 0, // TODO: Calcolare basandosi su EPP
-        ];
-
-        // Aggiungi flag per animazioni se i numeri sono grandi
-        $stats['animate'] = max($stats) > 10;
-
-        $featuredEgis = Egi::with(['collection', 'blockchain', 'traits.category'])
-            ->where('is_published', true) // <-- Riga corretta
-            ->whereHas('collection', function ($q) use ($creator) {
-                $q->where('creator_id', $creator->id)
-                    ->where('is_published', true);
-            })
-            ->latest()
-            ->take(8)
-            ->get();
-
-        return view('creator.home', compact('creator', 'stats', 'featuredEgis'));
+        // Redirect to portfolio as default view
+        return redirect()->route('creator.portfolio', $id);
     }
     /**
      * Visualizza la pagina indice dei Creator con filtri e paginazione.
@@ -247,28 +209,13 @@ class CreatorHomeController extends Controller
     }
 
     /**
-     * @package App\Http\Controllers\User
-     * @author Padmin D. Curtis (AI Partner OS2.0-Compliant) for Fabio Cherici
-     * @version 1.1.0 (FlorenceEGI MVP [Refactor])
-     * @date 2025-06-29
-     *
-     * @Oracode Method: Redirect to Creator's Collections
-     * 🎯 Purpose: Redirect to the collections index, filtered by this creator.
-     * 📤 Output: A redirect response.
+     * @Oracode Method: Display Creator's Collections (SPA)
+     * 🎯 Purpose: Show collections in new SPA layout
+     * 📤 Output: Collections view or partial
      */
-    public function collections($id): \Illuminate\Http\RedirectResponse
+    public function collections($id, Request $request)
     {
-        $creator = $this->resolveCreator($id);
-
-        if (!$creator->hasRole('creator')) {
-            abort(404);
-        }
-
-        // 📜 Logica Oracode: Non costruiamo la vista qui. Deleghiamo.
-        // Reindirizziamo alla rotta 'collections.index' (gestita da CollectionController)
-        // passando l'ID del creator come parametro di query.
-        // In questo modo, CreatorController non deve sapere nulla della vista delle collezioni.
-        return redirect()->route('collections.index', ['creator' => $creator->id]);
+        return $this->collectionsSection($id, $request);
     }
 
     /**
@@ -288,6 +235,121 @@ class CreatorHomeController extends Controller
         // Assumendo che 'home.collections.show' si aspetti lo slug (o l'ID),
         // il redirect è ora più robusto. Se 'home.collections.show' vuole l'ID, useremo $collection->id
         return redirect()->route('home.collections.show', $collection); // Laravel userà lo slug o l'id in base alla definizione della route
+    }
+
+    /**
+     * @Oracode Method: Collections Section
+     * 🎯 Purpose: Display creator's collections
+     * 📤 Output: Collections view or partial
+     */
+    public function collectionsSection($id, Request $request)
+    {
+        $creator = $this->resolveCreator($id);
+        if (!$creator->hasRole('creator')) {
+            abort(404);
+        }
+
+        $collections = $creator->collections()
+            ->where('is_published', true)
+            ->withCount('egis')
+            ->latest()
+            ->get();
+
+        $stats = [
+            'total_collections' => $collections->count(),
+            'total_egis' => $collections->sum('egis_count'),
+            'total_supporters' => 0,
+        ];
+
+        // Check if AJAX request
+        if ($request->ajax() || $request->get('partial')) {
+            return view('creator.partials.collections-content', compact('creator', 'collections', 'stats'));
+        }
+
+        return view('creator.home-spa', compact('creator', 'collections', 'stats'))
+            ->with('activeTab', 'collections');
+    }
+
+    /**
+     * @Oracode Method: Biography Section
+     * 🎯 Purpose: Display creator's biography
+     * 📤 Output: Biography view or partial
+     */
+    public function biography($id, Request $request)
+    {
+        $creator = $this->resolveCreator($id);
+        if (!$creator->hasRole('creator')) {
+            abort(404);
+        }
+
+        $stats = [
+            'total_collections' => $creator->collections()->count(),
+            'total_egis' => $creator->createdEgis()->count(),
+            'total_supporters' => 0,
+        ];
+
+        // Check if AJAX request
+        if ($request->ajax() || $request->get('partial')) {
+            return view('creator.partials.biography-content', compact('creator', 'stats'));
+        }
+
+        return view('creator.home-spa', compact('creator', 'stats'))
+            ->with('activeTab', 'biography');
+    }
+
+    /**
+     * @Oracode Method: Impact Section
+     * 🎯 Purpose: Display creator's environmental impact
+     * 📤 Output: Impact view or partial
+     */
+    public function impact($id, Request $request)
+    {
+        $creator = $this->resolveCreator($id);
+        if (!$creator->hasRole('creator')) {
+            abort(404);
+        }
+
+        $stats = [
+            'total_collections' => $creator->collections()->count(),
+            'total_egis' => $creator->createdEgis()->count(),
+            'total_supporters' => 0,
+            'impact_score' => 0, // TODO: Calculate from EPP
+        ];
+
+        // Check if AJAX request
+        if ($request->ajax() || $request->get('partial')) {
+            return view('creator.partials.impact-content', compact('creator', 'stats'));
+        }
+
+        return view('creator.home-spa', compact('creator', 'stats'))
+            ->with('activeTab', 'impact');
+    }
+
+    /**
+     * @Oracode Method: Community Section
+     * 🎯 Purpose: Display creator's community/supporters
+     * 📤 Output: Community view or partial
+     */
+    public function community($id, Request $request)
+    {
+        $creator = $this->resolveCreator($id);
+        if (!$creator->hasRole('creator')) {
+            abort(404);
+        }
+
+        $stats = [
+            'total_collections' => $creator->collections()->count(),
+            'total_egis' => $creator->createdEgis()->count(),
+            'total_supporters' => 0,
+        ];
+
+        // Check if AJAX request
+        if ($request->ajax() || $request->get('partial')) {
+            return view('creator.partials.community-content', compact('creator', 'stats'));
+        }
+
+        return view('creator.home-spa', compact('creator', 'stats'))
+            ->with('activeTab', 'community');
     }
 
     /**
