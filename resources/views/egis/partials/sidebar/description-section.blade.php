@@ -5,10 +5,10 @@
     VARIABILI: $egi
 --}}
 
-{{-- Description Section - Responsive --}}
-<div class="space-y-3 sm:space-y-4">
-    <h3 class="text-base font-semibold text-white sm:text-lg">{{ __('egi.about_this_piece') }}</h3>
-    <div class="prose prose-sm prose-invert max-w-none text-sm leading-relaxed text-gray-300 sm:text-base">
+{{-- Description Section - Compatto --}}
+<div class="space-y-2 sm:space-y-2.5 md:space-y-2.5 lg:space-y-3">
+    <h3 class="text-sm font-semibold text-white sm:text-sm md:text-base lg:text-base">{{ __('egi.about_this_piece') }}</h3>
+    <div class="prose prose-sm prose-invert max-w-none text-xs leading-relaxed text-gray-300 sm:text-xs md:text-sm lg:text-sm">
         {!! nl2br(e($egi->description ?? __('egi.default_description'))) !!}
     </div>
 </div>

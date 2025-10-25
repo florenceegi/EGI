@@ -46,9 +46,9 @@
     ];
 
     $sizeClasses = [
-        'sm' => 'text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1',
-        'md' => 'text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5',
-        'lg' => 'text-sm sm:text-base px-3 sm:px-4 py-1.5 sm:py-2',
+        'sm' => 'text-[9px] sm:text-[10px] md:text-xs px-1 sm:px-1.5 md:px-2 py-0.5 sm:py-0.5 md:py-1',
+        'md' => 'text-[10px] sm:text-xs md:text-xs lg:text-sm px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 md:py-1',
+        'lg' => 'text-xs sm:text-sm md:text-sm lg:text-base px-2 sm:px-3 md:px-3 py-1 sm:py-1.5 md:py-1.5',
     ];
 
     $style = $styles[$egiType->value];
@@ -56,8 +56,8 @@
 @endphp
 
 <span
-    class="{{ $style['bg'] }} {{ $style['text'] }} {{ $sizeClass }} {{ $style['border'] }} {{ $style['glow'] ?? '' }} inline-flex items-center gap-1 rounded-md border font-medium transition-all duration-200 hover:scale-105 sm:gap-1.5 sm:rounded-lg md:gap-2"
+    class="{{ $style['bg'] }} {{ $style['text'] }} {{ $sizeClass }} {{ $style['border'] }} {{ $style['glow'] ?? '' }} inline-flex items-center gap-0.5 rounded-sm border font-medium transition-all duration-200 hover:scale-105 sm:gap-1 sm:rounded-md md:gap-1 lg:rounded-md"
     role="status" aria-label="Tipo EGI: {{ $style['label'] }}">
-    <i class="fas {{ $style['icon'] }} text-[10px] sm:text-xs md:text-sm"></i>
+    <i class="fas {{ $style['icon'] }} text-[9px] sm:text-[10px] md:text-xs lg:text-sm"></i>
     <span class="font-semibold">{{ $style['label'] }}</span>
 </span>

@@ -13,10 +13,10 @@
 @endphp
 
 @if ($blockchainId)
-    <div class="mb-3 sm:mb-4">
+    <div class="mb-2 sm:mb-2.5 md:mb-3">
         <a href="{{ route('mint.show', $blockchainId) }}"
-            class="inline-flex w-full items-center justify-center rounded-lg border border-green-600/30 bg-green-700/20 px-4 py-3 text-sm font-medium text-green-400 backdrop-blur-sm transition-all hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300 sm:px-5 sm:py-3.5 sm:text-base md:px-6 md:py-4">
-            <svg class="mr-2 h-4 w-4 sm:mr-3 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="inline-flex w-full items-center justify-center rounded-lg border border-green-600/30 bg-green-700/20 px-3 py-2 text-xs font-medium text-green-400 backdrop-blur-sm transition-all hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300 sm:px-4 sm:py-2.5 sm:text-sm md:px-4 md:py-2.5 lg:text-sm">
+            <svg class="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -25,16 +25,16 @@
     </div>
 @endif
 
-{{-- Price & Purchase Section - Responsive --}}
+{{-- Price & Purchase Section - Compatto --}}
 <div
-    class="rounded-lg border border-gray-700/30 bg-gradient-to-br from-gray-800/50 to-gray-900/50 p-4 sm:rounded-xl sm:p-5 md:p-6">
+    class="rounded-lg border border-gray-700/30 bg-gradient-to-br from-gray-800/50 to-gray-900/50 p-3 sm:p-3 md:p-3 lg:p-4 xl:p-5">
     @if ($isForSale)
-        <div class="mb-4 text-center sm:mb-5 md:mb-6">
-            <p class="mb-1.5 text-xs text-gray-400 sm:mb-2 sm:text-sm">{{ $priceLabel }}</p>
+        <div class="mb-3 text-center sm:mb-3 md:mb-3 lg:mb-4">
+            <p class="mb-1 text-[10px] text-gray-400 sm:text-xs md:text-xs">{{ $priceLabel }}</p>
             <div class="flex items-baseline justify-center">
                 <x-currency-price :price="$displayPrice" :egi="$egi" :reservation="$highestPriorityReservation"
-                    class="text-2xl font-bold text-white sm:text-3xl md:text-4xl" :show-algo-conversion="true" />
-                <span class="ml-1.5 text-base font-medium text-gray-400 sm:ml-2 sm:text-lg">EUR</span>
+                    class="text-xl font-bold text-white sm:text-2xl md:text-2xl lg:text-3xl" :show-algo-conversion="true" />
+                <span class="ml-1 text-sm font-medium text-gray-400 sm:ml-1.5 sm:text-base">EUR</span>
             </div>
 
             {{-- Miglior offerente (STRONG vs WEAK) --}}

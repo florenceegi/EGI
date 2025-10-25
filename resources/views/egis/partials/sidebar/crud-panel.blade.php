@@ -5,19 +5,19 @@
     VARIABILI: $egi, $canUpdateEgi, $canDeleteEgi, $isPriceLocked, $canModifyPrice, $displayPrice, $displayUser, $highestPriorityReservation
 --}}
 
-{{-- Center: CRUD Box - Responsive --}}
+{{-- Center: CRUD Box - Compatto su tablet, normale su desktop --}}
 @if ($canUpdateEgi)
     <div
-        class="overflow-y-auto border-t border-emerald-700/30 bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl md:col-span-12 md:border-l md:border-r md:border-t-0 lg:col-span-12 xl:col-span-2">
-        {{-- CRUD Box Content - Responsive padding --}}
-        <div class="p-3 md:p-4 lg:p-5 xl:p-6">
+        class="overflow-y-auto border-t border-emerald-700/30 bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl md:col-span-5 md:border-l md:border-r md:border-t-0 lg:col-span-3 xl:col-span-2">
+        {{-- CRUD Box Content - Padding ottimizzato --}}
+        <div class="p-3 md:p-2 lg:p-3 xl:p-4">
             <div
-                class="rounded-xl border border-emerald-700/30 bg-gradient-to-br from-emerald-800/20 to-emerald-900/20 p-4 md:p-5 lg:p-6">
+                class="rounded-lg border border-emerald-700/30 bg-gradient-to-br from-emerald-800/20 to-emerald-900/20 p-2.5 md:p-2 lg:p-2.5 xl:p-3">
 
-                {{-- Header - Responsive text --}}
-                <div class="mb-4 flex items-center justify-between md:mb-6">
-                    <h3 class="text-base font-semibold text-emerald-400 md:text-lg">
-                        <svg class="mr-2 inline h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {{-- Header - Ultra-compatto --}}
+                <div class="mb-2 flex items-center justify-between md:mb-1.5 lg:mb-2">
+                    <h3 class="text-xs font-semibold text-emerald-400 md:text-[10px] lg:text-xs xl:text-sm">
+                        <svg class="mr-1.5 inline h-4 w-4 md:h-3.5 md:w-3.5 lg:h-4 lg:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                             </path>
@@ -25,9 +25,9 @@
                         {{ __('egi.crud.edit_egi') }}
                     </h3>
                     <button id="egi-edit-toggle"
-                        class="rounded-full p-2 text-emerald-400 transition-colors duration-200 hover:bg-emerald-800/30"
+                        class="rounded-full p-1.5 text-emerald-400 transition-colors duration-200 hover:bg-emerald-800/30 md:p-1 lg:p-1.5"
                         title="{{ __('egi.crud.toggle_edit_mode') }}">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="h-3.5 w-3.5 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
                             </path>

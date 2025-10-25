@@ -112,9 +112,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 ? 'bg-gradient-to-br from-amber-900/30 via-emerald-900/20 to-gray-900'
                 : 'bg-gradient-to-br from-gray-900 via-black to-gray-900' }}">
 
-            {{-- Badge MINTATO se token_EGI presente + Badge Tipo EGI - Responsive --}}
-            <div class="container mx-auto px-2 py-2 sm:px-3 sm:py-2.5 md:px-4 md:py-3">
-                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3">
+            {{-- Badge MINTATO se token_EGI presente + Badge Tipo EGI - Compatto --}}
+            <div class="container mx-auto px-2 py-1.5 sm:px-3 sm:py-2 md:px-3 md:py-2 lg:px-4 lg:py-2.5">
+                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-2 lg:gap-2.5">
                     {{-- EGI Type Badge (sempre visibile) - Responsive --}}
                     <x-egi-type-badge :type="$egi->egi_type ?? 'ASA'" size="md" />
 
@@ -150,14 +150,14 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             {{-- Cinematic Artwork Display --}}
             <div class="relative w-full">
 
-                {{-- Main Gallery Grid - RESPONSIVE per tutte le dimensioni --}}
+                {{-- Main Gallery Grid - SEMPRE multi-colonna da tablet in su --}}
                 <div class="grid grid-cols-1 gap-0 md:grid-cols-12">
 
-                    {{-- Left: Artwork Area (Responsive per tutti i breakpoint) --}}
-                    <div class="relative p-2 md:col-span-12 lg:col-span-6 lg:p-6 xl:col-span-7 xl:p-8">
+                    {{-- Left: Artwork Area - Ridotta per laptop, espansa per desktop --}}
+                    <div class="relative p-2 md:col-span-7 md:p-3 lg:col-span-6 lg:p-4 xl:col-span-7 xl:p-6">
 
-                        {{-- Artwork Container - Responsive --}}
-                        <div class="relative mx-auto w-full max-w-full md:max-w-3xl lg:max-w-4xl xl:max-w-5xl">
+                        {{-- Artwork Container - Sempre visibile completamente --}}
+                        <div class="relative mx-auto w-full max-w-full">
 
                             {{-- Collection Navigation Carousel - OpenSea Style --}}
                             <x-egi-collection-navigator :collectionEgis="$collectionEgis" :currentEgi="$egi" />
@@ -186,12 +186,12 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             'displayUser',
                             'highestPriorityReservation'))
 
-                    {{-- Right: Sidebar - Responsive per tutti i breakpoint --}}
+                    {{-- Right: Sidebar - Nascosta su tablet, visibile su laptop+ --}}
                     <div
-                        class="overflow-y-auto border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-xl md:col-span-12 md:border-l md:border-t-0 lg:col-span-6 xl:col-span-3">
+                        class="overflow-y-auto border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-xl md:hidden lg:col-span-3 lg:block lg:border-l lg:border-t-0 xl:col-span-3">
 
-                        {{-- Sidebar Content - Responsive padding e layout --}}
-                        <div class="space-y-6 p-4 md:space-y-8 md:p-6 lg:p-8">
+                        {{-- Sidebar Content - Padding compatto --}}
+                        <div class="space-y-4 p-4 md:space-y-3 md:p-3 lg:space-y-4 lg:p-4 xl:space-y-5 xl:p-5">
 
                             {{-- Price & Purchase Section --}}
                             @include(
