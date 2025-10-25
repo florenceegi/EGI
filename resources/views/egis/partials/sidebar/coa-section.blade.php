@@ -17,8 +17,8 @@
     $hasActiveCoa = $existingCoa && $existingCoa->status === 'valid';
 @endphp
 
-@if($hasActiveCoa)
-    {{-- Box completo solo se CoA presente --}}
+@if($hasActiveCoa || $isCreator)
+    {{-- Box completo: se CoA presente O se creator (per traits management) --}}
     <div class="bg-gradient-to-br from-amber-900/20 to-yellow-900/20 rounded-xl border border-amber-500/30 backdrop-blur-sm p-4 space-y-3">
         @include('components.coa.sidebar-section', [
             'egi' => $egi,
@@ -26,20 +26,11 @@
         ])
     </div>
 @else
-    {{-- Solo badge compatto se CoA assente --}}
+    {{-- Solo badge compatto se CoA assente e non creator --}}
     @include('components.coa.sidebar-section', [
         'egi' => $egi,
         'isCreator' => $isCreator
     ])
-@endif
-
-{{-- CoA Vocabulary Traits Management Section --}}
-@if($isCreator)
-<div class="bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-xl border border-purple-500/30 backdrop-blur-sm p-4 space-y-3">
-    @include('components.coa.traits-management', [
-        'egi' => $egi
-    ])
-</div>
 @endif
 
 {{-- Include CoA Annex Modal if user can manage --}}
