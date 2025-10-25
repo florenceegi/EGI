@@ -28,7 +28,7 @@
 
     @isset($heroFullWidth)
     {{-- Layout a colonna intera --}}
-    <div class="relative z-10 w-full px-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="relative z-10 w-full px-4 mx-auto mt-auto mb-auto sm:px-6 lg:px-8">
         {{ $heroFullWidth }}
     </div>
     @endisset
@@ -49,24 +49,24 @@
     @endisset
 
     {{-- Contenuto sotto l'hero --}}
-    <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+    <div class="relative z-10 w-full mt-12 mb-12 below-hero-content" role="region"
         aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
         {{ $belowHeroContent ?? '' }}
     </div>
 
     {{-- Top Collectors Carousel --}}
-    <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+    <div class="relative z-10 w-full mt-12 mb-12 below-hero-content" role="region"
         aria-label="Top Collectors Carousel">
         {{ $belowHeroContent_0_5 ?? '' }}
     </div>
 
     {{-- Contenuto sotto l'hero --}}
-    <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+    <div class="relative z-10 w-full mt-12 mb-12 below-hero-content" role="region"
         aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
         {{ $belowHeroContent_1 ?? '' }}
     </div>
 
-    <div class="relative z-10 w-full mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+    <div class="relative z-10 w-full mt-12 mb-12 below-hero-content" role="region"
         aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
 
         {{ $belowHeroContent_2 ?? '' }}
