@@ -1,12 +1,12 @@
 {{--
     Component: EGI Type Badge
     Display badge for EGI type with FlorenceEGI brand styling
-    
+
     @package Components
     @author Padmin D. Curtis (AI Partner OS3.0)
     @version 1.0.0 (FlorenceEGI - Dual Architecture)
     @date 2025-10-19
-    
+
     Props:
     - type: EgiType enum value (ASA|SmartContract|PreMint)
     - size: sm|md|lg (default: md)
@@ -46,9 +46,9 @@
     ];
 
     $sizeClasses = [
-        'sm' => 'text-xs px-2 py-1',
-        'md' => 'text-sm px-3 py-1.5',
-        'lg' => 'text-base px-4 py-2',
+        'sm' => 'text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1',
+        'md' => 'text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5',
+        'lg' => 'text-sm sm:text-base px-3 sm:px-4 py-1.5 sm:py-2',
     ];
 
     $style = $styles[$egiType->value];
@@ -56,9 +56,8 @@
 @endphp
 
 <span
-    class="{{ $style['bg'] }} {{ $style['text'] }} {{ $sizeClass }} {{ $style['border'] }} {{ $style['glow'] ?? '' }} inline-flex items-center gap-2 rounded-lg border font-medium transition-all duration-200 hover:scale-105"
+    class="{{ $style['bg'] }} {{ $style['text'] }} {{ $sizeClass }} {{ $style['border'] }} {{ $style['glow'] ?? '' }} inline-flex items-center gap-1 rounded-md border font-medium transition-all duration-200 hover:scale-105 sm:gap-1.5 sm:rounded-lg md:gap-2"
     role="status" aria-label="Tipo EGI: {{ $style['label'] }}">
-    <i class="fas {{ $style['icon'] }}"></i>
+    <i class="fas {{ $style['icon'] }} text-[10px] sm:text-xs md:text-sm"></i>
     <span class="font-semibold">{{ $style['label'] }}</span>
 </span>
-
