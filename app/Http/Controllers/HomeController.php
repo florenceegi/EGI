@@ -352,6 +352,7 @@ class HomeController extends Controller
      * @Oracode Method: Get Featured Creators for Carousel
      * 🎯 Purpose: Retrieve creator users for homepage creator showcase carousel
      * 👥 Users: Filters users with usertype 'creator'
+     * 🚫 Exclude: Excludes PA Entity users (usertype != 'pa_entity')
      * 📊 Metrics: Includes EGI and collection counts for each creator
      * 🎲 Selection: Random order to provide variety
      *
@@ -361,6 +362,7 @@ class HomeController extends Controller
     private function getFeaturedCreators()
     {
         return User::where('usertype', 'creator')
+            ->where('usertype', '!=', 'pa_entity') // Escludi PA Entity
             ->withCount(['createdEgis as egis_count', 'createdCollections as collections_count'])
             ->inRandomOrder()
             ->take(50) // Puoi regolare il numero di creator da mostrare
