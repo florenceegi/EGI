@@ -40,7 +40,7 @@ class UniversalSearchService {
         $perPage = $params['per_page'] ?? config('search.per_page');
 
         $query = Egi::query()
-            ->with(['collection.creator', 'traits.category', 'traits.traitType'])
+            ->with(['collection.creator', 'user', 'traits.category', 'traits.traitType'])
             ->where(function ($q) {
                 $q->where('is_published', true)
                     ->orWhere('is_public', true); // include anche EGI resi pubblici ma non ancora "pubblicati"
