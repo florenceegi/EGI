@@ -266,11 +266,39 @@ class EgiDualArchitectureController extends Controller
             ];
 
             $user = FegiAuth::user();
-            $result = $this->preMintManagementService->requestAiAnalysis($egi, $user, $requestMetadata);
+            
+            // Determine which AI operation to perform based on request parameter
+            $analysisType = $request->input('analysis_type', 'general'); // Default to general
+            
+            switch ($analysisType) {
+                case 'description':
+                    // Generate AI description
+                    $result = $this->preMintManagementService->generateDescription($egi, $user, $requestMetadata);
+                    $message = __('egi_dual_arch.description_generated');
+                    break;
+                    
+                case 'traits':
+                    // Extract AI traits (TODO: implement if needed)
+                    $result = $this->preMintManagementService->requestAiAnalysis($egi, $user, $requestMetadata);
+                    $message = __('egi_dual_arch.traits_extracted');
+                    break;
+                    
+                case 'promotion':
+                    // Generate promotion strategy (TODO: implement if needed)
+                    $result = $this->preMintManagementService->requestAiAnalysis($egi, $user, $requestMetadata);
+                    $message = __('egi_dual_arch.promotion_strategy_generated');
+                    break;
+                    
+                default:
+                    // General AI analysis
+                    $result = $this->preMintManagementService->requestAiAnalysis($egi, $user, $requestMetadata);
+                    $message = __('egi_dual_arch.ai_analysis_requested');
+                    break;
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => __('egi_dual_arch.ai_analysis_requested'),
+                'message' => $message,
                 'data' => $result
             ]);
         } catch (\Exception $e) {

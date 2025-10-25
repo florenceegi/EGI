@@ -34,7 +34,8 @@ use Illuminate\Support\Str;
  * @property-read \App\Models\Egi $egi
  * @property-read \App\Models\User|null $user
  */
-class EgiReservationCertificate extends Model {
+class EgiReservationCertificate extends Model
+{
     use HasFactory;
 
     /**
@@ -77,7 +78,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return void
      */
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
 
         // Generate UUID before creating
@@ -93,7 +95,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function reservation() {
+    public function reservation()
+    {
         return $this->belongsTo(Reservation::class);
     }
 
@@ -102,7 +105,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function egi() {
+    public function egi()
+    {
         return $this->belongsTo(Egi::class);
     }
 
@@ -111,7 +115,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
@@ -120,7 +125,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function egiBlockchain() {
+    public function egiBlockchain()
+    {
         return $this->belongsTo(EgiBlockchain::class, 'egi_blockchain_id');
     }
 
@@ -130,7 +136,8 @@ class EgiReservationCertificate extends Model {
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeBlockchainType($query) {
+    public function scopeBlockchainType($query)
+    {
         return $query->where('certificate_type', 'mint');
     }
 
@@ -140,7 +147,8 @@ class EgiReservationCertificate extends Model {
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeReservationType($query) {
+    public function scopeReservationType($query)
+    {
         return $query->where('certificate_type', 'reservation');
     }
 
@@ -150,7 +158,8 @@ class EgiReservationCertificate extends Model {
      * @param string $data The data to verify against the signature
      * @return bool Whether the signature is valid
      */
-    public function verifySignature(string $data): bool {
+    public function verifySignature(string $data): bool
+    {
         // Create a hash of the provided data
         $hash = hash('sha256', $data);
 
@@ -163,7 +172,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return string The data string used for signature verification
      */
-    public function generateVerificationData(): string {
+    public function generateVerificationData(): string
+    {
 
         $createdAt = $this->created_at ?? now();
 
@@ -201,7 +211,8 @@ class EgiReservationCertificate extends Model {
      * @return string
      * @privacy-safe The URL generation involves no PII beyond what's public
      */
-    public function getPublicUrlAttribute(): string {
+    public function getPublicUrlAttribute(): string
+    {
         if ($this->attributes['public_url']) {
             return $this->attributes['public_url'];
         }
@@ -215,7 +226,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return string
      */
-    public function getVerificationUrl(): string {
+    public function getVerificationUrl(): string
+    {
         return route('egi-certificates.verify', $this->certificate_uuid);
     }
 
@@ -224,7 +236,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return string|null
      */
-    public function getPdfUrl(): ?string {
+    public function getPdfUrl(): ?string
+    {
         if (!$this->pdf_path) {
             return null;
         }
@@ -237,7 +250,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return bool
      */
-    public function hasPdf(): bool {
+    public function hasPdf(): bool
+    {
         return !empty($this->pdf_path) && Storage::exists($this->pdf_path);
     }
 
@@ -246,7 +260,8 @@ class EgiReservationCertificate extends Model {
      *
      * @return bool Whether the update was successful
      */
-    public function markAsSuperseded(): bool {
+    public function markAsSuperseded(): bool
+    {
         $this->is_superseded = true;
         $this->is_current_highest = false;
         return $this->save();

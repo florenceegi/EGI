@@ -106,6 +106,7 @@
                 <form method="POST" action="{{ route('egi.dual-arch.pre-mint.request-analysis', $egi) }}"
                     onsubmit="return handleAIAnalysisRequest(event, {{ $egi->id }}, 'description');">
                     @csrf
+                    <input type="hidden" name="analysis_type" value="description">
                     <button type="submit"
                         class="flex w-full items-center justify-between rounded-lg border border-purple-200 bg-gradient-to-r from-purple-100 to-purple-50 px-4 py-3 font-medium text-purple-900 transition-all duration-200 hover:from-purple-200 hover:to-purple-100">
                         <span class="flex items-center gap-2">
@@ -119,6 +120,7 @@
                 <form method="POST" action="{{ route('egi.dual-arch.pre-mint.request-analysis', $egi) }}"
                     onsubmit="return handleAIAnalysisRequest(event, {{ $egi->id }}, 'traits');">
                     @csrf
+                    <input type="hidden" name="analysis_type" value="traits">
                     <button type="submit"
                         class="flex w-full items-center justify-between rounded-lg border border-blue-200 bg-gradient-to-r from-blue-100 to-blue-50 px-4 py-3 font-medium text-blue-900 transition-all duration-200 hover:from-blue-200 hover:to-blue-100">
                         <span class="flex items-center gap-2">
@@ -132,6 +134,7 @@
                 <form method="POST" action="{{ route('egi.dual-arch.pre-mint.request-analysis', $egi) }}"
                     onsubmit="return handleAIAnalysisRequest(event, {{ $egi->id }}, 'promotion');">
                     @csrf
+                    <input type="hidden" name="analysis_type" value="promotion">
                     <button type="submit"
                         class="flex w-full items-center justify-between rounded-lg border border-green-200 bg-gradient-to-r from-green-100 to-green-50 px-4 py-3 font-medium text-green-900 transition-all duration-200 hover:from-green-200 hover:to-green-100">
                         <span class="flex items-center gap-2">
