@@ -243,6 +243,13 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
                 @endif
             </div>
 
+            {{-- 🔍 DEBUG CREATOR --}}
+            @if ($egi->user)
+                <div class="mb-1 text-sm font-bold text-green-400">✅ Creator: {{ $egi->user->first_name }} {{ $egi->user->last_name }}</div>
+            @else
+                <div class="mb-1 text-sm font-bold text-red-400">❌ NO CREATOR DATA</div>
+            @endif
+
             <!-- Collection and Creator Info -->
             <div class="mb-2 flex flex-wrap items-center gap-4 text-sm text-gray-400">
                 @if ($egi->collection)
