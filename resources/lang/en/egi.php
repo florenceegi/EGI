@@ -51,6 +51,8 @@ return [
         'winning_bid' => 'WINNING BID',
         'outbid' => 'OUTBID',
         'not_owned' => 'NOT OWNED',
+        'not_published' => 'NOT PUBLISHED', // Badge for unpublished EGI (owner only)
+        'not_for_sale' => 'NOT FOR SALE', // Badge for not for sale EGI
         'to_activate' => 'TO ACTIVATE',
         'activated' => 'ACTIVATED',
         'reserved' => 'RESERVED',
