@@ -201,7 +201,9 @@ class HomeController extends Controller
     {
         // 🎲 RANDOM: Ordinamento casuale ad ogni reload
         // 🎯 FILTER: Solo EGI di creator con usertype = 'creator' (NO PA)
+        // 🚫 EXCLUDE: Esclusi EGI con type = 'pa_act'
         return Egi::where('is_published', true)
+            ->where('type', '!=', 'pa_act') // Escludi PA Act
             ->whereHas('user', function ($query) {
                 $query->where('usertype', 'creator');
             })
@@ -288,6 +290,7 @@ class HomeController extends Controller
     private function getFeaturedEgis()
     {
         return Egi::where('is_published', true)
+            ->where('type', '!=', 'pa_act') // Escludi PA Act
             ->whereHas('user', function ($query) {
                 $query->where('usertype', 'creator');
             })
@@ -411,6 +414,7 @@ class HomeController extends Controller
     {
         return Egi::where('is_published', true)
             ->where('hyper', true)
+            ->where('type', '!=', 'pa_act') // Escludi PA Act
             ->whereHas('user', function ($query) {
                 $query->where('usertype', 'creator');
             })
