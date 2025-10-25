@@ -78,27 +78,27 @@
                 <div class="overflow-hidden rounded-lg bg-white shadow-lg">
                     {{-- Header --}}
                     <div
-                        class="@if ($certificate->certificate_type === 'mint') bg-gradient-to-r from-green-500 to-emerald-600 @else bg-gradient-to-r from-indigo-500 to-purple-600 @endif p-6">
+                        class="@if ($certificate->egi_blockchain_id !== null) bg-gradient-to-r from-green-500 to-emerald-600 @else bg-gradient-to-r from-indigo-500 to-purple-600 @endif p-6">
                         <div class="flex items-center justify-between">
                             <h1 class="truncate text-2xl font-bold text-white">
-                                @if ($certificate->certificate_type === 'mint')
+                                @if ($certificate->egi_blockchain_id !== null)
                                     {{ __('certificate.blockchain_certificate_title') }}
                                 @else
                                     {{ __('certificate.page_title', ['uuid' => $certificate->certificate_uuid]) }}
                                 @endif
                             </h1>
                             <span
-                                class="@if ($certificate->certificate_type === 'mint') bg-green-100 text-green-800
+                                class="@if ($certificate->egi_blockchain_id !== null) bg-green-100 text-green-800
                             @elseif($certificate->reservation_type === 'strong') bg-blue-100 text-blue-800
                             @else bg-orange-100 text-orange-800 @endif inline-flex rounded-full px-3 py-1 text-sm font-semibold">
-                                @if ($certificate->certificate_type === 'mint')
+                                @if ($certificate->egi_blockchain_id !== null)
                                     {{ __('certificate.type.blockchain_purchase') }}
                                 @else
                                     {{ __('reservation.type.' . $certificate->reservation_type) }}
                                 @endif
                             </span>
                         </div>
-                        <p class="@if ($certificate->certificate_type === 'mint') text-green-100 @else text-indigo-100 @endif mt-2">
+                        <p class="@if ($certificate->egi_blockchain_id !== null) text-green-100 @else text-indigo-100 @endif mt-2">
                             {{ $certificate->created_at->diffForHumans() }}
                         </p>
                     </div>
@@ -126,8 +126,8 @@
                                             {{ $certificate->egi->collection->collection_name ?? '-' }}</dd>
                                     </div>
 
-                                    @if ($certificate->certificate_type === 'mint')
-                                        {{-- MINT certificate: Show ownership type instead of reservation type --}}
+                                    @if ($certificate->egi_blockchain_id !== null)
+                                        {{-- BLOCKCHAIN certificate: Show ownership type instead of reservation type --}}
                                         <div class="grid grid-cols-3 gap-4">
                                             <dt class="text-sm font-medium text-gray-500">
                                                 {{ __('certificate.details.ownership_type') }}</dt>
@@ -168,7 +168,7 @@
 
                                     <div class="grid grid-cols-3 gap-4">
                                         <dt class="text-sm font-medium text-gray-500">
-                                            @if ($certificate->certificate_type === 'mint')
+                                            @if ($certificate->egi_blockchain_id !== null)
                                                 {{ __('certificate.details.purchase_amount') }}
                                             @else
                                                 {{ __('certificate.details.offer_amount_fiat') }}
@@ -178,8 +178,8 @@
                                             €{{ number_format($certificate->offer_amount_fiat, 2) }}</dd>
                                     </div>
 
-                                    @if ($certificate->certificate_type === 'mint' && $certificate->egiBlockchain)
-                                        {{-- Blockchain specific data for MINT certificates --}}
+                                    @if ($certificate->egi_blockchain_id !== null && $certificate->egiBlockchain)
+                                        {{-- Blockchain specific data for BLOCKCHAIN certificates --}}
                                         <div
                                             class="col-span-3 mt-4 rounded-lg border-2 border-green-200 bg-green-50 p-4">
                                             <h3 class="mb-3 text-sm font-semibold text-green-800">🔗 Dati Blockchain
@@ -224,8 +224,8 @@
                                         </div>
                                     @endif
 
-                                    @if ($certificate->certificate_type !== 'mint')
-                                        {{-- ALGO amount only for RESERVATION certificates (not used in mint) --}}
+                                    @if ($certificate->egi_blockchain_id === null)
+                                        {{-- ALGO amount only for RESERVATION certificates (not used in blockchain) --}}
                                         <div class="grid grid-cols-3 gap-4">
                                             <dt class="text-sm font-medium text-gray-500">
                                                 {{ __('certificate.details.offer_amount_algo') }}</dt>
@@ -241,7 +241,7 @@
                                             {{ $certificate->created_at->format('d M Y H:i:s') }}</dd>
                                     </div>
 
-                                    @if ($certificate->certificate_type !== 'mint')
+                                    @if ($certificate->egi_blockchain_id === null)
                                         {{-- Status and Priority only for RESERVATION certificates --}}
                                         <div class="grid grid-cols-3 gap-4">
                                             <dt class="text-sm font-medium text-gray-500">
