@@ -7,91 +7,89 @@
 
 <!-- Platform Info Buttons (ora in cima) -->
 @isset($platformInfoButtons)
-<div class="relative z-20 w-full">
-    {{ $platformInfoButtons }}
-</div>
+    <div class="relative z-20 w-full">
+        {{ $platformInfoButtons }}
+    </div>
 @endisset
 
 <!-- Platform Statistics (ora sotto i bottoni) -->
 @isset($platformStats)
-<div class="relative z-20 w-full">
-    {{ $platformStats }}
-</div>
+    <div class="relative z-20 w-full">
+        {{ $platformStats }}
+    </div>
 @endisset
 
 <!-- Hero Section -->
 @unless (isset($noHero) && $noHero)
-<section id="hero-section" class="relative flex min-h-[100vh] flex-col items-center overflow-hidden"
-    aria-labelledby="hero-main-title">
+    <section id="hero-section" class="relative flex min-h-[100vh] flex-col overflow-hidden" aria-labelledby="hero-main-title">
 
-    <h1 id="hero-main-title" class="sr-only">{{ $title ?? __('guest_layout.default_title') }}</h1>
+        <h1 id="hero-main-title" class="sr-only">{{ $title ?? __('guest_layout.default_title') }}</h1>
 
-    @isset($heroFullWidth)
-    {{-- Layout a colonna intera --}}
-    <div class="relative z-10 w-full px-4 mx-auto mt-auto mb-auto sm:px-6 lg:px-8">
-        {{ $heroFullWidth }}
-    </div>
-    @endisset
+        @isset($heroFullWidth)
+            {{-- Layout a colonna intera --}}
+            <div class="relative z-10 mx-auto mb-auto mt-auto w-full px-4 sm:px-6 lg:px-8">
+                {{ $heroFullWidth }}
+            </div>
+        @endisset
 
-    {{-- EGI Carousel Slot - Mobile First --}}
-    @isset($egiCarousel)
-    <div class="relative z-10 w-full" role="region" aria-label="Featured EGI Carousel">
-        {{ $egiCarousel }}
-    </div>
-    @endisset
+        {{-- EGI Carousel Slot - Mobile First --}}
+        @isset($egiCarousel)
+            <div class="relative z-10 w-full" role="region" aria-label="Featured EGI Carousel">
+                {{ $egiCarousel }}
+            </div>
+        @endisset
 
-    {{-- Natan Assistant (se presente) --}}
-    @isset($heroNatanAssistant)
-    <div class="natan-assistant fixed bottom-6 right-6 z-[40] flex flex-col items-end" role="region"
-        aria-label="{{ __('guest_layout.hero_right_content_aria_label') }}">
-        {{ $heroNatanAssistant ?? '' }}
-    </div>
-    @endisset
+        {{-- Natan Assistant (se presente) --}}
+        @isset($heroNatanAssistant)
+            <div class="natan-assistant fixed bottom-6 right-6 z-[40] flex flex-col items-end" role="region"
+                aria-label="{{ __('guest_layout.hero_right_content_aria_label') }}">
+                {{ $heroNatanAssistant ?? '' }}
+            </div>
+        @endisset
 
-    {{-- Contenuto sotto l'hero --}}
-    <div class="relative z-10 w-full mt-12 mb-12 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
-        {{ $belowHeroContent ?? '' }}
-    </div>
+        {{-- Contenuto sotto l'hero --}}
+        <div class="below-hero-content relative z-10 w-full" role="region"
+            aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
+            {{ $belowHeroContent ?? '' }}
+        </div>
 
-    {{-- Top Collectors Carousel --}}
-    <div class="relative z-10 w-full mt-12 mb-12 below-hero-content" role="region"
-        aria-label="Top Collectors Carousel">
-        {{ $belowHeroContent_0_5 ?? '' }}
-    </div>
+        {{-- Top Collectors Carousel --}}
+        <div class="below-hero-content relative z-10 w-full" role="region"
+            aria-label="Top Collectors Carousel">
+            {{ $belowHeroContent_0_5 ?? '' }}
+        </div>
 
-    {{-- Contenuto sotto l'hero --}}
-    <div class="relative z-10 w-full mt-12 mb-12 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
-        {{ $belowHeroContent_1 ?? '' }}
-    </div>
+        {{-- Contenuto sotto l'hero --}}
+        <div class="below-hero-content relative z-10 w-full" role="region"
+            aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
+            {{ $belowHeroContent_1 ?? '' }}
+        </div>
 
-    <div class="relative z-10 w-full mt-12 mb-12 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
+        <div class="below-hero-content relative z-10 w-full" role="region"
+            aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
 
-        {{ $belowHeroContent_2 ?? '' }}
-    </div>
+            {{ $belowHeroContent_2 ?? '' }}
+        </div>
 
-    <div class="absolute z-20 transform -translate-x-1/2 animate-bounce-slow bottom-6 left-1/2 md:hidden">
-        <button type="button" aria-label="{{ __('guest_layout.scroll_down_aria_label') }}"
-            class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-full bg-opacity-30 hover:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            onclick="document.getElementById('main-content').scrollIntoView({behavior: 'smooth'});">
-            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-        </button>
-    </div>
-    </div>
-</section>
+        <div class="animate-bounce-slow absolute bottom-6 left-1/2 z-20 -translate-x-1/2 transform md:hidden">
+            <button type="button" aria-label="{{ __('guest_layout.scroll_down_aria_label') }}"
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-black bg-opacity-30 text-white hover:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                onclick="document.getElementById('main-content').scrollIntoView({behavior: 'smooth'});">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </button>
+        </div>
+    </section>
 @endunless
 
 {{-- SLOT PER IL CONTENUTO DEGLI ATTORI --}}
 @isset($actorContent)
-<div id="guest-layout-actors-section-wrapper" class="relative z-10 w-full"> {{-- Wrapper opzionale per stili globali se
+    <div id="guest-layout-actors-section-wrapper" class="relative z-10 w-full"> {{-- Wrapper opzionale per stili globali se
     necessario --}}
-    {{ $actorContent }}
-</div>
+        {{ $actorContent }}
+    </div>
 @endisset
 
 <!-- Main Content -->
@@ -103,7 +101,7 @@
 @include('components.info-footer')
 
 <!-- Modals -->
-<div id="upload-modal" class="hidden modal" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1"
+<div id="upload-modal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1"
     aria-labelledby="upload-modal-title">
     <div role="document">
         <button id="close-upload-modal" type="button"
@@ -140,7 +138,8 @@
         if (typeof Swal === 'undefined') {
             console.warn('⚠️ SweetAlert2 not available, using alert fallback');
             alert(
-                '� HEIC Format Detected\n\nThe selected file is in HEIC/HEIF format.\nWeb browsers don\'t support this format.\n\nSuggestion: Convert the file to JPG or PNG.');
+                '� HEIC Format Detected\n\nThe selected file is in HEIC/HEIF format.\nWeb browsers don\'t support this format.\n\nSuggestion: Convert the file to JPG or PNG.'
+            );
             return;
         }
 
