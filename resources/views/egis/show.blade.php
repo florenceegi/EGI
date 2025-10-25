@@ -166,30 +166,33 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             {{-- Sidebar Content - Padding compatto --}}
                             <div class="space-y-4 p-4 md:space-y-3 md:p-3 lg:space-y-4 lg:p-4 xl:space-y-5 xl:p-5">
 
-                                 {{-- Badge EGI Type e Mint in cima alla sidebar --}}
-                                 <div class="flex flex-wrap items-center gap-2 border-b border-gray-700/30 pb-3">
-                                     {{-- EGI Type Badge --}}
-                                     <x-egi-type-badge :type="$egi->egi_type ?? 'ASA'" size="md" />
+                                {{-- Badge EGI Type e Mint in cima alla sidebar --}}
+                                <div class="flex flex-wrap items-center gap-2 border-b border-gray-700/30 pb-3">
+                                    {{-- EGI Type Badge --}}
+                                    <x-egi-type-badge :type="$egi->egi_type ?? 'ASA'" size="md" />
 
-                                     {{-- Badge MINTATO con link blockchain (solo se token_EGI presente) --}}
-                                     @if ($egi->token_EGI)
-                                         <a href="https://algoexplorer.io/asset/{{ $egi->token_EGI }}" target="_blank" rel="noopener noreferrer"
-                                             class="inline-flex items-center space-x-1 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 to-emerald-500/20 px-2 py-1 shadow-md backdrop-blur-md transition-all hover:from-amber-500/30 hover:to-emerald-500/30 hover:border-amber-400/70 sm:space-x-1.5 sm:px-2.5 sm:py-1">
-                                             <svg class="h-3 w-3 flex-shrink-0 animate-pulse text-amber-400 sm:h-3.5 sm:w-3.5"
-                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                             </svg>
-                                             <span
-                                                 class="whitespace-nowrap rounded bg-emerald-600/80 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-white sm:text-[10px]">
-                                                 ASA #{{ $egi->token_EGI }}
-                                             </span>
-                                             <svg class="h-2.5 w-2.5 text-amber-300 sm:h-3 sm:w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                             </svg>
-                                         </a>
-                                     @endif
-                                 </div>
+                                    {{-- Badge MINTATO con link blockchain (solo se token_EGI presente) --}}
+                                    @if ($egi->token_EGI)
+                                        <a href="https://algoexplorer.io/asset/{{ $egi->token_EGI }}" target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="inline-flex items-center space-x-1 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 to-emerald-500/20 px-2 py-1 shadow-md backdrop-blur-md transition-all hover:border-amber-400/70 hover:from-amber-500/30 hover:to-emerald-500/30 sm:space-x-1.5 sm:px-2.5 sm:py-1">
+                                            <svg class="h-3 w-3 flex-shrink-0 animate-pulse text-amber-400 sm:h-3.5 sm:w-3.5"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                            </svg>
+                                            <span
+                                                class="whitespace-nowrap rounded bg-emerald-600/80 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-white sm:text-[10px]">
+                                                ASA #{{ $egi->token_EGI }}
+                                            </span>
+                                            <svg class="h-2.5 w-2.5 text-amber-300 sm:h-3 sm:w-3" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </a>
+                                    @endif
+                                </div>
 
                                 {{-- Price & Purchase Section --}}
                                 @include(
@@ -330,15 +333,15 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                     }
                 });
             </script>
-            {{-- Lightbox Zoom Overlay - Responsive --}}
+            {{-- Lightbox Zoom Overlay - Responsive ottimizzato per schermi piccoli --}}
             <div id="zoom-overlay"
-                class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm">
+                class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 sm:p-6 md:p-8">
                 <div id="zoom-content"
-                    class="relative max-h-[95%] max-w-[95%] sm:max-h-[90%] sm:max-w-[90%] md:max-h-[85%] md:max-w-[85%]">
+                    class="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-h-[88vh] sm:max-w-[88vw] md:max-h-[85vh] md:max-w-[85vw]">
                     <img id="zoom-overlay-image" src="" alt=""
-                        class="user-select-none max-h-full max-w-full touch-none" style="object-fit: contain;" />
+                        class="user-select-none h-full w-full touch-none object-contain" />
                     <button id="zoom-close" aria-label="Chiudi ingrandimento"
-                        class="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-2xl text-white transition-colors hover:bg-black/70 sm:right-3 sm:top-3 sm:h-9 sm:w-9 sm:text-3xl md:right-4 md:top-4 md:h-10 md:w-10">
+                        class="absolute right-1 top-1 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-2xl font-bold text-white shadow-xl transition-all hover:bg-black/90 hover:scale-110 sm:right-2 sm:top-2 sm:h-10 sm:w-10 sm:text-3xl md:right-3 md:top-3 md:h-11 md:w-11">
                         ×
                     </button>
                 </div>
