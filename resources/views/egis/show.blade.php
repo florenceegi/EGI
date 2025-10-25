@@ -121,8 +121,8 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                     {{-- Main Gallery Grid - SEMPRE multi-colonna da tablet in su --}}
                     <div class="grid grid-cols-1 gap-0 md:grid-cols-12">
 
-                        {{-- Left: Artwork Area - Ridotta per laptop, espansa per desktop --}}
-                        <div class="relative p-2 md:col-span-7 md:p-3 lg:col-span-6 lg:p-4 xl:col-span-7 xl:p-6">
+                        {{-- Left: Artwork Area - Ridotta quando CRUD visibile --}}
+                        <div class="relative p-2 @if($canUpdateEgi) md:col-span-7 lg:col-span-4 xl:col-span-5 @else md:col-span-7 lg:col-span-6 xl:col-span-7 @endif md:p-3 lg:p-4 xl:p-6">
 
                             {{-- Artwork Container con Floating Card - Sempre visibile completamente --}}
                             <div class="relative mx-auto w-full max-w-full">

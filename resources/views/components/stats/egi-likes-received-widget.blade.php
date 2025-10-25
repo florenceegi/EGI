@@ -21,28 +21,29 @@
     $usersWhoLiked = $likesData['users_who_liked'] ?? [];
 @endphp
 
-<div class="max-h-96 overflow-hidden rounded-xl bg-white bg-opacity-10 p-6 backdrop-blur-md"
-    style="max-height: 24rem; overflow: hidden;">
-    {{-- Header --}}
-    <div class="mb-6 flex items-center justify-between">
-        <h3 class="flex items-center text-xl font-semibold text-white">
-            <svg class="mr-2 h-6 w-6 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                    d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656z"
-                    clip-rule="evenodd"></path>
-            </svg>
-            {{ __('statistics.likes_received_for_this_egi') }}
-        </h3>
+@if ($totalLikes > 0)
+    {{-- Box completo solo se ci sono Like --}}
+    <div class="max-h-96 overflow-hidden rounded-xl bg-white bg-opacity-10 p-6 backdrop-blur-md"
+        style="max-height: 24rem; overflow: hidden;">
+        {{-- Header --}}
+        <div class="mb-6 flex items-center justify-between">
+            <h3 class="flex items-center text-xl font-semibold text-white">
+                <svg class="mr-2 h-6 w-6 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                {{ __('statistics.likes_received_for_this_egi') }}
+            </h3>
 
-        {{-- Total Likes Count --}}
-        <div class="text-right">
-            <div class="text-3xl font-bold text-pink-400">{{ number_format($totalLikes) }}</div>
-            <div class="text-sm text-gray-300">{{ __('statistics.total_likes') }}</div>
+            {{-- Total Likes Count --}}
+            <div class="text-right">
+                <div class="text-3xl font-bold text-pink-400">{{ number_format($totalLikes) }}</div>
+                <div class="text-sm text-gray-300">{{ __('statistics.total_likes') }}</div>
+            </div>
         </div>
-    </div>
 
-    {{-- Users Who Liked This EGI --}}
-    @if ($totalLikes > 0)
+        {{-- Users Who Liked This EGI --}}
         <div class="scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 max-h-48 space-y-3 overflow-y-auto pr-2"
             style="max-height: 12rem; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #6b7280 #374151;">
             @foreach ($usersWhoLiked as $userLike)
@@ -104,14 +105,18 @@
                 </div>
             @endforeach
         </div>
-    @else
-        <div class="py-8 text-center">
-            <svg class="mx-auto mb-3 h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
-                </path>
+    </div>
+@else
+    {{-- Badge compatto se nessun Like --}}
+    <div class="space-y-2">
+        <h3 class="text-sm font-semibold text-white">{{ __('statistics.likes_received_for_this_egi') }}</h3>
+        <div class="flex items-center space-x-2 rounded-lg border border-pink-500/30 bg-pink-900/20 px-3 py-2.5">
+            <svg class="h-4 w-4 flex-shrink-0 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656L10 17.657l-6.828-6.829a4 4 0 0 1 0-5.656z"
+                    clip-rule="evenodd"></path>
             </svg>
-            <p class="text-sm text-gray-300">{{ __('statistics.no_likes_received_yet') }}</p>
+            <span class="text-sm text-pink-200">{{ __('statistics.no_likes_received_yet') }}</span>
         </div>
-    @endif
-</div>
+    </div>
+@endif
