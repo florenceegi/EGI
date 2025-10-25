@@ -5,18 +5,18 @@
     VARIABILI: $egi, $canUpdateEgi, $canDeleteEgi, $isPriceLocked, $canModifyPrice, $displayPrice, $displayUser, $highestPriorityReservation
 --}}
 
-{{-- Center: CRUD Box --}}
+{{-- Center: CRUD Box - Responsive --}}
 @if ($canUpdateEgi)
     <div
-        class="overflow-y-auto border-l border-r border-emerald-700/30 bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl lg:col-span-3 xl:col-span-2">
-        {{-- CRUD Box Content --}}
-        <div class="p-4 lg:p-6">
+        class="overflow-y-auto border-t border-emerald-700/30 bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl md:col-span-12 md:border-l md:border-r md:border-t-0 lg:col-span-12 xl:col-span-2">
+        {{-- CRUD Box Content - Responsive padding --}}
+        <div class="p-3 md:p-4 lg:p-5 xl:p-6">
             <div
-                class="rounded-xl border border-emerald-700/30 bg-gradient-to-br from-emerald-800/20 to-emerald-900/20 p-6">
+                class="rounded-xl border border-emerald-700/30 bg-gradient-to-br from-emerald-800/20 to-emerald-900/20 p-4 md:p-5 lg:p-6">
 
-                {{-- Header --}}
-                <div class="mb-6 flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-emerald-400">
+                {{-- Header - Responsive text --}}
+                <div class="mb-4 flex items-center justify-between md:mb-6">
+                    <h3 class="text-base font-semibold text-emerald-400 md:text-lg">
                         <svg class="mr-2 inline h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">

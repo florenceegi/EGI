@@ -112,30 +112,30 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 ? 'bg-gradient-to-br from-amber-900/30 via-emerald-900/20 to-gray-900'
                 : 'bg-gradient-to-br from-gray-900 via-black to-gray-900' }}">
 
-            {{-- Badge MINTATO se token_EGI presente + Badge Tipo EGI --}}
-            <div class="container mx-auto px-4 py-3">
-                <div class="flex flex-wrap items-center gap-3">
-                    {{-- EGI Type Badge (sempre visibile) --}}
+            {{-- Badge MINTATO se token_EGI presente + Badge Tipo EGI - Responsive --}}
+            <div class="container mx-auto px-2 py-2 sm:px-3 sm:py-2.5 md:px-4 md:py-3">
+                <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3">
+                    {{-- EGI Type Badge (sempre visibile) - Responsive --}}
                     <x-egi-type-badge :type="$egi->egi_type ?? 'ASA'" size="md" />
 
-                    {{-- Badge MINTATO (solo se token_EGI presente) --}}
+                    {{-- Badge MINTATO (solo se token_EGI presente) - Responsive --}}
                     @if ($egi->token_EGI)
                         <div
-                            class="inline-flex items-center space-x-2 rounded-full border-2 border-amber-400/50 bg-gradient-to-r from-amber-500/20 to-emerald-500/20 px-4 py-2 shadow-lg backdrop-blur-md">
-                            <svg class="h-5 w-5 animate-pulse text-amber-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
+                            class="inline-flex items-center space-x-1 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 to-emerald-500/20 px-2 py-1 shadow-lg backdrop-blur-md sm:space-x-1.5 sm:border-2 sm:px-3 sm:py-1.5 md:space-x-2 md:px-4 md:py-2">
+                            <svg class="h-3 w-3 flex-shrink-0 animate-pulse text-amber-400 sm:h-4 sm:w-4 md:h-5 md:w-5"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                             <span
-                                class="text-sm font-bold text-amber-300">{{ __('egi.crud.blockchain_warning_title') }}</span>
+                                class="hidden text-xs font-bold text-amber-300 sm:inline sm:text-sm">{{ __('egi.crud.blockchain_warning_title') }}</span>
                             <span
-                                class="rounded bg-emerald-600/80 px-2 py-1 font-mono text-xs font-semibold text-white">
+                                class="whitespace-nowrap rounded bg-emerald-600/80 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-white sm:px-2 sm:py-1 sm:text-xs">
                                 ASA #{{ $egi->token_EGI }}
                             </span>
                             <a href="https://testnet.explorer.perawallet.app/asset/{{ $egi->token_EGI }}"
                                 target="_blank"
-                                class="inline-flex items-center text-xs font-medium text-amber-300 transition-colors hover:text-amber-200">
+                                class="hidden items-center text-xs font-medium text-amber-300 transition-colors hover:text-amber-200 md:inline-flex">
                                 {{ __('egi.crud.blockchain_verify_link') }}
                                 <svg class="ml-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -150,14 +150,14 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             {{-- Cinematic Artwork Display --}}
             <div class="relative w-full">
 
-                {{-- Main Gallery Grid - MODIFICATO per 3 colonne --}}
-                <div class="grid grid-cols-1 lg:grid-cols-12">
+                {{-- Main Gallery Grid - RESPONSIVE per tutte le dimensioni --}}
+                <div class="grid grid-cols-1 gap-0 md:grid-cols-12">
 
-                    {{-- Left: Artwork Area (Ridotta da 8-9 a 6-7) --}}
-                    <div class="relative p-2 lg:col-span-6 lg:p-8 xl:col-span-7">
+                    {{-- Left: Artwork Area (Responsive per tutti i breakpoint) --}}
+                    <div class="relative p-2 md:col-span-12 lg:col-span-6 lg:p-6 xl:col-span-7 xl:p-8">
 
-                        {{-- Artwork Container --}}
-                        <div class="relative w-full max-w-5xl">
+                        {{-- Artwork Container - Responsive --}}
+                        <div class="relative mx-auto w-full max-w-full md:max-w-3xl lg:max-w-4xl xl:max-w-5xl">
 
                             {{-- Collection Navigation Carousel - OpenSea Style --}}
                             <x-egi-collection-navigator :collectionEgis="$collectionEgis" :currentEgi="$egi" />
@@ -186,12 +186,12 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             'displayUser',
                             'highestPriorityReservation'))
 
-                    {{-- Right: Sidebar Esistente (Ridotta da 4-3 a 3) --}}
+                    {{-- Right: Sidebar - Responsive per tutti i breakpoint --}}
                     <div
-                        class="overflow-y-auto border-l border-gray-700/50 bg-gray-900/95 backdrop-blur-xl lg:col-span-3">
+                        class="overflow-y-auto border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-xl md:col-span-12 md:border-l md:border-t-0 lg:col-span-6 xl:col-span-3">
 
-                        {{-- Sidebar Content (Invariato) --}}
-                        <div class="space-y-8 p-6 lg:p-8">
+                        {{-- Sidebar Content - Responsive padding e layout --}}
+                        <div class="space-y-6 p-4 md:space-y-8 md:p-6 lg:p-8">
 
                             {{-- Price & Purchase Section --}}
                             @include(
@@ -331,74 +331,79 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 }
             });
         </script>
-        {{-- Lightbox Zoom Overlay --}}
+        {{-- Lightbox Zoom Overlay - Responsive --}}
         <div id="zoom-overlay"
             class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm">
-            <div id="zoom-content" class="relative max-h-[90%] max-w-[90%]">
+            <div id="zoom-content"
+                class="relative max-h-[95%] max-w-[95%] sm:max-h-[90%] sm:max-w-[90%] md:max-h-[85%] md:max-w-[85%]">
                 <img id="zoom-overlay-image" src="" alt=""
                     class="user-select-none max-h-full max-w-full touch-none" style="object-fit: contain;" />
                 <button id="zoom-close" aria-label="Chiudi ingrandimento"
-                    class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-3xl text-white transition-colors hover:bg-black/70">
+                    class="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-2xl text-white transition-colors hover:bg-black/70 sm:right-3 sm:top-3 sm:h-9 sm:w-9 sm:text-3xl md:right-4 md:top-4 md:h-10 md:w-10">
                     ×
                 </button>
             </div>
         </div>
 
-        {{-- Utility Details Modal --}}
+        {{-- Utility Details Modal - Responsive --}}
         @if ($egi->utility)
             <div id="utility-modal"
                 class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm">
-                <div class="relative mx-4 my-8 max-h-[90vh] w-full max-w-4xl overflow-hidden">
+                <div
+                    class="relative mx-2 my-4 max-h-[95vh] w-full max-w-[95%] overflow-hidden sm:mx-4 sm:my-6 sm:max-h-[90vh] sm:max-w-3xl md:my-8 md:max-w-4xl">
                     {{-- Modal Content --}}
                     <div
-                        class="rounded-2xl border border-orange-500/30 bg-gradient-to-br from-gray-900 to-gray-800 shadow-2xl">
-                        {{-- Modal Header --}}
-                        <div class="flex items-center justify-between border-b border-orange-500/20 p-6">
-                            <div class="flex items-center space-x-3">
-                                <div class="rounded-lg bg-orange-500/20 p-2">
-                                    <svg class="h-6 w-6 text-orange-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
+                        class="rounded-xl border border-orange-500/30 bg-gradient-to-br from-gray-900 to-gray-800 shadow-2xl sm:rounded-2xl">
+                        {{-- Modal Header - Responsive --}}
+                        <div class="flex items-center justify-between border-b border-orange-500/20 p-3 sm:p-4 md:p-6">
+                            <div class="flex min-w-0 items-center space-x-2 sm:space-x-3">
+                                <div class="flex-shrink-0 rounded-md bg-orange-500/20 p-1.5 sm:rounded-lg sm:p-2">
+                                    <svg class="h-4 w-4 text-orange-400 sm:h-5 sm:w-5 md:h-6 md:w-6" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                     </svg>
                                 </div>
-                                <div>
-                                    <h2 class="text-xl font-bold text-white">{{ $egi->utility->title }}</h2>
+                                <div class="min-w-0">
+                                    <h2 class="truncate text-base font-bold text-white sm:text-lg md:text-xl">
+                                        {{ $egi->utility->title }}</h2>
                                     <span
-                                        class="rounded-full border border-orange-400/30 bg-orange-500/20 px-3 py-1 text-xs font-medium text-white">
+                                        class="mt-1 inline-block rounded-full border border-orange-400/30 bg-orange-500/20 px-2 py-0.5 text-[10px] font-medium text-white sm:px-3 sm:py-1 sm:text-xs">
                                         {{ __('utility.types.' . $egi->utility->type . '.label') }}
                                     </span>
                                 </div>
                             </div>
                             <button id="utility-modal-close"
-                                class="p-2 text-gray-400 transition-colors hover:text-white">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="flex-shrink-0 p-1.5 text-gray-400 transition-colors hover:text-white sm:p-2">
+                                <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
 
-                        {{-- Modal Body --}}
-                        <div class="max-h-[calc(90vh-180px)] overflow-y-auto">
-                            <div class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
-                                {{-- Left Column: Images Carousel --}}
+                        {{-- Modal Body - Responsive --}}
+                        <div
+                            class="max-h-[calc(95vh-120px)] overflow-y-auto sm:max-h-[calc(90vh-140px)] md:max-h-[calc(90vh-180px)]">
+                            <div class="grid grid-cols-1 gap-3 p-3 sm:gap-4 sm:p-4 md:gap-6 md:p-6 lg:grid-cols-2">
+                                {{-- Left Column: Images Carousel - Responsive --}}
                                 @if ($egi->utility->getMedia('utility_gallery')->count() > 0)
-                                    <div class="space-y-4">
-                                        <h3 class="text-lg font-semibold text-orange-400">
+                                    <div class="space-y-3 sm:space-y-4">
+                                        <h3 class="text-base font-semibold text-orange-400 sm:text-lg">
                                             {{ __('utility.media.title') }}</h3>
 
-                                        {{-- Main Carousel Image --}}
+                                        {{-- Main Carousel Image - Responsive --}}
                                         <div class="relative">
                                             <div id="utility-carousel-container"
-                                                class="relative overflow-hidden rounded-xl bg-black/30">
+                                                class="relative overflow-hidden rounded-lg bg-black/30 sm:rounded-xl">
                                                 <div id="utility-carousel-track"
                                                     class="flex transition-transform duration-300 ease-in-out">
                                                     @foreach ($egi->utility->getMedia('utility_gallery') as $index => $media)
                                                         <div class="w-full flex-shrink-0">
                                                             <img src="{{ $media->getUrl() }}"
                                                                 alt="Utility image {{ $index + 1 }}"
-                                                                class="h-64 w-full object-cover md:h-80">
+                                                                class="h-48 w-full object-cover sm:h-56 md:h-64 lg:h-80">
                                                         </div>
                                                     @endforeach
                                                 </div>
@@ -454,13 +459,14 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                     </div>
                                 @endif
 
-                                {{-- Right Column: Utility Details --}}
-                                <div class="space-y-6">
+                                {{-- Right Column: Utility Details - Responsive --}}
+                                <div class="space-y-4 sm:space-y-6">
                                     {{-- Description --}}
                                     <div>
-                                        <h3 class="mb-3 text-lg font-semibold text-orange-400">
+                                        <h3 class="mb-2 text-base font-semibold text-orange-400 sm:mb-3 sm:text-lg">
                                             {{ __('utility.fields.description') }}</h3>
-                                        <p class="leading-relaxed text-gray-300">{{ $egi->utility->description }}</p>
+                                        <p class="text-sm leading-relaxed text-gray-300 sm:text-base">
+                                            {{ $egi->utility->description }}</p>
                                     </div>
 
                                     {{-- Type-specific Details --}}
