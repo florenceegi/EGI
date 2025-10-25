@@ -71,50 +71,23 @@
                     </div>
                 @endif
 
-                {{-- Auto-Mint Panel (Solo Creator di EGI non mintati) - COLLAPSABILE --}}
+                {{-- Pannello Unificato: Prepara e Minta (Solo Creator di EGI non mintati) --}}
                 @if ($isNotMinted && $isCreatorCheck)
                     <details class="group mb-4" open>
-                        <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-emerald-800/30 px-3 py-2 text-emerald-300 transition-colors hover:bg-emerald-800/40">
-                            <span class="text-sm font-semibold">Auto-Mint Creator</span>
-                            <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </summary>
-                        <div class="mt-3">
-                            <x-egi-auto-mint-panel :egi="$egi" :isCreator="$isCreatorCheck" />
-                        </div>
-                    </details>
-                @endif
-
-                {{-- AI Traits Panel (Solo Creator di EGI non mintati) - COLLAPSABILE --}}
-                @if ($isNotMinted && $isCreatorCheck)
-                    <details class="group mb-4">
-                        <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-purple-800/30 px-3 py-2 text-purple-300 transition-colors hover:bg-purple-800/40">
-                            <span class="text-sm font-semibold">Gestione Traits AI</span>
-                            <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </summary>
-                        <div class="mt-3">
-                            <x-egi-ai-traits-panel :egi="$egi" :isCreator="$isCreatorCheck" />
-                        </div>
-                    </details>
-                @endif
-
-                {{-- Pre-Mint Panel (EGI non mintati e disponibili sul marketplace) - COLLAPSABILE --}}
-                @if ($isNotMinted && !$egi->pre_mint_mode)
-                    <details class="group mb-4">
                         <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-blue-800/30 px-3 py-2 text-blue-300 transition-colors hover:bg-blue-800/40">
-                            <span class="text-sm font-semibold">EGI Pre-Mint</span>
+                            <span class="text-sm font-semibold">🎨 Prepara e Minta il tuo EGI</span>
                             <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
                         <div class="mt-3">
-                            <x-egi-pre-mint-panel :egi="$egi" />
+                            <x-egi-unified-mint-panel :egi="$egi" :isCreator="$isCreatorCheck" />
                         </div>
                     </details>
                 @endif
+
+                {{-- Vecchio pannello Traits separato rimosso - ora integrato nel pannello unificato --}}
+                {{-- Vecchio Pre-Mint Panel rimosso - ora unificato sopra --}}
 
                 {{-- EGI Vivente Panel (Solo SmartContract mintati) - COLLAPSABILE --}}
                 @if ($isSmartContract && $egi->smartContract)
