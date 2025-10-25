@@ -133,6 +133,177 @@ Contrasta la natura predittiva LLM. Meglio fermarsi e chiedere che procedere con
 
 ---
 
+## **🌍 REGOLA I18N - DIVIETO ASSOLUTO TESTO HARDCODED**
+
+### **❌ VIETATO IN MODO ASSOLUTO: TESTO HARDCODED**
+
+**PRINCIPIO FONDAMENTALE:** FlorenceEGI è una piattaforma INTERNAZIONALE. ZERO testo hardcoded in nessuna lingua.
+
+### **🚨 DIVIETO TOTALE:**
+
+```blade
+❌ VIETATO - Testo hardcoded in italiano:
+<h3>Storico Acquisti / Offerte</h3>
+<span>Nessuna offerta trovata</span>
+<span>Certificato non emesso</span>
+
+❌ VIETATO - Testo hardcoded in inglese:
+<h3>Purchase History / Offers</h3>
+<span>No offers found</span>
+<span>Certificate not issued</span>
+
+❌ VIETATO - Qualsiasi lingua hardcoded:
+'title' => 'Fixed text here'
+echo "Any hardcoded text";
+```
+
+### **✅ OBBLIGATORIO: Usare SEMPRE chiavi i18n:**
+
+```blade
+✅ CORRETTO - Blade views:
+<h3>{{ __('reservation.history.purchases_offers_title') }}</h3>
+<span>{{ __('reservation.history.no_entries') }}</span>
+<span>{{ __('egi.coa.no_certificate_issued') }}</span>
+
+✅ CORRETTO - PHP code:
+return redirect()->back()->with('success', __('messages.success'));
+$title = __('app.title');
+
+✅ CORRETTO - JavaScript:
+const message = "{{ __('js.messages.confirm') }}";
+```
+
+### **📋 WORKFLOW OBBLIGATORIO:**
+
+**PRIMA di scrivere QUALSIASI testo visibile all'utente:**
+
+1. **🔍 CERCA chiave esistente:**
+   ```bash
+   grep -r "testo_simile" resources/lang/
+   ```
+
+2. **❓ SE NON ESISTE → AGGIUNGI a file traduzioni:**
+   - Aggiungi a `/resources/lang/en/[file].php` (inglese - default)
+   - Aggiungi a `/resources/lang/it/[file].php` (italiano)
+   - Aggiungi a tutte le altre lingue: `de`, `es`, `fr`, `pt`
+
+3. **✅ USA la chiave nel codice:**
+   ```blade
+   {{ __('file.section.key') }}
+   ```
+
+### **📂 STRUTTURA FILE TRADUZIONI:**
+
+```
+resources/lang/
+├── en/          # Inglese (default)
+│   ├── egi.php
+│   ├── reservation.php
+│   ├── certificate.php
+│   └── ...
+├── it/          # Italiano
+├── de/          # Tedesco
+├── es/          # Spagnolo
+├── fr/          # Francese
+└── pt/          # Portoghese
+```
+
+### **🛡️ CONTROLLI OBBLIGATORI:**
+
+**PRIMA DI FARE COMMIT:**
+
+```bash
+# Cerca testo hardcoded sospetto in Blade:
+grep -r ">[A-Z][a-z]" resources/views/ | grep -v "__("
+
+# Cerca stringhe hardcoded in PHP:
+grep -r "echo.*[\"']" app/ | grep -v "__("
+```
+
+### **🚨 SE VIOLI QUESTA REGOLA:**
+
+```
+🛑 VIOLAZIONE I18N RILEVATA!
+
+File: [path]
+Linea: [number]
+Testo hardcoded: "[testo trovato]"
+
+CONSEGUENZE:
+❌ Piattaforma NON internazionale
+❌ Perdita clienti internazionali
+❌ Manutenzione impossibile
+❌ Traduttori NON possono lavorare
+
+AZIONI IMMEDIATE:
+1. 🛑 STOP commit immediato
+2. 📝 Aggiungi chiave a TUTTE le lingue (en/it/de/es/fr/pt)
+3. 🔄 Sostituisci testo hardcoded con __('key')
+4. ✅ Verifica con grep che non ci siano altri
+5. ⏳ Commit SOLO dopo fix completo
+```
+
+### **📚 ESEMPI FILE TRADUZIONI:**
+
+**resources/lang/en/reservation.php:**
+```php
+return [
+    'history' => [
+        'title' => 'Bid History',
+        'purchases_offers_title' => 'Purchase History / Offers',
+        'no_entries' => 'No bids found.',
+    ],
+];
+```
+
+**resources/lang/it/reservation.php:**
+```php
+return [
+    'history' => [
+        'title' => 'Storico Offerte',
+        'purchases_offers_title' => 'Storico Acquisti / Offerte',
+        'no_entries' => 'Nessuna offerta trovata.',
+    ],
+];
+```
+
+### **⚡ ECCEZIONI (RARISSIME):**
+
+Le UNICHE eccezioni permesse sono:
+
+1. **Codici tecnici NON visibili all'utente:**
+   ```php
+   'ERROR_CODE' => 'INTERNAL_ERROR'  // OK - codice interno
+   ```
+
+2. **Log di debug:**
+   ```php
+   $this->logger->debug('Technical debug message'); // OK - solo dev
+   ```
+
+3. **Commenti codice:**
+   ```php
+   // This is a comment - OK
+   ```
+
+**TUTTO IL RESTO = VIETATO**
+
+### **🎯 RATIONALE:**
+
+**Contesto ENTERPRISE/INTERNAZIONALE:**
+
+- 🌍 FlorenceEGI è per mercato GLOBALE (PA italiane + internazionali)
+- 🏛️ Standard enterprise richiedono i18n completo
+- 💼 Clienti PA richiedono piattaforma nella loro lingua
+- 📊 Manutenzione: traduttori lavorano su file, non cercano nel codice
+- 🔍 Audit: testo hardcoded = violazione best practices internazionali
+
+**Un solo testo hardcoded = piattaforma NON professionale**
+
+**Questa regola è P0-BLOCKING: se scrivi testo hardcoded, FERMA TUTTO e correggi.**
+
+---
+
 ## **🏛️ REGOLA MiCA-SAFE - COMPLIANCE EUROPEA OBBLIGATORIA**
 
 ### **🚨 FLORENCE EGI DEVE RIMANERE 100% MiCA-SAFE 🚨**
@@ -660,6 +831,12 @@ CHECKPOINT EXECUTION:
     ├─ SI → Cerco e replico
     └─ NO → Chiedo esempio
 
+[ ] Sto scrivendo TESTO visibile all'utente?
+    ├─ SI → È hardcoded?
+    │       ├─ SI → 🛑 STOP - USA __('chiave.traduzione')
+    │       └─ NO → Procedi
+    └─ NO → Procedi
+
 [ ] Sto aggiungendo limiti? (->take/->limit/->first)
     ├─ SI → È in StatisticsService?
     │       ├─ SI → 🛑 STOP - Verifica se parametrizzato
@@ -946,15 +1123,16 @@ Errore → Blacklist → Prevenzione futura
 
 # **QUICK REFERENCE CARD**
 
-## **5 DOMANDE PRIMA DI SCRIVERE CODICE:**
+## **6 DOMANDE PRIMA DI SCRIVERE CODICE:**
 
 1. ❓ Ho tutte le info? → NO = CHIEDI
 2. ❓ Uso metodi esistenti? → SI = VERIFICA PRIMA
 3. ❓ Esiste pattern simile? → CERCA E REPLICA
-4. ❓ Sto facendo assunzioni? → MARCA ⚠️ E CHIEDI
-5. ❓ Sto aggiungendo limiti? → SE STATISTICS = STOP
+4. ❓ Scrivo TESTO visibile? → SI = USA __('chiave') MAI HARDCODED
+5. ❓ Sto facendo assunzioni? → MARCA ⚠️ E CHIEDI
+6. ❓ Sto aggiungendo limiti? → SE STATISTICS = STOP
 
-**SE UNA RISPOSTA È "NO" → 🛑 STOP**
+**SE UNA RISPOSTA È "NO" O VIOLI REGOLA → 🛑 STOP**
 
 ## **FRASI DA USARE:**
 
@@ -969,6 +1147,8 @@ Errore → Blacklist → Prevenzione futura
 -   ❌ "Dovrebbe avere un metodo che..."
 -   ❌ "Suppongo che la tabella abbia..."
 -   ❌ "Il pattern standard sarebbe..." (senza verificare)
+-   ❌ `<h3>Testo hardcoded qui</h3>` (MAI testo visibile hardcoded!)
+-   ❌ `'title' => 'Fixed text'` (SEMPRE usare __('chiave'))
 
 ---
 
