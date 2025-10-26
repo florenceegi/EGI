@@ -7,6 +7,7 @@ use App\Models\Egi;
 use App\Models\NatanChatMessage;
 use App\Models\User;
 use App\Services\WebSearch\WebSearchService;
+use App\Services\WebSearch\WebSearchAutoDetector;
 use Illuminate\Support\Facades\DB;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -40,6 +41,7 @@ class NatanChatService
     protected AnthropicService $anthropic;
     protected RagService $rag;
     protected WebSearchService $webSearch;
+    protected WebSearchAutoDetector $webSearchDetector;
     protected DataSanitizerService $sanitizer;
     protected PersonaSelector $personaSelector;
     protected UltraLogManager $logger;
@@ -49,6 +51,7 @@ class NatanChatService
         AnthropicService $anthropic,
         RagService $rag,
         WebSearchService $webSearch,
+        WebSearchAutoDetector $webSearchDetector,
         DataSanitizerService $sanitizer,
         PersonaSelector $personaSelector,
         UltraLogManager $logger,
@@ -57,6 +60,7 @@ class NatanChatService
         $this->anthropic = $anthropic;
         $this->rag = $rag;
         $this->webSearch = $webSearch;
+        $this->webSearchDetector = $webSearchDetector;
         $this->sanitizer = $sanitizer;
         $this->personaSelector = $personaSelector;
         $this->logger = $logger;
@@ -160,6 +164,30 @@ class NatanChatService
             $logContext['persona_method'] = $personaSelection['method'];
 
             $this->logger->info('[NatanChatService] Persona selected', $logContext);
+
+            // STEP 1.5: Auto-detect if web search should be enabled (FASE 2 - Smart Mode) ✨ NEW v3.0
+            // If user didn't explicitly set useWebSearch, let AI decide
+            if (!$useWebSearch) {
+                $autoDetection = $this->webSearchDetector->shouldEnableWebSearch(
+                    $userQuery,
+                    $personaSelection['persona_id'],
+                    ['conversation_history' => $conversationHistory]
+                );
+
+                // Auto-enable if confidence >= 50%
+                if ($autoDetection['should_enable']) {
+                    $useWebSearch = true;
+                    $logContext['web_search_auto_enabled'] = true;
+                    $logContext['web_search_confidence'] = $autoDetection['confidence'];
+                    $logContext['web_search_reasoning'] = $autoDetection['reasoning'];
+
+                    $this->logger->info('[NatanChatService] Web search AUTO-ENABLED by detector', [
+                        'confidence' => $autoDetection['confidence'],
+                        'reasoning' => $autoDetection['reasoning'],
+                        'triggers' => $autoDetection['triggers'],
+                    ]);
+                }
+            }
 
             // STEP 2: Retrieve relevant acts using RAG system (if enabled)
             // Uses semantic search (vector embeddings) with keyword search fallback
