@@ -258,7 +258,7 @@ return [
         'blockchain_transaction_pool_error' => 'La rete Algorand è temporaneamente sovraccarica. Riprova tra 5-10 minuti. Il tuo pagamento NON è stato effettuato.',
 
         // Dual Architecture - Auto-Mint & Pre-Mint Errors (User Messages)
-        // Dual Architecture - Auto-Mint & Pre-Mint Errors (Dev)
+                // Dual Architecture - Auto-Mint & Pre-Mint Errors (Dev)
         'dual_arch_auto_mint_unauthorized' => 'Tentativo di gestione Auto-Mint non autorizzato. User: :user_id, EGI: :egi_id',
         'dual_arch_not_pre_mint' => 'Tentativo operazione su EGI non Pre-Mint. User: :user_id, EGI: :egi_id, Status: :status',
         'dual_arch_smart_contract_disabled' => 'Tentativo di accesso EGI Vivente con feature disabilitata. User: :user_id, EGI: :egi_id',
@@ -275,28 +275,6 @@ return [
         'kms_provider_unavailable' => 'CRITICAL: KMS provider unavailable. Provider: :provider, Endpoint: :endpoint, Error: :error',
         'kms_configuration_invalid' => 'CRITICAL: KMS configuration invalid. Provider: :provider, Issue: :issue',
         'kms_audit_log_failed' => 'KMS audit logging failed. Operation: :operation, User: :user_id, Error: :error',
-
-        // SuperAdmin AI & Platform Management Errors (Dev)
-        'superadmin_ai_consultations_index_error' => 'SuperAdmin AI Consultations index failed. Admin: :admin_id, Filters: :filters, Error: :error_message',
-        'superadmin_ai_consultations_show_error' => 'SuperAdmin AI Consultation show failed. Admin: :admin_id, Generation: :generation_id, Error: :error_message',
-        'superadmin_ai_credits_index_error' => 'SuperAdmin AI Credits index failed. Admin: :admin_id, Error: :error_message',
-        'superadmin_ai_features_index_error' => 'SuperAdmin AI Features index failed. Admin: :admin_id, Error: :error_message',
-        'superadmin_ai_statistics_index_error' => 'SuperAdmin AI Statistics index failed. Admin: :admin_id, Error: :error_message',
-        'superadmin_egili_index_error' => 'SuperAdmin Egili index failed. Admin: :admin_id, Error: :error_message',
-        'superadmin_equilibrium_index_error' => 'SuperAdmin Equilibrium index failed. Admin: :admin_id, Error: :error_message',
-        'superadmin_pricing_index_error' => 'SuperAdmin Feature Pricing index failed. Admin: :admin_id, Error: :error_message',
-        'superadmin_permissions_index_error' => 'SuperAdmin Permissions index failed. Admin: :admin_id, Error: :error_message',
-        'superadmin_roles_index_error' => 'SuperAdmin Roles index failed. Admin: :admin_id, Error: :error_message',
-
-        // Padmin Analyzer (OS3 Guardian) Errors (Dev Messages)
-        'padmin_cli_not_found' => 'Padmin CLI script not found at :cli_path. Command attempted: :command. Run: npm run build in tools/os3-guardian',
-        'padmin_node_execution_failed' => 'Node.js execution failed for command :command. Exit code: :exit_code, Error: :error',
-        'padmin_invalid_json_response' => 'Invalid JSON response from Padmin CLI. Command: :command, JSON error: :json_error',
-        'padmin_node_timeout' => 'Node.js execution timeout (:timeout seconds) for command :command',
-        'padmin_mark_fixed_failed' => 'Failed to mark violation :violation_id as fixed. User: :user_id, Error: :error',
-        'padmin_scan_failed' => 'Code quality scan failed for path :path with rules :rules. Error: :error',
-        'padmin_ai_fix_failed' => 'AI auto-fix failed for violation in :file. Error: :error. Backup: :backup',
-        'padmin_ai_preview_failed' => 'AI preview generation failed for violation in :file. Error: :error',
     ],
 
     'user' => [
@@ -355,28 +333,6 @@ return [
         'kms_provider_unavailable' => 'Il sistema di sicurezza non è al momento disponibile. Riprova tra qualche minuto o contatta l\'assistenza.',
         'kms_configuration_invalid' => 'Configurazione di sicurezza non valida. Contatta immediatamente l\'assistenza tecnica.',
         'kms_audit_log_failed' => 'Errore nel sistema di tracciamento sicurezza. L\'operazione è stata comunque completata.',
-
-        // SuperAdmin AI & Platform Management Errors (User Messages)
-        'superadmin_ai_consultations_index_error' => 'Errore durante il caricamento delle consulenze AI. Riprova più tardi.',
-        'superadmin_ai_consultations_show_error' => 'Errore durante il caricamento del dettaglio consulenza AI. Riprova più tardi.',
-        'superadmin_ai_credits_index_error' => 'Errore durante il caricamento della gestione crediti AI. Riprova più tardi.',
-        'superadmin_ai_features_index_error' => 'Errore durante il caricamento della configurazione AI. Riprova più tardi.',
-        'superadmin_ai_statistics_index_error' => 'Errore durante il caricamento delle statistiche AI. Riprova più tardi.',
-        'superadmin_egili_index_error' => 'Errore durante il caricamento della gestione Egili. Riprova più tardi.',
-        'superadmin_equilibrium_index_error' => 'Errore durante il caricamento della gestione Equilibrium. Riprova più tardi.',
-        'superadmin_pricing_index_error' => 'Errore durante il caricamento della gestione prezzi features. Riprova più tardi.',
-        'superadmin_permissions_index_error' => 'Errore durante il caricamento della gestione permessi. Riprova più tardi.',
-        'superadmin_roles_index_error' => 'Errore durante il caricamento della gestione ruoli. Riprova più tardi.',
-
-        // Padmin Analyzer (OS3 Guardian) Errors (User Messages)
-        'padmin_cli_not_found' => 'Il sistema Padmin Analyzer non è configurato correttamente. Contatta l\'amministratore.',
-        'padmin_node_execution_failed' => 'Errore durante l\'esecuzione dell\'analisi del codice. Riprova più tardi.',
-        'padmin_invalid_json_response' => 'Risposta non valida dal sistema di analisi. Riprova più tardi.',
-        'padmin_node_timeout' => 'L\'operazione ha impiegato troppo tempo. Riprova con parametri più restrittivi.',
-        'padmin_mark_fixed_failed' => 'Errore durante l\'aggiornamento dello stato della violazione. Riprova più tardi.',
-        'padmin_scan_failed' => 'Errore durante la scansione del codice. Verifica il percorso e riprova.',
-        'padmin_ai_fix_failed' => 'Impossibile applicare la correzione automatica. Riprova o procedi manualmente.',
-        'padmin_ai_preview_failed' => 'Impossibile generare l\'anteprima della correzione. Riprova più tardi.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

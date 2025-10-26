@@ -59,8 +59,7 @@ return [
         'entries' => 'Bid Entries',
         'view_certificate' => 'View Certificate',
         'no_entries' => 'No bids found.',
-        'be_first' => 'Be the first to bid on this EGI!',
-        'purchases_offers_title' => 'Purchase History / Offers'
+        'be_first' => 'Be the first to bid on this EGI!'
     ],
 
     // Error messages
