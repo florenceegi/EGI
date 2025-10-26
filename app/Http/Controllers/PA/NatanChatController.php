@@ -162,6 +162,7 @@ class NatanChatController extends Controller
                 'persona_id' => ['nullable', 'string', 'in:strategic,technical,legal,financial,urban_social,communication'],
                 'session_id' => ['nullable', 'string', 'max:100'],
                 'use_rag' => ['nullable', 'boolean'], // Enable/disable RAG retrieval
+                'use_web_search' => ['nullable', 'boolean'], // Enable/disable web search ✨ NEW v3.0
                 'reference_message_id' => ['nullable', 'integer', 'exists:natan_chat_messages,id'], // Elaborate on previous message
             ]);
 
@@ -171,6 +172,7 @@ class NatanChatController extends Controller
             $personaId = $validated['persona_id'] ?? null;
             $sessionId = $validated['session_id'] ?? null;
             $useRag = $validated['use_rag'] ?? true; // Default: use RAG
+            $useWebSearch = $validated['use_web_search'] ?? false; // Default: opt-in (false) ✨ NEW v3.0
             $referenceMessageId = $validated['reference_message_id'] ?? null;
 
             $this->logger->info('[NatanChatController] Processing user message', [
@@ -180,6 +182,7 @@ class NatanChatController extends Controller
                 'persona_id' => $personaId,
                 'session_id' => $sessionId,
                 'use_rag' => $useRag,
+                'use_web_search' => $useWebSearch, // NEW v3.0
                 'reference_message_id' => $referenceMessageId,
             ]);
 
@@ -212,7 +215,7 @@ class NatanChatController extends Controller
                 }
             }
 
-            // Process query with N.A.T.A.N. service (with persona support + elaboration)
+            // Process query with N.A.T.A.N. service (with persona support + elaboration + web search ✨ v3.0)
             $result = $this->chatService->processQuery(
                 $message,
                 $user,
@@ -220,6 +223,7 @@ class NatanChatController extends Controller
                 $personaId,
                 $sessionId,
                 $useRag,
+                $useWebSearch, // NEW v3.0
                 $referenceContext
             );
 
@@ -242,6 +246,8 @@ class NatanChatController extends Controller
                 'success' => true,
                 'response' => $result['response'],
                 'sources' => $result['sources'] ?? [],
+                'web_sources' => $result['web_sources'] ?? [], // NEW v3.0
+                'web_search_metadata' => $result['web_search_metadata'] ?? null, // NEW v3.0
                 'persona' => $result['persona'] ?? null,
                 'session_id' => $result['session_id'] ?? null,
                 'message_ids' => $result['message_ids'] ?? null, // IDs for user and assistant messages

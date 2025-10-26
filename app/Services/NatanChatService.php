@@ -6,6 +6,7 @@ use App\Config\NatanPersonas;
 use App\Models\Egi;
 use App\Models\NatanChatMessage;
 use App\Models\User;
+use App\Services\WebSearch\WebSearchService;
 use Illuminate\Support\Facades\DB;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -13,30 +14,32 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 /**
  * N.A.T.A.N. Chat Service - AI-powered conversational interface for PA acts
  *
- * This service implements RAG (Retrieval Augmented Generation) to allow
- * PA officials to interact with their administrative acts using natural language.
+ * This service implements RAG (Retrieval Augmented Generation) + Web Search to allow
+ * PA officials to interact with their administrative acts + global knowledge using natural language.
  *
  * FEATURES:
  * - Conversational AI: Ask questions about specific acts or general queries
  * - RAG: Retrieves relevant acts before generating response
+ * - WEB SEARCH: Augments with global best practices, normatives, funding (NEW v3.0)
  * - Context-aware: Maintains conversation history
  * - Multi-query: "Summarize act X", "Which acts about Y?", "Suggest Z"
  *
  * GDPR-COMPLIANT:
  * - Uses Anthropic Claude 3.5 Sonnet (EU DPA compliant)
  * - Processes ONLY public metadata (no PII, no signatures)
- * - Full audit trail of data sent to AI
- * - DataSanitizerService filters all sensitive data
+ * - Full audit trail of data sent to AI AND web search
+ * - DataSanitizerService + KeywordSanitizerService filter all sensitive data
  *
  * @package App\Services
  * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
- * @version 2.0.0 (FlorenceEGI - N.A.T.A.N. Chat AI with Anthropic)
- * @date 2025-10-12
+ * @version 3.0.0 (FlorenceEGI - N.A.T.A.N. Chat AI + Web Search)
+ * @date 2025-10-26
  */
 class NatanChatService
 {
     protected AnthropicService $anthropic;
     protected RagService $rag;
+    protected WebSearchService $webSearch;
     protected DataSanitizerService $sanitizer;
     protected PersonaSelector $personaSelector;
     protected UltraLogManager $logger;
@@ -45,6 +48,7 @@ class NatanChatService
     public function __construct(
         AnthropicService $anthropic,
         RagService $rag,
+        WebSearchService $webSearch,
         DataSanitizerService $sanitizer,
         PersonaSelector $personaSelector,
         UltraLogManager $logger,
@@ -52,6 +56,7 @@ class NatanChatService
     ) {
         $this->anthropic = $anthropic;
         $this->rag = $rag;
+        $this->webSearch = $webSearch;
         $this->sanitizer = $sanitizer;
         $this->personaSelector = $personaSelector;
         $this->logger = $logger;
@@ -64,11 +69,13 @@ class NatanChatService
      * WORKFLOW:
      * 1. Select appropriate persona (auto or manual)
      * 2. [OPTIONAL] Retrieve relevant acts using RAG system (semantic search + fallback)
-     * 3. Sanitize data (GDPR compliance)
-     * 4. Build context with public metadata only
-     * 5. Call Anthropic Claude 3.5 Sonnet with selected persona
-     * 6. Save message to database with persona metadata
-     * 7. Return structured response with sources
+     * 3. [OPTIONAL] Retrieve web search results (global best practices, normatives) ✨ NEW v3.0
+     * 4. Sanitize data (GDPR compliance)
+     * 5. Fusion: Merge RAG + Web Search results into unified context
+     * 6. Build context with public metadata only
+     * 7. Call Anthropic Claude 3.5 Sonnet with selected persona
+     * 8. Save message to database with persona metadata + web search tracking
+     * 9. Return structured response with sources (internal + external)
      *
      * MULTI-PERSONA SYSTEM:
      * - Auto mode: PersonaSelector analyzes query and chooses best expert
@@ -80,15 +87,21 @@ class NatanChatService
      * - Keyword search: SQL LIKE queries (fallback if no embeddings)
      * - Scales to 24k+ acts with acceptable performance
      *
+     * WEB SEARCH STRATEGY (NEW v3.0):
+     * - Automatic keyword sanitization (GDPR-safe)
+     * - Multi-provider support (Perplexity AI, Google Custom Search)
+     * - Persona-specific domain prioritization
+     * - Results caching for performance
+     *
      * ITERATIVE ELABORATION:
      * - use_rag=false: Skips RAG retrieval (for general consulting or elaborations)
      * - referenceContext: When provided, Claude elaborates on a previous response
      * - Use cases: Simplify, Deepen, Transform format, Extract actions, etc.
      *
      * GDPR AUDIT:
-     * - Logs what data is sent to AI
+     * - Logs what data is sent to AI AND web search APIs
      * - Validates no private fields are present
-     * - All data passes through DataSanitizerService
+     * - All data passes through DataSanitizerService + KeywordSanitizerService
      *
      * @param string $userQuery User's question/request
      * @param User $user Current authenticated user
@@ -96,8 +109,9 @@ class NatanChatService
      * @param string|null $manualPersonaId Manual persona selection (null = auto mode)
      * @param string|null $sessionId Session ID for conversation tracking (generated if null)
      * @param bool $useRag Enable RAG retrieval (default: true)
+     * @param bool $useWebSearch Enable web search (default: false, opt-in) ✨ NEW
      * @param array|null $referenceContext Previous message to elaborate on (null = new query)
-     * @return array ['success' => bool, 'response' => string, 'sources' => array, 'persona' => array, 'session_id' => string]
+     * @return array ['success' => bool, 'response' => string, 'sources' => array, 'web_sources' => array, 'persona' => array, 'session_id' => string]
      * @throws \Exception
      */
     public function processQuery(
@@ -107,6 +121,7 @@ class NatanChatService
         ?string $manualPersonaId = null,
         ?string $sessionId = null,
         bool $useRag = true,
+        bool $useWebSearch = false,
         ?array $referenceContext = null
     ): array {
         $startTime = microtime(true);
@@ -172,6 +187,61 @@ class NatanChatService
                 $this->logger->info('[NatanChatService] RAG skipped (elaboration or general query)', $logContext);
             }
 
+            // STEP 2.5: Retrieve web search results (if enabled) ✨ NEW v3.0
+            $webSearchResults = [];
+            $webSearchMetadata = null;
+            if ($useWebSearch) {
+                $webSearchResponse = $this->webSearch->search(
+                    $userQuery,
+                    $personaSelection['persona_id'],
+                    5 // Max 5 web results
+                );
+
+                if ($webSearchResponse['success']) {
+                    $webSearchResults = $webSearchResponse['results'];
+                    $webSearchMetadata = $webSearchResponse['metadata'];
+
+                    $logContext['web_search_count'] = count($webSearchResults);
+                    $logContext['web_search_provider'] = $webSearchMetadata['provider'] ?? 'unknown';
+                    $logContext['web_search_from_cache'] = $webSearchMetadata['from_cache'] ?? false;
+
+                    $this->logger->info('[NatanChatService] Web search results retrieved', $logContext);
+
+                    // GDPR Audit - Log web search data
+                    $this->logger->info('[NatanChatService][GDPR] Web search query sent to external API', [
+                        'user_id' => $user->id,
+                        'provider' => $webSearchMetadata['provider'],
+                        'query_sanitized' => $webSearchMetadata['query_sanitized'],
+                        'keywords_removed' => $webSearchMetadata['keywords_removed'],
+                        'results_count' => count($webSearchResults),
+                        'from_cache' => $webSearchMetadata['from_cache'],
+                        'timestamp' => now()->toIso8601String(),
+                    ]);
+                } else {
+                    $this->logger->warning('[NatanChatService] Web search failed, continuing without web results', [
+                        'error' => $webSearchResponse['error'] ?? 'unknown',
+                    ]);
+                }
+            } else {
+                $logContext['web_search_disabled'] = true;
+            }
+
+            // STEP 2.6: Fusion - Merge RAG + Web Search into unified context ✨ NEW v3.0
+            if (!empty($webSearchResults)) {
+                // Add web_sources to context for Claude
+                $context['web_sources'] = $webSearchResults;
+
+                // Build web sources summary for prompt
+                $webSourcesSummary = $this->buildWebSourcesSummary($webSearchResults);
+                $context['web_sources_summary'] = $webSourcesSummary;
+
+                $this->logger->info('[NatanChatService] Context fusion completed (RAG + Web)', [
+                    'internal_sources' => count($context['acts']),
+                    'external_sources' => count($webSearchResults),
+                    'total_sources' => count($context['acts']) + count($webSearchResults),
+                ]);
+            }
+
             // Add reference context if provided (for elaborations)
             if ($referenceContext) {
                 $context['reference_message'] = $referenceContext;
@@ -233,6 +303,11 @@ class NatanChatService
                 'rag_sources' => array_column($context['acts'], 'id'),
                 'rag_acts_count' => count($context['acts']),
                 'rag_method' => $ragMethod,
+                'web_search_enabled' => $useWebSearch, // NEW v3.0
+                'web_search_provider' => $webSearchMetadata['provider'] ?? null, // NEW v3.0
+                'web_search_results' => !empty($webSearchResults) ? $webSearchResults : null, // NEW v3.0
+                'web_search_count' => count($webSearchResults), // NEW v3.0
+                'web_search_from_cache' => $webSearchMetadata['from_cache'] ?? false, // NEW v3.0
                 'ai_model' => config('services.anthropic.model'),
                 'response_time_ms' => $responseTime,
                 'reference_message_id' => $referenceContext['id'] ?? null, // Track elaborations
@@ -243,6 +318,8 @@ class NatanChatService
                 'response' => $aiResponse,
                 'sources' => $sources,
                 'relevant_acts_count' => count($context['acts']),
+                'web_sources' => $webSearchResults, // NEW v3.0
+                'web_search_metadata' => $webSearchMetadata, // NEW v3.0
                 'persona' => [
                     'id' => $personaSelection['persona_id'],
                     'name' => NatanPersonas::getName($personaSelection['persona_id']),
@@ -301,5 +378,45 @@ class NatanChatService
                 "Come viene garantita la sicurezza dei dati?"
             ];
         }
+    }
+
+    /**
+     * Build summary text from web search results ✨ NEW v3.0
+     *
+     * Creates a structured summary of external sources for Claude's context.
+     * Format optimized for AI consumption.
+     *
+     * @param array $webResults Web search results
+     * @return string Formatted summary
+     */
+    protected function buildWebSourcesSummary(array $webResults): string
+    {
+        if (empty($webResults)) {
+            return '';
+        }
+
+        $summary = "## EXTERNAL WEB SOURCES (Best Practices, Normatives, Case Studies)\n\n";
+
+        foreach ($webResults as $index => $result) {
+            $num = $index + 1;
+            $title = $result['title'] ?? 'Untitled';
+            $url = $result['url'] ?? '';
+            $snippet = $result['snippet'] ?? '';
+            $relevance = $result['relevance_score'] ?? 0;
+
+            $summary .= "### Source {$num} (Relevance: " . round($relevance * 100) . "%)\n";
+            $summary .= "**Title:** {$title}\n";
+            $summary .= "**URL:** {$url}\n";
+            $summary .= "**Content:** {$snippet}\n\n";
+        }
+
+        $summary .= "---\n\n";
+        $summary .= "**INSTRUCTIONS:**\n";
+        $summary .= "- Use these external sources to benchmark internal acts against global best practices\n";
+        $summary .= "- Cite sources when making comparisons or recommendations\n";
+        $summary .= "- Identify gaps between internal practices and international standards\n";
+        $summary .= "- Suggest actionable improvements based on successful case studies\n";
+
+        return $summary;
     }
 }

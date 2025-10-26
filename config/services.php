@@ -85,4 +85,80 @@ return [
         'timeout' => env('OPENAI_TIMEOUT', 30), // seconds
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Web Search Services (N.A.T.A.N. Enhanced)
+    |--------------------------------------------------------------------------
+    |
+    | External web search APIs to augment N.A.T.A.N. responses with
+    | global best practices, real-time normative updates, and funding opportunities.
+    |
+    | GDPR-COMPLIANT: Only sanitized keywords are sent (no internal document data).
+    |
+    | Supported providers:
+    | - Perplexity AI: AI-powered search with citations (recommended)
+    | - Google Custom Search: Traditional search with snippets
+    |
+    */
+    'web_search' => [
+        'enabled' => env('WEB_SEARCH_ENABLED', true),
+        'default_provider' => env('WEB_SEARCH_PROVIDER', 'perplexity'), // perplexity|google
+        'max_results' => env('WEB_SEARCH_MAX_RESULTS', 5),
+        'timeout' => env('WEB_SEARCH_TIMEOUT', 15), // seconds
+        'cache_ttl' => env('WEB_SEARCH_CACHE_TTL', 3600), // 1 hour cache
+
+        // Perplexity AI (recommended)
+        'perplexity' => [
+            'api_key' => env('PERPLEXITY_API_KEY'),
+            'base_url' => env('PERPLEXITY_BASE_URL', 'https://api.perplexity.ai'),
+            'model' => env('PERPLEXITY_MODEL', 'llama-3.1-sonar-large-128k-online'),
+            'timeout' => env('PERPLEXITY_TIMEOUT', 30),
+        ],
+
+        // Google Custom Search API (fallback)
+        'google' => [
+            'api_key' => env('GOOGLE_SEARCH_API_KEY'),
+            'search_engine_id' => env('GOOGLE_SEARCH_ENGINE_ID'), // cx parameter
+            'base_url' => 'https://www.googleapis.com/customsearch/v1',
+            'timeout' => env('GOOGLE_SEARCH_TIMEOUT', 10),
+        ],
+
+        // Keyword sanitization (GDPR protection)
+        'sanitization' => [
+            'remove_protocols' => true, // Remove "protocollo 1234/2024"
+            'remove_internal_refs' => true, // Remove "determina 847/2024"
+            'remove_names' => true, // Remove person names
+            'remove_locations' => true, // Remove specific locations (keep generic "Firenze")
+            'max_keyword_length' => 100, // Truncate long keywords
+        ],
+
+        // Persona-specific search preferences
+        'persona_preferences' => [
+            'strategic' => [
+                'domains_priority' => ['mckinsey.com', 'bcg.com', 'oecd.org', 'worldbank.org'],
+                'keywords_boost' => ['best practices', 'case study', 'benchmark'],
+            ],
+            'legal' => [
+                'domains_priority' => ['gazzettaufficiale.it', 'garanteprivacy.it', 'normattiva.it'],
+                'keywords_boost' => ['sentenza', 'normativa', 'compliance'],
+            ],
+            'financial' => [
+                'domains_priority' => ['pnrr.gov.it', 'europa.eu', 'mise.gov.it'],
+                'keywords_boost' => ['funding', 'bando', 'finanziamento'],
+            ],
+            'technical' => [
+                'domains_priority' => ['agid.gov.it', 'iso.org'],
+                'keywords_boost' => ['technical specification', 'standard'],
+            ],
+            'urban_social' => [
+                'domains_priority' => ['unhabitat.org', 'c40.org', 'eukn.eu'],
+                'keywords_boost' => ['urban', 'city', 'sustainable'],
+            ],
+            'communication' => [
+                'domains_priority' => ['formez.it', 'comunicazione.pa.gov.it'],
+                'keywords_boost' => ['communication', 'engagement', 'stakeholder'],
+            ],
+        ],
+    ],
+
 ];

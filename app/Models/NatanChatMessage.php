@@ -52,6 +52,11 @@ class NatanChatMessage extends Model
         'rag_sources',
         'rag_acts_count',
         'rag_method',
+        'web_search_enabled', // NEW v3.0
+        'web_search_provider', // NEW v3.0
+        'web_search_results', // NEW v3.0
+        'web_search_count', // NEW v3.0
+        'web_search_from_cache', // NEW v3.0
         'ai_model',
         'tokens_input',
         'tokens_output',
@@ -65,6 +70,10 @@ class NatanChatMessage extends Model
         'persona_alternatives' => 'array',
         'rag_sources' => 'array',
         'rag_acts_count' => 'integer',
+        'web_search_enabled' => 'boolean', // NEW v3.0
+        'web_search_results' => 'array', // NEW v3.0
+        'web_search_count' => 'integer', // NEW v3.0
+        'web_search_from_cache' => 'boolean', // NEW v3.0
         'tokens_input' => 'integer',
         'tokens_output' => 'integer',
         'response_time_ms' => 'integer',
