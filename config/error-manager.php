@@ -6282,202 +6282,69 @@ return [
         ],
 
         // ====================================================
-        // SUPERADMIN ERRORS - AI & Platform Management
+        // N.A.T.A.N. WEB SEARCH ERRORS (v3.0)
         // ====================================================
-        'SUPERADMIN_AI_CONSULTATIONS_INDEX_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_consultations_index_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_consultations_index_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
 
-        'SUPERADMIN_AI_CONSULTATIONS_SHOW_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_consultations_show_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_consultations_show_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
-
-        'SUPERADMIN_AI_CREDITS_INDEX_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_credits_index_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_credits_index_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
-
-        'SUPERADMIN_AI_FEATURES_INDEX_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_features_index_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_features_index_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
-
-        'SUPERADMIN_AI_STATISTICS_INDEX_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_ai_statistics_index_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_ai_statistics_index_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
-
-        'SUPERADMIN_EGILI_INDEX_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_egili_index_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_egili_index_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
-
-        'SUPERADMIN_EQUILIBRIUM_INDEX_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_equilibrium_index_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_equilibrium_index_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
-
-        'SUPERADMIN_PRICING_INDEX_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_pricing_index_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_pricing_index_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
-
-        'SUPERADMIN_PERMISSIONS_INDEX_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_permissions_index_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_permissions_index_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
-
-        'SUPERADMIN_ROLES_INDEX_ERROR' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.superadmin_roles_index_error',
-            'user_message_key' => 'error-manager::errors_2.user.superadmin_roles_index_error',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'sweet-alert',
-        ],
-
-        // ===== PADMIN ANALYZER (OS3 Guardian) =====
-
-        'PADMIN_CLI_NOT_FOUND' => [
-            'type' => 'error',
-            'blocking' => 'blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.padmin_cli_not_found',
-            'user_message_key' => 'error-manager::errors_2.user.padmin_cli_not_found',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'toast',
-        ],
-
-        'PADMIN_NODE_EXECUTION_FAILED' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.padmin_node_execution_failed',
-            'user_message_key' => 'error-manager::errors_2.user.padmin_node_execution_failed',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
-            'msg_to' => 'toast',
-        ],
-
-        'PADMIN_INVALID_JSON_RESPONSE' => [
-            'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.padmin_invalid_json_response',
-            'user_message_key' => 'error-manager::errors_2.user.padmin_invalid_json_response',
-            'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => false,
-            'msg_to' => 'toast',
-        ],
-
-        'PADMIN_NODE_TIMEOUT' => [
-            'type' => 'warning',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.padmin_node_timeout',
-            'user_message_key' => 'error-manager::errors_2.user.padmin_node_timeout',
-            'http_status_code' => 504,
-            'devTeam_email_need' => false,
-            'notify_slack' => true,
-            'msg_to' => 'toast',
-        ],
-
-        'PADMIN_MARK_FIXED_FAILED' => [
+        'WEB_SEARCH_FAILED' => [
             'type' => 'error',
             'blocking' => 'not',
-            'dev_message_key' => 'error-manager::errors_2.dev.padmin_mark_fixed_failed',
-            'user_message_key' => 'error-manager::errors_2.user.padmin_mark_fixed_failed',
+            'dev_message_key' => 'error-manager::errors_2.dev.web_search_failed',
+            'user_message_key' => 'error-manager::errors_2.user.web_search_failed',
             'http_status_code' => 500,
             'devTeam_email_need' => false,
             'notify_slack' => false,
             'msg_to' => 'toast',
         ],
 
-        'PADMIN_SCAN_FAILED' => [
-            'type' => 'error',
+        'WEB_SEARCH_SANITIZATION_FAILED' => [
+            'type' => 'critical',
             'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.padmin_scan_failed',
-            'user_message_key' => 'error-manager::errors_2.user.padmin_scan_failed',
+            'dev_message_key' => 'error-manager::errors_2.dev.web_search_sanitization_failed',
+            'user_message_key' => 'error-manager::errors_2.user.web_search_sanitization_failed',
             'http_status_code' => 500,
             'devTeam_email_need' => true,
             'notify_slack' => true,
-            'msg_to' => 'toast',
+            'msg_to' => 'sweet-alert',
         ],
 
-        'PADMIN_AI_FIX_FAILED' => [
+        'NORMATIVE_MONITORING_FAILED' => [
             'type' => 'error',
-            'blocking' => 'semi-blocking',
-            'dev_message_key' => 'error-manager::errors_2.dev.padmin_ai_fix_failed',
-            'user_message_key' => 'error-manager::errors_2.user.padmin_ai_fix_failed',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.normative_monitoring_failed',
+            'user_message_key' => 'error-manager::errors_2.user.normative_monitoring_failed',
             'http_status_code' => 500,
-            'devTeam_email_need' => true,
-            'notify_slack' => true,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
             'msg_to' => 'toast',
         ],
 
-        'PADMIN_AI_PREVIEW_FAILED' => [
+        'NORMATIVE_NOTIFICATION_FAILED' => [
             'type' => 'warning',
             'blocking' => 'not',
-            'dev_message_key' => 'error-manager::errors_2.dev.padmin_ai_preview_failed',
-            'user_message_key' => 'error-manager::errors_2.user.padmin_ai_preview_failed',
+            'dev_message_key' => 'error-manager::errors_2.dev.normative_notification_failed',
+            'user_message_key' => 'error-manager::errors_2.user.normative_notification_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'FUNDING_SEARCH_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.funding_search_failed',
+            'user_message_key' => 'error-manager::errors_2.user.funding_search_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'COMPETITOR_BENCHMARK_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.competitor_benchmark_failed',
+            'user_message_key' => 'error-manager::errors_2.user.competitor_benchmark_failed',
             'http_status_code' => 500,
             'devTeam_email_need' => false,
             'notify_slack' => false,

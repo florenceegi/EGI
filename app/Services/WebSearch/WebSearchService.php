@@ -37,8 +37,7 @@ use RuntimeException;
  * @date 2025-10-26
  * @purpose External web search integration with GDPR compliance
  */
-class WebSearchService
-{
+class WebSearchService {
     protected KeywordSanitizerService $sanitizer;
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
@@ -105,10 +104,12 @@ class WebSearchService
             // Validate sanitization
             $validation = $this->sanitizer->validate($sanitized['keywords']);
             if (!$validation['is_safe']) {
-                $this->logger->error('[WebSearchService][GDPR] Sanitization validation failed', [
+                // UEM: Critical error - sanitization failed (security issue)
+                $this->errorManager->handle('WEB_SEARCH_SANITIZATION_FAILED', [
                     ...$logContext,
                     'violations' => $validation['violations'],
-                ]);
+                    'query' => $userQuery,
+                ], new \RuntimeException('GDPR sanitization validation failed'));
 
                 return [
                     'success' => false,
@@ -181,12 +182,7 @@ class WebSearchService
                 'metadata' => $metadata,
             ];
         } catch (\Throwable $e) {
-            $this->logger->error('[WebSearchService] Search failed', [
-                ...$logContext,
-                'error' => $e->getMessage(),
-                'exception' => get_class($e),
-            ]);
-
+            // UEM: Error handling (NO logger->error, solo UEM!)
             $this->errorManager->handle('WEB_SEARCH_FAILED', $logContext, $e);
 
             return [
@@ -234,8 +230,7 @@ class WebSearchService
      * @param int $maxResults Max results
      * @return array Normalized results
      */
-    protected function searchPerplexity(string $query, ?string $personaId, int $maxResults): array
-    {
+    protected function searchPerplexity(string $query, ?string $personaId, int $maxResults): array {
         $config = $this->config['perplexity'] ?? [];
         $apiKey = $config['api_key'] ?? null;
 
@@ -282,8 +277,7 @@ class WebSearchService
     /**
      * Parse Perplexity API response to normalized format
      */
-    protected function parsePerplexityResponse(array $data, int $maxResults): array
-    {
+    protected function parsePerplexityResponse(array $data, int $maxResults): array {
         $results = [];
 
         // Extract main response
@@ -324,8 +318,7 @@ class WebSearchService
      * @param int $maxResults Max results
      * @return array Normalized results
      */
-    protected function searchGoogle(string $query, ?string $personaId, int $maxResults): array
-    {
+    protected function searchGoogle(string $query, ?string $personaId, int $maxResults): array {
         $config = $this->config['google'] ?? [];
         $apiKey = $config['api_key'] ?? null;
         $searchEngineId = $config['search_engine_id'] ?? null;
@@ -362,8 +355,7 @@ class WebSearchService
     /**
      * Parse Google Custom Search response to normalized format
      */
-    protected function parseGoogleResponse(array $data, int $maxResults): array
-    {
+    protected function parseGoogleResponse(array $data, int $maxResults): array {
         $results = [];
         $items = $data['items'] ?? [];
 
@@ -383,8 +375,7 @@ class WebSearchService
     /**
      * Get persona-specific priority domains
      */
-    protected function getPersonaDomains(?string $personaId): array
-    {
+    protected function getPersonaDomains(?string $personaId): array {
         if (!$personaId) {
             return [];
         }
@@ -396,16 +387,14 @@ class WebSearchService
     /**
      * Generate cache key
      */
-    protected function getCacheKey(string $query, ?string $personaId, int $maxResults): string
-    {
+    protected function getCacheKey(string $query, ?string $personaId, int $maxResults): string {
         return 'web_search:' . md5($query . $personaId . $maxResults);
     }
 
     /**
      * Clear cache for specific query or all
      */
-    public function clearCache(?string $query = null): void
-    {
+    public function clearCache(?string $query = null): void {
         if ($query) {
             $cacheKey = $this->getCacheKey($query, null, 5);
             Cache::forget($cacheKey);
@@ -415,4 +404,3 @@ class WebSearchService
         }
     }
 }
-

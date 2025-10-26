@@ -33,13 +33,11 @@ use function in_array;
  * @date 2025-10-26
  * @purpose GDPR-safe keyword sanitization for external web search
  */
-class KeywordSanitizerService
-{
+class KeywordSanitizerService {
     protected UltraLogManager $logger;
     protected array $config;
 
-    public function __construct(UltraLogManager $logger)
-    {
+    public function __construct(UltraLogManager $logger) {
         $this->logger = $logger;
         $this->config = config('services.web_search.sanitization', []);
     }
@@ -61,8 +59,7 @@ class KeywordSanitizerService
      * @param string|null $personaId Persona for context-aware boosting
      * @return array ['keywords' => array, 'sanitized_query' => string, 'removed' => array]
      */
-    public function sanitize(string $userQuery, ?string $personaId = null): array
-    {
+    public function sanitize(string $userQuery, ?string $personaId = null): array {
         $logContext = [
             'service' => 'KeywordSanitizerService',
             'persona_id' => $personaId,
@@ -132,8 +129,7 @@ class KeywordSanitizerService
     /**
      * Normalize query (lowercase, trim, remove special chars)
      */
-    protected function normalizeQuery(string $query): string
-    {
+    protected function normalizeQuery(string $query): string {
         // Lowercase
         $query = mb_strtolower($query, 'UTF-8');
 
@@ -146,14 +142,50 @@ class KeywordSanitizerService
     /**
      * Extract keywords from query
      */
-    protected function extractKeywords(string $query): array
-    {
+    protected function extractKeywords(string $query): array {
         // Remove common stopwords (Italian + English)
         $stopwords = [
-            'il', 'lo', 'la', 'i', 'gli', 'le', 'un', 'una', 'dei', 'degli', 'delle',
-            'di', 'a', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra',
-            'e', 'o', 'ma', 'anche', 'come', 'quando', 'dove', 'perché', 'che', 'chi',
-            'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+            'il',
+            'lo',
+            'la',
+            'i',
+            'gli',
+            'le',
+            'un',
+            'una',
+            'dei',
+            'degli',
+            'delle',
+            'di',
+            'a',
+            'da',
+            'in',
+            'con',
+            'su',
+            'per',
+            'tra',
+            'fra',
+            'e',
+            'o',
+            'ma',
+            'anche',
+            'come',
+            'quando',
+            'dove',
+            'perché',
+            'che',
+            'chi',
+            'the',
+            'a',
+            'an',
+            'and',
+            'or',
+            'but',
+            'in',
+            'on',
+            'at',
+            'to',
+            'for',
         ];
 
         $words = explode(' ', $query);
@@ -193,16 +225,20 @@ class KeywordSanitizerService
      * - "atto n. 456"
      * - Any number pattern: "123/2024"
      */
-    protected function removeInternalReferences(array $keywords): array
-    {
+    protected function removeInternalReferences(array $keywords): array {
         $removed = [];
         $cleaned = [];
 
         // Patterns that indicate internal references
         $internalPatterns = [
-            'protocollo', 'protocol',
-            'determina', 'delibera', 'ordinanza', 'decreto',
-            'atto', 'act',
+            'protocollo',
+            'protocol',
+            'determina',
+            'delibera',
+            'ordinanza',
+            'decreto',
+            'atto',
+            'act',
         ];
 
         // Number patterns to remove
@@ -244,15 +280,22 @@ class KeywordSanitizerService
      *
      * Current approach: Remove capitalized words that look like names
      */
-    protected function removePersonNames(array $keywords): array
-    {
+    protected function removePersonNames(array $keywords): array {
         $removed = [];
         $cleaned = [];
 
         // Common Italian titles/roles (keep these)
         $roleTitles = [
-            'sindaco', 'assessore', 'dirigente', 'responsabile', 'funzionario',
-            'ingegnere', 'architetto', 'geometra', 'ragioniere', 'dottore',
+            'sindaco',
+            'assessore',
+            'dirigente',
+            'responsabile',
+            'funzionario',
+            'ingegnere',
+            'architetto',
+            'geometra',
+            'ragioniere',
+            'dottore',
         ];
 
         foreach ($keywords as $keyword) {
@@ -285,21 +328,39 @@ class KeywordSanitizerService
      * KEEP: "Firenze", "Italia", "Europa", "Toscana" (generic useful)
      * REMOVE: "Via Roma 123", "Piazza Duomo 5" (too specific)
      */
-    protected function generalizeLocations(array $keywords): array
-    {
+    protected function generalizeLocations(array $keywords): array {
         $removed = [];
         $cleaned = [];
 
         // Generic locations (keep these)
         $genericLocations = [
-            'firenze', 'florence', 'italia', 'italy', 'toscana', 'tuscany',
-            'europa', 'europe', 'milano', 'roma', 'napoli', 'torino',
+            'firenze',
+            'florence',
+            'italia',
+            'italy',
+            'toscana',
+            'tuscany',
+            'europa',
+            'europe',
+            'milano',
+            'roma',
+            'napoli',
+            'torino',
         ];
 
         // Specific location indicators (remove these)
         $specificIndicators = [
-            'via', 'viale', 'piazza', 'corso', 'strada', 'località', 'quartiere',
-            'street', 'avenue', 'square', 'district',
+            'via',
+            'viale',
+            'piazza',
+            'corso',
+            'strada',
+            'località',
+            'quartiere',
+            'street',
+            'avenue',
+            'square',
+            'district',
         ];
 
         foreach ($keywords as $keyword) {
@@ -331,8 +392,7 @@ class KeywordSanitizerService
      *
      * Example: Strategic persona → add "best practices", "benchmark"
      */
-    protected function boostWithPersonaKeywords(array $keywords, string $personaId): array
-    {
+    protected function boostWithPersonaKeywords(array $keywords, string $personaId): array {
         $personaPrefs = config("services.web_search.persona_preferences.{$personaId}", []);
         $boostKeywords = $personaPrefs['keywords_boost'] ?? [];
 
@@ -354,8 +414,7 @@ class KeywordSanitizerService
      * @param array $keywords Sanitized keywords
      * @return array ['is_safe' => bool, 'violations' => array]
      */
-    public function validate(array $keywords): array
-    {
+    public function validate(array $keywords): array {
         $violations = [];
 
         // Check for number patterns (protocol/determina IDs)
@@ -383,4 +442,3 @@ class KeywordSanitizerService
         ];
     }
 }
-

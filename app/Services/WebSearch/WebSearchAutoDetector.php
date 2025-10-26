@@ -27,12 +27,10 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @date 2025-10-26
  * @purpose Intelligent web search activation based on query analysis
  */
-class WebSearchAutoDetector
-{
+class WebSearchAutoDetector {
     protected UltraLogManager $logger;
 
-    public function __construct(UltraLogManager $logger)
-    {
+    public function __construct(UltraLogManager $logger) {
         $this->logger = $logger;
     }
 
@@ -57,8 +55,16 @@ class WebSearchAutoDetector
 
         // TRIGGER 1: Benchmarking keywords (high confidence)
         $benchmarkingKeywords = [
-            'best practice', 'migliori pratiche', 'benchmark', 'confronta', 'compare',
-            'come fanno', 'altri comuni', 'europa', 'internazionale', 'case study',
+            'best practice',
+            'migliori pratiche',
+            'benchmark',
+            'confronta',
+            'compare',
+            'come fanno',
+            'altri comuni',
+            'europa',
+            'internazionale',
+            'case study',
         ];
 
         foreach ($benchmarkingKeywords as $keyword) {
@@ -70,8 +76,16 @@ class WebSearchAutoDetector
 
         // TRIGGER 2: Normative/Legal keywords (high confidence)
         $legalKeywords = [
-            'normativa', 'legge', 'decreto', 'sentenza', 'giurisprudenza', 'compliance',
-            'gdpr', 'aggiornamento normativo', 'nuova normativa', 'regolamento',
+            'normativa',
+            'legge',
+            'decreto',
+            'sentenza',
+            'giurisprudenza',
+            'compliance',
+            'gdpr',
+            'aggiornamento normativo',
+            'nuova normativa',
+            'regolamento',
         ];
 
         foreach ($legalKeywords as $keyword) {
@@ -83,8 +97,16 @@ class WebSearchAutoDetector
 
         // TRIGGER 3: Funding keywords (high confidence)
         $fundingKeywords = [
-            'funding', 'finanziamento', 'bando', 'contributo', 'pnrr', 'fondi europei',
-            'opportunità', 'grant', 'incentivi', 'agevolazioni',
+            'funding',
+            'finanziamento',
+            'bando',
+            'contributo',
+            'pnrr',
+            'fondi europei',
+            'opportunità',
+            'grant',
+            'incentivi',
+            'agevolazioni',
         ];
 
         foreach ($fundingKeywords as $keyword) {
@@ -127,7 +149,11 @@ class WebSearchAutoDetector
 
         // TRIGGER 6: Explicit user intent
         $explicitIntents = [
-            'cerca sul web', 'search web', 'internet', 'online', 'fonti esterne',
+            'cerca sul web',
+            'search web',
+            'internet',
+            'online',
+            'fonti esterne',
         ];
 
         foreach ($explicitIntents as $intent) {
@@ -167,8 +193,7 @@ class WebSearchAutoDetector
     /**
      * Build human-readable reasoning for decision
      */
-    protected function buildReasoning(float $score, array $triggers): string
-    {
+    protected function buildReasoning(float $score, array $triggers): string {
         if (empty($triggers)) {
             return 'No indicators for external sources detected.';
         }
@@ -207,4 +232,3 @@ class WebSearchAutoDetector
         return implode('. ', $reasons) . ".";
     }
 }
-
