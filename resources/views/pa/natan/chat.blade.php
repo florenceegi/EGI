@@ -118,13 +118,31 @@
 
                         {{-- Input Area - Ottimizzato mobile --}}
                         <div class="rounded-b-2xl border-t border-gray-200 bg-gray-50 p-2 sm:p-4">
+                            {{-- Web Search Toggle ✨ NEW v3.0 --}}
+                            <div class="mb-2 flex items-center justify-between rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-2 sm:p-3">
+                                <div class="flex items-center gap-2">
+                                    <label for="webSearchToggle" class="flex cursor-pointer items-center gap-2">
+                                        <input type="checkbox" id="webSearchToggle"
+                                            class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0" />
+                                        <span class="text-xs font-medium text-gray-700 sm:text-sm">{{ __('natan.web_search.toggle_label') }}</span>
+                                    </label>
+                                    <span class="material-icons cursor-help text-sm text-gray-400 sm:text-base"
+                                        title="{{ __('natan.web_search.toggle_hint') }}">info</span>
+                                </div>
+                                <span id="webSearchStatus"
+                                    class="hidden items-center gap-1 text-xs font-medium text-blue-600 sm:flex">
+                                    <span class="material-icons text-xs">public</span>
+                                    <span>{{ __('natan.web_search.enabled') }}</span>
+                                </span>
+                            </div>
+
                             <form id="chatForm" class="flex gap-1.5 sm:gap-2">
-                                <textarea id="userInput" rows="1" placeholder="Scrivi la tua domanda... (Shift+Enter)"
+                                <textarea id="userInput" rows="1" placeholder="{{ __('natan.chat.input_placeholder') }}"
                                     class="flex-1 resize-none rounded-xl border-2 border-gray-200 px-3 py-2 text-sm focus:border-[#2D5016] focus:outline-none focus:ring-2 focus:ring-[#2D5016]/20 disabled:cursor-not-allowed disabled:bg-gray-100 sm:px-4 sm:py-3 sm:text-base"
                                     style="max-height: 150px; overflow-y: auto;"></textarea>
                                 <button type="submit" id="sendBtn"
                                     class="flex items-center gap-1 self-end rounded-xl bg-[#2D5016] px-3 py-2 text-sm font-medium text-white transition-all hover:bg-[#3D6026] disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-6 sm:py-3 sm:text-base">
-                                    <span id="sendBtnText" class="hidden sm:inline">Invia</span>
+                                    <span id="sendBtnText" class="hidden sm:inline">{{ __('natan.chat.send_button') }}</span>
                                     <span id="sendBtnLoader" class="hidden items-center gap-1 sm:gap-2">
                                         <svg class="h-3 w-3 animate-spin sm:h-4 sm:w-4" fill="none"
                                             viewBox="0 0 24 24">
@@ -659,6 +677,21 @@
                         this.autoResizeTextarea(this.elements.userInput);
                     });
 
+                    // Web Search Toggle listener ✨ NEW v3.0
+                    const webSearchToggle = document.getElementById('webSearchToggle');
+                    const webSearchStatus = document.getElementById('webSearchStatus');
+                    if (webSearchToggle && webSearchStatus) {
+                        webSearchToggle.addEventListener('change', () => {
+                            if (webSearchToggle.checked) {
+                                webSearchStatus.classList.remove('hidden');
+                                webSearchStatus.classList.add('flex');
+                            } else {
+                                webSearchStatus.classList.add('hidden');
+                                webSearchStatus.classList.remove('flex');
+                            }
+                        });
+                    }
+
                     // Event delegation for quick action buttons (dynamically created)
                     this.elements.chatMessages.addEventListener('click', (e) => {
                         // Quick actions
@@ -732,7 +765,7 @@
                  * Add message to chat
                  */
                 addMessage(role, content, sources = null, persona = null, message_id = null, is_elaboration = false,
-                    reference_content = null) {
+                    reference_content = null, web_sources = null) {
                     const timestamp = new Date().toLocaleTimeString('it-IT', {
                         hour: '2-digit',
                         minute: '2-digit'
@@ -742,6 +775,7 @@
                         role,
                         content,
                         sources,
+                        web_sources, // NEW v3.0 - External web sources
                         persona, // Persona info for assistant messages
                         message_id, // Database ID for elaborations
                         is_elaboration, // Is this an elaboration of a previous message?
@@ -858,6 +892,45 @@
                         bubbleDiv.appendChild(sourcesDiv);
                     }
 
+                    // Web Sources (for AI messages with web search enabled) ✨ NEW v3.0
+                    if (message.web_sources && message.web_sources.length > 0) {
+                        const webSourcesDiv = document.createElement('div');
+                        webSourcesDiv.className = 'mt-3 border-t border-blue-200 pt-3 bg-blue-50/30 rounded-lg p-2';
+
+                        const collapseId = `web-sources-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                        const webSourcesCount = message.web_sources.length;
+
+                        webSourcesDiv.innerHTML = `
+                            <button class="sources-toggle-btn mb-2 flex w-full items-center justify-between text-left text-xs font-semibold text-blue-700 hover:text-blue-900"
+                                    data-target="${collapseId}">
+                                <span class="flex items-center gap-1">
+                                    <span class="material-icons text-sm">public</span>
+                                    <span>🌐 {{ __('natan.web_sources.title') }} (${webSourcesCount})</span>
+                                </span>
+                                <span class="material-icons text-sm transition-transform" data-icon="${collapseId}">expand_more</span>
+                            </button>
+                            <div id="${collapseId}" class="hidden space-y-2">
+                                ${message.web_sources.map((source, idx) => `
+                                    <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
+                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                            <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
+                                            <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                ${Math.round((source.relevance_score || 1) * 100)}%
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
+                                        <a href="${source.url}" target="_blank" rel="noopener noreferrer"
+                                           class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                            <span class="material-icons text-xs">open_in_new</span>
+                                            <span class="truncate">${source.url}</span>
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                        bubbleDiv.appendChild(webSourcesDiv);
+                    }
+
                     // Timestamp + Copy Button
                     const timestampDiv = document.createElement('div');
                     timestampDiv.className = message.role === 'user' ?
@@ -935,6 +1008,9 @@
                     this.showLoadingIndicator();
 
                     try {
+                        // Get web search toggle state ✨ NEW v3.0
+                        const webSearchEnabled = document.getElementById('webSearchToggle')?.checked || false;
+
                         const response = await fetch(this.config.apiUrl, {
                             method: 'POST',
                             headers: {
@@ -946,7 +1022,8 @@
                                 message: message,
                                 conversation_history: this.getConversationHistory(),
                                 persona_id: window.selectedPersona || null, // From persona selector
-                                session_id: this.config.sessionId || null
+                                session_id: this.config.sessionId || null,
+                                use_web_search: webSearchEnabled // NEW v3.0
                             })
                         });
 
@@ -956,9 +1033,9 @@
                         this.hideLoadingIndicator();
 
                         if (data.success) {
-                            // Pass persona info, message_id, elaboration flag, and reference content to message renderer
+                            // Pass persona info, message_id, elaboration flag, reference content, and web_sources ✨ v3.0
                             this.addMessage('assistant', data.response, data.sources, data.persona, data.message_ids
-                                ?.assistant, data.is_elaboration, data.reference_content);
+                                ?.assistant, data.is_elaboration, data.reference_content, data.web_sources);
 
                             // Update session ID if provided
                             if (data.session_id) {
