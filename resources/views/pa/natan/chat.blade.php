@@ -1662,8 +1662,8 @@
                     @if ($projects->count() > 0)
                         <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                             @foreach ($projects as $project)
-                                <button type="button" onclick="selectProject({{ $project->id }})"
-                                    class="group relative overflow-hidden rounded-xl border-2 p-4 text-left transition-all hover:shadow-lg {{ $activeProject && $activeProject->id === $project->id ? 'border-[#D4A574] bg-gradient-to-br from-[#D4A574]/10 to-white' : 'border-gray-200 bg-white hover:border-[#D4A574]/50' }}">
+                                <div
+                                    class="group relative overflow-hidden rounded-xl border-2 p-4 transition-all {{ $activeProject && $activeProject->id === $project->id ? 'border-[#D4A574] bg-gradient-to-br from-[#D4A574]/10 to-white shadow-lg' : 'border-gray-200 bg-white hover:border-[#D4A574]/50 hover:shadow-md' }}">
                                     {{-- Active Badge --}}
                                     @if ($activeProject && $activeProject->id === $project->id)
                                         <div
@@ -1698,7 +1698,7 @@
                                     @endif
 
                                     {{-- Project Stats --}}
-                                    <div class="flex items-center gap-4 text-xs text-gray-500">
+                                    <div class="mb-3 flex items-center gap-4 text-xs text-gray-500">
                                         <div class="flex items-center gap-1">
                                             <span class="material-icons text-sm">description</span>
                                             <span>{{ $project->documents()->count() }} documenti</span>
@@ -1708,7 +1708,26 @@
                                             <span>{{ $project->chatMessages()->count() }} chat</span>
                                         </div>
                                     </div>
-                                </button>
+
+                                    {{-- Action Buttons --}}
+                                    <div class="flex items-center gap-2 border-t border-gray-200 pt-3">
+                                        {{-- Upload Document Button --}}
+                                        <button type="button" onclick="event.stopPropagation(); triggerProjectUpload({{ $project->id }})"
+                                            class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#D4A574] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
+                                            <span class="material-icons text-sm">upload_file</span>
+                                            <span>{{ __('projects.upload_document') }}</span>
+                                        </button>
+
+                                        {{-- Select/Activate Button --}}
+                                        @if (!$activeProject || $activeProject->id !== $project->id)
+                                            <button type="button" onclick="selectProject({{ $project->id }})"
+                                                class="flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-[#1B365D] bg-white px-3 py-2 text-sm font-medium text-[#1B365D] transition-colors hover:bg-[#1B365D] hover:text-white">
+                                                <span class="material-icons text-sm">check_circle</span>
+                                                <span>{{ __('projects.activate') }}</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
                             @endforeach
                         </div>
                     @else
@@ -1820,6 +1839,12 @@
                 </div>
             </div>
         </div>
+
+        {{-- Hidden File Inputs for Each Project --}}
+        @foreach ($projects as $project)
+            <input type="file" id="projectUploadInput_{{ $project->id }}" accept=".pdf,.docx,.txt,.md"
+                class="hidden" onchange="handleProjectDocumentUpload(event, {{ $project->id }})">
+        @endforeach
     </div>
 
     @push('scripts')
@@ -2127,6 +2152,84 @@
                     // Restore button
                     uploadBtn.disabled = false;
                     uploadBtn.innerHTML = originalHTML;
+                }
+            }
+
+            // ✨ NEW v4.0 - Project Upload from Modal
+            function triggerProjectUpload(projectId) {
+                const input = document.getElementById(`projectUploadInput_${projectId}`);
+                if (input) {
+                    input.click();
+                }
+            }
+
+            async function handleProjectDocumentUpload(event, projectId) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                // Client-side validation
+                const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
+                const maxSize = 10 * 1024 * 1024; // 10MB
+
+                if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx|txt|md)$/i)) {
+                    alert('{{ __("projects.invalid_file_type") }}');
+                    event.target.value = '';
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    alert('{{ __("projects.file_too_large", ["size" => 10]) }}');
+                    event.target.value = '';
+                    return;
+                }
+
+                // Find the upload button for this project
+                const uploadBtn = event.target.previousElementSibling;
+                const originalHTML = uploadBtn ? uploadBtn.innerHTML : '';
+                
+                if (uploadBtn) {
+                    uploadBtn.disabled = true;
+                    uploadBtn.innerHTML = '<span class="material-icons text-sm animate-spin">hourglass_empty</span><span>{{ __("projects.uploading") }}</span>';
+                }
+
+                const formData = new FormData();
+                formData.append('document', file);
+
+                try {
+                    const response = await fetch(`/pa/projects/${projectId}/documents/upload`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Show success message
+                        alert(data.message || '{{ __("projects.document_uploaded_successfully", ["filename" => ""]) }}');
+                        
+                        // Reset input
+                        event.target.value = '';
+
+                        // Reload modal to update document count
+                        window.location.reload();
+                    } else {
+                        alert(data.message || '{{ __("projects.upload_error") }}');
+                        event.target.value = '';
+                    }
+                } catch (error) {
+                    console.error('[handleProjectDocumentUpload] Error:', error);
+                    alert('{{ __("projects.network_error") }}');
+                    event.target.value = '';
+                } finally {
+                    // Restore button
+                    if (uploadBtn) {
+                        uploadBtn.disabled = false;
+                        uploadBtn.innerHTML = originalHTML;
+                    }
                 }
             }
         </script>

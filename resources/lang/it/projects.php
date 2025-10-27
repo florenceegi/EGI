@@ -36,6 +36,7 @@ return [
     'new_project' => 'Nuovo Progetto',
     'creating' => 'Creazione in corso...',
     'cancel' => 'Annulla',
+    'activate' => 'Attiva',
     'edit' => 'Modifica progetto',
     'delete' => 'Elimina progetto',
     'upload_document' => 'Carica documento',
