@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes; // Importa SoftDeletes
 use App\Models\EgiSmartContract;
 use App\Models\EgiLivingSubscription;
-use App\Models\PaActEmbedding;
 
 /**
  * 📜 Oracode Eloquent Model: Egi
@@ -234,6 +233,18 @@ class Egi extends Model
     }
 
     /**
+     * Get the embedding for this PA Act (for RAG semantic search)
+     *
+     * N.A.T.A.N. v3.0 - Vector embeddings for semantic search
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function embedding(): HasOne
+    {
+        return $this->hasOne(\App\Models\PaActEmbedding::class, 'egi_id');
+    }
+
+    /**
      * Get traits grouped by category
      *
      * @return \Illuminate\Support\Collection
@@ -360,18 +371,6 @@ class Egi extends Model
     public function blockchain(): HasOne
     {
         return $this->hasOne(EgiBlockchain::class, 'egi_id');
-    }
-
-    /**
-     * 🔗 PA Act Embedding: Get vector embedding for semantic search (1:1 relationship)
-     *
-     * Used for RAG (Retrieval Augmented Generation) system.
-     *
-     * @return HasOne
-     */
-    public function embedding(): HasOne
-    {
-        return $this->hasOne(PaActEmbedding::class, 'egi_id');
     }
 
     /**
