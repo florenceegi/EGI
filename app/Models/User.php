@@ -221,6 +221,17 @@ class User extends Authenticatable implements HasMedia {
         return $this->ownedCollections();
     }
 
+    /**
+     * User's projects (PA Enterprise feature)
+     *
+     * ✨ NEW v4.0 - Projects System for Priority RAG
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function projects(): HasMany {
+        return $this->hasMany(\App\Models\Project::class, 'user_id');
+    }
+
     // In app/Models/User.php
     public function getCurrentCollectionDetails() {
         if (!$this->current_collection_id) {
