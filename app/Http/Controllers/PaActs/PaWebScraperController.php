@@ -46,8 +46,7 @@ use App\Services\PaActs\PaWebScraperService;
  *
  * ============================================================================
  */
-class PaWebScraperController extends Controller
-{
+class PaWebScraperController extends Controller {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected PaWebScraperService $scraperService;
@@ -65,8 +64,7 @@ class PaWebScraperController extends Controller
     /**
      * Display list of web scrapers
      */
-    public function index(Request $request): View
-    {
+    public function index(Request $request): View {
         try {
             $user = Auth::user();
 
@@ -115,8 +113,7 @@ class PaWebScraperController extends Controller
     /**
      * Show form for creating new scraper
      */
-    public function create(): View
-    {
+    public function create(): View {
         $this->logger->info('[PaWebScraperController] Show create form');
 
         // Template pre-configurati (Firenze, ecc.)
@@ -128,8 +125,7 @@ class PaWebScraperController extends Controller
     /**
      * Store new scraper
      */
-    public function store(Request $request): RedirectResponse
-    {
+    public function store(Request $request): RedirectResponse {
         try {
             // Check if creating from template
             if ($request->has('template')) {
@@ -221,8 +217,7 @@ class PaWebScraperController extends Controller
     /**
      * Display scraper details
      */
-    public function show(PaWebScraper $scraper): View|RedirectResponse
-    {
+    public function show(PaWebScraper $scraper): View|RedirectResponse {
         try {
             // Authorization check
             if ($scraper->business_id !== Auth::user()->business_id) {
@@ -248,8 +243,7 @@ class PaWebScraperController extends Controller
     /**
      * Show form for editing scraper
      */
-    public function edit(PaWebScraper $scraper): View|RedirectResponse
-    {
+    public function edit(PaWebScraper $scraper): View|RedirectResponse {
         try {
             // Authorization
             if ($scraper->user_id !== Auth::id()) {
@@ -269,8 +263,7 @@ class PaWebScraperController extends Controller
     /**
      * Update scraper
      */
-    public function update(Request $request, PaWebScraper $scraper): RedirectResponse
-    {
+    public function update(Request $request, PaWebScraper $scraper): RedirectResponse {
         try {
             // Authorization
             if ($scraper->user_id !== Auth::id()) {
@@ -309,8 +302,7 @@ class PaWebScraperController extends Controller
     /**
      * Delete scraper
      */
-    public function destroy(PaWebScraper $scraper): RedirectResponse
-    {
+    public function destroy(PaWebScraper $scraper): RedirectResponse {
         try {
             // Authorization
             if ($scraper->user_id !== Auth::id()) {
@@ -330,8 +322,7 @@ class PaWebScraperController extends Controller
     /**
      * Test scraper connection
      */
-    public function test(PaWebScraper $scraper): RedirectResponse
-    {
+    public function test(PaWebScraper $scraper): RedirectResponse {
         try {
             // Authorization
             if ($scraper->user_id !== Auth::id()) {
@@ -370,8 +361,7 @@ class PaWebScraperController extends Controller
     /**
      * Toggle scraper active status
      */
-    public function toggle(PaWebScraper $scraper): RedirectResponse
-    {
+    public function toggle(PaWebScraper $scraper): RedirectResponse {
         try {
             // Authorization
             if ($scraper->user_id !== Auth::id()) {
@@ -394,8 +384,7 @@ class PaWebScraperController extends Controller
     /**
      * Get scraper progress (for real-time updates)
      */
-    public function progress(PaWebScraper $scraper)
-    {
+    public function progress(PaWebScraper $scraper) {
         try {
             // Authorization
             if ($scraper->user_id !== Auth::id()) {
@@ -422,8 +411,7 @@ class PaWebScraperController extends Controller
      * Preview scraper results (DRY-RUN - no import)
      * Test how many acts would be scraped without actually saving them
      */
-    public function preview(Request $request, PaWebScraper $scraper)
-    {
+    public function preview(Request $request, PaWebScraper $scraper) {
         try {
             // Authorization
             if ($scraper->user_id !== Auth::id()) {
@@ -465,15 +453,14 @@ class PaWebScraperController extends Controller
     /**
      * Execute scraper manually
      */
-    public function run(Request $request, PaWebScraper $scraper): RedirectResponse
-    {
+    public function run(Request $request, PaWebScraper $scraper): RedirectResponse {
         try {
             // Authorization
             if ($scraper->user_id !== Auth::id()) {
                 abort(403);
             }
 
-            $this->logger->info('[PaWebScraperController] Manual scraper execution', [
+            $this->logger->info('[PaWebScraperController] Manual scraper execution initiated', [
                 'scraper_id' => $scraper->id,
                 'user_id' => Auth::id()
             ]);
@@ -481,47 +468,38 @@ class PaWebScraperController extends Controller
             // Get options from request (year, filters, etc.)
             $options = $request->only(['year', 'month', 'tipo', 'limit']);
 
-            // Execute scraper with GDPR compliance
-            $result = $this->scraperService->execute($scraper, Auth::user(), $options);
+            // 🚀 ASYNC EXECUTION: Dispatch job to queue instead of blocking
+            // This prevents timeout and allows monitoring via progress endpoint
+            \App\Jobs\ExecuteScraperJob::dispatch($scraper, Auth::user(), $options);
 
-            if ($result['success']) {
-                $actsSaved = $result['stats']['acts_saved'] ?? 0;
-                $actsSkipped = $result['stats']['acts_skipped'] ?? 0;
-                $actsCount = $result['stats']['acts_count'] ?? 0;
+            // Reset scraper stats for new run
+            $scraper->update([
+                'last_run_at' => now(),
+                'total_acts_scraped' => 0, // Will be updated by job
+            ]);
 
-                $message = sprintf(
-                    'Scraping completato! %d atti estratti, %d salvati, %d già presenti. Tempo: %s secondi',
-                    $actsCount,
-                    $actsSaved,
-                    $actsSkipped,
-                    $result['stats']['execution_time']
-                );
+            $message = sprintf(
+                'Scraping avviato in background! Segui il progresso in tempo reale nella pagina dettaglio. Il processo continuerà anche se chiudi questa finestra.'
+            );
 
-                // Store results in session for display/import
-                session(['scraper_results' => $result]);
-
-                return redirect()
-                    ->route('pa.scrapers.show', $scraper)
-                    ->with('success', $message)
-                    ->with('scraper_data', $result['acts']);
-            } else {
-                return back()->with('error', 'Scraping fallito: ' . $result['error']);
-            }
+            return redirect()
+                ->route('pa.scrapers.show', $scraper)
+                ->with('success', $message)
+                ->with('scraper_running', true);
         } catch (\Exception $e) {
             $this->logger->error('[PaWebScraperController] Scraper execution error', [
                 'scraper_id' => $scraper->id,
                 'error' => $e->getMessage()
             ]);
 
-            return back()->with('error', 'Errore esecuzione scraper: ' . $e->getMessage());
+            return back()->with('error', 'Errore avvio scraper: ' . $e->getMessage());
         }
     }
 
     /**
      * Get scraper templates (Firenze, ecc.)
      */
-    protected function getScraperTemplates(): array
-    {
+    protected function getScraperTemplates(): array {
         return [
             'firenze_delibere' => [
                 'name' => 'Delibere Comune di Firenze',

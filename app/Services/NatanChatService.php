@@ -399,7 +399,7 @@ class NatanChatService {
 
             // 🧪 TEMPORARY TEST: Force low limit to debug rate limit issue
             $claudeContextLimit = 50; // REMOVE AFTER TEST
-            
+
             \Log::info('🚀🚀🚀 ADAPTIVE RETRY STARTING', [
                 'total_acts_found' => $originalActsCount,
                 'first_attempt_will_send' => $claudeContextLimit,
