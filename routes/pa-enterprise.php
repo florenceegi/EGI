@@ -248,16 +248,26 @@ Route::prefix('pa')
          */
         Route::prefix('web-scrapers')->name('web-scrapers.')->group(function () {
             Route::get('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'create'])->name('create');
             Route::post('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'store'])->name('store');
+            Route::get('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'show'])->name('show');
+            Route::get('/{scraper}/edit', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'edit'])->name('edit');
+            Route::put('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'update'])->name('update');
             Route::delete('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'destroy'])->name('destroy');
+            Route::post('/{scraper}/run', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'run'])->name('run');
             Route::post('/{scraper}/toggle', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'toggle'])->name('toggle');
         });
 
         // ALIAS: pa.scrapers.* → pa.web-scrapers.* (per compatibilità menu)
         Route::prefix('scrapers')->name('scrapers.')->group(function () {
             Route::get('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'create'])->name('create');
             Route::post('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'store'])->name('store');
+            Route::get('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'show'])->name('show');
+            Route::get('/{scraper}/edit', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'edit'])->name('edit');
+            Route::put('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'update'])->name('update');
             Route::delete('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'destroy'])->name('destroy');
+            Route::post('/{scraper}/run', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'run'])->name('run');
             Route::post('/{scraper}/toggle', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'toggle'])->name('toggle');
         });
 
@@ -286,9 +296,6 @@ Route::prefix('pa')
 
         // ✨ NEW v4.0 - Document Upload (for Priority RAG)
         Route::post('/projects/{project}/documents/upload', [ProjectController::class, 'uploadDocument'])->name('projects.documents.upload');
-
-        /**
-         * FUTURE ROUTES (FASE 2-3)
 
         /**
          * FUTURE ROUTES (FASE 2-3)
