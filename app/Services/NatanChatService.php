@@ -409,8 +409,13 @@ class NatanChatService {
                 'strategy' => 'MAX_CONTEXT_FIRST',
             ]);
 
+            \Log::info('🔄 ENTERING WHILE LOOP', ['retry_attempt' => $retryAttempt, 'maxRetries' => $maxRetries]);
+
             while ($retryAttempt < $maxRetries) {
+                \Log::info('🔁 WHILE ITERATION START', ['retry_attempt' => $retryAttempt]);
+                
                 try {
+                    \Log::info('✅ INSIDE TRY BLOCK', ['claudeContextLimit' => $claudeContextLimit]);
                     // Apply current limit to context
                     $limitedContext = $context;
                     if ($claudeContextLimit < $originalActsCount) {
@@ -444,6 +449,12 @@ class NatanChatService {
                     ]);
                     break;
                 } catch (\Exception $e) {
+                    \Log::error('❌ EXCEPTION CAUGHT IN RETRY LOOP!', [
+                        'exception' => get_class($e),
+                        'message' => substr($e->getMessage(), 0, 200),
+                        'retry_attempt' => $retryAttempt,
+                    ]);
+                    
                     // Check if it's a rate limit error
                     $errorBody = method_exists($e, 'getMessage') ? $e->getMessage() : '';
                     $isRateLimitError = str_contains($errorBody, 'rate_limit_error') ||
