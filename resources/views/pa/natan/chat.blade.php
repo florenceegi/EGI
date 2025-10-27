@@ -1101,6 +1101,7 @@
                             })
                         });
 
+                        // Parse JSON response (works for both 200 and error status codes)
                         const data = await response.json();
 
                         // Remove loading indicator
@@ -1121,15 +1122,17 @@
                                 this.showPersonaSuggestion(data.persona.suggestion);
                             }
                         } else {
-                            this.addMessage('assistant', 'Mi dispiace, si è verificato un errore: ' + (data.message ||
-                                'Errore sconosciuto'));
+                            // Show error message from backend (localized or specific)
+                            this.addMessage('assistant', data.message || 'Mi dispiace, si è verificato un errore sconosciuto.');
                         }
 
                     } catch (error) {
-                        console.error('[N.A.T.A.N.] API Error:', error);
+                        console.error('[N.A.T.A.N.] Network/Parsing Error:', error);
                         this.hideLoadingIndicator();
+                        // Only show generic message for actual network/parsing errors
+                        // (API errors are handled in the !data.success branch above)
                         this.addMessage('assistant',
-                            'Mi dispiace, non riesco a connettermi al servizio AI. Riprova tra poco.');
+                            'Mi dispiace, non riesco a connettermi al servizio AI. Verifica la tua connessione e riprova.');
                     } finally {
                         this.setLoading(false);
                     }

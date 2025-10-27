@@ -109,7 +109,7 @@ class WebSearchService {
                     ...$logContext,
                     'violations' => $validation['violations'],
                     'query' => $userQuery,
-                ], new \RuntimeException('GDPR sanitization validation failed'));
+                ], null);
 
                 return [
                     'success' => false,
