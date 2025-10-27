@@ -160,6 +160,7 @@ class NatanChatController extends Controller {
                 'use_rag' => ['nullable', 'boolean'], // Enable/disable RAG retrieval
                 'use_web_search' => ['nullable', 'boolean'], // Enable/disable web search ✨ NEW v3.0
                 'reference_message_id' => ['nullable', 'integer', 'exists:natan_chat_messages,id'], // Elaborate on previous message
+                'project_id' => ['nullable', 'integer', 'exists:projects,id'], // ✨ NEW v4.0 - Project context
             ]);
 
             $user = auth()->user();
@@ -170,6 +171,7 @@ class NatanChatController extends Controller {
             $useRag = $validated['use_rag'] ?? true; // Default: use RAG
             $useWebSearch = $validated['use_web_search'] ?? false; // Default: opt-in (false) ✨ NEW v3.0
             $referenceMessageId = $validated['reference_message_id'] ?? null;
+            $projectId = $validated['project_id'] ?? session('active_project_id'); // ✨ NEW v4.0
 
             $this->logger->info('[NatanChatController] Processing user message', [
                 ...$logContext,
@@ -211,7 +213,7 @@ class NatanChatController extends Controller {
                 }
             }
 
-            // Process query with N.A.T.A.N. service (with persona support + elaboration + web search ✨ v3.0)
+            // Process query with N.A.T.A.N. service (with persona support + elaboration + web search ✨ v3.0 + project context ✨ v4.0)
             $result = $this->chatService->processQuery(
                 $message,
                 $user,
@@ -220,7 +222,8 @@ class NatanChatController extends Controller {
                 $sessionId,
                 $useRag,
                 $useWebSearch, // NEW v3.0
-                $referenceContext
+                $referenceContext,
+                $projectId // ✨ NEW v4.0 - Project context for priority RAG
             );
 
             if (!$result['success']) {

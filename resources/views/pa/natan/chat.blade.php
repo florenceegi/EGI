@@ -1496,6 +1496,9 @@
                     this.showLoadingIndicator();
 
                     try {
+                        // ✨ NEW v4.0 - Get active project ID for Priority RAG
+                        const activeProjectId = window.activeProject?.id || null;
+
                         const response = await fetch(this.config.apiUrl, {
                             method: 'POST',
                             headers: {
@@ -1507,7 +1510,8 @@
                                 message: message,
                                 conversation_history: this.getConversationHistory(),
                                 use_rag: false, // No RAG for free chat
-                                session_id: this.config.sessionId
+                                session_id: this.config.sessionId,
+                                project_id: activeProjectId // ✨ NEW v4.0 - Project context for Priority RAG
                             })
                         });
 
@@ -1652,6 +1656,9 @@
 
     @push('scripts')
         <script>
+            // ✨ NEW v4.0 - Initialize active project for Priority RAG
+            window.activeProject = @json($activeProject ?? null);
+
             // Projects Modal Handler
             function openProjectsModal() {
                 const modal = document.getElementById('projectsModal');

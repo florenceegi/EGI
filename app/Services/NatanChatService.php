@@ -124,6 +124,7 @@ class NatanChatService {
      * @param bool $useRag Enable RAG retrieval (default: true)
      * @param bool $useWebSearch Enable web search (default: false, opt-in) ✨ NEW
      * @param array|null $referenceContext Previous message to elaborate on (null = new query)
+     * @param int|null $projectId Active project ID for priority RAG (null = generic chat) ✨ NEW v4.0
      * @return array ['success' => bool, 'response' => string, 'sources' => array, 'web_sources' => array, 'persona' => array, 'session_id' => string]
      * @throws \Exception
      */
@@ -135,7 +136,8 @@ class NatanChatService {
         ?string $sessionId = null,
         bool $useRag = true,
         bool $useWebSearch = false,
-        ?array $referenceContext = null
+        ?array $referenceContext = null,
+        ?int $projectId = null // ✨ NEW v4.0
     ): array {
         $startTime = microtime(true);
         $sessionId = $sessionId ?? uniqid('natan_', true);
@@ -148,6 +150,7 @@ class NatanChatService {
             'manual_persona' => $manualPersonaId,
             'use_rag' => $useRag,
             'has_reference' => $referenceContext !== null,
+            'project_id' => $projectId, // ✨ NEW v4.0
         ];
 
         $this->logger->info('[NatanChatService] Processing user query', $logContext);
@@ -159,6 +162,7 @@ class NatanChatService {
                 'session_id' => $sessionId,
                 'role' => 'user',
                 'content' => $userQuery,
+                'project_id' => $projectId, // ✨ NEW v4.0
             ]);
 
             // STEP 1: Select appropriate persona
@@ -201,16 +205,33 @@ class NatanChatService {
             // STEP 2: Retrieve relevant acts using RAG system (if enabled)
             // Uses semantic search (vector embeddings) with keyword search fallback
             // REGOLA STATISTICS: No limit hardcoded → scandaglia TUTTE le fonti
+            // ✨ NEW v4.0: Priority RAG when project_id is active
             $ragMethod = null;
             if ($useRag) {
-                $context = $this->rag->getContextForQuery($userQuery, $user); // No limit = scansione totale
-                $ragMethod = 'semantic'; // Default to semantic (will be enhanced later with actual detection)
+                if ($projectId) {
+                    // ✨ NEW v4.0: Priority RAG with 3-tier search (Project Docs > Project Chat > PA Acts)
+                    $context = app(\App\Services\Projects\ProjectRagService::class)
+                        ->searchWithPriority($userQuery, $projectId, $user);
+                    
+                    $ragMethod = 'priority_rag'; // Project context mode
+                    
+                    $logContext['project_id'] = $projectId;
+                    $logContext['project_docs_count'] = count($context['project_documents'] ?? []);
+                    $logContext['project_chat_count'] = count($context['chat_history'] ?? []);
+                    $logContext['pa_acts_count'] = count($context['pa_acts'] ?? []);
+                    
+                    $this->logger->info('[NatanChatService] Priority RAG context retrieved (Project mode)', $logContext);
+                } else {
+                    // Generic PA chat: Standard RAG
+                    $context = $this->rag->getContextForQuery($userQuery, $user); // No limit = scansione totale
+                    $ragMethod = 'semantic'; // Default to semantic
 
-                $logContext['acts_count'] = count($context['acts']);
-                $logContext['context_summary_length'] = strlen($context['acts_summary']);
-                $logContext['rag_method'] = $ragMethod;
+                    $logContext['acts_count'] = count($context['acts']);
+                    $logContext['context_summary_length'] = strlen($context['acts_summary']);
+                    $logContext['rag_method'] = $ragMethod;
 
-                $this->logger->info('[NatanChatService] RAG context retrieved and sanitized', $logContext);
+                    $this->logger->info('[NatanChatService] RAG context retrieved and sanitized (Generic PA mode)', $logContext);
+                }
             } else {
                 // No RAG: Empty context (for elaborations or general consulting)
                 $context = [
