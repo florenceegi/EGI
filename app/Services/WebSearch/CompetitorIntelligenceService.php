@@ -35,8 +35,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-10-26
  * @purpose Benchmark PA against other municipalities using public data only
  */
-class CompetitorIntelligenceService
-{
+class CompetitorIntelligenceService {
     protected WebSearchService $webSearch;
     protected ConsentService $consentService;
     protected AuditLogService $auditService;
@@ -65,8 +64,7 @@ class CompetitorIntelligenceService
      * @param array $competitorCities Cities to compare with
      * @return array ['benchmark' => array, 'insights' => array]
      */
-    public function getBenchmark(User $user, string $topic, array $competitorCities = []): array
-    {
+    public function getBenchmark(User $user, string $topic, array $competitorCities = []): array {
         // ULM: Log start
         $this->logger->info('[CompetitorIntelligence] Benchmark requested', [
             'user_id' => $user->id,
@@ -141,8 +139,7 @@ class CompetitorIntelligenceService
     /**
      * Generate actionable insights from benchmark data
      */
-    protected function generateInsights(array $benchmarkData): array
-    {
+    protected function generateInsights(array $benchmarkData): array {
         // Basic insights (can be enhanced with AI analysis)
         return [
             'cities_analyzed' => count($benchmarkData),
@@ -151,4 +148,3 @@ class CompetitorIntelligenceService
         ];
     }
 }
-

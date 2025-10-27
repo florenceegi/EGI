@@ -172,6 +172,32 @@ Route::prefix('pa')
         });
 
         /**
+         * AI COSTS MONITORING DASHBOARD (NEW v3.2)
+         *
+         * GET  /pa/ai-costs              → Dashboard costi AI
+         * GET  /pa/ai-costs/api/stats    → API statistiche spesa (JSON)
+         * GET  /pa/ai-costs/api/trend    → API trend giornaliero (JSON)
+         * POST /pa/ai-costs/api/budget   → Aggiorna budget settings
+         *
+         * Features:
+         * - Monitoraggio costi AI real-time (Anthropic, OpenAI, Perplexity)
+         * - Budget tracking per provider
+         * - Alert automatici soglie budget
+         * - Trend spesa ultimi 30 giorni
+         * - Cost breakdown per model
+         * - Monthly spending reports
+         *
+         * Authorization: auth + role:pa_entity
+         * GDPR: Solo dati aggregati, no PII
+         */
+        Route::prefix('/ai-costs')->name('ai-costs.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\PA\AiCostsDashboardController::class, 'index'])->name('dashboard');
+            Route::get('/api/stats', [\App\Http\Controllers\PA\AiCostsDashboardController::class, 'getStats'])->name('api.stats');
+            Route::get('/api/trend', [\App\Http\Controllers\PA\AiCostsDashboardController::class, 'getTrend'])->name('api.trend');
+            Route::post('/api/budget', [\App\Http\Controllers\PA\AiCostsDashboardController::class, 'updateBudget'])->name('api.budget');
+        });
+
+        /**
          * VECTOR EMBEDDINGS MANAGEMENT
          *
          * GET  /pa/embeddings             → Dashboard embeddings con statistiche

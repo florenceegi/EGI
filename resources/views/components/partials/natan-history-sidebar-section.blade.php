@@ -60,7 +60,7 @@
     <div class="session-card group cursor-pointer rounded-lg border border-white/10 bg-white/5 p-2.5 transition-all hover:border-[#D4A574] hover:bg-white/10"
         data-session-id="">
         <div class="mb-1.5 flex items-start justify-between gap-2">
-            <div class="flex-1 min-w-0">
+            <div class="min-w-0 flex-1">
                 <p class="truncate text-xs text-white/50" data-session-date></p>
                 <p class="truncate text-xs font-medium text-white/70" data-message-count></p>
             </div>
@@ -371,4 +371,3 @@
         window.NatanHistorySidebar = NatanHistorySidebar;
     })();
 </script>
-

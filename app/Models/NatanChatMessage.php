@@ -33,8 +33,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
-class NatanChatMessage extends Model
-{
+class NatanChatMessage extends Model {
     protected $table = 'natan_chat_messages';
 
     protected $fillable = [
@@ -85,96 +84,84 @@ class NatanChatMessage extends Model
     /**
      * Get the user who sent/received this message
      */
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
 
     /**
      * Get the original message this is elaborating on (if any)
      */
-    public function referenceMessage(): BelongsTo
-    {
+    public function referenceMessage(): BelongsTo {
         return $this->belongsTo(NatanChatMessage::class, 'reference_message_id');
     }
 
     /**
      * Get all elaborations of this message
      */
-    public function elaborations()
-    {
+    public function elaborations() {
         return $this->hasMany(NatanChatMessage::class, 'reference_message_id');
     }
 
     /**
      * Scope to get messages from a specific session
      */
-    public function scopeForSession($query, string $sessionId)
-    {
+    public function scopeForSession($query, string $sessionId) {
         return $query->where('session_id', $sessionId);
     }
 
     /**
      * Scope to get messages for a specific user
      */
-    public function scopeForUser($query, int $userId)
-    {
+    public function scopeForUser($query, int $userId) {
         return $query->where('user_id', $userId);
     }
 
     /**
      * Scope to get only user messages
      */
-    public function scopeUserMessages($query)
-    {
+    public function scopeUserMessages($query) {
         return $query->where('role', 'user');
     }
 
     /**
      * Scope to get only assistant messages
      */
-    public function scopeAssistantMessages($query)
-    {
+    public function scopeAssistantMessages($query) {
         return $query->where('role', 'assistant');
     }
 
     /**
      * Scope to get messages by persona
      */
-    public function scopeByPersona($query, string $personaId)
-    {
+    public function scopeByPersona($query, string $personaId) {
         return $query->where('persona_id', $personaId);
     }
 
     /**
      * Scope to get recent messages (last N hours)
      */
-    public function scopeRecent($query, int $hours = 24)
-    {
+    public function scopeRecent($query, int $hours = 24) {
         return $query->where('created_at', '>=', now()->subHours($hours));
     }
 
     /**
      * Check if this is an assistant message
      */
-    public function isAssistant(): bool
-    {
+    public function isAssistant(): bool {
         return $this->role === 'assistant';
     }
 
     /**
      * Check if this is a user message
      */
-    public function isUser(): bool
-    {
+    public function isUser(): bool {
         return $this->role === 'user';
     }
 
     /**
      * Get persona display info
      */
-    public function getPersonaInfo(): ?array
-    {
+    public function getPersonaInfo(): ?array {
         if (!$this->persona_id) {
             return null;
         }
@@ -192,8 +179,7 @@ class NatanChatMessage extends Model
     /**
      * Get RAG info
      */
-    public function getRagInfo(): ?array
-    {
+    public function getRagInfo(): ?array {
         if ($this->rag_acts_count === 0) {
             return null;
         }
@@ -208,8 +194,7 @@ class NatanChatMessage extends Model
     /**
      * Get API usage stats
      */
-    public function getApiStats(): ?array
-    {
+    public function getApiStats(): ?array {
         if (!$this->ai_model) {
             return null;
         }

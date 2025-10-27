@@ -33,8 +33,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-10-26
  * @purpose Real-time regulatory compliance monitoring for PA with GDPR compliance
  */
-class NormativeMonitoringService
-{
+class NormativeMonitoringService {
     protected WebSearchService $webSearch;
     protected ConsentService $consentService;
     protected AuditLogService $auditService;
@@ -76,8 +75,7 @@ class NormativeMonitoringService
     /**
      * Check for new normative updates (GDPR-compliant)
      */
-    public function checkForUpdates(): array
-    {
+    public function checkForUpdates(): array {
         // ULM: Log start
         $this->logger->info('[NormativeMonitoring] Starting scheduled check');
 
@@ -133,8 +131,7 @@ class NormativeMonitoringService
     /**
      * Check single topic for updates
      */
-    protected function checkTopic(string $topicKey, array $topic): array
-    {
+    protected function checkTopic(string $topicKey, array $topic): array {
         $cacheKey = "normative_monitoring:{$topicKey}";
         $previousResults = Cache::get($cacheKey, []);
 
@@ -172,8 +169,7 @@ class NormativeMonitoringService
     /**
      * Detect new items by comparing URLs
      */
-    protected function detectNewItems(array $currentResults, array $previousResults): array
-    {
+    protected function detectNewItems(array $currentResults, array $previousResults): array {
         if (empty($previousResults)) {
             return []; // First run: no alerts
         }
@@ -193,8 +189,7 @@ class NormativeMonitoringService
     /**
      * Notify users with GDPR compliance (consent check + audit trail)
      */
-    protected function notifyUsersGdprCompliant(string $topicKey, array $newItems, array $roles): int
-    {
+    protected function notifyUsersGdprCompliant(string $topicKey, array $newItems, array $roles): int {
         $users = User::role($roles)->get();
 
         if ($users->isEmpty()) {
@@ -264,8 +259,7 @@ class NormativeMonitoringService
     /**
      * Get monitoring status (for dashboard)
      */
-    public function getMonitoringStatus(): array
-    {
+    public function getMonitoringStatus(): array {
         $status = [];
 
         foreach ($this->monitoringTopics as $topicKey => $topic) {
@@ -285,4 +279,3 @@ class NormativeMonitoringService
         return $status;
     }
 }
-
