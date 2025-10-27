@@ -201,7 +201,7 @@ class ProjectController extends Controller {
                     'project_id' => $project->id,
                     'project_name' => $project->name,
                 ],
-                GdprActivityCategory::GENERAL_ACTIVITY
+                GdprActivityCategory::PLATFORM_USAGE
             );
 
             // 5. ULM: Log success
@@ -351,7 +351,7 @@ class ProjectController extends Controller {
                     'project_id' => $project->id,
                     'changes' => array_keys($validated),
                 ],
-                GdprActivityCategory::GENERAL_ACTIVITY
+                GdprActivityCategory::PLATFORM_USAGE
             );
 
             // 5. ULM: Log success
@@ -409,7 +409,7 @@ class ProjectController extends Controller {
                     'project_id' => $project->id,
                     'project_name' => $projectName,
                 ],
-                GdprActivityCategory::GENERAL_ACTIVITY
+                GdprActivityCategory::PLATFORM_USAGE
             );
 
             // 4. ULM: Log success
@@ -480,7 +480,7 @@ class ProjectController extends Controller {
                     'document_id' => $document->id,
                     'filename' => $document->filename,
                 ],
-                GdprActivityCategory::GENERAL_ACTIVITY
+                GdprActivityCategory::PLATFORM_USAGE
             );
 
             // 6. ULM: Log success
@@ -556,7 +556,7 @@ class ProjectController extends Controller {
                     'project_id' => $project->id,
                     'project_name' => $project->name,
                 ],
-                GdprActivityCategory::GENERAL_ACTIVITY
+                GdprActivityCategory::PLATFORM_USAGE
             );
 
             $this->logger->info('[ProjectController] Project set as active', [
@@ -606,7 +606,7 @@ class ProjectController extends Controller {
                 [
                     'previous_project_id' => $activeProjectId,
                 ],
-                GdprActivityCategory::GENERAL_ACTIVITY
+                GdprActivityCategory::PLATFORM_USAGE
             );
 
             $this->logger->info('[ProjectController] Active project removed', [

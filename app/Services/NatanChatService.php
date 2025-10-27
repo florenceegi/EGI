@@ -212,14 +212,14 @@ class NatanChatService {
                     // ✨ NEW v4.0: Priority RAG with 3-tier search (Project Docs > Project Chat > PA Acts)
                     $context = app(\App\Services\Projects\ProjectRagService::class)
                         ->searchWithPriority($userQuery, $projectId, $user);
-                    
+
                     $ragMethod = 'priority_rag'; // Project context mode
-                    
+
                     $logContext['project_id'] = $projectId;
                     $logContext['project_docs_count'] = count($context['project_documents'] ?? []);
                     $logContext['project_chat_count'] = count($context['chat_history'] ?? []);
                     $logContext['pa_acts_count'] = count($context['pa_acts'] ?? []);
-                    
+
                     $this->logger->info('[NatanChatService] Priority RAG context retrieved (Project mode)', $logContext);
                 } else {
                     // Generic PA chat: Standard RAG

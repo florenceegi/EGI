@@ -42,7 +42,8 @@
                                     </div>
                                     <div>
                                         <h2 class="text-base font-bold text-white sm:text-lg">N.A.T.A.N.</h2>
-                                        <p class="text-[10px] text-white/80 sm:text-xs">Nodo di Analisi e Tracciamento Atti
+                                        <p class="text-[10px] text-white/80 sm:text-xs">Nodo di Analisi e Tracciamento
+                                            Atti
                                             Notarizzati</p>
                                     </div>
                                 </div>
@@ -50,10 +51,11 @@
                                 {{-- ✨ NEW v4.0 - Active Project Badge --}}
                                 @if ($activeProject)
                                     <div
-                                        class="flex items-center gap-2 rounded-lg bg-white/10 backdrop-blur-sm px-3 py-1.5 border border-white/20">
+                                        class="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 backdrop-blur-sm">
                                         <div class="flex h-8 w-8 items-center justify-center rounded-lg"
                                             style="background-color: {{ $activeProject->color ?? '#D4A574' }}">
-                                            <span class="material-icons text-sm text-white">{{ $activeProject->icon ?? 'folder' }}</span>
+                                            <span
+                                                class="material-icons text-sm text-white">{{ $activeProject->icon ?? 'folder' }}</span>
                                         </div>
                                         <div class="hidden sm:block">
                                             <p class="text-xs font-medium text-white">{{ $activeProject->name }}</p>
@@ -158,10 +160,12 @@
 
                             {{-- ✨ NEW v4.0 - Upload Documents (only when project active) --}}
                             @if ($activeProject)
-                                <div class="mb-3 flex items-center gap-3 rounded-lg border-2 border-[#D4A574] bg-gradient-to-r from-[#D4A574]/10 to-white p-3">
+                                <div
+                                    class="mb-3 flex items-center gap-3 rounded-lg border-2 border-[#D4A574] bg-gradient-to-r from-[#D4A574]/10 to-white p-3">
                                     <div class="flex h-10 w-10 items-center justify-center rounded-lg"
                                         style="background-color: {{ $activeProject->color ?? '#D4A574' }}20">
-                                        <span class="material-icons" style="color: {{ $activeProject->color ?? '#D4A574' }}">{{ $activeProject->icon ?? 'folder' }}</span>
+                                        <span class="material-icons"
+                                            style="color: {{ $activeProject->color ?? '#D4A574' }}">{{ $activeProject->icon ?? 'folder' }}</span>
                                     </div>
                                     <div class="flex-1">
                                         <p class="text-sm font-medium text-[#1B365D]">{{ $activeProject->name }}</p>
@@ -882,29 +886,29 @@
 
                         personaBadgeDiv.innerHTML = `
                             ${message.is_elaboration ? `
-                                                                                                        <span class="elaboration-badge">
-                                                                                                            🔄 Elaborazione
-                                                                                                        </span>
-                                                                                                    ` : ''}
+                                                                                                                <span class="elaboration-badge">
+                                                                                                                    🔄 Elaborazione
+                                                                                                                </span>
+                                                                                                            ` : ''}
                             <span style="background-color: ${personaColor};"
                                   class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
                                 <span>${personaIcon}</span>
                                 <span>${message.persona.name}</span>
                             </span>
                             ${message.persona.confidence ? `
-                                                                                                                                <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
-                                                                                                                                    ${Math.round(message.persona.confidence * 100)}%
-                                                                                                                                </span>
-                                                                                                                            ` : ''}
+                                                                                                                                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
+                                                                                                                                            ${Math.round(message.persona.confidence * 100)}%
+                                                                                                                                        </span>
+                                                                                                                                    ` : ''}
                             ${message.persona.method === 'manual' ? `
-                                                                                                                                <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
-                                                                                                                                    ✓ Manuale
-                                                                                                                                </span>
-                                                                                                                            ` : message.persona.method === 'default' ? `
-                                                                                                                                <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
-                                                                                                                                    Auto (Default)
-                                                                                                                                </span>
-                                                                                                                            ` : ''}
+                                                                                                                                        <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
+                                                                                                                                            ✓ Manuale
+                                                                                                                                        </span>
+                                                                                                                                    ` : message.persona.method === 'default' ? `
+                                                                                                                                        <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
+                                                                                                                                            Auto (Default)
+                                                                                                                                        </span>
+                                                                                                                                    ` : ''}
                         `;
                         bubbleDiv.appendChild(personaBadgeDiv);
 
@@ -950,13 +954,13 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-1">
                                 ${message.sources.map(source => `
-                                                                                                    <a href="${source.url}" target="_blank"
-                                                                                                       class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
-                                                                                                        <span class="font-medium">${source.protocol_number}</span>
-                                                                                                        <span class="text-gray-600"> - </span>
-                                                                                                        <span>${source.title}</span>
-                                                                                                    </a>
-                                                                                                `).join('')}
+                                                                                                            <a href="${source.url}" target="_blank"
+                                                                                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
+                                                                                                                <span class="font-medium">${source.protocol_number}</span>
+                                                                                                                <span class="text-gray-600"> - </span>
+                                                                                                                <span>${source.title}</span>
+                                                                                                            </a>
+                                                                                                        `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(sourcesDiv);
@@ -981,21 +985,21 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-2">
                                 ${message.web_sources.map((source, idx) => `
-                                                                            <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
-                                                                                <div class="flex items-start justify-between gap-2 mb-1">
-                                                                                    <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
-                                                                                    <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                                                        ${Math.round((source.relevance_score || 1) * 100)}%
-                                                                                    </span>
-                                                                                </div>
-                                                                                <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
-                                                                                <a href="${source.url}" target="_blank" rel="noopener noreferrer"
-                                                                                   class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                                                                    <span class="material-icons text-xs">open_in_new</span>
-                                                                                    <span class="truncate">${source.url}</span>
-                                                                                </a>
-                                                                            </div>
-                                                                        `).join('')}
+                                                                                    <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
+                                                                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                                                                            <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
+                                                                                            <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                                                                ${Math.round((source.relevance_score || 1) * 100)}%
+                                                                                            </span>
+                                                                                        </div>
+                                                                                        <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
+                                                                                        <a href="${source.url}" target="_blank" rel="noopener noreferrer"
+                                                                                           class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                                                                            <span class="material-icons text-xs">open_in_new</span>
+                                                                                            <span class="truncate">${source.url}</span>
+                                                                                        </a>
+                                                                                    </div>
+                                                                                `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(webSourcesDiv);
@@ -1663,7 +1667,7 @@
                         <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                             @foreach ($projects as $project)
                                 <div
-                                    class="group relative overflow-hidden rounded-xl border-2 p-4 transition-all {{ $activeProject && $activeProject->id === $project->id ? 'border-[#D4A574] bg-gradient-to-br from-[#D4A574]/10 to-white shadow-lg' : 'border-gray-200 bg-white hover:border-[#D4A574]/50 hover:shadow-md' }}">
+                                    class="{{ $activeProject && $activeProject->id === $project->id ? 'border-[#D4A574] bg-gradient-to-br from-[#D4A574]/10 to-white shadow-lg' : 'border-gray-200 bg-white hover:border-[#D4A574]/50 hover:shadow-md' }} group relative overflow-hidden rounded-xl border-2 p-4 transition-all">
                                     {{-- Active Badge --}}
                                     @if ($activeProject && $activeProject->id === $project->id)
                                         <div
@@ -1712,7 +1716,8 @@
                                     {{-- Action Buttons --}}
                                     <div class="flex items-center gap-2 border-t border-gray-200 pt-3">
                                         {{-- Upload Document Button --}}
-                                        <button type="button" onclick="event.stopPropagation(); triggerProjectUpload({{ $project->id }})"
+                                        <button type="button"
+                                            onclick="event.stopPropagation(); triggerProjectUpload({{ $project->id }})"
                                             class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#D4A574] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
                                             <span class="material-icons text-sm">upload_file</span>
                                             <span>{{ __('projects.upload_document') }}</span>
@@ -1739,7 +1744,8 @@
                     @endif
 
                     {{-- Create Project Form --}}
-                    <div id="createProjectForm" class="hidden rounded-xl border-2 border-[#D4A574] bg-gradient-to-br from-[#D4A574]/5 to-white p-6">
+                    <div id="createProjectForm"
+                        class="hidden rounded-xl border-2 border-[#D4A574] bg-gradient-to-br from-[#D4A574]/5 to-white p-6">
                         <div class="mb-4 flex items-center justify-between">
                             <h3 class="text-lg font-bold text-[#1B365D]">
                                 <span class="material-icons mr-2 align-middle">add_circle</span>
@@ -1761,7 +1767,7 @@
                                 <input type="text" id="projectName" name="name" required maxlength="100"
                                     class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]/20"
                                     placeholder="{{ __('projects.name_placeholder') }}">
-                                <span class="text-xs text-red-500 hidden" id="nameError"></span>
+                                <span class="hidden text-xs text-red-500" id="nameError"></span>
                             </div>
 
                             {{-- Description --}}
@@ -1775,12 +1781,14 @@
 
                             {{-- Icon Picker --}}
                             <div>
-                                <label class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.icon') }}</label>
+                                <label
+                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.icon') }}</label>
                                 <input type="hidden" id="projectIcon" name="icon" value="folder">
-                                <div class="grid grid-cols-8 gap-2 rounded-lg border border-gray-300 bg-white p-3" style="max-height: 150px; overflow-y: auto;">
+                                <div class="grid grid-cols-8 gap-2 rounded-lg border border-gray-300 bg-white p-3"
+                                    style="max-height: 150px; overflow-y: auto;">
                                     @foreach (['folder', 'folder_special', 'work', 'school', 'account_balance', 'gavel', 'description', 'assignment', 'assessment', 'business_center', 'library_books', 'event_note'] as $icon)
                                         <button type="button" onclick="selectIcon('{{ $icon }}')"
-                                            class="icon-option flex h-10 w-10 items-center justify-center rounded-lg border-2 border-transparent transition-all hover:border-[#D4A574] {{ $icon === 'folder' ? 'border-[#D4A574] bg-[#D4A574]/10' : 'hover:bg-gray-50' }}"
+                                            class="icon-option {{ $icon === 'folder' ? 'border-[#D4A574] bg-[#D4A574]/10' : 'hover:bg-gray-50' }} flex h-10 w-10 items-center justify-center rounded-lg border-2 border-transparent transition-all hover:border-[#D4A574]"
                                             data-icon="{{ $icon }}">
                                             <span class="material-icons text-gray-700">{{ $icon }}</span>
                                         </button>
@@ -1790,13 +1798,15 @@
 
                             {{-- Color Picker --}}
                             <div>
-                                <label class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.color') }}</label>
+                                <label
+                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.color') }}</label>
                                 <input type="hidden" id="projectColor" name="color" value="#1B365D">
-                                <div class="flex gap-2 flex-wrap">
+                                <div class="flex flex-wrap gap-2">
                                     @foreach (['#1B365D', '#2D5016', '#D4A574', '#6B6B6B', '#C13120', '#E67E22', '#8E44AD'] as $color)
                                         <button type="button" onclick="selectColor('{{ $color }}')"
-                                            class="color-option h-10 w-10 rounded-lg border-2 transition-all hover:scale-110 {{ $color === '#1B365D' ? 'border-white ring-2 ring-[#D4A574]' : 'border-transparent' }}"
-                                            style="background-color: {{ $color }}" data-color="{{ $color }}">
+                                            class="color-option {{ $color === '#1B365D' ? 'border-white ring-2 ring-[#D4A574]' : 'border-transparent' }} h-10 w-10 rounded-lg border-2 transition-all hover:scale-110"
+                                            style="background-color: {{ $color }}"
+                                            data-color="{{ $color }}">
                                         </button>
                                     @endforeach
                                 </div>
@@ -1809,8 +1819,8 @@
                                     {{ __('projects.cancel') }}
                                 </button>
                                 <button type="submit" id="submitProjectBtn"
-                                    class="rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968] disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <span class="material-icons mr-2 text-sm align-middle">save</span>
+                                    class="rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968] disabled:cursor-not-allowed disabled:opacity-50">
+                                    <span class="material-icons mr-2 align-middle text-sm">save</span>
                                     {{ __('projects.create') }}
                                 </button>
                             </div>
@@ -1957,7 +1967,7 @@
 
                         // Client-side validation
                         if (!nameInput.value.trim()) {
-                            nameError.textContent = '{{ __("projects.name_required") }}';
+                            nameError.textContent = '{{ __('projects.name_required') }}';
                             nameError.classList.remove('hidden');
                             nameInput.focus();
                             return;
@@ -1966,7 +1976,7 @@
                         // Disable submit button
                         submitBtn.disabled = true;
                         submitBtn.innerHTML =
-                            '<span class="material-icons mr-2 text-sm align-middle animate-spin">hourglass_empty</span>{{ __("projects.creating") }}';
+                            '<span class="material-icons mr-2 text-sm align-middle animate-spin">hourglass_empty</span>{{ __('projects.creating') }}';
 
                         const formData = {
                             name: nameInput.value.trim(),
@@ -1980,7 +1990,8 @@
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'X-CSRF-TOKEN': document.querySelector(
+                                        'meta[name="csrf-token"]').content,
                                     'Accept': 'application/json'
                                 },
                                 body: JSON.stringify(formData)
@@ -1993,23 +2004,24 @@
                                 window.location.reload();
                             } else {
                                 // Show error
-                                nameError.textContent = data.message || '{{ __("projects.create_error") }}';
+                                nameError.textContent = data.message ||
+                                '{{ __('projects.create_error') }}';
                                 nameError.classList.remove('hidden');
 
                                 // Re-enable button
                                 submitBtn.disabled = false;
                                 submitBtn.innerHTML =
-                                    '<span class="material-icons mr-2 text-sm align-middle">save</span>{{ __("projects.create") }}';
+                                    '<span class="material-icons mr-2 text-sm align-middle">save</span>{{ __('projects.create') }}';
                             }
                         } catch (error) {
                             console.error('[ProjectForm] Error:', error);
-                            nameError.textContent = '{{ __("projects.network_error") }}';
+                            nameError.textContent = '{{ __('projects.network_error') }}';
                             nameError.classList.remove('hidden');
 
                             // Re-enable button
                             submitBtn.disabled = false;
                             submitBtn.innerHTML =
-                                '<span class="material-icons mr-2 text-sm align-middle">save</span>{{ __("projects.create") }}';
+                                '<span class="material-icons mr-2 text-sm align-middle">save</span>{{ __('projects.create') }}';
                         }
                     });
                 }
@@ -2037,17 +2049,17 @@
                         window.location.reload();
                     } else {
                         console.error('[selectProject] Failed:', data.message);
-                        alert(data.message || '{{ __("projects.select_error") }}');
+                        alert(data.message || '{{ __('projects.select_error') }}');
                     }
                 } catch (error) {
                     console.error('[selectProject] Error:', error);
-                    alert('{{ __("projects.network_error") }}');
+                    alert('{{ __('projects.network_error') }}');
                 }
             }
 
             // ✨ NEW v4.0 - Remove Project Context
             async function removeProject() {
-                if (!confirm('{{ __("projects.remove_confirm") }}')) {
+                if (!confirm('{{ __('projects.remove_confirm') }}')) {
                     return;
                 }
 
@@ -2068,11 +2080,11 @@
                         window.location.reload();
                     } else {
                         console.error('[removeProject] Failed:', data.message);
-                        alert(data.message || '{{ __("projects.remove_error") }}');
+                        alert(data.message || '{{ __('projects.remove_error') }}');
                     }
                 } catch (error) {
                     console.error('[removeProject] Error:', error);
-                    alert('{{ __("projects.network_error") }}');
+                    alert('{{ __('projects.network_error') }}');
                 }
             }
 
@@ -2089,24 +2101,27 @@
                 if (!file) return;
 
                 // Client-side validation
-                const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
+                const allowedTypes = ['application/pdf',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain',
+                    'text/markdown'
+                ];
                 const maxSize = 10 * 1024 * 1024; // 10MB
 
                 if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx|txt|md)$/i)) {
-                    alert('{{ __("projects.invalid_file_type") }}');
+                    alert('{{ __('projects.invalid_file_type') }}');
                     event.target.value = ''; // Reset input
                     return;
                 }
 
                 if (file.size > maxSize) {
-                    alert('{{ __("projects.file_too_large", ["size" => 10]) }}');
+                    alert('{{ __('projects.file_too_large', ['size' => 10]) }}');
                     event.target.value = ''; // Reset input
                     return;
                 }
 
                 const activeProjectId = window.activeProject?.id;
                 if (!activeProjectId) {
-                    alert('{{ __("projects.no_active_project") }}');
+                    alert('{{ __('projects.no_active_project') }}');
                     return;
                 }
 
@@ -2114,7 +2129,8 @@
                 const uploadBtn = event.target.previousElementSibling;
                 const originalHTML = uploadBtn.innerHTML;
                 uploadBtn.disabled = true;
-                uploadBtn.innerHTML = '<span class="material-icons text-sm animate-spin">hourglass_empty</span><span class="hidden sm:inline">{{ __("projects.uploading") }}</span>';
+                uploadBtn.innerHTML =
+                    '<span class="material-icons text-sm animate-spin">hourglass_empty</span><span class="hidden sm:inline">{{ __('projects.uploading') }}</span>';
 
                 const formData = new FormData();
                 formData.append('document', file);
@@ -2133,7 +2149,7 @@
 
                     if (data.success) {
                         // Show success message
-                        alert(data.message || '{{ __("projects.document_uploaded_successfully", ["filename" => ""]) }}');
+                        alert(data.message || '{{ __('projects.document_uploaded_successfully', ['filename' => '']) }}');
 
                         // Reset input
                         event.target.value = '';
@@ -2141,12 +2157,12 @@
                         // Optional: Reload to update document count (or update DOM dynamically)
                         // window.location.reload();
                     } else {
-                        alert(data.message || '{{ __("projects.upload_error") }}');
+                        alert(data.message || '{{ __('projects.upload_error') }}');
                         event.target.value = '';
                     }
                 } catch (error) {
                     console.error('[handleDocumentUpload] Error:', error);
-                    alert('{{ __("projects.network_error") }}');
+                    alert('{{ __('projects.network_error') }}');
                     event.target.value = '';
                 } finally {
                     // Restore button
@@ -2168,17 +2184,20 @@
                 if (!file) return;
 
                 // Client-side validation
-                const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
+                const allowedTypes = ['application/pdf',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain',
+                    'text/markdown'
+                ];
                 const maxSize = 10 * 1024 * 1024; // 10MB
 
                 if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx|txt|md)$/i)) {
-                    alert('{{ __("projects.invalid_file_type") }}');
+                    alert('{{ __('projects.invalid_file_type') }}');
                     event.target.value = '';
                     return;
                 }
 
                 if (file.size > maxSize) {
-                    alert('{{ __("projects.file_too_large", ["size" => 10]) }}');
+                    alert('{{ __('projects.file_too_large', ['size' => 10]) }}');
                     event.target.value = '';
                     return;
                 }
@@ -2186,10 +2205,11 @@
                 // Find the upload button for this project
                 const uploadBtn = event.target.previousElementSibling;
                 const originalHTML = uploadBtn ? uploadBtn.innerHTML : '';
-                
+
                 if (uploadBtn) {
                     uploadBtn.disabled = true;
-                    uploadBtn.innerHTML = '<span class="material-icons text-sm animate-spin">hourglass_empty</span><span>{{ __("projects.uploading") }}</span>';
+                    uploadBtn.innerHTML =
+                        '<span class="material-icons text-sm animate-spin">hourglass_empty</span><span>{{ __('projects.uploading') }}</span>';
                 }
 
                 const formData = new FormData();
@@ -2209,20 +2229,20 @@
 
                     if (data.success) {
                         // Show success message
-                        alert(data.message || '{{ __("projects.document_uploaded_successfully", ["filename" => ""]) }}');
-                        
+                        alert(data.message || '{{ __('projects.document_uploaded_successfully', ['filename' => '']) }}');
+
                         // Reset input
                         event.target.value = '';
 
                         // Reload modal to update document count
                         window.location.reload();
                     } else {
-                        alert(data.message || '{{ __("projects.upload_error") }}');
+                        alert(data.message || '{{ __('projects.upload_error') }}');
                         event.target.value = '';
                     }
                 } catch (error) {
                     console.error('[handleProjectDocumentUpload] Error:', error);
-                    alert('{{ __("projects.network_error") }}');
+                    alert('{{ __('projects.network_error') }}');
                     event.target.value = '';
                 } finally {
                     // Restore button
