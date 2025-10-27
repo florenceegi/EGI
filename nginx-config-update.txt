@@ -6,7 +6,7 @@
         fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_index index.php;
         include fastcgi_params;
-        
+
         # TIMEOUT CONFIGURATION - Increased for long-running AI requests
         fastcgi_read_timeout 300s;      # 5 minutes (default: 60s)
         fastcgi_send_timeout 300s;      # 5 minutes (default: 60s)
@@ -22,7 +22,7 @@
 
 # RATIONALE:
 # - fastcgi_read_timeout: Tempo max per leggere risposta da PHP-FPM
-# - fastcgi_send_timeout: Tempo max per inviare richiesta a PHP-FPM  
+# - fastcgi_send_timeout: Tempo max per inviare richiesta a PHP-FPM
 # - fastcgi_connect_timeout: Tempo max per connettersi a PHP-FPM
 # - 300s (5 minuti) è sufficiente per retry loop + RAG + web search
 

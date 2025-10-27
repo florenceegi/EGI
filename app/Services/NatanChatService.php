@@ -398,7 +398,7 @@ class NatanChatService {
             $maxRetries = 10; // Safety: prevent infinite loop
 
             // 🧪 TEMPORARY TEST: Force low limit to debug rate limit issue
-            $claudeContextLimit = 50; // REMOVE AFTER TEST
+            $claudeContextLimit = 50; // KEEP for testing - remove when rate limit issue resolved
 
             \Log::info('🚀🚀🚀 ADAPTIVE RETRY STARTING', [
                 'total_acts_found' => $originalActsCount,

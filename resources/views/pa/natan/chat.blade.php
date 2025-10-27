@@ -886,29 +886,29 @@
 
                         personaBadgeDiv.innerHTML = `
                             ${message.is_elaboration ? `
-                                                                                                                        <span class="elaboration-badge">
-                                                                                                                            🔄 Elaborazione
-                                                                                                                        </span>
-                                                                                                                    ` : ''}
+                                                                                                                                <span class="elaboration-badge">
+                                                                                                                                    🔄 Elaborazione
+                                                                                                                                </span>
+                                                                                                                            ` : ''}
                             <span style="background-color: ${personaColor};"
                                   class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
                                 <span>${personaIcon}</span>
                                 <span>${message.persona.name}</span>
                             </span>
                             ${message.persona.confidence ? `
-                                                                                                                                                <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
-                                                                                                                                                    ${Math.round(message.persona.confidence * 100)}%
-                                                                                                                                                </span>
-                                                                                                                                            ` : ''}
+                                                                                                                                                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
+                                                                                                                                                            ${Math.round(message.persona.confidence * 100)}%
+                                                                                                                                                        </span>
+                                                                                                                                                    ` : ''}
                             ${message.persona.method === 'manual' ? `
-                                                                                                                                                <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
-                                                                                                                                                    ✓ Manuale
-                                                                                                                                                </span>
-                                                                                                                                            ` : message.persona.method === 'default' ? `
-                                                                                                                                                <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
-                                                                                                                                                    Auto (Default)
-                                                                                                                                                </span>
-                                                                                                                                            ` : ''}
+                                                                                                                                                        <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
+                                                                                                                                                            ✓ Manuale
+                                                                                                                                                        </span>
+                                                                                                                                                    ` : message.persona.method === 'default' ? `
+                                                                                                                                                        <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
+                                                                                                                                                            Auto (Default)
+                                                                                                                                                        </span>
+                                                                                                                                                    ` : ''}
                         `;
                         bubbleDiv.appendChild(personaBadgeDiv);
 
@@ -954,13 +954,13 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-1">
                                 ${message.sources.map(source => `
-                                                                                                                    <a href="${source.url}" target="_blank"
-                                                                                                                       class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
-                                                                                                                        <span class="font-medium">${source.protocol_number}</span>
-                                                                                                                        <span class="text-gray-600"> - </span>
-                                                                                                                        <span>${source.title}</span>
-                                                                                                                    </a>
-                                                                                                                `).join('')}
+                                                                                                                            <a href="${source.url}" target="_blank"
+                                                                                                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
+                                                                                                                                <span class="font-medium">${source.protocol_number}</span>
+                                                                                                                                <span class="text-gray-600"> - </span>
+                                                                                                                                <span>${source.title}</span>
+                                                                                                                            </a>
+                                                                                                                        `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(sourcesDiv);
@@ -985,21 +985,21 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-2">
                                 ${message.web_sources.map((source, idx) => `
-                                                                                            <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
-                                                                                                <div class="flex items-start justify-between gap-2 mb-1">
-                                                                                                    <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
-                                                                                                    <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                                                                        ${Math.round((source.relevance_score || 1) * 100)}%
-                                                                                                    </span>
-                                                                                                </div>
-                                                                                                <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
-                                                                                                <a href="${source.url}" target="_blank" rel="noopener noreferrer"
-                                                                                                   class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                                                                                    <span class="material-icons text-xs">open_in_new</span>
-                                                                                                    <span class="truncate">${source.url}</span>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                        `).join('')}
+                                                                                                    <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
+                                                                                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                                                                                            <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
+                                                                                                            <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                                                                                ${Math.round((source.relevance_score || 1) * 100)}%
+                                                                                                            </span>
+                                                                                                        </div>
+                                                                                                        <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
+                                                                                                        <a href="${source.url}" target="_blank" rel="noopener noreferrer"
+                                                                                                           class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                                                                                            <span class="material-icons text-xs">open_in_new</span>
+                                                                                                            <span class="truncate">${source.url}</span>
+                                                                                                        </a>
+                                                                                                    </div>
+                                                                                                `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(webSourcesDiv);
@@ -1107,7 +1107,7 @@
                         // Check for specific HTTP errors before parsing
                         if (response.status === 504) {
                             this.hideLoadingIndicator();
-                            this.addMessage('assistant', 
+                            this.addMessage('assistant',
                                 'La richiesta sta richiedendo più tempo del previsto. Il sistema potrebbe essere sotto carico. Per favore riprova tra qualche minuto.'
                             );
                             return;
@@ -1116,16 +1116,16 @@
                         // Read response body as text FIRST (can only read once!)
                         const responseText = await response.text();
                         console.log('[N.A.T.A.N.] Response length:', responseText.length, 'chars');
-                        
+
                         // Check if response looks like JSON
                         const contentType = response.headers.get('content-type');
                         if (!contentType || !contentType.includes('application/json')) {
                             // Server returned non-JSON (probably HTML error page)
                             console.error('[N.A.T.A.N.] Server returned non-JSON response');
                             console.log('[N.A.T.A.N.] Raw response:', responseText.substring(0, 500));
-                            
+
                             this.hideLoadingIndicator();
-                            this.addMessage('assistant', 
+                            this.addMessage('assistant',
                                 'Si è verificato un errore del server. Il nostro team è stato notificato. Per favore riprova più tardi.'
                             );
                             return;
@@ -1144,9 +1144,9 @@
                         } catch (parseError) {
                             console.error('[N.A.T.A.N.] JSON Parse Error:', parseError);
                             console.log('[N.A.T.A.N.] First 500 chars:', responseText.substring(0, 500));
-                            
+
                             this.hideLoadingIndicator();
-                            this.addMessage('assistant', 
+                            this.addMessage('assistant',
                                 'Errore nel parsing della risposta del server. Il nostro team è stato notificato.'
                             );
                             return;
@@ -1180,21 +1180,23 @@
                         console.error('[N.A.T.A.N.] Error type:', error.constructor.name);
                         console.error('[N.A.T.A.N.] Error message:', error.message);
                         console.error('[N.A.T.A.N.] Stack trace:', error.stack);
-                        
+
                         this.hideLoadingIndicator();
-                        
+
                         // Determine error type for better user feedback
                         let errorMessage = 'Mi dispiace, si è verificato un errore imprevisto.';
-                        
+
                         if (error.name === 'SyntaxError') {
-                            errorMessage = 'Errore nel parsing della risposta del server. Il nostro team è stato notificato.';
+                            errorMessage =
+                                'Errore nel parsing della risposta del server. Il nostro team è stato notificato.';
                             console.error('[N.A.T.A.N.] CRITICAL: Server returned non-JSON response');
                         } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                            errorMessage = 'Mi dispiace, non riesco a connettermi al servizio AI. Verifica la tua connessione e riprova.';
+                            errorMessage =
+                                'Mi dispiace, non riesco a connettermi al servizio AI. Verifica la tua connessione e riprova.';
                         } else if (error.message) {
                             errorMessage = `Errore tecnico: ${error.message}`;
                         }
-                        
+
                         this.addMessage('assistant', errorMessage);
                     } finally {
                         this.setLoading(false);

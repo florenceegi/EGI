@@ -57,8 +57,8 @@
             </form>
 
             {{-- Run Manually --}}
-            <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}"
-                onsubmit="showLoadingModal('run'); return true;">
+            <form id="runScraperForm" method="POST" action="{{ route('pa.scrapers.run', $scraper) }}"
+                onsubmit="event.preventDefault(); executeScraperFromForm();">
                 @csrf
                 <button type="submit"
                     class="inline-flex items-center gap-2 rounded-lg bg-[#2D5016] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#1F3810]">
@@ -169,8 +169,8 @@
     {{-- Stats Row --}}
     <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
         <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <p class="text-sm font-medium text-gray-600">Totale Atti Estratti</p>
-            <p class="mt-2 text-3xl font-bold text-[#D4A574]">{{ number_format($scraper->total_items_scraped) }}</p>
+            <p class="text-sm font-medium text-gray-600">Atti Unici nel Database</p>
+            <p class="mt-2 text-3xl font-bold text-[#D4A574]">{{ number_format($actualActsCount) }}</p>
         </div>
         <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <p class="text-sm font-medium text-gray-600">Ultima Esecuzione</p>
@@ -486,13 +486,79 @@
             return true;
         }
 
-        function startProgressPolling() {
-            console.log('[SCRAPER] Starting progress polling...');
+        /**
+         * UNIVERSAL SCRAPER EXECUTOR - chiamata da tutti i punti di esecuzione
+         * 
+         * @param {number} scraperId - ID dello scraper
+         * @param {string} runUrl - URL endpoint per esecuzione
+         * @param {string} progressUrl - URL endpoint per polling progress
+         * @param {object} params - Parametri aggiuntivi (year, etc.)
+         */
+        async function executeScraperWithProgress(scraperId, runUrl, progressUrl, params = {}) {
+            console.log('[SCRAPER] Universal executor - starting', {
+                scraperId, 
+                runUrl, 
+                progressUrl, 
+                params
+            });
+            
+            // 1. Show modal IMMEDIATELY
+            showLoadingModal('run');
+            
+            // 2. Start progress polling BEFORE making request
+            startProgressPolling(progressUrl);
+            
+            // 3. Prepare request body
+            const formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            
+            // Add optional parameters (year, etc.)
+            Object.keys(params).forEach(key => {
+                formData.append(key, params[key]);
+            });
+            
+            try {
+                console.log('[SCRAPER] Sending AJAX request to execute scraper');
+                
+                const response = await fetch(runUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+                
+                console.log('[SCRAPER] Response status:', response.status);
+                
+                // Don't wait for completion - polling will handle updates
+                // If 504 or long timeout, scraper is still running in background
+                
+            } catch (error) {
+                console.error('[SCRAPER] Execute error (expected for long operations):', error);
+                // Polling continues - scraper runs in background even if request times out
+            }
+        }
 
+        /**
+         * Execute from form (legacy wrapper for compatibility)
+         */
+        function executeScraperFromForm() {
+            const form = document.getElementById('runScraperForm');
+            executeScraperWithProgress(
+                {{ $scraper->id }},
+                form.action,
+                '{{ route('pa.scrapers.progress', $scraper) }}',
+                {}
+            );
+        }
+
+        function startProgressPolling(progressUrl) {
+            console.log('[SCRAPER] Starting progress polling...', progressUrl);
             // Poll every 1.5 seconds
             progressInterval = setInterval(async () => {
                 try {
-                    const response = await fetch('{{ route('pa.scrapers.progress', $scraper) }}');
+                    const response = await fetch(progressUrl);
                     const data = await response.json();
 
                     console.log('[SCRAPER] Progress data:', data);
@@ -643,33 +709,17 @@
             }
         });
 
-        // Import button - trigger scraping with specific year
+        // Import button - trigger scraping with specific year (UNIVERSAL EXECUTOR)
         importBtn.addEventListener('click', function() {
             const year = this.dataset.year;
             
-            // Create a hidden form to submit with year parameter
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route('pa.scrapers.run', $scraper) }}';
-            
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = '{{ csrf_token() }}';
-            
-            const yearInput = document.createElement('input');
-            yearInput.type = 'hidden';
-            yearInput.name = 'year';
-            yearInput.value = year;
-            
-            form.appendChild(csrfInput);
-            form.appendChild(yearInput);
-            
-            // Show loading modal before submit
-            showLoadingModal('run');
-            
-            document.body.appendChild(form);
-            form.submit();
+            // Use universal executor with year parameter
+            executeScraperWithProgress(
+                {{ $scraper->id }},
+                '{{ route('pa.scrapers.run', $scraper) }}',
+                '{{ route('pa.scrapers.progress', $scraper) }}',
+                { year: year }
+            );
         });
     </script>
 

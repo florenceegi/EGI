@@ -114,15 +114,15 @@
             </div>
         </div>
 
-        {{-- Total Acts Scraped --}}
+        {{-- Total Acts in Database --}}
         <div class="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">
-                        Totale Atti Estratti
+                        Atti Unici nel Database
                     </p>
                     <p class="mt-2 text-3xl font-bold text-[#D4A574]">
-                        {{ number_format($scrapers->sum('total_items_scraped')) }}
+                        {{ number_format($stats['total_items']) }}
                     </p>
                 </div>
                 <div class="rounded-lg bg-[#D4A574] bg-opacity-10 p-3">
@@ -202,11 +202,16 @@
                                     @endif
                                 </td>
 
-                                {{-- Atti Estratti --}}
+                                {{-- Atti Estratti (ultima esecuzione) --}}
                                 <td class="px-6 py-4 text-center">
-                                    <span class="font-semibold text-[#D4A574]">
-                                        {{ number_format($scraper->total_items_scraped) }}
-                                    </span>
+                                    @if ($scraper->stats && isset($scraper->stats['acts_count']))
+                                        <span class="font-semibold text-[#D4A574]">
+                                            {{ number_format($scraper->stats['acts_count']) }}
+                                        </span>
+                                        <p class="text-xs text-gray-500">ultima esecuzione</p>
+                                    @else
+                                        <span class="text-gray-400">-</span>
+                                    @endif
                                 </td>
 
                                 {{-- Azioni --}}
@@ -220,16 +225,12 @@
                                         </a>
 
                                         {{-- Run Manually --}}
-                                        <form method="POST" action="{{ route('pa.scrapers.run', $scraper) }}"
-                                            class="inline-block"
-                                            onsubmit="showLoadingModal('run', '{{ $scraper->source_entity }}', {{ $scraper->id }})">
-                                            @csrf
-                                            <button type="submit"
-                                                class="inline-flex items-center rounded-lg bg-[#2D5016] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#1F3810]"
-                                                title="Esegui Manualmente">
-                                                <span class="text-sm material-symbols-outlined">play_arrow</span>
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                            onclick="executeScraperWithProgress({{ $scraper->id }}, '{{ route('pa.scrapers.run', $scraper) }}', '{{ route('pa.scrapers.progress', $scraper) }}', {})"
+                                            class="inline-flex items-center rounded-lg bg-[#2D5016] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#1F3810]"
+                                            title="Esegui Manualmente">
+                                            <span class="text-sm material-symbols-outlined">play_arrow</span>
+                                        </button>
 
                                         {{-- Edit --}}
                                         <a href="{{ route('pa.scrapers.edit', $scraper) }}"
@@ -382,6 +383,60 @@
         let progressInterval = null;
         let currentScraperId = null;
 
+        /**
+         * UNIVERSAL SCRAPER EXECUTOR - unified execution from any trigger point
+         * 
+         * @param {number} scraperId - ID dello scraper
+         * @param {string} runUrl - URL endpoint per esecuzione
+         * @param {string} progressUrl - URL endpoint per polling progress
+         * @param {object} params - Parametri aggiuntivi (year, etc.)
+         */
+        async function executeScraperWithProgress(scraperId, runUrl, progressUrl, params = {}) {
+            console.log('[SCRAPER] Universal executor - starting', {
+                scraperId, 
+                runUrl, 
+                progressUrl, 
+                params
+            });
+            
+            // 1. Show modal IMMEDIATELY
+            showLoadingModal('run', '', scraperId);
+            
+            // 2. Start progress polling BEFORE making request
+            startProgressPolling(progressUrl);
+            
+            // 3. Prepare request body
+            const formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            
+            // Add optional parameters (year, etc.)
+            Object.keys(params).forEach(key => {
+                formData.append(key, params[key]);
+            });
+            
+            try {
+                console.log('[SCRAPER] Sending AJAX request to execute scraper');
+                
+                const response = await fetch(runUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+                
+                console.log('[SCRAPER] Response status:', response.status);
+                
+                // Don't wait for completion - polling will handle updates
+                // If 504 or long timeout, scraper is still running in background
+                
+            } catch (error) {
+                console.error('[SCRAPER] Execute error (expected for long operations):', error);
+                // Polling continues - scraper runs in background even if request times out
+            }
+        }
+
         function showLoadingModal(type, sourceEntity = '', scraperId = null) {
             const modal = document.getElementById('loadingModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -414,21 +469,30 @@
             return true;
         }
 
-        function startProgressPolling(scraperId) {
+        function startProgressPolling(progressUrl) {
+            console.log('[SCRAPER] Starting progress polling...', progressUrl);
             // Poll every 1.5 seconds
             progressInterval = setInterval(async () => {
                 try {
-                    const response = await fetch(`/pa/scrapers/${scraperId}/progress`);
+                    const response = await fetch(progressUrl);
                     const data = await response.json();
 
+                    console.log('[SCRAPER] Progress data:', data);
+
                     if (data.status === 'running') {
+                        console.log('[SCRAPER] Status: RUNNING - Updating UI...');
                         updateProgress(data);
                     } else if (data.status === 'completed') {
+                        console.log('[SCRAPER] Status: COMPLETED');
+                        updateProgress(data);
                         clearInterval(progressInterval);
                         // Let the page reload show final results
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 3000);
                     }
                 } catch (error) {
-                    console.error('Progress polling error:', error);
+                    console.error('[SCRAPER] Progress polling error:', error);
                 }
             }, 1500);
         }

@@ -89,11 +89,16 @@ class PaWebScraperController extends Controller {
 
             $scrapers = $query->paginate(10)->withQueryString();
 
+            // Calculate actual unique acts in database
+            $actualActsCount = \App\Models\Egi::whereNotNull('pa_act_type')
+                ->whereNotNull('pa_protocol_number')
+                ->count();
+
             // Stats
             $stats = [
                 'total' => PaWebScraper::where('user_id', $user->id)->count(),
                 'active' => PaWebScraper::where('user_id', $user->id)->where('is_active', true)->count(),
-                'total_items' => PaWebScraper::where('user_id', $user->id)->sum('total_items_scraped'),
+                'total_items' => $actualActsCount, // Actual unique acts in DB
             ];
 
             return view('pa.scrapers.index', compact('scrapers', 'stats'));
@@ -228,7 +233,15 @@ class PaWebScraperController extends Controller {
                 'scraper_id' => $scraper->id
             ]);
 
-            return view('pa.scrapers.show', compact('scraper'));
+            // Calculate actual unique acts in database for this scraper
+            $actualActsCount = \App\Models\Egi::whereNotNull('pa_act_type')
+                ->whereNotNull('pa_protocol_number')
+                ->count();
+
+            return view('pa.scrapers.show', [
+                'scraper' => $scraper,
+                'actualActsCount' => $actualActsCount
+            ]);
         } catch (\Exception $e) {
             $this->logger->error('[PaWebScraperController] Error showing scraper', [
                 'error' => $e->getMessage()
@@ -468,31 +481,42 @@ class PaWebScraperController extends Controller {
             // Get options from request (year, filters, etc.)
             $options = $request->only(['year', 'month', 'tipo', 'limit']);
 
-            // 🚀 ASYNC EXECUTION: Dispatch job to queue instead of blocking
-            // This prevents timeout and allows monitoring via progress endpoint
-            \App\Jobs\ExecuteScraperJob::dispatch($scraper, Auth::user(), $options);
+            // Increase PHP execution time for long-running scraping (10 minutes)
+            set_time_limit(600);
 
-            // Reset scraper stats for new run
-            $scraper->update([
-                'last_run_at' => now(),
-                'total_acts_scraped' => 0, // Will be updated by job
-            ]);
+            // Execute scraper with GDPR compliance (SYNCHRONOUS - writes progress to cache)
+            $result = $this->scraperService->execute($scraper, Auth::user(), $options);
 
-            $message = sprintf(
-                'Scraping avviato in background! Segui il progresso in tempo reale nella pagina dettaglio. Il processo continuerà anche se chiudi questa finestra.'
-            );
+            if ($result['success']) {
+                $actsSaved = $result['stats']['acts_saved'] ?? 0;
+                $actsSkipped = $result['stats']['acts_skipped'] ?? 0;
+                $actsCount = $result['stats']['acts_count'] ?? 0;
 
-            return redirect()
-                ->route('pa.scrapers.show', $scraper)
-                ->with('success', $message)
-                ->with('scraper_running', true);
+                $message = sprintf(
+                    'Scraping completato! %d atti estratti, %d salvati, %d già presenti. Tempo: %s secondi',
+                    $actsCount,
+                    $actsSaved,
+                    $actsSkipped,
+                    $result['stats']['execution_time']
+                );
+
+                // Store results in session for display/import
+                session(['scraper_results' => $result]);
+
+                return redirect()
+                    ->route('pa.scrapers.show', $scraper)
+                    ->with('success', $message)
+                    ->with('scraper_data', $result['acts']);
+            } else {
+                return back()->with('error', 'Scraping fallito: ' . $result['error']);
+            }
         } catch (\Exception $e) {
             $this->logger->error('[PaWebScraperController] Scraper execution error', [
                 'scraper_id' => $scraper->id,
                 'error' => $e->getMessage()
             ]);
 
-            return back()->with('error', 'Errore avvio scraper: ' . $e->getMessage());
+            return back()->with('error', 'Errore esecuzione scraper: ' . $e->getMessage());
         }
     }
 

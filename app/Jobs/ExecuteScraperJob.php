@@ -18,8 +18,7 @@ use Illuminate\Support\Facades\Log;
  * @date 2025-10-27
  * @purpose Execute web scraper asynchronously to prevent HTTP timeout
  */
-class ExecuteScraperJob implements ShouldQueue
-{
+class ExecuteScraperJob implements ShouldQueue {
     use Queueable;
 
     public $timeout = 600; // 10 minutes max execution
@@ -39,8 +38,7 @@ class ExecuteScraperJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(PaWebScraperService $scraperService): void
-    {
+    public function handle(PaWebScraperService $scraperService): void {
         Log::info('[ExecuteScraperJob] Starting background scraper execution', [
             'scraper_id' => $this->scraper->id,
             'user_id' => $this->user->id,
