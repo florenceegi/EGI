@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Services\NatanChatService;
-use App\Services\PaActSearchService;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Carbon\Carbon;
@@ -54,10 +53,24 @@ class NatanDiagnosticTest extends Command
         $user = User::findOrFail($userId);
         Auth::login($user);
 
+        // Ensure user has GDPR consent for testing
+        $consent = $user->consents()
+            ->where('consent_type', 'allow-personal-data-processing')
+            ->where('granted', true)
+            ->first();
+        
+        if (!$consent) {
+            $this->error("❌ User {$userId} doesn't have GDPR consent for personal data processing.");
+            $this->error("Run this command to grant consent:");
+            $this->error("php artisan tinker --execute=\"User::find({$userId})->consents()->create(['consent_type' => 'allow-personal-data-processing', 'granted' => true, 'status' => 'active', 'consent_version_id' => 1, 'legal_basis' => 'consent', 'ip_address' => '127.0.0.1'])\"");
+            return 1;
+        }
+
         $this->info("🧪 NATAN Diagnostic Test Suite");
         $this->info("Category: {$category}");
         $this->info("Iterations: {$iterations}");
         $this->info("User: {$user->name} (ID: {$userId})");
+        $this->info("✅ GDPR Consent: Active");
         $this->newLine();
 
         $startTime = microtime(true);
@@ -207,17 +220,27 @@ class NatanDiagnosticTest extends Command
             try {
                 // Test the query processing
                 $response = $this->natanService->processQuery(
-                    $query,
-                    $user,
-                    [],
-                    'strategic',
-                    null,
-                    true,
-                    false
+                    $query,                    // userQuery
+                    $user,                     // user
+                    [],                        // conversationHistory
+                    'strategic',               // manualPersonaId
+                    null,                      // sessionId
+                    true,                      // useRag
+                    false,                     // useWebSearch
+                    null,                      // referenceContext
+                    null                       // projectId
                 );
 
                 $success = $response['success'] ?? false;
                 $timeTaken = round(microtime(true) - $startTime, 2);
+
+                // Check for errors in response
+                $errorMessage = null;
+                if (!$success) {
+                    $errorMessage = $response['response'] ?? 'Unknown error';
+                    // Debug: print error to console
+                    $this->error("❌ Test failed: {$errorMessage}");
+                }
 
                 // Log result
                 $this->results[] = [
@@ -226,6 +249,7 @@ class NatanDiagnosticTest extends Command
                     'success' => $success,
                     'time_seconds' => $timeTaken,
                     'rate_limit_hit' => str_contains($response['response'] ?? '', 'rate limit'),
+                    'error' => $errorMessage,
                     'timestamp' => Carbon::now()->toIso8601String(),
                     'burst_test' => $trackBurst,
                     'iteration' => $i + 1,
@@ -262,17 +286,25 @@ class NatanDiagnosticTest extends Command
             // For now, just track what happens with normal flow
             
             $response = $this->natanService->processQuery(
-                $query,
-                $user,
-                [],
-                'strategic',
-                null,
-                true,
-                false
+                $query,                    // userQuery
+                $user,                     // user
+                [],                        // conversationHistory
+                'strategic',               // manualPersonaId
+                null,                      // sessionId
+                true,                      // useRag
+                false,                     // useWebSearch
+                null,                      // referenceContext
+                null                       // projectId
             );
 
             $success = $response['success'] ?? false;
             $timeTaken = round(microtime(true) - $startTime, 2);
+
+            // Check for errors in response
+            $errorMessage = null;
+            if (!$success) {
+                $errorMessage = $response['response'] ?? 'Unknown error';
+            }
 
             $this->results[] = [
                 'test_type' => 'context_size',
@@ -281,6 +313,7 @@ class NatanDiagnosticTest extends Command
                 'success' => $success,
                 'time_seconds' => $timeTaken,
                 'rate_limit_hit' => str_contains($response['response'] ?? '', 'rate limit'),
+                'error' => $errorMessage,
                 'timestamp' => Carbon::now()->toIso8601String(),
                 'iteration' => $iteration,
             ];
