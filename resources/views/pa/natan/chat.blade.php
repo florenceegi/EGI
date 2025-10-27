@@ -1,4 +1,7 @@
 <x-pa-layout noHero="true">
+    {{-- Chat History Sidebar (NEW v3.1) --}}
+    @include('pa.natan.partials._history-sidebar')
+
     <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
@@ -119,12 +122,14 @@
                         {{-- Input Area - Ottimizzato mobile --}}
                         <div class="rounded-b-2xl border-t border-gray-200 bg-gray-50 p-2 sm:p-4">
                             {{-- Web Search Toggle ✨ NEW v3.0 --}}
-                            <div class="mb-2 flex items-center justify-between rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-2 sm:p-3">
+                            <div
+                                class="mb-2 flex items-center justify-between rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-2 sm:p-3">
                                 <div class="flex items-center gap-2">
                                     <label for="webSearchToggle" class="flex cursor-pointer items-center gap-2">
                                         <input type="checkbox" id="webSearchToggle"
                                             class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0" />
-                                        <span class="text-xs font-medium text-gray-700 sm:text-sm">{{ __('natan.web_search.toggle_label') }}</span>
+                                        <span
+                                            class="text-xs font-medium text-gray-700 sm:text-sm">{{ __('natan.web_search.toggle_label') }}</span>
                                     </label>
                                     <span class="material-icons cursor-help text-sm text-gray-400 sm:text-base"
                                         title="{{ __('natan.web_search.toggle_hint') }}">info</span>
@@ -142,7 +147,8 @@
                                     style="max-height: 150px; overflow-y: auto;"></textarea>
                                 <button type="submit" id="sendBtn"
                                     class="flex items-center gap-1 self-end rounded-xl bg-[#2D5016] px-3 py-2 text-sm font-medium text-white transition-all hover:bg-[#3D6026] disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-6 sm:py-3 sm:text-base">
-                                    <span id="sendBtnText" class="hidden sm:inline">{{ __('natan.chat.send_button') }}</span>
+                                    <span id="sendBtnText"
+                                        class="hidden sm:inline">{{ __('natan.chat.send_button') }}</span>
                                     <span id="sendBtnLoader" class="hidden items-center gap-1 sm:gap-2">
                                         <svg class="h-3 w-3 animate-spin sm:h-4 sm:w-4" fill="none"
                                             viewBox="0 0 24 24">
@@ -789,6 +795,34 @@
                 },
 
                 /**
+                 * Clear chat and start new conversation
+                 * NEW v3.1 - Used by History Sidebar
+                 */
+                clearChat() {
+                    console.log('[N.A.T.A.N.] Clearing chat');
+                    
+                    // Reset state
+                    this.messages = [];
+                    this.conversationHistory = [];
+                    this.config.sessionId = null;
+                    
+                    // Clear UI
+                    if (this.elements.chatMessages) {
+                        this.elements.chatMessages.innerHTML = '';
+                    }
+                    
+                    // Show welcome message
+                    if (this.elements.welcomeMessage) {
+                        this.elements.welcomeMessage.style.display = 'flex';
+                    }
+                    
+                    // Clear input
+                    if (this.elements.userInput) {
+                        this.elements.userInput.value = '';
+                    }
+                },
+
+                /**
                  * Render single message
                  */
                 renderMessage(message) {
@@ -812,29 +846,29 @@
 
                         personaBadgeDiv.innerHTML = `
                             ${message.is_elaboration ? `
-                                                                <span class="elaboration-badge">
-                                                                    🔄 Elaborazione
-                                                                </span>
-                                                            ` : ''}
+                                                                                <span class="elaboration-badge">
+                                                                                    🔄 Elaborazione
+                                                                                </span>
+                                                                            ` : ''}
                             <span style="background-color: ${personaColor};"
                                   class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
                                 <span>${personaIcon}</span>
                                 <span>${message.persona.name}</span>
                             </span>
                             ${message.persona.confidence ? `
-                                                                                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
-                                                                                            ${Math.round(message.persona.confidence * 100)}%
-                                                                                        </span>
-                                                                                    ` : ''}
+                                                                                                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
+                                                                                                            ${Math.round(message.persona.confidence * 100)}%
+                                                                                                        </span>
+                                                                                                    ` : ''}
                             ${message.persona.method === 'manual' ? `
-                                                                                        <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
-                                                                                            ✓ Manuale
-                                                                                        </span>
-                                                                                    ` : message.persona.method === 'default' ? `
-                                                                                        <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
-                                                                                            Auto (Default)
-                                                                                        </span>
-                                                                                    ` : ''}
+                                                                                                        <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
+                                                                                                            ✓ Manuale
+                                                                                                        </span>
+                                                                                                    ` : message.persona.method === 'default' ? `
+                                                                                                        <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
+                                                                                                            Auto (Default)
+                                                                                                        </span>
+                                                                                                    ` : ''}
                         `;
                         bubbleDiv.appendChild(personaBadgeDiv);
 
@@ -880,13 +914,13 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-1">
                                 ${message.sources.map(source => `
-                                                            <a href="${source.url}" target="_blank"
-                                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
-                                                                <span class="font-medium">${source.protocol_number}</span>
-                                                                <span class="text-gray-600"> - </span>
-                                                                <span>${source.title}</span>
-                                                            </a>
-                                                        `).join('')}
+                                                                            <a href="${source.url}" target="_blank"
+                                                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
+                                                                                <span class="font-medium">${source.protocol_number}</span>
+                                                                                <span class="text-gray-600"> - </span>
+                                                                                <span>${source.title}</span>
+                                                                            </a>
+                                                                        `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(sourcesDiv);
@@ -911,21 +945,21 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-2">
                                 ${message.web_sources.map((source, idx) => `
-                                    <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
-                                        <div class="flex items-start justify-between gap-2 mb-1">
-                                            <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
-                                            <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                ${Math.round((source.relevance_score || 1) * 100)}%
-                                            </span>
-                                        </div>
-                                        <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
-                                        <a href="${source.url}" target="_blank" rel="noopener noreferrer"
-                                           class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                            <span class="material-icons text-xs">open_in_new</span>
-                                            <span class="truncate">${source.url}</span>
-                                        </a>
-                                    </div>
-                                `).join('')}
+                                                    <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
+                                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                                            <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
+                                                            <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                                ${Math.round((source.relevance_score || 1) * 100)}%
+                                                            </span>
+                                                        </div>
+                                                        <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
+                                                        <a href="${source.url}" target="_blank" rel="noopener noreferrer"
+                                                           class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                                            <span class="material-icons text-xs">open_in_new</span>
+                                                            <span class="truncate">${source.url}</span>
+                                                        </a>
+                                                    </div>
+                                                `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(webSourcesDiv);
@@ -1286,6 +1320,9 @@
                     }
                 }
             };
+
+            // Expose globally for History Sidebar access (NEW v3.1)
+            window.NatanChat = NatanChat;
 
             // Initialize on DOM ready
             if (document.readyState === 'loading') {
