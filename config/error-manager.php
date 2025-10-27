@@ -5460,6 +5460,17 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'DOCUMENT_PROCESSING_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.document_processing_failed',
+            'user_message_key' => 'error-manager::errors_2.user.document_processing_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
         'PA_HERITAGE_DETAIL_ERROR' => [
             'type' => 'error',
             'blocking' => 'semi-blocking',

@@ -142,9 +142,9 @@ class EmbeddingService {
      * Call OpenAI Embeddings API
      *
      * @param string $text Text to embed
-     * @return array|null Vector of 1536 floats
+     * @return array|null Vector of 1536 floats or array with 'vector' and 'usage' keys
      */
-    private function callOpenAIEmbedding(string $text): ?array {
+    public function callOpenAIEmbedding(string $text): ?array {
         $apiKey = config('services.openai.api_key');
         $baseUrl = config('services.openai.base_url');
         $model = config('services.openai.embedding_model');

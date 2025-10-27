@@ -26,6 +26,7 @@ return [
         'project_edit_page_error' => 'Error loading project edit form :project_id for user :user_id.',
         'project_update_failed' => 'Error updating project :project_id for user :user_id.',
         'project_delete_failed' => 'Error deleting project :project_id for user :user_id.',
+        'document_processing_failed' => 'Error processing document :document_id (project :project_id). Error: :error',
     ],
 
     'user' => [
@@ -46,6 +47,7 @@ return [
         'project_edit_page_error' => 'Unable to load edit form. Please try again.',
         'project_update_failed' => 'Unable to update project. Please check your data and try again.',
         'project_delete_failed' => 'Unable to delete project. Please try again later.',
+        'document_processing_failed' => 'Unable to process document. Please check the format and try again.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
