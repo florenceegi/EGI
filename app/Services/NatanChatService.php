@@ -20,7 +20,6 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * N.A.T.A.N. Chat Service - AI-powered conversational interface for PA acts
  *
  * VERSION: 4.1.0 - Adaptive Retry with Progressive Context Reduction
-```
  *
  * This service implements RAG (Retrieval Augmented Generation) + Web Search to allow
  * PA officials to interact with their administrative acts + global knowledge using natural language.
@@ -501,7 +500,7 @@ class NatanChatService {
                         if ($isRateLimitError && $claudeContextLimit <= $minLimit) {
                             // Don't throw exception - return user-friendly response
                             $userMessage = __('natan.errors.rate_limit_exhausted');
-                            
+
                             return [
                                 'success' => false,
                                 'response' => $userMessage,
@@ -522,7 +521,7 @@ class NatanChatService {
                     'max_retries' => $maxRetries,
                     'last_limit' => $claudeContextLimit,
                 ]);
-                
+
                 // Return user-friendly response instead of throwing
                 return [
                     'success' => false,
