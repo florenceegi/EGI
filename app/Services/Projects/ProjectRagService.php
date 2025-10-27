@@ -545,7 +545,8 @@ class ProjectRagService {
             return 0.0;
         }
 
-        $textLower = strtolower($text);
+        $textLower = strtolower($text); 
+
         $matches = 0;
 
         foreach ($keywords as $keyword) {

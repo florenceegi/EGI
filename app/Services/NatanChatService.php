@@ -223,10 +223,11 @@ class NatanChatService {
                         $context = $this->rag->getContextForQuery($userQuery, $user);
                         $ragMethod = 'semantic';
                     } else {
-                        // STEP 2.2: Call correct method searchProjectContext()
-                        // NO LIMIT = scansione completa (REGOLA STATISTICS)
+                        // STEP 2.2: Priority RAG - Search in ALL available sources
+                        // NO LIMIT on search = scans entire archive (10k, 100k, 1M acts if present)
+                        // Then takes top N by similarity for Claude context (prevent rate limit)
                         $ragResults = app(\App\Services\Projects\ProjectRagService::class)
-                            ->searchProjectContext($userQuery, $project);
+                            ->searchProjectContext($userQuery, $project, null); // null = search ALL
 
                         $ragMethod = 'priority_rag'; // Project context mode
 
@@ -235,11 +236,11 @@ class NatanChatService {
                         $stats = $ragResults['stats'] ?? [];
 
                         // STEP 2.3: Transform ProjectRag results to standard RAG format
-                        // ProjectRag returns: ['type' => 'document'|'chat', 'text' => '...', 'similarity' => X]
+                        // ProjectRag returns: ['type' => 'document'|'chat'|'pa_act', 'text' => '...', 'similarity' => X]
                         // Standard RAG expects: ['id' => X, 'content' => '...', ...]
                         $transformedResults = array_map(function ($result, $index) {
                             return [
-                                'id' => $result['type'] . '_' . ($result['chunk_id'] ?? $result['message_id'] ?? $index),
+                                'id' => $result['type'] . '_' . ($result['chunk_id'] ?? $result['message_id'] ?? $result['act_id'] ?? $index),
                                 'content' => $result['text'] ?? '',
                                 'source_type' => $result['type'],
                                 'similarity' => $result['similarity'],
@@ -247,9 +248,20 @@ class NatanChatService {
                             ];
                         }, $rawResults, array_keys($rawResults));
 
+                        // STEP 2.4: ENTERPRISE STRATEGY - Take only TOP N for Claude to prevent rate limits
+                        // Search scanned ALL sources, now limit context for API
+                        $claudeContextLimit = config('natan.claude_context_limit', 100);
+                        $topResults = array_slice($transformedResults, 0, $claudeContextLimit);
+                        
+                        $this->logger->info('[NatanChatService] Applied Claude context limit', [
+                            'total_found' => count($transformedResults),
+                            'sent_to_claude' => count($topResults),
+                            'limit' => $claudeContextLimit,
+                        ]);
+
                         $context = [
-                            'acts' => $transformedResults,
-                            'acts_summary' => $this->buildProjectContextSummary($rawResults),
+                            'acts' => $topResults, // Send only TOP N to Claude
+                            'acts_summary' => $this->buildProjectContextSummary($topResults),
                             'stats' => $stats,
                         ];
 
