@@ -432,4 +432,201 @@ class ProjectController extends Controller {
                 ->withErrors(['error' => $e->getMessage()]);
         }
     }
+
+    /**
+     * Upload document to project
+     *
+     * POST /pa/projects/{project}/documents/upload
+     *
+     * ✨ NEW v4.0 - Document upload for Priority RAG
+     *
+     * @param Request $request
+     * @param Project $project
+     * @return JsonResponse
+     */
+    public function uploadDocument(Request $request, Project $project): JsonResponse {
+        try {
+            $user = Auth::user();
+
+            // 1. Authorization: Owner check
+            if ($project->user_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('projects.unauthorized')
+                ], 403);
+            }
+
+            // 2. ULM: Log operation start
+            $this->logger->info('[ProjectController] Uploading document to project', [
+                'user_id' => $user->id,
+                'project_id' => $project->id,
+                'filename' => $request->file('document')?->getClientOriginalName(),
+            ]);
+
+            // 3. Validation
+            $validated = $request->validate([
+                'document' => 'required|file|mimes:pdf,docx,txt,md|max:10240', // 10MB max
+            ]);
+
+            // 4. Upload and process document via service
+            $document = $this->projectService->uploadDocument($project, $validated['document'], $user);
+
+            // 5. GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'project_document_uploaded',
+                [
+                    'project_id' => $project->id,
+                    'document_id' => $document->id,
+                    'filename' => $document->filename,
+                ],
+                GdprActivityCategory::GENERAL_ACTIVITY
+            );
+
+            // 6. ULM: Log success
+            $this->logger->info('[ProjectController] Document uploaded successfully', [
+                'document_id' => $document->id,
+                'project_id' => $project->id,
+                'user_id' => $user->id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('projects.document_uploaded_successfully', ['filename' => $document->filename]),
+                'document' => [
+                    'id' => $document->id,
+                    'filename' => $document->filename,
+                    'status' => $document->status,
+                    'created_at' => $document->created_at->format('d/m/Y H:i'),
+                ]
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Validation errors
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            // 7. UEM: Error handling
+            $this->errorManager->handle('PROJECT_DOCUMENT_UPLOAD_FAILED', [
+                'project_id' => $project->id ?? null,
+                'user_id' => Auth::id(),
+                'filename' => $request->file('document')?->getClientOriginalName(),
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * ✨ NEW v4.0 - Set active project in session (for chat context)
+     *
+     * POST /pa/projects/set-active
+     */
+    public function setActive(Request $request): JsonResponse {
+        try {
+            $user = Auth::user();
+
+            $validated = $request->validate([
+                'project_id' => 'required|integer|exists:projects,id',
+            ]);
+
+            $project = Project::findOrFail($validated['project_id']);
+
+            // Authorization: Owner check
+            if ($project->user_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('projects.unauthorized')
+                ], 403);
+            }
+
+            // Set active project in session
+            session(['active_project_id' => $project->id]);
+
+            // GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'project_set_active',
+                [
+                    'project_id' => $project->id,
+                    'project_name' => $project->name,
+                ],
+                GdprActivityCategory::GENERAL_ACTIVITY
+            );
+
+            $this->logger->info('[ProjectController] Project set as active', [
+                'project_id' => $project->id,
+                'user_id' => $user->id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('projects.set_active_success', ['name' => $project->name]),
+                'project' => [
+                    'id' => $project->id,
+                    'name' => $project->name,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('PROJECT_SET_ACTIVE_FAILED', [
+                'user_id' => Auth::id(),
+                'project_id' => $request->input('project_id'),
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * ✨ NEW v4.0 - Remove active project from session (return to generic chat)
+     *
+     * POST /pa/projects/remove-active
+     */
+    public function removeActive(): JsonResponse {
+        try {
+            $user = Auth::user();
+
+            $activeProjectId = session('active_project_id');
+
+            // Remove from session
+            session()->forget('active_project_id');
+
+            // GDPR: Audit trail
+            $this->auditService->logUserAction(
+                $user,
+                'project_removed_active',
+                [
+                    'previous_project_id' => $activeProjectId,
+                ],
+                GdprActivityCategory::GENERAL_ACTIVITY
+            );
+
+            $this->logger->info('[ProjectController] Active project removed', [
+                'user_id' => $user->id,
+                'previous_project_id' => $activeProjectId,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('projects.remove_active_success'),
+            ]);
+        } catch (\Exception $e) {
+            $this->errorManager->handle('PROJECT_REMOVE_ACTIVE_FAILED', [
+                'user_id' => Auth::id(),
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

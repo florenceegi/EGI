@@ -156,6 +156,27 @@
                                 </span>
                             </div>
 
+                            {{-- ✨ NEW v4.0 - Upload Documents (only when project active) --}}
+                            @if ($activeProject)
+                                <div class="mb-3 flex items-center gap-3 rounded-lg border-2 border-[#D4A574] bg-gradient-to-r from-[#D4A574]/10 to-white p-3">
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg"
+                                        style="background-color: {{ $activeProject->color ?? '#D4A574' }}20">
+                                        <span class="material-icons" style="color: {{ $activeProject->color ?? '#D4A574' }}">{{ $activeProject->icon ?? 'folder' }}</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-[#1B365D]">{{ $activeProject->name }}</p>
+                                        <p class="text-xs text-gray-600">{{ __('projects.upload_documents_hint') }}</p>
+                                    </div>
+                                    <button type="button" onclick="triggerDocumentUpload()"
+                                        class="flex items-center gap-2 rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
+                                        <span class="material-icons text-sm">upload_file</span>
+                                        <span class="hidden sm:inline">{{ __('projects.upload_document') }}</span>
+                                    </button>
+                                    <input type="file" id="documentUploadInput" accept=".pdf,.docx,.txt,.md"
+                                        class="hidden" onchange="handleDocumentUpload(event)">
+                                </div>
+                            @endif
+
                             <form id="chatForm" class="flex gap-1.5 sm:gap-2">
                                 <textarea id="userInput" rows="1" placeholder="{{ __('natan.chat.input_placeholder') }}"
                                     class="flex-1 resize-none rounded-xl border-2 border-gray-200 px-3 py-2 text-sm focus:border-[#2D5016] focus:outline-none focus:ring-2 focus:ring-[#2D5016]/20 disabled:cursor-not-allowed disabled:bg-gray-100 sm:px-4 sm:py-3 sm:text-base"
@@ -2027,6 +2048,85 @@
                 } catch (error) {
                     console.error('[removeProject] Error:', error);
                     alert('{{ __("projects.network_error") }}');
+                }
+            }
+
+            // ✨ NEW v4.0 - Document Upload Management
+            function triggerDocumentUpload() {
+                const input = document.getElementById('documentUploadInput');
+                if (input) {
+                    input.click();
+                }
+            }
+
+            async function handleDocumentUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                // Client-side validation
+                const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown'];
+                const maxSize = 10 * 1024 * 1024; // 10MB
+
+                if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx|txt|md)$/i)) {
+                    alert('{{ __("projects.invalid_file_type") }}');
+                    event.target.value = ''; // Reset input
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    alert('{{ __("projects.file_too_large", ["size" => 10]) }}');
+                    event.target.value = ''; // Reset input
+                    return;
+                }
+
+                const activeProjectId = window.activeProject?.id;
+                if (!activeProjectId) {
+                    alert('{{ __("projects.no_active_project") }}');
+                    return;
+                }
+
+                // Show uploading notification
+                const uploadBtn = event.target.previousElementSibling;
+                const originalHTML = uploadBtn.innerHTML;
+                uploadBtn.disabled = true;
+                uploadBtn.innerHTML = '<span class="material-icons text-sm animate-spin">hourglass_empty</span><span class="hidden sm:inline">{{ __("projects.uploading") }}</span>';
+
+                const formData = new FormData();
+                formData.append('document', file);
+
+                try {
+                    const response = await fetch(`/pa/projects/${activeProjectId}/documents/upload`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Show success message
+                        alert(data.message || '{{ __("projects.document_uploaded_successfully", ["filename" => ""]) }}');
+
+                        // Reset input
+                        event.target.value = '';
+
+                        // Optional: Reload to update document count (or update DOM dynamically)
+                        // window.location.reload();
+                    } else {
+                        alert(data.message || '{{ __("projects.upload_error") }}');
+                        event.target.value = '';
+                    }
+                } catch (error) {
+                    console.error('[handleDocumentUpload] Error:', error);
+                    alert('{{ __("projects.network_error") }}');
+                    event.target.value = '';
+                } finally {
+                    // Restore button
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML = originalHTML;
                 }
             }
         </script>

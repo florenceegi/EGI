@@ -187,4 +187,45 @@ class ProjectService {
             'total_chat_messages' => $project->chatMessages()->count(),
         ];
     }
+
+    /**
+     * Upload document to project
+     *
+     * ✨ NEW v4.0 - Document upload for Priority RAG
+     *
+     * @param Project $project
+     * @param \Illuminate\Http\UploadedFile $file
+     * @param User $user
+     * @return \App\Models\ProjectDocument
+     * @throws \Exception
+     */
+    public function uploadDocument(Project $project, $file, User $user): \App\Models\ProjectDocument {
+        // 1. Check document limit (if any - for now unlimited)
+        // TODO: Add limit check in future if needed
+
+        // 2. Store file
+        $filename = $file->getClientOriginalName();
+        $path = $file->store('projects/' . $project->id . '/documents', 'private');
+
+        // 3. Create ProjectDocument record
+        $document = $project->documents()->create([
+            'filename' => $filename,
+            'filepath' => $path,
+            'mime_type' => $file->getMimeType(),
+            'size' => $file->getSize(),
+            'status' => 'pending', // Will be updated by ProcessDocumentJob
+            'uploaded_by' => $user->id,
+        ]);
+
+        // 4. Queue processing job (chunking + vectorization)
+        \App\Jobs\ProcessDocumentJob::dispatch($document);
+
+        $this->logger->info('[ProjectService] Document queued for processing', [
+            'document_id' => $document->id,
+            'project_id' => $project->id,
+            'filename' => $filename,
+        ]);
+
+        return $document;
+    }
 }

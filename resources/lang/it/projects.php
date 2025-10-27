@@ -90,6 +90,12 @@ return [
     'select_error' => 'Errore nella selezione del progetto',
     'remove_error' => 'Errore nella rimozione del progetto',
     'remove_confirm' => 'Sei sicuro di voler rimuovere il progetto attivo? La chat tornerà in modalità generica.',
+    'upload_error' => 'Errore durante il caricamento del documento',
+    'no_active_project' => 'Nessun progetto attivo selezionato',
+    'uploading' => 'Caricamento...',
+    'upload_documents_hint' => 'Carica documenti per usarli nella chat',
+    'set_active_success' => 'Progetto ":name" attivato con successo',
+    'remove_active_success' => 'Progetto rimosso. Chat in modalità generica.',
 
     // Stats and info
     'chats_count' => 'Chat',

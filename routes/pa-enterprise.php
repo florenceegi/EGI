@@ -284,6 +284,9 @@ Route::prefix('pa')
         Route::post('/projects/set-active', [ProjectController::class, 'setActive'])->name('projects.set-active');
         Route::post('/projects/remove-active', [ProjectController::class, 'removeActive'])->name('projects.remove-active');
 
+        // ✨ NEW v4.0 - Document Upload (for Priority RAG)
+        Route::post('/projects/{project}/documents/upload', [ProjectController::class, 'uploadDocument'])->name('projects.documents.upload');
+
         /**
          * FUTURE ROUTES (FASE 2-3)
 
