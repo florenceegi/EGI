@@ -1113,15 +1113,16 @@
                             return;
                         }
 
-                        // Parse JSON response (works for both 200 and error status codes)
-                        let data;
-                        const contentType = response.headers.get('content-type');
+                        // Read response body as text FIRST (can only read once!)
+                        const responseText = await response.text();
+                        console.log('[N.A.T.A.N.] Response length:', responseText.length, 'chars');
                         
+                        // Check if response looks like JSON
+                        const contentType = response.headers.get('content-type');
                         if (!contentType || !contentType.includes('application/json')) {
                             // Server returned non-JSON (probably HTML error page)
                             console.error('[N.A.T.A.N.] Server returned non-JSON response');
-                            const textResponse = await response.text();
-                            console.log('[N.A.T.A.N.] Raw response:', textResponse.substring(0, 500));
+                            console.log('[N.A.T.A.N.] Raw response:', responseText.substring(0, 500));
                             
                             this.hideLoadingIndicator();
                             this.addMessage('assistant', 
@@ -1130,8 +1131,10 @@
                             return;
                         }
 
+                        // Try to parse as JSON
+                        let data;
                         try {
-                            data = await response.json();
+                            data = JSON.parse(responseText);
                             console.log('[N.A.T.A.N.] Parsed data:', {
                                 success: data.success,
                                 hasMessage: !!data.message,
@@ -1140,6 +1143,8 @@
                             });
                         } catch (parseError) {
                             console.error('[N.A.T.A.N.] JSON Parse Error:', parseError);
+                            console.log('[N.A.T.A.N.] First 500 chars:', responseText.substring(0, 500));
+                            
                             this.hideLoadingIndicator();
                             this.addMessage('assistant', 
                                 'Errore nel parsing della risposta del server. Il nostro team è stato notificato.'
