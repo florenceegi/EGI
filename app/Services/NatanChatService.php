@@ -248,20 +248,16 @@ class NatanChatService {
                             ];
                         }, $rawResults, array_keys($rawResults));
 
-                        // STEP 2.4: ENTERPRISE STRATEGY - Take only TOP N for Claude to prevent rate limits
-                        // Search scanned ALL sources, now limit context for API
-                        $claudeContextLimit = config('natan.claude_context_limit', 100);
-                        $topResults = array_slice($transformedResults, 0, $claudeContextLimit);
-
-                        $this->logger->info('[NatanChatService] Applied Claude context limit', [
+                        // STEP 2.4: Prepare context with ALL results
+                        // NO pre-filtering! Adaptive retry will reduce if rate limited
+                        $this->logger->info('[NatanChatService] Priority RAG - prepared ALL results for Claude', [
                             'total_found' => count($transformedResults),
-                            'sent_to_claude' => count($topResults),
-                            'limit' => $claudeContextLimit,
+                            'strategy' => 'SEND_ALL_THEN_ADAPT',
                         ]);
 
                         $context = [
-                            'acts' => $topResults, // Send only TOP N to Claude
-                            'acts_summary' => $this->buildProjectContextSummary($topResults),
+                            'acts' => $transformedResults, // ALL results - adaptive retry will reduce if needed
+                            'acts_summary' => $this->buildProjectContextSummary($transformedResults),
                             'stats' => $stats,
                         ];
 
@@ -274,29 +270,26 @@ class NatanChatService {
                     }
                 } else {
                     // Generic PA chat: Standard RAG
-                    // ENTERPRISE STRATEGY: Search ALL, take TOP N for Claude
+                    // ENTERPRISE STRATEGY: Search ALL, send ALL to Claude (adaptive retry will reduce if needed)
                     $contextRaw = $this->rag->getContextForQuery($userQuery, $user); // No limit = scans all
 
-                    // Apply TOP N limit for Claude context (prevent rate limits)
-                    $claudeContextLimit = config('natan.claude_context_limit', 100);
+                    // NO pre-filtering! Send ALL acts found
                     $allActs = $contextRaw['acts'] ?? [];
-                    $topActs = array_slice($allActs, 0, $claudeContextLimit);
 
-                    $this->logger->info('[NatanChatService] Applied Claude context limit (Standard RAG)', [
+                    $this->logger->info('[NatanChatService] Standard RAG - prepared ALL results for Claude', [
                         'total_found' => count($allActs),
-                        'sent_to_claude' => count($topActs),
-                        'limit' => $claudeContextLimit,
+                        'strategy' => 'SEND_ALL_THEN_ADAPT',
                     ]);
 
                     $context = [
-                        'acts' => $topActs,
+                        'acts' => $allActs, // ALL acts - adaptive retry will reduce if needed
                         'acts_summary' => $contextRaw['acts_summary'] ?? '',
                         'stats' => $contextRaw['stats'] ?? [],
                     ];
 
                     $ragMethod = 'semantic'; // Default to semantic
 
-                    $logContext['acts_count'] = count($topActs);
+                    $logContext['acts_count'] = count($allActs);
                     $logContext['context_summary_length'] = strlen($context['acts_summary']);
                     $logContext['rag_method'] = $ragMethod;
 
@@ -389,25 +382,39 @@ class NatanChatService {
             ]);
 
             // STEP 4: Call Anthropic Claude API with ADAPTIVE RETRY on rate_limit_error
-            // ENTERPRISE STRATEGY: Automatically reduce context size on rate limit errors
-            // Retry sequence: 100 → 50 → 25 → 10 → 5 until success or minimum reached
+            // ENTERPRISE STRATEGY: Try ALL acts first, reduce ONLY if rate limited
+            // OBIETTIVO: Massimizzare contesto inviato a Claude per accuratezza massima
+            // Retry sequence: ALL_FOUND → HALF → QUARTER → ... until Claude accepts
             $aiResponseData = null;
             $usage = null;
             $originalActsCount = count($context['acts']);
-            $claudeContextLimit = config('natan.claude_context_limit', 100);
+            
+            // START WITH ALL ACTS FOUND (not a config limit!)
+            $claudeContextLimit = $originalActsCount; // PROVA TUTTI!
             $minLimit = config('natan.claude_context_limit_minimum', 5);
             $retryAttempt = 0;
             $maxRetries = 10; // Safety: prevent infinite loop
+
+            $this->logger->info('[NatanChatService] Starting adaptive retry - will try ALL acts first', [
+                'total_acts_found' => $originalActsCount,
+                'first_attempt_will_send' => $claudeContextLimit,
+                'strategy' => 'MAX_CONTEXT_FIRST',
+            ]);
 
             while ($retryAttempt < $maxRetries) {
                 try {
                     // Apply current limit to context
                     $limitedContext = $context;
-                    if ($originalActsCount > $claudeContextLimit) {
+                    if ($claudeContextLimit < $originalActsCount) {
                         $limitedContext['acts'] = array_slice($context['acts'], 0, $claudeContextLimit);
-                        $this->logger->info('[NatanChatService] Context limited for Claude API', [
+                        $this->logger->info('[NatanChatService] Context reduced for retry', [
                             'original_count' => $originalActsCount,
-                            'limited_to' => $claudeContextLimit,
+                            'sending' => $claudeContextLimit,
+                            'retry_attempt' => $retryAttempt,
+                        ]);
+                    } else {
+                        $this->logger->info('[NatanChatService] Sending ALL acts found', [
+                            'acts_count' => $claudeContextLimit,
                             'retry_attempt' => $retryAttempt,
                         ]);
                     }
@@ -421,19 +428,19 @@ class NatanChatService {
                     );
 
                     // Success! Break retry loop
-                    $this->logger->info('[NatanChatService] AI response successful', [
+                    $this->logger->info('[NatanChatService] ✅ Claude API accepted context', [
                         'retry_attempt' => $retryAttempt,
-                        'final_limit' => $claudeContextLimit,
-                        'original_count' => $originalActsCount,
+                        'acts_sent' => $claudeContextLimit,
+                        'acts_found' => $originalActsCount,
+                        'reduction_percentage' => $originalActsCount > 0 ? round(($claudeContextLimit / $originalActsCount) * 100, 1) : 100,
                     ]);
                     break;
-
                 } catch (\Exception $e) {
                     // Check if it's a rate limit error
                     $errorBody = method_exists($e, 'getMessage') ? $e->getMessage() : '';
                     $isRateLimitError = str_contains($errorBody, 'rate_limit_error') ||
-                                       str_contains($errorBody, 'rate limit') ||
-                                       str_contains($errorBody, '429');
+                        str_contains($errorBody, 'rate limit') ||
+                        str_contains($errorBody, '429');
 
                     if ($isRateLimitError && $claudeContextLimit > $minLimit) {
                         // Reduce limit by half and retry
@@ -441,20 +448,20 @@ class NatanChatService {
                         $claudeContextLimit = max($minLimit, (int)($claudeContextLimit / 2));
                         $retryAttempt++;
 
-                        $this->logger->warning('[NatanChatService] Rate limit detected, retrying with reduced context', [
+                        $this->logger->warning('[NatanChatService] ⚠️ Rate limit hit - reducing context and retrying', [
                             'previous_limit' => $previousLimit,
                             'new_limit' => $claudeContextLimit,
                             'retry_attempt' => $retryAttempt,
+                            'reduction_percentage' => round(($claudeContextLimit / $originalActsCount) * 100, 1),
                             'error' => substr($errorBody, 0, 200),
                         ]);
 
                         // Brief pause before retry (exponential backoff)
                         usleep(min(100000 * pow(2, $retryAttempt), 2000000)); // Max 2 seconds
                         continue;
-
                     } else {
                         // Not a rate limit error OR reached minimum limit - rethrow
-                        $this->logger->error('[NatanChatService] API call failed (non-retryable)', [
+                        $this->logger->error('[NatanChatService] ❌ API call failed (non-retryable)', [
                             'is_rate_limit' => $isRateLimitError,
                             'current_limit' => $claudeContextLimit,
                             'min_limit' => $minLimit,
@@ -476,7 +483,7 @@ class NatanChatService {
             $usage = $aiResponseData['usage'] ?? null;
 
             // Update context['acts'] with final limited version for accurate logging
-            if ($originalActsCount > $claudeContextLimit) {
+            if ($claudeContextLimit < $originalActsCount) {
                 $context['acts'] = array_slice($context['acts'], 0, $claudeContextLimit);
             }
 
