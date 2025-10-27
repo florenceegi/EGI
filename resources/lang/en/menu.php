@@ -42,10 +42,15 @@ return [
     'pa' => 'PA Enterprise Management',
     'pa_dashboard' => 'Dashboard',
     'pa_heritage' => 'Certified Documents',
-    'pa_acts' => 'Tokenized Acts',
+    'pa_acts' => 'N.A.T.A.N. Intelligence',
     'pa_scrapers' => 'Web Scraping Agent',
+    'pa_embeddings' => 'Semantic Search',
+    'pa_ai_costs' => 'AI Costs Monitor',
+    'pa_statistics' => 'Acts Statistics',
+    'pa_batch_processor' => 'Batch Processing',
     'pa_coa' => 'CoA Certificates',
     'pa_inspectors' => 'Assigned Inspectors',
+    'pa_projects' => 'N.A.T.A.N. Projects',
 
     // Context-specific Menu Groups
     'pa_management' => 'PA Management',

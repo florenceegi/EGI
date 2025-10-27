@@ -69,6 +69,7 @@ return [
     'pa_batch_processor' => 'Elaborazione Batch',
     'pa_coa' => 'Certificati CoA',
     'pa_inspectors' => 'Ispettori Assegnati',
+    'pa_projects' => 'Progetti N.A.T.A.N.',
 
     // Context-specific Menu Groups
     'pa_management' => 'Gestione PA',

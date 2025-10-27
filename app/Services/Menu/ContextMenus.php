@@ -42,6 +42,7 @@ use App\Services\Menu\Items\PABatchProcessorMenu;
 use App\Services\Menu\Items\PAScrapersMenu;
 use App\Services\Menu\Items\PAEmbeddingsMenu;
 use App\Services\Menu\Items\PAAiCostsMenu;
+use App\Services\Menu\Items\PAProjectsMenu;
 // SuperAdmin Menu Items
 use App\Services\Menu\Items\SuperadminDashboardMenu;
 use App\Services\Menu\Items\SuperadminAiConsultationsMenu;
@@ -270,6 +271,7 @@ class ContextMenus {
                 $paMainMenu = new MenuGroup(__('menu.pa_management'), 'pa-building', [
                     // new PAHeritageMenu(),
                     new PAActsMenu(),
+                    new PAProjectsMenu(),
                     new PAScrapersMenu(),
                     new PAEmbeddingsMenu(),
                     new PAAiCostsMenu(), // NEW v3.2 - AI Costs Monitoring

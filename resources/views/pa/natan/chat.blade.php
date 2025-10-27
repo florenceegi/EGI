@@ -844,29 +844,29 @@
 
                         personaBadgeDiv.innerHTML = `
                             ${message.is_elaboration ? `
-                                                                                                <span class="elaboration-badge">
-                                                                                                    🔄 Elaborazione
-                                                                                                </span>
-                                                                                            ` : ''}
+                                                                                                        <span class="elaboration-badge">
+                                                                                                            🔄 Elaborazione
+                                                                                                        </span>
+                                                                                                    ` : ''}
                             <span style="background-color: ${personaColor};"
                                   class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
                                 <span>${personaIcon}</span>
                                 <span>${message.persona.name}</span>
                             </span>
                             ${message.persona.confidence ? `
-                                                                                                                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
-                                                                                                                            ${Math.round(message.persona.confidence * 100)}%
-                                                                                                                        </span>
-                                                                                                                    ` : ''}
+                                                                                                                                <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
+                                                                                                                                    ${Math.round(message.persona.confidence * 100)}%
+                                                                                                                                </span>
+                                                                                                                            ` : ''}
                             ${message.persona.method === 'manual' ? `
-                                                                                                                        <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
-                                                                                                                            ✓ Manuale
-                                                                                                                        </span>
-                                                                                                                    ` : message.persona.method === 'default' ? `
-                                                                                                                        <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
-                                                                                                                            Auto (Default)
-                                                                                                                        </span>
-                                                                                                                    ` : ''}
+                                                                                                                                <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
+                                                                                                                                    ✓ Manuale
+                                                                                                                                </span>
+                                                                                                                            ` : message.persona.method === 'default' ? `
+                                                                                                                                <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
+                                                                                                                                    Auto (Default)
+                                                                                                                                </span>
+                                                                                                                            ` : ''}
                         `;
                         bubbleDiv.appendChild(personaBadgeDiv);
 
@@ -912,13 +912,13 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-1">
                                 ${message.sources.map(source => `
-                                                                                            <a href="${source.url}" target="_blank"
-                                                                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
-                                                                                                <span class="font-medium">${source.protocol_number}</span>
-                                                                                                <span class="text-gray-600"> - </span>
-                                                                                                <span>${source.title}</span>
-                                                                                            </a>
-                                                                                        `).join('')}
+                                                                                                    <a href="${source.url}" target="_blank"
+                                                                                                       class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
+                                                                                                        <span class="font-medium">${source.protocol_number}</span>
+                                                                                                        <span class="text-gray-600"> - </span>
+                                                                                                        <span>${source.title}</span>
+                                                                                                    </a>
+                                                                                                `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(sourcesDiv);
@@ -943,21 +943,21 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-2">
                                 ${message.web_sources.map((source, idx) => `
-                                                                    <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
-                                                                        <div class="flex items-start justify-between gap-2 mb-1">
-                                                                            <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
-                                                                            <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                                                ${Math.round((source.relevance_score || 1) * 100)}%
-                                                                            </span>
-                                                                        </div>
-                                                                        <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
-                                                                        <a href="${source.url}" target="_blank" rel="noopener noreferrer"
-                                                                           class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                                                            <span class="material-icons text-xs">open_in_new</span>
-                                                                            <span class="truncate">${source.url}</span>
-                                                                        </a>
-                                                                    </div>
-                                                                `).join('')}
+                                                                            <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
+                                                                                <div class="flex items-start justify-between gap-2 mb-1">
+                                                                                    <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
+                                                                                    <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                                                        ${Math.round((source.relevance_score || 1) * 100)}%
+                                                                                    </span>
+                                                                                </div>
+                                                                                <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
+                                                                                <a href="${source.url}" target="_blank" rel="noopener noreferrer"
+                                                                                   class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                                                                    <span class="material-icons text-xs">open_in_new</span>
+                                                                                    <span class="truncate">${source.url}</span>
+                                                                                </a>
+                                                                            </div>
+                                                                        `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(webSourcesDiv);
@@ -1591,6 +1591,106 @@
             } else {
                 FreeChat.init();
             }
+        </script>
+    @endpush
+
+    {{-- Projects Modal --}}
+    <div id="projectsModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm"
+        role="dialog" aria-labelledby="projectsModalTitle" aria-modal="true">
+        <div class="flex min-h-screen items-center justify-center p-4">
+            <div class="w-full max-w-4xl transform rounded-2xl bg-white shadow-2xl transition-all">
+                {{-- Modal Header --}}
+                <div
+                    class="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-[#1B365D] to-[#2D5016] px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <span class="material-icons text-3xl text-white">folder_special</span>
+                        <h2 id="projectsModalTitle" class="text-2xl font-bold text-white">
+                            {{ __('projects.projects') }}
+                        </h2>
+                    </div>
+                    <button type="button" onclick="closeProjectsModal()"
+                        class="rounded-lg p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+
+                {{-- Modal Body --}}
+                <div class="p-6">
+                    {{-- Coming Soon Message --}}
+                    <div class="py-12 text-center">
+                        <span class="material-icons mb-4 text-6xl text-[#D4A574]">construction</span>
+                        <h3 class="mb-2 text-2xl font-bold text-[#1B365D]">
+                            {{ __('projects.coming_soon') }}
+                        </h3>
+                        <p class="text-gray-600">
+                            {{ __('projects.modal_description') }}
+                        </p>
+                    </div>
+
+                    {{-- TODO: Projects list will go here
+                    <div class="space-y-4">
+                        Projects cards...
+                    </div>
+                    --}}
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                    <button type="button" onclick="closeProjectsModal()"
+                        class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+                        {{ __('projects.close') }}
+                    </button>
+                    <button type="button"
+                        class="rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
+                        <span class="material-icons mr-2 text-sm">add</span>
+                        {{ __('projects.create_new') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+        <script>
+            // Projects Modal Handler
+            function openProjectsModal() {
+                const modal = document.getElementById('projectsModal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+
+            function closeProjectsModal() {
+                const modal = document.getElementById('projectsModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+            }
+
+            // Listen for modal action from sidebar
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('[data-action="open-projects-modal"]');
+                if (target) {
+                    e.preventDefault();
+                    openProjectsModal();
+                }
+            });
+
+            // Close modal on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeProjectsModal();
+                }
+            });
+
+            // Close modal on backdrop click
+            document.getElementById('projectsModal')?.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeProjectsModal();
+                }
+            });
         </script>
     @endpush
 </x-pa-layout>

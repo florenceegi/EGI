@@ -35,8 +35,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - Role check: pa_entity (done in methods via hasRole)
  * - Ownership check: user_id === Auth::id() per ogni operazione
  */
-class ProjectController extends Controller
-{
+class ProjectController extends Controller {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected ProjectService $projectService;
@@ -74,13 +73,16 @@ class ProjectController extends Controller
      * - Status filter (active/inactive)
      * - Pagination (15 items/page)
      */
-    public function index(Request $request): View|RedirectResponse
-    {
+    public function index(Request $request): View|RedirectResponse {
         try {
             $user = Auth::user();
 
-            // Authorization: Check pa_entity role
-            if (!$user->hasRole('pa_entity')) {
+            // Authorization: Check pa_entity role OR superadmin
+            if (!$user->hasRole('pa_entity') && !$user->hasRole('superadmin')) {
+                $this->logger->warning('[ProjectController] Unauthorized access attempt to projects index', [
+                    'user_id' => $user->id,
+                    'roles' => $user->roles->pluck('name')->toArray(),
+                ]);
                 abort(403, __('projects.unauthorized'));
             }
 
@@ -98,7 +100,7 @@ class ProjectController extends Controller
                 $search = $validated['search'];
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             }
 
@@ -120,7 +122,6 @@ class ProjectController extends Controller
             ]);
 
             return view('pa.natan.projects.index', compact('projects'));
-
         } catch (\Exception $e) {
             // UEM: Error handling
             $this->errorManager->handle('PROJECT_INDEX_ERROR', [
@@ -138,17 +139,15 @@ class ProjectController extends Controller
      *
      * GET /pa/projects/create
      */
-    public function create(): View|RedirectResponse
-    {
+    public function create(): View|RedirectResponse {
         try {
             $user = Auth::user();
 
-            if (!$user->hasRole('pa_entity')) {
+            if (!$user->hasRole('pa_entity') && !$user->hasRole('superadmin')) {
                 abort(403, __('projects.unauthorized'));
             }
 
             return view('pa.projects.create');
-
         } catch (\Exception $e) {
             $this->errorManager->handle('PROJECT_CREATE_PAGE_ERROR', [
                 'user_id' => Auth::id(),
@@ -165,12 +164,11 @@ class ProjectController extends Controller
      *
      * POST /pa/projects
      */
-    public function store(Request $request): RedirectResponse
-    {
+    public function store(Request $request): RedirectResponse {
         try {
             $user = Auth::user();
 
-            if (!$user->hasRole('pa_entity')) {
+            if (!$user->hasRole('pa_entity') && !$user->hasRole('superadmin')) {
                 abort(403, __('projects.unauthorized'));
             }
 
@@ -211,7 +209,6 @@ class ProjectController extends Controller
             return redirect()
                 ->route('pa.projects.show', $project)
                 ->with('success', __('projects.created_successfully', ['name' => $project->name]));
-
         } catch (\Exception $e) {
             // 6. UEM: Error handling
             $this->errorManager->handle('PROJECT_CREATE_FAILED', [
@@ -231,8 +228,7 @@ class ProjectController extends Controller
      *
      * GET /pa/projects/{project}
      */
-    public function show(Project $project): View|RedirectResponse
-    {
+    public function show(Project $project): View|RedirectResponse {
         try {
             $user = Auth::user();
 
@@ -251,7 +247,6 @@ class ProjectController extends Controller
             $statistics = $this->projectService->getProjectStatistics($project);
 
             return view('pa.projects.show', compact('project', 'statistics'));
-
         } catch (\Exception $e) {
             $this->errorManager->handle('PROJECT_SHOW_ERROR', [
                 'project_id' => $project->id ?? null,
@@ -269,8 +264,7 @@ class ProjectController extends Controller
      *
      * GET /pa/projects/{project}/edit
      */
-    public function edit(Project $project): View|RedirectResponse
-    {
+    public function edit(Project $project): View|RedirectResponse {
         try {
             $user = Auth::user();
 
@@ -279,7 +273,6 @@ class ProjectController extends Controller
             }
 
             return view('pa.projects.edit', compact('project'));
-
         } catch (\Exception $e) {
             $this->errorManager->handle('PROJECT_EDIT_PAGE_ERROR', [
                 'project_id' => $project->id ?? null,
@@ -297,8 +290,7 @@ class ProjectController extends Controller
      *
      * PUT /pa/projects/{project}
      */
-    public function update(Request $request, Project $project): RedirectResponse
-    {
+    public function update(Request $request, Project $project): RedirectResponse {
         try {
             $user = Auth::user();
 
@@ -342,7 +334,6 @@ class ProjectController extends Controller
             return redirect()
                 ->route('pa.projects.show', $project)
                 ->with('success', __('projects.updated_successfully'));
-
         } catch (\Exception $e) {
             // 6. UEM: Error handling
             $this->errorManager->handle('PROJECT_UPDATE_FAILED', [
@@ -362,8 +353,7 @@ class ProjectController extends Controller
      *
      * DELETE /pa/projects/{project}
      */
-    public function destroy(Project $project): RedirectResponse
-    {
+    public function destroy(Project $project): RedirectResponse {
         try {
             $user = Auth::user();
 
@@ -402,7 +392,6 @@ class ProjectController extends Controller
             return redirect()
                 ->route('pa.projects.index')
                 ->with('success', __('projects.deleted_successfully'));
-
         } catch (\Exception $e) {
             // 5. UEM: Error handling
             $this->errorManager->handle('PROJECT_DELETE_FAILED', [

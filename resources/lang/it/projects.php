@@ -43,6 +43,9 @@ return [
     'filter_apply' => 'Applica filtri',
     'filter_clear' => 'Cancella filtri',
     'clear_filters' => 'Rimuovi filtri',
+    'close' => 'Chiudi',
+    'coming_soon' => 'Funzionalità in arrivo',
+    'modal_description' => 'La gestione progetti sarà disponibile a breve. Potrai caricare documenti, organizzarli in progetti e usarli per chat prioritarie con N.A.T.A.N.',
 
     // Page titles
     'page_title_index' => 'I Miei Progetti',

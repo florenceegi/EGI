@@ -43,6 +43,9 @@ return [
     'filter_apply' => 'Apply filters',
     'filter_clear' => 'Clear filters',
     'clear_filters' => 'Remove filters',
+    'close' => 'Close',
+    'coming_soon' => 'Coming Soon',
+    'modal_description' => 'Project management will be available soon. You will be able to upload documents, organize them into projects, and use them for priority chats with N.A.T.A.N.',
 
     // Page titles
     'page_title_index' => 'My Projects',
