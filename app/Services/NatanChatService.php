@@ -397,13 +397,16 @@ class NatanChatService {
             $retryAttempt = 0;
             $maxRetries = 10; // Safety: prevent infinite loop
 
-            // 🧪 TEMPORARY TEST: Force low limit to debug rate limit issue
-            $claudeContextLimit = 50; // KEEP for testing - remove when rate limit issue resolved
+            // 🧪 TEMPORARY TEST: Force low INITIAL limit for acceleration limit compliance
+            // Anthropic has ACCELERATION limits - must start small and scale gradually
+            // Start with 10 acts instead of 50 to avoid triggering acceleration limit
+            $claudeContextLimit = 10; // REDUCED from 50 - testing acceleration compliance
 
             \Log::info('🚀🚀🚀 ADAPTIVE RETRY STARTING', [
                 'total_acts_found' => $originalActsCount,
                 'first_attempt_will_send' => $claudeContextLimit,
                 'FORCED_LIMIT_TEST' => true, // 🧪 TEST MODE
+                'NOTE' => 'Starting with 10 acts to comply with Anthropic acceleration limits',
             ]);
 
             $this->logger->info('[NatanChatService] Starting adaptive retry - will try ALL acts first', [
@@ -480,10 +483,17 @@ class NatanChatService {
 
                         // LONGER pause for ACCELERATION LIMIT
                         // Anthropic requires GRADUAL scaling - need significant delays between attempts
-                        // Progressive delay: 5s → 10s → 15s → 20s → 25s → 30s (max)
-                        $delaySec = min(5 * $retryAttempt, 30);
+                        // Progressive delay: 10s → 15s → 20s → 25s → 30s → 35s → 40s (max)
+                        // INCREASED from 5s to 10s base to comply with acceleration limits
+                        $delaySec = min(10 + (5 * $retryAttempt), 40);
 
                         $this->logger->info('[NatanChatService] 💤 Waiting {delay}s before retry (acceleration limit)', [
+                            'delay_seconds' => $delaySec,
+                            'retry_attempt' => $retryAttempt,
+                            'reason' => 'Anthropic acceleration limit - scaling gradually',
+                        ]);
+
+                        \Log::info('💤 SLEEPING BEFORE RETRY', [
                             'delay_seconds' => $delaySec,
                             'retry_attempt' => $retryAttempt,
                         ]);

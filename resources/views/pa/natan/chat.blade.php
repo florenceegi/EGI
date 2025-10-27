@@ -1,4 +1,7 @@
 <x-pa-layout noHero="true">
+    {{-- AI Processing Panel Component --}}
+    @include('pa.natan._ai-processing-panel')
+
     {{-- Chat History is now integrated in enterprise sidebar --}}
     <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -1078,8 +1081,9 @@
                 async sendToApi(message) {
                     this.setLoading(true);
 
-                    // Show loading indicator
-                    this.showLoadingIndicator();
+                    // Show AI Processing Panel (enterprise UI for complex queries)
+                    // Will be updated dynamically based on backend progress
+                    AIProcessingPanel.show(0); // Will update with actual count from backend
 
                     try {
                         // Get web search toggle state ✨ NEW v3.0
@@ -1139,21 +1143,32 @@
                                 success: data.success,
                                 hasMessage: !!data.message,
                                 hasResponse: !!data.response,
-                                hasError: !!data.error
+                                hasError: !!data.error,
+                                actsProcessed: data.acts_processed || 0
                             });
+
+                            // Update AI Processing Panel with actual stats from backend
+                            if (data.acts_processed) {
+                                AIProcessingPanel.updateStats({
+                                    acts: data.acts_processed,
+                                    relevance: data.relevance_score || 0
+                                });
+                                AIProcessingPanel.updateProgress(50); // Mid-progress when data arrives
+                            }
+
                         } catch (parseError) {
                             console.error('[N.A.T.A.N.] JSON Parse Error:', parseError);
                             console.log('[N.A.T.A.N.] First 500 chars:', responseText.substring(0, 500));
 
-                            this.hideLoadingIndicator();
+                            AIProcessingPanel.hide();
                             this.addMessage('assistant',
                                 'Errore nel parsing della risposta del server. Il nostro team è stato notificato.'
                             );
                             return;
                         }
 
-                        // Remove loading indicator
-                        this.hideLoadingIndicator();
+                        // Complete AI processing and hide panel
+                        AIProcessingPanel.complete();
 
                         if (data.success) {
                             // Pass persona info, message_id, elaboration flag, reference content, and web_sources ✨ v3.0
@@ -2321,5 +2336,8 @@
                 }
             }
         </script>
+
+        {{-- AI Processing Panel Controller --}}
+        <script src="{{ asset('js/ai-processing-panel.js') }}"></script>
     @endpush
 </x-pa-layout>
