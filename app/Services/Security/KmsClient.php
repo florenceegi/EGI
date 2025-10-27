@@ -57,7 +57,7 @@ class KmsClient {
         $this->auditService = $auditService;
 
         // Environment configuration
-    $this->developmentMode = config('app.env') !== 'production';
+        $this->developmentMode = config('app.env') !== 'production';
         $this->kekId = config('kms.kek_id', 'egi-wallet-master-key');
 
         // Initialize mock KEK for development
@@ -184,10 +184,6 @@ class KmsClient {
                 'key_id' => $encryptedDekData['kek_id'] ?? 'unknown',
                 'error' => $e->getMessage()
             ], $e);
-            throw $e;
-        }
-    }
-
             throw $e;
         }
     }
@@ -411,196 +407,6 @@ class KmsClient {
                     'issue' => 'Unknown KMS provider for decryption'
                 ]);
                 throw new \Exception('Unknown KMS provider: ' . $provider);
-        }
-    }
-
-    /**
-     * AWS KMS DEK encryption
-     *
-     * @param string $dek Raw DEK bytes
-     * @return array Encrypted DEK data
-     * @throws \Exception If AWS KMS encryption fails
-     */
-    private function encryptDEKAwsKms(string $dek): array {
-        try {
-            $config = config('kms.providers.aws');
-
-            // TODO: Integrate AWS SDK
-            // $kms = new Aws\Kms\KmsClient([
-            //     'version' => 'latest',
-            //     'region' => $config['region'],
-            //     'credentials' => [
-            //         'key' => $config['access_key_id'],
-            //         'secret' => $config['secret_access_key']
-            //     ]
-            // ]);
-            //
-            // $result = $kms->encrypt([
-            //     'KeyId' => $config['kek_key_id'],
-            //     'Plaintext' => $dek,
-            //     'EncryptionContext' => [
-            //         'application' => 'FlorenceEGI',
-            //         'purpose' => 'wallet_mnemonic_dek'
-            //     ]
-            // ]);
-
-            throw new \Exception('AWS KMS integration requires AWS SDK installation: composer require aws/aws-sdk-php');
-        } catch (\Exception $e) {
-            $this->errorManager->handle('KMS_DEK_ENCRYPTION_FAILED', [
-                'provider' => 'aws',
-                'key_id' => $config['kek_key_id'] ?? 'unknown',
-                'error' => $e->getMessage()
-            ], $e);
-            throw $e;
-        }
-    }
-
-    /**
-     * AWS KMS DEK decryption
-     *
-     * @param array $encryptedDekData Encrypted DEK data
-     * @return string Raw DEK bytes
-     * @throws \Exception If AWS KMS decryption fails
-     */
-    private function decryptDEKAwsKms(array $encryptedDekData): string {
-        try {
-            $config = config('kms.providers.aws');
-
-            // TODO: Integrate AWS SDK
-            // $kms = new Aws\Kms\KmsClient([
-            //     'version' => 'latest',
-            //     'region' => $config['region'],
-            //     'credentials' => [
-            //         'key' => $config['access_key_id'],
-            //         'secret' => $config['secret_access_key']
-            //     ]
-            // ]);
-            //
-            // $result = $kms->decrypt([
-            //     'CiphertextBlob' => base64_decode($encryptedDekData['encrypted_dek']),
-            //     'EncryptionContext' => [
-            //         'application' => 'FlorenceEGI',
-            //         'purpose' => 'wallet_mnemonic_dek'
-            //     ]
-            // ]);
-            //
-            // return $result['Plaintext'];
-
-            throw new \Exception('AWS KMS integration requires AWS SDK installation');
-        } catch (\Exception $e) {
-            $this->errorManager->handle('KMS_DEK_DECRYPTION_FAILED', [
-                'provider' => 'aws',
-                'key_id' => $encryptedDekData['kek_id'] ?? 'unknown',
-                'error' => $e->getMessage()
-            ], $e);
-            throw $e;
-        }
-    }
-
-    /**
-     * Azure Key Vault DEK encryption
-     *
-     * @param string $dek Raw DEK bytes
-     * @return array Encrypted DEK data
-     * @throws \Exception If Azure Key Vault encryption fails
-     */
-    private function encryptDEKAwsKms(string $dek): array {
-        try {
-            $config = config('kms.aws');
-            if (!$config) {
-                throw new \RuntimeException('Missing kms.aws configuration');
-            }
-
-            // Validate region vs key ARN region (best-effort parse)
-            $region = $config['region'] ?? null;
-            $kekArn = $config['kek_arn'] ?? null;
-            if (!$kekArn) {
-                throw new \InvalidArgumentException('Missing AWS KMS KEK ARN (config kms.aws.kek_arn)');
-            }
-
-            // Build AWS KMS client
-            $credentials = [
-                'key' => $config['key'] ?? null,
-                'secret' => $config['secret'] ?? null,
-            ];
-            if (!empty($config['token'])) {
-                $credentials['token'] = $config['token'];
-            }
-
-            $kms = new \Aws\Kms\KmsClient([
-                'version' => 'latest',
-                'region' => $region,
-                'credentials' => $credentials,
-            ]);
-
-            $result = $kms->encrypt([
-                'KeyId' => $kekArn,
-                'Plaintext' => $dek,
-                'EncryptionContext' => [
-                    'application' => 'FlorenceEGI',
-                    'purpose' => 'wallet_mnemonic_dek',
-                ],
-            ]);
-
-            $ciphertextBlob = $result['CiphertextBlob'] ?? ($result->get('CiphertextBlob') ?? null);
-            $keyId = $result['KeyId'] ?? ($result->get('KeyId') ?? $kekArn);
-
-            return [
-                'encrypted_dek' => base64_encode($ciphertextBlob),
-                'nonce' => null, // not used with AWS KMS
-                'kek_id' => (string) $keyId,
-                'provider' => 'aws',
-                'created_at' => now()->toISOString(),
-            ];
-            ], $e);
-            throw $e;
-        }
-    }
-                'key_id' => $config['kek_arn'] ?? 'unknown',
-    /**
-     * Azure Key Vault DEK decryption
-     *
-     * @param array $encryptedDekData Encrypted DEK data
-     * @return string Raw DEK bytes
-     * @throws \Exception If Azure Key Vault decryption fails
-     */
-    private function decryptDEKAwsKms(array $encryptedDekData): string {
-        try {
-            $config = config('kms.aws');
-            if (!$config) {
-                throw new \RuntimeException('Missing kms.aws configuration');
-            }
-
-            $credentials = [
-                'key' => $config['key'] ?? null,
-                'secret' => $config['secret'] ?? null,
-            ];
-            if (!empty($config['token'])) {
-                $credentials['token'] = $config['token'];
-            }
-
-            $kms = new \Aws\Kms\KmsClient([
-                'version' => 'latest',
-                'region' => $config['region'] ?? null,
-                'credentials' => $credentials,
-            ]);
-
-            $result = $kms->decrypt([
-                'CiphertextBlob' => base64_decode($encryptedDekData['encrypted_dek']),
-                'EncryptionContext' => [
-                    'application' => 'FlorenceEGI',
-                    'purpose' => 'wallet_mnemonic_dek',
-                ],
-            ]);
-
-            $plaintext = $result['Plaintext'] ?? ($result->get('Plaintext') ?? null);
-            if ($plaintext === null) {
-                throw new \RuntimeException('AWS KMS did not return Plaintext');
-            }
-            return $plaintext;
-                'error' => $e->getMessage()
-            ], $e);
-            throw $e;
         }
     }
 

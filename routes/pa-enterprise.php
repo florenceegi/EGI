@@ -4,6 +4,7 @@ use App\Http\Controllers\PA\PADashboardController;
 use App\Http\Controllers\PA\PAHeritageController;
 use App\Http\Controllers\PA\NatanChatController;
 use App\Http\Controllers\PA\PaEmbeddingsController;
+use App\Http\Controllers\PA\ProjectController;
 use App\Http\Controllers\PaActs\PaActUploadController;
 use App\Http\Controllers\PaActs\PaActController;
 use App\Http\Controllers\PaActs\PaActPublicController;
@@ -245,20 +246,42 @@ Route::prefix('pa')
          *
          * Authorization: auth + role:pa_entity + business scope
          */
-        Route::prefix('/scrapers')->name('scrapers.')->group(function () {
+        Route::prefix('web-scrapers')->name('web-scrapers.')->group(function () {
             Route::get('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'index'])->name('index');
-            Route::get('/create', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'create'])->name('create');
             Route::post('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'store'])->name('store');
-            Route::get('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'show'])->name('show');
-            Route::get('/{scraper}/edit', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'edit'])->name('edit');
-            Route::put('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'update'])->name('update');
             Route::delete('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'destroy'])->name('destroy');
-            Route::post('/{scraper}/test', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'test'])->name('test');
-            Route::post('/{scraper}/preview', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'preview'])->name('preview');
-            Route::post('/{scraper}/run', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'run'])->name('run');
-            Route::get('/{scraper}/progress', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'progress'])->name('progress');
             Route::post('/{scraper}/toggle', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'toggle'])->name('toggle');
         });
+
+        // ALIAS: pa.scrapers.* → pa.web-scrapers.* (per compatibilità menu)
+        Route::prefix('scrapers')->name('scrapers.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'index'])->name('index');
+            Route::post('/', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'store'])->name('store');
+            Route::delete('/{scraper}', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'destroy'])->name('destroy');
+            Route::post('/{scraper}/toggle', [\App\Http\Controllers\PaActs\PaWebScraperController::class, 'toggle'])->name('toggle');
+        });
+
+        /**
+         * PROJECTS SYSTEM (FASE 4)
+         *
+         * GET    /pa/projects           → Projects list
+         * GET    /pa/projects/create    → Create project form
+         * POST   /pa/projects           → Store new project
+         * GET    /pa/projects/{project} → Project detail (tab-based UI)
+         * GET    /pa/projects/{project}/edit → Edit project form
+         * PUT    /pa/projects/{project} → Update project
+         * DELETE /pa/projects/{project} → Delete project (soft)
+         *
+         * Features:
+         * - Document upload for RAG
+         * - Priority search (project docs > chat history > PA acts)
+         * - Tab-based UI (Documents / Chat / Settings)
+         * - GDPR audit trail for all operations
+         */
+        Route::resource('projects', ProjectController::class);
+
+        /**
+         * FUTURE ROUTES (FASE 2-3)
 
         /**
          * FUTURE ROUTES (FASE 2-3)

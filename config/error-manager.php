@@ -5379,6 +5379,87 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // ====================================================
+        // PA Projects System Errors (FASE 4)
+        // ====================================================
+
+        'PROJECT_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.project_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.project_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'PROJECT_CREATE_PAGE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.project_create_page_error',
+            'user_message_key' => 'error-manager::errors_2.user.project_create_page_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'PROJECT_CREATE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.project_create_failed',
+            'user_message_key' => 'error-manager::errors_2.user.project_create_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'PROJECT_SHOW_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.project_show_error',
+            'user_message_key' => 'error-manager::errors_2.user.project_show_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'PROJECT_EDIT_PAGE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.project_edit_page_error',
+            'user_message_key' => 'error-manager::errors_2.user.project_edit_page_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'PROJECT_UPDATE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.project_update_failed',
+            'user_message_key' => 'error-manager::errors_2.user.project_update_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'PROJECT_DELETE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.project_delete_failed',
+            'user_message_key' => 'error-manager::errors_2.user.project_delete_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
         'PA_HERITAGE_DETAIL_ERROR' => [
             'type' => 'error',
             'blocking' => 'semi-blocking',

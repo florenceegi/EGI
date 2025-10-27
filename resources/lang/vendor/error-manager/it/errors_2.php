@@ -27,6 +27,15 @@ return [
         'pa_heritage_list_error' => 'Errore durante il caricamento della lista patrimonio per utente :user_id.',
         'pa_heritage_detail_error' => 'Errore durante il caricamento del dettaglio patrimonio :egi_id per utente :user_id.',
 
+        // PA Projects System Errors (FASE 4) - Dev
+        'project_index_error' => 'Errore durante il caricamento della lista progetti per utente :user_id.',
+        'project_create_page_error' => 'Errore durante il caricamento del form creazione progetto per utente :user_id.',
+        'project_create_failed' => 'Errore durante la creazione del progetto per utente :user_id. Dati: :request_data',
+        'project_show_error' => 'Errore durante il caricamento del progetto :project_id per utente :user_id.',
+        'project_edit_page_error' => 'Errore durante il caricamento del form modifica progetto :project_id per utente :user_id.',
+        'project_update_failed' => 'Errore durante l\'aggiornamento del progetto :project_id per utente :user_id.',
+        'project_delete_failed' => 'Errore durante l\'eliminazione del progetto :project_id per utente :user_id.',
+
         // PA Acts Upload Errors (Dev)
         'pa_act_auth_required' => 'Tentativo di upload atto PA senza autenticazione. User: :user_id, IP: :ip',
         'pa_act_role_required' => 'Utente :user_id non autorizzato (ruolo non PA) per upload atto.',
@@ -154,6 +163,15 @@ return [
         'pa_dashboard_error' => 'Impossibile caricare la dashboard PA. Riprova tra poco.',
         'pa_dashboard_quickstats_error' => 'Impossibile aggiornare le statistiche. Riprova.',
         'pa_heritage_list_error' => 'Impossibile caricare la lista del patrimonio. Riprova tra poco.',
+
+        // PA Projects System User Messages (FASE 4)
+        'project_index_error' => 'Impossibile caricare la lista progetti. Riprova tra poco.',
+        'project_create_page_error' => 'Impossibile caricare il form di creazione. Riprova.',
+        'project_create_failed' => 'Impossibile creare il progetto. Verifica i dati inseriti e riprova.',
+        'project_show_error' => 'Impossibile caricare il progetto. Riprova tra poco.',
+        'project_edit_page_error' => 'Impossibile caricare il form di modifica. Riprova.',
+        'project_update_failed' => 'Impossibile aggiornare il progetto. Verifica i dati e riprova.',
+        'project_delete_failed' => 'Impossibile eliminare il progetto. Riprova tra poco.',
         'pa_heritage_detail_error' => 'Impossibile caricare il dettaglio del bene patrimoniale. Riprova tra poco.',
 
         // PA Acts Upload Errors (User-Friendly)
@@ -258,7 +276,7 @@ return [
         'blockchain_transaction_pool_error' => 'La rete Algorand è temporaneamente sovraccarica. Riprova tra 5-10 minuti. Il tuo pagamento NON è stato effettuato.',
 
         // Dual Architecture - Auto-Mint & Pre-Mint Errors (User Messages)
-                // Dual Architecture - Auto-Mint & Pre-Mint Errors (Dev)
+        // Dual Architecture - Auto-Mint & Pre-Mint Errors (Dev)
         'dual_arch_auto_mint_unauthorized' => 'Tentativo di gestione Auto-Mint non autorizzato. User: :user_id, EGI: :egi_id',
         'dual_arch_not_pre_mint' => 'Tentativo operazione su EGI non Pre-Mint. User: :user_id, EGI: :egi_id, Status: :status',
         'dual_arch_smart_contract_disabled' => 'Tentativo di accesso EGI Vivente con feature disabilitata. User: :user_id, EGI: :egi_id',
