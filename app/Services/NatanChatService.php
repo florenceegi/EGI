@@ -13,7 +13,6 @@ use App\Services\WebSearch\WebSearchService;
 use App\Services\WebSearch\WebSearchAutoDetector;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
@@ -253,7 +252,7 @@ class NatanChatService {
                         // Search scanned ALL sources, now limit context for API
                         $claudeContextLimit = config('natan.claude_context_limit', 100);
                         $topResults = array_slice($transformedResults, 0, $claudeContextLimit);
-                        
+
                         $this->logger->info('[NatanChatService] Applied Claude context limit', [
                             'total_found' => count($transformedResults),
                             'sent_to_claude' => count($topResults),
@@ -277,24 +276,24 @@ class NatanChatService {
                     // Generic PA chat: Standard RAG
                     // ENTERPRISE STRATEGY: Search ALL, take TOP N for Claude
                     $contextRaw = $this->rag->getContextForQuery($userQuery, $user); // No limit = scans all
-                    
+
                     // Apply TOP N limit for Claude context (prevent rate limits)
                     $claudeContextLimit = config('natan.claude_context_limit', 100);
                     $allActs = $contextRaw['acts'] ?? [];
                     $topActs = array_slice($allActs, 0, $claudeContextLimit);
-                    
+
                     $this->logger->info('[NatanChatService] Applied Claude context limit (Standard RAG)', [
                         'total_found' => count($allActs),
                         'sent_to_claude' => count($topActs),
                         'limit' => $claudeContextLimit,
                     ]);
-                    
+
                     $context = [
                         'acts' => $topActs,
                         'acts_summary' => $contextRaw['acts_summary'] ?? '',
                         'stats' => $contextRaw['stats'] ?? [],
                     ];
-                    
+
                     $ragMethod = 'semantic'; // Default to semantic
 
                     $logContext['acts_count'] = count($topActs);
@@ -469,7 +468,7 @@ class NatanChatService {
 
             // Safety check: if we exhausted retries
             if ($aiResponseData === null) {
-                throw new RuntimeException('Exhausted all retry attempts for Claude API call');
+                throw new \RuntimeException('Exhausted all retry attempts for Claude API call');
             }
 
             // Extract message and usage from response
