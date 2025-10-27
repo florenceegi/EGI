@@ -758,15 +758,15 @@
                     const internal = providerData.internal || {};
                     const providerApi = providerData.provider_api || {};
                     const comparison = providerData.comparison || {};
-                    
+
                     // Determine badge status
                     let badgeClass, badgeIcon, badgeText, messageClass, messageText, messageIcon;
-                    
+
                     if (!providerData.success) {
                         // Billing API not available
                         const apiConfigured = providerData.api_configured ?? false;
                         const noData = (internal.cost || 0) === 0;
-                        
+
                         if (!apiConfigured) {
                             // API not configured (e.g., Perplexity)
                             badgeClass = 'bg-gray-200 text-gray-700';
@@ -782,7 +782,8 @@
                             badgeText = 'NO DATA';
                             messageClass = 'text-blue-700';
                             messageIcon = 'info';
-                            messageText = `Nessun utilizzo registrato per ${providerName} in questo mese. Usa N.A.T.A.N. o genera embeddings per vedere i costi.`;
+                            messageText =
+                                `Nessun utilizzo registrato per ${providerName} in questo mese. Usa N.A.T.A.N. o genera embeddings per vedere i costi.`;
                         } else {
                             // API configured, has usage, but billing API unavailable
                             badgeClass = 'bg-blue-100 text-blue-700 border-blue-300';
@@ -790,13 +791,14 @@
                             badgeText = 'Billing N/D';
                             messageClass = 'text-blue-700';
                             messageIcon = 'info';
-                            messageText = `Tracking interno attivo. ${providerData.error || 'Billing API non disponibile pubblicamente.'}`;
+                            messageText =
+                                `Tracking interno attivo. ${providerData.error || 'Billing API non disponibile pubblicamente.'}`;
                         }
                     } else {
                         // Billing API available
                         const status = comparison.status || 'UNKNOWN';
                         const noData = (internal.cost || 0) === 0 && (providerApi.cost || 0) === 0;
-                        
+
                         if (noData) {
                             badgeClass = 'bg-blue-100 text-blue-700 border-blue-300';
                             badgeIcon = 'info';
@@ -858,13 +860,13 @@
                             </p>
 
                             ${manualCheckUrl && !providerData.success ? `
-                                <a href="${manualCheckUrl}"
-                                   target="_blank"
-                                   class="mt-3 inline-flex items-center gap-1 text-xs text-[#1B365D] hover:underline">
-                                    <span class="material-icons text-sm">open_in_new</span>
-                                    Controlla manualmente
-                                </a>
-                            ` : ''}
+                                    <a href="${manualCheckUrl}"
+                                       target="_blank"
+                                       class="mt-3 inline-flex items-center gap-1 text-xs text-[#1B365D] hover:underline">
+                                        <span class="material-icons text-sm">open_in_new</span>
+                                        Controlla manualmente
+                                    </a>
+                                ` : ''}
 
                             <div class="mt-3 flex gap-2 text-xs text-gray-500">
                                 <div class="flex items-center gap-1">

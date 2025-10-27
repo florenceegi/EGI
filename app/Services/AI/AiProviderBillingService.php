@@ -252,7 +252,7 @@ class AiProviderBillingService {
 
         if (!$providerBilling || !($providerBilling['success'] ?? false)) {
             // Provider billing API not available, but STILL show internal tracking
-            
+
             // Check if API key is configured
             $apiKeyConfigured = match ($provider) {
                 'openai' => !empty(config('services.openai.api_key')),
@@ -260,7 +260,7 @@ class AiProviderBillingService {
                 'perplexity' => !empty(config('services.perplexity.api_key')),
                 default => false,
             };
-            
+
             return array_merge([
                 'success' => false, // Billing API failed
                 'provider' => $provider,

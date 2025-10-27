@@ -30,6 +30,13 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
 ├─ API pubblica verification
 ├─ Testing completo
 └─ Deployment production
+
+FASE 4: PROJECTS SYSTEM (RAG Enhancement) ⏱️ 3 settimane
+├─ Database (projects, documents, chunks)
+├─ Document processing pipeline
+├─ Priority RAG (docs > chats > acts)
+├─ Tab-based UI (Documents/Chat/Settings)
+└─ Chat history as knowledge base
 ```
 
 ---
@@ -38,11 +45,12 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
 
 **Overall Progress:** 60% (brainstorming + design + database + routes + controllers + layout + menu + heritage list complete)
 
-| Fase                  | Progress | Status         | ETA      |
-| --------------------- | -------- | -------------- | -------- |
-| **FASE 1: MVP**       | 78%      | 🟡 IN PROGRESS | 5 days   |
-| **FASE 2: Expansion** | 0%       | ⚪ NOT STARTED | +2 weeks |
-| **FASE 3: Release**   | 0%       | ⚪ NOT STARTED | +4 weeks |
+| Fase                     | Progress | Status         | ETA      |
+| ------------------------ | -------- | -------------- | -------- |
+| **FASE 1: MVP**          | 78%      | 🟡 IN PROGRESS | 5 days   |
+| **FASE 2: Expansion**    | 0%       | ⚪ NOT STARTED | +2 weeks |
+| **FASE 3: Release**      | 0%       | ⚪ NOT STARTED | +4 weeks |
+| **FASE 4: Projects RAG** | 0%       | 🟡 IN PROGRESS | +3 weeks |
 
 ---
 
@@ -711,14 +719,403 @@ FASE 3: RELEASE FINALE ⏱️ 4 settimane
 
 ---
 
-## 📊 EFFORT SUMMARY
+## � FASE 4: PROJECTS SYSTEM (RAG Enhancement)
 
-| Fase                  | Tasks        | Effort    | Timeline    |
-| --------------------- | ------------ | --------- | ----------- |
-| **FASE 1: MVP**       | 19 tasks     | ~40h      | 2 weeks     |
-| **FASE 2: Expansion** | 10 tasks     | ~30h      | 2 weeks     |
-| **FASE 3: Release**   | 12 tasks     | ~60h      | 4 weeks     |
-| **TOTALE**            | **41 tasks** | **~130h** | **8 weeks** |
+**OBIETTIVO:** Sistema Projects per upload documenti PA + priority RAG search  
+**ISPIRAZIONE:** OpenAI/Anthropic Projects - file upload + prioritized context  
+**APPROCCIO:** Tab-based UI (OPZIONE B) - Documents/Chat/Settings  
+**EFFORT TOTALE:** ~60 ore (3 settimane)
+
+**FEATURES:**
+
+-   Upload documenti PA (PDF, DOCX, TXT, CSV, XLSX, MD)
+-   Priority search: Project docs → Chat history → Acts
+-   Chat history diventa searchable knowledge base
+-   Tab-based UI per PA users
+-   Embedding model: ada-002 (MVP) → 3-small (optimization)
+
+### ⚪ FASE 4.1: Database & Models (12h)
+
+-   [ ] **TASK 11.1: Projects Migration** ⏱️ 2h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `database/migrations/YYYY_MM_DD_create_projects_table.php`
+    -   **Schema:**
+        ```sql
+        id, user_id, name, description, icon, color
+        settings (JSON: limits, auto_embed, priority_rag)
+        is_active, created_at, updated_at
+        ```
+    -   **Indexes:** user_id, is_active
+    -   **Limits:** 20 projects/user, 50 docs/project
+    -   **Dependencies:** None
+    -   **Output:** Migration ready
+
+-   [ ] **TASK 11.2: Project Documents Migration** ⏱️ 2h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `database/migrations/YYYY_MM_DD_create_project_documents_table.php`
+    -   **Schema:**
+        ```sql
+        id, project_id, filename, original_name, mime_type
+        size_bytes, file_path, status (pending/processing/ready/failed)
+        metadata (JSON: pages, words, extraction_method)
+        processed_at, created_at, updated_at
+        ```
+    -   **Indexes:** project_id, status
+    -   **Storage:** storage/app/projects/{project_id}/{filename}
+    -   **Dependencies:** TASK 11.1
+    -   **Output:** Migration ready
+
+-   [ ] **TASK 11.3: Project Document Chunks Migration** ⏱️ 2h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `database/migrations/YYYY_MM_DD_create_project_document_chunks_table.php`
+    -   **Schema:**
+        ```sql
+        id, project_document_id, chunk_index, chunk_text
+        embedding (JSON 1536 dims), embedding_model (varchar)
+        tokens_count, page_number, metadata (JSON)
+        created_at, updated_at
+        ```
+    -   **Indexes:** project_document_id, (embedding) SPATIAL if supported
+    -   **Embedding:** OpenAI ada-002 (MVP)
+    -   **Dependencies:** TASK 11.2
+    -   **Output:** Migration ready
+
+-   [ ] **TASK 11.4: Add project_id to natan_chat_messages** ⏱️ 1h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `database/migrations/YYYY_MM_DD_add_project_id_to_natan_chat_messages.php`
+    -   **Change:** `$table->foreignId('project_id')->nullable()->constrained('projects')->onDelete('set null');`
+    -   **Purpose:** Link chat history to projects
+    -   **Dependencies:** TASK 11.1
+    -   **Output:** Migration ready
+
+-   [ ] **TASK 11.5: Models Creation** ⏱️ 3h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **Files:**
+        -   `app/Models/Project.php`
+        -   `app/Models/ProjectDocument.php`
+        -   `app/Models/ProjectDocumentChunk.php`
+    -   **Relationships:**
+        -   Project belongsTo User, hasMany Documents, hasMany ChatMessages
+        -   ProjectDocument belongsTo Project, hasMany Chunks
+        -   ProjectDocumentChunk belongsTo ProjectDocument
+    -   **Casts:** settings/metadata → array, embedding → array
+    -   **Dependencies:** TASK 11.1-11.4
+    -   **Output:** Models ready
+
+-   [ ] **TASK 11.6: Factories & Seeders** ⏱️ 2h
+    -   **Priority:** P2
+    -   **Files:**
+        -   `database/factories/ProjectFactory.php`
+        -   `database/factories/ProjectDocumentFactory.php`
+        -   `database/seeders/ProjectSeeder.php`
+    -   **Test Data:** 3 projects, 10 docs, 50 chunks
+    -   **Dependencies:** TASK 11.5
+    -   **Output:** Seeders ready
+
+### ⚪ FASE 4.2: Document Processing Pipeline (18h)
+
+-   [ ] **TASK 12.1: DocumentProcessingService** ⏱️ 4h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `app/Services/Projects/DocumentProcessingService.php`
+    -   **Methods:**
+        -   `uploadDocument(Project $project, UploadedFile $file): ProjectDocument`
+        -   `extractText(ProjectDocument $doc): string`
+        -   `chunkDocument(ProjectDocument $doc, string $text): array`
+        -   `generateEmbeddings(ProjectDocumentChunk $chunk): void`
+    -   **Text Extraction:** pdftotext (PDF), PHPWord (DOCX), file_get_contents (TXT/MD)
+    -   **Chunking:** 1000 tokens, 200 overlap
+    -   **Dependencies:** TASK 11.5
+    -   **Output:** Service ready
+
+-   [ ] **TASK 12.2: ProcessDocumentJob** ⏱️ 3h
+
+    -   **Priority:** P1 (HIGH)
+    -   **File:** `app/Jobs/Projects/ProcessDocumentJob.php`
+    -   **Queue:** `projects` (dedicated queue)
+    -   **Flow:**
+        1. Extract text
+        2. Chunk document
+        3. Generate embeddings for each chunk
+        4. Update status to 'ready'
+    -   **Error Handling:** Max 3 retries, UEM integration
+    -   **Dependencies:** TASK 12.1
+    -   **Output:** Job ready
+
+-   [ ] **TASK 12.3: File Upload Validation** ⏱️ 2h
+
+    -   **Priority:** P1 (HIGH)
+    -   **Files:**
+        -   `app/Http/Requests/Projects/UploadDocumentRequest.php`
+        -   `app/Rules/Projects/ValidDocumentMimeType.php`
+    -   **Validation:**
+        -   Max 10MB per file
+        -   Mimes: pdf, docx, txt, csv, xlsx, md
+        -   Max 50 docs per project
+        -   Filename sanitization
+    -   **Dependencies:** None
+    -   **Output:** Validation ready
+
+-   [ ] **TASK 12.4: Storage Configuration** ⏱️ 1h
+
+    -   **Priority:** P1 (HIGH)
+    -   **File:** `config/filesystems.php`
+    -   **Disk:**
+        ```php
+        'projects' => [
+            'driver' => 'local',
+            'root' => storage_path('app/projects'),
+            'url' => env('APP_URL').'/storage/projects',
+            'visibility' => 'private',
+        ],
+        ```
+    -   **Symlink:** `php artisan storage:link`
+    -   **Dependencies:** None
+    -   **Output:** Storage ready
+
+-   [ ] **TASK 12.5: Progress Tracking UI** ⏱️ 4h
+
+    -   **Priority:** P2
+    -   **Component:** Livewire ProcessingProgressCard
+    -   **Features:**
+        -   Real-time status (pending/processing/ready)
+        -   Progress bar (0-100%)
+        -   Error display
+        -   Cancel button
+    -   **WebSocket:** Laravel Echo + Pusher (optional)
+    -   **Dependencies:** TASK 12.2
+    -   **Output:** UI component ready
+
+-   [ ] **TASK 12.6: Testing Pipeline** ⏱️ 4h
+    -   **Priority:** P2
+    -   **Files:**
+        -   `tests/Feature/Projects/DocumentProcessingTest.php`
+        -   `tests/Unit/Services/DocumentProcessingServiceTest.php`
+    -   **Tests:**
+        -   PDF extraction (3 pages test file)
+        -   DOCX extraction
+        -   Chunking logic (token count verification)
+        -   Embedding generation (OpenAI mock)
+    -   **Dependencies:** TASK 12.1
+    -   **Output:** Tests passing
+
+### ⚪ FASE 4.3: Priority RAG System (12h)
+
+-   [ ] **TASK 13.1: ProjectRagService** ⏱️ 4h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `app/Services/Projects/ProjectRagService.php`
+    -   **Methods:**
+        -   `searchProjectDocuments(Project $project, string $query, int $limit = 5): Collection`
+        -   `searchProjectChats(Project $project, string $query, int $limit = 3): Collection`
+        -   `buildPriorityContext(Project $project, string $query): array`
+    -   **Priority Logic:**
+        1. Search project documents (chunks embeddings)
+        2. Search project chat history (natan_chat_messages)
+        3. Fallback to acts (RagService)
+    -   **Dependencies:** TASK 11.5
+    -   **Output:** Service ready
+
+-   [ ] **TASK 13.2: NatanChatService Integration** ⏱️ 3h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `app/Services/NatanChatService.php` (modify)
+    -   **Changes:**
+        -   Add `?Project $project` parameter to `processQuery()`
+        -   Check `$project` exists → use ProjectRagService
+        -   Save `project_id` in NatanChatMessage
+        -   Build context with source attribution
+    -   **Dependencies:** TASK 13.1
+    -   **Output:** Integration ready
+
+-   [ ] **TASK 13.3: Source Attribution** ⏱️ 3h
+
+    -   **Priority:** P1 (HIGH)
+    -   **Feature:** "According to [filename] (page X)..."
+    -   **Implementation:**
+        -   ProjectRagService returns metadata (filename, page)
+        -   NatanChatService includes in context
+        -   Frontend displays citations
+    -   **Dependencies:** TASK 13.1
+    -   **Output:** Citations ready
+
+-   [ ] **TASK 13.4: Chat History Search** ⏱️ 2h
+    -   **Priority:** P2
+    -   **Feature:** Previous project chats become searchable
+    -   **Implementation:**
+        -   Index chat content (no embeddings needed - simple LIKE search)
+        -   Return relevant past conversations
+        -   Link to original chat in UI
+    -   **Dependencies:** TASK 11.4
+    -   **Output:** Search ready
+
+### ⚪ FASE 4.4: Frontend UI (Tab-based) (12h)
+
+-   [ ] **TASK 14.1: Projects Index Page** ⏱️ 3h
+
+    -   **Priority:** P1 (HIGH)
+    -   **Route:** `/pa/natan/projects`
+    -   **View:** `resources/views/pa/natan/projects/index.blade.php`
+    -   **Features:**
+        -   Project cards grid
+        -   Create new project button
+        -   Search/filter
+        -   Active project badge
+    -   **Dependencies:** TASK 11.5
+    -   **Output:** Index page ready
+
+-   [ ] **TASK 14.2: Project Detail (Tab-based)** ⏱️ 5h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **Route:** `/pa/natan/projects/{project}`
+    -   **View:** `resources/views/pa/natan/projects/show.blade.php`
+    -   **Tabs:**
+        -   **Documents** - Upload, list, delete
+        -   **Chat** - Integrated N.A.T.A.N. interface
+        -   **Settings** - Name, icon, limits
+    -   **UI:** Tailwind tabs component
+    -   **Dependencies:** TASK 14.1
+    -   **Output:** Detail page ready
+
+-   [ ] **TASK 14.3: Document Upload UI** ⏱️ 2h
+
+    -   **Priority:** P1 (HIGH)
+    -   **Component:** Drag-drop upload zone
+    -   **Features:**
+        -   Dropzone.js or Livewire File Upload
+        -   Multi-file upload
+        -   Progress indicators
+        -   File type validation (client-side)
+    -   **Dependencies:** TASK 14.2
+    -   **Output:** Upload UI ready
+
+-   [ ] **TASK 14.4: Chat Interface Integration** ⏱️ 2h
+    -   **Priority:** P1 (HIGH)
+    -   **Modification:** Existing N.A.T.A.N. chat
+    -   **Changes:**
+        -   Project selector dropdown
+        -   "Using project: [name]" indicator
+        -   Citation display (file sources)
+        -   Switch between projects
+    -   **Dependencies:** TASK 13.2
+    -   **Output:** Chat integration ready
+
+### ⚪ FASE 4.5: Controller & Routes (6h)
+
+-   [ ] **TASK 15.1: ProjectController** ⏱️ 3h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `app/Http/Controllers/PA/ProjectController.php`
+    -   **Methods:**
+        -   index() - List projects
+        -   show(Project $project) - Detail view
+        -   store(CreateProjectRequest $request) - Create
+        -   update(UpdateProjectRequest $request, Project $project)
+        -   destroy(Project $project)
+        -   uploadDocument(UploadDocumentRequest $request, Project $project)
+    -   **Middleware:** auth, role:pa_entity
+    -   **Dependencies:** TASK 11.5
+    -   **Output:** Controller ready
+
+-   [ ] **TASK 15.2: Routes Registration** ⏱️ 1h
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `routes/pa-enterprise.php`
+    -   **Routes:**
+        ```php
+        Route::prefix('/projects')->name('projects.')->group(function () {
+            Route::get('/', [ProjectController::class, 'index'])->name('index');
+            Route::post('/', [ProjectController::class, 'store'])->name('store');
+            Route::get('/{project}', [ProjectController::class, 'show'])->name('show');
+            Route::put('/{project}', [ProjectController::class, 'update'])->name('update');
+            Route::delete('/{project}', [ProjectController::class, 'destroy'])->name('destroy');
+            Route::post('/{project}/documents', [ProjectController::class, 'uploadDocument'])->name('documents.upload');
+        });
+        ```
+    -   **Dependencies:** TASK 15.1
+    -   **Output:** Routes ready
+
+-   [ ] **TASK 15.3: Menu Integration** ⏱️ 1h
+
+    -   **Priority:** P2
+    -   **File:** `app/Services/Menu/Items/PAProjectsMenu.php`
+    -   **Menu Item:**
+        -   Icon: folder_open
+        -   Label: menu.pa_projects (I18N)
+        -   Route: pa.projects.index
+        -   Badge: projects count (optional)
+    -   **Dependencies:** TASK 15.2
+    -   **Output:** Menu ready
+
+-   [ ] **TASK 15.4: I18N Translations** ⏱️ 1h
+    -   **Priority:** P2
+    -   **Files:**
+        -   `resources/lang/en/projects.php`
+        -   `resources/lang/it/projects.php`
+    -   **Keys:**
+        -   projects.title, projects.create, projects.upload
+        -   projects.documents_tab, projects.chat_tab, projects.settings_tab
+        -   projects.no_documents, projects.processing, etc.
+    -   **Dependencies:** None
+    -   **Output:** Translations ready
+
+### ⚪ FASE 4.6: Testing & Documentation (6h)
+
+-   [ ] **TASK 16.1: Feature Tests** ⏱️ 3h
+
+    -   **Priority:** P1 (HIGH)
+    -   **Files:**
+        -   `tests/Feature/Projects/ProjectControllerTest.php`
+        -   `tests/Feature/Projects/DocumentUploadTest.php`
+        -   `tests/Feature/Projects/ProjectRagTest.php`
+    -   **Tests:**
+        -   Create/list/delete project
+        -   Upload document (PDF mock)
+        -   Search project documents
+        -   Priority RAG flow
+    -   **Dependencies:** TASK 15.1
+    -   **Output:** Tests passing
+
+-   [ ] **TASK 16.2: Documentation** ⏱️ 2h
+
+    -   **Priority:** P2
+    -   **File:** `docs/ai/context/PROJECTS_SYSTEM_GUIDE.md`
+    -   **Content:**
+        -   Architecture overview
+        -   Database schema
+        -   Upload workflow
+        -   RAG priority logic
+        -   API reference
+        -   Troubleshooting
+    -   **Dependencies:** None
+    -   **Output:** Documentation ready
+
+-   [ ] **TASK 16.3: Optimization** ⏱️ 1h
+    -   **Priority:** P2
+    -   **Tasks:**
+        -   Embedding model upgrade: ada-002 → 3-small (5x cheaper)
+        -   Add `embedding_model` column to chunks table
+        -   Gradual migration strategy
+        -   Performance benchmarks
+    -   **Dependencies:** TASK 11.3
+    -   **Output:** Optimization guide
+
+---
+
+## �📊 EFFORT SUMMARY
+
+| Fase                     | Tasks        | Effort    | Timeline     |
+| ------------------------ | ------------ | --------- | ------------ |
+| **FASE 1: MVP**          | 19 tasks     | ~40h      | 2 weeks      |
+| **FASE 2: Expansion**    | 10 tasks     | ~30h      | 2 weeks      |
+| **FASE 3: Release**      | 12 tasks     | ~60h      | 4 weeks      |
+| **FASE 4: Projects RAG** | 24 tasks     | ~60h      | 3 weeks      |
+| **TOTALE**               | **65 tasks** | **~190h** | **11 weeks** |
 
 ---
 
