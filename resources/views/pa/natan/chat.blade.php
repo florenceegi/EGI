@@ -1104,8 +1104,32 @@
                         // Log response status for debugging
                         console.log('[N.A.T.A.N.] Response status:', response.status, response.statusText);
 
+                        // Check for specific HTTP errors before parsing
+                        if (response.status === 504) {
+                            this.hideLoadingIndicator();
+                            this.addMessage('assistant', 
+                                'La richiesta sta richiedendo più tempo del previsto. Il sistema potrebbe essere sotto carico. Per favore riprova tra qualche minuto.'
+                            );
+                            return;
+                        }
+
                         // Parse JSON response (works for both 200 and error status codes)
                         let data;
+                        const contentType = response.headers.get('content-type');
+                        
+                        if (!contentType || !contentType.includes('application/json')) {
+                            // Server returned non-JSON (probably HTML error page)
+                            console.error('[N.A.T.A.N.] Server returned non-JSON response');
+                            const textResponse = await response.text();
+                            console.log('[N.A.T.A.N.] Raw response:', textResponse.substring(0, 500));
+                            
+                            this.hideLoadingIndicator();
+                            this.addMessage('assistant', 
+                                'Si è verificato un errore del server. Il nostro team è stato notificato. Per favore riprova più tardi.'
+                            );
+                            return;
+                        }
+
                         try {
                             data = await response.json();
                             console.log('[N.A.T.A.N.] Parsed data:', {
@@ -1116,8 +1140,11 @@
                             });
                         } catch (parseError) {
                             console.error('[N.A.T.A.N.] JSON Parse Error:', parseError);
-                            console.log('[N.A.T.A.N.] Raw response text:', await response.text());
-                            throw parseError; // Re-throw to be caught by outer catch
+                            this.hideLoadingIndicator();
+                            this.addMessage('assistant', 
+                                'Errore nel parsing della risposta del server. Il nostro team è stato notificato.'
+                            );
+                            return;
                         }
 
                         // Remove loading indicator
