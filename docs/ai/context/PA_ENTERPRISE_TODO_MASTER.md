@@ -50,7 +50,7 @@ FASE 4: PROJECTS SYSTEM (RAG Enhancement) ⏱️ 3 settimane
 | **FASE 1: MVP**          | 78%      | 🟡 IN PROGRESS | 5 days   |
 | **FASE 2: Expansion**    | 0%       | ⚪ NOT STARTED | +2 weeks |
 | **FASE 3: Release**      | 0%       | ⚪ NOT STARTED | +4 weeks |
-| **FASE 4: Projects RAG** | 0%       | 🟡 IN PROGRESS | +3 weeks |
+| **FASE 4: Projects RAG** | 25%      | 🟡 IN PROGRESS | +3 weeks |
 
 ---
 
@@ -734,88 +734,168 @@ FASE 4: PROJECTS SYSTEM (RAG Enhancement) ⏱️ 3 settimane
 -   Tab-based UI per PA users
 -   Embedding model: ada-002 (MVP) → 3-small (optimization)
 
-### ⚪ FASE 4.1: Database & Models (12h)
+### ✅ FASE 4.1: Database & Models (12h) - COMPLETATO
 
--   [ ] **TASK 11.1: Projects Migration** ⏱️ 2h
+-   [x] **TASK 11.1: Projects Migration** ⏱️ 2h ✅ COMPLETATO
 
     -   **Priority:** P0 (BLOCKING)
-    -   **File:** `database/migrations/YYYY_MM_DD_create_projects_table.php`
+    -   **File:** `database/migrations/2025_10_27_085543_create_projects_table.php`
     -   **Schema:**
         ```sql
         id, user_id, name, description, icon, color
-        settings (JSON: limits, auto_embed, priority_rag)
+        settings (JSON: max_documents, max_size_mb, auto_embed, priority_rag, allowed_types)
         is_active, created_at, updated_at
         ```
-    -   **Indexes:** user_id, is_active
-    -   **Limits:** 20 projects/user, 50 docs/project
-    -   **Dependencies:** None
-    -   **Output:** Migration ready
+    -   **Indexes:** user_id, is_active, composite (user_id, is_active)
+    -   **Limits:** 20 projects/user, 50 docs/project, 10MB/file
+    -   **Status:** ✅ Migration eseguita con successo (353.58ms)
 
--   [ ] **TASK 11.2: Project Documents Migration** ⏱️ 2h
+-   [x] **TASK 11.2: Project Documents Migration** ⏱️ 2h ✅ COMPLETATO
 
     -   **Priority:** P0 (BLOCKING)
-    -   **File:** `database/migrations/YYYY_MM_DD_create_project_documents_table.php`
+    -   **File:** `database/migrations/2025_10_27_085610_create_project_documents_table.php`
     -   **Schema:**
         ```sql
         id, project_id, filename, original_name, mime_type
         size_bytes, file_path, status (pending/processing/ready/failed)
-        metadata (JSON: pages, words, extraction_method)
+        error_message, metadata (JSON: pages, words, extraction_method, chunks_count)
         processed_at, created_at, updated_at
         ```
-    -   **Indexes:** project_id, status
+    -   **Indexes:** project_id, status, composite (project_id, status)
     -   **Storage:** storage/app/projects/{project_id}/{filename}
-    -   **Dependencies:** TASK 11.1
-    -   **Output:** Migration ready
+    -   **Status:** ✅ Migration eseguita con successo (274.68ms)
 
--   [ ] **TASK 11.3: Project Document Chunks Migration** ⏱️ 2h
+-   [x] **TASK 11.3: Project Document Chunks Migration** ⏱️ 2h ✅ COMPLETATO
 
     -   **Priority:** P0 (BLOCKING)
-    -   **File:** `database/migrations/YYYY_MM_DD_create_project_document_chunks_table.php`
+    -   **File:** `database/migrations/2025_10_27_085622_create_project_document_chunks_table.php`
     -   **Schema:**
         ```sql
         id, project_document_id, chunk_index, chunk_text
-        embedding (JSON 1536 dims), embedding_model (varchar)
+        embedding (JSON 1536 dims), embedding_model (varchar - tracks version for migration)
         tokens_count, page_number, metadata (JSON)
         created_at, updated_at
         ```
-    -   **Indexes:** project_document_id, (embedding) SPATIAL if supported
-    -   **Embedding:** OpenAI ada-002 (MVP)
-    -   **Dependencies:** TASK 11.2
-    -   **Output:** Migration ready
+    -   **Indexes:** project_document_id, composite (project_document_id, chunk_index)
+    -   **Embedding:** OpenAI text-embedding-ada-002 (MVP) → 3-small (future optimization)
+    -   **Status:** ✅ Migration eseguita con successo (220.77ms)
 
--   [ ] **TASK 11.4: Add project_id to natan_chat_messages** ⏱️ 1h
+-   [x] **TASK 11.4: Add project_id to natan_chat_messages** ⏱️ 1h ✅ COMPLETATO
 
     -   **Priority:** P0 (BLOCKING)
-    -   **File:** `database/migrations/YYYY_MM_DD_add_project_id_to_natan_chat_messages.php`
+    -   **File:** `database/migrations/2025_10_27_085632_add_project_id_to_natan_chat_messages.php`
     -   **Change:** `$table->foreignId('project_id')->nullable()->constrained('projects')->onDelete('set null');`
-    -   **Purpose:** Link chat history to projects
-    -   **Dependencies:** TASK 11.1
-    -   **Output:** Migration ready
+    -   **Indexes:** project_id, composite (project_id, user_id, created_at)
+    -   **Purpose:** Link chat history to projects for searchable knowledge base
+    -   **Status:** ✅ Migration eseguita con successo (411.14ms)
 
--   [ ] **TASK 11.5: Models Creation** ⏱️ 3h
+-   [x] **TASK 11.5: Models Creation** ⏱️ 3h ✅ COMPLETATO
 
     -   **Priority:** P0 (BLOCKING)
     -   **Files:**
-        -   `app/Models/Project.php`
-        -   `app/Models/ProjectDocument.php`
-        -   `app/Models/ProjectDocumentChunk.php`
+        -   `app/Models/Project.php` ✅
+        -   `app/Models/ProjectDocument.php` ✅
+        -   `app/Models/ProjectDocumentChunk.php` ✅
     -   **Relationships:**
-        -   Project belongsTo User, hasMany Documents, hasMany ChatMessages
-        -   ProjectDocument belongsTo Project, hasMany Chunks
-        -   ProjectDocumentChunk belongsTo ProjectDocument
+        -   Project: belongsTo User, hasMany Documents, hasMany ChatMessages
+        -   ProjectDocument: belongsTo Project, hasMany Chunks
+        -   ProjectDocumentChunk: belongsTo ProjectDocument
+    -   **Scopes:**
+        -   Project: active(), forUser()
+        -   ProjectDocument: ready(), failed(), processing()
+        -   ProjectDocumentChunk: withEmbedding(), ordered()
+    -   **Helper Methods:**
+        -   Project: canAddDocument(), getMaxFileSizeBytes(), getAllowedFileTypes()
+        -   ProjectDocument: markAsProcessing/Ready/Failed(), isReady/Failed/Processing()
+        -   ProjectDocumentChunk: hasEmbedding(), cosineSimilarity()
     -   **Casts:** settings/metadata → array, embedding → array
-    -   **Dependencies:** TASK 11.1-11.4
-    -   **Output:** Models ready
+    -   **Status:** ✅ Models completi con full business logic
 
--   [ ] **TASK 11.6: Factories & Seeders** ⏱️ 2h
+-   [ ] **TASK 11.6: Factories & Seeders** ⏱️ 2h ⚪ NOT STARTED
     -   **Priority:** P2
     -   **Files:**
         -   `database/factories/ProjectFactory.php`
         -   `database/factories/ProjectDocumentFactory.php`
         -   `database/seeders/ProjectSeeder.php`
     -   **Test Data:** 3 projects, 10 docs, 50 chunks
-    -   **Dependencies:** TASK 11.5
-    -   **Output:** Seeders ready
+    -   **Status:** Optional per MVP
+
+### ✅ FASE 4.5: Controller & Routes (6h) - COMPLETATO
+
+-   [x] **TASK 15.1: ProjectService** ⏱️ 2h ✅ COMPLETATO
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `app/Services/Projects/ProjectService.php`
+    -   **Methods:**
+        -   `getUserProjects(User $user, bool $activeOnly = true): Collection`
+        -   `createProject(User $user, array $data): Project` (with 20-project limit check)
+        -   `updateProject(Project $project, array $data): Project`
+        -   `deleteProject(Project $project): bool` (soft delete)
+        -   `getProjectStatistics(Project $project): array`
+    -   **UEM Integration:** Error codes for all operations
+    -   **ULM Integration:** Full logging for audit trails
+    -   **Status:** ✅ Service completo con business logic
+
+-   [x] **TASK 15.2: ProjectController** ⏱️ 3h ✅ COMPLETATO
+
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `app/Http/Controllers/PA/ProjectController.php`
+    -   **Methods:** index, create, store, show, edit, update, destroy
+    -   **GDPR Compliance:**
+        -   AuditLogService integration (logUserAction for create/update/delete)
+        -   Full audit trail for PA compliance
+        -   GdprActivityCategory::GENERAL_ACTIVITY
+    -   **Authorization:**
+        -   Middleware: auth
+        -   Role check: hasRole('pa_entity') in methods
+        -   Ownership validation: project->user_id === Auth::id()
+    -   **UEM/ULM:** Full error handling + logging
+    -   **I18N:** Zero hardcoded text, all via __('projects.key')
+    -   **Status:** ✅ Controller completo GDPR-compliant
+
+-   [x] **TASK 15.3: Routes Registration** ⏱️ 1h ✅ COMPLETATO
+    -   **Priority:** P0 (BLOCKING)
+    -   **File:** `routes/pa-enterprise.php`
+    -   **Routes:** Resource routes `Route::resource('projects', ProjectController::class)`
+    -   **Generated Routes:**
+        -   GET /pa/projects → index
+        -   GET /pa/projects/create → create
+        -   POST /pa/projects → store
+        -   GET /pa/projects/{project} → show
+        -   GET /pa/projects/{project}/edit → edit
+        -   PUT /pa/projects/{project} → update
+        -   DELETE /pa/projects/{project} → destroy
+    -   **Middleware:** auth, role:pa_entity (from group)
+    -   **Named Routes:** pa.projects.\*
+    -   **Bugfix:** Added pa.scrapers.\* alias → pa.web-scrapers.\* (menu compatibility)
+    -   **Status:** ✅ Routes registrate e testate
+
+### ✅ TRANSLATIONS & ERROR HANDLING - COMPLETATO
+
+-   [x] **TASK 16.1: I18N Translations** ⏱️ 1h ✅ COMPLETATO
+
+    -   **Files:**
+        -   `resources/lang/en/projects.php` ✅
+        -   `resources/lang/it/projects.php` ✅
+    -   **Keys:** success messages, error messages, labels, actions, tabs
+    -   **Coverage:** Complete (created_successfully, updated_successfully, deleted_successfully, etc.)
+    -   **Status:** ✅ Full i18n coverage
+
+-   [x] **TASK 16.2: UEM Error Codes** ⏱️ 1h ✅ COMPLETATO
+    -   **File:** `config/error-manager.php`
+    -   **Codes Added:** 7 error codes
+        -   PROJECT_INDEX_ERROR
+        -   PROJECT_CREATE_PAGE_ERROR
+        -   PROJECT_CREATE_FAILED
+        -   PROJECT_SHOW_ERROR
+        -   PROJECT_EDIT_PAGE_ERROR
+        -   PROJECT_UPDATE_FAILED
+        -   PROJECT_DELETE_FAILED
+    -   **UEM Translations:**
+        -   `resources/lang/vendor/error-manager/it/errors_2.php` ✅
+        -   `resources/lang/vendor/error-manager/en/errors_2.php` ✅
+    -   **Coverage:** Dev messages + User messages per ogni error code
+    -   **Status:** ✅ UEM integration completa
 
 ### ⚪ FASE 4.2: Document Processing Pipeline (18h)
 
