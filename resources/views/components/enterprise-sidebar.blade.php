@@ -186,6 +186,11 @@
         @endif
     </div>
 
+    {{-- N.A.T.A.N. Chat History (visible only in chat page) --}}
+    @if(str_contains(Route::currentRouteName(), 'natan.chat'))
+        @include('components.partials.natan-history-sidebar-section')
+    @endif
+
     <!-- Logout Button -->
     <div class="px-4 py-4">
         <form method="POST" action="{{ route('logout') }}" class="w-full">

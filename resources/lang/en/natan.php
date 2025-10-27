@@ -113,4 +113,3 @@ return [
     'gdpr.no_pii_sent' => 'No personal data is sent to external services',
     'gdpr.audit_trail' => 'All interactions are logged for audit purposes',
 ];
-

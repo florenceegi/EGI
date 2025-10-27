@@ -23,4 +23,3 @@ return [
     'copy.button' => 'Copiar',
     'errors.generic' => 'Se produjo un error. Inténtelo de nuevo más tarde.',
 ];
-

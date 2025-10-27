@@ -13,10 +13,10 @@
 @endphp
 
 @if ($blockchainId)
-    <div class="mb-2 sm:mb-2.5 md:mb-3">
+    <div class="mb-4">
         <a href="{{ route('mint.show', $blockchainId) }}"
-            class="inline-flex w-full items-center justify-center rounded-lg border border-green-600/30 bg-green-700/20 px-3 py-2 text-xs font-medium text-green-400 backdrop-blur-sm transition-all hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300 sm:px-4 sm:py-2.5 sm:text-sm md:px-4 md:py-2.5 lg:text-sm">
-            <svg class="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="inline-flex items-center justify-center w-full px-6 py-4 font-medium text-green-400 transition-all border rounded-lg border-green-600/30 bg-green-700/20 backdrop-blur-sm hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -25,16 +25,15 @@
     </div>
 @endif
 
-{{-- Price & Purchase Section - Compatto --}}
-<div
-    class="rounded-lg border border-gray-700/30 bg-gradient-to-br from-gray-800/50 to-gray-900/50 p-3 sm:p-3 md:p-3 lg:p-4 xl:p-5">
+{{-- Price & Purchase Section --}}
+<div class="p-6 border rounded-xl border-gray-700/30 bg-gradient-to-br from-gray-800/50 to-gray-900/50">
     @if ($isForSale)
-        <div class="mb-3 text-center sm:mb-3 md:mb-3 lg:mb-4">
-            <p class="mb-1 text-[10px] text-gray-400 sm:text-xs md:text-xs">{{ $priceLabel }}</p>
+        <div class="mb-6 text-center">
+            <p class="mb-2 text-sm text-gray-400">{{ $priceLabel }}</p>
             <div class="flex items-baseline justify-center">
                 <x-currency-price :price="$displayPrice" :egi="$egi" :reservation="$highestPriorityReservation"
-                    class="text-xl font-bold text-white sm:text-2xl md:text-2xl lg:text-3xl" :show-algo-conversion="true" />
-                <span class="ml-1 text-sm font-medium text-gray-400 sm:ml-1.5 sm:text-base">EUR</span>
+                    class="text-4xl font-bold text-white" :show-algo-conversion="true" />
+                <span class="ml-2 text-lg font-medium text-gray-400">EUR</span>
             </div>
 
             {{-- Miglior offerente (STRONG vs WEAK) --}}
@@ -54,11 +53,11 @@
                 @endphp
 
                 <div
-                    class="{{ $bgColor }} {{ $borderColor }} mt-2 flex items-center justify-center gap-1.5 rounded-md border p-1.5 sm:mt-3 sm:gap-2 sm:rounded-lg sm:p-2">
+                    class="{{ $bgColor }} {{ $borderColor }} mt-3 flex items-center justify-center gap-2 rounded-lg border p-2">
                     <div
-                        class="{{ $iconBg }} flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full sm:h-5 sm:w-5">
+                        class="{{ $iconBg }} flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full">
                         @if ($isWeakReservation)
-                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
                                     clip-rule="evenodd" />
@@ -67,35 +66,35 @@
                             {{-- Check if commissioner has avatar --}}
                             @if ($activatorDisplayTop && $activatorDisplayTop['is_commissioner'] && $activatorDisplayTop['avatar'])
                                 <img src="{{ $activatorDisplayTop['avatar'] }}" alt="{{ $activatorDisplayTop['name'] }}"
-                                    class="h-5 w-5 rounded-full object-cover">
+                                    class="object-cover w-5 h-5 rounded-full">
                             @else
-                                <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
                                         clip-rule="evenodd" />
                                 </svg>
                             @endif
                         @endif
                     </div>
-                    <span class="{{ $textColor }} text-xs sm:text-sm">
+                    <span class="{{ $textColor }} text-sm">
                         @if ($isWeakReservation)
                             {{ __('egi.reservation.weak_bidder') }}: <span
                                 class="font-semibold text-white">{{ $highestPriorityReservation->fegi_code ?? 'FG#******' }}</span>
                         @else
                             {{ __('egi.reservation.strong_bidder') }}: <span
-                                class="inline-block max-w-[150px] truncate font-semibold text-white">{{ $activatorDisplayTop['name'] }}</span>
+                                class="font-semibold text-white">{{ $activatorDisplayTop['name'] }}</span>
                         @endif
                     </span>
                 </div>
             @endif
         </div>
     @else
-        <div class="mb-4 text-center sm:mb-5 md:mb-6">
+        <div class="mb-6 text-center">
             @if ($egi->price && $egi->price > 0)
-                <p class="text-base font-semibold text-gray-300 sm:text-lg">{{ __('egi.not_currently_listed') }}</p>
-                <p class="mt-1 text-xs text-gray-500 sm:text-sm">{{ __('egi.contact_owner_availability') }}</p>
+                <p class="text-lg font-semibold text-gray-300">{{ __('egi.not_currently_listed') }}</p>
+                <p class="mt-1 text-sm text-gray-500">{{ __('egi.contact_owner_availability') }}</p>
             @else
-                <p class="text-base font-semibold text-gray-300 sm:text-lg">{{ __('egi.not_for_sale') }}</p>
-                <p class="mt-1 text-xs text-gray-500 sm:text-sm">{{ __('egi.not_for_sale_description') }}</p>
+                <p class="text-lg font-semibold text-gray-300">{{ __('egi.not_for_sale') }}</p>
+                <p class="mt-1 text-sm text-gray-500">{{ __('egi.not_for_sale_description') }}</p>
             @endif
         </div>
     @endif
@@ -161,7 +160,7 @@ $userReservation =
                     @if ($isReservedByUser && $canMint && $userReservation)
                         <a href="{{ route('mint.payment-form', ['egiId' => $egi->id]) }}?reservation_id={{ $userReservation->id }}"
                             class="mint-button inline-flex w-full transform items-center justify-center rounded-lg border border-purple-500/30 bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-6 py-4 font-medium text-white shadow-lg backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-purple-400/50 hover:from-[#7d3c98] hover:to-[#8e44ad]">
-                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m-3-6h6" />
                             </svg>
@@ -176,7 +175,7 @@ $userReservation =
                             <button type="button"
                                 class="reserve-button inline-flex transform items-center justify-center rounded-lg border border-orange-500/30 bg-gradient-to-r from-[#E67E22] to-[#d35400] px-4 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-orange-400/50 hover:from-[#d35400] hover:to-[#ba4a00]"
                                 data-egi-id="{{ $egi->id }}">
-                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
@@ -186,7 +185,7 @@ $userReservation =
                             {{-- Mint Direct Button (right, emphasized) - VIOLA --}}
                             <a href="{{ route('egi.mint-direct', $egi->id) }}"
                                 class="mint-direct-button inline-flex transform items-center justify-center rounded-lg border border-purple-500/30 bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-3 text-sm font-bold text-white shadow-md backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-purple-400/50 hover:from-[#7d3c98] hover:to-[#8e44ad]">
-                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
@@ -198,7 +197,7 @@ $userReservation =
                     @elseif($canMint && !$canReserve)
                         <a href="{{ route('egi.mint-direct', $egi->id) }}"
                             class="mint-direct-button inline-flex w-full transform items-center justify-center rounded-lg border border-purple-500/30 bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-6 py-4 font-medium text-white shadow-lg backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-purple-400/50 hover:from-[#7d3c98] hover:to-[#8e44ad]">
-                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
@@ -212,13 +211,13 @@ $userReservation =
                             class="reserve-button inline-flex w-full transform items-center justify-center rounded-lg border border-orange-500/30 bg-gradient-to-r from-[#E67E22] to-[#d35400] px-6 py-4 font-medium text-white backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-orange-400/50 hover:from-[#d35400] hover:to-[#ba4a00]"
                             data-egi-id="{{ $egi->id }}">
                             @if ($hasCurrentReservation)
-                                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                 </svg>
                                 {{ __('egi.actions.outbid') }}
                             @else
-                                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
@@ -229,8 +228,8 @@ $userReservation =
                 @elseif(!auth()->check())
                     {{-- User not logged in (azioni disponibili solo dopo login) --}}
                     <div
-                        class="inline-flex w-full items-center justify-center rounded-lg border border-gray-600/30 bg-gray-700/50 px-6 py-4 font-medium text-gray-400 backdrop-blur-sm">
-                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="inline-flex items-center justify-center w-full px-6 py-4 font-medium text-gray-400 border rounded-lg border-gray-600/30 bg-gray-700/50 backdrop-blur-sm">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
@@ -239,8 +238,8 @@ $userReservation =
                 @else
                     {{-- Stato non disponibile o prezzo non impostato --}}
                     <div
-                        class="inline-flex w-full items-center justify-center rounded-lg border border-gray-600/30 bg-gray-700/50 px-6 py-4 font-medium text-gray-400 backdrop-blur-sm">
-                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="inline-flex items-center justify-center w-full px-6 py-4 font-medium text-gray-400 border rounded-lg border-gray-600/30 bg-gray-700/50 backdrop-blur-sm">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
                         </svg>

@@ -24,8 +24,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @version 1.0.0 (FlorenceEGI - N.A.T.A.N. Chat AI)
  * @date 2025-10-10
  */
-class NatanChatController extends Controller
-{
+class NatanChatController extends Controller {
     protected NatanChatService $chatService;
     protected UltraLogManager $logger;
 
@@ -42,8 +41,7 @@ class NatanChatController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index()
-    {
+    public function index() {
         $user = auth()->user();
 
         // Get 6 random strategic questions from the library
@@ -57,11 +55,10 @@ class NatanChatController extends Controller
 
     /**
      * Get all strategic questions from the library
-     * 
+     *
      * @return array
      */
-    private function getStrategicQuestionsLibrary(): array
-    {
+    private function getStrategicQuestionsLibrary(): array {
         return [
             // Strategic & Governance
             "Analizza le principali aree di investimento del Comune negli ultimi 12 mesi e suggerisci una strategia di ottimizzazione basata su ROI e priorità strategiche",
@@ -146,8 +143,7 @@ class NatanChatController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function sendMessage(Request $request): JsonResponse
-    {
+    public function sendMessage(Request $request): JsonResponse {
         $logContext = [
             'controller' => static::class,
             'user_id' => auth()->id(),
@@ -295,8 +291,7 @@ class NatanChatController extends Controller
      *
      * @return JsonResponse
      */
-    public function getSuggestions(): JsonResponse
-    {
+    public function getSuggestions(): JsonResponse {
         try {
             $user = auth()->user();
             $suggestions = $this->chatService->getSuggestedQuestions($user);
@@ -324,16 +319,15 @@ class NatanChatController extends Controller
 
     /**
      * Get user chat history (list of sessions)
-     * 
+     *
      * GDPR-COMPLIANT: Returns only authenticated user's sessions
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
-    public function getHistory(Request $request): JsonResponse
-    {
+    public function getHistory(Request $request): JsonResponse {
         $user = auth()->user();
-        
+
         $this->logger->info('[NATAN][Controller] Getting user history', [
             'user_id' => $user->id,
         ]);
@@ -345,17 +339,16 @@ class NatanChatController extends Controller
 
     /**
      * Get messages from a specific session
-     * 
+     *
      * GDPR-COMPLIANT: Authorization check (only owner can access)
-     * 
+     *
      * @param Request $request
      * @param string $sessionId
      * @return JsonResponse
      */
-    public function getSession(Request $request, string $sessionId): JsonResponse
-    {
+    public function getSession(Request $request, string $sessionId): JsonResponse {
         $user = auth()->user();
-        
+
         $this->logger->info('[NATAN][Controller] Getting session messages', [
             'user_id' => $user->id,
             'session_id' => $sessionId,
@@ -368,17 +361,16 @@ class NatanChatController extends Controller
 
     /**
      * Delete a user session (GDPR: Right to be forgotten)
-     * 
+     *
      * GDPR-COMPLIANT: Authorization check + Audit trail
-     * 
+     *
      * @param Request $request
      * @param string $sessionId
      * @return JsonResponse
      */
-    public function deleteSession(Request $request, string $sessionId): JsonResponse
-    {
+    public function deleteSession(Request $request, string $sessionId): JsonResponse {
         $user = auth()->user();
-        
+
         $this->logger->info('[NATAN][Controller] Deleting session', [
             'user_id' => $user->id,
             'session_id' => $sessionId,

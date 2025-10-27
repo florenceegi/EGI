@@ -17,13 +17,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * @version 1.0.0 (FlorenceEGI - N.A.T.A.N. Web Search Tests)
  * @date 2025-10-26
  */
-class NatanWebSearchTest extends TestCase
-{
+class NatanWebSearchTest extends TestCase {
     use RefreshDatabase;
 
     /** @test */
-    public function it_accepts_web_search_parameter_in_api()
-    {
+    public function it_accepts_web_search_parameter_in_api() {
         $user = User::factory()->create();
         $user->assignRole('pa_entity');
 
@@ -43,8 +41,7 @@ class NatanWebSearchTest extends TestCase
     }
 
     /** @test */
-    public function it_saves_web_search_metadata_to_database()
-    {
+    public function it_saves_web_search_metadata_to_database() {
         $user = User::factory()->create();
         $user->assignRole('pa_entity');
 
@@ -67,8 +64,7 @@ class NatanWebSearchTest extends TestCase
     }
 
     /** @test */
-    public function it_does_not_enable_web_search_by_default()
-    {
+    public function it_does_not_enable_web_search_by_default() {
         $user = User::factory()->create();
         $user->assignRole('pa_entity');
 
@@ -85,4 +81,3 @@ class NatanWebSearchTest extends TestCase
         $this->assertFalse($message->web_search_enabled);
     }
 }
-

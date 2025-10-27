@@ -20,7 +20,8 @@
     @php return; @endphp
 @endif
 
-<div class="overflow-hidden rounded-2xl border-2 border-blue-200 bg-white shadow-lg" id="unified-mint-panel-{{ $egi->id }}">
+<div class="overflow-hidden rounded-2xl border-2 border-blue-200 bg-white shadow-lg"
+    id="unified-mint-panel-{{ $egi->id }}">
     {{-- Header --}}
     <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
         <div class="flex items-center gap-3">
@@ -38,7 +39,8 @@
         {{-- Step 1: Descrizione AI --}}
         <div class="rounded-xl border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 p-5">
             <div class="mb-3 flex items-center gap-2">
-                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-purple-600 text-sm font-bold text-white">1</span>
+                <span
+                    class="flex h-8 w-8 items-center justify-center rounded-full bg-purple-600 text-sm font-bold text-white">1</span>
                 <h4 class="text-lg font-bold text-purple-900">Scrivi la descrizione</h4>
             </div>
             <p class="mb-4 text-sm text-purple-700">
@@ -60,17 +62,19 @@
         <details class="group rounded-xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">
             <summary class="cursor-pointer p-5 transition-colors hover:bg-amber-100">
                 <div class="flex items-center gap-2">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-600 text-sm font-bold text-white">2</span>
+                    <span
+                        class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-600 text-sm font-bold text-white">2</span>
                     <div class="flex-1">
                         <h4 class="text-lg font-bold text-amber-900">Aggiungi le caratteristiche</h4>
                         <p class="text-sm text-amber-700">Colori, stile, tecnica, emozioni... (clicca per aprire)</p>
                     </div>
-                    <svg class="h-5 w-5 text-amber-600 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-5 w-5 text-amber-600 transition-transform group-open:rotate-180" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </div>
             </summary>
-            
+
             <div class="border-t-2 border-amber-200 p-5">
                 <x-egi-ai-traits-panel :egi="$egi" :isCreator="$isCreator" />
             </div>
@@ -79,7 +83,8 @@
         {{-- Step 3: Mint su Blockchain --}}
         <div class="border-t-2 border-gray-200 pt-6">
             <div class="mb-4 flex items-center gap-2">
-                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">3</span>
+                <span
+                    class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">3</span>
                 <h4 class="text-lg font-bold text-gray-900">Scegli come mintare</h4>
             </div>
             <p class="mb-6 text-sm text-gray-600">
@@ -103,9 +108,12 @@
                                         Come un certificato digitale unico e sicuro
                                     </div>
                                     <div class="mt-3 flex flex-wrap gap-2">
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Gratis</span>
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Veloce</span>
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Per sempre</span>
+                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓
+                                            Gratis</span>
+                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓
+                                            Veloce</span>
+                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Per
+                                            sempre</span>
                                     </div>
                                 </div>
                             </div>
@@ -127,15 +135,19 @@
                                 <div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xl font-bold">EGI Intelligente</span>
-                                        <span class="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-amber-900">PREMIUM</span>
+                                        <span
+                                            class="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-amber-900">PREMIUM</span>
                                     </div>
                                     <div class="mt-1 text-sm text-purple-100">
                                         Con intelligenza artificiale che promuove e valorizza la tua opera
                                     </div>
                                     <div class="mt-3 flex flex-wrap gap-2">
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ AI inclusa</span>
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Auto-promozione</span>
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Storico completo</span>
+                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ AI
+                                            inclusa</span>
+                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓
+                                            Auto-promozione</span>
+                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Storico
+                                            completo</span>
                                     </div>
                                 </div>
                             </div>
@@ -152,7 +164,8 @@
                 <i class="fas fa-info-circle mt-0.5 text-blue-600"></i>
                 <div class="text-sm text-blue-800">
                     <p class="font-semibold">Cosa significa "mintare"?</p>
-                    <p class="mt-1">Significa creare una copia unica della tua opera su blockchain, come un certificato digitale che nessuno può copiare o falsificare.</p>
+                    <p class="mt-1">Significa creare una copia unica della tua opera su blockchain, come un
+                        certificato digitale che nessuno può copiare o falsificare.</p>
                 </div>
             </div>
         </div>
@@ -170,8 +183,8 @@
 
             const form = event.target;
             const typeName = targetType === 'ASA' ? 'EGI Semplice' : 'EGI Intelligente';
-            const typeDesc = targetType === 'ASA' ? 
-                'Verrà creato un certificato digitale unico sulla blockchain' : 
+            const typeDesc = targetType === 'ASA' ?
+                'Verrà creato un certificato digitale unico sulla blockchain' :
                 'Verrà creato un EGI intelligente con AI che promuoverà la tua opera';
 
             Swal.fire({
@@ -391,4 +404,3 @@
         }
     </script>
 @endpush
-

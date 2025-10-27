@@ -12,22 +12,21 @@ use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * RAG (Retrieval Augmented Generation) Service
- * 
+ *
  * Sistema di recupero intelligente dei dati per alimentare l'AI:
  * 1. Recupera atti PA rilevanti dal database
  * 2. Sanitizza i dati (solo metadati pubblici)
  * 3. Crea contesto strutturato per l'AI
- * 
+ *
  * RAG STRATEGIES:
  * - Semantic search: Vector embeddings + cosine similarity (preferred)
  * - Keyword search: SQL LIKE queries (fallback)
- * 
+ *
  * GDPR COMPLIANCE:
  * Tutti i dati passano attraverso DataSanitizerService prima
  * di essere inviati all'AI.
  */
-class RagService
-{
+class RagService {
     private UltraLogManager $logger;
     private DataSanitizerService $sanitizer;
     private EmbeddingService $embeddingService;
@@ -44,23 +43,22 @@ class RagService
 
     /**
      * Recupera il contesto per una query utente
-     * 
+     *
      * STRATEGIA (REGOLA STATISTICS):
      * - Scandaglia TUTTI gli atti disponibili (no limit nascosto)
      * - Semantic search: calcola similarity su TUTTI → torna TOP-N più rilevanti
      * - Keyword search: cerca in TUTTI → ordina → torna TOP-N
      * - $limit controlla SOLO quanti atti tornare all'AI, NON quanti scandagliare
-     * 
+     *
      * @param string $query Query dell'utente
      * @param User $user Utente corrente (per scope PA)
      * @param int|null $limit Numero massimo di atti da TORNARE (non da scandagliare). Default: 1000 (scansione totale)
      * @return array Contesto per l'AI con atti più rilevanti
      */
-    public function getContextForQuery(string $query, User $user, ?int $limit = null): array
-    {
+    public function getContextForQuery(string $query, User $user, ?int $limit = null): array {
         // REGOLA STATISTICS: Di default recupera TUTTI gli atti (no limit nascosto)
         // Limit SOLO se esplicitamente richiesto dal chiamante
-        
+
         // Se limit non specificato, recupera TUTTI gli atti
         if ($limit === null) {
             $limit = 1000; // Nessun limite pratico (scansione totale)
@@ -114,19 +112,18 @@ class RagService
 
     /**
      * Trova atti rilevanti per una query
-     * 
+     *
      * STRATEGY:
      * 1. Try semantic search (vector embeddings) - PREFERRED
      * 2. Fallback to keyword search if no embeddings
-     * 
+     *
      * Keyword search basata su:
      * - Keyword matching (protocollo, tipo, titolo)
      * - Date range (se menzionate)
      * - Importi (se menzionati)
      * - Status blockchain (se richiesto)
      */
-    private function findRelevantActs(string $query, User $user, int $limit): Collection
-    {
+    private function findRelevantActs(string $query, User $user, int $limit): Collection {
         // STRATEGY 1: Try semantic search first (if embeddings exist)
         $semanticResults = $this->semanticSearch($query, $user, $limit, 0.5);
         if ($semanticResults && $semanticResults->isNotEmpty()) {
@@ -227,22 +224,21 @@ class RagService
 
     /**
      * Semantic Search using Vector Embeddings
-     * 
+     *
      * Uses cosine similarity to find most relevant acts.
-     * 
+     *
      * PERFORMANCE:
      * - 24k acts: ~1-2 sec (acceptable for demo)
      * - Scales to 100k acts
      * - Can migrate to PostgreSQL+pgvector for better performance
-     * 
+     *
      * @param string $query User query
      * @param User $user Current user (for scope)
      * @param int $limit Max results
      * @param float $minSimilarity Minimum similarity threshold (0.0-1.0)
      * @return Collection|null Collection of Egi or null if no embeddings
      */
-    public function semanticSearch(string $query, User $user, int $limit = 10, float $minSimilarity = 0.5): ?Collection
-    {
+    public function semanticSearch(string $query, User $user, int $limit = 10, float $minSimilarity = 0.5): ?Collection {
         $this->logger->info('[RAG] Starting semantic search', [
             'query_length' => strlen($query),
             'user_id' => $user->id,
@@ -305,12 +301,11 @@ class RagService
 
     /**
      * Generate embedding for user query
-     * 
+     *
      * @param string $query
      * @return array|null Vector of 1536 floats
      */
-    private function generateQueryEmbedding(string $query): ?array
-    {
+    private function generateQueryEmbedding(string $query): ?array {
         // Use OpenAI API to generate embedding
         $apiKey = config('services.openai.api_key');
         $baseUrl = config('services.openai.base_url');
@@ -352,8 +347,7 @@ class RagService
     /**
      * Estrae keyword significative dalla query
      */
-    private function extractKeywords(string $query): array
-    {
+    private function extractKeywords(string $query): array {
         // Rimuovi stopwords comuni
         $stopwords = [
             'il',
@@ -435,8 +429,7 @@ class RagService
     /**
      * Recupera statistiche globali per il dashboard
      */
-    public function getGlobalStats(User $user): array
-    {
+    public function getGlobalStats(User $user): array {
         $acts = Egi::query()
             ->where('user_id', $user->id)
             ->whereNotNull('pa_protocol_number')
@@ -448,8 +441,7 @@ class RagService
     /**
      * Recupera suggerimenti di query basati sui dati disponibili
      */
-    public function getSuggestions(User $user): array
-    {
+    public function getSuggestions(User $user): array {
         $stats = $this->getGlobalStats($user);
 
         $suggestions = [];

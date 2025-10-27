@@ -164,7 +164,7 @@ Route::prefix('pa')
             Route::get('/chat', [NatanChatController::class, 'index'])->name('chat');
             Route::post('/chat/message', [NatanChatController::class, 'sendMessage'])->name('chat.message');
             Route::get('/chat/suggestions', [NatanChatController::class, 'getSuggestions'])->name('chat.suggestions');
-            
+
             // Chat History (NEW v3.1 - GDPR-Compliant)
             Route::get('/chat/history', [NatanChatController::class, 'getHistory'])->name('chat.history');
             Route::get('/chat/session/{sessionId}', [NatanChatController::class, 'getSession'])->name('chat.session');

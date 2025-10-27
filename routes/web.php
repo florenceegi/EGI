@@ -88,11 +88,6 @@ Route::get('/test-create-fegi', function () {
     return $controller->connect($request);
 });
 
-// 🧪 TEST ROUTE: Wallet Setup Modal (standalone)
-Route::get('/test-wallet-setup', function () {
-    return view('auth.register-wallet-setup');
-})->name('test.wallet-setup');
-
 // 📄 PUBLIC CERTIFICATE ENDPOINT (No auth required - blockchain transparency)
 Route::post('/mint/{egiId}/certificate/pdf/check', [App\Http\Controllers\EgiReservationCertificateController::class, 'checkMintCertificatePdf'])
     ->name('mint.certificate.pdf-check');

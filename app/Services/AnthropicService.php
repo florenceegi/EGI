@@ -16,16 +16,14 @@ use Ultra\UltraLogManager\UltraLogManager;
  * - Non invia MAI: firme digitali, nominativi, file_path, IP
  * - Logging audit completo di cosa viene inviato
  */
-class AnthropicService
-{
+class AnthropicService {
     private UltraLogManager $logger;
     private string $apiKey;
     private string $baseUrl;
     private string $model;
     private int $timeout;
 
-    public function __construct(UltraLogManager $logger)
-    {
+    public function __construct(UltraLogManager $logger) {
         $this->logger = $logger;
         $this->apiKey = config('services.anthropic.api_key');
         $this->baseUrl = config('services.anthropic.base_url', 'https://api.anthropic.com');
@@ -40,8 +38,7 @@ class AnthropicService
     /**
      * Verifica se il servizio Anthropic è disponibile
      */
-    public function isAvailable(): bool
-    {
+    public function isAvailable(): bool {
         try {
             // Semplice test di connessione
             $response = Http::withHeaders([
@@ -67,8 +64,7 @@ class AnthropicService
      * @param string $personaId ID della persona N.A.T.A.N. da usare
      * @return string La risposta di Claude
      */
-    public function chat(string $userMessage, array $context = [], array $conversationHistory = [], string $personaId = 'strategic'): string
-    {
+    public function chat(string $userMessage, array $context = [], array $conversationHistory = [], string $personaId = 'strategic'): string {
         try {
             $this->logger->info('[AnthropicService] Chat request initiated', [
                 'user_message_length' => strlen($userMessage),
@@ -124,19 +120,18 @@ class AnthropicService
 
     /**
      * Costruisce il system prompt con il contesto dei dati pubblici
-     * 
+     *
      * ENTERPRISE-GRADE PROMPT ENGINEERING:
      * - Chain of Thought reasoning
      * - Structured analytical framework
      * - Quality criteria and self-evaluation
      * - Few-shot examples for calibration
      * - Multi-persona support for specialized responses
-     * 
+     *
      * @param array $context Context data
      * @param string $personaId Persona to use ('strategic', 'technical', 'legal', 'financial', 'urban_social', 'communication')
      */
-    private function buildSystemPrompt(array $context, string $personaId = 'strategic'): string
-    {
+    private function buildSystemPrompt(array $context, string $personaId = 'strategic'): string {
         // Select the appropriate persona prompt
         $basePrompt = match ($personaId) {
             'strategic' => $this->buildStrategicPrompt(),
@@ -154,8 +149,7 @@ class AnthropicService
     /**
      * Build Strategic Consultant prompt (McKinsey-style)
      */
-    private function buildStrategicPrompt(): string
-    {
+    private function buildStrategicPrompt(): string {
         return <<<PROMPT
 # IDENTITY & ROLE
 
@@ -165,7 +159,7 @@ Your expertise includes:
 - Strategic analysis using proven frameworks (SWOT, Porter's Five Forces, Value Chain, BCG Matrix)
 - Data-driven insights and hypothesis-driven problem solving
 - Governance optimization and operational excellence
-- Financial modeling and resource allocation optimization  
+- Financial modeling and resource allocation optimization
 - Change management and stakeholder analysis
 - International benchmarking against best-in-class municipalities
 
@@ -237,7 +231,7 @@ For strategic questions, use this **McKinsey-style format**:
 
 **Pattern Identification:**
 - What's working (build on this)
-- What's not working (address urgently)  
+- What's not working (address urgently)
 - What's missing (gap vs best-in-class)
 
 ## 🎯 PROBLEM STRUCTURING
@@ -264,7 +258,7 @@ For strategic questions, use this **McKinsey-style format**:
 ### OPTION B: [Name]
 [Same structure]
 
-### OPTION C: [Name]  
+### OPTION C: [Name]
 [Same structure]
 
 **Decision Matrix:**
@@ -282,7 +276,7 @@ For strategic questions, use this **McKinsey-style format**:
 
 **Rationale:**
 1. [Data-driven reason]
-2. [Strategic fit reason]  
+2. [Strategic fit reason]
 3. [Risk/return optimization]
 
 ## 📅 IMPLEMENTATION ROADMAP
@@ -336,7 +330,7 @@ For strategic questions, use this **McKinsey-style format**:
 
 **Governance:**
 - Steering Committee: monthly
-- Working Groups: bi-weekly  
+- Working Groups: bi-weekly
 - Dashboard updates: real-time
 - Review gates: quarterly
 
@@ -358,7 +352,7 @@ For strategic questions, use this **McKinsey-style format**:
 
 **Funding Strategy:**
 - EU Funds: €X (source: PNRR, etc.)
-- National grants: €Y  
+- National grants: €Y
 - Municipal budget: €Z
 - PPP opportunities: €W
 
@@ -414,7 +408,7 @@ Urban mobility inefficiency
    ├─ Governance weakness (no accountability)
    └─ Complexity bias (favoring large projects)
 
-**Hypothesis:** 
+**Hypothesis:**
 Reallocating €10M from delayed tram to integrated agile mobility will deliver 2x impact in 1/4 the time with lower execution risk.
 
 ## 💡 STRATEGIC OPTIONS
@@ -461,7 +455,7 @@ Reallocating €10M from delayed tram to integrated agile mobility will deliver 
 
 **Rationale:**
 1. **De-risk execution:** Quick wins (€50k integrated ticketing) prove concept with minimal investment
-2. **Build momentum:** Early successes (3-6mo) enable tougher decisions on tram reallocation  
+2. **Build momentum:** Early successes (3-6mo) enable tougher decisions on tram reallocation
 3. **Preserve optionality:** Data from Phase 0-1 informs optimal Phase 2-3 investment split
 4. **Stakeholder alignment:** Show results before asking for major strategic pivot
 
@@ -546,7 +540,7 @@ Initiative 3: Bus priority corridors (€2M, 5mo)
 
 **Best Practices:**
 - **Copenhagen "Copenhagenize":** Citywide cycling master plan with 20yr vision but 2yr quick-win cycles → Lesson: Dream big, start small, iterate
-- **Helsinki MaaS:** Whim app integrated all transport → Lesson: User experience > tech sophistication  
+- **Helsinki MaaS:** Whim app integrated all transport → Lesson: User experience > tech sophistication
 - **Avoid: Bordeaux tram cost overruns:** 180% budget overrun, 5yr delays → Lesson: Fixed-price contracts + governance + realistic timelines
 
 ## 💰 FINANCIAL MODEL
@@ -599,7 +593,7 @@ Maintain your McKinsey-level strategic depth, but adjust phrasing for PA institu
 **AVOID (commercial/sensational):**
 - "Innovativo!", "Rivoluzionario!", "Unico!"
 - "Quick win straordinario!"
-- "ROI eccezionale!"  
+- "ROI eccezionale!"
 - "Game changer!"
 
 **OUTPUT READY FOR:** Note di servizio, verbali Giunta, relazioni assessorili
@@ -618,8 +612,7 @@ PROMPT;
      * Build Common Context section (shared by all personas)
      * Includes GDPR compliance and available data
      */
-    private function buildCommonContext(array $context): string
-    {
+    private function buildCommonContext(array $context): string {
         $commonPrompt = <<<PROMPT
 
 
@@ -701,8 +694,7 @@ PROMPT;
     /**
      * Build Technical Expert prompt
      */
-    private function buildTechnicalPrompt(): string
-    {
+    private function buildTechnicalPrompt(): string {
         return <<<PROMPT
 # IDENTITY & ROLE
 
@@ -803,8 +795,7 @@ PROMPT;
     /**
      * Build Legal/Administrative Expert prompt
      */
-    private function buildLegalPrompt(): string
-    {
+    private function buildLegalPrompt(): string {
         return <<<PROMPT
 # IDENTITY & ROLE
 
@@ -902,8 +893,7 @@ PROMPT;
     /**
      * Build Financial Analyst prompt
      */
-    private function buildFinancialPrompt(): string
-    {
+    private function buildFinancialPrompt(): string {
         return <<<PROMPT
 # IDENTITY & ROLE
 
@@ -1017,8 +1007,7 @@ PROMPT;
     /**
      * Build Urban Planner / Social Impact prompt
      */
-    private function buildUrbanSocialPrompt(): string
-    {
+    private function buildUrbanSocialPrompt(): string {
         return <<<PROMPT
 # IDENTITY & ROLE
 
@@ -1131,8 +1120,7 @@ PROMPT;
     /**
      * Build Communication/PR Specialist prompt
      */
-    private function buildCommunicationPrompt(): string
-    {
+    private function buildCommunicationPrompt(): string {
         return <<<PROMPT
 # IDENTITY & ROLE
 
@@ -1270,8 +1258,7 @@ PROMPT;
     /**
      * Costruisce l'array di messaggi per l'API
      */
-    private function buildMessages(string $userMessage, array $conversationHistory): array
-    {
+    private function buildMessages(string $userMessage, array $conversationHistory): array {
         $messages = [];
 
         // Aggiungi storia conversazione (max ultimi 10 messaggi)
@@ -1297,8 +1284,7 @@ PROMPT;
      * @param string $pdfText Il testo estratto dal PDF
      * @return array Metadati estratti
      */
-    public function extractMetadata(string $pdfText): array
-    {
+    public function extractMetadata(string $pdfText): array {
         try {
             $this->logger->info('[AnthropicService] Extracting metadata from PDF text', [
                 'text_length' => strlen($pdfText),
@@ -1383,8 +1369,7 @@ PROMPT;
      * @return string Claude's description based on visual analysis
      * @throws RuntimeException When vision analysis fails
      */
-    public function analyzeImage(string $imageUrl, string $prompt, array $context = []): string
-    {
+    public function analyzeImage(string $imageUrl, string $prompt, array $context = []): string {
         try {
             $this->logger->info('[AnthropicService] Image analysis request initiated', [
                 'image_url_length' => strlen($imageUrl),
@@ -1466,8 +1451,7 @@ PROMPT;
      * @return array ['media_type' => string, 'base64' => string]
      * @throws RuntimeException When image fetch fails
      */
-    private function fetchImageAsBase64(string $imageUrl): array
-    {
+    private function fetchImageAsBase64(string $imageUrl): array {
         try {
             $this->logger->info('[AnthropicService] Starting image fetch', [
                 'original_image_url' => $imageUrl,
@@ -1577,8 +1561,7 @@ PROMPT;
      * @param array $context Artwork context (title, type, etc.)
      * @return string System prompt for Claude Vision
      */
-    private function buildEgiVisionSystemPrompt(array $context): string
-    {
+    private function buildEgiVisionSystemPrompt(array $context): string {
         $basePrompt = <<<PROMPT
 Sei N.A.T.A.N. (Nodo di Analisi e Tracciamento Atti Notarizzati), un assistente AI specializzato nell'analisi di opere d'arte digitali per il marketplace FlorenceEGI.
 
@@ -1642,8 +1625,7 @@ PROMPT;
      * @return array Structured trait proposals with confidence scores
      * @throws RuntimeException When analysis fails
      */
-    public function analyzeImageForTraits(string $imageUrl, array $context, int $requestedCount = 5): array
-    {
+    public function analyzeImageForTraits(string $imageUrl, array $context, int $requestedCount = 5): array {
         try {
             $this->logger->info('[AnthropicService] Trait analysis request initiated', [
                 'image_url_length' => strlen($imageUrl),
@@ -1735,8 +1717,7 @@ PROMPT;
      * @param array $context EGI context
      * @return string System prompt for Claude
      */
-    private function buildTraitExtractionSystemPrompt(array $context): string
-    {
+    private function buildTraitExtractionSystemPrompt(array $context): string {
         $basePrompt = <<<PROMPT
 Sei N.A.T.A.N. (Nodo di Analisi e Tracciamento Atti Notarizzati), un assistente AI specializzato nell'estrazione di NFT traits per il marketplace FlorenceEGI.
 
@@ -1806,8 +1787,7 @@ PROMPT;
      * @param int $requestedCount Number of traits requested
      * @return string User prompt
      */
-    private function buildTraitExtractionPrompt(array $context, int $requestedCount): string
-    {
+    private function buildTraitExtractionPrompt(array $context, int $requestedCount): string {
         $prompt = "Analizza questa opera d'arte e identifica **ESATTAMENTE {$requestedCount} TRAITS** più rilevanti e descrittivi.\n\n";
 
         if (!empty($context['title'])) {
@@ -1860,8 +1840,7 @@ INSTRUCTIONS;
      * @return array Parsed trait data
      * @throws RuntimeException If JSON parsing fails
      */
-    private function parseTraitAnalysisResponse(string $response): array
-    {
+    private function parseTraitAnalysisResponse(string $response): array {
         try {
             // Remove markdown code blocks if present
             $response = preg_replace('/```json\s*/i', '', $response);
@@ -1909,8 +1888,7 @@ INSTRUCTIONS;
      * @param array $traits Array of trait objects
      * @return float Average confidence
      */
-    private function calculateAverageConfidence(array $traits): float
-    {
+    private function calculateAverageConfidence(array $traits): float {
         if (empty($traits)) {
             return 0;
         }

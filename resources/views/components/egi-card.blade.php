@@ -99,68 +99,39 @@ if ($portfolioContext && $portfolioOwner) {
     $showActivationBadge = false;
     $badgeStatus = 'not_activated'; // Default: da attivare
 
-    // Check prezzo e modalità vendita
+    // Check prezzo: se 0 o null, EGI non disponibile
     $egiPrice = $egi->price ?? 0;
-    $saleMode = $egi->sale_mode ?? null;
-    $isNotForSale = $saleMode === 'not_for_sale';
     $isAvailable = $egiPrice > 0;
 
-    // 🆕 PRIORITÀ MASSIMA: Check pubblicazione (solo per owner/creator)
-    $isOwner =
-        $isAuthenticated &&
-        ($currentUserId === $creatorId ||
-            $currentUserId === ($egiCollection->owner_id ?? null) ||
-            $currentUserId === ($egiCollection->creator_id ?? null));
-    $isPublished = $egi->is_published ?? true;
-
-    // 🎯 DETERMINAZIONE STATO BADGE - Ordine di priorità
-    if (!$isPublished && $isOwner) {
-        // 1️⃣ NON PUBBLICATO (solo per owner) - ROSSO
-        $badgeStatus = 'not_published';
-        $showActivationBadge = false;
-    } elseif ($isMinted) {
-        // 2️⃣ MINTATO - VIOLA
+    if ($isMinted) {
         $badgeStatus = 'minted';
         $showActivationBadge = false;
     } elseif ($hasActiveReservations) {
-        // 3️⃣ PRENOTATO - ARANCIO
         $badgeStatus = 'reserved';
         $showActivationBadge = false;
-    } elseif ($isNotForSale) {
-        // 4️⃣ NON IN VENDITA - BLU SCURO
-        $badgeStatus = 'not_for_sale';
-        $showActivationBadge = false;
     } elseif (!$isAvailable) {
-        // 5️⃣ PREZZO ZERO (non disponibile) - GRIGIO SCURO
-        $badgeStatus = 'not_available';
+        $badgeStatus = 'not_available'; // Rosso: prezzo zero
         $showActivationBadge = false;
     } else {
-        // 6️⃣ DA ATTIVARE (disponibile) - VERDE
         $badgeStatus = 'not_activated';
         $showActivationBadge = true;
     }
 
     // 🎨 Determina colori badge basati su FlorenceEGI Brand Guidelines
     $badgeColor = match ($badgeStatus) {
-        'not_published' => 'bg-[#C13120]/90', // 🔴 Rosso Urgenza - SOLO per non pubblicato
-        'minted' => 'bg-[#8E44AD]/90', // 🟣 Viola Innovazione (premium, futuro)
-        'reserved' => 'bg-[#E67E22]/90', // 🟠 Arancio Energia (notifiche positive)
-        'not_for_sale' => 'bg-[#34495E]/90', // 🔵 Blu Scuro (non in vendita)
-        'not_activated' => 'bg-[#2D5016]/90', // 🟢 Verde Rinascita (disponibile)
-        'not_available' => 'bg-[#7F8C8D]/90', // ⚪ Grigio Scuro (prezzo zero)
+        'minted' => 'bg-[#8E44AD]/90', // Viola Innovazione (premium, futuro)
+        'reserved' => 'bg-[#E67E22]/90', // Arancio Energia (notifiche positive)
+        'not_activated' => 'bg-[#2D5016]/90', // Verde Rinascita (sostenibilità, disponibile)
+        'not_available' => 'bg-[#C13120]/90', // Rosso Urgenza (prezzo zero o non vendibile)
         default => 'bg-gray-500/90', // Grigio per stati imprevisti
     };
 
     // Determina il label del badge basato sul contesto
-    if ($badgeStatus === 'not_published') {
-        // Badge NON PUBBLICATA ha priorità su tutto (solo per owner)
-        $badgeLabel = __('egi.badge.not_published');
-    } elseif ($creatorPortfolioContext) {
+    if ($creatorPortfolioContext) {
         // Nel Creator Portfolio
         $badgeLabel = match ($badgeStatus) {
             'minted' => __('egi.badge.minted'),
             'reserved' => __('egi.badge.reserved'),
-            'not_for_sale' => __('egi.badge.not_for_sale'),
             default => __('egi.badge.to_activate'),
         };
     } elseif ($portfolioContext) {
@@ -169,18 +140,15 @@ if ($portfolioContext && $portfolioOwner) {
     } else {
         // Card normale (non portfolio)
         // 🔨 AUCTION MODE: Mostra "Da Mintare" se EGI è all'asta
-    if (($egi->sale_mode ?? null) === 'auction' && $badgeStatus !== 'minted' && $badgeStatus !== 'not_for_sale') {
+    if (($egi->sale_mode ?? null) === 'auction' && $badgeStatus !== 'minted') {
         $badgeLabel = __('egi.badge.auction_active'); // "Da Mintare"
         $badgeColor = 'bg-gradient-to-r from-amber-500 to-orange-600'; // Colore distintivo per asta
     } else {
         $badgeLabel = match ($badgeStatus) {
-            'not_published' => __('egi.badge.not_published'),
             'minted' => __('egi.badge.minted'),
             'reserved' => __('egi.badge.reserved'),
-            'not_for_sale' => __('egi.badge.not_for_sale'),
-            'not_activated' => __('egi.badge.to_activate'),
-            'not_available' => __('egi.status.not_available'),
-            default => __('egi.badge.to_activate'),
+            'not_activated' => __('egi.badge.to_activate'), // Verde: da attivare
+            default => __('egi.status.not_available'), // Rosso: non disponibile
         };
     }
 }
@@ -367,9 +335,6 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                     $badgeLabel = match ($badgeStatus) {
                         'minted' => __('egi.badge.minted'),
                         'reserved' => __('egi.badge.reserved'),
-                        'not_for_sale' => __('egi.badge.not_for_sale'),
-                        'not_available' => __('egi.status.not_available'),
-                        'not_published' => __('egi.badge.not_published'),
                         default => __('egi.badge.to_activate'),
                     };
                 } else {
@@ -464,7 +429,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                 @else
                     <span data-portfolio-badge="1" data-lbl-winning="{{ __('egi.badge.winning_bid') }}"
                         data-lbl-not-owned="{{ $badgeLabel }}"
-                        class="{{ $badgeColor }} absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm"
+                        class="{{ $showActivationBadge ? $badgeColor : 'bg-[#C13120]/90' }} absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm"
                         title="{{ $badgeLabel }}">
                         <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                             @if ($showActivationBadge)
@@ -483,8 +448,8 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                     </span>
                 @endif
             @endif
-            {{-- Badge per card normale (non portfolio) - Mostra TUTTI gli stati --}}
-        @elseif (!$isCreator)
+            {{-- Badge per card normale (non portfolio) - Mostra status mint/reserve/availability --}}
+        @elseif (!$isCreator && ($badgeStatus === 'minted' || $badgeStatus === 'reserved'))
             <span
                 class="{{ $badgeColor }} absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm"
                 title="{{ $badgeLabel }}">
@@ -494,29 +459,9 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                         <path fill-rule="evenodd"
                             d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
                             clip-rule="evenodd" />
-                    @elseif($badgeStatus === 'reserved')
+                    @else
                         {{-- Icona "Prenotato" (bookmark) --}}
                         <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                    @elseif($badgeStatus === 'not_for_sale')
-                        {{-- Icona "Non in vendita" (ban/block) --}}
-                        <path fill-rule="evenodd"
-                            d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
-                            clip-rule="evenodd" />
-                    @elseif($badgeStatus === 'not_available')
-                        {{-- Icona "Non disponibile" (warning) --}}
-                        <path fill-rule="evenodd"
-                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                            clip-rule="evenodd" />
-                    @elseif($badgeStatus === 'not_published')
-                        {{-- Icona "Non pubblicato" (eye-off) --}}
-                        <path fill-rule="evenodd"
-                            d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
-                            clip-rule="evenodd" />
-                    @else
-                        {{-- Icona "Da attivare" (play) --}}
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8.108v3.784a1 1 0 001.555.94l3.108-1.892a1 1 0 000-1.688L9.555 7.168z"
-                            clip-rule="evenodd" />
                     @endif
                 </svg>
                 {{ $badgeLabel }}
@@ -617,29 +562,6 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                 </div>
             @endif
 
-            {{-- 🎨 CO-CREATOR (se mintato) - SEMPRE VISIBILE come box separato --}}
-            @if ($isMinted && $egi->blockchain && $egi->blockchain->buyer)
-                @php
-                    $coCreator = $egi->blockchain->buyer;
-                    $coCreatorImageUrl = $coCreator->profile_photo_url ?? '';
-                    $coCreatorDisplay = formatActivatorDisplay($coCreator);
-                @endphp
-                <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
-                    data-co-creator-info>
-                    <div
-                        class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
-                        <img src="{{ $coCreatorImageUrl }}" alt="{{ $coCreatorDisplay['name'] }}"
-                            class="h-full w-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            loading="lazy" decoding="async">
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <span class="text-xs font-medium text-gray-300">{{ __('egi.creator.co_creator') }}</span>
-                        <span
-                            class="ml-1 truncate text-xs font-semibold text-white">{{ $coCreatorDisplay['name'] }}</span>
-                    </div>
-                </div>
-            @endif
-
             {{-- 📊 RESERVATION COUNT --}}
             @if ($egi->reservations && $egi->reservations->count() > 0)
                 <div class="mb-2 flex items-center gap-2 rounded-lg border border-gray-700/50 bg-gray-800/50 p-2"
@@ -664,7 +586,22 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
 
         {{-- 💰 PRICE SECTION - SIMPLIFIED --}}
         <div class="mt-4">
-            @if ($displayPrice && $displayPrice > 0 && $saleMode !== 'not_for_sale')
+            @if (!(bool) $egi->is_published)
+                {{-- DRAFT Status --}}
+                <div
+                    class="flex items-center justify-center rounded-xl border border-yellow-500/30 bg-gradient-to-r from-yellow-600/20 to-amber-500/20 p-3">
+                    <div class="flex items-center gap-2">
+                        <div class="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500">
+                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-yellow-300">{{ __('egi.status.draft') }}</span>
+                    </div>
+                </div>
+            @elseif ($displayPrice && $displayPrice > 0)
                 {{-- ACTIVE PRICE - From highest reservation or base price --}}
                 <div
                     class="rounded-xl border border-green-500/30 bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-3">

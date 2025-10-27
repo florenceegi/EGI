@@ -18,24 +18,21 @@ use Mockery;
  * @version 1.0.0 (FlorenceEGI - N.A.T.A.N. Web Search Tests)
  * @date 2025-10-26
  */
-class KeywordSanitizerServiceTest extends TestCase
-{
+class KeywordSanitizerServiceTest extends TestCase {
     protected KeywordSanitizerService $service;
 
-    protected function setUp(): void
-    {
+    protected function setUp(): void {
         parent::setUp();
-        
+
         $logger = Mockery::mock(UltraLogManager::class);
         $logger->shouldReceive('info')->andReturn(true);
         $logger->shouldReceive('warning')->andReturn(true);
-        
+
         $this->service = new KeywordSanitizerService($logger);
     }
 
     /** @test */
-    public function it_removes_protocol_numbers()
-    {
+    public function it_removes_protocol_numbers() {
         $query = "Analizza protocollo 1234/2024 e determina 847/2024";
         $result = $this->service->sanitize($query);
 
@@ -46,8 +43,7 @@ class KeywordSanitizerServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_removes_internal_reference_keywords()
-    {
+    public function it_removes_internal_reference_keywords() {
         $query = "Confronta determina delibera con best practices";
         $result = $this->service->sanitize($query);
 
@@ -59,8 +55,7 @@ class KeywordSanitizerServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_keeps_generic_locations()
-    {
+    public function it_keeps_generic_locations() {
         $query = "Best practices Firenze Italia Europa";
         $result = $this->service->sanitize($query);
 
@@ -70,8 +65,7 @@ class KeywordSanitizerServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_validates_sanitized_keywords_are_safe()
-    {
+    public function it_validates_sanitized_keywords_are_safe() {
         $safeKeywords = ['best', 'practices', 'firenze', 'europa'];
         $validation = $this->service->validate($safeKeywords);
 
@@ -80,8 +74,7 @@ class KeywordSanitizerServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_detects_unsafe_keywords_with_numbers()
-    {
+    public function it_detects_unsafe_keywords_with_numbers() {
         $unsafeKeywords = ['best', '1234', 'practices', '847/2024'];
         $validation = $this->service->validate($unsafeKeywords);
 
@@ -91,8 +84,7 @@ class KeywordSanitizerServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_boosts_keywords_with_persona_specific_terms()
-    {
+    public function it_boosts_keywords_with_persona_specific_terms() {
         $query = "analizza gestione rifiuti";
         $result = $this->service->sanitize($query, 'strategic');
 
@@ -100,10 +92,8 @@ class KeywordSanitizerServiceTest extends TestCase
         $this->assertGreaterThan(2, count($result['keywords']));
     }
 
-    protected function tearDown(): void
-    {
+    protected function tearDown(): void {
         Mockery::close();
         parent::tearDown();
     }
 }
-

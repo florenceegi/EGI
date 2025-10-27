@@ -1,0 +1,38 @@
+# Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+# .cursorrules (o .cursorignore)
+
+# Dipendenze
+node_modules/
+vendor/
+
+# Build e cache
+storage/
+bootstrap/cache/
+public/build/
+public/hot/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Version control
+.git/
+
+# Logs
+*.log
+storage/logs/
+
+# Environment
+.env
+.env.*
+
+# Testing
+coverage/
+.phpunit.result.cache
+
+# Temporanei
+tmp/
+temp/
+*.tmp

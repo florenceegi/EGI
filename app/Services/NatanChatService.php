@@ -458,19 +458,18 @@ class NatanChatService {
 
     /**
      * Get user chat history (list of sessions)
-     * 
+     *
      * GDPR-COMPLIANT:
      * - Checks consent before returning history
      * - Logs audit trail for data access
      * - Returns only user's own sessions (authorization)
      * - Pseudonymized session_ids
-     * 
+     *
      * @param User $user The authenticated PA user
      * @param int|null $limit Max number of sessions to return (default: 50)
      * @return array Sessions with first message preview
      */
-    public function getUserChatHistory(User $user, ?int $limit = 50): array
-    {
+    public function getUserChatHistory(User $user, ?int $limit = 50): array {
         $logContext = ['user_id' => $user->id, 'limit' => $limit];
         $this->logger->info('[NATAN][History] Retrieving user chat history', $logContext);
 
@@ -495,10 +494,12 @@ class NatanChatService {
 
             // Retrieve sessions (grouped by session_id, ordered by most recent)
             $sessions = NatanChatMessage::forUser($user->id)
-                ->select('session_id', 
+                ->select(
+                    'session_id',
                     DB::raw('MIN(created_at) as session_start'),
                     DB::raw('MAX(created_at) as session_end'),
-                    DB::raw('COUNT(*) as message_count'))
+                    DB::raw('COUNT(*) as message_count')
+                )
                 ->groupBy('session_id')
                 ->orderByDesc('session_end')
                 ->limit($limit ?? 50)
@@ -531,7 +532,6 @@ class NatanChatService {
                 'success' => true,
                 'sessions' => $sessionsWithPreview->toArray(),
             ];
-
         } catch (\Throwable $e) {
             // UEM: Error handling
             $this->errorManager->handle('NATAN_HISTORY_FAILED', $logContext, $e);
@@ -546,18 +546,17 @@ class NatanChatService {
 
     /**
      * Get all messages from a specific session
-     * 
+     *
      * GDPR-COMPLIANT:
      * - Authorization: only session owner can access
      * - Audit trail for data access
      * - Returns sanitized messages (no raw AI tokens/internals)
-     * 
+     *
      * @param string $sessionId The session ID to retrieve
      * @param User $user The authenticated PA user
      * @return array Messages array or error
      */
-    public function getSessionMessages(string $sessionId, User $user): array
-    {
+    public function getSessionMessages(string $sessionId, User $user): array {
         $logContext = ['session_id' => $sessionId, 'user_id' => $user->id];
         $this->logger->info('[NATAN][History] Retrieving session messages', $logContext);
 
@@ -569,7 +568,7 @@ class NatanChatService {
 
             if (!$sessionCheck) {
                 $this->logger->warning('[NATAN][History] Unauthorized access attempt', $logContext);
-                
+
                 // GDPR: Audit trail for failed access (potential security event)
                 $this->auditService->logUserAction(
                     $user,
@@ -622,7 +621,6 @@ class NatanChatService {
                 'success' => true,
                 'messages' => $messages->toArray(),
             ];
-
         } catch (\Throwable $e) {
             // UEM: Error handling
             $this->errorManager->handle('NATAN_SESSION_RETRIEVAL_FAILED', $logContext, $e);
@@ -637,19 +635,18 @@ class NatanChatService {
 
     /**
      * Delete a user session (GDPR: Right to be forgotten)
-     * 
+     *
      * GDPR-COMPLIANT:
      * - Authorization: only session owner can delete
      * - Audit trail for deletion (critical operation)
      * - Permanent deletion (not soft delete)
      * - Returns confirmation
-     * 
+     *
      * @param string $sessionId The session ID to delete
      * @param User $user The authenticated PA user
      * @return array Success status
      */
-    public function deleteUserSession(string $sessionId, User $user): array
-    {
+    public function deleteUserSession(string $sessionId, User $user): array {
         $logContext = ['session_id' => $sessionId, 'user_id' => $user->id];
         $this->logger->info('[NATAN][History] Deleting user session', $logContext);
 
@@ -701,7 +698,6 @@ class NatanChatService {
                 'success' => true,
                 'deleted_count' => $deleted,
             ];
-
         } catch (\Throwable $e) {
             // UEM: Error handling
             $this->errorManager->handle('NATAN_SESSION_DELETE_FAILED', $logContext, $e);
