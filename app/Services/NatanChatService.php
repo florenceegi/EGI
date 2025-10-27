@@ -36,8 +36,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @version 3.0.0 (FlorenceEGI - N.A.T.A.N. Chat AI + Web Search)
  * @date 2025-10-26
  */
-class NatanChatService
-{
+class NatanChatService {
     protected AnthropicService $anthropic;
     protected RagService $rag;
     protected WebSearchService $webSearch;
@@ -191,9 +190,10 @@ class NatanChatService
 
             // STEP 2: Retrieve relevant acts using RAG system (if enabled)
             // Uses semantic search (vector embeddings) with keyword search fallback
+            // REGOLA STATISTICS: No limit hardcoded → scandaglia TUTTE le fonti
             $ragMethod = null;
             if ($useRag) {
-                $context = $this->rag->getContextForQuery($userQuery, $user, 10);
+                $context = $this->rag->getContextForQuery($userQuery, $user); // No limit = scansione totale
                 $ragMethod = 'semantic'; // Default to semantic (will be enhanced later with actual detection)
 
                 $logContext['acts_count'] = count($context['acts']);
@@ -389,8 +389,7 @@ class NatanChatService
      * @param User $user
      * @return array
      */
-    public function getSuggestedQuestions(User $user): array
-    {
+    public function getSuggestedQuestions(User $user): array {
         try {
             return $this->rag->getSuggestions($user);
         } catch (\Exception $e) {
@@ -417,8 +416,7 @@ class NatanChatService
      * @param array $webResults Web search results
      * @return string Formatted summary
      */
-    protected function buildWebSourcesSummary(array $webResults): string
-    {
+    protected function buildWebSourcesSummary(array $webResults): string {
         if (empty($webResults)) {
             return '';
         }

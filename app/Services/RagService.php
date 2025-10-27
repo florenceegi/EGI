@@ -45,25 +45,31 @@ class RagService
     /**
      * Recupera il contesto per una query utente
      * 
+     * STRATEGIA (REGOLA STATISTICS):
+     * - Scandaglia TUTTI gli atti disponibili (no limit nascosto)
+     * - Semantic search: calcola similarity su TUTTI → torna TOP-N più rilevanti
+     * - Keyword search: cerca in TUTTI → ordina → torna TOP-N
+     * - $limit controlla SOLO quanti atti tornare all'AI, NON quanti scandagliare
+     * 
      * @param string $query Query dell'utente
      * @param User $user Utente corrente (per scope PA)
-     * @param int $limit Numero massimo di atti da recuperare
-     * @return array Contesto per l'AI
+     * @param int|null $limit Numero massimo di atti da TORNARE (non da scandagliare). Default: 1000 (scansione totale)
+     * @return array Contesto per l'AI con atti più rilevanti
      */
-    public function getContextForQuery(string $query, User $user, int $limit = 10): array
+    public function getContextForQuery(string $query, User $user, ?int $limit = null): array
     {
-        // Determina se recuperare TUTTI gli atti o solo un campione
+        // REGOLA STATISTICS: Di default recupera TUTTI gli atti (no limit nascosto)
+        // Limit SOLO se esplicitamente richiesto dal chiamante
+        
+        // Se limit non specificato, recupera TUTTI gli atti
+        if ($limit === null) {
+            $limit = 1000; // Nessun limite pratico (scansione totale)
+        }
+
+        // Log strategia
         $isCountQuery = preg_match('/\b(quant[iae]|numero|totale|conta|somma)\b/i', $query);
         $isAnalysisQuery = preg_match('/\b(quali|mostra|analizza|elenca|top|più attiv|principali|priorità|riassumi|confronta|tutt)\b/i', $query);
         $isSpecificQuery = preg_match('/\b(atto|protocollo|delibera)\s+\d{3,}/i', $query); // Cerca atto specifico
-
-        // Per conteggi e analisi, recupera TUTTI gli atti (no limit)
-        // Per query specifiche, usa un campione piccolo
-        if ($isCountQuery || $isAnalysisQuery) {
-            $limit = 1000; // Nessun limite pratico (prende tutti)
-        } elseif (!$isSpecificQuery) {
-            $limit = 50; // Campione ragionevole per query generiche
-        }
 
         $this->logger->info('[RAG] Getting context for query', [
             'query_length' => strlen($query),
