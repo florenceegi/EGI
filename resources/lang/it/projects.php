@@ -33,6 +33,9 @@ return [
     'create' => 'Crea progetto',
     'create_new' => 'Nuovo Progetto',
     'create_first_project' => 'Crea il tuo primo progetto',
+    'new_project' => 'Nuovo Progetto',
+    'creating' => 'Creazione in corso...',
+    'cancel' => 'Annulla',
     'edit' => 'Modifica progetto',
     'delete' => 'Elimina progetto',
     'upload_document' => 'Carica documento',
@@ -46,6 +49,8 @@ return [
     'close' => 'Chiudi',
     'coming_soon' => 'Funzionalità in arrivo',
     'modal_description' => 'La gestione progetti sarà disponibile a breve. Potrai caricare documenti, organizzarli in progetti e usarli per chat prioritarie con N.A.T.A.N.',
+    'remove_context' => 'Rimuovi Progetto',
+    'active_context' => 'Progetto attivo',
 
     // Page titles
     'page_title_index' => 'I Miei Progetti',
@@ -67,10 +72,24 @@ return [
 
     // Empty states
     'no_projects_title' => 'Nessun progetto ancora',
+    'no_projects' => 'Nessun progetto trovato',
+    'create_first' => 'Crea il tuo primo progetto per iniziare',
     'no_projects_message' => 'Crea il tuo primo progetto per iniziare a organizzare documenti e conversazioni.',
     'no_results_title' => 'Nessun risultato trovato',
     'no_results_message' => 'Non ci sono progetti che corrispondono ai filtri selezionati. Prova a modificare i criteri di ricerca.',
     'no_description' => 'Nessuna descrizione',
+
+    // Form placeholders
+    'name_placeholder' => 'Es: PNRR Sostenibilità 2024',
+    'description_placeholder' => 'Descrizione opzionale del progetto...',
+
+    // Form validation
+    'name_required' => 'Il nome del progetto è obbligatorio',
+    'create_error' => 'Errore durante la creazione del progetto',
+    'network_error' => 'Errore di connessione. Riprova.',
+    'select_error' => 'Errore nella selezione del progetto',
+    'remove_error' => 'Errore nella rimozione del progetto',
+    'remove_confirm' => 'Sei sicuro di voler rimuovere il progetto attivo? La chat tornerà in modalità generica.',
 
     // Stats and info
     'chats_count' => 'Chat',

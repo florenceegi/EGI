@@ -280,6 +280,10 @@ Route::prefix('pa')
          */
         Route::resource('projects', ProjectController::class);
 
+        // ✨ NEW v4.0 - Project Session Management (for chat context)
+        Route::post('/projects/set-active', [ProjectController::class, 'setActive'])->name('projects.set-active');
+        Route::post('/projects/remove-active', [ProjectController::class, 'removeActive'])->name('projects.remove-active');
+
         /**
          * FUTURE ROUTES (FASE 2-3)
 

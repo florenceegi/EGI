@@ -34,16 +34,33 @@
                         {{-- Chat Header - Ottimizzato per mobile --}}
                         <div
                             class="rounded-t-2xl border-b border-gray-200 bg-gradient-to-r from-[#1B365D] to-[#2D5016] p-3 sm:p-6">
-                            <div class="flex items-center gap-2 sm:gap-3">
-                                <div
-                                    class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm sm:h-12 sm:w-12">
-                                    <span class="material-icons text-xl text-white sm:text-2xl">smart_toy</span>
+                            <div class="flex items-center justify-between gap-2 sm:gap-3">
+                                <div class="flex items-center gap-2 sm:gap-3">
+                                    <div
+                                        class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm sm:h-12 sm:w-12">
+                                        <span class="material-icons text-xl text-white sm:text-2xl">smart_toy</span>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-base font-bold text-white sm:text-lg">N.A.T.A.N.</h2>
+                                        <p class="text-[10px] text-white/80 sm:text-xs">Nodo di Analisi e Tracciamento Atti
+                                            Notarizzati</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h2 class="text-base font-bold text-white sm:text-lg">N.A.T.A.N.</h2>
-                                    <p class="text-[10px] text-white/80 sm:text-xs">Nodo di Analisi e Tracciamento Atti
-                                        Notarizzati</p>
-                                </div>
+
+                                {{-- ✨ NEW v4.0 - Active Project Badge --}}
+                                @if ($activeProject)
+                                    <div
+                                        class="flex items-center gap-2 rounded-lg bg-white/10 backdrop-blur-sm px-3 py-1.5 border border-white/20">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg"
+                                            style="background-color: {{ $activeProject->color ?? '#D4A574' }}">
+                                            <span class="material-icons text-sm text-white">{{ $activeProject->icon ?? 'folder' }}</span>
+                                        </div>
+                                        <div class="hidden sm:block">
+                                            <p class="text-xs font-medium text-white">{{ $activeProject->name }}</p>
+                                            <p class="text-[10px] text-white/60">{{ __('projects.active_context') }}</p>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
@@ -1620,31 +1637,161 @@
 
                 {{-- Modal Body --}}
                 <div class="p-6">
-                    {{-- Coming Soon Message --}}
-                    <div class="py-12 text-center">
-                        <span class="material-icons mb-4 text-6xl text-[#D4A574]">construction</span>
-                        <h3 class="mb-2 text-2xl font-bold text-[#1B365D]">
-                            {{ __('projects.coming_soon') }}
-                        </h3>
-                        <p class="text-gray-600">
-                            {{ __('projects.modal_description') }}
-                        </p>
-                    </div>
+                    {{-- Projects List --}}
+                    @if ($projects->count() > 0)
+                        <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                            @foreach ($projects as $project)
+                                <button type="button" onclick="selectProject({{ $project->id }})"
+                                    class="group relative overflow-hidden rounded-xl border-2 p-4 text-left transition-all hover:shadow-lg {{ $activeProject && $activeProject->id === $project->id ? 'border-[#D4A574] bg-gradient-to-br from-[#D4A574]/10 to-white' : 'border-gray-200 bg-white hover:border-[#D4A574]/50' }}">
+                                    {{-- Active Badge --}}
+                                    @if ($activeProject && $activeProject->id === $project->id)
+                                        <div
+                                            class="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-[#D4A574] px-2 py-1">
+                                            <span class="material-icons text-xs text-white">check_circle</span>
+                                            <span class="text-xs font-medium text-white">Attivo</span>
+                                        </div>
+                                    @endif
 
-                    {{-- TODO: Projects list will go here
-                    <div class="space-y-4">
-                        Projects cards...
+                                    {{-- Project Header --}}
+                                    <div class="mb-3 flex items-center gap-3">
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-lg"
+                                            style="background-color: {{ $project->color ?? '#1B365D' }}20">
+                                            <span class="material-icons text-2xl"
+                                                style="color: {{ $project->color ?? '#1B365D' }}">{{ $project->icon ?? 'folder' }}</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-bold text-[#1B365D] group-hover:text-[#D4A574]">
+                                                {{ $project->name }}
+                                            </h4>
+                                            <p class="text-xs text-gray-500">
+                                                {{ \Carbon\Carbon::parse($project->created_at)->format('d/m/Y') }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {{-- Project Description --}}
+                                    @if ($project->description)
+                                        <p class="mb-3 line-clamp-2 text-sm text-gray-600">
+                                            {{ $project->description }}
+                                        </p>
+                                    @endif
+
+                                    {{-- Project Stats --}}
+                                    <div class="flex items-center gap-4 text-xs text-gray-500">
+                                        <div class="flex items-center gap-1">
+                                            <span class="material-icons text-sm">description</span>
+                                            <span>{{ $project->documents()->count() }} documenti</span>
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <span class="material-icons text-sm">chat</span>
+                                            <span>{{ $project->chatMessages()->count() }} chat</span>
+                                        </div>
+                                    </div>
+                                </button>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="mb-6 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                            <span class="material-icons mb-3 text-5xl text-gray-400">folder_open</span>
+                            <h4 class="mb-2 font-bold text-gray-700">{{ __('projects.no_projects') }}</h4>
+                            <p class="text-sm text-gray-500">{{ __('projects.create_first') }}</p>
+                        </div>
+                    @endif
+
+                    {{-- Create Project Form --}}
+                    <div id="createProjectForm" class="hidden rounded-xl border-2 border-[#D4A574] bg-gradient-to-br from-[#D4A574]/5 to-white p-6">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-[#1B365D]">
+                                <span class="material-icons mr-2 align-middle">add_circle</span>
+                                {{ __('projects.new_project') }}
+                            </h3>
+                            <button type="button" onclick="toggleCreateForm()"
+                                class="text-gray-500 hover:text-gray-700">
+                                <span class="material-icons">close</span>
+                            </button>
+                        </div>
+
+                        <form id="newProjectForm" class="space-y-4">
+                            @csrf
+                            {{-- Name --}}
+                            <div>
+                                <label for="projectName"
+                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.name') }}
+                                    <span class="text-red-500">*</span></label>
+                                <input type="text" id="projectName" name="name" required maxlength="100"
+                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]/20"
+                                    placeholder="{{ __('projects.name_placeholder') }}">
+                                <span class="text-xs text-red-500 hidden" id="nameError"></span>
+                            </div>
+
+                            {{-- Description --}}
+                            <div>
+                                <label for="projectDescription"
+                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.description') }}</label>
+                                <textarea id="projectDescription" name="description" rows="3" maxlength="1000"
+                                    class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]/20"
+                                    placeholder="{{ __('projects.description_placeholder') }}"></textarea>
+                            </div>
+
+                            {{-- Icon Picker --}}
+                            <div>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.icon') }}</label>
+                                <input type="hidden" id="projectIcon" name="icon" value="folder">
+                                <div class="grid grid-cols-8 gap-2 rounded-lg border border-gray-300 bg-white p-3" style="max-height: 150px; overflow-y: auto;">
+                                    @foreach (['folder', 'folder_special', 'work', 'school', 'account_balance', 'gavel', 'description', 'assignment', 'assessment', 'business_center', 'library_books', 'event_note'] as $icon)
+                                        <button type="button" onclick="selectIcon('{{ $icon }}')"
+                                            class="icon-option flex h-10 w-10 items-center justify-center rounded-lg border-2 border-transparent transition-all hover:border-[#D4A574] {{ $icon === 'folder' ? 'border-[#D4A574] bg-[#D4A574]/10' : 'hover:bg-gray-50' }}"
+                                            data-icon="{{ $icon }}">
+                                            <span class="material-icons text-gray-700">{{ $icon }}</span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            {{-- Color Picker --}}
+                            <div>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.color') }}</label>
+                                <input type="hidden" id="projectColor" name="color" value="#1B365D">
+                                <div class="flex gap-2 flex-wrap">
+                                    @foreach (['#1B365D', '#2D5016', '#D4A574', '#6B6B6B', '#C13120', '#E67E22', '#8E44AD'] as $color)
+                                        <button type="button" onclick="selectColor('{{ $color }}')"
+                                            class="color-option h-10 w-10 rounded-lg border-2 transition-all hover:scale-110 {{ $color === '#1B365D' ? 'border-white ring-2 ring-[#D4A574]' : 'border-transparent' }}"
+                                            style="background-color: {{ $color }}" data-color="{{ $color }}">
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            {{-- Submit Button --}}
+                            <div class="flex justify-end gap-3 pt-4">
+                                <button type="button" onclick="toggleCreateForm()"
+                                    class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+                                    {{ __('projects.cancel') }}
+                                </button>
+                                <button type="submit" id="submitProjectBtn"
+                                    class="rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968] disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span class="material-icons mr-2 text-sm align-middle">save</span>
+                                    {{ __('projects.create') }}
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    --}}
                 </div>
 
                 {{-- Modal Footer --}}
                 <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                    @if ($activeProject)
+                        <button type="button" onclick="removeProject()"
+                            class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50">
+                            <span class="material-icons mr-2 text-sm">close</span>
+                            {{ __('projects.remove_context') }}
+                        </button>
+                    @endif
                     <button type="button" onclick="closeProjectsModal()"
                         class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
                         {{ __('projects.close') }}
                     </button>
-                    <button type="button"
+                    <button type="button" onclick="toggleCreateForm()"
                         class="rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
                         <span class="material-icons mr-2 text-sm">add</span>
                         {{ __('projects.create_new') }}
@@ -1698,6 +1845,190 @@
                     closeProjectsModal();
                 }
             });
+
+            // ✨ NEW v4.0 - Project Form Management
+            function toggleCreateForm() {
+                const form = document.getElementById('createProjectForm');
+                if (form) {
+                    form.classList.toggle('hidden');
+                    if (!form.classList.contains('hidden')) {
+                        document.getElementById('projectName').focus();
+                    } else {
+                        // Reset form on close
+                        document.getElementById('newProjectForm').reset();
+                        document.getElementById('projectIcon').value = 'folder';
+                        document.getElementById('projectColor').value = '#1B365D';
+                        resetIconSelection('folder');
+                        resetColorSelection('#1B365D');
+                    }
+                }
+            }
+
+            function selectIcon(iconName) {
+                document.getElementById('projectIcon').value = iconName;
+                resetIconSelection(iconName);
+            }
+
+            function resetIconSelection(activeIcon) {
+                document.querySelectorAll('.icon-option').forEach(btn => {
+                    if (btn.dataset.icon === activeIcon) {
+                        btn.classList.add('border-[#D4A574]', 'bg-[#D4A574]/10');
+                        btn.classList.remove('border-transparent');
+                    } else {
+                        btn.classList.remove('border-[#D4A574]', 'bg-[#D4A574]/10');
+                        btn.classList.add('border-transparent');
+                    }
+                });
+            }
+
+            function selectColor(colorHex) {
+                document.getElementById('projectColor').value = colorHex;
+                resetColorSelection(colorHex);
+            }
+
+            function resetColorSelection(activeColor) {
+                document.querySelectorAll('.color-option').forEach(btn => {
+                    if (btn.dataset.color === activeColor) {
+                        btn.classList.add('border-white', 'ring-2', 'ring-[#D4A574]');
+                        btn.classList.remove('border-transparent');
+                    } else {
+                        btn.classList.remove('border-white', 'ring-2', 'ring-[#D4A574]');
+                        btn.classList.add('border-transparent');
+                    }
+                });
+            }
+
+            // ✨ NEW v4.0 - AJAX Form Submit
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.getElementById('newProjectForm');
+                if (form) {
+                    form.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+
+                        const submitBtn = document.getElementById('submitProjectBtn');
+                        const nameInput = document.getElementById('projectName');
+                        const nameError = document.getElementById('nameError');
+
+                        // Client-side validation
+                        if (!nameInput.value.trim()) {
+                            nameError.textContent = '{{ __("projects.name_required") }}';
+                            nameError.classList.remove('hidden');
+                            nameInput.focus();
+                            return;
+                        }
+
+                        // Disable submit button
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML =
+                            '<span class="material-icons mr-2 text-sm align-middle animate-spin">hourglass_empty</span>{{ __("projects.creating") }}';
+
+                        const formData = {
+                            name: nameInput.value.trim(),
+                            description: document.getElementById('projectDescription').value.trim(),
+                            icon: document.getElementById('projectIcon').value,
+                            color: document.getElementById('projectColor').value,
+                        };
+
+                        try {
+                            const response = await fetch('{{ route('pa.projects.store') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify(formData)
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                // Reload page to show new project in list
+                                window.location.reload();
+                            } else {
+                                // Show error
+                                nameError.textContent = data.message || '{{ __("projects.create_error") }}';
+                                nameError.classList.remove('hidden');
+
+                                // Re-enable button
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML =
+                                    '<span class="material-icons mr-2 text-sm align-middle">save</span>{{ __("projects.create") }}';
+                            }
+                        } catch (error) {
+                            console.error('[ProjectForm] Error:', error);
+                            nameError.textContent = '{{ __("projects.network_error") }}';
+                            nameError.classList.remove('hidden');
+
+                            // Re-enable button
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML =
+                                '<span class="material-icons mr-2 text-sm align-middle">save</span>{{ __("projects.create") }}';
+                        }
+                    });
+                }
+            });
+
+            // ✨ NEW v4.0 - Project Selection
+            async function selectProject(projectId) {
+                try {
+                    const response = await fetch('{{ route('pa.projects.set-active') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            project_id: projectId
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Reload chat page with new project context
+                        window.location.reload();
+                    } else {
+                        console.error('[selectProject] Failed:', data.message);
+                        alert(data.message || '{{ __("projects.select_error") }}');
+                    }
+                } catch (error) {
+                    console.error('[selectProject] Error:', error);
+                    alert('{{ __("projects.network_error") }}');
+                }
+            }
+
+            // ✨ NEW v4.0 - Remove Project Context
+            async function removeProject() {
+                if (!confirm('{{ __("projects.remove_confirm") }}')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch('{{ route('pa.projects.remove-active') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Reload chat page without project context (generic PA chat)
+                        window.location.reload();
+                    } else {
+                        console.error('[removeProject] Failed:', data.message);
+                        alert(data.message || '{{ __("projects.remove_error") }}');
+                    }
+                } catch (error) {
+                    console.error('[removeProject] Error:', error);
+                    alert('{{ __("projects.network_error") }}');
+                }
+            }
         </script>
     @endpush
 </x-pa-layout>

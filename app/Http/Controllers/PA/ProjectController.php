@@ -9,6 +9,7 @@ use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Ultra\UltraLogManager\UltraLogManager;
@@ -164,11 +165,14 @@ class ProjectController extends Controller {
      *
      * POST /pa/projects
      */
-    public function store(Request $request): RedirectResponse {
+    public function store(Request $request): RedirectResponse|JsonResponse {
         try {
             $user = Auth::user();
 
             if (!$user->hasRole('pa_entity') && !$user->hasRole('superadmin')) {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => __('projects.unauthorized')], 403);
+                }
                 abort(403, __('projects.unauthorized'));
             }
 
@@ -206,6 +210,23 @@ class ProjectController extends Controller {
                 'user_id' => $user->id,
             ]);
 
+            // ✨ NEW v4.0 - Support AJAX requests from chat modal
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => __('projects.created_successfully', ['name' => $project->name]),
+                    'project' => [
+                        'id' => $project->id,
+                        'name' => $project->name,
+                        'description' => $project->description,
+                        'icon' => $project->icon,
+                        'color' => $project->color,
+                        'documents_count' => 0,
+                        'chats_count' => 0,
+                    ]
+                ], 201);
+            }
+
             return redirect()
                 ->route('pa.projects.show', $project)
                 ->with('success', __('projects.created_successfully', ['name' => $project->name]));
@@ -215,6 +236,13 @@ class ProjectController extends Controller {
                 'user_id' => Auth::id(),
                 'request_data' => $request->except(['_token']),
             ], $e);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 422);
+            }
 
             return redirect()
                 ->back()

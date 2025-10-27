@@ -48,8 +48,15 @@ class NatanChatController extends Controller {
         $allStrategicQuestions = $this->getStrategicQuestionsLibrary();
         $suggestedQuestions = collect($allStrategicQuestions)->random(6)->toArray();
 
+        // ✨ NEW v4.0 - Projects System integration
+        $projects = $user->projects()->orderBy('created_at', 'desc')->get();
+        $activeProjectId = session('active_project_id');
+        $activeProject = $activeProjectId ? $projects->firstWhere('id', $activeProjectId) : null;
+
         return view('pa.natan.chat', [
-            'suggested_questions' => $suggestedQuestions
+            'suggested_questions' => $suggestedQuestions,
+            'projects' => $projects,
+            'activeProject' => $activeProject,
         ]);
     }
 
