@@ -488,7 +488,7 @@ class NatanChatService {
                         sleep($delaySec); // Use sleep() not usleep() for longer delays
                         continue;
                     } else {
-                        // Not a rate limit error OR reached minimum limit - rethrow
+                        // Not a rate limit error OR reached minimum limit
                         $this->logger->error('[NatanChatService] ❌ API call failed (non-retryable)', [
                             'is_rate_limit' => $isRateLimitError,
                             'current_limit' => $claudeContextLimit,
@@ -496,6 +496,12 @@ class NatanChatService {
                             'retry_attempt' => $retryAttempt,
                             'error' => substr($errorBody, 0, 500),
                         ]);
+                        
+                        // User-friendly message for rate limit exhaustion
+                        if ($isRateLimitError && $claudeContextLimit <= $minLimit) {
+                            throw new \RuntimeException(__('natan.errors.rate_limit_exhausted'));
+                        }
+                        
                         throw $e;
                     }
                 }
@@ -503,7 +509,12 @@ class NatanChatService {
 
             // Safety check: if we exhausted retries
             if ($aiResponseData === null) {
-                throw new \RuntimeException('Exhausted all retry attempts for Claude API call');
+                $this->logger->critical('[NatanChatService] Exhausted all retry attempts', [
+                    'total_attempts' => $retryAttempt,
+                    'max_retries' => $maxRetries,
+                    'last_limit' => $claudeContextLimit,
+                ]);
+                throw new \RuntimeException(__('natan.errors.rate_limit_exhausted'));
             }
 
             // Extract message and usage from response

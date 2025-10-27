@@ -104,6 +104,7 @@ return [
     'errors.generic' => 'Si è verificato un errore. Riprova tra poco.',
     'errors.no_api_key' => 'Configurazione API mancante. Contatta l\'amministratore.',
     'errors.rate_limit' => 'Troppi richieste. Attendi qualche secondo.',
+    'errors.rate_limit_exhausted' => 'Il servizio AI è momentaneamente sotto carico. Per favore riprova tra 2-3 minuti. Ci scusiamo per l\'inconveniente.',
     'errors.invalid_query' => 'La domanda non è valida. Fornisci più dettagli.',
     'errors.no_results' => 'Nessun risultato trovato.',
     'errors.web_search_failed' => 'Ricerca web non riuscita. Continua solo con documenti interni.',

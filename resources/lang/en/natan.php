@@ -104,6 +104,7 @@ return [
     'errors.generic' => 'An error occurred. Please try again later.',
     'errors.no_api_key' => 'API configuration missing. Contact administrator.',
     'errors.rate_limit' => 'Too many requests. Please wait a few seconds.',
+    'errors.rate_limit_exhausted' => 'The AI service is temporarily under heavy load. Please try again in 2-3 minutes. We apologize for the inconvenience.',
     'errors.invalid_query' => 'Invalid question. Please provide more details.',
     'errors.no_results' => 'No results found.',
     'errors.web_search_failed' => 'Web search failed. Continuing with internal documents only.',
