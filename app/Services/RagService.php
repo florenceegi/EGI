@@ -148,7 +148,7 @@ class RagService {
                         'specific' => $isSpecificQuery,
                     ],
                 ],
-                GdprActivityCategory::PERSONAL_DATA_READ
+                GdprActivityCategory::DATA_ACCESS
             );
 
             // 5. Sanitizza i dati

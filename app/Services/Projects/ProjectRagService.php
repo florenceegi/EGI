@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\ProjectDocumentChunk;
 use App\Models\NatanChatMessage;
 use App\Services\EmbeddingService;
+use App\Services\RagService;
 use App\Services\Gdpr\AuditLogService;
 use App\Services\Gdpr\ConsentService;
 use App\Enums\Gdpr\GdprActivityCategory;
@@ -52,6 +53,7 @@ class ProjectRagService {
     protected AuditLogService $auditService;
     protected ConsentService $consentService;
     protected EmbeddingService $embeddingService;
+    protected RagService $ragService;
 
     /**
      * Constructor with GDPR/Ultra compliance
@@ -61,6 +63,7 @@ class ProjectRagService {
      * @param AuditLogService $auditService GDPR audit logging service
      * @param ConsentService $consentService GDPR consent management service
      * @param EmbeddingService $embeddingService Vector embedding service
+     * @param RagService $ragService Standard RAG service for PA acts
      * @privacy-safe All injected services handle GDPR compliance
      */
     public function __construct(
@@ -68,13 +71,15 @@ class ProjectRagService {
         ErrorManagerInterface $errorManager,
         AuditLogService $auditService,
         ConsentService $consentService,
-        EmbeddingService $embeddingService
+        EmbeddingService $embeddingService,
+        RagService $ragService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
         $this->consentService = $consentService;
         $this->embeddingService = $embeddingService;
+        $this->ragService = $ragService;
     }
 
     /**
@@ -115,7 +120,7 @@ class ProjectRagService {
             $this->logger->info('[ProjectRAG] Starting priority RAG search', $logContext);
 
             // 2. GDPR: Check consent BEFORE accessing user data
-            $user = $project->user;
+            $user = $project->owner; // Use owner() relation
             if (!$this->consentService->hasConsent($user, 'allow-personal-data-processing')) {
                 $this->logger->warning('[ProjectRAG] Missing consent for data processing', [
                     'user_id' => $user->id,
@@ -149,15 +154,22 @@ class ProjectRagService {
                 $minSimilarity
             );
 
-            // TODO FASE 4.4: TIER 3 - Search PA acts (requires integration with RagService)
+            // 6. TIER 3: Search PA acts (SEMPRE, non fallback!)
+            $paActsResults = $this->searchPaActs(
+                $query,
+                $user,
+                $limit,
+                $minSimilarity
+            );
 
-            // 6. Merge and rank results
+            // 7. Merge and rank results from ALL 3 tiers
             $mergedResults = $this->mergeAndRankResults([
                 'documents' => $documentResults,
                 'chat' => $chatResults,
+                'pa_acts' => $paActsResults,
             ], $limit);
 
-            // 7. GDPR: Audit log data access
+            // 8. GDPR: Audit log data access
             $this->auditService->logUserAction(
                 $user,
                 'project_rag_search',
@@ -167,17 +179,19 @@ class ProjectRagService {
                     'total_results' => count($mergedResults),
                     'documents_found' => count($documentResults),
                     'chat_found' => count($chatResults),
+                    'pa_acts_found' => count($paActsResults),
                     'limit_applied' => $limit,
                 ],
-                GdprActivityCategory::PERSONAL_DATA_READ
+                GdprActivityCategory::DATA_ACCESS
             );
 
-            // 8. ULM: Log success
+            // 9. ULM: Log success
             $this->logger->info('[ProjectRAG] Search completed', [
                 ...$logContext,
                 'total_results' => count($mergedResults),
                 'documents_found' => count($documentResults),
                 'chat_found' => count($chatResults),
+                'pa_acts_found' => count($paActsResults),
             ]);
 
             return [
@@ -186,6 +200,7 @@ class ProjectRagService {
                     'total' => count($mergedResults),
                     'documents' => count($documentResults),
                     'chat' => count($chatResults),
+                    'pa_acts' => count($paActsResults),
                     'query_embedding_generated' => true,
                 ],
             ];
@@ -224,11 +239,11 @@ class ProjectRagService {
 
         // Get all chunks from project documents with embeddings
         $chunks = ProjectDocumentChunk::query()
-            ->whereHas('projectDocument', function ($query) use ($project) {
+            ->whereHas('document', function ($query) use ($project) {
                 $query->where('project_id', $project->id)
                     ->where('status', 'ready'); // Only processed documents
             })
-            ->with(['projectDocument'])
+            ->with(['document'])
             ->whereNotNull('embedding')
             ->get();
 
@@ -248,7 +263,7 @@ class ProjectRagService {
                 'type' => 'document',
                 'chunk_id' => $chunk->id,
                 'document_id' => $chunk->project_document_id,
-                'document_name' => $chunk->projectDocument->filename,
+                'document_name' => $chunk->document->filename,
                 'text' => $chunk->chunk_text,
                 'similarity' => $similarity,
                 'page_number' => $chunk->page_number,
@@ -351,6 +366,87 @@ class ProjectRagService {
     }
 
     /**
+     * Search PA acts (TIER 3 - ALWAYS executed, not fallback!)
+     *
+     * Uses standard RagService to search user's PA acts.
+     * Weight: 0.5 (lower priority than project docs/chat but ALWAYS included)
+     *
+     * @param string $query User query
+     * @param \App\Models\User $user
+     * @param int|null $limit Max results (null = no limit)
+     * @param float $minSimilarity Minimum similarity threshold
+     * @return array Results with similarity scores
+     */
+    protected function searchPaActs(
+        string $query,
+        \App\Models\User $user,
+        ?int $limit,
+        float $minSimilarity
+    ): array {
+        $this->logger->info('[ProjectRAG] Searching PA acts (TIER 3)', [
+            'user_id' => $user->id,
+        ]);
+
+        try {
+            // Use standard RAG service to get PA acts context
+            $ragContext = $this->ragService->getContextForQuery($query, $user, $limit);
+
+            // Extract acts and transform to ProjectRAG format
+            $acts = $ragContext['acts'] ?? [];
+
+            if (empty($acts)) {
+                $this->logger->info('[ProjectRAG] No PA acts found');
+                return [];
+            }
+
+            // Transform to standard result format with similarity
+            $results = [];
+            foreach ($acts as $act) {
+                // RagService already provides similarity in 'relevance' field
+                $similarity = $act['relevance'] ?? 0.5; // Default if missing
+
+                // Filter by minimum similarity
+                if ($similarity >= $minSimilarity) {
+                    $results[] = [
+                        'type' => 'pa_act',
+                        'act_id' => $act['id'] ?? null,
+                        'text' => $act['content'] ?? $act['summary'] ?? '',
+                        'title' => $act['title'] ?? '',
+                        'similarity' => $similarity,
+                        'metadata' => $act,
+                    ];
+                }
+            }
+
+            // Sort by similarity
+            usort($results, function ($a, $b) {
+                return $b['similarity'] <=> $a['similarity'];
+            });
+
+            // Apply limit if specified
+            if ($limit !== null) {
+                $results = array_slice($results, 0, $limit);
+            }
+
+            $this->logger->info('[ProjectRAG] PA acts search completed', [
+                'acts_scanned' => count($acts),
+                'results_found' => count($results),
+            ]);
+
+            return $results;
+        } catch (\Throwable $e) {
+            // Log error but don't fail entire search
+            $this->logger->error('[ProjectRAG] PA acts search failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
+            ]);
+
+            // Return empty array - other tiers may still have results
+            return [];
+        }
+    }
+
+    /**
      * Generate embedding for query
      *
      * @param string $query
@@ -385,7 +481,7 @@ class ProjectRagService {
      * RANKING STRATEGY:
      * - Documents get 1.0x weight (highest priority)
      * - Chat gets 0.8x weight (context aware)
-     * - PA acts get 0.6x weight (general knowledge)
+     * - PA acts get 0.5x weight (general knowledge - ALWAYS included!)
      *
      * @param array $tierResults Results from each tier
      * @param int|null $limit Total results to return (null = no limit, returns all)
@@ -394,7 +490,7 @@ class ProjectRagService {
     protected function mergeAndRankResults(array $tierResults, ?int $limit): array {
         $merged = [];
 
-        // Apply tier weights
+        // Apply tier weights - TUTTI E 3 I TIER SEMPRE!
         foreach ($tierResults['documents'] ?? [] as $result) {
             $result['weighted_similarity'] = $result['similarity'] * 1.0;
             $merged[] = $result;
@@ -402,6 +498,11 @@ class ProjectRagService {
 
         foreach ($tierResults['chat'] ?? [] as $result) {
             $result['weighted_similarity'] = $result['similarity'] * 0.8;
+            $merged[] = $result;
+        }
+
+        foreach ($tierResults['pa_acts'] ?? [] as $result) {
+            $result['weighted_similarity'] = $result['similarity'] * 0.5;
             $merged[] = $result;
         }
 

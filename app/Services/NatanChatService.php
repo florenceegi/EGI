@@ -538,10 +538,11 @@ class NatanChatService {
             return '';
         }
 
-        $summary = "## PROJECT CONTEXT (Documents + Chat History)\n\n";
+        $summary = "## PROJECT CONTEXT (Documents + Chat History + PA Acts)\n\n";
 
         $documentCount = 0;
         $chatCount = 0;
+        $paActsCount = 0;
 
         foreach ($results as $index => $result) {
             $num = $index + 1;
@@ -569,15 +570,24 @@ class NatanChatService {
                     $summary .= "**Assistant:** {$response}\n";
                 }
                 $summary .= "\n";
+            } elseif ($type === 'pa_act') {
+                $paActsCount++;
+                $title = $result['title'] ?? 'Atto PA';
+                $text = $result['text'] ?? '';
+
+                $summary .= "### PA Act {$paActsCount} (Relevance: {$similarity}%)\n";
+                $summary .= "**Title:** {$title}\n";
+                $summary .= "**Content:** {$text}\n\n";
             }
         }
 
         $summary .= "---\n\n";
         $summary .= "**INSTRUCTIONS:**\n";
-        $summary .= "- Prioritize information from project documents (highest accuracy)\n";
-        $summary .= "- Use chat history for context continuity\n";
-        $summary .= "- Cite document sources when providing answers\n";
-        $summary .= "- Total sources: {$documentCount} documents, {$chatCount} chat messages\n";
+        $summary .= "- Prioritize information from project documents (weight 1.0 - highest accuracy)\n";
+        $summary .= "- Use chat history for context continuity (weight 0.8)\n";
+        $summary .= "- Use PA acts for general knowledge (weight 0.5)\n";
+        $summary .= "- Cite document/act sources when providing answers\n";
+        $summary .= "- Total sources: {$documentCount} documents, {$chatCount} chat messages, {$paActsCount} PA acts\n";
 
         return $summary;
     }
