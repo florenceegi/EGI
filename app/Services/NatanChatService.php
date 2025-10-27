@@ -18,7 +18,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * N.A.T.A.N. Chat Service - AI-powered conversational interface for PA acts
- * 
+ *
  * VERSION: 4.1.0 - Adaptive Retry with Progressive Context Reduction
 ```
  *
@@ -413,7 +413,7 @@ class NatanChatService {
 
             while ($retryAttempt < $maxRetries) {
                 \Log::info('🔁 WHILE ITERATION START', ['retry_attempt' => $retryAttempt]);
-                
+
                 try {
                     \Log::info('✅ INSIDE TRY BLOCK', ['claudeContextLimit' => $claudeContextLimit]);
                     // Apply current limit to context
@@ -454,7 +454,7 @@ class NatanChatService {
                         'message' => substr($e->getMessage(), 0, 200),
                         'retry_attempt' => $retryAttempt,
                     ]);
-                    
+
                     // Check if it's a rate limit error
                     $errorBody = method_exists($e, 'getMessage') ? $e->getMessage() : '';
                     $isRateLimitError = str_contains($errorBody, 'rate_limit_error') ||
@@ -479,12 +479,12 @@ class NatanChatService {
                         // Anthropic requires GRADUAL scaling - need significant delays between attempts
                         // Progressive delay: 5s → 10s → 15s → 20s → 25s → 30s (max)
                         $delaySec = min(5 * $retryAttempt, 30);
-                        
+
                         $this->logger->info('[NatanChatService] 💤 Waiting {delay}s before retry (acceleration limit)', [
                             'delay_seconds' => $delaySec,
                             'retry_attempt' => $retryAttempt,
                         ]);
-                        
+
                         sleep($delaySec); // Use sleep() not usleep() for longer delays
                         continue;
                     } else {
@@ -496,12 +496,20 @@ class NatanChatService {
                             'retry_attempt' => $retryAttempt,
                             'error' => substr($errorBody, 0, 500),
                         ]);
-                        
+
                         // User-friendly message for rate limit exhaustion
                         if ($isRateLimitError && $claudeContextLimit <= $minLimit) {
-                            throw new \RuntimeException(__('natan.errors.rate_limit_exhausted'));
+                            // Don't throw exception - return user-friendly response
+                            $userMessage = __('natan.errors.rate_limit_exhausted');
+                            
+                            return [
+                                'success' => false,
+                                'response' => $userMessage,
+                                'error' => 'rate_limit_exhausted',
+                                'retry_attempts' => $retryAttempt,
+                            ];
                         }
-                        
+
                         throw $e;
                     }
                 }
@@ -514,7 +522,14 @@ class NatanChatService {
                     'max_retries' => $maxRetries,
                     'last_limit' => $claudeContextLimit,
                 ]);
-                throw new \RuntimeException(__('natan.errors.rate_limit_exhausted'));
+                
+                // Return user-friendly response instead of throwing
+                return [
+                    'success' => false,
+                    'response' => __('natan.errors.rate_limit_exhausted'),
+                    'error' => 'max_retries_exhausted',
+                    'retry_attempts' => $retryAttempt,
+                ];
             }
 
             // Extract message and usage from response
