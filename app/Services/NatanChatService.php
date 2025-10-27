@@ -13,6 +13,7 @@ use App\Services\WebSearch\WebSearchService;
 use App\Services\WebSearch\WebSearchAutoDetector;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
@@ -274,10 +275,29 @@ class NatanChatService {
                     }
                 } else {
                     // Generic PA chat: Standard RAG
-                    $context = $this->rag->getContextForQuery($userQuery, $user); // No limit = scansione totale
+                    // ENTERPRISE STRATEGY: Search ALL, take TOP N for Claude
+                    $contextRaw = $this->rag->getContextForQuery($userQuery, $user); // No limit = scans all
+                    
+                    // Apply TOP N limit for Claude context (prevent rate limits)
+                    $claudeContextLimit = config('natan.claude_context_limit', 100);
+                    $allActs = $contextRaw['acts'] ?? [];
+                    $topActs = array_slice($allActs, 0, $claudeContextLimit);
+                    
+                    $this->logger->info('[NatanChatService] Applied Claude context limit (Standard RAG)', [
+                        'total_found' => count($allActs),
+                        'sent_to_claude' => count($topActs),
+                        'limit' => $claudeContextLimit,
+                    ]);
+                    
+                    $context = [
+                        'acts' => $topActs,
+                        'acts_summary' => $contextRaw['acts_summary'] ?? '',
+                        'stats' => $contextRaw['stats'] ?? [],
+                    ];
+                    
                     $ragMethod = 'semantic'; // Default to semantic
 
-                    $logContext['acts_count'] = count($context['acts']);
+                    $logContext['acts_count'] = count($topActs);
                     $logContext['context_summary_length'] = strlen($context['acts_summary']);
                     $logContext['rag_method'] = $ragMethod;
 
@@ -369,17 +389,97 @@ class NatanChatService {
                 'timestamp' => now()->toIso8601String(),
             ]);
 
-            // STEP 4: Call Anthropic Claude API with selected persona
-            $aiResponseData = $this->anthropic->chat(
-                $userQuery,
-                $context,
-                $conversationHistory,
-                $personaSelection['persona_id']
-            );
+            // STEP 4: Call Anthropic Claude API with ADAPTIVE RETRY on rate_limit_error
+            // ENTERPRISE STRATEGY: Automatically reduce context size on rate limit errors
+            // Retry sequence: 100 → 50 → 25 → 10 → 5 until success or minimum reached
+            $aiResponseData = null;
+            $usage = null;
+            $originalActsCount = count($context['acts']);
+            $claudeContextLimit = config('natan.claude_context_limit', 100);
+            $minLimit = config('natan.claude_context_limit_minimum', 5);
+            $retryAttempt = 0;
+            $maxRetries = 10; // Safety: prevent infinite loop
+
+            while ($retryAttempt < $maxRetries) {
+                try {
+                    // Apply current limit to context
+                    $limitedContext = $context;
+                    if ($originalActsCount > $claudeContextLimit) {
+                        $limitedContext['acts'] = array_slice($context['acts'], 0, $claudeContextLimit);
+                        $this->logger->info('[NatanChatService] Context limited for Claude API', [
+                            'original_count' => $originalActsCount,
+                            'limited_to' => $claudeContextLimit,
+                            'retry_attempt' => $retryAttempt,
+                        ]);
+                    }
+
+                    // Call Anthropic API
+                    $aiResponseData = $this->anthropic->chat(
+                        $userQuery,
+                        $limitedContext,
+                        $conversationHistory,
+                        $personaSelection['persona_id']
+                    );
+
+                    // Success! Break retry loop
+                    $this->logger->info('[NatanChatService] AI response successful', [
+                        'retry_attempt' => $retryAttempt,
+                        'final_limit' => $claudeContextLimit,
+                        'original_count' => $originalActsCount,
+                    ]);
+                    break;
+
+                } catch (\Exception $e) {
+                    // Check if it's a rate limit error
+                    $errorBody = method_exists($e, 'getMessage') ? $e->getMessage() : '';
+                    $isRateLimitError = str_contains($errorBody, 'rate_limit_error') ||
+                                       str_contains($errorBody, 'rate limit') ||
+                                       str_contains($errorBody, '429');
+
+                    if ($isRateLimitError && $claudeContextLimit > $minLimit) {
+                        // Reduce limit by half and retry
+                        $previousLimit = $claudeContextLimit;
+                        $claudeContextLimit = max($minLimit, (int)($claudeContextLimit / 2));
+                        $retryAttempt++;
+
+                        $this->logger->warning('[NatanChatService] Rate limit detected, retrying with reduced context', [
+                            'previous_limit' => $previousLimit,
+                            'new_limit' => $claudeContextLimit,
+                            'retry_attempt' => $retryAttempt,
+                            'error' => substr($errorBody, 0, 200),
+                        ]);
+
+                        // Brief pause before retry (exponential backoff)
+                        usleep(min(100000 * pow(2, $retryAttempt), 2000000)); // Max 2 seconds
+                        continue;
+
+                    } else {
+                        // Not a rate limit error OR reached minimum limit - rethrow
+                        $this->logger->error('[NatanChatService] API call failed (non-retryable)', [
+                            'is_rate_limit' => $isRateLimitError,
+                            'current_limit' => $claudeContextLimit,
+                            'min_limit' => $minLimit,
+                            'retry_attempt' => $retryAttempt,
+                            'error' => substr($errorBody, 0, 500),
+                        ]);
+                        throw $e;
+                    }
+                }
+            }
+
+            // Safety check: if we exhausted retries
+            if ($aiResponseData === null) {
+                throw new RuntimeException('Exhausted all retry attempts for Claude API call');
+            }
 
             // Extract message and usage from response
             $aiResponse = $aiResponseData['message'] ?? $aiResponseData; // Backward compatibility
             $usage = $aiResponseData['usage'] ?? null;
+
+            // Update context['acts'] with final limited version for accurate logging
+            if ($originalActsCount > $claudeContextLimit) {
+                $context['acts'] = array_slice($context['acts'], 0, $claudeContextLimit);
+            }
 
             $responseTime = (int)((microtime(true) - $startTime) * 1000); // milliseconds
 

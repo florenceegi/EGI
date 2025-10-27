@@ -32,4 +32,19 @@ return [
     */
     'claude_context_limit' => env('NATAN_CLAUDE_CONTEXT_LIMIT', 100),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Claude Context Limit - MINIMUM (Adaptive Retry)
+    |--------------------------------------------------------------------------
+    |
+    | When rate_limit_error occurs, system automatically retries with reduced
+    | context size. This is the MINIMUM limit before giving up.
+    |
+    | Retry sequence: 100 → 50 → 25 → 10 → 5
+    |
+    | Default: 5 (minimum viable context for meaningful response)
+    |
+    */
+    'claude_context_limit_minimum' => env('NATAN_CLAUDE_CONTEXT_LIMIT_MINIMUM', 5),
+
 ];
