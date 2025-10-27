@@ -475,8 +475,17 @@ class NatanChatService {
                             'error' => substr($errorBody, 0, 200),
                         ]);
 
-                        // Brief pause before retry (exponential backoff)
-                        usleep(min(100000 * pow(2, $retryAttempt), 2000000)); // Max 2 seconds
+                        // LONGER pause for ACCELERATION LIMIT
+                        // Anthropic requires GRADUAL scaling - need significant delays between attempts
+                        // Progressive delay: 5s → 10s → 15s → 20s → 25s → 30s (max)
+                        $delaySec = min(5 * $retryAttempt, 30);
+                        
+                        $this->logger->info('[NatanChatService] 💤 Waiting {delay}s before retry (acceleration limit)', [
+                            'delay_seconds' => $delaySec,
+                            'retry_attempt' => $retryAttempt,
+                        ]);
+                        
+                        sleep($delaySec); // Use sleep() not usleep() for longer delays
                         continue;
                     } else {
                         // Not a rate limit error OR reached minimum limit - rethrow
