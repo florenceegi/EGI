@@ -64,7 +64,8 @@ class AiFixService {
             ];
 
             // Call Claude
-            $response = $this->anthropic->chat($userPrompt, $context, []);
+            $responseData = $this->anthropic->chat($userPrompt, $context, []);
+            $response = $responseData['message'] ?? $responseData; // Backward compatibility
 
             // Parse response
             $fixedCode = $this->extractCodeFromResponse($response);

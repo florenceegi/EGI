@@ -5,44 +5,46 @@ namespace App\Http\Controllers\PA;
 use App\Http\Controllers\Controller;
 use App\Models\AiBudgetSetting;
 use App\Services\AI\AiCostCalculatorService;
+use App\Services\AI\AiProviderBillingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * AI Costs Dashboard Controller
- * 
+ *
  * Provides REST API and views for AI costs monitoring
- * 
+ *
  * ENDPOINTS:
  * - GET  /pa/ai-costs              → Dashboard view
  * - GET  /pa/ai-costs/api/stats    → Get spending statistics
  * - GET  /pa/ai-costs/api/trend    → Get daily spending trend
  * - POST /pa/ai-costs/api/budget   → Update budget settings
- * 
+ *
  * @package App\Http\Controllers\PA
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - AI Cost Monitor)
  * @date 2025-10-27
  */
-class AiCostsDashboardController extends Controller
-{
+class AiCostsDashboardController extends Controller {
     protected AiCostCalculatorService $costCalculator;
+    protected AiProviderBillingService $billingService;
     protected UltraLogManager $logger;
 
     public function __construct(
         AiCostCalculatorService $costCalculator,
+        AiProviderBillingService $billingService,
         UltraLogManager $logger
     ) {
         $this->costCalculator = $costCalculator;
+        $this->billingService = $billingService;
         $this->logger = $logger;
     }
 
     /**
      * Show AI costs dashboard
      */
-    public function index()
-    {
+    public function index() {
         $user = auth()->user();
 
         $this->logger->info('[AiCostsDashboard] Accessing dashboard', [
@@ -51,7 +53,7 @@ class AiCostsDashboardController extends Controller
 
         // Get current month spending
         $currentMonth = $this->costCalculator->getCurrentMonthSpending();
-        
+
         // Get budget settings
         $budgets = AiBudgetSetting::getAllBudgets();
 
@@ -68,10 +70,9 @@ class AiCostsDashboardController extends Controller
     /**
      * Get spending statistics (API)
      */
-    public function getStats(Request $request): JsonResponse
-    {
+    public function getStats(Request $request): JsonResponse {
         $user = auth()->user();
-        
+
         $period = $request->input('period', 'current_month'); // current_month, last_30_days, custom
 
         $this->logger->info('[AiCostsDashboard] Fetching stats', [
@@ -97,14 +98,14 @@ class AiCostsDashboardController extends Controller
 
             foreach ($stats['by_provider'] as &$providerStats) {
                 $budget = $budgets->firstWhere('provider', strtolower($providerStats['provider']));
-                
+
                 if ($budget) {
                     $alert = $this->costCalculator->checkBudgetAlert(
                         $providerStats['cost'],
                         $budget->monthly_budget
                     );
                     $providerStats['budget'] = $alert;
-                    
+
                     if ($alert['alert_level'] !== 'normal') {
                         $alerts[] = [
                             'provider' => $providerStats['provider'],
@@ -120,7 +121,6 @@ class AiCostsDashboardController extends Controller
                 'stats' => $stats,
                 'alerts' => $alerts,
             ]);
-
         } catch (\Throwable $e) {
             $this->logger->error('[AiCostsDashboard] Failed to fetch stats', [
                 'error' => $e->getMessage(),
@@ -136,8 +136,7 @@ class AiCostsDashboardController extends Controller
     /**
      * Get daily spending trend (API)
      */
-    public function getTrend(Request $request): JsonResponse
-    {
+    public function getTrend(Request $request): JsonResponse {
         $user = auth()->user();
 
         $this->logger->info('[AiCostsDashboard] Fetching trend', [
@@ -151,7 +150,6 @@ class AiCostsDashboardController extends Controller
                 'success' => true,
                 'trend' => $trend,
             ]);
-
         } catch (\Throwable $e) {
             $this->logger->error('[AiCostsDashboard] Failed to fetch trend', [
                 'error' => $e->getMessage(),
@@ -167,8 +165,7 @@ class AiCostsDashboardController extends Controller
     /**
      * Update budget settings (API)
      */
-    public function updateBudget(Request $request): JsonResponse
-    {
+    public function updateBudget(Request $request): JsonResponse {
         $user = auth()->user();
 
         $validated = $request->validate([
@@ -197,7 +194,6 @@ class AiCostsDashboardController extends Controller
                 'budget' => $budget,
                 'message' => 'Budget aggiornato con successo',
             ]);
-
         } catch (\Throwable $e) {
             $this->logger->error('[AiCostsDashboard] Failed to update budget', [
                 'error' => $e->getMessage(),
@@ -209,5 +205,45 @@ class AiCostsDashboardController extends Controller
             ], 500);
         }
     }
-}
 
+    /**
+     * Compare internal tracking with provider billing API (API)
+     *
+     * NEW: Compares internal token tracking with actual spending
+     * reported by Anthropic/OpenAI APIs
+     */
+    public function compareBilling(Request $request): JsonResponse {
+        $user = auth()->user();
+
+        $provider = $request->input('provider'); // null = all providers
+
+        $this->logger->info('[AiCostsDashboard] Comparing billing', [
+            'user_id' => $user->id,
+            'provider' => $provider ?? 'all',
+        ]);
+
+        try {
+            if ($provider) {
+                // Compare specific provider
+                $comparison = $this->billingService->compareBilling($provider);
+            } else {
+                // Compare all providers
+                $comparison = $this->billingService->getAllBillingComparison();
+            }
+
+            return response()->json([
+                'success' => true,
+                'comparison' => $comparison,
+            ]);
+        } catch (\Throwable $e) {
+            $this->logger->error('[AiCostsDashboard] Failed to compare billing', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to compare billing: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+}

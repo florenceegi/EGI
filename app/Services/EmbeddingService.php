@@ -11,22 +11,21 @@ use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * Embedding Service
- * 
+ *
  * Generates and manages vector embeddings for PA acts using OpenAI API.
- * 
+ *
  * ARCHITECTURE:
  * - Uses OpenAI text-embedding-ada-002 (1536 dimensions)
  * - Embeddings stored in MariaDB as JSON
  * - GDPR-compliant: only public metadata (no PII)
- * 
+ *
  * COST:
  * - ~$0.0001 per 1K tokens
  * - ~$0.02 for 24,000 acts (one-time)
- * 
+ *
  * @see https://platform.openai.com/docs/guides/embeddings
  */
-class EmbeddingService
-{
+class EmbeddingService {
     private UltraLogManager $logger;
     private DataSanitizerService $sanitizer;
 
@@ -40,13 +39,12 @@ class EmbeddingService
 
     /**
      * Generate embedding for a single PA act
-     * 
+     *
      * @param Egi $egi PA act EGI
      * @param bool $force Force regeneration even if exists
      * @return PaActEmbedding|null
      */
-    public function generateForAct(Egi $egi, bool $force = false): ?PaActEmbedding
-    {
+    public function generateForAct(Egi $egi, bool $force = false): ?PaActEmbedding {
         // Check if already exists
         $existing = $egi->embedding;
         if ($existing && !$force) {
@@ -65,11 +63,14 @@ class EmbeddingService
         }
 
         // Call OpenAI API
-        $vector = $this->callOpenAIEmbedding($content);
-        if (!$vector) {
+        $embeddingData = $this->callOpenAIEmbedding($content);
+        if (!$embeddingData) {
             $this->logger->error('[Embedding] Failed to generate', ['egi_id' => $egi->id]);
             return null;
         }
+
+        $vector = $embeddingData['vector'] ?? $embeddingData; // Backward compatibility
+        $usage = $embeddingData['usage'] ?? null;
 
         // Save or update embedding
         $embedding = PaActEmbedding::updateOrCreate(
@@ -85,6 +86,7 @@ class EmbeddingService
         $this->logger->info('[Embedding] Generated successfully', [
             'egi_id' => $egi->id,
             'dimension' => count($vector),
+            'tokens_used' => $usage['total_tokens'] ?? null,
         ]);
 
         return $embedding;
@@ -92,16 +94,15 @@ class EmbeddingService
 
     /**
      * Build content to embed from PA act
-     * 
+     *
      * GDPR-COMPLIANT:
      * - Only public metadata
      * - No PII, signatures, internal paths
-     * 
+     *
      * @param Egi $egi
      * @return string
      */
-    private function buildEmbeddingContent(Egi $egi): string
-    {
+    private function buildEmbeddingContent(Egi $egi): string {
         $parts = [];
 
         // Protocol number (searchable identifier)
@@ -139,12 +140,11 @@ class EmbeddingService
 
     /**
      * Call OpenAI Embeddings API
-     * 
+     *
      * @param string $text Text to embed
      * @return array|null Vector of 1536 floats
      */
-    private function callOpenAIEmbedding(string $text): ?array
-    {
+    private function callOpenAIEmbedding(string $text): ?array {
         $apiKey = config('services.openai.api_key');
         $baseUrl = config('services.openai.base_url');
         $model = config('services.openai.embedding_model');
@@ -175,13 +175,25 @@ class EmbeddingService
 
             $data = $response->json();
             $vector = $data['data'][0]['embedding'] ?? null;
+            $usage = $data['usage'] ?? null; // Track token usage
 
             if (!$vector || !is_array($vector)) {
                 $this->logger->error('[Embedding] Invalid response format');
                 return null;
             }
 
-            return $vector;
+            // Log usage for cost tracking
+            if ($usage) {
+                $this->logger->info('[Embedding] OpenAI usage', [
+                    'prompt_tokens' => $usage['prompt_tokens'] ?? 0,
+                    'total_tokens' => $usage['total_tokens'] ?? 0,
+                ]);
+            }
+
+            return [
+                'vector' => $vector,
+                'usage' => $usage,
+            ];
         } catch (\Exception $e) {
             $this->logger->error('[Embedding] Exception calling OpenAI', [
                 'message' => $e->getMessage(),
@@ -192,13 +204,12 @@ class EmbeddingService
 
     /**
      * Calculate cosine similarity between two vectors
-     * 
+     *
      * @param array $vec1 First vector
      * @param array $vec2 Second vector
      * @return float Similarity score (0.0 to 1.0)
      */
-    public function cosineSimilarity(array $vec1, array $vec2): float
-    {
+    public function cosineSimilarity(array $vec1, array $vec2): float {
         if (count($vec1) !== count($vec2)) {
             throw new \InvalidArgumentException('Vectors must have same dimension');
         }

@@ -195,6 +195,7 @@ Route::prefix('pa')
             Route::get('/api/stats', [\App\Http\Controllers\PA\AiCostsDashboardController::class, 'getStats'])->name('api.stats');
             Route::get('/api/trend', [\App\Http\Controllers\PA\AiCostsDashboardController::class, 'getTrend'])->name('api.trend');
             Route::post('/api/budget', [\App\Http\Controllers\PA\AiCostsDashboardController::class, 'updateBudget'])->name('api.budget');
+            Route::get('/api/compare-billing', [\App\Http\Controllers\PA\AiCostsDashboardController::class, 'compareBilling'])->name('api.compare-billing');
         });
 
         /**

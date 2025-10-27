@@ -62,9 +62,9 @@ class AnthropicService {
      * @param array $context Contesto aggiuntivo (metadati pubblici)
      * @param array $conversationHistory Storia della conversazione
      * @param string $personaId ID della persona N.A.T.A.N. da usare
-     * @return string La risposta di Claude
+     * @return array ['message' => string, 'usage' => array|null] La risposta di Claude con usage tracking
      */
-    public function chat(string $userMessage, array $context = [], array $conversationHistory = [], string $personaId = 'strategic'): string {
+    public function chat(string $userMessage, array $context = [], array $conversationHistory = [], string $personaId = 'strategic'): array {
         try {
             $this->logger->info('[AnthropicService] Chat request initiated', [
                 'user_message_length' => strlen($userMessage),
@@ -102,13 +102,18 @@ class AnthropicService {
 
             $data = $response->json();
             $assistantMessage = $data['content'][0]['text'] ?? '';
+            $usage = $data['usage'] ?? null;
 
             $this->logger->info('[AnthropicService] Chat response received', [
                 'response_length' => strlen($assistantMessage),
-                'usage' => $data['usage'] ?? null,
+                'usage' => $usage,
             ]);
 
-            return $assistantMessage;
+            // Return both message and usage for cost tracking
+            return [
+                'message' => $assistantMessage,
+                'usage' => $usage,
+            ];
         } catch (\Exception $e) {
             $this->logger->error('[AnthropicService] Chat error', [
                 'error' => $e->getMessage(),

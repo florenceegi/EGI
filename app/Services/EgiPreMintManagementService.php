@@ -29,8 +29,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @date 2025-10-21
  * @purpose Manage Pre-Mint EGI lifecycle with GDPR compliance
  */
-class EgiPreMintManagementService
-{
+class EgiPreMintManagementService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
@@ -79,8 +78,7 @@ class EgiPreMintManagementService
      * @throws \Exception When Pre-Mint enable fails
      * @privacy-safe Logs creator action with GDPR audit trail
      */
-    public function enablePreMintMode(Egi $egi, User $user, array $requestMetadata): array
-    {
+    public function enablePreMintMode(Egi $egi, User $user, array $requestMetadata): array {
         try {
             // 1. ULM: Log service operation start
             $this->logger->info('[PRE_MINT_SERVICE] Enabling Pre-Mint mode', [
@@ -166,8 +164,7 @@ class EgiPreMintManagementService
      * @throws \Exception When Pre-Mint disable fails
      * @privacy-safe Logs creator action with GDPR audit trail
      */
-    public function disablePreMintMode(Egi $egi, User $user, array $requestMetadata): array
-    {
+    public function disablePreMintMode(Egi $egi, User $user, array $requestMetadata): array {
         try {
             // 1. ULM: Log service operation start
             $this->logger->info('[PRE_MINT_SERVICE] Disabling Pre-Mint mode', [
@@ -248,8 +245,7 @@ class EgiPreMintManagementService
      * @throws \Exception When AI analysis request fails
      * @privacy-safe Logs AI interaction with GDPR audit trail
      */
-    public function requestAiAnalysis(Egi $egi, User $user, array $requestMetadata): array
-    {
+    public function requestAiAnalysis(Egi $egi, User $user, array $requestMetadata): array {
         try {
             // 1. ULM: Log service operation start
             $this->logger->info('[PRE_MINT_SERVICE] Requesting N.A.T.A.N AI analysis', [
@@ -274,13 +270,15 @@ class EgiPreMintManagementService
                 . "Considera: completezza metadati, qualità descrizione, potenziale appeal per acquirenti. "
                 . "Fornisci: (1) Punteggio qualità 1-10, (2) Suggerimenti concreti per migliorare, (3) Stima potenziale prezzo di vendita.";
 
-            $aiResponse = $this->anthropicService->chat($aiPrompt, $egiContext, []);
+            $aiResponseData = $this->anthropicService->chat($aiPrompt, $egiContext, []);
+            $aiResponse = $aiResponseData['message'] ?? $aiResponseData; // Backward compatibility
 
             // 4. Store AI analysis result in EGI metadata (for future reference)
             $analysisResult = [
                 'analysis_timestamp' => now()->toIso8601String(),
                 'ai_response' => $aiResponse,
                 'ai_model' => config('services.anthropic.model', 'claude-3-5-sonnet-20241022'),
+                'tokens_used' => ($aiResponseData['usage']['input_tokens'] ?? 0) + ($aiResponseData['usage']['output_tokens'] ?? 0),
             ];
 
             // 5. GDPR: Log user action with AuditLogService
@@ -341,8 +339,7 @@ class EgiPreMintManagementService
      * @throws \Exception When promotion fails
      * @privacy-safe Logs blockchain operation with GDPR audit trail
      */
-    public function promoteToOnChain(Egi $egi, string $targetType, User $user, array $requestMetadata): array
-    {
+    public function promoteToOnChain(Egi $egi, string $targetType, User $user, array $requestMetadata): array {
         try {
             // 1. ULM: Log service operation start
             $this->logger->info('[PRE_MINT_SERVICE] Promoting Pre-Mint to blockchain', [
@@ -447,8 +444,7 @@ class EgiPreMintManagementService
      * @throws \Exception When AI generation fails
      * @privacy-safe Logs AI content generation with GDPR audit trail
      */
-    public function generateDescription(Egi $egi, User $user, array $requestMetadata): array
-    {
+    public function generateDescription(Egi $egi, User $user, array $requestMetadata): array {
         try {
             // 1. ULM: Log service operation start
             $this->logger->info('[PRE_MINT_SERVICE] Generating AI description', [
@@ -583,8 +579,7 @@ class EgiPreMintManagementService
      * @throws \Exception When AI improvement fails or no description exists
      * @privacy-safe Logs AI content modification with GDPR audit trail
      */
-    public function improveDescription(Egi $egi, User $user, array $requestMetadata): array
-    {
+    public function improveDescription(Egi $egi, User $user, array $requestMetadata): array {
         try {
             // 1. Validate existing description
             if (empty($egi->description)) {

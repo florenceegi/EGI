@@ -298,19 +298,25 @@ class NatanChatService {
             ]);
 
             // STEP 4: Call Anthropic Claude API with selected persona
-            $aiResponse = $this->anthropic->chat(
+            $aiResponseData = $this->anthropic->chat(
                 $userQuery,
                 $context,
                 $conversationHistory,
                 $personaSelection['persona_id']
             );
 
+            // Extract message and usage from response
+            $aiResponse = $aiResponseData['message'] ?? $aiResponseData; // Backward compatibility
+            $usage = $aiResponseData['usage'] ?? null;
+
             $responseTime = (int)((microtime(true) - $startTime) * 1000); // milliseconds
 
             $this->logger->info('[NatanChatService] AI response generated', [
                 ...$logContext,
                 'response_length' => strlen($aiResponse),
-                'response_time_ms' => $responseTime
+                'response_time_ms' => $responseTime,
+                'tokens_input' => $usage['input_tokens'] ?? null,
+                'tokens_output' => $usage['output_tokens'] ?? null,
             ]);
 
             // STEP 5: Build response with sources (sanitized)
@@ -347,6 +353,8 @@ class NatanChatService {
                 'web_search_count' => count($webSearchResults), // NEW v3.0
                 'web_search_from_cache' => $webSearchMetadata['from_cache'] ?? false, // NEW v3.0
                 'ai_model' => config('services.anthropic.model'),
+                'tokens_input' => $usage['input_tokens'] ?? null, // Track tokens for cost monitoring
+                'tokens_output' => $usage['output_tokens'] ?? null, // Track tokens for cost monitoring
                 'response_time_ms' => $responseTime,
                 'reference_message_id' => $referenceContext['id'] ?? null, // Track elaborations
             ]);

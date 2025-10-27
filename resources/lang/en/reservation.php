@@ -115,4 +115,13 @@ return [
         'default' => 'Update on your reservation for :egi_title',
         'archived_success' => 'Notification archived successfully.'
     ],
+
+    // === AI COSTS DASHBOARD ===
+    'ai_costs' => [
+        'provider_billing_comparison' => 'Provider Billing Comparison',
+        'comparison_description' => 'Compare internal tracking with real data from AI provider APIs',
+        'refresh_billing' => 'Refresh Billing',
+        'loading_billing' => 'Loading billing data...',
+        'click_refresh_billing' => 'Click "Refresh Billing" to compare internally tracked costs with real data from OpenAI, Anthropic and Perplexity',
+    ],
 ];
