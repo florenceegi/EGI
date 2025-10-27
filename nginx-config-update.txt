@@ -1,0 +1,31 @@
+# CONFIGURAZIONE TIMEOUT PER NGINX - Laravel Forge
+# Sostituisci il blocco "location ~ \.php$" con questo:
+
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        
+        # TIMEOUT CONFIGURATION - Increased for long-running AI requests
+        fastcgi_read_timeout 300s;      # 5 minutes (default: 60s)
+        fastcgi_send_timeout 300s;      # 5 minutes (default: 60s)
+        fastcgi_connect_timeout 300s;   # 5 minutes (default: 60s)
+    }
+
+# STEPS:
+# 1. Laravel Forge → Servers → Seleziona server
+# 2. Sites → app.13.48.57.194.sslip.io → Files → Edit Nginx Configuration
+# 3. Trova il blocco "location ~ \.php$"
+# 4. Aggiungi le 3 righe di timeout PRIMA della chiusura }
+# 5. Save → Nginx si ricarica automaticamente
+
+# RATIONALE:
+# - fastcgi_read_timeout: Tempo max per leggere risposta da PHP-FPM
+# - fastcgi_send_timeout: Tempo max per inviare richiesta a PHP-FPM  
+# - fastcgi_connect_timeout: Tempo max per connettersi a PHP-FPM
+# - 300s (5 minuti) è sufficiente per retry loop + RAG + web search
+
+# VERIFICATION:
+# Dopo il save, testa la query che falliva con 504.
+# Se ancora timeout, controlla anche PHP-FPM config (prossimo step).
