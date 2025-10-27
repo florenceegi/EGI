@@ -8,6 +8,9 @@ use App\Models\Project;
 use App\Models\ProjectDocumentChunk;
 use App\Models\NatanChatMessage;
 use App\Services\EmbeddingService;
+use App\Services\Gdpr\AuditLogService;
+use App\Services\Gdpr\ConsentService;
+use App\Enums\Gdpr\GdprActivityCategory;
 use Illuminate\Support\Collection;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -15,10 +18,12 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 /**
  * Project RAG Service
  * 
- * Priority RAG search for Projects System:
- * 1. Search project documents (uploaded files)
- * 2. Search chat history (searchable knowledge base)
- * 3. Search PA acts (fallback to general knowledge)
+ * Priority RAG search for Projects System with GDPR compliance:
+ * 1. Verify user consent before accessing data
+ * 2. Search project documents (uploaded files)
+ * 3. Search chat history (searchable knowledge base)
+ * 4. Search PA acts (fallback to general knowledge)
+ * 5. Audit log all data access operations
  * 
  * SEARCH PRIORITY:
  * - TIER 1: Project-specific documents (highest relevance)
@@ -30,25 +35,46 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - Configurable similarity threshold (default: 0.5)
  * - Returns top-N results across all tiers
  * 
+ * GDPR COMPLIANCE:
+ * - ConsentService: Verifies consent before accessing user data
+ * - AuditLogService: Tracks all data access operations
+ * - ErrorManagerInterface: Structured error handling with UEM
+ * 
  * @package App\Services\Projects
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Projects RAG System)
+ * @version 2.0.0 (FlorenceEGI - GDPR/ULTRA Compliance)
  * @date 2025-10-27
- * @purpose Priority RAG search for project-specific context
+ * @purpose Priority RAG search with full GDPR compliance
  */
 class ProjectRagService
 {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
+    protected AuditLogService $auditService;
+    protected ConsentService $consentService;
     protected EmbeddingService $embeddingService;
 
+    /**
+     * Constructor with GDPR/Ultra compliance
+     *
+     * @param UltraLogManager $logger Ultra logging manager for audit trails
+     * @param ErrorManagerInterface $errorManager Ultra error manager for error handling
+     * @param AuditLogService $auditService GDPR audit logging service
+     * @param ConsentService $consentService GDPR consent management service
+     * @param EmbeddingService $embeddingService Vector embedding service
+     * @privacy-safe All injected services handle GDPR compliance
+     */
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
+        AuditLogService $auditService,
+        ConsentService $consentService,
         EmbeddingService $embeddingService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
+        $this->auditService = $auditService;
+        $this->consentService = $consentService;
         $this->embeddingService = $embeddingService;
     }
 
@@ -59,6 +85,11 @@ class ProjectRagService
      * 1. Project documents (uploaded files with embeddings)
      * 2. Chat history (previous conversations in this project)
      * 3. PA acts (user's general knowledge base - if available)
+     * 
+     * GDPR COMPLIANCE:
+     * - Verifies consent before accessing user data
+     * - Audit logs all data access operations
+     * - Structured error handling with UEM
      * 
      * @param string $query User query
      * @param Project $project Current project
@@ -80,10 +111,22 @@ class ProjectRagService
             'limit' => $limit,
         ];
 
-        $this->logger->info('[ProjectRAG] Starting priority RAG search', $logContext);
-
         try {
-            // Generate query embedding
+            // 1. ULM: Log start operation
+            $this->logger->info('[ProjectRAG] Starting priority RAG search', $logContext);
+
+            // 2. GDPR: Check consent BEFORE accessing user data
+            $user = $project->user;
+            if (!$this->consentService->hasConsent($user, 'allow-personal-data-processing')) {
+                $this->logger->warning('[ProjectRAG] Missing consent for data processing', [
+                    'user_id' => $user->id,
+                    'project_id' => $project->id,
+                ]);
+
+                return $this->emptyResults();
+            }
+
+            // 3. Generate query embedding
             $queryEmbedding = $this->generateQueryEmbedding($query);
 
             if (!$queryEmbedding) {
@@ -91,7 +134,7 @@ class ProjectRagService
                 return $this->emptyResults();
             }
 
-            // TIER 1: Search project documents
+            // 4. TIER 1: Search project documents
             $documentResults = $this->searchProjectDocuments(
                 $queryEmbedding,
                 $project,
@@ -99,7 +142,7 @@ class ProjectRagService
                 $minSimilarity
             );
 
-            // TIER 2: Search chat history
+            // 5. TIER 2: Search chat history
             $chatResults = $this->searchChatHistory(
                 $queryEmbedding,
                 $project,
@@ -109,12 +152,28 @@ class ProjectRagService
 
             // TODO FASE 4.4: TIER 3 - Search PA acts (requires integration with RagService)
 
-            // Merge and rank results
+            // 6. Merge and rank results
             $mergedResults = $this->mergeAndRankResults([
                 'documents' => $documentResults,
                 'chat' => $chatResults,
             ], $limit);
 
+            // 7. GDPR: Audit log data access
+            $this->auditService->logUserAction(
+                $user,
+                'project_rag_search',
+                [
+                    'project_id' => $project->id,
+                    'query_length' => strlen($query),
+                    'total_results' => count($mergedResults),
+                    'documents_found' => count($documentResults),
+                    'chat_found' => count($chatResults),
+                    'limit_applied' => $limit,
+                ],
+                GdprActivityCategory::PERSONAL_DATA_READ
+            );
+
+            // 8. ULM: Log success
             $this->logger->info('[ProjectRAG] Search completed', [
                 ...$logContext,
                 'total_results' => count($mergedResults),
@@ -133,6 +192,7 @@ class ProjectRagService
             ];
 
         } catch (\Throwable $e) {
+            // 9. UEM: Error handling
             $this->logger->error('[ProjectRAG] Search failed', [
                 ...$logContext,
                 'error' => $e->getMessage(),
