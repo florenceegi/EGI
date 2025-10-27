@@ -210,17 +210,55 @@ class NatanChatService {
             if ($useRag) {
                 if ($projectId) {
                     // ✨ NEW v4.0: Priority RAG with 3-tier search (Project Docs > Project Chat > PA Acts)
-                    $context = app(\App\Services\Projects\ProjectRagService::class)
-                        ->searchWithPriority($userQuery, $projectId, $user);
+                    // STEP 2.1: Load Project model
+                    $project = \App\Models\Project::find($projectId);
 
-                    $ragMethod = 'priority_rag'; // Project context mode
+                    if (!$project) {
+                        $this->logger->warning('[NatanChatService] Project not found for RAG', [
+                            'project_id' => $projectId,
+                            'user_id' => $user->id,
+                        ]);
 
-                    $logContext['project_id'] = $projectId;
-                    $logContext['project_docs_count'] = count($context['project_documents'] ?? []);
-                    $logContext['project_chat_count'] = count($context['chat_history'] ?? []);
-                    $logContext['pa_acts_count'] = count($context['pa_acts'] ?? []);
+                        // Fallback to standard RAG if project not found
+                        $context = $this->rag->getContextForQuery($userQuery, $user);
+                        $ragMethod = 'semantic';
+                    } else {
+                        // STEP 2.2: Call correct method searchProjectContext()
+                        $ragResults = app(\App\Services\Projects\ProjectRagService::class)
+                            ->searchProjectContext($userQuery, $project, 10);
 
-                    $this->logger->info('[NatanChatService] Priority RAG context retrieved (Project mode)', $logContext);
+                        $ragMethod = 'priority_rag'; // Project context mode
+
+                        // Extract results and stats
+                        $rawResults = $ragResults['results'] ?? [];
+                        $stats = $ragResults['stats'] ?? [];
+
+                        // STEP 2.3: Transform ProjectRag results to standard RAG format
+                        // ProjectRag returns: ['type' => 'document'|'chat', 'text' => '...', 'similarity' => X]
+                        // Standard RAG expects: ['id' => X, 'content' => '...', ...]
+                        $transformedResults = array_map(function ($result, $index) {
+                            return [
+                                'id' => $result['type'] . '_' . ($result['chunk_id'] ?? $result['message_id'] ?? $index),
+                                'content' => $result['text'] ?? '',
+                                'source_type' => $result['type'],
+                                'similarity' => $result['similarity'],
+                                'metadata' => $result,
+                            ];
+                        }, $rawResults, array_keys($rawResults));
+
+                        $context = [
+                            'acts' => $transformedResults,
+                            'acts_summary' => $this->buildProjectContextSummary($rawResults),
+                            'stats' => $stats,
+                        ];
+
+                        $logContext['project_id'] = $projectId;
+                        $logContext['total_results'] = $stats['total'] ?? 0;
+                        $logContext['project_docs_count'] = $stats['documents'] ?? 0;
+                        $logContext['project_chat_count'] = $stats['chat'] ?? 0;
+
+                        $this->logger->info('[NatanChatService] Priority RAG context retrieved (Project mode)', $logContext);
+                    }
                 } else {
                     // Generic PA chat: Standard RAG
                     $context = $this->rag->getContextForQuery($userQuery, $user); // No limit = scansione totale
@@ -481,6 +519,64 @@ class NatanChatService {
         $summary .= "- Cite sources when making comparisons or recommendations\n";
         $summary .= "- Identify gaps between internal practices and international standards\n";
         $summary .= "- Suggest actionable improvements based on successful case studies\n";
+
+        return $summary;
+    }
+
+    /**
+     * Build context summary from ProjectRag results
+     *
+     * Transforms project RAG results (documents + chat) into a structured
+     * summary compatible with Claude's context window.
+     *
+     * @param array $results ProjectRag search results
+     * @return string Formatted summary
+     */
+    protected function buildProjectContextSummary(array $results): string {
+        if (empty($results)) {
+            return '';
+        }
+
+        $summary = "## PROJECT CONTEXT (Documents + Chat History)\n\n";
+
+        $documentCount = 0;
+        $chatCount = 0;
+
+        foreach ($results as $index => $result) {
+            $num = $index + 1;
+            $type = $result['type'] ?? 'unknown';
+            $similarity = round(($result['similarity'] ?? 0) * 100);
+
+            if ($type === 'document') {
+                $documentCount++;
+                $docName = $result['document_name'] ?? 'Unknown';
+                $text = $result['text'] ?? '';
+                $page = $result['page_number'] ?? 'N/A';
+
+                $summary .= "### Document {$documentCount} (Relevance: {$similarity}%)\n";
+                $summary .= "**File:** {$docName}\n";
+                $summary .= "**Page:** {$page}\n";
+                $summary .= "**Content:** {$text}\n\n";
+            } elseif ($type === 'chat') {
+                $chatCount++;
+                $message = $result['text'] ?? '';
+                $response = $result['response'] ?? '';
+
+                $summary .= "### Chat History {$chatCount} (Relevance: {$similarity}%)\n";
+                $summary .= "**User:** {$message}\n";
+                if ($response) {
+                    $summary .= "**Assistant:** {$response}\n";
+                }
+                $summary .= "\n";
+            }
+        }
+
+        $summary .= "---\n\n";
+        $summary .= "**INSTRUCTIONS:**\n";
+        $summary .= "- Prioritize information from project documents (highest accuracy)\n";
+        $summary .= "- Use chat history for context continuity\n";
+        $summary .= "- Cite document sources when providing answers\n";
+        $summary .= "- Total sources: {$documentCount} documents, {$chatCount} chat messages\n";
 
         return $summary;
     }
