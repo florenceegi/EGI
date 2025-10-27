@@ -112,5 +112,26 @@ return [
     'gdpr.data_info' => 'I tuoi dati sono trattati in modo sicuro e conforme GDPR',
     'gdpr.no_pii_sent' => 'Nessun dato personale viene inviato a servizi esterni',
     'gdpr.audit_trail' => 'Tutte le interazioni sono registrate per audit',
-];
 
+    // === CHAT HISTORY (NEW v3.1) ===
+    'history.title' => 'Cronologia Conversazioni',
+    'history.subtitle' => 'Le tue sessioni passate con N.A.T.A.N.',
+    'history.empty' => 'Nessuna conversazione precedente',
+    'history.empty_hint' => 'Inizia una nuova conversazione per vederla apparire qui',
+    'history.session_count' => '{count} conversazioni|{count} conversazione|{count} conversazioni',
+    'history.load_session' => 'Carica conversazione',
+    'history.delete_session' => 'Elimina conversazione',
+    'history.delete_confirm' => 'Sei sicuro di voler eliminare questa conversazione? L\'operazione è irreversibile.',
+    'history.deleted_success' => 'Conversazione eliminata con successo',
+    'history.deleted_error' => 'Errore durante l\'eliminazione. Riprova.',
+    'history.session_date' => 'Sessione del {date}',
+    'history.message_count' => '{count} messaggi',
+    'history.first_message' => 'Prima domanda:',
+    'history.with_persona' => 'con {persona}',
+    'history.toggle' => 'Mostra/Nascondi Cronologia',
+    'history.loading' => 'Caricamento cronologia...',
+    'history.loading_session' => 'Caricamento conversazione...',
+    'history.no_consent' => 'Consenso mancante per accedere alla cronologia',
+    'history.unauthorized' => 'Non autorizzato ad accedere a questa conversazione',
+    'history.new_conversation' => 'Nuova Conversazione',
+];

@@ -6351,5 +6351,39 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // N.A.T.A.N. CHAT HISTORY ERRORS (v3.1)
+        'NATAN_HISTORY_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_history_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_history_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_SESSION_RETRIEVAL_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_session_retrieval_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_session_retrieval_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_SESSION_DELETE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_session_delete_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_session_delete_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];

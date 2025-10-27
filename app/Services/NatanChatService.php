@@ -3,11 +3,15 @@
 namespace App\Services;
 
 use App\Config\NatanPersonas;
+use App\Enums\Gdpr\GdprActivityCategory;
 use App\Models\Egi;
 use App\Models\NatanChatMessage;
 use App\Models\User;
+use App\Services\Gdpr\AuditLogService;
+use App\Services\Gdpr\ConsentService;
 use App\Services\WebSearch\WebSearchService;
 use App\Services\WebSearch\WebSearchAutoDetector;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -43,6 +47,8 @@ class NatanChatService {
     protected WebSearchAutoDetector $webSearchDetector;
     protected DataSanitizerService $sanitizer;
     protected PersonaSelector $personaSelector;
+    protected ConsentService $consentService;
+    protected AuditLogService $auditService;
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
 
@@ -53,6 +59,8 @@ class NatanChatService {
         WebSearchAutoDetector $webSearchDetector,
         DataSanitizerService $sanitizer,
         PersonaSelector $personaSelector,
+        ConsentService $consentService,
+        AuditLogService $auditService,
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager
     ) {
@@ -62,6 +70,8 @@ class NatanChatService {
         $this->webSearchDetector = $webSearchDetector;
         $this->sanitizer = $sanitizer;
         $this->personaSelector = $personaSelector;
+        $this->consentService = $consentService;
+        $this->auditService = $auditService;
         $this->logger = $logger;
         $this->errorManager = $errorManager;
     }
@@ -444,5 +454,262 @@ class NatanChatService {
         $summary .= "- Suggest actionable improvements based on successful case studies\n";
 
         return $summary;
+    }
+
+    /**
+     * Get user chat history (list of sessions)
+     * 
+     * GDPR-COMPLIANT:
+     * - Checks consent before returning history
+     * - Logs audit trail for data access
+     * - Returns only user's own sessions (authorization)
+     * - Pseudonymized session_ids
+     * 
+     * @param User $user The authenticated PA user
+     * @param int|null $limit Max number of sessions to return (default: 50)
+     * @return array Sessions with first message preview
+     */
+    public function getUserChatHistory(User $user, ?int $limit = 50): array
+    {
+        $logContext = ['user_id' => $user->id, 'limit' => $limit];
+        $this->logger->info('[NATAN][History] Retrieving user chat history', $logContext);
+
+        try {
+            // GDPR: Check consent before accessing history
+            if (!$this->consentService->hasConsent($user, 'allow-personal-data-processing')) {
+                $this->logger->warning('[NATAN][History] Access denied: missing consent', $logContext);
+                return [
+                    'success' => false,
+                    'error' => 'consent_required',
+                    'sessions' => [],
+                ];
+            }
+
+            // GDPR: Audit trail for data access
+            $this->auditService->logUserAction(
+                $user,
+                'natan_history_accessed',
+                ['limit' => $limit],
+                GdprActivityCategory::DATA_ACCESS
+            );
+
+            // Retrieve sessions (grouped by session_id, ordered by most recent)
+            $sessions = NatanChatMessage::forUser($user->id)
+                ->select('session_id', 
+                    DB::raw('MIN(created_at) as session_start'),
+                    DB::raw('MAX(created_at) as session_end'),
+                    DB::raw('COUNT(*) as message_count'))
+                ->groupBy('session_id')
+                ->orderByDesc('session_end')
+                ->limit($limit ?? 50)
+                ->get();
+
+            // For each session, get first user message as preview
+            $sessionsWithPreview = $sessions->map(function ($session) use ($user) {
+                $firstMessage = NatanChatMessage::forSession($session->session_id)
+                    ->forUser($user->id)
+                    ->userMessages()
+                    ->orderBy('created_at', 'asc')
+                    ->first();
+
+                return [
+                    'session_id' => $session->session_id,
+                    'session_start' => $session->session_start,
+                    'session_end' => $session->session_end,
+                    'message_count' => $session->message_count,
+                    'preview' => $firstMessage ? \Illuminate\Support\Str::limit($firstMessage->content, 100) : null,
+                    'first_persona' => $firstMessage ? $firstMessage->persona_name : null,
+                ];
+            });
+
+            $this->logger->info('[NATAN][History] History retrieved successfully', [
+                ...$logContext,
+                'sessions_count' => $sessionsWithPreview->count(),
+            ]);
+
+            return [
+                'success' => true,
+                'sessions' => $sessionsWithPreview->toArray(),
+            ];
+
+        } catch (\Throwable $e) {
+            // UEM: Error handling
+            $this->errorManager->handle('NATAN_HISTORY_FAILED', $logContext, $e);
+
+            return [
+                'success' => false,
+                'error' => 'retrieval_failed',
+                'sessions' => [],
+            ];
+        }
+    }
+
+    /**
+     * Get all messages from a specific session
+     * 
+     * GDPR-COMPLIANT:
+     * - Authorization: only session owner can access
+     * - Audit trail for data access
+     * - Returns sanitized messages (no raw AI tokens/internals)
+     * 
+     * @param string $sessionId The session ID to retrieve
+     * @param User $user The authenticated PA user
+     * @return array Messages array or error
+     */
+    public function getSessionMessages(string $sessionId, User $user): array
+    {
+        $logContext = ['session_id' => $sessionId, 'user_id' => $user->id];
+        $this->logger->info('[NATAN][History] Retrieving session messages', $logContext);
+
+        try {
+            // AUTHORIZATION: Check if session belongs to user
+            $sessionCheck = NatanChatMessage::forSession($sessionId)
+                ->forUser($user->id)
+                ->exists();
+
+            if (!$sessionCheck) {
+                $this->logger->warning('[NATAN][History] Unauthorized access attempt', $logContext);
+                
+                // GDPR: Audit trail for failed access (potential security event)
+                $this->auditService->logUserAction(
+                    $user,
+                    'natan_session_unauthorized_access',
+                    ['session_id' => $sessionId],
+                    GdprActivityCategory::SECURITY_EVENT
+                );
+
+                return [
+                    'success' => false,
+                    'error' => 'unauthorized',
+                    'messages' => [],
+                ];
+            }
+
+            // GDPR: Audit trail for successful access
+            $this->auditService->logUserAction(
+                $user,
+                'natan_session_accessed',
+                ['session_id' => $sessionId],
+                GdprActivityCategory::DATA_ACCESS
+            );
+
+            // Retrieve all messages (ordered chronologically)
+            $messages = NatanChatMessage::forSession($sessionId)
+                ->forUser($user->id)
+                ->orderBy('created_at', 'asc')
+                ->get()
+                ->map(function ($message) {
+                    // Return sanitized message (hide internal AI metadata)
+                    return [
+                        'id' => $message->id,
+                        'role' => $message->role,
+                        'content' => $message->content,
+                        'persona' => $message->getPersonaInfo(),
+                        'rag_info' => $message->getRagInfo(),
+                        'web_search_enabled' => $message->web_search_enabled,
+                        'web_search_count' => $message->web_search_count,
+                        'created_at' => $message->created_at->toIso8601String(),
+                        'was_helpful' => $message->was_helpful,
+                    ];
+                });
+
+            $this->logger->info('[NATAN][History] Session retrieved successfully', [
+                ...$logContext,
+                'messages_count' => $messages->count(),
+            ]);
+
+            return [
+                'success' => true,
+                'messages' => $messages->toArray(),
+            ];
+
+        } catch (\Throwable $e) {
+            // UEM: Error handling
+            $this->errorManager->handle('NATAN_SESSION_RETRIEVAL_FAILED', $logContext, $e);
+
+            return [
+                'success' => false,
+                'error' => 'retrieval_failed',
+                'messages' => [],
+            ];
+        }
+    }
+
+    /**
+     * Delete a user session (GDPR: Right to be forgotten)
+     * 
+     * GDPR-COMPLIANT:
+     * - Authorization: only session owner can delete
+     * - Audit trail for deletion (critical operation)
+     * - Permanent deletion (not soft delete)
+     * - Returns confirmation
+     * 
+     * @param string $sessionId The session ID to delete
+     * @param User $user The authenticated PA user
+     * @return array Success status
+     */
+    public function deleteUserSession(string $sessionId, User $user): array
+    {
+        $logContext = ['session_id' => $sessionId, 'user_id' => $user->id];
+        $this->logger->info('[NATAN][History] Deleting user session', $logContext);
+
+        try {
+            // AUTHORIZATION: Check if session belongs to user
+            $messagesCount = NatanChatMessage::forSession($sessionId)
+                ->forUser($user->id)
+                ->count();
+
+            if ($messagesCount === 0) {
+                $this->logger->warning('[NATAN][History] Unauthorized deletion attempt', $logContext);
+
+                // GDPR: Audit trail for failed deletion (security event)
+                $this->auditService->logUserAction(
+                    $user,
+                    'natan_session_delete_unauthorized',
+                    ['session_id' => $sessionId],
+                    GdprActivityCategory::SECURITY_EVENT
+                );
+
+                return [
+                    'success' => false,
+                    'error' => 'unauthorized',
+                ];
+            }
+
+            // GDPR: Audit trail BEFORE deletion (critical operation)
+            $this->auditService->logUserAction(
+                $user,
+                'natan_session_deleted',
+                [
+                    'session_id' => $sessionId,
+                    'messages_count' => $messagesCount,
+                ],
+                GdprActivityCategory::DATA_DELETION
+            );
+
+            // Delete all messages in session (permanent)
+            $deleted = NatanChatMessage::forSession($sessionId)
+                ->forUser($user->id)
+                ->delete();
+
+            $this->logger->info('[NATAN][History] Session deleted successfully', [
+                ...$logContext,
+                'deleted_count' => $deleted,
+            ]);
+
+            return [
+                'success' => true,
+                'deleted_count' => $deleted,
+            ];
+
+        } catch (\Throwable $e) {
+            // UEM: Error handling
+            $this->errorManager->handle('NATAN_SESSION_DELETE_FAILED', $logContext, $e);
+
+            return [
+                'success' => false,
+                'error' => 'deletion_failed',
+            ];
+        }
     }
 }

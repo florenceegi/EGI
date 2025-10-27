@@ -321,4 +321,71 @@ class NatanChatController extends Controller
             ]);
         }
     }
+
+    /**
+     * Get user chat history (list of sessions)
+     * 
+     * GDPR-COMPLIANT: Returns only authenticated user's sessions
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getHistory(Request $request): JsonResponse
+    {
+        $user = auth()->user();
+        
+        $this->logger->info('[NATAN][Controller] Getting user history', [
+            'user_id' => $user->id,
+        ]);
+
+        $result = $this->chatService->getUserChatHistory($user, 50);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Get messages from a specific session
+     * 
+     * GDPR-COMPLIANT: Authorization check (only owner can access)
+     * 
+     * @param Request $request
+     * @param string $sessionId
+     * @return JsonResponse
+     */
+    public function getSession(Request $request, string $sessionId): JsonResponse
+    {
+        $user = auth()->user();
+        
+        $this->logger->info('[NATAN][Controller] Getting session messages', [
+            'user_id' => $user->id,
+            'session_id' => $sessionId,
+        ]);
+
+        $result = $this->chatService->getSessionMessages($sessionId, $user);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Delete a user session (GDPR: Right to be forgotten)
+     * 
+     * GDPR-COMPLIANT: Authorization check + Audit trail
+     * 
+     * @param Request $request
+     * @param string $sessionId
+     * @return JsonResponse
+     */
+    public function deleteSession(Request $request, string $sessionId): JsonResponse
+    {
+        $user = auth()->user();
+        
+        $this->logger->info('[NATAN][Controller] Deleting session', [
+            'user_id' => $user->id,
+            'session_id' => $sessionId,
+        ]);
+
+        $result = $this->chatService->deleteUserSession($sessionId, $user);
+
+        return response()->json($result);
+    }
 }
