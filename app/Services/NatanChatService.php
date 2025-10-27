@@ -380,15 +380,31 @@ class NatanChatService {
             ]);
 
             // STEP 5: Build response with sources (sanitized)
+            // Handle both standard RAG and ProjectRag formats
             $sources = array_map(function ($act) {
+                // ProjectRag format: metadata contains original result
+                if (isset($act['source_type']) && $act['source_type'] === 'pa_act') {
+                    $metadata = $act['metadata'] ?? [];
+                    return [
+                        'id' => $metadata['act_id'] ?? $act['id'],
+                        'protocol_number' => $metadata['metadata']['protocol_number'] ?? 'N/A',
+                        'date' => $metadata['metadata']['date'] ?? null,
+                        'type' => $metadata['metadata']['type'] ?? 'pa_act',
+                        'title' => $metadata['title'] ?? 'Atto PA',
+                        'url' => isset($metadata['act_id']) ? route('pa.acts.show', $metadata['act_id']) : '#',
+                        'blockchain_anchored' => $metadata['metadata']['blockchain_anchored'] ?? false,
+                    ];
+                }
+
+                // Standard RAG format
                 return [
                     'id' => $act['id'],
-                    'protocol_number' => $act['protocol_number'],
-                    'date' => $act['date'],
-                    'type' => $act['type'],
-                    'title' => $act['title'],
+                    'protocol_number' => $act['protocol_number'] ?? 'N/A',
+                    'date' => $act['date'] ?? null,
+                    'type' => $act['type'] ?? 'unknown',
+                    'title' => $act['title'] ?? 'Unknown',
                     'url' => route('pa.acts.show', $act['id']),
-                    'blockchain_anchored' => $act['blockchain_anchored'],
+                    'blockchain_anchored' => $act['blockchain_anchored'] ?? false,
                 ];
             }, $context['acts']);
 
