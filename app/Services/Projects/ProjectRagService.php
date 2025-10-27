@@ -92,14 +92,14 @@ class ProjectRagService {
      *
      * @param string $query User query
      * @param Project $project Current project
-     * @param int $limit Total results to return
+     * @param int|null $limit Total results to return (null = no limit, scansione completa)
      * @param float $minSimilarity Minimum similarity threshold (0.0-1.0)
      * @return array Structured results with attribution
      */
     public function searchProjectContext(
         string $query,
         Project $project,
-        int $limit = 10,
+        ?int $limit = null,
         float $minSimilarity = 0.5
     ): array {
         $logContext = [
@@ -208,14 +208,14 @@ class ProjectRagService {
      *
      * @param array $queryEmbedding Query vector (1536 dims)
      * @param Project $project
-     * @param int $limit
+     * @param int|null $limit Max results (null = no limit)
      * @param float $minSimilarity
      * @return array Results with similarity scores
      */
     protected function searchProjectDocuments(
         array $queryEmbedding,
         Project $project,
-        int $limit,
+        ?int $limit,
         float $minSimilarity
     ): array {
         $this->logger->info('[ProjectRAG] Searching project documents', [
@@ -256,10 +256,14 @@ class ProjectRagService {
             ];
         })->filter(function ($item) use ($minSimilarity) {
             return $item['similarity'] >= $minSimilarity;
-        })->sortByDesc('similarity')
-            ->take($limit)
-            ->values()
-            ->toArray();
+        })->sortByDesc('similarity');
+
+        // Apply limit ONLY if specified (REGOLA STATISTICS)
+        if ($limit !== null) {
+            $scored = $scored->take($limit);
+        }
+
+        $scored = $scored->values()->toArray();
 
         $this->logger->info('[ProjectRAG] Document search completed', [
             'chunks_scanned' => $chunks->count(),
@@ -279,14 +283,14 @@ class ProjectRagService {
      *
      * @param array $queryEmbedding Query vector (1536 dims)
      * @param Project $project
-     * @param int $limit
+     * @param int|null $limit Max results (null = no limit)
      * @param float $minSimilarity
      * @return array Results with similarity scores
      */
     protected function searchChatHistory(
         array $queryEmbedding,
         Project $project,
-        int $limit,
+        ?int $limit,
         float $minSimilarity
     ): array {
         $this->logger->info('[ProjectRAG] Searching chat history', [
@@ -299,8 +303,7 @@ class ProjectRagService {
             ->where('project_id', $project->id)
             ->where('user_id', $project->user_id)
             ->orderBy('created_at', 'desc')
-            ->limit(100) // Scan recent 100 messages
-            ->get();
+            ->get(); // REGOLA STATISTICS: No limit on scan = complete history
 
         if ($messages->isEmpty()) {
             $this->logger->info('[ProjectRAG] No chat history found');
@@ -334,7 +337,10 @@ class ProjectRagService {
             return $b['similarity'] <=> $a['similarity'];
         });
 
-        $results = array_slice($results, 0, $limit);
+        // Apply limit ONLY if specified (REGOLA STATISTICS)
+        if ($limit !== null) {
+            $results = array_slice($results, 0, $limit);
+        }
 
         $this->logger->info('[ProjectRAG] Chat search completed', [
             'messages_scanned' => $messages->count(),
@@ -382,10 +388,10 @@ class ProjectRagService {
      * - PA acts get 0.6x weight (general knowledge)
      *
      * @param array $tierResults Results from each tier
-     * @param int $limit Total results to return
+     * @param int|null $limit Total results to return (null = no limit, returns all)
      * @return array Merged and ranked results
      */
-    protected function mergeAndRankResults(array $tierResults, int $limit): array {
+    protected function mergeAndRankResults(array $tierResults, ?int $limit): array {
         $merged = [];
 
         // Apply tier weights
@@ -404,8 +410,8 @@ class ProjectRagService {
             return $b['weighted_similarity'] <=> $a['weighted_similarity'];
         });
 
-        // Return top-N
-        return array_slice($merged, 0, $limit);
+        // Return top-N ONLY if limit specified, else return all (REGOLA STATISTICS)
+        return $limit !== null ? array_slice($merged, 0, $limit) : $merged;
     }
 
     /**

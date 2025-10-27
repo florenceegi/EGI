@@ -224,8 +224,9 @@ class NatanChatService {
                         $ragMethod = 'semantic';
                     } else {
                         // STEP 2.2: Call correct method searchProjectContext()
+                        // NO LIMIT = scansione completa (REGOLA STATISTICS)
                         $ragResults = app(\App\Services\Projects\ProjectRagService::class)
-                            ->searchProjectContext($userQuery, $project, 10);
+                            ->searchProjectContext($userQuery, $project);
 
                         $ragMethod = 'priority_rag'; // Project context mode
 
