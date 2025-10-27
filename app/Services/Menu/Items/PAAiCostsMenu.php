@@ -2,6 +2,8 @@
 
 namespace App\Services\Menu\Items;
 
+use App\Services\Menu\MenuItem;
+
 /**
  * AI Costs Dashboard Menu Item
  * 
@@ -12,8 +14,10 @@ namespace App\Services\Menu\Items;
  * @version 1.0.0 (FlorenceEGI - AI Cost Monitor)
  * @date 2025-10-27
  */
-class PAAiCostsMenu extends MenuItem {
-    public function __construct() {
+class PAAiCostsMenu extends MenuItem
+{
+    public function __construct()
+    {
         parent::__construct(
             translationKey: 'menu.pa_ai_costs',
             route: 'pa.ai-costs.dashboard',
