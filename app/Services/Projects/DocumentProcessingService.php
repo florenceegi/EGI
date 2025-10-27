@@ -16,34 +16,33 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * Document Processing Service
- * 
+ *
  * Extracts text from documents, chunks content, generates embeddings.
- * 
+ *
  * SUPPORTED FORMATS:
  * - PDF: Via PdfParserService (smalot/pdfparser)
  * - DOCX: Via PhpOffice\PhpWord
  * - TXT/MD: Native PHP
  * - CSV: Native PHP (converts to text)
  * - XLSX: TODO (future - phpoffice/phpspreadsheet)
- * 
+ *
  * CHUNKING STRATEGY:
  * - Max tokens: 1000 (configurable)
  * - Overlap: 200 tokens (configurable)
  * - Preserves paragraph boundaries when possible
- * 
+ *
  * EMBEDDING GENERATION:
  * - Uses EmbeddingService (OpenAI ada-002)
  * - Stores in project_document_chunks table
  * - 1536 dimensions vector
- * 
+ *
  * @package App\Services\Projects
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - Projects RAG System)
  * @date 2025-10-27
  * @purpose Process uploaded documents for RAG search
  */
-class DocumentProcessingService
-{
+class DocumentProcessingService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected EmbeddingService $embeddingService;
@@ -63,12 +62,11 @@ class DocumentProcessingService
 
     /**
      * Process uploaded document: extract text, chunk, generate embeddings
-     * 
+     *
      * @param ProjectDocument $document
      * @return bool Success status
      */
-    public function processDocument(ProjectDocument $document): bool
-    {
+    public function processDocument(ProjectDocument $document): bool {
         $logContext = [
             'service' => 'DocumentProcessingService',
             'document_id' => $document->id,
@@ -154,7 +152,6 @@ class DocumentProcessingService
             $this->logger->info('[DocumentProcessing] Document processing completed', $logContext);
 
             return true;
-
         } catch (\Throwable $e) {
             $this->logger->error('[DocumentProcessing] Processing failed', [
                 ...$logContext,
@@ -173,13 +170,12 @@ class DocumentProcessingService
 
     /**
      * Extract text from document based on MIME type
-     * 
+     *
      * @param ProjectDocument $document
      * @return string Extracted text
      * @throws \Exception If extraction fails
      */
-    protected function extractTextFromDocument(ProjectDocument $document): string
-    {
+    protected function extractTextFromDocument(ProjectDocument $document): string {
         $filePath = Storage::disk('local')->path($document->file_path);
 
         if (!file_exists($filePath)) {
@@ -216,13 +212,12 @@ class DocumentProcessingService
 
     /**
      * Extract text from DOCX file
-     * 
+     *
      * @param string $filePath
      * @return string
      * @throws \Exception
      */
-    protected function extractTextFromDocx(string $filePath): string
-    {
+    protected function extractTextFromDocx(string $filePath): string {
         try {
             $phpWord = IOFactory::load($filePath);
             $text = '';
@@ -242,7 +237,6 @@ class DocumentProcessingService
             }
 
             return trim($text);
-
         } catch (\Throwable $e) {
             throw new \Exception("Failed to extract text from DOCX: {$e->getMessage()}");
         }
@@ -250,12 +244,11 @@ class DocumentProcessingService
 
     /**
      * Extract text from CSV file
-     * 
+     *
      * @param string $filePath
      * @return string
      */
-    protected function extractTextFromCsv(string $filePath): string
-    {
+    protected function extractTextFromCsv(string $filePath): string {
         $text = '';
         $handle = fopen($filePath, 'r');
 
@@ -271,19 +264,18 @@ class DocumentProcessingService
 
     /**
      * Chunk text into smaller pieces for embedding
-     * 
+     *
      * STRATEGY:
      * - Target: 1000 tokens per chunk
      * - Overlap: 200 tokens between chunks
      * - Preserves paragraph boundaries when possible
-     * 
+     *
      * @param string $text Full document text
      * @param int $maxTokens Max tokens per chunk (default: 1000)
      * @param int $overlapTokens Overlap between chunks (default: 200)
      * @return array Array of chunks with metadata
      */
-    protected function chunkText(string $text, int $maxTokens = 1000, int $overlapTokens = 200): array
-    {
+    protected function chunkText(string $text, int $maxTokens = 1000, int $overlapTokens = 200): array {
         // Simple token estimation: ~4 chars per token (rough approximation)
         $charsPerToken = 4;
         $maxChars = $maxTokens * $charsPerToken;
@@ -318,11 +310,10 @@ class DocumentProcessingService
 
                 // Start new chunk with overlap
                 $words = explode(' ', $currentChunk);
-                $overlapWords = array_slice($words, -($overlapTokens * 2)); // Rough overlap
+                $overlapWords = array_slice($words, - ($overlapTokens * 2)); // Rough overlap
                 $currentChunk = implode(' ', $overlapWords) . "\n\n" . $paragraph;
                 $currentTokens = (int)ceil(strlen($currentChunk) / $charsPerToken);
                 $charPosition = $endChar - strlen(implode(' ', $overlapWords));
-
             } else {
                 // Add paragraph to current chunk
                 $currentChunk .= ($currentChunk ? "\n\n" : '') . $paragraph;
@@ -345,12 +336,11 @@ class DocumentProcessingService
 
     /**
      * Generate embedding for a text chunk
-     * 
+     *
      * @param string $text Chunk text
      * @return array|null Vector (1536 floats) or null on failure
      */
-    protected function generateEmbeddingForChunk(string $text): ?array
-    {
+    protected function generateEmbeddingForChunk(string $text): ?array {
         try {
             $result = $this->embeddingService->callOpenAIEmbedding($text);
 
@@ -364,7 +354,6 @@ class DocumentProcessingService
             }
 
             return $result;
-
         } catch (\Throwable $e) {
             $this->logger->error('[DocumentProcessing] Embedding generation failed', [
                 'error' => $e->getMessage(),
@@ -377,12 +366,11 @@ class DocumentProcessingService
 
     /**
      * Get extraction method name for metadata
-     * 
+     *
      * @param string $mimeType
      * @return string
      */
-    protected function getExtractionMethod(string $mimeType): string
-    {
+    protected function getExtractionMethod(string $mimeType): string {
         if (str_starts_with($mimeType, 'application/pdf')) {
             return 'pdfparser';
         }

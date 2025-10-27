@@ -27,6 +27,7 @@ return [
         'project_update_failed' => 'Error updating project :project_id for user :user_id.',
         'project_delete_failed' => 'Error deleting project :project_id for user :user_id.',
         'document_processing_failed' => 'Error processing document :document_id (project :project_id). Error: :error',
+        'project_rag_search_failed' => 'Error during RAG search in project :project_id for user :user_id. Query: :query',
     ],
 
     'user' => [
@@ -48,6 +49,7 @@ return [
         'project_update_failed' => 'Unable to update project. Please check your data and try again.',
         'project_delete_failed' => 'Unable to delete project. Please try again later.',
         'document_processing_failed' => 'Unable to process document. Please check the format and try again.',
+        'project_rag_search_failed' => 'Unable to search project documents. Please try again later.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

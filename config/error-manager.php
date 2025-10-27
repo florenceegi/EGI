@@ -5471,6 +5471,17 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'PROJECT_RAG_SEARCH_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.project_rag_search_failed',
+            'user_message_key' => 'error-manager::errors_2.user.project_rag_search_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
         'PA_HERITAGE_DETAIL_ERROR' => [
             'type' => 'error',
             'blocking' => 'semi-blocking',

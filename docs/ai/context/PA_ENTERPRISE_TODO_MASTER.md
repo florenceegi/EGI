@@ -850,7 +850,7 @@ FASE 4: PROJECTS SYSTEM (RAG Enhancement) ⏱️ 3 settimane
         -   Role check: hasRole('pa_entity') in methods
         -   Ownership validation: project->user_id === Auth::id()
     -   **UEM/ULM:** Full error handling + logging
-    -   **I18N:** Zero hardcoded text, all via __('projects.key')
+    -   **I18N:** Zero hardcoded text, all via \_\_('projects.key')
     -   **Status:** ✅ Controller completo GDPR-compliant
 
 -   [x] **TASK 15.3: Routes Registration** ⏱️ 1h ✅ COMPLETATO

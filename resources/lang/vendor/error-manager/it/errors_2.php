@@ -36,6 +36,7 @@ return [
         'project_update_failed' => 'Errore durante l\'aggiornamento del progetto :project_id per utente :user_id.',
         'project_delete_failed' => 'Errore durante l\'eliminazione del progetto :project_id per utente :user_id.',
         'document_processing_failed' => 'Errore durante l\'elaborazione del documento :document_id (progetto :project_id). Errore: :error',
+        'project_rag_search_failed' => 'Errore durante la ricerca RAG nel progetto :project_id per utente :user_id. Query: :query',
 
         // PA Acts Upload Errors (Dev)
         'pa_act_auth_required' => 'Tentativo di upload atto PA senza autenticazione. User: :user_id, IP: :ip',
@@ -174,6 +175,7 @@ return [
         'project_update_failed' => 'Impossibile aggiornare il progetto. Verifica i dati e riprova.',
         'project_delete_failed' => 'Impossibile eliminare il progetto. Riprova tra poco.',
         'document_processing_failed' => 'Impossibile elaborare il documento. Verifica il formato e riprova.',
+        'project_rag_search_failed' => 'Impossibile cercare nei documenti del progetto. Riprova tra poco.',
         'pa_heritage_detail_error' => 'Impossibile caricare il dettaglio del bene patrimoniale. Riprova tra poco.',
 
         // PA Acts Upload Errors (User-Friendly)

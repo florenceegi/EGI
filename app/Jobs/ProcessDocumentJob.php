@@ -15,25 +15,24 @@ use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * Process Document Job
- * 
+ *
  * Async queue job to process uploaded documents:
  * - Extract text from PDF/DOCX/TXT/CSV
  * - Chunk content
  * - Generate embeddings
  * - Update document status
- * 
+ *
  * QUEUE: default
  * TIMEOUT: 300 seconds (5 minutes)
  * RETRIES: 3 attempts
- * 
+ *
  * @package App\Jobs
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - Projects RAG System)
  * @date 2025-10-27
  * @purpose Async document processing for RAG
  */
-class ProcessDocumentJob implements ShouldQueue
-{
+class ProcessDocumentJob implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -62,8 +61,7 @@ class ProcessDocumentJob implements ShouldQueue
      *
      * @param ProjectDocument $document
      */
-    public function __construct(ProjectDocument $document)
-    {
+    public function __construct(ProjectDocument $document) {
         $this->document = $document;
         $this->onQueue('default');
     }
@@ -97,7 +95,6 @@ class ProcessDocumentJob implements ShouldQueue
             } else {
                 $logger->warning('[ProcessDocumentJob] Document processing returned false', $logContext);
             }
-
         } catch (\Throwable $e) {
             $logger->error('[ProcessDocumentJob] Job failed with exception', [
                 ...$logContext,
@@ -116,8 +113,7 @@ class ProcessDocumentJob implements ShouldQueue
      * @param \Throwable $exception
      * @return void
      */
-    public function failed(\Throwable $exception): void
-    {
+    public function failed(\Throwable $exception): void {
         $logger = app(UltraLogManager::class);
 
         $logger->error('[ProcessDocumentJob] Job failed after all retries', [
