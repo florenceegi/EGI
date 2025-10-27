@@ -18,6 +18,9 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * N.A.T.A.N. Chat Service - AI-powered conversational interface for PA acts
+ * 
+ * VERSION: 4.1.0 - Adaptive Retry with Progressive Context Reduction
+```
  *
  * This service implements RAG (Retrieval Augmented Generation) + Web Search to allow
  * PA officials to interact with their administrative acts + global knowledge using natural language.
@@ -388,12 +391,17 @@ class NatanChatService {
             $aiResponseData = null;
             $usage = null;
             $originalActsCount = count($context['acts']);
-            
+
             // START WITH ALL ACTS FOUND (not a config limit!)
             $claudeContextLimit = $originalActsCount; // PROVA TUTTI!
             $minLimit = config('natan.claude_context_limit_minimum', 5);
             $retryAttempt = 0;
             $maxRetries = 10; // Safety: prevent infinite loop
+
+            \Log::info('🚀🚀🚀 ADAPTIVE RETRY STARTING', [
+                'total_acts_found' => $originalActsCount,
+                'first_attempt_will_send' => $claudeContextLimit,
+            ]);
 
             $this->logger->info('[NatanChatService] Starting adaptive retry - will try ALL acts first', [
                 'total_acts_found' => $originalActsCount,
