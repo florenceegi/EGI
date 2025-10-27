@@ -31,12 +31,48 @@ return [
 
     // Actions
     'create' => 'Crea progetto',
+    'create_new' => 'Nuovo Progetto',
+    'create_first_project' => 'Crea il tuo primo progetto',
     'edit' => 'Modifica progetto',
     'delete' => 'Elimina progetto',
     'upload_document' => 'Carica documento',
     'view_documents' => 'Vedi documenti',
+    'view_details' => 'Vedi dettagli',
     'view_chat' => 'Vedi chat',
     'settings' => 'Impostazioni',
+    'filter_apply' => 'Applica filtri',
+    'filter_clear' => 'Cancella filtri',
+    'clear_filters' => 'Rimuovi filtri',
+
+    // Page titles
+    'page_title_index' => 'I Miei Progetti',
+    'page_title_create' => 'Nuovo Progetto',
+    'page_title_edit' => 'Modifica Progetto',
+    'page_title_show' => 'Dettagli Progetto',
+    'projects' => 'Progetti',
+
+    // Search and Filters
+    'search_placeholder' => 'Cerca progetti',
+    'search_by_name_desc' => 'Cerca per nome o descrizione',
+    'filter_status' => 'Stato',
+    'all_status' => 'Tutti gli stati',
+    'status' => 'Stato',
+    'status_active' => 'Attivo',
+    'status_inactive' => 'Inattivo',
+    'active_filters' => 'Filtri attivi',
+    'search' => 'Ricerca',
+
+    // Empty states
+    'no_projects_title' => 'Nessun progetto ancora',
+    'no_projects_message' => 'Crea il tuo primo progetto per iniziare a organizzare documenti e conversazioni.',
+    'no_results_title' => 'Nessun risultato trovato',
+    'no_results_message' => 'Non ci sono progetti che corrispondono ai filtri selezionati. Prova a modificare i criteri di ricerca.',
+    'no_description' => 'Nessuna descrizione',
+
+    // Stats and info
+    'chats_count' => 'Chat',
+    'limits_title' => 'Limiti progetto',
+    'limits_message' => 'Hai :current progetti su :max massimi (:remaining disponibili).',
 
     // Tabs
     'tab_documents' => 'Documenti',

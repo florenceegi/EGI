@@ -31,12 +31,48 @@ return [
 
     // Actions
     'create' => 'Create project',
+    'create_new' => 'New Project',
+    'create_first_project' => 'Create your first project',
     'edit' => 'Edit project',
     'delete' => 'Delete project',
     'upload_document' => 'Upload document',
     'view_documents' => 'View documents',
+    'view_details' => 'View details',
     'view_chat' => 'View chat',
     'settings' => 'Settings',
+    'filter_apply' => 'Apply filters',
+    'filter_clear' => 'Clear filters',
+    'clear_filters' => 'Remove filters',
+
+    // Page titles
+    'page_title_index' => 'My Projects',
+    'page_title_create' => 'New Project',
+    'page_title_edit' => 'Edit Project',
+    'page_title_show' => 'Project Details',
+    'projects' => 'Projects',
+
+    // Search and Filters
+    'search_placeholder' => 'Search projects',
+    'search_by_name_desc' => 'Search by name or description',
+    'filter_status' => 'Status',
+    'all_status' => 'All statuses',
+    'status' => 'Status',
+    'status_active' => 'Active',
+    'status_inactive' => 'Inactive',
+    'active_filters' => 'Active filters',
+    'search' => 'Search',
+
+    // Empty states
+    'no_projects_title' => 'No projects yet',
+    'no_projects_message' => 'Create your first project to start organizing documents and conversations.',
+    'no_results_title' => 'No results found',
+    'no_results_message' => 'There are no projects matching the selected filters. Try modifying your search criteria.',
+    'no_description' => 'No description',
+
+    // Stats and info
+    'chats_count' => 'Chats',
+    'limits_title' => 'Project limits',
+    'limits_message' => 'You have :current projects out of :max maximum (:remaining available).',
 
     // Tabs
     'tab_documents' => 'Documents',

@@ -180,7 +180,6 @@ class RagService {
             ]);
 
             return $context;
-
         } catch (\Exception $e) {
             // 10. UEM: Error handling
             $this->errorManager->handle('RAG_CONTEXT_RETRIEVAL_FAILED', [
@@ -420,7 +419,6 @@ class RagService {
 
             $data = $response->json();
             return $data['data'][0]['embedding'] ?? null;
-
         } catch (\Exception $e) {
             // UEM: Error handling for embedding generation
             $this->errorManager->handle('RAG_EMBEDDING_GENERATION_FAILED', [

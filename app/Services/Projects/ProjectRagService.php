@@ -17,37 +17,36 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * Project RAG Service
- * 
+ *
  * Priority RAG search for Projects System with GDPR compliance:
  * 1. Verify user consent before accessing data
  * 2. Search project documents (uploaded files)
  * 3. Search chat history (searchable knowledge base)
  * 4. Search PA acts (fallback to general knowledge)
  * 5. Audit log all data access operations
- * 
+ *
  * SEARCH PRIORITY:
  * - TIER 1: Project-specific documents (highest relevance)
  * - TIER 2: Chat history within project (context awareness)
  * - TIER 3: User's PA acts (general knowledge fallback)
- * 
+ *
  * ALGORITHM:
  * - Cosine similarity on embeddings
  * - Configurable similarity threshold (default: 0.5)
  * - Returns top-N results across all tiers
- * 
+ *
  * GDPR COMPLIANCE:
  * - ConsentService: Verifies consent before accessing user data
  * - AuditLogService: Tracks all data access operations
  * - ErrorManagerInterface: Structured error handling with UEM
- * 
+ *
  * @package App\Services\Projects
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 2.0.0 (FlorenceEGI - GDPR/ULTRA Compliance)
  * @date 2025-10-27
  * @purpose Priority RAG search with full GDPR compliance
  */
-class ProjectRagService
-{
+class ProjectRagService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
@@ -80,17 +79,17 @@ class ProjectRagService
 
     /**
      * Search across project documents, chat history, and PA acts
-     * 
+     *
      * PRIORITY TIERS:
      * 1. Project documents (uploaded files with embeddings)
      * 2. Chat history (previous conversations in this project)
      * 3. PA acts (user's general knowledge base - if available)
-     * 
+     *
      * GDPR COMPLIANCE:
      * - Verifies consent before accessing user data
      * - Audit logs all data access operations
      * - Structured error handling with UEM
-     * 
+     *
      * @param string $query User query
      * @param Project $project Current project
      * @param int $limit Total results to return
@@ -190,7 +189,6 @@ class ProjectRagService
                     'query_embedding_generated' => true,
                 ],
             ];
-
         } catch (\Throwable $e) {
             // 9. UEM: Error handling
             $this->logger->error('[ProjectRAG] Search failed', [
@@ -207,7 +205,7 @@ class ProjectRagService
 
     /**
      * Search project document chunks
-     * 
+     *
      * @param array $queryEmbedding Query vector (1536 dims)
      * @param Project $project
      * @param int $limit
@@ -259,9 +257,9 @@ class ProjectRagService
         })->filter(function ($item) use ($minSimilarity) {
             return $item['similarity'] >= $minSimilarity;
         })->sortByDesc('similarity')
-          ->take($limit)
-          ->values()
-          ->toArray();
+            ->take($limit)
+            ->values()
+            ->toArray();
 
         $this->logger->info('[ProjectRAG] Document search completed', [
             'chunks_scanned' => $chunks->count(),
@@ -274,11 +272,11 @@ class ProjectRagService
 
     /**
      * Search chat history within project
-     * 
+     *
      * Note: Chat messages don't have embeddings in MVP.
      * Future enhancement: add embeddings to natan_chat_messages
      * For now: keyword matching fallback
-     * 
+     *
      * @param array $queryEmbedding Query vector (1536 dims)
      * @param Project $project
      * @param int $limit
@@ -311,7 +309,7 @@ class ProjectRagService
 
         // Simple keyword matching (temporary until we add embeddings)
         $keywords = $this->extractKeywords($this->getQueryFromEmbedding($queryEmbedding));
-        
+
         $results = [];
         foreach ($messages as $message) {
             $score = $this->calculateKeywordSimilarity(
@@ -348,12 +346,11 @@ class ProjectRagService
 
     /**
      * Generate embedding for query
-     * 
+     *
      * @param string $query
      * @return array|null Vector (1536 floats) or null on failure
      */
-    protected function generateQueryEmbedding(string $query): ?array
-    {
+    protected function generateQueryEmbedding(string $query): ?array {
         try {
             $result = $this->embeddingService->callOpenAIEmbedding($query);
 
@@ -367,7 +364,6 @@ class ProjectRagService
             }
 
             return $result;
-
         } catch (\Throwable $e) {
             $this->logger->error('[ProjectRAG] Query embedding generation failed', [
                 'error' => $e->getMessage(),
@@ -379,18 +375,17 @@ class ProjectRagService
 
     /**
      * Merge and rank results from multiple tiers
-     * 
+     *
      * RANKING STRATEGY:
      * - Documents get 1.0x weight (highest priority)
      * - Chat gets 0.8x weight (context aware)
      * - PA acts get 0.6x weight (general knowledge)
-     * 
+     *
      * @param array $tierResults Results from each tier
      * @param int $limit Total results to return
      * @return array Merged and ranked results
      */
-    protected function mergeAndRankResults(array $tierResults, int $limit): array
-    {
+    protected function mergeAndRankResults(array $tierResults, int $limit): array {
         $merged = [];
 
         // Apply tier weights
@@ -415,15 +410,14 @@ class ProjectRagService
 
     /**
      * Extract keywords from query for fallback search
-     * 
+     *
      * @param string $query
      * @return array Keywords
      */
-    protected function extractKeywords(string $query): array
-    {
+    protected function extractKeywords(string $query): array {
         // Remove common words
         $stopWords = ['il', 'lo', 'la', 'i', 'gli', 'le', 'di', 'a', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra', 'e', 'o', 'ma', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for'];
-        
+
         $words = \preg_split('/\s+/', strtolower($query));
         $keywords = array_filter($words, function ($word) use ($stopWords) {
             return strlen($word) > 3 && !in_array($word, $stopWords);
@@ -434,13 +428,12 @@ class ProjectRagService
 
     /**
      * Calculate keyword-based similarity (fallback)
-     * 
+     *
      * @param array $keywords
      * @param string $text
      * @return float Similarity score (0.0-1.0)
      */
-    protected function calculateKeywordSimilarity(array $keywords, string $text): float
-    {
+    protected function calculateKeywordSimilarity(array $keywords, string $text): float {
         if (empty($keywords)) {
             return 0.0;
         }
@@ -459,15 +452,14 @@ class ProjectRagService
 
     /**
      * Get query text from embedding (placeholder)
-     * 
+     *
      * Note: We can't reverse embeddings to text.
      * This is a placeholder - in real usage, we keep original query.
-     * 
+     *
      * @param array $embedding
      * @return string Empty string (can't reverse embeddings)
      */
-    protected function getQueryFromEmbedding(array $embedding): string
-    {
+    protected function getQueryFromEmbedding(array $embedding): string {
         // This is a design limitation - we should pass original query separately
         // For now, return empty (chat search will be skipped in MVP)
         return '';
@@ -475,11 +467,10 @@ class ProjectRagService
 
     /**
      * Empty results structure
-     * 
+     *
      * @return array
      */
-    protected function emptyResults(): array
-    {
+    protected function emptyResults(): array {
         return [
             'results' => [],
             'stats' => [

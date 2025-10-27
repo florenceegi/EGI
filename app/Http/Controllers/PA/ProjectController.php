@@ -68,8 +68,13 @@ class ProjectController extends Controller
      * Display projects list
      *
      * GET /pa/projects
+     *
+     * Supports:
+     * - Search (name, description)
+     * - Status filter (active/inactive)
+     * - Pagination (15 items/page)
      */
-    public function index(): View|RedirectResponse
+    public function index(Request $request): View|RedirectResponse
     {
         try {
             $user = Auth::user();
@@ -79,14 +84,42 @@ class ProjectController extends Controller
                 abort(403, __('projects.unauthorized'));
             }
 
+            // Validate filters
+            $validated = $request->validate([
+                'search' => 'nullable|string|max:255',
+                'status' => 'nullable|in:active,inactive',
+            ]);
+
+            // Build query
+            $query = $user->projects()->with(['documents', 'chatMessages']);
+
+            // Apply search filter
+            if (!empty($validated['search'])) {
+                $search = $validated['search'];
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            // Apply status filter
+            if (isset($validated['status'])) {
+                $isActive = $validated['status'] === 'active';
+                $query->where('is_active', $isActive);
+            }
+
+            // Order and paginate
+            $query->orderBy('updated_at', 'desc');
+            $projects = $query->paginate(15)->withQueryString();
+
             // ULM: Log access
             $this->logger->info('[ProjectController] Projects index accessed', [
                 'user_id' => $user->id,
+                'filters' => $validated,
+                'results_count' => $projects->total(),
             ]);
 
-            $projects = $this->projectService->getUserProjects($user);
-
-            return view('pa.projects.index', compact('projects'));
+            return view('pa.natan.projects.index', compact('projects'));
 
         } catch (\Exception $e) {
             // UEM: Error handling
