@@ -88,8 +88,8 @@ class DataSanitizerService
             'created_at' => $act->created_at?->format('Y-m-d H:i:s'),
         ];
 
-        // Log audit
-        $this->logger->info('[DataSanitizer] Act sanitized', [
+        // Log audit (DEBUG level - INFO troppo verbose con 500 atti)
+        $this->logger->debug('[DataSanitizer] Act sanitized', [
             'act_id' => $act->id,
             'public_fields' => array_keys($publicData),
         ]);
@@ -110,19 +110,19 @@ class DataSanitizerService
             // Handle both old format (Egi object) and new format (array with 'act' and 'similarity')
             $act = is_array($item) ? ($item['act'] ?? $item) : $item;
             $similarity = is_array($item) ? ($item['similarity'] ?? null) : null;
-            
+
             // If still not an Egi instance, skip
             if (!$act instanceof Egi) {
                 return null;
             }
-            
+
             $sanitizedAct = $this->sanitizeAct($act);
-            
+
             // PRESERVE similarity score if present (needed for avg_relevance)
             if ($similarity !== null) {
                 $sanitizedAct['similarity'] = $similarity;
             }
-            
+
             return $sanitizedAct;
         })->filter()->toArray();
 
@@ -157,9 +157,9 @@ class DataSanitizerService
             $sanitized = preg_replace($pattern, '[NOME]', $sanitized);
         }
 
-        // Se abbiamo sostituito qualcosa, logga
+        // Se abbiamo sostituito qualcosa, logga (DEBUG level - evita spam)
         if ($sanitized !== $title) {
-            $this->logger->info('[DataSanitizer] Title redacted (nominatives removed)', [
+            $this->logger->debug('[DataSanitizer] Title redacted (nominatives removed)', [
                 'original_length' => strlen($title),
                 'sanitized_length' => strlen($sanitized),
             ]);
@@ -192,7 +192,7 @@ class DataSanitizerService
                 if (!$act instanceof \App\Models\Egi) {
                     continue; // Skip invalid items
                 }
-                
+
                 $sanitized = $this->sanitizeAct($act);
                 $summary .= sprintf(
                     "%d. [%s] %s - Prot.%s (%s) - Dir: %s\n",
@@ -212,7 +212,7 @@ class DataSanitizerService
                 if (!$act instanceof \App\Models\Egi) {
                     continue; // Skip invalid items
                 }
-                
+
                 $sanitized = $this->sanitizeAct($act);
                 $summary .= sprintf(
                     "%d. [%s] %s\n   Protocollo: %s | Data: %s | Direzione: %s\n   Importo: %s€ | Blockchain: %s\n\n",
