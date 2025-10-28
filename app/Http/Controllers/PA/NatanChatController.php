@@ -1116,11 +1116,27 @@ class NatanChatController extends Controller {
         $emitSSE = function (string $event, array $data) {
             echo "event: {$event}\n";
             echo "data: " . json_encode($data) . "\n\n";
-            ob_flush();
+            
+            // Force immediate send (disable all buffering)
+            if (ob_get_level() > 0) {
+                ob_end_flush();
+            }
             flush();
         };
 
         return response()->stream(function () use ($request, $emitSSE, $chatService, $creditsService, $buildEnterprisePrompt, $formatActsForClaude) {
+            // Disable output buffering completely
+            @ini_set('output_buffering', 'off');
+            @ini_set('zlib.output_compression', false);
+            
+            // Disable implicit flush (we control it manually)
+            @ob_implicit_flush(true);
+            
+            // Clear any existing buffers
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+            
             try {
                 $user = auth()->user();
 

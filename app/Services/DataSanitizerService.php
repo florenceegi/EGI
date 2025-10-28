@@ -105,9 +105,17 @@ class DataSanitizerService
      */
     public function sanitizeActsCollection(Collection $acts): array
     {
-        $sanitized = $acts->map(function (Egi $act) {
+        $sanitized = $acts->map(function ($item) {
+            // Handle both old format (Egi object) and new format (array with 'act' and 'similarity')
+            $act = is_array($item) ? ($item['act'] ?? $item) : $item;
+            
+            // If still not an Egi instance, skip
+            if (!$act instanceof Egi) {
+                return null;
+            }
+            
             return $this->sanitizeAct($act);
-        })->toArray();
+        })->filter()->toArray();
 
         $this->logger->info('[DataSanitizer] Collection sanitized', [
             'acts_count' => count($sanitized),
