@@ -271,11 +271,12 @@ class NatanChatService {
                         $this->logger->info('[NatanChatService] Priority RAG context retrieved (Project mode)', $logContext);
                     }
                 } else {
-                    // Generic PA chat: Standard RAG
-                    // ENTERPRISE STRATEGY: Search ALL, send ALL to Claude (adaptive retry will reduce if needed)
-                    $contextRaw = $this->rag->getContextForQuery($userQuery, $user); // No limit = scans all
+                    // Generic PA chat: Standard RAG with SMART LIMIT
+                    // RAG will rank by relevance, we take top 20 most relevant
+                    $smartLimit = 20; // Top 20 most relevant acts
+                    $contextRaw = $this->rag->getContextForQuery($userQuery, $user, $smartLimit);
 
-                    // NO pre-filtering! Send ALL acts found
+                    // Send top 20 ranked acts to Claude
                     $allActs = $contextRaw['acts'] ?? [];
 
                     $this->logger->info('[NatanChatService] Standard RAG - prepared ALL results for Claude', [
@@ -392,27 +393,22 @@ class NatanChatService {
             $originalActsCount = count($context['acts']);
 
             // START WITH ALL ACTS FOUND (not a config limit!)
-            $claudeContextLimit = $originalActsCount; // PROVA TUTTI!
+            // SMART LIMIT: Start with reasonable amount, not ALL acts
+            $claudeContextLimit = min($originalActsCount, 20); // Max 20 acts per request
             $minLimit = config('natan.claude_context_limit_minimum', 5);
             $retryAttempt = 0;
             $maxRetries = 10; // Safety: prevent infinite loop
 
-            // 🧪 TEMPORARY TEST: Force low INITIAL limit for acceleration limit compliance
-            // Anthropic has ACCELERATION limits - must start small and scale gradually
-            // Start with 10 acts instead of 50 to avoid triggering acceleration limit
-            $claudeContextLimit = 10; // REDUCED from 50 - testing acceleration compliance
-
             \Log::info('🚀🚀🚀 ADAPTIVE RETRY STARTING', [
                 'total_acts_found' => $originalActsCount,
                 'first_attempt_will_send' => $claudeContextLimit,
-                'FORCED_LIMIT_TEST' => true, // 🧪 TEST MODE
-                'NOTE' => 'Starting with 10 acts to comply with Anthropic acceleration limits',
+                'strategy' => 'SMART_LIMIT_20',
             ]);
 
-            $this->logger->info('[NatanChatService] Starting adaptive retry - will try ALL acts first', [
+            $this->logger->info('[NatanChatService] Starting adaptive retry with smart limit', [
                 'total_acts_found' => $originalActsCount,
                 'first_attempt_will_send' => $claudeContextLimit,
-                'strategy' => 'MAX_CONTEXT_FIRST',
+                'strategy' => 'MAX_20_ACTS_PER_REQUEST',
             ]);
 
             \Log::info('🔄 ENTERING WHILE LOOP', ['retry_attempt' => $retryAttempt, 'maxRetries' => $maxRetries]);
@@ -502,13 +498,13 @@ class NatanChatService {
                         continue;
                     } else {
                         // Not a rate limit error OR reached minimum limit
-                        $this->logger->error('[NatanChatService] ❌ API call failed (non-retryable)', [
+                        $this->errorManager->handle('NATAN_API_CALL_FAILED', [
+                            'user_id' => $user->id,
                             'is_rate_limit' => $isRateLimitError,
                             'current_limit' => $claudeContextLimit,
                             'min_limit' => $minLimit,
                             'retry_attempt' => $retryAttempt,
-                            'error' => substr($errorBody, 0, 500),
-                        ]);
+                        ], $e);
 
                         // User-friendly message for rate limit exhaustion
                         if ($isRateLimitError && $claudeContextLimit <= $minLimit) {
@@ -643,14 +639,12 @@ class NatanChatService {
                 ],
             ];
         } catch (\Throwable $e) {
-            $this->logger->error('[NatanChatService] Query processing failed', [
+            // UEM handles logging + user notification
+            $this->errorManager->handle('NATAN_QUERY_PROCESSING_FAILED', [
                 ...$logContext,
-                'error' => $e->getMessage(),
-                'exception' => get_class($e),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            $this->errorManager->handle('NATAN_CHAT_FAILED', $logContext, $e);
+                'query_length' => mb_strlen($query),
+                'history_count' => count($history),
+            ], $e);
 
             return [
                 'success' => false,

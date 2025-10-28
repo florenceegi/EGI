@@ -6724,5 +6724,16 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'NATAN_API_CALL_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_api_call_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_api_call_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];
