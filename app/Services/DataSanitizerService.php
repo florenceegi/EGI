@@ -177,7 +177,13 @@ class DataSanitizerService
         // Se ci sono molti atti (>50), usa formato compatto
         if ($count > 50) {
             $summary .= "[FORMATO COMPATTO - {$count} atti]\n\n";
-            foreach ($acts as $index => $act) {
+            foreach ($acts as $index => $item) {
+                // Extract Egi from array if RagService returns ['act' => Egi, 'similarity' => float]
+                $act = is_array($item) ? ($item['act'] ?? $item) : $item;
+                if (!$act instanceof \App\Models\Egi) {
+                    continue; // Skip invalid items
+                }
+                
                 $sanitized = $this->sanitizeAct($act);
                 $summary .= sprintf(
                     "%d. [%s] %s - Prot.%s (%s) - Dir: %s\n",
@@ -191,7 +197,13 @@ class DataSanitizerService
             }
         } else {
             // Formato esteso per pochi atti
-            foreach ($acts as $index => $act) {
+            foreach ($acts as $index => $item) {
+                // Extract Egi from array if RagService returns ['act' => Egi, 'similarity' => float]
+                $act = is_array($item) ? ($item['act'] ?? $item) : $item;
+                if (!$act instanceof \App\Models\Egi) {
+                    continue; // Skip invalid items
+                }
+                
                 $sanitized = $this->sanitizeAct($act);
                 $summary .= sprintf(
                     "%d. [%s] %s\n   Protocollo: %s | Data: %s | Direzione: %s\n   Importo: %s€ | Blockchain: %s\n\n",
