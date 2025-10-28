@@ -1425,10 +1425,10 @@
                             // Add response to chat
                             this.addMessage('assistant', data.response);
 
-                            // Block panel for 3 seconds to show final stats
-                            setTimeout(() => {
-                                AIProcessingPanel.hide();
-                            }, 3000);
+                            // ❌ REMOVED auto-hide - User must manually close panel to see final stats
+                            // setTimeout(() => {
+                            //     AIProcessingPanel.hide();
+                            // }, 3000);
                             break;
 
                         case 'done':
@@ -1437,6 +1437,7 @@
                                 this.addMessage('assistant', data.message);
                                 AIProcessingPanel.hide();
                             }
+                            // ❌ REMOVED auto-hide on success - User closes manually with button
                             break;
 
                         case 'error':
