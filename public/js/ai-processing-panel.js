@@ -646,28 +646,41 @@ const AIProcessingPanel = {
             return;
         }
 
-        const icon = stageElement.querySelector(".stage-icon");
-        const label = stageElement.querySelector(".stage-label");
-        const detailElement = stageElement.querySelector(".stage-detail");
+        // HTML structure: <span class="material-symbols-outlined">icon</span>
+        const icon = stageElement.querySelector(".material-symbols-outlined");
+        const detailElement = document.getElementById(`stage-${stageId}-detail`);
 
-        // Remove all status classes
+        if (!icon) {
+            console.warn(`[AIProcessingPanel] Icon not found in stage-${stageId}`);
+            return;
+        }
+
+        // Remove all status classes from parent
         stageElement.classList.remove(
-            "stage-pending",
-            "stage-active",
-            "stage-completed",
-            "stage-error"
+            "border-gray-200", "bg-gray-50",
+            "border-blue-200", "bg-blue-50",
+            "border-green-200", "bg-green-50",
+            "border-red-200", "bg-red-50"
         );
 
-        // Add new status class
-        stageElement.classList.add(`stage-${status}`);
-
-        // Update icon based on status
+        // Update icon and colors based on status
         if (status === "active") {
-            icon.innerHTML = `<span class="material-symbols-outlined animate-spin text-blue-500">progress_activity</span>`;
+            icon.textContent = "progress_activity";
+            icon.className = "material-symbols-outlined animate-spin text-blue-500";
+            stageElement.classList.add("border-blue-200", "bg-blue-50");
         } else if (status === "completed") {
-            icon.innerHTML = `<span class="material-symbols-outlined text-green-500">check_circle</span>`;
+            icon.textContent = "check_circle";
+            icon.className = "material-symbols-outlined text-green-600";
+            stageElement.classList.add("border-green-200", "bg-green-50");
         } else if (status === "error") {
-            icon.innerHTML = `<span class="material-symbols-outlined text-red-500">error</span>`;
+            icon.textContent = "error";
+            icon.className = "material-symbols-outlined text-red-500";
+            stageElement.classList.add("border-red-200", "bg-red-50");
+        } else {
+            // pending
+            icon.textContent = "pending";
+            icon.className = "material-symbols-outlined text-gray-400";
+            stageElement.classList.add("border-gray-200", "bg-gray-50");
         }
 
         // Update detail text if provided
