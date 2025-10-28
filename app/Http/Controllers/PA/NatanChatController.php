@@ -1282,6 +1282,33 @@ class NatanChatController extends Controller {
                     'first_source' => $sources[0] ?? null,
                 ]);
 
+                // ✅ DATA VERIFICATION - Log financial data for audit
+                $actsWithAmounts = $acts->filter(function($act) {
+                    return !empty($act->jsonMetadata['pa_act']['amount']);
+                });
+                
+                $totalAmount = $actsWithAmounts->sum(function($act) {
+                    $amount = $act->jsonMetadata['pa_act']['amount'];
+                    // Handle both string "250000.00" and numeric 250000.00
+                    return is_numeric($amount) ? (float)$amount : 0;
+                });
+
+                \Log::warning('[SSE] DATA VERIFICATION - Acts with financial data', [
+                    'query' => $query,
+                    'total_acts_analyzed' => $acts->count(),
+                    'acts_with_amount' => $actsWithAmounts->count(),
+                    'total_amount_eur' => number_format($totalAmount, 2, '.', ''),
+                    'total_amount_millions' => round($totalAmount / 1_000_000, 2) . 'M',
+                    'acts_ids_with_amounts' => $actsWithAmounts->pluck('id')->take(20)->toArray(), // First 20 IDs
+                    'sample_amounts' => $actsWithAmounts->take(10)->map(function($act) {
+                        return [
+                            'id' => $act->id,
+                            'protocol' => $act->pa_protocol_number,
+                            'amount' => $act->jsonMetadata['pa_act']['amount'],
+                        ];
+                    })->toArray(),
+                ]);
+
                 // EVENT 6: Response Generation Complete
                 $emitSSE('response_generation_complete', [
                     'response' => $result['response'] ?? '',
