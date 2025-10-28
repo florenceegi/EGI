@@ -1380,7 +1380,7 @@
                             break;
 
                         case 'ai_analysis_start':
-                            AIProcessingPanel.updateStage('ai', 'active', `Claude Sonnet 4.5`);
+                            AIProcessingPanel.updateStage('ai', 'active', `Modello: ${data.model}`);
                             AIProcessingPanel.updateProgress(50);
                             break;
 
