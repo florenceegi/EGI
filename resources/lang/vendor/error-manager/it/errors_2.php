@@ -60,6 +60,7 @@ return [
         'natan_chunking_progress_failed' => 'Errore polling avanzamento chunking per sessione :session_id (utente :user_id). Errore: :error',
         'natan_chunking_final_failed' => 'Errore recupero analisi chunked finale per sessione :session_id (utente :user_id). Errore: :error',
         'natan_api_call_failed' => 'Chiamata API N.A.T.A.N. fallita per utente :user_id. Rate limit: :is_rate_limit, limite: :current_limit, tentativo: :retry_attempt. Errore: :error',
+        'natan_chunking_max_retries' => 'Chunking N.A.T.A.N. ha esaurito i tentativi massimi per chunk :chunk_index (max: :max_retries). Errore: :error',
 
         // PA Acts Upload Errors (Dev)
         'pa_act_auth_required' => 'Tentativo di upload atto PA senza autenticazione. User: :user_id, IP: :ip',
@@ -222,6 +223,7 @@ return [
         'natan_chunking_progress_failed' => 'Impossibile verificare l\'avanzamento dell\'analisi. Aggiorna la pagina.',
         'natan_chunking_final_failed' => 'Impossibile recuperare i risultati dell\'analisi. Contatta l\'assistenza.',
         'natan_api_call_failed' => 'Servizio AI temporaneamente non disponibile. Riprova tra qualche istante.',
+        'natan_chunking_max_retries' => 'Elaborazione analisi fallita dopo multipli tentativi. Riprova più tardi o contatta l\'assistenza.',
 
         'pa_heritage_detail_error' => 'Impossibile caricare il dettaglio del bene patrimoniale. Riprova tra poco.',
 

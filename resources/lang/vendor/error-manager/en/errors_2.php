@@ -51,6 +51,7 @@ return [
         'natan_chunking_progress_failed' => 'Error polling chunking progress for session :session_id (user :user_id). Error: :error',
         'natan_chunking_final_failed' => 'Error retrieving final chunked analysis for session :session_id (user :user_id). Error: :error',
         'natan_api_call_failed' => 'N.A.T.A.N. API call failed for user :user_id. Rate limit: :is_rate_limit, limit: :current_limit, retry: :retry_attempt. Error: :error',
+        'natan_chunking_max_retries' => 'N.A.T.A.N. chunking exhausted max retries for chunk :chunk_index (max: :max_retries). Error: :error',
     ],
 
     'user' => [
@@ -96,6 +97,7 @@ return [
         'natan_chunking_progress_failed' => 'Unable to check analysis progress. Please refresh the page.',
         'natan_chunking_final_failed' => 'Unable to retrieve analysis results. Please contact support.',
         'natan_api_call_failed' => 'AI service temporarily unavailable. Please try again in a few moments.',
+        'natan_chunking_max_retries' => 'Analysis processing failed after multiple attempts. Please try again later or contact support.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
