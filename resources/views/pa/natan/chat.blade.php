@@ -808,9 +808,16 @@
                     // Feature flag: use SSE for real-time progress tracking
                     const useSSE = true; // TODO: make configurable in user settings
                     
+                    // 🚨 DIAGNOSTIC LOG - REMOVE AFTER TESTING
+                    console.log('🔥 [DIAGNOSTIC] handleSubmit called');
+                    console.log('🔥 [DIAGNOSTIC] useSSE flag:', useSSE);
+                    console.log('🔥 [DIAGNOSTIC] Will call:', useSSE ? 'sendToApiWithSSE' : 'sendToApi');
+                    
                     if (useSSE) {
+                        console.log('🚀 [DIAGNOSTIC] Calling sendToApiWithSSE NOW');
                         await this.sendToApiWithSSE(message);
                     } else {
+                        console.log('⚠️ [DIAGNOSTIC] Calling OLD sendToApi');
                         await this.sendToApi(message);
                     }
                 },
@@ -1256,12 +1263,17 @@
                  * @param {string} message - User query
                  */
                 async sendToApiWithSSE(message) {
+                    console.log('🚀🚀🚀 [SSE] sendToApiWithSSE CALLED!', message);
+                    
                     this.setLoading(true);
                     AIProcessingPanel.show(0);
 
                     try {
                         // Use SSE endpoint instead of traditional POST
                         const url = '/pa/natan/analyze-stream';
+                        
+                        console.log('📡 [SSE] Calling URL:', url);
+                        console.log('📡 [SSE] Message:', message);
                         
                         const response = await fetch(url, {
                             method: 'POST',
@@ -1276,9 +1288,14 @@
                             })
                         });
 
+                        console.log('✅ [SSE] Response received:', response.status, response.statusText);
+
                         if (!response.ok) {
+                            console.error('❌ [SSE] Response not OK:', response.status);
                             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                         }
+
+                        console.log('📖 [SSE] Starting to read stream...');
 
                         // Create ReadableStream reader
                         const reader = response.body.getReader();
