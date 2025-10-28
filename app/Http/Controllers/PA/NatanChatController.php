@@ -1264,16 +1264,22 @@ class NatanChatController extends Controller {
 
                 // Build sources array from sanitized acts (for frontend display)
                 $sources = $acts->map(function ($act) {
+                    // $act is an Egi model instance, not array
                     return [
-                        'id' => $act['id'] ?? null,
-                        'protocol_number' => $act['protocol_number'] ?? 'N/A',
-                        'date' => $act['date'] ?? null,
-                        'type' => $act['type'] ?? 'pa_act',
-                        'title' => $act['title'] ?? $act['object'] ?? 'Atto PA',
-                        'url' => isset($act['id']) ? route('pa.acts.show', $act['id']) : '#',
-                        'blockchain_anchored' => $act['blockchain_anchored'] ?? false,
+                        'id' => $act->id,
+                        'protocol_number' => $act->pa_protocol_number ?? 'N/A',
+                        'date' => $act->pa_protocol_date ?? $act->created_at,
+                        'type' => $act->type_label ?? 'pa_act',
+                        'title' => $act->title ?? $act->object ?? 'Atto PA',
+                        'url' => route('pa.acts.show', $act->id),
+                        'blockchain_anchored' => !empty($act->blockchain_tx_id),
                     ];
                 })->toArray();
+
+                \Log::info('[SSE] Sources built', [
+                    'count' => count($sources),
+                    'first_source' => $sources[0] ?? null,
+                ]);
 
                 // EVENT 6: Response Generation Complete
                 $emitSSE('response_generation_complete', [
