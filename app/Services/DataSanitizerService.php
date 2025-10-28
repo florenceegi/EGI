@@ -97,24 +97,33 @@ class DataSanitizerService
         return $publicData;
     }
 
-    /**
-     * Sanitizza una collezione di atti PA
+        /**
+     * Sanitizza una collection di atti PA rimuovendo dati potenzialmente sensibili
+     * PRESERVES similarity scores from RagService (needed for avg_relevance calculation)
      *
-     * @param Collection $acts Collezione di atti
-     * @return array Array di atti sanitizzati
+     * @param Collection $acts Collection of Egi or array['act' => Egi, 'similarity' => float]
+     * @return array Sanitized acts with preserved similarity
      */
     public function sanitizeActsCollection(Collection $acts): array
     {
         $sanitized = $acts->map(function ($item) {
             // Handle both old format (Egi object) and new format (array with 'act' and 'similarity')
             $act = is_array($item) ? ($item['act'] ?? $item) : $item;
+            $similarity = is_array($item) ? ($item['similarity'] ?? null) : null;
             
             // If still not an Egi instance, skip
             if (!$act instanceof Egi) {
                 return null;
             }
             
-            return $this->sanitizeAct($act);
+            $sanitizedAct = $this->sanitizeAct($act);
+            
+            // PRESERVE similarity score if present (needed for avg_relevance)
+            if ($similarity !== null) {
+                $sanitizedAct['similarity'] = $similarity;
+            }
+            
+            return $sanitizedAct;
         })->filter()->toArray();
 
         $this->logger->info('[DataSanitizer] Collection sanitized', [

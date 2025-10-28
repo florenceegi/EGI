@@ -1165,7 +1165,11 @@ class NatanChatController extends Controller {
                     $limit
                 );
                 
-                \Log::info('[SSE] RAG search completed', ['acts_count' => count($ragContext['acts'] ?? [])]);
+                \Log::info('[SSE] RAG search completed', [
+                    'acts_count' => count($ragContext['acts'] ?? []),
+                    'first_act_structure' => isset($ragContext['acts'][0]) ? array_keys($ragContext['acts'][0]) : [],
+                    'first_act_has_similarity' => isset($ragContext['acts'][0]['similarity']),
+                ]);
 
                 // Extract acts and calculate average similarity
                 $acts = collect($ragContext['acts'] ?? [])
@@ -1176,6 +1180,12 @@ class NatanChatController extends Controller {
                 $similarities = collect($ragContext['acts'] ?? [])
                     ->pluck('similarity')
                     ->filter(fn($val) => $val !== null);
+                
+                \Log::info('[SSE] Similarities extracted', [
+                    'count' => $similarities->count(),
+                    'first_5' => $similarities->take(5)->toArray(),
+                    'avg' => $similarities->avg(),
+                ]);
                 
                 $avgRelevance = $similarities->isNotEmpty() 
                     ? $similarities->avg() 
