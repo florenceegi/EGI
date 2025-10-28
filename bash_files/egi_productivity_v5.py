@@ -137,7 +137,9 @@ def parse_git_log(repo: str, since: str, until: str) -> List[CommitEntry]:
             if current:
                 commits.append(current)
             sha, author, date_str, subject = line.split("|", 3)
-            date = dt.datetime.fromisoformat(date_str.strip())
+            # Fix: remove timezone for fromisoformat compatibility
+            date_clean = re.sub(r'\s[+-]\d{4}$', '', date_str.strip())
+            date = dt.datetime.fromisoformat(date_clean)
             current = CommitEntry(sha=sha, author=author, date=date, message=subject, files=[])
         elif line.strip() == "":
             # separator, ignore
@@ -457,7 +459,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     per_day = aggregate_by_day(commits, args.exclude)
 
     # Pick today's day (or the first available in range)
-    day_key = dt.date.fromisoformat(args.since)
+    # Fix: handle both date and datetime formats
+    since_str = args.since.split()[0] if ' ' in args.since else args.since
+    day_key = dt.date.fromisoformat(since_str)
     if day_key not in per_day and per_day:
         day_key = sorted(per_day.keys())[-1]
     if day_key not in per_day:
