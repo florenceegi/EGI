@@ -1116,7 +1116,7 @@ class NatanChatController extends Controller {
         $emitSSE = function (string $event, array $data) {
             echo "event: {$event}\n";
             echo "data: " . json_encode($data) . "\n\n";
-            
+
             // Force immediate send (disable all buffering)
             if (ob_get_level() > 0) {
                 ob_end_flush();
@@ -1128,15 +1128,15 @@ class NatanChatController extends Controller {
             // Disable output buffering completely
             @ini_set('output_buffering', 'off');
             @ini_set('zlib.output_compression', false);
-            
+
             // Disable implicit flush (we control it manually)
             @ob_implicit_flush(true);
-            
+
             // Clear any existing buffers
             while (ob_get_level() > 0) {
                 ob_end_clean();
             }
-            
+
             try {
                 $user = auth()->user();
 
@@ -1157,15 +1157,15 @@ class NatanChatController extends Controller {
                 ]);
 
                 // Execute RAG semantic search (BLOCKING - may take 2-3 minutes!)
-                \Log::info('[SSE] Starting RAG search...', ['query' => $query, 'limit' => $limit]);
-                
+                $this->logger->info('[SSE] Starting RAG search...', ['query' => $query, 'limit' => $limit]);
+
                 $ragContext = app(\App\Services\RagService::class)->getContextForQuery(
                     $query,
                     $user,
                     $limit
                 );
-                
-                \Log::info('[SSE] RAG search completed', [
+
+                $this->logger->info('[SSE] RAG search completed', [
                     'acts_count' => count($ragContext['acts'] ?? []),
                     'first_act_structure' => isset($ragContext['acts'][0]) ? array_keys($ragContext['acts'][0]) : [],
                     'first_act_has_similarity' => isset($ragContext['acts'][0]['similarity']),
@@ -1180,15 +1180,15 @@ class NatanChatController extends Controller {
                 $similarities = collect($ragContext['acts'] ?? [])
                     ->pluck('similarity')
                     ->filter(fn($val) => $val !== null);
-                
-                \Log::info('[SSE] Similarities extracted', [
+
+                $this->logger->info('[SSE] Similarities extracted', [
                     'count' => $similarities->count(),
                     'first_5' => $similarities->take(5)->toArray(),
                     'avg' => $similarities->avg(),
                 ]);
-                
-                $avgRelevance = $similarities->isNotEmpty() 
-                    ? $similarities->avg() 
+
+                $avgRelevance = $similarities->isNotEmpty()
+                    ? $similarities->avg()
                     : 0;
 
                 // EVENT 2: Semantic Search Complete
@@ -1276,31 +1276,31 @@ class NatanChatController extends Controller {
                     ];
                 })->values()->toArray(); // ✅ values() force numeric array, not object
 
-                \Log::info('[SSE] Sources built', [
+                $this->logger->info('[SSE] Sources built', [
                     'count' => count($sources),
                     'is_array' => is_array($sources),
                     'first_source' => $sources[0] ?? null,
                 ]);
 
                 // ✅ DATA VERIFICATION - Log financial data for audit
-                $actsWithAmounts = $acts->filter(function($act) {
+                $actsWithAmounts = $acts->filter(function ($act) {
                     return !empty($act->jsonMetadata['pa_act']['amount']);
                 });
-                
-                $totalAmount = $actsWithAmounts->sum(function($act) {
+
+                $totalAmount = $actsWithAmounts->sum(function ($act) {
                     $amount = $act->jsonMetadata['pa_act']['amount'];
                     // Handle both string "250000.00" and numeric 250000.00
                     return is_numeric($amount) ? (float)$amount : 0;
                 });
 
-                \Log::warning('[SSE] DATA VERIFICATION - Acts with financial data', [
+                $this->logger->warning('[SSE] DATA VERIFICATION - Acts with financial data', [
                     'query' => $query,
                     'total_acts_analyzed' => $acts->count(),
                     'acts_with_amount' => $actsWithAmounts->count(),
                     'total_amount_eur' => number_format($totalAmount, 2, '.', ''),
                     'total_amount_millions' => round($totalAmount / 1_000_000, 2) . 'M',
                     'acts_ids_with_amounts' => $actsWithAmounts->pluck('id')->take(20)->toArray(), // First 20 IDs
-                    'sample_amounts' => $actsWithAmounts->take(10)->map(function($act) {
+                    'sample_amounts' => $actsWithAmounts->take(10)->map(function ($act) {
                         return [
                             'id' => $act->id,
                             'protocol' => $act->pa_protocol_number,
@@ -1449,7 +1449,7 @@ PROMPT;
         return $acts->map(function ($item) {
             // Handle both old format (Egi object) and new format (array with 'act' and 'similarity')
             $act = is_array($item) ? ($item['act'] ?? $item) : $item;
-            
+
             return [
                 'id' => $act->id,
                 'number' => $act->jsonMetadata['pa_act']['number'] ?? 'N/A',
