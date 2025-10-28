@@ -642,8 +642,8 @@ class NatanChatService {
             // UEM handles logging + user notification
             $this->errorManager->handle('NATAN_QUERY_PROCESSING_FAILED', [
                 ...$logContext,
-                'query_length' => mb_strlen($query),
-                'history_count' => count($history),
+                'query_length' => mb_strlen($userQuery),
+                'history_count' => count($conversationHistory),
             ], $e);
 
             return [
