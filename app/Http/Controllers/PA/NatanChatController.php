@@ -647,23 +647,25 @@ class NatanChatController extends Controller {
                 'session_id' => $sessionId,
             ]);
 
-            // Extract keywords
-            $keywords = $this->extractKeywords($query);
+            // Use RAG semantic search instead of keyword matching
+            $ragContext = app(\App\Services\RagService::class)->getContextForQuery(
+                $query,
+                $user,
+                $limit // Search with user-specified limit
+            );
 
-            // Fetch acts from user's collection (up to limit)
-            $acts = \App\Models\Egi::query()
-                ->whereHas('collection', function ($q) use ($user) {
-                    $q->where('creator_id', $user->id);
+            $acts = collect($ragContext['acts'] ?? [])
+                ->map(function ($actData) {
+                    // RAG returns array data, convert to Egi models
+                    return \App\Models\Egi::find($actData['id']);
                 })
-                ->whereNotNull('pa_act_type')
-                ->where(function ($q) use ($keywords) {
-                    foreach ($keywords as $keyword) {
-                        $q->orWhere('title', 'LIKE', "%{$keyword}%")
-                            ->orWhere('description', 'LIKE', "%{$keyword}%");
-                    }
-                })
-                ->limit($limit)
-                ->get();
+                ->filter(); // Remove nulls
+
+            $this->logger->info('[NATAN] Acts retrieved via semantic search', [
+                'user_id' => $user->id,
+                'total_acts' => $acts->count(),
+                'limit' => $limit,
+            ]);
 
             if ($acts->isEmpty()) {
                 return response()->json([
@@ -735,7 +737,6 @@ class NatanChatController extends Controller {
                     'user_limit' => $limit,
                     'total_acts' => $acts->count(),
                     'total_chunks' => $chunks->count(),
-                    'keywords' => $keywords,
                     'current_chunk' => 0,
                     'chunk_progress' => 0,
                     'acts_in_current_chunk' => 0,
@@ -1088,23 +1089,5 @@ class NatanChatController extends Controller {
                 'message' => 'Failed to estimate cost. Please try again.',
             ], 500);
         }
-    }
-
-    /**
-     * Extract keywords from query
-     *
-     * @param string $query
-     * @return array
-     */
-    private function extractKeywords(string $query): array {
-        // Remove common words (stopwords)
-        $stopwords = ['il', 'lo', 'la', 'i', 'gli', 'le', 'un', 'uno', 'una', 'di', 'da', 'del', 'della', 'dei', 'delle', 'a', 'con', 'per', 'su', 'in', 'e', 'o', 'che', 'come', 'quando', 'dove', 'sulla', 'sullo', 'sulle', 'sul'];
-
-        $words = \preg_split('/\s+/', \strtolower($query));
-        $keywords = \array_filter($words, function ($word) use ($stopwords) {
-            return \strlen($word) > 3 && !\in_array($word, $stopwords);
-        });
-
-        return \array_values($keywords);
     }
 }
