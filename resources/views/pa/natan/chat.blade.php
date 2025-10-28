@@ -1266,7 +1266,16 @@
                     console.log('🚀🚀🚀 [SSE] sendToApiWithSSE CALLED!', message);
 
                     this.setLoading(true);
+                    
+                    // Check if AIProcessingPanel exists
+                    if (typeof AIProcessingPanel === 'undefined') {
+                        console.error('❌ AIProcessingPanel NOT LOADED!');
+                        return;
+                    }
+                    
+                    console.log('✅ AIProcessingPanel exists, calling show()...');
                     AIProcessingPanel.show(0);
+                    console.log('✅ AIProcessingPanel.show() completed');
 
                     try {
                         // Use SSE endpoint instead of traditional POST
