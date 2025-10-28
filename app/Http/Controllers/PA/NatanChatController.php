@@ -1172,8 +1172,14 @@ class NatanChatController extends Controller {
                     ->map(fn($actData) => $actData['act'] ?? \App\Models\Egi::find($actData['id']))
                     ->filter();
 
-                $avgRelevance = collect($ragContext['acts'] ?? [])
-                    ->avg('similarity') ?? 0;
+                // FIXED: avg() on array keys not working - extract similarity values first
+                $similarities = collect($ragContext['acts'] ?? [])
+                    ->pluck('similarity')
+                    ->filter(fn($val) => $val !== null);
+                
+                $avgRelevance = $similarities->isNotEmpty() 
+                    ? $similarities->avg() 
+                    : 0;
 
                 // EVENT 2: Semantic Search Complete
                 $emitSSE('semantic_search_complete', [

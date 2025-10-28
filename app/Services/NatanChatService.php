@@ -642,6 +642,11 @@ class NatanChatService {
                     'user' => $userMessage->id,
                     'assistant' => $assistantMessage->id,
                 ],
+                // ✨ NEW: Usage tracking for SSE cost panel
+                'usage' => $usage ?? [
+                    'input_tokens' => 0,
+                    'output_tokens' => 0,
+                ],
             ];
         } catch (\Throwable $e) {
             // UEM handles logging + user notification
