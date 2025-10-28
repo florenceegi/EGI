@@ -10,6 +10,7 @@ use App\Models\Egi;
 use App\Models\Collection;
 use App\Services\DataSanitizerService;
 use App\Services\Gdpr\AuditLogService;
+use App\Services\PaActs\FinancialDataExtractorService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -70,6 +71,7 @@ class PaWebScraperService
     protected ErrorManagerInterface $errorManager;
     protected DataSanitizerService $sanitizer;
     protected AuditLogService $auditLog;
+    protected FinancialDataExtractorService $financialExtractor;
     protected Client $httpClient;
 
     /**
@@ -86,12 +88,14 @@ class PaWebScraperService
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
         DataSanitizerService $sanitizer,
-        AuditLogService $auditLog
+        AuditLogService $auditLog,
+        FinancialDataExtractorService $financialExtractor
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->sanitizer = $sanitizer;
         $this->auditLog = $auditLog;
+        $this->financialExtractor = $financialExtractor;
 
         // Initialize HTTP client with defaults
         $this->httpClient = new Client([
@@ -509,6 +513,10 @@ class PaWebScraperService
         $dataAtto = $this->parseDate($act['dataAdozione'] ?? $act['data'] ?? null);
         $tipoAttoCompleto = $act['tipoAttoDto']['nome'] ?? $act['tipo'] ?? 'Atto Generico';
 
+        // ✅ ENHANCED: Extract financial data using FinancialDataExtractorService
+        // NOTA: Questo service fa pattern recognition avanzato su TESTO, non solo campi API
+        $financialData = $this->financialExtractor->extractFromAct($act);
+
         return [
             'numero_atto' => $numeroAtto,
             'tipo_atto' => $tipoAttoCompleto,
@@ -531,6 +539,8 @@ class PaWebScraperService
                 'scraped_from' => $scraper->getFullUrl(),
                 'scraped_at' => now()->toIso8601String(),
                 'legal_basis' => $scraper->legal_basis,
+                // ✅ NEW: Financial data extracted from API
+                'financial_data' => $financialData,
             ],
             'allegati' => $this->convertAllegati($act['allegati'] ?? []),
         ];
