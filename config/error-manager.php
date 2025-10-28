@@ -6510,5 +6510,164 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'NATAN_CONFIG_INDEX_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_config_index_error',
+            'user_message_key' => 'error-manager::errors_2.user.natan_config_index_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_CONFIG_UPDATE_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_config_update_error',
+            'user_message_key' => 'error-manager::errors_2.user.natan_config_update_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_CONFIG_RESET_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_config_reset_error',
+            'user_message_key' => 'error-manager::errors_2.user.natan_config_reset_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        // ===========================
+        // AI CREDITS ERRORS (Task 5)
+        // ===========================
+
+        'AI_CREDITS_INSUFFICIENT' => [
+            'type' => 'warning',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.ai_credits_insufficient',
+            'user_message_key' => 'error-manager::errors_2.user.ai_credits_insufficient',
+            'http_status_code' => 402, // Payment Required
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'AI_CREDITS_DEDUCT_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.ai_credits_deduct_failed',
+            'user_message_key' => 'error-manager::errors_2.user.ai_credits_deduct_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'AI_CREDITS_REFUND_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.ai_credits_refund_failed',
+            'user_message_key' => 'error-manager::errors_2.user.ai_credits_refund_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'AI_CREDITS_CALCULATION_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.ai_credits_calculation_failed',
+            'user_message_key' => 'error-manager::errors_2.user.ai_credits_calculation_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'log',
+        ],
+
+        'AI_CREDITS_ESTIMATION_FAILED' => [
+            'type' => 'warning',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.ai_credits_estimation_failed',
+            'user_message_key' => 'error-manager::errors_2.user.ai_credits_estimation_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'log',
+        ],
+
+        // === N.A.T.A.N. CHAT ERRORS ===
+        'NATAN_AI_CONSENT_REQUIRED' => [
+            'type' => 'warning',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_ai_consent_required',
+            'user_message_key' => 'error-manager::errors_2.user.natan_ai_consent_required',
+            'http_status_code' => 403,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_MESSAGE_PROCESSING_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_message_processing_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_message_processing_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_QUERY_PROCESSING_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_query_processing_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_query_processing_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_SESSION_DELETE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_session_delete_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_session_delete_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_SEARCH_PREVIEW_FAILED' => [
+            'type' => 'warning',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_search_preview_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_search_preview_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_ANALYSIS_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_analysis_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_analysis_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];
