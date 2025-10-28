@@ -103,7 +103,55 @@
             {{-- Live Stats --}}
             <div class="grid grid-cols-2 gap-4 rounded-xl bg-gray-50 p-4 md:grid-cols-4">
                 <div class="text-center">
-                    <p class="mb-1 text-xs text-gray-600">Atti analizzati</p>
+                    <div class="mb-1 flex items-center justify-center gap-1">
+                        <p class="text-xs text-gray-600">Top atti per rilevanza</p>
+                        <button 
+                            type="button"
+                            class="group relative cursor-help"
+                            aria-label="Informazioni sulla selezione degli atti"
+                        >
+                            <span class="material-symbols-outlined text-[14px] text-gray-400 hover:text-[#1B365D]">help</span>
+                            
+                            {{-- Tooltip Dettagliato --}}
+                            <div class="absolute bottom-full left-1/2 z-50 mb-2 hidden w-80 -translate-x-1/2 rounded-lg border border-gray-200 bg-white p-4 shadow-xl group-hover:block">
+                                <div class="mb-2 flex items-start gap-2">
+                                    <span class="material-symbols-outlined text-[#1B365D]">info</span>
+                                    <div>
+                                        <p class="mb-2 text-xs font-semibold text-gray-900">Come vengono selezionati gli atti:</p>
+                                        <ol class="space-y-2 text-[11px] text-gray-700">
+                                            <li class="flex gap-2">
+                                                <span class="font-mono text-[#2D5016]">1.</span>
+                                                <span><strong>Ricerca semantica</strong> su tutti gli atti del Comune con embeddings</span>
+                                            </li>
+                                            <li class="flex gap-2">
+                                                <span class="font-mono text-[#2D5016]">2.</span>
+                                                <span><strong>Calcolo similarità</strong> (cosine similarity) tra query e contenuto atti</span>
+                                            </li>
+                                            <li class="flex gap-2">
+                                                <span class="font-mono text-[#2D5016]">3.</span>
+                                                <span><strong>Filtro qualitativo:</strong> solo atti con similarità ≥ 50%</span>
+                                            </li>
+                                            <li class="flex gap-2">
+                                                <span class="font-mono text-[#2D5016]">4.</span>
+                                                <span><strong>Ordinamento</strong> per rilevanza decrescente</span>
+                                            </li>
+                                            <li class="flex gap-2">
+                                                <span class="font-mono text-[#2D5016]">5.</span>
+                                                <span><strong>Selezione Top N</strong> atti più pertinenti (limite impostato)</span>
+                                            </li>
+                                        </ol>
+                                        <p class="mt-3 rounded bg-blue-50 px-2 py-1 text-[10px] text-blue-800">
+                                            <strong>Risultato:</strong> Gli atti mostrati sono i più rilevanti per la tua ricerca, non un campione casuale.
+                                        </p>
+                                    </div>
+                                </div>
+                                {{-- Freccia tooltip --}}
+                                <div class="absolute left-1/2 top-full -translate-x-1/2">
+                                    <div class="border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
                     <p class="text-2xl font-bold text-[#1B365D]" id="stat-acts">0</p>
                 </div>
                 <div class="text-center">
