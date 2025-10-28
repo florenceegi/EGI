@@ -219,6 +219,38 @@ class ConsentTypeSeeder extends Seeder {
                     'is_required' => false,
                     'priority_order' => 25,
                     'is_active' => true,
+                ],
+
+                // AI PROCESSING CONSENT (N.A.T.A.N. System)
+                [
+                    'slug' => 'allow-ai-processing',
+                    'legal_basis' => 'consent',
+                    'data_categories' => [
+                        'query_data',
+                        'document_analysis_data',
+                        'ai_interaction_data'
+                    ],
+                    'processing_purposes' => [
+                        'ai_assisted_analysis',
+                        'intelligent_document_search',
+                        'automated_consulting',
+                        'strategic_recommendations'
+                    ],
+                    'recipients' => [
+                        'internal_staff',
+                        'ai_service_providers'
+                    ],
+                    'international_transfers' => true,
+                    'is_required' => false,
+                    'is_granular' => true,
+                    'can_withdraw' => true,
+                    'withdrawal_effect_days' => 0,
+                    'retention_period' => '90_days',
+                    'deletion_method' => 'anonymization',
+                    'priority_order' => 8,
+                    'is_active' => true,
+                    'requires_double_opt_in' => false,
+                    'requires_age_verification' => false,
                 ]
             ];
 
