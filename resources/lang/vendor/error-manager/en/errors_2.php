@@ -52,6 +52,9 @@ return [
         'natan_chunking_final_failed' => 'Error retrieving final chunked analysis for session :session_id (user :user_id). Error: :error',
         'natan_api_call_failed' => 'N.A.T.A.N. API call failed for user :user_id. Rate limit: :is_rate_limit, limit: :current_limit, retry: :retry_attempt. Error: :error',
         'natan_chunking_max_retries' => 'N.A.T.A.N. chunking exhausted max retries for chunk :chunk_index (max: :max_retries). Error: :error',
+        'natan_job_session_not_found' => 'N.A.T.A.N. background job could not find session :session_id in cache.',
+        'natan_job_analysis_failed' => 'N.A.T.A.N. background chunked analysis failed for session :session_id. Error: :error',
+        'natan_job_user_not_found' => 'N.A.T.A.N. background job could not find user for session :session_id (user_id: :user_id).',
     ],
 
     'user' => [
@@ -98,6 +101,9 @@ return [
         'natan_chunking_final_failed' => 'Unable to retrieve analysis results. Please contact support.',
         'natan_api_call_failed' => 'AI service temporarily unavailable. Please try again in a few moments.',
         'natan_chunking_max_retries' => 'Analysis processing failed after multiple attempts. Please try again later or contact support.',
+        'natan_job_session_not_found' => 'Analysis session expired or not found. Please start a new analysis.',
+        'natan_job_analysis_failed' => 'Background analysis failed. Your credits have been refunded. Please try again or contact support.',
+        'natan_job_user_not_found' => 'User session invalid. Please log in again and retry.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

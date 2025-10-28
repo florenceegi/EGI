@@ -61,6 +61,9 @@ return [
         'natan_chunking_final_failed' => 'Errore recupero analisi chunked finale per sessione :session_id (utente :user_id). Errore: :error',
         'natan_api_call_failed' => 'Chiamata API N.A.T.A.N. fallita per utente :user_id. Rate limit: :is_rate_limit, limite: :current_limit, tentativo: :retry_attempt. Errore: :error',
         'natan_chunking_max_retries' => 'Chunking N.A.T.A.N. ha esaurito i tentativi massimi per chunk :chunk_index (max: :max_retries). Errore: :error',
+        'natan_job_session_not_found' => 'Job N.A.T.A.N. in background non ha trovato la sessione :session_id in cache.',
+        'natan_job_analysis_failed' => 'Analisi chunked N.A.T.A.N. in background fallita per sessione :session_id. Errore: :error',
+        'natan_job_user_not_found' => 'Job N.A.T.A.N. in background non ha trovato l\'utente per sessione :session_id (user_id: :user_id).',
 
         // PA Acts Upload Errors (Dev)
         'pa_act_auth_required' => 'Tentativo di upload atto PA senza autenticazione. User: :user_id, IP: :ip',
@@ -224,6 +227,9 @@ return [
         'natan_chunking_final_failed' => 'Impossibile recuperare i risultati dell\'analisi. Contatta l\'assistenza.',
         'natan_api_call_failed' => 'Servizio AI temporaneamente non disponibile. Riprova tra qualche istante.',
         'natan_chunking_max_retries' => 'Elaborazione analisi fallita dopo multipli tentativi. Riprova più tardi o contatta l\'assistenza.',
+        'natan_job_session_not_found' => 'Sessione di analisi scaduta o non trovata. Avvia una nuova analisi.',
+        'natan_job_analysis_failed' => 'Analisi in background fallita. I tuoi crediti sono stati rimborsati. Riprova o contatta l\'assistenza.',
+        'natan_job_user_not_found' => 'Sessione utente non valida. Effettua nuovamente il login e riprova.',
 
         'pa_heritage_detail_error' => 'Impossibile caricare il dettaglio del bene patrimoniale. Riprova tra poco.',
 

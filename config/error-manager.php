@@ -6746,5 +6746,38 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'NATAN_JOB_SESSION_NOT_FOUND' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_job_session_not_found',
+            'user_message_key' => 'error-manager::errors_2.user.natan_job_session_not_found',
+            'http_status_code' => 404,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_JOB_ANALYSIS_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_job_analysis_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_job_analysis_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_JOB_USER_NOT_FOUND' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_job_user_not_found',
+            'user_message_key' => 'error-manager::errors_2.user.natan_job_user_not_found',
+            'http_status_code' => 404,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];
