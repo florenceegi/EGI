@@ -1272,14 +1272,18 @@
                         // Use SSE endpoint instead of traditional POST
                         const url = '/pa/natan/analyze-stream';
                         
+                        // Get FRESH CSRF token from meta tag (not cached config)
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || this.config.csrfToken;
+                        
                         console.log('📡 [SSE] Calling URL:', url);
                         console.log('📡 [SSE] Message:', message);
+                        console.log('🔐 [SSE] CSRF Token:', csrfToken ? 'Present' : 'MISSING!');
                         
                         const response = await fetch(url, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': this.config.csrfToken,
+                                'X-CSRF-TOKEN': csrfToken,
                                 'Accept': 'text/event-stream'
                             },
                             body: JSON.stringify({

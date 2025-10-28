@@ -370,7 +370,12 @@ class NatanChatService {
             // Add reference context if provided (for elaborations)
             if ($referenceContext) {
                 $context['reference_message'] = $referenceContext;
-                $logContext['reference_message_id'] = $referenceContext['id'];
+                
+                // Only log reference ID if it exists (not all reference contexts have IDs)
+                if (isset($referenceContext['id'])) {
+                    $logContext['reference_message_id'] = $referenceContext['id'];
+                }
+                
                 $this->logger->info('[NatanChatService] Reference context included for elaboration', $logContext);
             }
 
