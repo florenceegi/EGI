@@ -100,9 +100,61 @@ const AIProcessingPanel = {
     },
 
     /**
+     * Reset all panel values to initial state
+     * Called before showing panel for new query
+     */
+    reset() {
+        console.log("[AIProcessingPanel] Resetting all values");
+
+        // Reset stats
+        this.updateStats({
+            acts: 0,
+            relevance: 0,
+        });
+
+        // Reset timer
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+        if (this.elements.statTime) {
+            this.elements.statTime.textContent = "00:00";
+        }
+
+        // Reset cost tracking panel
+        const costPanel = document.getElementById("aiCostTracking");
+        if (costPanel) {
+            costPanel.classList.add("hidden");
+        }
+
+        // Reset cost values
+        const costInputTokens = document.getElementById("costInputTokens");
+        const costOutputTokens = document.getElementById("costOutputTokens");
+        const costCurrentTotal = document.getElementById("costCurrentTotal");
+
+        if (costInputTokens) costInputTokens.textContent = "0";
+        if (costOutputTokens) costOutputTokens.textContent = "0";
+        if (costCurrentTotal) costCurrentTotal.textContent = "€0.00";
+
+        // Reset all stages to pending
+        this.updateStage("search", "pending", "In attesa...");
+        this.updateStage("context", "pending", "In attesa...");
+        this.updateStage("ai", "pending", "In attesa...");
+        this.updateStage("response", "pending", "In attesa...");
+
+        // Reset progress
+        this.updateProgress(0);
+
+        console.log("[AIProcessingPanel] Reset completed");
+    },
+
+    /**
      * Show panel with initial stats
      */
     show(actsCount = 0) {
+        // Reset all values BEFORE showing
+        this.reset();
+
         if (this.elements.panel) {
             this.elements.panel.classList.remove("hidden");
             this.elements.panel.style.display = "flex"; // ✨ Override inline style
@@ -125,7 +177,7 @@ const AIProcessingPanel = {
         this.updateStage(
             "search",
             "completed",
-            `${actsCount} atti trovati nel database`
+            `Ricerca su ${actsCount} atti`
         );
         this.updateStage(
             "context",
@@ -755,20 +807,23 @@ const AIProcessingPanel = {
             console.log("[AIProcessingPanel] Cost panel now VISIBLE");
         }
 
-        // Update values in HTML elements
-        const inputTokensEl = document.getElementById("cost-input-tokens");
-        const outputTokensEl = document.getElementById("cost-output-tokens");
-        const costEurEl = document.getElementById("cost-eur");
+        // Update values in HTML elements (use IDs from static HTML)
+        const inputTokensEl = document.getElementById("costInputTokens");
+        const outputTokensEl = document.getElementById("costOutputTokens");
+        const costEurEl = document.getElementById("costCurrentTotal");
 
         if (inputTokensEl) {
             inputTokensEl.textContent = (costData.inputTokens || 0).toLocaleString("it-IT");
+            console.log("[AIProcessingPanel] Input tokens updated:", costData.inputTokens);
         }
         if (outputTokensEl) {
             outputTokensEl.textContent = (costData.outputTokens || 0).toLocaleString("it-IT");
+            console.log("[AIProcessingPanel] Output tokens updated:", costData.outputTokens);
         }
         if (costEurEl) {
             const costEur = costData.costEur || costData.cost_eur || 0;
             costEurEl.textContent = `€${costEur.toFixed(2)}`;
+            console.log("[AIProcessingPanel] Cost EUR updated:", costEur);
         }
 
         console.log("[AIProcessingPanel] Cost tracking updated AND VISIBLE:", costData);
