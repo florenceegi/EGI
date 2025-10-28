@@ -47,6 +47,19 @@ return [
         'ai_credits_calculation_failed' => 'Errore calcolo crediti da token (input: :input_tokens, output: :output_tokens). Errore: :error',
         'ai_credits_estimation_failed' => 'Errore stima costo per :total_acts atti (dimensione chunk: :chunk_size). Errore: :error',
 
+        // N.A.T.A.N. Chat Errors - Dev
+        'natan_ai_consent_required' => 'Consenso elaborazione AI mancante per utente :user_id. Operazione bloccata.',
+        'natan_message_processing_failed' => 'Errore elaborazione messaggio N.A.T.A.N. per utente :user_id. Persona: :persona_id, sessione: :session_id. Errore: :error',
+        'natan_query_processing_failed' => 'Errore generazione risposta AI per utente :user_id. Lunghezza query: :query_length, storico: :history_count messaggi. Errore: :error',
+        'natan_session_delete_failed' => 'Errore eliminazione sessione N.A.T.A.N. :session_id per utente :user_id. Errore: :error',
+        'natan_search_preview_failed' => 'Errore generazione anteprima ricerca per utente :user_id. Query: :query. Errore: :error',
+        'natan_analysis_failed' => 'Errore durante analisi N.A.T.A.N. per utente :user_id. Query: :query, limite: :limit atti. Errore: :error',
+        'natan_suggestions_failed' => 'Errore recupero domande suggerite per utente :user_id. Mostro suggerimenti fallback. Errore: :error',
+        'natan_history_access_failed' => 'Errore accesso storico chat per utente :user_id. Errore: :error',
+        'natan_session_access_failed' => 'Errore accesso sessione :session_id per utente :user_id. Errore: :error',
+        'natan_chunking_progress_failed' => 'Errore polling avanzamento chunking per sessione :session_id (utente :user_id). Errore: :error',
+        'natan_chunking_final_failed' => 'Errore recupero analisi chunked finale per sessione :session_id (utente :user_id). Errore: :error',
+
         // PA Acts Upload Errors (Dev)
         'pa_act_auth_required' => 'Tentativo di upload atto PA senza autenticazione. User: :user_id, IP: :ip',
         'pa_act_role_required' => 'Utente :user_id non autorizzato (ruolo non PA) per upload atto.',
@@ -194,6 +207,19 @@ return [
         'ai_credits_refund_failed' => 'Impossibile elaborare il rimborso. Contatta l\'assistenza.',
         'ai_credits_calculation_failed' => 'Impossibile calcolare il costo. Operazione annullata per sicurezza.',
         'ai_credits_estimation_failed' => 'Impossibile stimare il costo. Riprova tra poco.',
+
+        // N.A.T.A.N. Chat User Messages
+        'natan_ai_consent_required' => 'È richiesto il consenso per l\'elaborazione AI. Aggiorna le tue impostazioni privacy.',
+        'natan_message_processing_failed' => 'Impossibile elaborare il tuo messaggio. Riprova.',
+        'natan_query_processing_failed' => 'Impossibile generare la risposta AI. Riprova o contatta l\'assistenza.',
+        'natan_session_delete_failed' => 'Impossibile eliminare la sessione di chat. Riprova o contatta l\'assistenza.',
+        'natan_search_preview_failed' => 'Impossibile visualizzare l\'anteprima della ricerca. Riprova.',
+        'natan_analysis_failed' => 'Impossibile completare l\'analisi. Riprova o contatta l\'assistenza.',
+        'natan_suggestions_failed' => 'Impossibile caricare le domande suggerite. Mostro suggerimenti predefiniti.',
+        'natan_history_access_failed' => 'Impossibile caricare lo storico chat. Riprova tra poco.',
+        'natan_session_access_failed' => 'Impossibile caricare i messaggi della sessione. Riprova tra poco.',
+        'natan_chunking_progress_failed' => 'Impossibile verificare l\'avanzamento dell\'analisi. Aggiorna la pagina.',
+        'natan_chunking_final_failed' => 'Impossibile recuperare i risultati dell\'analisi. Contatta l\'assistenza.',
 
         'pa_heritage_detail_error' => 'Impossibile caricare il dettaglio del bene patrimoniale. Riprova tra poco.',
 

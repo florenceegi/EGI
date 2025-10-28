@@ -37,6 +37,19 @@ return [
         'ai_credits_refund_failed' => 'Error refunding :credits credits to user :user_id. Reason: :reason. Error: :error',
         'ai_credits_calculation_failed' => 'Error calculating credits from tokens (input: :input_tokens, output: :output_tokens). Error: :error',
         'ai_credits_estimation_failed' => 'Error estimating cost for :total_acts acts (chunk size: :chunk_size). Error: :error',
+
+        // N.A.T.A.N. Chat Errors - Dev
+        'natan_ai_consent_required' => 'AI processing consent missing for user :user_id. Operation blocked.',
+        'natan_message_processing_failed' => 'Error processing N.A.T.A.N. message for user :user_id. Persona: :persona_id, session: :session_id. Error: :error',
+        'natan_query_processing_failed' => 'Error generating AI response for user :user_id. Query length: :query_length, history: :history_count messages. Error: :error',
+        'natan_session_delete_failed' => 'Error deleting N.A.T.A.N. session :session_id for user :user_id. Error: :error',
+        'natan_search_preview_failed' => 'Error generating search preview for user :user_id. Query: :query. Error: :error',
+        'natan_analysis_failed' => 'Error during N.A.T.A.N. analysis for user :user_id. Query: :query, limit: :limit acts. Error: :error',
+        'natan_suggestions_failed' => 'Error retrieving suggested questions for user :user_id. Returning fallback suggestions. Error: :error',
+        'natan_history_access_failed' => 'Error accessing chat history for user :user_id. Error: :error',
+        'natan_session_access_failed' => 'Error accessing session :session_id for user :user_id. Error: :error',
+        'natan_chunking_progress_failed' => 'Error polling chunking progress for session :session_id (user :user_id). Error: :error',
+        'natan_chunking_final_failed' => 'Error retrieving final chunked analysis for session :session_id (user :user_id). Error: :error',
     ],
 
     'user' => [
@@ -76,6 +89,11 @@ return [
         'natan_session_delete_failed' => 'Unable to delete chat session. Please try again or contact support.',
         'natan_search_preview_failed' => 'Unable to preview search results. Please try again.',
         'natan_analysis_failed' => 'Unable to complete analysis. Please try again or contact support.',
+        'natan_suggestions_failed' => 'Unable to load suggested questions. Default suggestions shown.',
+        'natan_history_access_failed' => 'Unable to load chat history. Please try again later.',
+        'natan_session_access_failed' => 'Unable to load session messages. Please try again later.',
+        'natan_chunking_progress_failed' => 'Unable to check analysis progress. Please refresh the page.',
+        'natan_chunking_final_failed' => 'Unable to retrieve analysis results. Please contact support.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
