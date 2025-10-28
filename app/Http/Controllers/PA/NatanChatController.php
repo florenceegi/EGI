@@ -1222,15 +1222,28 @@ class NatanChatController extends Controller {
                 $strategicPrompt = call_user_func($buildEnterprisePrompt, $query, $acts);
 
                 // Call Claude via NatanChatService
+                // Let AI auto-select persona based on query (strategic, financial, legal, technical, urban, communication)
                 $result = $chatService->processQuery(
                     userQuery: $strategicPrompt,
                     user: $user,
                     conversationHistory: [],
-                    manualPersonaId: 'strategic',
+                    manualPersonaId: null, // ✅ AUTO-SELECT persona (was hardcoded 'strategic')
                     useRag: false, // We provide acts directly
                     useWebSearch: false,
                     referenceContext: ['acts' => call_user_func($formatActsForClaude, $acts)]
                 );
+
+                // EVENT 4.5: Persona Selected (NEW - show which expert is responding)
+                $personaInfo = $result['persona'] ?? null;
+                if ($personaInfo) {
+                    $emitSSE('persona_selected', [
+                        'persona_id' => $personaInfo['id'],
+                        'persona_name' => $personaInfo['name'],
+                        'confidence' => $personaInfo['confidence'],
+                        'method' => $personaInfo['method'],
+                        'timestamp' => now()->toISOString(),
+                    ]);
+                }
 
                 // EVENT 5: Cost Update (PA tracking - direct EUR cost)
                 $usage = $result['usage'] ?? null;

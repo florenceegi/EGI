@@ -1403,6 +1403,12 @@
                             AIProcessingPanel.updateProgress(50);
                             break;
 
+                        case 'persona_selected':
+                            // Show which N.A.T.A.N. expert persona is responding
+                            console.log('[SSE] Persona selected:', data.persona_name, `(${data.confidence}% confidence)`);
+                            AIProcessingPanel.updateStage('ai', 'active', `${data.persona_name} (${data.confidence}%)`);
+                            break;
+
                         case 'cost_update':
                             // Show cost tracking panel (PA direct billing - EUR only)
                             AIProcessingPanel.updateCostTracking({
