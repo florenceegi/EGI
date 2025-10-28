@@ -1404,11 +1404,10 @@
                             break;
 
                         case 'cost_update':
-                            // Show cost tracking panel
+                            // Show cost tracking panel (PA direct billing - EUR only)
                             AIProcessingPanel.updateCostTracking({
                                 inputTokens: data.input_tokens,
                                 outputTokens: data.output_tokens,
-                                creditsUsed: data.credits_used,
                                 costEur: data.cost_eur
                             });
                             break;
