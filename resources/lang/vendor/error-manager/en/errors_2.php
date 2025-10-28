@@ -30,6 +30,13 @@ return [
         'project_rag_search_failed' => 'Error during RAG search in project :project_id for user :user_id. Query: :query',
         'rag_context_retrieval_failed' => 'Error retrieving RAG context for user :user_id. Query length: :query_length',
         'rag_embedding_generation_failed' => 'Error generating embedding for query (length :query_length). OpenAI API failed.',
+
+        // AI Credits Errors (Task 5) - Dev
+        'ai_credits_insufficient' => 'Insufficient AI credits for user :user_id. Balance: :balance, required: :required. Feature: :source_type',
+        'ai_credits_deduct_failed' => 'Error deducting :credits credits from user :user_id (balance: :balance). Feature: :source_type. Error: :error',
+        'ai_credits_refund_failed' => 'Error refunding :credits credits to user :user_id. Reason: :reason. Error: :error',
+        'ai_credits_calculation_failed' => 'Error calculating credits from tokens (input: :input_tokens, output: :output_tokens). Error: :error',
+        'ai_credits_estimation_failed' => 'Error estimating cost for :total_acts acts (chunk size: :chunk_size). Error: :error',
     ],
 
     'user' => [
@@ -54,6 +61,21 @@ return [
         'project_rag_search_failed' => 'Unable to search project documents. Please try again later.',
         'rag_context_retrieval_failed' => 'Unable to retrieve data for your query. Please try again or contact support.',
         'rag_embedding_generation_failed' => 'Search service temporarily unavailable. Please try again later.',
+
+        // AI Credits User Messages (Task 5)
+        'ai_credits_insufficient' => 'Insufficient AI credits. Please purchase more credits to continue.',
+        'ai_credits_deduct_failed' => 'Unable to process AI credits payment. Please try again or contact support.',
+        'ai_credits_refund_failed' => 'Unable to process refund. Please contact support.',
+        'ai_credits_calculation_failed' => 'Unable to calculate cost. Operation cancelled for your safety.',
+        'ai_credits_estimation_failed' => 'Unable to estimate cost. Please try again later.',
+
+        // N.A.T.A.N. Chat User Messages
+        'natan_ai_consent_required' => 'AI processing consent required. Please update your privacy settings.',
+        'natan_message_processing_failed' => 'Unable to process your message. Please try again.',
+        'natan_query_processing_failed' => 'Unable to generate AI response. Please try again or contact support.',
+        'natan_session_delete_failed' => 'Unable to delete chat session. Please try again or contact support.',
+        'natan_search_preview_failed' => 'Unable to preview search results. Please try again.',
+        'natan_analysis_failed' => 'Unable to complete analysis. Please try again or contact support.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

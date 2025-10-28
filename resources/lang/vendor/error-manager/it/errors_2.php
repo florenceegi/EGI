@@ -40,6 +40,13 @@ return [
         'rag_context_retrieval_failed' => 'Errore durante il recupero contesto RAG per utente :user_id. Lunghezza query: :query_length',
         'rag_embedding_generation_failed' => 'Errore generazione embedding per query (lunghezza :query_length). API OpenAI fallita.',
 
+        // AI Credits Errors (Task 5) - Dev
+        'ai_credits_insufficient' => 'Crediti AI insufficienti per utente :user_id. Saldo: :balance, richiesti: :required. Feature: :source_type',
+        'ai_credits_deduct_failed' => 'Errore deduzione :credits crediti da utente :user_id (saldo: :balance). Feature: :source_type. Errore: :error',
+        'ai_credits_refund_failed' => 'Errore rimborso :credits crediti a utente :user_id. Motivo: :reason. Errore: :error',
+        'ai_credits_calculation_failed' => 'Errore calcolo crediti da token (input: :input_tokens, output: :output_tokens). Errore: :error',
+        'ai_credits_estimation_failed' => 'Errore stima costo per :total_acts atti (dimensione chunk: :chunk_size). Errore: :error',
+
         // PA Acts Upload Errors (Dev)
         'pa_act_auth_required' => 'Tentativo di upload atto PA senza autenticazione. User: :user_id, IP: :ip',
         'pa_act_role_required' => 'Utente :user_id non autorizzato (ruolo non PA) per upload atto.',
@@ -180,6 +187,14 @@ return [
         'project_rag_search_failed' => 'Impossibile cercare nei documenti del progetto. Riprova tra poco.',
         'rag_context_retrieval_failed' => 'Impossibile recuperare i dati per la tua ricerca. Riprova o contatta l\'assistenza.',
         'rag_embedding_generation_failed' => 'Servizio di ricerca temporaneamente non disponibile. Riprova tra poco.',
+
+        // AI Credits User Messages (Task 5)
+        'ai_credits_insufficient' => 'Crediti AI insufficienti. Acquista crediti aggiuntivi per continuare.',
+        'ai_credits_deduct_failed' => 'Impossibile elaborare il pagamento in crediti AI. Riprova o contatta l\'assistenza.',
+        'ai_credits_refund_failed' => 'Impossibile elaborare il rimborso. Contatta l\'assistenza.',
+        'ai_credits_calculation_failed' => 'Impossibile calcolare il costo. Operazione annullata per sicurezza.',
+        'ai_credits_estimation_failed' => 'Impossibile stimare il costo. Riprova tra poco.',
+
         'pa_heritage_detail_error' => 'Impossibile caricare il dettaglio del bene patrimoniale. Riprova tra poco.',
 
         // PA Acts Upload Errors (User-Friendly)
