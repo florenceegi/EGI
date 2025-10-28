@@ -88,11 +88,8 @@ class DataSanitizerService
             'created_at' => $act->created_at?->format('Y-m-d H:i:s'),
         ];
 
-        // Log audit (DEBUG level - INFO troppo verbose con 500 atti)
-        $this->logger->debug('[DataSanitizer] Act sanitized', [
-            'act_id' => $act->id,
-            'public_fields' => array_keys($publicData),
-        ]);
+        // NO logging per singoli atti - troppo verbose (500 atti per query)
+        // Collection-level logging in sanitizeActsCollection() è sufficiente
 
         return $publicData;
     }
@@ -157,14 +154,9 @@ class DataSanitizerService
             $sanitized = preg_replace($pattern, '[NOME]', $sanitized);
         }
 
-        // Se abbiamo sostituito qualcosa, logga (DEBUG level - evita spam)
-        if ($sanitized !== $title) {
-            $this->logger->debug('[DataSanitizer] Title redacted (nominatives removed)', [
-                'original_length' => strlen($title),
-                'sanitized_length' => strlen($sanitized),
-            ]);
-        }
-
+        // NO logging per singole redactions - troppo verbose
+        // Se serve debug, attivare temporaneamente
+        
         return $sanitized;
     }
 
