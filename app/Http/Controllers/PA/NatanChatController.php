@@ -1268,16 +1268,17 @@ class NatanChatController extends Controller {
                     return [
                         'id' => $act->id,
                         'protocol_number' => $act->pa_protocol_number ?? 'N/A',
-                        'date' => $act->pa_protocol_date ?? $act->created_at,
+                        'date' => $act->pa_protocol_date ? $act->pa_protocol_date->format('Y-m-d') : null,
                         'type' => $act->type_label ?? 'pa_act',
                         'title' => $act->title ?? $act->object ?? 'Atto PA',
                         'url' => route('pa.acts.show', $act->id),
                         'blockchain_anchored' => !empty($act->blockchain_tx_id),
                     ];
-                })->toArray();
+                })->values()->toArray(); // ✅ values() force numeric array, not object
 
                 \Log::info('[SSE] Sources built', [
                     'count' => count($sources),
+                    'is_array' => is_array($sources),
                     'first_source' => $sources[0] ?? null,
                 ]);
 
