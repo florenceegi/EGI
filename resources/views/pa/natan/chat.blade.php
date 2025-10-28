@@ -1427,8 +1427,13 @@
                             AIProcessingPanel.updateStage('response', 'completed', 'Completata');
                             AIProcessingPanel.updateProgress(100);
 
-                            // Add response to chat
-                            this.addMessage('assistant', data.response);
+                            // Add response to chat WITH sources and persona
+                            this.addMessage(
+                                'assistant', 
+                                data.response,
+                                data.sources || [],      // ✅ Sources array
+                                data.persona || null     // ✅ Persona object
+                            );
 
                             // ❌ REMOVED auto-hide - User must manually close panel to see final stats
                             // setTimeout(() => {

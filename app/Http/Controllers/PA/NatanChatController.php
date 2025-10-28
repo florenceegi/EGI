@@ -1265,7 +1265,8 @@ class NatanChatController extends Controller {
                 // EVENT 6: Response Generation Complete
                 $emitSSE('response_generation_complete', [
                     'response' => $result['response'] ?? '',
-                    'sources_count' => count($result['sources'] ?? []),
+                    'sources' => $result['sources'] ?? [], // ✅ FULL sources array (not just count!)
+                    'persona' => $personaInfo, // ✅ Persona info for badge
                     'timestamp' => now()->toISOString(),
                 ]);
 
