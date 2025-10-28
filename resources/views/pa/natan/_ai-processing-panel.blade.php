@@ -85,7 +85,7 @@
                 <div class="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3" id="stage-ai">
                     <span class="material-symbols-outlined text-gray-400">pending</span>
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-gray-900">Analisi AI con Claude Sonnet 4.5</p>
+                        <p class="text-sm font-medium text-gray-900">Analisi AI con Claude 3.5 Sonnet (20241022)</p>
                         <p class="text-xs text-gray-600" id="stage-ai-detail">In attesa...</p>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                 </div>
                 <div class="text-center">
                     <p class="mb-1 text-xs text-gray-600">Modello AI</p>
-                    <p class="text-xs font-semibold text-gray-700" id="stat-model">Claude<br>Sonnet 4.5</p>
+                    <p class="text-xs font-semibold text-gray-700" id="stat-model">Claude 3.5<br>Sonnet (Oct 2024)</p>
                 </div>
             </div>
 
