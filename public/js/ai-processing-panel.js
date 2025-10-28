@@ -636,19 +636,12 @@ const AIProcessingPanel = {
      * @param {string} detail - Optional detail text
      */
     updateStage(stageId, status, detail = null) {
-        const stageMapping = {
-            search: "semantic_search",
-            context: "context_building",
-            ai: "ai_analysis",
-            response: "response_generation",
-        };
-
-        const actualStageId = stageMapping[stageId] || stageId;
-        const stageElement = document.getElementById(`stage-${actualStageId}`);
+        // Use stageId directly (no mapping needed - HTML has correct IDs)
+        const stageElement = document.getElementById(`stage-${stageId}`);
 
         if (!stageElement) {
             console.warn(
-                `[AIProcessingPanel] Stage element not found: stage-${actualStageId}`
+                `[AIProcessingPanel] Stage element not found: stage-${stageId}`
             );
             return;
         }
@@ -684,7 +677,7 @@ const AIProcessingPanel = {
         }
 
         console.log(
-            `[AIProcessingPanel] Stage updated: ${actualStageId} → ${status}`,
+            `[AIProcessingPanel] Stage updated: ${stageId} → ${status}`,
             detail
         );
     },
@@ -700,7 +693,7 @@ const AIProcessingPanel = {
      * @param {number} costData.costEur - Cost in EUR
      */
     updateCostTracking(costData) {
-        // Find or create cost tracking panel
+        // Find cost tracking panel in HTML
         let costPanel = document.getElementById("aiCostTracking");
 
         if (!costPanel) {
@@ -744,27 +737,38 @@ const AIProcessingPanel = {
             }
         }
 
-        // Update values
-        const inputTokensEl = document.getElementById("cost-input-tokens");
-        const outputTokensEl = document.getElementById("cost-output-tokens");
-        const creditsEl = document.getElementById("cost-credits");
-        const eurEl = document.getElementById("cost-eur");
+        // SHOW the panel (remove 'hidden' class from HTML)
+        if (costPanel && costPanel.classList.contains('hidden')) {
+            costPanel.classList.remove('hidden');
+            console.log("[AIProcessingPanel] Cost panel now VISIBLE");
+        }
 
-        if (inputTokensEl)
-            inputTokensEl.textContent = (
-                costData.inputTokens || 0
-            ).toLocaleString("it-IT");
-        if (outputTokensEl)
-            outputTokensEl.textContent = (
-                costData.outputTokens || 0
-            ).toLocaleString("it-IT");
-        if (creditsEl)
-            creditsEl.textContent = (costData.creditsUsed || 0).toLocaleString(
-                "it-IT"
-            );
-        if (eurEl) eurEl.textContent = `€${(costData.costEur || 0).toFixed(2)}`;
+        // Update values in HTML elements
+        const inputTokensEl = document.getElementById("costInputTokens");
+        const outputTokensEl = document.getElementById("costOutputTokens");
+        const creditsEl = document.getElementById("costCurrentCredits");
+        const currentTotalEl = document.getElementById("costCurrentTotal");
+        const estimatedFinalEl = document.getElementById("costEstimatedFinal");
 
-        console.log("[AIProcessingPanel] Cost tracking updated:", costData);
+        if (inputTokensEl) {
+            inputTokensEl.textContent = (costData.inputTokens || 0).toLocaleString("it-IT");
+        }
+        if (outputTokensEl) {
+            outputTokensEl.textContent = (costData.outputTokens || 0).toLocaleString("it-IT");
+        }
+        if (creditsEl) {
+            creditsEl.textContent = (costData.creditsUsed || 0).toLocaleString("it-IT");
+        }
+        if (currentTotalEl) {
+            currentTotalEl.textContent = (costData.creditsUsed || 0).toFixed(2);
+        }
+        if (estimatedFinalEl) {
+            // Estimated final = current * 1.2 (rough estimate)
+            const estimated = (costData.creditsUsed || 0) * 1.2;
+            estimatedFinalEl.textContent = estimated.toFixed(2);
+        }
+
+        console.log("[AIProcessingPanel] Cost tracking updated AND VISIBLE:", costData);
     },
 };
 
