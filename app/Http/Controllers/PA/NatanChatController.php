@@ -1262,10 +1262,23 @@ class NatanChatController extends Controller {
                     ]);
                 }
 
+                // Build sources array from sanitized acts (for frontend display)
+                $sources = $acts->map(function ($act) {
+                    return [
+                        'id' => $act['id'] ?? null,
+                        'protocol_number' => $act['protocol_number'] ?? 'N/A',
+                        'date' => $act['date'] ?? null,
+                        'type' => $act['type'] ?? 'pa_act',
+                        'title' => $act['title'] ?? $act['object'] ?? 'Atto PA',
+                        'url' => isset($act['id']) ? route('pa.acts.show', $act['id']) : '#',
+                        'blockchain_anchored' => $act['blockchain_anchored'] ?? false,
+                    ];
+                })->toArray();
+
                 // EVENT 6: Response Generation Complete
                 $emitSSE('response_generation_complete', [
                     'response' => $result['response'] ?? '',
-                    'sources' => $result['sources'] ?? [], // ✅ FULL sources array (not just count!)
+                    'sources' => $sources, // ✅ Sources from sanitized acts (not from processQuery which has useRag=false)
                     'persona' => $personaInfo, // ✅ Persona info for badge
                     'timestamp' => now()->toISOString(),
                 ]);
