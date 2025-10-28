@@ -1231,6 +1231,9 @@ class NatanChatController extends Controller {
             } catch (\Exception $e) {
                 $emitSSE('error', [
                     'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
                     'timestamp' => now()->toISOString(),
                 ]);
             }
