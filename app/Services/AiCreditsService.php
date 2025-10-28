@@ -97,6 +97,58 @@ class AiCreditsService {
      * @param int $outputTokens Output tokens generated
      * @return int Credits to deduct (rounded up)
      */
+    /**
+     * Calculate cost in EUR from tokens (NO credits conversion)
+     * 
+     * For PA/Enterprise contexts where client pays Anthropic directly
+     * and needs to track ACTUAL cost per query for internal accounting.
+     *
+     * @param int $inputTokens Input tokens used
+     * @param int $outputTokens Output tokens used
+     * @return float Cost in EUR (rounded to 2 decimals)
+     */
+    public function calculateCostEUR(int $inputTokens, int $outputTokens): float {
+        try {
+            // Cost in USD (Anthropic pricing)
+            $inputCostUSD = ($inputTokens / 1_000_000) * self::CLAUDE_SONNET_35_INPUT_PRICE;
+            $outputCostUSD = ($outputTokens / 1_000_000) * self::CLAUDE_SONNET_35_OUTPUT_PRICE;
+            $totalCostUSD = $inputCostUSD + $outputCostUSD;
+
+            // Get current exchange rate (dynamic, updated daily)
+            $exchangeRate = $this->getExchangeRate();
+
+            // Convert USD to EUR
+            $totalCostEUR = $totalCostUSD * $exchangeRate;
+
+            $this->logger->debug('Cost calculated in EUR', [
+                'input_tokens' => $inputTokens,
+                'output_tokens' => $outputTokens,
+                'cost_usd' => round($totalCostUSD, 6),
+                'exchange_rate' => $exchangeRate,
+                'cost_eur' => round($totalCostEUR, 2),
+                'log_category' => 'AI_COST_CALCULATION'
+            ]);
+
+            return round($totalCostEUR, 2);
+        } catch (\Exception $e) {
+            // UEM: Cost calculation failed
+            $this->errorManager->handle('AI_COST_CALCULATION_FAILED', [
+                'input_tokens' => $inputTokens,
+                'output_tokens' => $outputTokens,
+            ], $e);
+
+            // Fallback sicuro: ritorna 0 se calcolo fallisce
+            return 0.0;
+        }
+    }
+
+    /**
+     * Calculate credits from tokens (LEGACY - used for user credit system)
+     *
+     * @param int $inputTokens Input tokens used
+     * @param int $outputTokens Output tokens used
+     * @return int Credits (1 EUR = 100 credits)
+     */
     public function calculateCreditsFromTokens(int $inputTokens, int $outputTokens): int {
         try {
             // Cost in USD

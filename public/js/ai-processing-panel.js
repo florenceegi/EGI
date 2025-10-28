@@ -717,28 +717,27 @@ const AIProcessingPanel = {
             costPanel = document.createElement("div");
             costPanel.id = "aiCostTracking";
             costPanel.className =
-                "mt-4 rounded-lg bg-gray-50 p-3 border border-gray-200";
+                "mt-4 rounded-lg bg-gradient-to-br from-amber-50 to-orange-50 p-4 border-2 border-amber-200";
             costPanel.innerHTML = `
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="material-symbols-outlined text-gray-600 text-lg">payments</span>
-                    <h4 class="text-sm font-semibold text-gray-700">Costi Real-Time</h4>
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="material-symbols-outlined text-amber-600 text-xl">euro</span>
+                    <h4 class="text-sm font-bold text-gray-800">Costo Query (Anthropic)</h4>
                 </div>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                        <span class="text-gray-500">Token Input:</span>
-                        <span id="cost-input-tokens" class="font-mono font-semibold text-gray-700 ml-1">0</span>
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-white rounded px-2 py-1.5 border border-gray-200">
+                        <span class="text-gray-500 block text-[10px] uppercase">Token Input:</span>
+                        <span id="cost-input-tokens" class="font-mono font-bold text-gray-700 text-sm">0</span>
                     </div>
-                    <div>
-                        <span class="text-gray-500">Token Output:</span>
-                        <span id="cost-output-tokens" class="font-mono font-semibold text-gray-700 ml-1">0</span>
+                    <div class="bg-white rounded px-2 py-1.5 border border-gray-200">
+                        <span class="text-gray-500 block text-[10px] uppercase">Token Output:</span>
+                        <span id="cost-output-tokens" class="font-mono font-bold text-gray-700 text-sm">0</span>
                     </div>
-                    <div>
-                        <span class="text-gray-500">Crediti:</span>
-                        <span id="cost-credits" class="font-mono font-semibold text-[#D4A574] ml-1">0</span>
-                    </div>
-                    <div>
-                        <span class="text-gray-500">Costo:</span>
-                        <span id="cost-eur" class="font-mono font-semibold text-[#2D5016] ml-1">€0.00</span>
+                </div>
+                <div class="mt-3 bg-white rounded-lg px-3 py-2 border-2 border-green-500">
+                    <span class="text-gray-600 text-xs block mb-1">Costo totale questa query:</span>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-2xl font-black text-green-700" id="cost-eur">€0.00</span>
+                        <span class="text-[10px] text-gray-500">EUR</span>
                     </div>
                 </div>
             `;
@@ -757,11 +756,9 @@ const AIProcessingPanel = {
         }
 
         // Update values in HTML elements
-        const inputTokensEl = document.getElementById("costInputTokens");
-        const outputTokensEl = document.getElementById("costOutputTokens");
-        const creditsEl = document.getElementById("costCurrentCredits");
-        const currentTotalEl = document.getElementById("costCurrentTotal");
-        const estimatedFinalEl = document.getElementById("costEstimatedFinal");
+        const inputTokensEl = document.getElementById("cost-input-tokens");
+        const outputTokensEl = document.getElementById("cost-output-tokens");
+        const costEurEl = document.getElementById("cost-eur");
 
         if (inputTokensEl) {
             inputTokensEl.textContent = (costData.inputTokens || 0).toLocaleString("it-IT");
@@ -769,16 +766,9 @@ const AIProcessingPanel = {
         if (outputTokensEl) {
             outputTokensEl.textContent = (costData.outputTokens || 0).toLocaleString("it-IT");
         }
-        if (creditsEl) {
-            creditsEl.textContent = (costData.creditsUsed || 0).toLocaleString("it-IT");
-        }
-        if (currentTotalEl) {
-            currentTotalEl.textContent = (costData.creditsUsed || 0).toFixed(2);
-        }
-        if (estimatedFinalEl) {
-            // Estimated final = current * 1.2 (rough estimate)
-            const estimated = (costData.creditsUsed || 0) * 1.2;
-            estimatedFinalEl.textContent = estimated.toFixed(2);
+        if (costEurEl) {
+            const costEur = costData.costEur || costData.cost_eur || 0;
+            costEurEl.textContent = `€${costEur.toFixed(2)}`;
         }
 
         console.log("[AIProcessingPanel] Cost tracking updated AND VISIBLE:", costData);

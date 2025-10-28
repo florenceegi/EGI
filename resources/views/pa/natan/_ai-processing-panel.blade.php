@@ -122,54 +122,44 @@
 
             {{-- ✨ NEW v5.0 - Real-Time Cost Tracking --}}
             <div id="aiCostTracking"
-                class="hidden rounded-xl border border-[#E67E22]/30 bg-gradient-to-br from-[#E67E22]/5 to-white p-6 shadow-sm">
+                class="hidden rounded-xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-lg">
                 {{-- Cost Header --}}
                 <div class="mb-4 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#E67E22]/20">
-                            <span class="material-symbols-outlined text-[#E67E22]">payments</span>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/20">
+                            <span class="material-symbols-outlined text-2xl text-amber-600">euro</span>
                         </div>
                         <div>
-                            <h4 class="font-bold text-[#1B365D]">{{ __('ai_credits.realtime.panel_title') }}</h4>
-                            <p class="text-xs text-gray-600">{{ __('ai_credits.realtime.tokens_used') }}</p>
+                            <h4 class="font-bold text-gray-900">Costo Query (Anthropic)</h4>
+                            <p class="text-xs text-gray-600">Addebito diretto API</p>
                         </div>
                     </div>
-                    <div class="rounded-lg bg-[#E67E22] px-3 py-1">
-                        <span class="text-sm font-bold text-white" id="costCurrentCredits">0</span>
-                        <span class="text-xs text-white/80">{{ __('ai_credits.balance.credits') }}</span>
+                    <div class="rounded-lg bg-green-600 px-4 py-2">
+                        <span class="text-2xl font-black text-white" id="costCurrentTotal">€0.00</span>
                     </div>
                 </div>
 
                 {{-- Cost Breakdown --}}
-                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    <div class="rounded-lg bg-blue-50 p-3 text-center">
-                        <p class="text-xs text-gray-600">{{ __('ai_credits.realtime.input') }}</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="rounded-lg border-2 border-gray-200 bg-white p-3 text-center">
+                        <p class="text-xs text-gray-500 uppercase">Input</p>
                         <p class="text-lg font-bold text-blue-600" id="costInputTokens">0</p>
                         <p class="text-xs text-gray-500">tokens</p>
                     </div>
-                    <div class="rounded-lg bg-purple-50 p-3 text-center">
-                        <p class="text-xs text-gray-600">{{ __('ai_credits.realtime.output') }}</p>
+                    <div class="rounded-lg border-2 border-gray-200 bg-white p-3 text-center">
+                        <p class="text-xs text-gray-500 uppercase">Output</p>
                         <p class="text-lg font-bold text-purple-600" id="costOutputTokens">0</p>
                         <p class="text-xs text-gray-500">tokens</p>
                     </div>
-                    <div class="rounded-lg bg-orange-50 p-3 text-center">
-                        <p class="text-xs text-gray-600">{{ __('ai_credits.realtime.current_cost') }}</p>
-                        <p class="text-lg font-bold text-orange-600" id="costCurrentTotal">0.00</p>
-                        <p class="text-xs text-gray-500">{{ __('ai_credits.balance.credits') }}</p>
-                    </div>
-                    <div class="rounded-lg bg-green-50 p-3 text-center">
-                        <p class="text-xs text-gray-600">{{ __('ai_credits.realtime.estimated_final') }}</p>
-                        <p class="text-lg font-bold text-green-600" id="costEstimatedFinal">0.00</p>
-                        <p class="text-xs text-gray-500">{{ __('ai_credits.balance.credits') }}</p>
-                    </div>
                 </div>
 
-                {{-- Per-Chunk Costs (for chunking mode) --}}
-                <div id="costPerChunk" class="mt-3 hidden space-y-2">
-                    <p class="text-xs font-medium text-gray-700">{{ __('ai_credits.summary.cost_per_chunk') }}:</p>
-                    <div class="max-h-32 space-y-1 overflow-y-auto" id="costChunksList">
-                        {{-- Dynamically populated by JavaScript --}}
-                    </div>
+                {{-- Note PA --}}
+                <div class="mt-4 rounded-lg bg-blue-50 p-3 border border-blue-200">
+                    <p class="text-xs text-blue-800">
+                        <span class="material-symbols-outlined text-sm align-middle">info</span>
+                        <strong>Tracciamento costi:</strong> Costo reale addebitato da Anthropic per questa query.
+                        Utile per rendicontazione interna PA.
+                    </p>
                 </div>
             </div>
 

@@ -1232,10 +1232,10 @@ class NatanChatController extends Controller {
                     referenceContext: ['acts' => call_user_func($formatActsForClaude, $acts)]
                 );
 
-                // EVENT 5: Cost Update
+                // EVENT 5: Cost Update (PA tracking - direct EUR cost)
                 $usage = $result['usage'] ?? null;
                 if ($usage) {
-                    $credits = $creditsService->calculateCreditsFromTokens(
+                    $costEUR = $creditsService->calculateCostEUR(
                         $usage['input_tokens'] ?? 0,
                         $usage['output_tokens'] ?? 0
                     );
@@ -1244,8 +1244,7 @@ class NatanChatController extends Controller {
                         'input_tokens' => $usage['input_tokens'] ?? 0,
                         'output_tokens' => $usage['output_tokens'] ?? 0,
                         'total_tokens' => ($usage['input_tokens'] ?? 0) + ($usage['output_tokens'] ?? 0),
-                        'credits_used' => $credits,
-                        'cost_eur' => round($credits / 100, 2),
+                        'cost_eur' => $costEUR,
                         'timestamp' => now()->toISOString(),
                     ]);
                 }
