@@ -2838,6 +2838,6 @@
         </script>
 
         {{-- AI Processing Panel Controller --}}
-        <script src="{{ asset('js/ai-processing-panel.js') }}"></script>
+        <script src="{{ asset('js/ai-processing-panel.js') }}?v={{ time() }}"></script>
     @endpush
 </x-pa-layout>
