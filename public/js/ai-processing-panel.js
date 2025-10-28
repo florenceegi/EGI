@@ -338,8 +338,8 @@ const AIProcessingPanel = {
 
         console.log("[AIProcessingPanel] Processing completed");
 
-        // Auto-hide after 2 seconds
-        setTimeout(() => this.hide(), 2000);
+        // ❌ REMOVED auto-hide - User must manually close panel to see final stats
+        // setTimeout(() => this.hide(), 2000);
     },
 
     // ========================================
@@ -603,8 +603,8 @@ const AIProcessingPanel = {
 
         console.log("[AIProcessingPanel] Chunking process completed");
 
-        // Auto-hide after 3 seconds
-        setTimeout(() => this.hide(), 3000);
+        // ❌ REMOVED auto-hide - User must manually close panel to see final stats
+        // setTimeout(() => this.hide(), 3000);
     },
 
     /**

@@ -270,6 +270,18 @@
 
         </div>
 
+        {{-- Close Button --}}
+        <div class="border-t border-gray-200 bg-white px-8 py-4">
+            <button id="aiProcessingCloseBtn"
+                class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                onclick="AIProcessingPanel.hide()">
+                <span class="flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-xl">check_circle</span>
+                    <span>Chiudi e visualizza risposta</span>
+                </span>
+            </button>
+        </div>
+
         {{-- Footer --}}
         <div class="border-t border-gray-200 bg-gray-50 px-8 py-4">
             <p class="text-center text-xs text-gray-600">
