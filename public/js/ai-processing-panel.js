@@ -630,59 +630,69 @@ const AIProcessingPanel = {
     /**
      * Update stage indicator
      * ✨ NEW v6.0 - Real-time stage tracking for SSE
-     * 
+     *
      * @param {string} stageId - Stage ID (search|context|ai|response)
      * @param {string} status - Status (pending|active|completed|error)
      * @param {string} detail - Optional detail text
      */
     updateStage(stageId, status, detail = null) {
         const stageMapping = {
-            'search': 'semantic_search',
-            'context': 'context_building',
-            'ai': 'ai_analysis',
-            'response': 'response_generation'
+            search: "semantic_search",
+            context: "context_building",
+            ai: "ai_analysis",
+            response: "response_generation",
         };
 
         const actualStageId = stageMapping[stageId] || stageId;
         const stageElement = document.getElementById(`stage-${actualStageId}`);
-        
+
         if (!stageElement) {
-            console.warn(`[AIProcessingPanel] Stage element not found: stage-${actualStageId}`);
+            console.warn(
+                `[AIProcessingPanel] Stage element not found: stage-${actualStageId}`
+            );
             return;
         }
 
-        const icon = stageElement.querySelector('.stage-icon');
-        const label = stageElement.querySelector('.stage-label');
-        const detailElement = stageElement.querySelector('.stage-detail');
+        const icon = stageElement.querySelector(".stage-icon");
+        const label = stageElement.querySelector(".stage-label");
+        const detailElement = stageElement.querySelector(".stage-detail");
 
         // Remove all status classes
-        stageElement.classList.remove('stage-pending', 'stage-active', 'stage-completed', 'stage-error');
-        
+        stageElement.classList.remove(
+            "stage-pending",
+            "stage-active",
+            "stage-completed",
+            "stage-error"
+        );
+
         // Add new status class
         stageElement.classList.add(`stage-${status}`);
 
         // Update icon based on status
-        if (status === 'active') {
+        if (status === "active") {
             icon.innerHTML = `<span class="material-symbols-outlined animate-spin text-blue-500">progress_activity</span>`;
-        } else if (status === 'completed') {
+        } else if (status === "completed") {
             icon.innerHTML = `<span class="material-symbols-outlined text-green-500">check_circle</span>`;
-        } else if (status === 'error') {
+        } else if (status === "error") {
             icon.innerHTML = `<span class="material-symbols-outlined text-red-500">error</span>`;
         }
 
         // Update detail text if provided
         if (detail && detailElement) {
             detailElement.textContent = detail;
-            detailElement.classList.remove('hidden');
+            detailElement.classList.remove("hidden");
         }
 
-        console.log(`[AIProcessingPanel] Stage updated: ${actualStageId} → ${status}`, detail);
+        console.log(
+            `[AIProcessingPanel] Stage updated: ${actualStageId} → ${status}`,
+            detail
+        );
     },
 
     /**
      * Update cost tracking panel
      * ✨ NEW v6.0 - Real-time cost display during processing
-     * 
+     *
      * @param {object} costData - Cost tracking data
      * @param {number} costData.inputTokens - Input tokens consumed
      * @param {number} costData.outputTokens - Output tokens consumed
@@ -691,16 +701,17 @@ const AIProcessingPanel = {
      */
     updateCostTracking(costData) {
         // Find or create cost tracking panel
-        let costPanel = document.getElementById('aiCostTracking');
-        
+        let costPanel = document.getElementById("aiCostTracking");
+
         if (!costPanel) {
             // Create cost panel if doesn't exist
             const panel = this.elements.panel;
             if (!panel) return;
 
-            costPanel = document.createElement('div');
-            costPanel.id = 'aiCostTracking';
-            costPanel.className = 'mt-4 rounded-lg bg-gray-50 p-3 border border-gray-200';
+            costPanel = document.createElement("div");
+            costPanel.id = "aiCostTracking";
+            costPanel.className =
+                "mt-4 rounded-lg bg-gray-50 p-3 border border-gray-200";
             costPanel.innerHTML = `
                 <div class="flex items-center gap-2 mb-2">
                     <span class="material-symbols-outlined text-gray-600 text-lg">payments</span>
@@ -725,26 +736,35 @@ const AIProcessingPanel = {
                     </div>
                 </div>
             `;
-            
+
             // Insert after progress section
-            const progressSection = panel.querySelector('.space-y-4');
+            const progressSection = panel.querySelector(".space-y-4");
             if (progressSection) {
                 progressSection.appendChild(costPanel);
             }
         }
 
         // Update values
-        const inputTokensEl = document.getElementById('cost-input-tokens');
-        const outputTokensEl = document.getElementById('cost-output-tokens');
-        const creditsEl = document.getElementById('cost-credits');
-        const eurEl = document.getElementById('cost-eur');
+        const inputTokensEl = document.getElementById("cost-input-tokens");
+        const outputTokensEl = document.getElementById("cost-output-tokens");
+        const creditsEl = document.getElementById("cost-credits");
+        const eurEl = document.getElementById("cost-eur");
 
-        if (inputTokensEl) inputTokensEl.textContent = (costData.inputTokens || 0).toLocaleString('it-IT');
-        if (outputTokensEl) outputTokensEl.textContent = (costData.outputTokens || 0).toLocaleString('it-IT');
-        if (creditsEl) creditsEl.textContent = (costData.creditsUsed || 0).toLocaleString('it-IT');
+        if (inputTokensEl)
+            inputTokensEl.textContent = (
+                costData.inputTokens || 0
+            ).toLocaleString("it-IT");
+        if (outputTokensEl)
+            outputTokensEl.textContent = (
+                costData.outputTokens || 0
+            ).toLocaleString("it-IT");
+        if (creditsEl)
+            creditsEl.textContent = (costData.creditsUsed || 0).toLocaleString(
+                "it-IT"
+            );
         if (eurEl) eurEl.textContent = `€${(costData.costEur || 0).toFixed(2)}`;
 
-        console.log('[AIProcessingPanel] Cost tracking updated:', costData);
+        console.log("[AIProcessingPanel] Cost tracking updated:", costData);
     },
 };
 

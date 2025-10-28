@@ -639,7 +639,7 @@ PROMPT;
             $commonPrompt .= "\n\n# 🔄 ITERATIVE ELABORATION MODE\n\n";
             $commonPrompt .= "You are being asked to elaborate, refine, or transform a previous analysis.\n\n";
             $commonPrompt .= "## Original Response to Elaborate On:\n\n";
-            
+
             // Handle both message-based and acts-based reference contexts
             if (isset($ref['persona_name']) && isset($ref['persona_id'])) {
                 $commonPrompt .= "**From:** {$ref['persona_name']} ({$ref['persona_id']})\n";
@@ -655,7 +655,7 @@ PROMPT;
                 $commonPrompt .= "You will analyze the provided acts in the RAG CONTEXT section below.\n";
                 $commonPrompt .= "\n\n---\n\n";
             }
-            
+
             $commonPrompt .= "## Your Task:\n\n";
             $commonPrompt .= "Work with the above analysis according to the user's request. You can:\n";
             $commonPrompt .= "- **Simplify** it for different audiences (citizens, non-experts, media)\n";

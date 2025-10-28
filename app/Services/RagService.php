@@ -372,7 +372,14 @@ class RagService {
         // Sort by similarity (descending)
         $sorted = $scored->sortByDesc('similarity')->take($limit);
 
-        $results = $sorted->pluck('act');
+        // Return acts WITH similarity scores (not just acts)
+        $results = $sorted->map(function ($item) {
+            return [
+                'id' => $item['act']->id,
+                'act' => $item['act'],
+                'similarity' => $item['similarity'],
+            ];
+        });
 
         $this->logger->info('[RAG] Semantic search completed', [
             'results_count' => $results->count(),

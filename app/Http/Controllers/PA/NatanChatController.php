@@ -1111,9 +1111,9 @@ class NatanChatController extends Controller {
         $creditsService = $this->creditsService;
         $buildEnterprisePrompt = [$this, 'buildEnterprisePrompt'];
         $formatActsForClaude = [$this, 'formatActsForClaude'];
-        
+
         // Helper function to emit SSE events (defined outside closure)
-        $emitSSE = function(string $event, array $data) {
+        $emitSSE = function (string $event, array $data) {
             echo "event: {$event}\n";
             echo "data: " . json_encode($data) . "\n\n";
             ob_flush();
@@ -1147,12 +1147,13 @@ class NatanChatController extends Controller {
                     $limit
                 );
 
+                // Extract acts and calculate average similarity
                 $acts = collect($ragContext['acts'] ?? [])
-                    ->map(fn($actData) => \App\Models\Egi::find($actData['id']))
+                    ->map(fn($actData) => $actData['act'] ?? \App\Models\Egi::find($actData['id']))
                     ->filter();
 
                 $avgRelevance = collect($ragContext['acts'] ?? [])
-                    ->avg('similarity_score') ?? 0;
+                    ->avg('similarity') ?? 0;
 
                 // EVENT 2: Semantic Search Complete
                 $emitSSE('semantic_search_complete', [
@@ -1227,7 +1228,6 @@ class NatanChatController extends Controller {
                     'avg_relevance' => round($avgRelevance * 100, 1),
                     'timestamp' => now()->toISOString(),
                 ]);
-
             } catch (\Exception $e) {
                 $emitSSE('error', [
                     'message' => $e->getMessage(),
@@ -1350,7 +1350,10 @@ PROMPT;
      * @return array
      */
     private function formatActsForClaude($acts): array {
-        return $acts->map(function ($act) {
+        return $acts->map(function ($item) {
+            // Handle both old format (Egi object) and new format (array with 'act' and 'similarity')
+            $act = is_array($item) ? ($item['act'] ?? $item) : $item;
+            
             return [
                 'id' => $act->id,
                 'number' => $act->jsonMetadata['pa_act']['number'] ?? 'N/A',
