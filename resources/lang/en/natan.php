@@ -108,9 +108,19 @@ return [
     'errors.invalid_query' => 'Invalid question. Please provide more details.',
     'errors.no_results' => 'No results found.',
     'errors.web_search_failed' => 'Web search failed. Continuing with internal documents only.',
+    'errors.insufficient_credits' => 'Insufficient credits: you have :balance credits, but :required are needed for this analysis.',
+    'errors.ai_consent_required' => 'AI processing consent required. Please update your privacy settings to use N.A.T.A.N.',
 
     // === GDPR & PRIVACY ===
     'gdpr.data_info' => 'Your data is processed securely and GDPR-compliant',
     'gdpr.no_pii_sent' => 'No personal data is sent to external services',
     'gdpr.audit_trail' => 'All interactions are logged for audit purposes',
+
+    // === INTELLIGENT CHUNKING (Phase 3 - Frontend Integration) ===
+    'chunking.timeout_error' => 'The processing is taking longer than expected (>5 minutes)',
+    'chunking.session_not_found' => 'Processing session not found. Please try again.',
+    'chunking.unauthorized' => 'You do not have permission to access this processing session.',
+    'chunking.polling_error' => 'Error checking processing status',
+    'chunking.final_error' => 'Error retrieving final result',
+    'chunking.retry_button' => 'Retry Analysis',
 ];

@@ -22,4 +22,13 @@ return [
     'sources.title' => 'Sources',
     'copy.button' => 'Copier',
     'errors.generic' => 'Une erreur s\'est produite. Veuillez réessayer plus tard.',
+    'errors.ai_consent_required' => 'Consentement de traitement IA requis. Veuillez mettre à jour vos paramètres de confidentialité pour utiliser N.A.T.A.N.',
+
+    // === INTELLIGENT CHUNKING - Frontend Errors (Phase 3) ===
+    'chunking.timeout_error' => 'Le traitement prend plus de temps que prévu (>5 minutes)',
+    'chunking.session_not_found' => 'Session de traitement introuvable. Veuillez réessayer.',
+    'chunking.unauthorized' => 'Vous n\'avez pas la permission d\'accéder à cette session de traitement.',
+    'chunking.polling_error' => 'Erreur lors de la vérification de l\'état du traitement',
+    'chunking.final_error' => 'Erreur lors de la récupération du résultat final',
+    'chunking.retry_button' => 'Réessayer l\'Analyse',
 ];

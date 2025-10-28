@@ -22,4 +22,13 @@ return [
     'sources.title' => 'Fuentes',
     'copy.button' => 'Copiar',
     'errors.generic' => 'Se produjo un error. Inténtelo de nuevo más tarde.',
+    'errors.ai_consent_required' => 'Se requiere consentimiento para procesamiento de IA. Actualice su configuración de privacidad para usar N.A.T.A.N.',
+
+    // === INTELLIGENT CHUNKING - Frontend Errors (Phase 3) ===
+    'chunking.timeout_error' => 'El procesamiento está tardando más de lo esperado (>5 minutos)',
+    'chunking.session_not_found' => 'Sesión de procesamiento no encontrada. Inténtelo de nuevo.',
+    'chunking.unauthorized' => 'No tiene permisos para acceder a esta sesión de procesamiento.',
+    'chunking.polling_error' => 'Error al verificar el estado del procesamiento',
+    'chunking.final_error' => 'Error al recuperar el resultado final',
+    'chunking.retry_button' => 'Reintentar Análisis',
 ];
