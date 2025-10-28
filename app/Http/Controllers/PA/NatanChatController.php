@@ -1156,12 +1156,16 @@ class NatanChatController extends Controller {
                     'timestamp' => now()->toISOString(),
                 ]);
 
-                // Execute RAG semantic search
+                // Execute RAG semantic search (BLOCKING - may take 2-3 minutes!)
+                \Log::info('[SSE] Starting RAG search...', ['query' => $query, 'limit' => $limit]);
+                
                 $ragContext = app(\App\Services\RagService::class)->getContextForQuery(
                     $query,
                     $user,
                     $limit
                 );
+                
+                \Log::info('[SSE] RAG search completed', ['acts_count' => count($ragContext['acts'] ?? [])]);
 
                 // Extract acts and calculate average similarity
                 $acts = collect($ragContext['acts'] ?? [])
