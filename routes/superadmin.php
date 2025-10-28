@@ -7,6 +7,7 @@ use App\Http\Controllers\Superadmin\SuperadminAiFeaturesController;
 use App\Http\Controllers\Superadmin\SuperadminAiStatisticsController;
 use App\Http\Controllers\Superadmin\SuperadminEgiliController;
 use App\Http\Controllers\Superadmin\SuperadminEquilibriumController;
+use App\Http\Controllers\Superadmin\SuperadminNatanConfigController;
 use App\Http\Controllers\Superadmin\PadminController;
 use App\Http\Controllers\Superadmin\SuperadminFeaturePricingController;
 use App\Http\Controllers\Superadmin\SuperadminRolesController;
@@ -85,6 +86,15 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
         // AI Auto-Fix Endpoints
         Route::post('/violations/{id}/ai-preview', [PadminController::class, 'previewAiFix'])->name('violations.ai-preview');
         Route::post('/violations/{id}/ai-apply', [PadminController::class, 'applyAiFix'])->name('violations.ai-apply');
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // NATAN AI CONFIGURATION
+    // ═══════════════════════════════════════════════════════════════
+    Route::prefix('natan')->name('natan.')->group(function () {
+        Route::get('/config', [SuperadminNatanConfigController::class, 'index'])->name('config');
+        Route::post('/config', [SuperadminNatanConfigController::class, 'update'])->name('config.update');
+        Route::post('/config/reset', [SuperadminNatanConfigController::class, 'reset'])->name('config.reset');
     });
 
     // ═══════════════════════════════════════════════════════════════

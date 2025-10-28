@@ -1,4 +1,5 @@
 # NATAN Diagnostic Test Suite
+
 **Version:** 1.0.0  
 **Date:** 2025-10-27  
 **Purpose:** Systematic testing to identify bottlenecks and failure points
@@ -12,7 +13,8 @@
 **Obiettivo:** Verificare qualità e performance della ricerca semantica
 
 #### Test 1.1: Volume Scaling
-```
+
+```Analizza lo stato manutentivo delle infrastrutture pubbliche e proponi un piano di manutenzione predittiva basato su priorità
 Query: "delibere approvate nel 2024"
 
 Expected behavior:
@@ -28,18 +30,19 @@ Metric to track:
 ```
 
 #### Test 1.2: Query Specificity
+
 ```
 Test queries (dal generico allo specifico):
 
-A. "delibere" 
+A. "delibere"
    Expected: ~1539 atti (troppi)
-   
+
 B. "delibere 2024"
    Expected: ~500-700 atti
-   
+
 C. "delibere su manutenzione strade 2024"
    Expected: ~50-100 atti
-   
+
 D. "delibera numero 234 del 15 marzo 2024"
    Expected: 1-5 atti
 
@@ -51,6 +54,7 @@ D: 95% (molto specifico)
 ```
 
 #### Test 1.3: Semantic vs Keyword
+
 ```
 Test pairs:
 
@@ -76,6 +80,7 @@ Compare:
 **Obiettivo:** Trovare sweet spot per numero atti inviabili a Claude
 
 #### Test 2.1: Fixed Context Sizes
+
 ```
 Query fissa: "Riassumi le delibere più importanti"
 
@@ -95,6 +100,7 @@ For each size:
 ```
 
 #### Test 2.2: Adaptive Retry Effectiveness
+
 ```
 Start with 1000 atti trovati
 
@@ -117,6 +123,7 @@ Metrics:
 **Obiettivo:** Capire pattern temporali dei rate limit Anthropic
 
 #### Test 3.1: Burst Testing
+
 ```
 Send 10 queries in rapid succession (no delay):
 
@@ -130,6 +137,7 @@ Track:
 ```
 
 #### Test 3.2: Gradual Ramp-Up
+
 ```
 Start: 5 atti
 Wait: 60 seconds
@@ -148,6 +156,7 @@ Find: Maximum sustainable rate without hitting limits
 **Obiettivo:** Verificare se embeddings catturano semantica correttamente
 
 #### Test 4.1: Known Relevant Acts
+
 ```
 Manually identify 5 delibere about "manutenzione strade"
 
@@ -160,6 +169,7 @@ Check:
 ```
 
 #### Test 4.2: False Positive Analysis
+
 ```
 Query: "progetti ambientali sostenibili"
 
@@ -174,6 +184,7 @@ Manually check top 20 results:
 ### **5. TIMEOUT & PERFORMANCE TESTS**
 
 #### Test 5.1: End-to-End Timing
+
 ```
 Break down total time:
 
@@ -189,6 +200,7 @@ Identify bottleneck.
 ```
 
 #### Test 5.2: Database Query Performance
+
 ```sql
 -- Test embedding search performance
 EXPLAIN ANALYZE
@@ -205,6 +217,7 @@ LIMIT 100;
 ## 🔧 **TEST EXECUTION PLAN**
 
 ### **Day 1: Data Collection**
+
 ```bash
 # Create test log directory
 mkdir -p storage/logs/natan-tests
@@ -216,6 +229,7 @@ php artisan natan:diagnostic-test --category=rate-limit
 ```
 
 ### **Day 2: Analysis**
+
 ```bash
 # Generate test report
 php artisan natan:generate-test-report
@@ -224,27 +238,31 @@ php artisan natan:generate-test-report
 ```
 
 ### **Day 3: Optimization**
+
 Based on test results, implement fixes:
-- Adjust semantic search parameters
-- Optimize context window size
-- Improve retry strategy
-- Add intelligent caching
+
+-   Adjust semantic search parameters
+-   Optimize context window size
+-   Improve retry strategy
+-   Add intelligent caching
 
 ---
 
 ## 📊 **SUCCESS METRICS**
 
 **CURRENT STATE (baseline):**
-- Success rate: ~30% (estimate)
-- Avg response time: 30-120s (quando funziona)
-- Rate limit frequency: ~70%
-- User satisfaction: ⭐⭐ (2/5)
+
+-   Success rate: ~30% (estimate)
+-   Avg response time: 30-120s (quando funziona)
+-   Rate limit frequency: ~70%
+-   User satisfaction: ⭐⭐ (2/5)
 
 **TARGET STATE (after optimization):**
-- Success rate: >90%
-- Avg response time: <15s
-- Rate limit frequency: <10%
-- User satisfaction: ⭐⭐⭐⭐⭐ (5/5)
+
+-   Success rate: >90%
+-   Avg response time: <15s
+-   Rate limit frequency: <10%
+-   User satisfaction: ⭐⭐⭐⭐⭐ (5/5)
 
 ---
 
@@ -262,16 +280,16 @@ Based on test results, implement fixes:
 
 ```json
 {
-  "test_id": "semantic-search-1.1-volume-100",
-  "timestamp": "2025-10-27T20:00:00Z",
-  "query": "delibere 2024",
-  "acts_found": 687,
-  "acts_sent_to_claude": 10,
-  "retry_attempts": 2,
-  "total_time_seconds": 45,
-  "success": true,
-  "rate_limit_hit": true,
-  "response_quality": 4,
-  "notes": "Reduced from 687 to 10 acts due to rate limit"
+    "test_id": "semantic-search-1.1-volume-100",
+    "timestamp": "2025-10-27T20:00:00Z",
+    "query": "delibere 2024",
+    "acts_found": 687,
+    "acts_sent_to_claude": 10,
+    "retry_attempts": 2,
+    "total_time_seconds": 45,
+    "success": true,
+    "rate_limit_hit": true,
+    "response_quality": 4,
+    "notes": "Reduced from 687 to 10 acts due to rate limit"
 }
 ```

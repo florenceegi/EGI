@@ -508,7 +508,6 @@ class ProcessChunkedAnalysis implements ShouldQueue {
                 'partial_response' => $result['response'] ?? '',
                 'usage' => $result['usage'] ?? null, // Claude token usage for cost tracking
             ];
-
         } catch (\Exception $e) {
             $logger->error('[NATAN Job] Error processing chunk with Claude', [
                 'session_id' => $this->sessionId,
@@ -620,7 +619,6 @@ class ProcessChunkedAnalysis implements ShouldQueue {
                 'response' => $result['response'] ?? $this->buildFallbackAggregation($chunkResults, $query, $totalRelevant),
                 'usage' => $result['usage'] ?? [],
             ];
-
         } catch (\Exception $e) {
             $logger->error('[NATAN Job] Error during Claude aggregation', [
                 'session_id' => $this->sessionId,

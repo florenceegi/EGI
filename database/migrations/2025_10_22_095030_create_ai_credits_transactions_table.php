@@ -22,8 +22,7 @@ return new class extends Migration {
      * - Balance management
      * - Subscription tiers
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('ai_credits_transactions', function (Blueprint $table) {
             $table->id();
 
@@ -69,9 +68,11 @@ return new class extends Migration {
                 'ai_marketing',         // Azioni marketing
                 'ai_description',       // Generazione descrizioni
                 'ai_translation',       // Traduzioni AI
+                'ai_pa_analysis_chunked', // Analisi PA chunked (Task 5)
                 'payment',              // Pagamento
                 'subscription_plan',    // Piano subscription
                 'promotion',            // Promozione
+                'refund',               // Rimborso
                 'manual'                // Operazione manuale
             ])->nullable()
                 ->comment('Tipo sorgente/destinazione');
@@ -216,8 +217,7 @@ return new class extends Migration {
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('ai_credits_transactions');
     }
 };

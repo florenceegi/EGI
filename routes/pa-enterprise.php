@@ -170,6 +170,18 @@ Route::prefix('pa')
             Route::get('/chat/history', [NatanChatController::class, 'getHistory'])->name('chat.history');
             Route::get('/chat/session/{sessionId}', [NatanChatController::class, 'getSession'])->name('chat.session');
             Route::delete('/chat/session/{sessionId}', [NatanChatController::class, 'deleteSession'])->name('chat.session.delete');
+
+            // Intelligent Chunking System (NEW v4.0)
+            Route::post('/search-preview', [NatanChatController::class, 'searchPreview'])->name('search.preview');
+            Route::post('/analyze', [NatanChatController::class, 'analyzeActs'])->name('analyze');
+            Route::get('/chunking-progress/{sessionId}', [NatanChatController::class, 'getChunkingProgress'])->name('chunking.progress');
+            Route::get('/chunking-final/{sessionId}', [NatanChatController::class, 'getChunkingFinal'])->name('chunking.final');
+
+            // SSE Streaming for Real-Time Progress (NEW v6.0)
+            Route::post('/analyze-stream', [NatanChatController::class, 'analyzeActsStream'])->name('analyze.stream');
+
+            // AI Credits Cost Tracking (NEW v5.0)
+            Route::post('/estimate-cost', [NatanChatController::class, 'estimateCost'])->name('estimate.cost');
         });
 
         /**

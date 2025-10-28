@@ -54,3 +54,12 @@ Schedule::command('oracle:poll')
         return config('egi_living.feature_flags.oracle_polling_enabled', false);
     })
     ->appendOutputTo(storage_path('logs/oracle.log'));
+
+### 📌 5️⃣ JOB AUTOMATICO: EXCHANGE RATE UPDATE ###
+// Update USD to EUR exchange rate daily for AI credits pricing
+Schedule::command('ai-credits:update-exchange-rate')
+    ->daily()
+    ->at('02:00') // Run at 2 AM (when ECB updates rates)
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/exchange-rate.log'));

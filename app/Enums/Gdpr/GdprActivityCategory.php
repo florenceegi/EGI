@@ -85,6 +85,9 @@ enum GdprActivityCategory: string {
 /** AI processing and analysis activities */
     case AI_PROCESSING = 'ai_processing';
 
+/** AI Credits usage and financial tracking */
+    case AI_CREDITS_USAGE = 'ai_credits_usage';
+
 /** EGI trait management (creation, modification) */
     case EGI_TRAIT_MANAGEMENT = 'egi_trait_management';
 
@@ -116,6 +119,7 @@ enum GdprActivityCategory: string {
             self::WALLET_SECRET_ACCESSED => 'Wallet Secret Accessed (Mnemonic Export)',
             self::NOTIFICATION_MANAGEMENT => 'Notification Management and User Interactions',
             self::AI_PROCESSING => 'AI Processing and Analysis Activities',
+            self::AI_CREDITS_USAGE => 'AI Credits Usage and Financial Operations',
             self::EGI_TRAIT_MANAGEMENT => 'EGI Trait Management (Creation, Modification)',
         };
     }
@@ -134,7 +138,8 @@ enum GdprActivityCategory: string {
             self::PERSONAL_DATA_UPDATE,
             self::WALLET_MANAGEMENT,
             self::WALLET_CREATED,
-            self::WALLET_SECRET_ACCESSED => PrivacyLevel::CRITICAL,
+            self::WALLET_SECRET_ACCESSED,
+            self::AI_CREDITS_USAGE => PrivacyLevel::CRITICAL, // Financial data tracking
 
             // HIGH - Security and authentication (3 years retention)
             self::AUTHENTICATION,

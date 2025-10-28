@@ -22,7 +22,8 @@
  */
 const AICostPreview = {
     config: {
-        csrfToken: document.querySelector('meta[name="csrf-token"]')?.content || '',
+        csrfToken:
+            document.querySelector('meta[name="csrf-token"]')?.content || "",
         modal: null,
         estimateData: null,
         onProceedCallback: null,
@@ -32,8 +33,8 @@ const AICostPreview = {
      * Initialize modal
      */
     init() {
-        this.config.modal = document.getElementById('aiCostPreviewModal');
-        console.log('[AICostPreview] Initialized');
+        this.config.modal = document.getElementById("aiCostPreviewModal");
+        console.log("[AICostPreview] Initialized");
     },
 
     /**
@@ -43,44 +44,47 @@ const AICostPreview = {
      * @param {Function} onProceed - Callback to execute when user confirms
      */
     async show(params, onProceed) {
-        console.log('[AICostPreview] 💰 Opening cost preview modal', params);
+        console.log("[AICostPreview] 💰 Opening cost preview modal", params);
 
         this.config.onProceedCallback = onProceed;
 
         // Show modal
         if (this.config.modal) {
-            this.config.modal.classList.remove('hidden');
-            this.config.modal.classList.add('flex');
+            this.config.modal.classList.remove("hidden");
+            this.config.modal.classList.add("flex");
         }
 
         // Show loading state
-        document.getElementById('costPreviewLoading')?.classList.remove('hidden');
-        document.getElementById('costPreviewContent')?.classList.add('hidden');
+        document
+            .getElementById("costPreviewLoading")
+            ?.classList.remove("hidden");
+        document.getElementById("costPreviewContent")?.classList.add("hidden");
 
         // Fetch cost estimation
         try {
-            const response = await fetch('/pa/natan/estimate-cost', {
-                method: 'POST',
+            const response = await fetch("/pa/natan/estimate-cost", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': this.config.csrfToken,
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    "X-CSRF-TOKEN": this.config.csrfToken,
                 },
                 body: JSON.stringify(params),
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                throw new Error(
+                    `HTTP ${response.status}: ${response.statusText}`
+                );
             }
 
             const data = await response.json();
-            console.log('[AICostPreview] 📊 Estimation received:', data);
+            console.log("[AICostPreview] 📊 Estimation received:", data);
 
             this.config.estimateData = data;
             this.renderEstimation(data);
-
         } catch (error) {
-            console.error('[AICostPreview] ❌ Estimation failed:', error);
+            console.error("[AICostPreview] ❌ Estimation failed:", error);
             this.showError(error.message);
         }
     },
@@ -92,15 +96,18 @@ const AICostPreview = {
      */
     renderEstimation(data) {
         // Hide loading, show content
-        document.getElementById('costPreviewLoading')?.classList.add('hidden');
-        document.getElementById('costPreviewContent')?.classList.remove('hidden');
+        document.getElementById("costPreviewLoading")?.classList.add("hidden");
+        document
+            .getElementById("costPreviewContent")
+            ?.classList.remove("hidden");
 
         // Update subtitle
-        const subtitle = document.getElementById('costPreviewSubtitle');
+        const subtitle = document.getElementById("costPreviewSubtitle");
         if (subtitle) {
-            subtitle.textContent = data.chunks_count > 1
-                ? `${data.acts_count} atti, ${data.chunks_count} chunks`
-                : `${data.acts_count} atti`;
+            subtitle.textContent =
+                data.chunks_count > 1
+                    ? `${data.acts_count} atti, ${data.chunks_count} chunks`
+                    : `${data.acts_count} atti`;
         }
 
         // User balance
@@ -108,56 +115,80 @@ const AICostPreview = {
         const estimatedCost = parseFloat(data.estimated_credits || 0);
         const balanceAfter = currentBalance - estimatedCost;
 
-        document.getElementById('userCurrentBalance').textContent = currentBalance.toFixed(2);
-        document.getElementById('userBalanceAfter').textContent = balanceAfter.toFixed(2);
+        document.getElementById("userCurrentBalance").textContent =
+            currentBalance.toFixed(2);
+        document.getElementById("userBalanceAfter").textContent =
+            balanceAfter.toFixed(2);
 
         // Balance status card styling
-        const balanceCard = document.getElementById('balanceStatusCard');
-        const balanceAfterEl = document.getElementById('userBalanceAfter');
+        const balanceCard = document.getElementById("balanceStatusCard");
+        const balanceAfterEl = document.getElementById("userBalanceAfter");
 
         if (balanceAfter >= 0) {
             // Sufficient credits
-            balanceCard?.classList.remove('border-red-300', 'bg-red-50');
-            balanceCard?.classList.add('border-green-300', 'bg-green-50');
-            balanceAfterEl?.classList.remove('text-red-600');
-            balanceAfterEl?.classList.add('text-green-600');
+            balanceCard?.classList.remove("border-red-300", "bg-red-50");
+            balanceCard?.classList.add("border-green-300", "bg-green-50");
+            balanceAfterEl?.classList.remove("text-red-600");
+            balanceAfterEl?.classList.add("text-green-600");
         } else {
             // Insufficient credits
-            balanceCard?.classList.remove('border-green-300', 'bg-green-50');
-            balanceCard?.classList.add('border-red-300', 'bg-red-50');
-            balanceAfterEl?.classList.remove('text-green-600');
-            balanceAfterEl?.classList.add('text-red-600');
+            balanceCard?.classList.remove("border-green-300", "bg-green-50");
+            balanceCard?.classList.add("border-red-300", "bg-red-50");
+            balanceAfterEl?.classList.remove("text-green-600");
+            balanceAfterEl?.classList.add("text-red-600");
         }
 
         // Analysis details
-        document.getElementById('estimateActsCount').textContent = data.acts_count || 0;
-        document.getElementById('estimateChunksCount').textContent = data.chunks_count || 1;
-        document.getElementById('estimateTotalTokens').textContent = (data.total_tokens || 0).toLocaleString();
+        document.getElementById("estimateActsCount").textContent =
+            data.acts_count || 0;
+        document.getElementById("estimateChunksCount").textContent =
+            data.chunks_count || 1;
+        document.getElementById("estimateTotalTokens").textContent = (
+            data.total_tokens || 0
+        ).toLocaleString();
 
         // Cost breakdown
-        document.getElementById('estimateInputTokens').textContent = (data.input_tokens || 0).toLocaleString();
-        document.getElementById('estimateOutputTokens').textContent = (data.output_tokens || 0).toLocaleString();
-        document.getElementById('inputTokenPrice').textContent = `$${(data.input_price_per_million || 3).toFixed(3)}`;
-        document.getElementById('outputTokenPrice').textContent = `$${(data.output_price_per_million || 15).toFixed(3)}`;
-        document.getElementById('estimatedCostCredits').textContent = estimatedCost.toFixed(2);
+        document.getElementById("estimateInputTokens").textContent = (
+            data.input_tokens || 0
+        ).toLocaleString();
+        document.getElementById("estimateOutputTokens").textContent = (
+            data.output_tokens || 0
+        ).toLocaleString();
+        document.getElementById("inputTokenPrice").textContent = `$${(
+            data.input_price_per_million || 3
+        ).toFixed(3)}`;
+        document.getElementById("outputTokenPrice").textContent = `$${(
+            data.output_price_per_million || 15
+        ).toFixed(3)}`;
+        document.getElementById("estimatedCostCredits").textContent =
+            estimatedCost.toFixed(2);
 
         // Exchange rate
-        document.getElementById('exchangeRateDisplay').textContent = (data.exchange_rate || 0.92).toFixed(4);
-        const updatedDate = data.exchange_rate_updated ? new Date(data.exchange_rate_updated).toLocaleDateString() : '-';
-        document.getElementById('exchangeRateUpdated').textContent = updatedDate;
+        document.getElementById("exchangeRateDisplay").textContent = (
+            data.exchange_rate || 0.92
+        ).toFixed(4);
+        const updatedDate = data.exchange_rate_updated
+            ? new Date(data.exchange_rate_updated).toLocaleDateString()
+            : "-";
+        document.getElementById("exchangeRateUpdated").textContent =
+            updatedDate;
 
         // Insufficient credits warning
-        const insufficientWarning = document.getElementById('insufficientCreditsWarning');
-        const proceedBtn = document.getElementById('costPreviewProceedBtn');
+        const insufficientWarning = document.getElementById(
+            "insufficientCreditsWarning"
+        );
+        const proceedBtn = document.getElementById("costPreviewProceedBtn");
 
         if (balanceAfter < 0) {
-            insufficientWarning?.classList.remove('hidden');
-            document.getElementById('creditsRequired').textContent = estimatedCost.toFixed(2);
-            document.getElementById('creditsBalance').textContent = currentBalance.toFixed(2);
-            proceedBtn?.setAttribute('disabled', 'true');
+            insufficientWarning?.classList.remove("hidden");
+            document.getElementById("creditsRequired").textContent =
+                estimatedCost.toFixed(2);
+            document.getElementById("creditsBalance").textContent =
+                currentBalance.toFixed(2);
+            proceedBtn?.setAttribute("disabled", "true");
         } else {
-            insufficientWarning?.classList.add('hidden');
-            proceedBtn?.removeAttribute('disabled');
+            insufficientWarning?.classList.add("hidden");
+            proceedBtn?.removeAttribute("disabled");
         }
     },
 
@@ -165,10 +196,10 @@ const AICostPreview = {
      * Show error in modal
      */
     showError(message) {
-        document.getElementById('costPreviewLoading')?.classList.add('hidden');
-        const content = document.getElementById('costPreviewContent');
+        document.getElementById("costPreviewLoading")?.classList.add("hidden");
+        const content = document.getElementById("costPreviewContent");
         if (content) {
-            content.classList.remove('hidden');
+            content.classList.remove("hidden");
             content.innerHTML = `
                 <div class="rounded-xl border-2 border-red-300 bg-red-50 p-6 text-center">
                     <span class="material-symbols-outlined mb-3 text-5xl text-red-600">error</span>
@@ -183,10 +214,12 @@ const AICostPreview = {
      * User confirmed - proceed with analysis
      */
     proceed() {
-        console.log('[AICostPreview] ✅ User confirmed, proceeding with analysis');
+        console.log(
+            "[AICostPreview] ✅ User confirmed, proceeding with analysis"
+        );
         this.close();
 
-        if (typeof this.config.onProceedCallback === 'function') {
+        if (typeof this.config.onProceedCallback === "function") {
             this.config.onProceedCallback(this.config.estimateData);
         }
     },
@@ -196,8 +229,8 @@ const AICostPreview = {
      */
     close() {
         if (this.config.modal) {
-            this.config.modal.classList.add('hidden');
-            this.config.modal.classList.remove('flex');
+            this.config.modal.classList.add("hidden");
+            this.config.modal.classList.remove("flex");
         }
         this.config.estimateData = null;
         this.config.onProceedCallback = null;
@@ -222,11 +255,11 @@ const AICostTracker = {
      * Show cost tracking panel
      */
     show() {
-        const panel = document.getElementById('aiCostTracking');
+        const panel = document.getElementById("aiCostTracking");
         if (panel) {
-            panel.classList.remove('hidden');
+            panel.classList.remove("hidden");
             this.config.isVisible = true;
-            console.log('[AICostTracker] 💰 Cost tracking panel shown');
+            console.log("[AICostTracker] 💰 Cost tracking panel shown");
         }
     },
 
@@ -234,9 +267,9 @@ const AICostTracker = {
      * Hide cost tracking panel
      */
     hide() {
-        const panel = document.getElementById('aiCostTracking');
+        const panel = document.getElementById("aiCostTracking");
         if (panel) {
-            panel.classList.add('hidden');
+            panel.classList.add("hidden");
             this.config.isVisible = false;
         }
     },
@@ -255,13 +288,22 @@ const AICostTracker = {
         this.config.estimatedFinal = parseFloat(costData.estimated_final || 0);
 
         // Update DOM
-        document.getElementById('costCurrentCredits').textContent = this.config.currentCost.toFixed(2);
-        document.getElementById('costInputTokens').textContent = this.config.inputTokens.toLocaleString();
-        document.getElementById('costOutputTokens').textContent = this.config.outputTokens.toLocaleString();
-        document.getElementById('costCurrentTotal').textContent = this.config.currentCost.toFixed(2);
-        document.getElementById('costEstimatedFinal').textContent = this.config.estimatedFinal.toFixed(2);
+        document.getElementById("costCurrentCredits").textContent =
+            this.config.currentCost.toFixed(2);
+        document.getElementById("costInputTokens").textContent =
+            this.config.inputTokens.toLocaleString();
+        document.getElementById("costOutputTokens").textContent =
+            this.config.outputTokens.toLocaleString();
+        document.getElementById("costCurrentTotal").textContent =
+            this.config.currentCost.toFixed(2);
+        document.getElementById("costEstimatedFinal").textContent =
+            this.config.estimatedFinal.toFixed(2);
 
-        console.log('[AICostTracker] 📊 Cost updated:', this.config.currentCost, 'credits');
+        console.log(
+            "[AICostTracker] 📊 Cost updated:",
+            this.config.currentCost,
+            "credits"
+        );
     },
 
     /**
@@ -273,17 +315,20 @@ const AICostTracker = {
     addChunkCost(chunkNumber, cost) {
         this.config.chunkCosts.push({ chunk: chunkNumber, cost });
 
-        const chunksList = document.getElementById('costChunksList');
-        const perChunkContainer = document.getElementById('costPerChunk');
+        const chunksList = document.getElementById("costChunksList");
+        const perChunkContainer = document.getElementById("costPerChunk");
 
         if (chunksList && perChunkContainer) {
-            perChunkContainer.classList.remove('hidden');
+            perChunkContainer.classList.remove("hidden");
 
-            const chunkItem = document.createElement('div');
-            chunkItem.className = 'flex items-center justify-between rounded-lg bg-gray-100 px-3 py-2';
+            const chunkItem = document.createElement("div");
+            chunkItem.className =
+                "flex items-center justify-between rounded-lg bg-gray-100 px-3 py-2";
             chunkItem.innerHTML = `
                 <span class="text-xs font-medium text-gray-700">Chunk ${chunkNumber}</span>
-                <span class="text-sm font-bold text-[#E67E22]">${cost.toFixed(2)} credits</span>
+                <span class="text-sm font-bold text-[#E67E22]">${cost.toFixed(
+                    2
+                )} credits</span>
             `;
             chunksList.appendChild(chunkItem);
         }
@@ -299,18 +344,18 @@ const AICostTracker = {
         this.config.outputTokens = 0;
         this.config.chunkCosts = [];
 
-        const chunksList = document.getElementById('costChunksList');
+        const chunksList = document.getElementById("costChunksList");
         if (chunksList) {
-            chunksList.innerHTML = '';
+            chunksList.innerHTML = "";
         }
 
-        document.getElementById('costPerChunk')?.classList.add('hidden');
+        document.getElementById("costPerChunk")?.classList.add("hidden");
     },
 };
 
 // Initialize on DOM ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
         AICostPreview.init();
     });
 } else {

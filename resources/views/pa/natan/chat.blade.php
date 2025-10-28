@@ -2,6 +2,9 @@
     {{-- AI Processing Panel Component --}}
     @include('pa.natan._ai-processing-panel')
 
+    {{-- AI Cost Preview Modal Component --}}
+    @include('pa.natan._ai-cost-preview-modal')
+
     {{-- Chat History is now integrated in enterprise sidebar --}}
     <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -628,6 +631,9 @@
     </style>
 
     @push('scripts')
+        {{-- AI Cost Tracking System --}}
+        <script src="{{ asset('js/ai-cost-tracking.js') }}"></script>
+
         <script>
             /**
              * Ask Question - Insert question into input and submit
@@ -798,8 +804,15 @@
                     // Add user message
                     this.addMessage('user', message);
 
-                    // Send to API
-                    await this.sendToApi(message);
+                    // Send to API with SSE streaming (NEW v6.0)
+                    // Feature flag: use SSE for real-time progress tracking
+                    const useSSE = true; // TODO: make configurable in user settings
+                    
+                    if (useSSE) {
+                        await this.sendToApiWithSSE(message);
+                    } else {
+                        await this.sendToApi(message);
+                    }
                 },
 
                 /**
@@ -889,29 +902,29 @@
 
                         personaBadgeDiv.innerHTML = `
                             ${message.is_elaboration ? `
-                                                                                                                                <span class="elaboration-badge">
-                                                                                                                                    🔄 Elaborazione
-                                                                                                                                </span>
-                                                                                                                            ` : ''}
+                                                                                                                                                                <span class="elaboration-badge">
+                                                                                                                                                                    🔄 Elaborazione
+                                                                                                                                                                </span>
+                                                                                                                                                            ` : ''}
                             <span style="background-color: ${personaColor};"
                                   class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
                                 <span>${personaIcon}</span>
                                 <span>${message.persona.name}</span>
                             </span>
                             ${message.persona.confidence ? `
-                                                                                                                                                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
-                                                                                                                                                            ${Math.round(message.persona.confidence * 100)}%
-                                                                                                                                                        </span>
-                                                                                                                                                    ` : ''}
+                                                                                                                                                                                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
+                                                                                                                                                                                            ${Math.round(message.persona.confidence * 100)}%
+                                                                                                                                                                                        </span>
+                                                                                                                                                                                    ` : ''}
                             ${message.persona.method === 'manual' ? `
-                                                                                                                                                        <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
-                                                                                                                                                            ✓ Manuale
-                                                                                                                                                        </span>
-                                                                                                                                                    ` : message.persona.method === 'default' ? `
-                                                                                                                                                        <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
-                                                                                                                                                            Auto (Default)
-                                                                                                                                                        </span>
-                                                                                                                                                    ` : ''}
+                                                                                                                                                                                        <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
+                                                                                                                                                                                            ✓ Manuale
+                                                                                                                                                                                        </span>
+                                                                                                                                                                                    ` : message.persona.method === 'default' ? `
+                                                                                                                                                                                        <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
+                                                                                                                                                                                            Auto (Default)
+                                                                                                                                                                                        </span>
+                                                                                                                                                                                    ` : ''}
                         `;
                         bubbleDiv.appendChild(personaBadgeDiv);
 
@@ -957,13 +970,13 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-1">
                                 ${message.sources.map(source => `
-                                                                                                                            <a href="${source.url}" target="_blank"
-                                                                                                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
-                                                                                                                                <span class="font-medium">${source.protocol_number}</span>
-                                                                                                                                <span class="text-gray-600"> - </span>
-                                                                                                                                <span>${source.title}</span>
-                                                                                                                            </a>
-                                                                                                                        `).join('')}
+                                                                                                                                                            <a href="${source.url}" target="_blank"
+                                                                                                                                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
+                                                                                                                                                                <span class="font-medium">${source.protocol_number}</span>
+                                                                                                                                                                <span class="text-gray-600"> - </span>
+                                                                                                                                                                <span>${source.title}</span>
+                                                                                                                                                            </a>
+                                                                                                                                                        `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(sourcesDiv);
@@ -988,21 +1001,21 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-2">
                                 ${message.web_sources.map((source, idx) => `
-                                                                                                    <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
-                                                                                                        <div class="flex items-start justify-between gap-2 mb-1">
-                                                                                                            <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
-                                                                                                            <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                                                                                ${Math.round((source.relevance_score || 1) * 100)}%
-                                                                                                            </span>
-                                                                                                        </div>
-                                                                                                        <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
-                                                                                                        <a href="${source.url}" target="_blank" rel="noopener noreferrer"
-                                                                                                           class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                                                                                            <span class="material-icons text-xs">open_in_new</span>
-                                                                                                            <span class="truncate">${source.url}</span>
-                                                                                                        </a>
-                                                                                                    </div>
-                                                                                                `).join('')}
+                                                                                                                                    <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
+                                                                                                                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                                                                                                                            <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
+                                                                                                                                            <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                                                                                                                ${Math.round((source.relevance_score || 1) * 100)}%
+                                                                                                                                            </span>
+                                                                                                                                        </div>
+                                                                                                                                        <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
+                                                                                                                                        <a href="${source.url}" target="_blank" rel="noopener noreferrer"
+                                                                                                                                           class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                                                                                                                            <span class="material-icons text-xs">open_in_new</span>
+                                                                                                                                            <span class="truncate">${source.url}</span>
+                                                                                                                                        </a>
+                                                                                                                                    </div>
+                                                                                                                                `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(webSourcesDiv);
@@ -1167,7 +1180,24 @@
                             return;
                         }
 
-                        // Complete AI processing and hide panel
+                        // 🚀 PHASE 3: Detect chunking mode and start polling
+                        if (data.mode === 'chunking' && data.session_id) {
+                            console.log('[N.A.T.A.N.] 🔄 Chunking mode activated', {
+                                sessionId: data.session_id,
+                                totalChunks: data.total_chunks,
+                                totalActs: data.total_acts,
+                                strategy: data.strategy
+                            });
+
+                            // Show chunking panel instead of normal progress
+                            AIProcessingPanel.showChunking(data.total_chunks, data.total_acts);
+
+                            // Start polling loop
+                            this.startChunkingPoll(data.session_id);
+                            return; // Exit here, polling will handle completion
+                        }
+
+                        // Complete AI processing and hide panel (normal mode)
                         AIProcessingPanel.complete();
 
                         if (data.success) {
@@ -1215,6 +1245,172 @@
                         this.addMessage('assistant', errorMessage);
                     } finally {
                         this.setLoading(false);
+                    }
+                },
+
+                /**
+                 * Send to API with Server-Sent Events (SSE) streaming
+                 * 
+                 * Real-time progress tracking for semantic search + AI analysis.
+                 * 
+                 * @param {string} message - User query
+                 */
+                async sendToApiWithSSE(message) {
+                    this.setLoading(true);
+                    AIProcessingPanel.show(0);
+
+                    try {
+                        // Use SSE endpoint instead of traditional POST
+                        const url = '/pa/natan/analyze-stream';
+                        
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': this.config.csrfToken,
+                                'Accept': 'text/event-stream'
+                            },
+                            body: JSON.stringify({
+                                query: message,
+                                limit: 500 // Default limit, or get from slider
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+
+                        // Create ReadableStream reader
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder();
+                        let buffer = '';
+
+                        // Read stream
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            
+                            if (done) break;
+
+                            // Decode chunk
+                            buffer += decoder.decode(value, { stream: true });
+
+                            // Process complete events (separated by \n\n)
+                            const events = buffer.split('\n\n');
+                            buffer = events.pop(); // Keep incomplete event in buffer
+
+                            for (const eventText of events) {
+                                if (!eventText.trim()) continue;
+
+                                // Parse SSE format: "event: name\ndata: {json}\n"
+                                const lines = eventText.split('\n');
+                                let eventName = '';
+                                let eventData = '';
+
+                                for (const line of lines) {
+                                    if (line.startsWith('event:')) {
+                                        eventName = line.substring(6).trim();
+                                    } else if (line.startsWith('data:')) {
+                                        eventData = line.substring(5).trim();
+                                    }
+                                }
+
+                                if (!eventName || !eventData) continue;
+
+                                // Parse event data
+                                let data;
+                                try {
+                                    data = JSON.parse(eventData);
+                                } catch (e) {
+                                    console.error('[SSE] Parse error:', e, eventData);
+                                    continue;
+                                }
+
+                                // Handle event
+                                this.handleSSEEvent(eventName, data);
+                            }
+                        }
+
+                    } catch (error) {
+                        console.error('[SSE] Error:', error);
+                        AIProcessingPanel.hide();
+                        this.addMessage('assistant', `Errore durante l'elaborazione: ${error.message}`);
+                    } finally {
+                        this.setLoading(false);
+                    }
+                },
+
+                /**
+                 * Handle SSE event
+                 * 
+                 * @param {string} event - Event name
+                 * @param {object} data - Event data
+                 */
+                handleSSEEvent(event, data) {
+                    console.log(`[SSE] Event: ${event}`, data);
+
+                    switch (event) {
+                        case 'semantic_search_start':
+                            AIProcessingPanel.updateStage('search', 'active', `Ricerca con ${data.model}`);
+                            break;
+
+                        case 'semantic_search_complete':
+                            AIProcessingPanel.updateStage('search', 'completed', `${data.acts_found} atti trovati`);
+                            AIProcessingPanel.updateStats({
+                                acts: data.acts_found,
+                                relevance: data.avg_relevance
+                            });
+                            AIProcessingPanel.updateProgress(30);
+                            break;
+
+                        case 'ai_analysis_start':
+                            AIProcessingPanel.updateStage('ai', 'active', `Claude Sonnet 4.5`);
+                            AIProcessingPanel.updateProgress(50);
+                            break;
+
+                        case 'cost_update':
+                            // Show cost tracking panel
+                            AIProcessingPanel.updateCostTracking({
+                                inputTokens: data.input_tokens,
+                                outputTokens: data.output_tokens,
+                                creditsUsed: data.credits_used,
+                                costEur: data.cost_eur
+                            });
+                            break;
+
+                        case 'response_generation_start':
+                            AIProcessingPanel.updateStage('response', 'active', 'Generazione risposta');
+                            AIProcessingPanel.updateProgress(75);
+                            break;
+
+                        case 'response_generation_complete':
+                            AIProcessingPanel.updateStage('response', 'completed', 'Completata');
+                            AIProcessingPanel.updateProgress(100);
+
+                            // Add response to chat
+                            this.addMessage('assistant', data.response);
+
+                            // Block panel for 3 seconds to show final stats
+                            setTimeout(() => {
+                                AIProcessingPanel.hide();
+                            }, 3000);
+                            break;
+
+                        case 'done':
+                            console.log('[SSE] Stream completed:', data);
+                            if (data.status === 'no_acts') {
+                                this.addMessage('assistant', data.message);
+                                AIProcessingPanel.hide();
+                            }
+                            break;
+
+                        case 'error':
+                            console.error('[SSE] Error event:', data);
+                            AIProcessingPanel.hide();
+                            this.addMessage('assistant', `Errore: ${data.message}`);
+                            break;
+
+                        default:
+                            console.warn('[SSE] Unknown event:', event, data);
                     }
                 },
 
@@ -1274,6 +1470,274 @@
 
                     // Send elaboration request
                     this.sendToApiWithElaboration(prompt, messageId);
+                },
+
+                /**
+                 * Start polling for chunking progress
+                 *
+                 * @param {string} sessionId - The chunking session ID
+                 * @package App\PA\NatanChat
+                 * @author Padmin D. Curtis (AI Partner OS3.0)
+                 * @version 1.0.0 (FlorenceEGI - NATAN Intelligent Chunking Phase 3)
+                 * @date 2025-01-27
+                 * @purpose Poll backend for chunk processing progress until completion
+                 */
+                startChunkingPoll(sessionId) {
+                    console.log('[N.A.T.A.N.] 🔄 Starting polling for session:', sessionId);
+
+                    let pollAttempts = 0;
+                    const maxPollAttempts = 150; // 150 attempts × 2 seconds = 5 minutes max
+                    const pollInterval = 2000; // 2 seconds
+
+                    const pollProgress = async () => {
+                        pollAttempts++;
+
+                        // Timeout check
+                        if (pollAttempts >= maxPollAttempts) {
+                            console.error('[N.A.T.A.N.] ⏱️ Polling timeout after 5 minutes');
+                            AIProcessingPanel.hide();
+                            this.showChunkingError(
+                                '⚠️ {{ __('natan.chunking.timeout_error') }}. Il processamento potrebbe ancora essere in corso in background.',
+                                sessionId
+                            );
+                            this.setLoading(false);
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch(`/pa/natan/chunking-progress/${sessionId}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': this.config.csrfToken
+                                }
+                            });
+
+                            if (!response.ok) {
+                                if (response.status === 404) {
+                                    console.error('[N.A.T.A.N.] ❌ Session not found');
+                                    AIProcessingPanel.hide();
+                                    this.showChunkingError('{{ __('natan.chunking.session_not_found') }}', null);
+                                    this.setLoading(false);
+                                    return;
+                                } else if (response.status === 403) {
+                                    console.error('[N.A.T.A.N.] 🔒 Unauthorized access');
+                                    AIProcessingPanel.hide();
+                                    this.showChunkingError('{{ __('natan.chunking.unauthorized') }}', null);
+                                    this.setLoading(false);
+                                    return;
+                                } else if (response.status === 429) {
+                                    console.warn('[N.A.T.A.N.] ⚠️ Rate limit hit, continuing polling...');
+                                    setTimeout(pollProgress, pollInterval);
+                                    return;
+                                }
+                                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                            }
+
+                            const data = await response.json();
+                            console.log('[N.A.T.A.N.] 📊 Progress update:', {
+                                currentChunk: data.current_chunk,
+                                chunkProgress: data.chunk_progress,
+                                actsInChunk: data.acts_in_chunk,
+                                completedChunks: data.completed_chunks?.length || 0,
+                                allCompleted: data.all_completed
+                            });
+
+                            // Update chunk progress bar
+                            AIProcessingPanel.updateChunkProgress(data.current_chunk, data.chunk_progress);
+
+                            // Update acts counter
+                            if (data.acts_in_chunk) {
+                                AIProcessingPanel.updateStats({
+                                    acts: data.acts_in_chunk,
+                                    relevance: 0 // Will be updated on final
+                                });
+                            }
+
+                            // Mark completed chunks
+                            if (data.last_completed && data.last_completed_index !== undefined) {
+                                AIProcessingPanel.completeChunk(data.last_completed_index);
+                            }
+
+                            // Check if all chunks completed
+                            if (data.all_completed) {
+                                console.log('[N.A.T.A.N.] ✅ All chunks completed, fetching final result...');
+                                await this.fetchChunkingFinal(sessionId);
+                                return; // Stop polling
+                            }
+
+                            // Continue polling
+                            setTimeout(pollProgress, pollInterval);
+
+                        } catch (error) {
+                            console.error('[N.A.T.A.N.] ❌ Polling error:', error);
+
+                            // Retry on network errors
+                            if (pollAttempts < maxPollAttempts) {
+                                console.log('[N.A.T.A.N.] 🔄 Retrying after error...');
+                                setTimeout(pollProgress, pollInterval);
+                            } else {
+                                AIProcessingPanel.hide();
+                                this.showChunkingError(
+                                    `{{ __('natan.chunking.polling_error') }}: ${error.message}`,
+                                    sessionId
+                                );
+                                this.setLoading(false);
+                            }
+                        }
+                    };
+
+                    // Start polling immediately
+                    pollProgress();
+                },
+
+                /**
+                 * Fetch final aggregated chunking result
+                 *
+                 * @param {string} sessionId - The chunking session ID
+                 * @package App\PA\NatanChat
+                 * @author Padmin D. Curtis (AI Partner OS3.0)
+                 * @version 1.0.0 (FlorenceEGI - NATAN Intelligent Chunking Phase 3)
+                 * @date 2025-01-27
+                 * @purpose Retrieve and display final aggregated response after all chunks processed
+                 */
+                async fetchChunkingFinal(sessionId) {
+                    console.log('[N.A.T.A.N.] 📦 Fetching final result for session:', sessionId);
+
+                    try {
+                        const response = await fetch(`/pa/natan/chunking-final/${sessionId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': this.config.csrfToken
+                            }
+                        });
+
+                        if (!response.ok) {
+                            if (response.status === 425) {
+                                console.warn('[N.A.T.A.N.] ⚠️ Processing not complete yet, waiting...');
+                                // Wait and poll progress again
+                                setTimeout(() => this.startChunkingPoll(sessionId), 2000);
+                                return;
+                            }
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+
+                        const data = await response.json();
+                        console.log('[N.A.T.A.N.] ✅ Final result received:', {
+                            totalRelevantActs: data.total_relevant_acts,
+                            chunksProcessed: data.chunks_processed,
+                            sourcesCount: data.sources?.length || 0
+                        });
+
+                        // Update final stats
+                        AIProcessingPanel.updateStats({
+                            acts: data.total_relevant_acts || 0,
+                            relevance: data.relevance_score || 0
+                        });
+
+                        // Complete processing
+                        AIProcessingPanel.complete();
+
+                        // Display aggregated response in chat
+                        if (data.aggregated_response) {
+                            this.addMessage(
+                                'assistant',
+                                data.aggregated_response,
+                                data.sources,
+                                data.persona,
+                                data.message_id,
+                                false, // not elaboration
+                                null, // no reference content
+                                data.web_sources || null
+                            );
+
+                            // Update session ID if provided
+                            if (data.session_id) {
+                                this.config.sessionId = data.session_id;
+                            }
+                        } else {
+                            throw new Error('No aggregated response in final result');
+                        }
+
+                    } catch (error) {
+                        console.error('[N.A.T.A.N.] ❌ Error fetching final result:', error);
+                        AIProcessingPanel.hide();
+                        this.showChunkingError(
+                            `{{ __('natan.chunking.final_error') }}: ${error.message}`,
+                            sessionId
+                        );
+                    } finally {
+                        this.setLoading(false);
+                    }
+                },
+
+                /**
+                 * Show chunking error with retry button
+                 *
+                 * @param {string} errorMessage - The error message to display
+                 * @param {string} sessionId - The chunking session ID (optional, for retry)
+                 * @package App\PA\NatanChat
+                 * @author Padmin D. Curtis (AI Partner OS3.0)
+                 * @version 1.0.0 (FlorenceEGI - NATAN Chunking Error Recovery)
+                 * @date 2025-01-27
+                 * @purpose Display error message with retry button for chunking failures
+                 */
+                showChunkingError(errorMessage, sessionId = null) {
+                    console.log('[N.A.T.A.N.] 🚨 Showing chunking error with retry option');
+
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'flex justify-start mb-4';
+                    errorDiv.innerHTML = `
+                        <div class="max-w-2xl rounded-2xl rounded-tl-sm bg-red-50 border-l-4 border-red-500 px-4 py-3 shadow-sm">
+                            <div class="flex items-start gap-3">
+                                <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-sm text-red-800 font-medium mb-2">${errorMessage}</p>
+                                    ${sessionId ? `
+                                                        <button
+                                                            onclick="NatanChat.retryChunking('${sessionId}')"
+                                                            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200"
+                                                        >
+                                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                                            </svg>
+                                                            {{ __('natan.chunking.retry_button') }}
+                                                        </button>
+                                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    this.elements.chatMessages.appendChild(errorDiv);
+                    this.scrollToBottom();
+                },
+
+                /**
+                 * Retry chunking analysis
+                 *
+                 * @param {string} sessionId - The failed session ID
+                 * @package App\PA\NatanChat
+                 * @author Padmin D. Curtis (AI Partner OS3.0)
+                 * @version 1.0.0 (FlorenceEGI - NATAN Chunking Error Recovery)
+                 * @date 2025-01-27
+                 * @purpose Restart polling for a failed chunking session
+                 */
+                retryChunking(sessionId) {
+                    console.log('[N.A.T.A.N.] 🔄 Retrying chunking for session:', sessionId);
+
+                    // Clear loading state
+                    this.setLoading(false);
+
+                    // Re-show chunking panel
+                    AIProcessingPanel.show(0);
+                    AIProcessingPanel.showChunking(5, 0); // Will be updated by first poll
+
+                    // Restart polling
+                    this.startChunkingPoll(sessionId);
                 },
 
                 /**

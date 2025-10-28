@@ -19,11 +19,8 @@
 --}}
 
 {{-- Cost Preview Modal (hidden by default) --}}
-<div id="aiCostPreviewModal"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm"
-    role="dialog"
-    aria-labelledby="costPreviewTitle"
-    aria-modal="true">
+<div id="aiCostPreviewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm"
+    role="dialog" aria-labelledby="costPreviewTitle" aria-modal="true">
     <div class="mx-4 w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
 
         {{-- Modal Header --}}
@@ -40,8 +37,7 @@
                         {{ __('ai_credits.preview.loading') }}
                     </p>
                 </div>
-                <button type="button"
-                    onclick="AICostPreview.close()"
+                <button type="button" onclick="AICostPreview.close()"
                     class="rounded-lg p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white">
                     <span class="material-symbols-outlined">close</span>
                 </button>
@@ -129,7 +125,8 @@
                     <div class="flex items-start gap-3">
                         <span class="material-symbols-outlined mt-0.5 text-blue-600">info</span>
                         <div class="flex-1 text-xs">
-                            <p class="mb-1 font-medium text-gray-900">{{ __('ai_credits.preview.rate_info') }}: <span id="exchangeRateDisplay">0.92</span> USD/EUR</p>
+                            <p class="mb-1 font-medium text-gray-900">{{ __('ai_credits.preview.rate_info') }}: <span
+                                    id="exchangeRateDisplay">0.92</span> USD/EUR</p>
                             <p class="text-gray-600">
                                 {{ __('ai_credits.preview.rate_source') }} •
                                 {{ __('ai_credits.preview.rate_updated') }}: <span id="exchangeRateUpdated">-</span>
@@ -143,7 +140,8 @@
                     <div class="flex items-start gap-4">
                         <span class="material-symbols-outlined text-3xl text-red-600">error</span>
                         <div class="flex-1">
-                            <h4 class="mb-2 font-bold text-red-900">{{ __('ai_credits.preview.insufficient_title') }}</h4>
+                            <h4 class="mb-2 font-bold text-red-900">{{ __('ai_credits.preview.insufficient_title') }}
+                            </h4>
                             <p class="mb-4 text-sm text-red-800" id="insufficientMessage">
                                 {{ __('ai_credits.preview.insufficient_message', ['required' => '<span id="creditsRequired">0</span>', 'balance' => '<span id="creditsBalance">0</span>']) }}
                             </p>
@@ -162,15 +160,11 @@
 
         {{-- Modal Footer --}}
         <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-8 py-4">
-            <button type="button"
-                onclick="AICostPreview.close()"
+            <button type="button" onclick="AICostPreview.close()"
                 class="rounded-lg border border-gray-300 bg-white px-6 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
                 {{ __('ai_credits.preview.cancel') }}
             </button>
-            <button type="button"
-                id="costPreviewProceedBtn"
-                onclick="AICostPreview.proceed()"
-                disabled
+            <button type="button" id="costPreviewProceedBtn" onclick="AICostPreview.proceed()" disabled
                 class="rounded-lg bg-[#E67E22] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-[#D35400] disabled:cursor-not-allowed disabled:opacity-50">
                 <span class="material-symbols-outlined mr-2 align-middle text-sm">check_circle</span>
                 {{ __('ai_credits.preview.proceed') }}

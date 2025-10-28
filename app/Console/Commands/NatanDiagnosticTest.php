@@ -10,16 +10,15 @@ use Carbon\Carbon;
 
 /**
  * NATAN Diagnostic Test Command
- * 
+ *
  * @package App\Console\Commands
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0
  * @date 2025-10-27
  * @purpose Systematic testing of NATAN AI system performance and reliability
  */
-class NatanDiagnosticTest extends Command
-{
-    protected $signature = 'natan:diagnostic-test 
+class NatanDiagnosticTest extends Command {
+    protected $signature = 'natan:diagnostic-test
                             {--category= : Test category (semantic-search, context-window, rate-limit, all)}
                             {--iterations=10 : Number of iterations per test}
                             {--user-id=1 : User ID to run tests as}';
@@ -38,8 +37,7 @@ class NatanDiagnosticTest extends Command
         $this->logDir = storage_path('logs/natan-tests');
     }
 
-    public function handle()
-    {
+    public function handle() {
         $category = $this->option('category') ?? 'all';
         $iterations = (int)$this->option('iterations');
         $userId = (int)$this->option('user-id');
@@ -58,7 +56,7 @@ class NatanDiagnosticTest extends Command
             ->where('consent_type', 'allow-personal-data-processing')
             ->where('granted', true)
             ->first();
-        
+
         if (!$consent) {
             $this->error("❌ User {$userId} doesn't have GDPR consent for personal data processing.");
             $this->error("Run this command to grant consent:");
@@ -87,10 +85,10 @@ class NatanDiagnosticTest extends Command
 
         $this->newLine();
         $this->info("✅ Tests completed in {$totalTime} seconds");
-        
+
         // Save results
         $this->saveResults();
-        
+
         // Display summary
         $this->displaySummary();
 
@@ -100,8 +98,7 @@ class NatanDiagnosticTest extends Command
     /**
      * Run semantic search tests
      */
-    protected function runSemanticSearchTests(int $iterations): void
-    {
+    protected function runSemanticSearchTests(int $iterations): void {
         $this->info("🔍 SEMANTIC SEARCH TESTS");
         $this->newLine();
 
@@ -135,8 +132,7 @@ class NatanDiagnosticTest extends Command
     /**
      * Run context window tests
      */
-    protected function runContextWindowTests(int $iterations): void
-    {
+    protected function runContextWindowTests(int $iterations): void {
         $this->info("📊 CONTEXT WINDOW TESTS");
         $this->newLine();
 
@@ -145,11 +141,11 @@ class NatanDiagnosticTest extends Command
 
         foreach ($contextSizes as $size) {
             $this->line("Testing with {$size} acts context...");
-            
+
             for ($i = 0; $i < $iterations; $i++) {
                 $this->runContextSizeTest($fixedQuery, $size, $i + 1);
             }
-            
+
             $this->newLine();
         }
     }
@@ -157,15 +153,14 @@ class NatanDiagnosticTest extends Command
     /**
      * Run rate limit tests
      */
-    protected function runRateLimitTests(int $iterations): void
-    {
+    protected function runRateLimitTests(int $iterations): void {
         $this->info("⚡ RATE LIMIT TESTS");
         $this->newLine();
 
         // Test 3.1: Burst Testing
         $this->line("Test 3.1: Burst Testing (rapid succession)");
         $query = "Analizza delibere gennaio 2024";
-        
+
         for ($i = 0; $i < $iterations; $i++) {
             $this->info("  Burst attempt " . ($i + 1) . "/{$iterations}");
             $this->runQueryTest($query, 1, null, true);
@@ -176,11 +171,11 @@ class NatanDiagnosticTest extends Command
         $this->newLine();
         $this->line("Test 3.2: Gradual Ramp-Up (with delays)");
         $sizes = [5, 10, 25, 50];
-        
+
         foreach ($sizes as $size) {
             $this->info("  Testing with {$size} acts (60s delay)...");
             $this->runContextSizeTest($query, $size, 1);
-            
+
             if ($size < end($sizes)) {
                 $this->line("  Waiting 60 seconds...");
                 sleep(60);
@@ -191,8 +186,7 @@ class NatanDiagnosticTest extends Command
     /**
      * Run all tests
      */
-    protected function runAllTests(int $iterations): void
-    {
+    protected function runAllTests(int $iterations): void {
         $this->runSemanticSearchTests($iterations);
         $this->newLine(2);
         $this->runContextWindowTests($iterations);
@@ -216,7 +210,7 @@ class NatanDiagnosticTest extends Command
 
         for ($i = 0; $i < $iterations; $i++) {
             $startTime = microtime(true);
-            
+
             try {
                 // Test the query processing
                 $response = $this->natanService->processQuery(
@@ -254,7 +248,6 @@ class NatanDiagnosticTest extends Command
                     'burst_test' => $trackBurst,
                     'iteration' => $i + 1,
                 ];
-
             } catch (\Exception $e) {
                 $this->results[] = [
                     'test_type' => 'query',
@@ -275,16 +268,15 @@ class NatanDiagnosticTest extends Command
     /**
      * Run context size test
      */
-    protected function runContextSizeTest(string $query, int $contextSize, int $iteration): void
-    {
+    protected function runContextSizeTest(string $query, int $contextSize, int $iteration): void {
         $startTime = microtime(true);
-        
+
         $user = Auth::user();
-        
+
         try {
             // Mock: force specific context size (would need to modify NatanChatService)
             // For now, just track what happens with normal flow
-            
+
             $response = $this->natanService->processQuery(
                 $query,                    // userQuery
                 $user,                     // user
@@ -317,7 +309,6 @@ class NatanDiagnosticTest extends Command
                 'timestamp' => Carbon::now()->toIso8601String(),
                 'iteration' => $iteration,
             ];
-
         } catch (\Exception $e) {
             $this->results[] = [
                 'test_type' => 'context_size',
@@ -333,19 +324,17 @@ class NatanDiagnosticTest extends Command
     /**
      * Save results to JSON
      */
-    protected function saveResults(): void
-    {
+    protected function saveResults(): void {
         $filename = $this->logDir . '/test-results-' . Carbon::now()->format('Y-m-d-His') . '.json';
         file_put_contents($filename, json_encode($this->results, JSON_PRETTY_PRINT));
-        
+
         $this->info("📁 Results saved to: {$filename}");
     }
 
     /**
      * Display summary statistics
      */
-    protected function displaySummary(): void
-    {
+    protected function displaySummary(): void {
         if (empty($this->results)) {
             return;
         }
@@ -354,11 +343,11 @@ class NatanDiagnosticTest extends Command
         $successCount = collect($this->results)->where('success', true)->count();
         $failCount = $totalTests - $successCount;
         $successRate = round(($successCount / $totalTests) * 100, 1);
-        
+
         $avgTime = collect($this->results)
             ->where('success', true)
             ->avg('time_seconds');
-        
+
         $rateLimitCount = collect($this->results)
             ->where('rate_limit_hit', true)
             ->count();

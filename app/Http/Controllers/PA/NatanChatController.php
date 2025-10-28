@@ -315,7 +315,6 @@ class NatanChatController extends Controller {
                 'reference_content' => $referenceContext['content'] ?? null,
                 'timestamp' => now()->toIso8601String()
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -323,7 +322,6 @@ class NatanChatController extends Controller {
                 'message' => 'Dati non validi',
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('NATAN_MESSAGE_PROCESSING_FAILED', [
                 'user_id' => auth()->id(),
@@ -404,7 +402,6 @@ class NatanChatController extends Controller {
             );
 
             return response()->json($result);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('NATAN_HISTORY_ACCESS_FAILED', [
                 'user_id' => auth()->id(),
@@ -444,7 +441,6 @@ class NatanChatController extends Controller {
             );
 
             return response()->json($result);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('NATAN_SESSION_ACCESS_FAILED', [
                 'user_id' => auth()->id(),
@@ -493,7 +489,6 @@ class NatanChatController extends Controller {
             }
 
             return response()->json($result);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('NATAN_SESSION_DELETE_FAILED', [
                 'user_id' => auth()->id(),
@@ -572,7 +567,6 @@ class NatanChatController extends Controller {
                 'keywords_used' => $keywords,
                 'slider_config' => $sliderConfig,
             ]);
-
         } catch (\Exception $e) {
             $this->errorManager->handle('NATAN_SEARCH_PREVIEW_FAILED', [
                 'user_id' => auth()->id(),
@@ -1068,7 +1062,6 @@ class NatanChatController extends Controller {
             ]);
 
             return response()->json($estimation);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -1076,7 +1069,6 @@ class NatanChatController extends Controller {
                 'message' => $e->getMessage(),
                 'errors' => $e->errors(),
             ], 422);
-
         } catch (\Exception $e) {
             $this->logger->error('[NatanChatController] Cost estimation failed', [
                 'error' => $e->getMessage(),
@@ -1089,5 +1081,285 @@ class NatanChatController extends Controller {
                 'message' => 'Failed to estimate cost. Please try again.',
             ], 500);
         }
+    }
+
+    /**
+     * Analyze Acts with Server-Sent Events (SSE) Streaming
+     *
+     * Real-time progress tracking for semantic search + AI analysis.
+     *
+     * EVENTS EMITTED:
+     * 1. 'semantic_search_start' → Search begins
+     * 2. 'semantic_search_progress' → Search in progress (if large dataset)
+     * 3. 'semantic_search_complete' → Found acts with REAL counts
+     * 4. 'chunking_start' → If chunking mode activated
+     * 5. 'chunk_start' → Each chunk begins
+     * 6. 'chunk_progress' → Chunk progress updates (0-100%)
+     * 7. 'chunk_complete' → Chunk done with partial results
+     * 8. 'ai_analysis_start' → Claude processing starts
+     * 9. 'cost_update' → Real-time cost tracking
+     * 10. 'response_generation_start' → Markdown rendering begins
+     * 11. 'response_generation_complete' → Final response ready
+     * 12. 'done' → Stream ends
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function analyzeActsStream(Request $request) {
+        // Capture controller dependencies for use inside closure
+        $chatService = $this->chatService;
+        $creditsService = $this->creditsService;
+        $buildEnterprisePrompt = [$this, 'buildEnterprisePrompt'];
+        $formatActsForClaude = [$this, 'formatActsForClaude'];
+        
+        // Helper function to emit SSE events (defined outside closure)
+        $emitSSE = function(string $event, array $data) {
+            echo "event: {$event}\n";
+            echo "data: " . json_encode($data) . "\n\n";
+            ob_flush();
+            flush();
+        };
+
+        return response()->stream(function () use ($request, $emitSSE, $chatService, $creditsService, $buildEnterprisePrompt, $formatActsForClaude) {
+            try {
+                $user = auth()->user();
+
+                // Validate input
+                $validated = $request->validate([
+                    'query' => 'required|string|min:3|max:500',
+                    'limit' => 'required|integer|min:50|max:5000',
+                ]);
+
+                $query = $validated['query'];
+                $limit = $validated['limit'];
+
+                // EVENT 1: Semantic Search Start
+                $emitSSE('semantic_search_start', [
+                    'model' => 'text-embedding-3-small',
+                    'query' => $query,
+                    'timestamp' => now()->toISOString(),
+                ]);
+
+                // Execute RAG semantic search
+                $ragContext = app(\App\Services\RagService::class)->getContextForQuery(
+                    $query,
+                    $user,
+                    $limit
+                );
+
+                $acts = collect($ragContext['acts'] ?? [])
+                    ->map(fn($actData) => \App\Models\Egi::find($actData['id']))
+                    ->filter();
+
+                $avgRelevance = collect($ragContext['acts'] ?? [])
+                    ->avg('similarity_score') ?? 0;
+
+                // EVENT 2: Semantic Search Complete
+                $emitSSE('semantic_search_complete', [
+                    'acts_found' => $acts->count(),
+                    'avg_relevance' => round($avgRelevance * 100, 1),
+                    'timestamp' => now()->toISOString(),
+                ]);
+
+                if ($acts->isEmpty()) {
+                    $emitSSE('done', [
+                        'status' => 'no_acts',
+                        'message' => __('natan.no_acts_found'),
+                    ]);
+                    return;
+                }
+
+                // EVENT 3: AI Analysis Start
+                $emitSSE('ai_analysis_start', [
+                    'model' => 'claude-3-5-sonnet-20241022',
+                    'total_acts' => $acts->count(),
+                    'timestamp' => now()->toISOString(),
+                ]);
+
+                // EVENT 4: Response Generation Start
+                $emitSSE('response_generation_start', [
+                    'timestamp' => now()->toISOString(),
+                ]);
+
+                // Build enterprise-grade prompt for PA analysis
+                $strategicPrompt = call_user_func($buildEnterprisePrompt, $query, $acts);
+
+                // Call Claude via NatanChatService
+                $result = $chatService->processQuery(
+                    userQuery: $strategicPrompt,
+                    user: $user,
+                    conversationHistory: [],
+                    manualPersonaId: 'strategic',
+                    useRag: false, // We provide acts directly
+                    useWebSearch: false,
+                    referenceContext: ['acts' => call_user_func($formatActsForClaude, $acts)]
+                );
+
+                // EVENT 5: Cost Update
+                $usage = $result['usage'] ?? null;
+                if ($usage) {
+                    $credits = $creditsService->calculateCreditsFromTokens(
+                        $usage['input_tokens'] ?? 0,
+                        $usage['output_tokens'] ?? 0
+                    );
+
+                    $emitSSE('cost_update', [
+                        'input_tokens' => $usage['input_tokens'] ?? 0,
+                        'output_tokens' => $usage['output_tokens'] ?? 0,
+                        'total_tokens' => ($usage['input_tokens'] ?? 0) + ($usage['output_tokens'] ?? 0),
+                        'credits_used' => $credits,
+                        'cost_eur' => round($credits / 100, 2),
+                        'timestamp' => now()->toISOString(),
+                    ]);
+                }
+
+                // EVENT 6: Response Generation Complete
+                $emitSSE('response_generation_complete', [
+                    'response' => $result['response'] ?? '',
+                    'sources_count' => count($result['sources'] ?? []),
+                    'timestamp' => now()->toISOString(),
+                ]);
+
+                // EVENT 7: Done
+                $emitSSE('done', [
+                    'status' => 'completed',
+                    'total_acts' => $acts->count(),
+                    'avg_relevance' => round($avgRelevance * 100, 1),
+                    'timestamp' => now()->toISOString(),
+                ]);
+
+            } catch (\Exception $e) {
+                $emitSSE('error', [
+                    'message' => $e->getMessage(),
+                    'timestamp' => now()->toISOString(),
+                ]);
+            }
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'X-Accel-Buffering' => 'no', // Disable nginx buffering
+            'Connection' => 'keep-alive',
+        ]);
+    }
+
+    /**
+     * Emit Server-Sent Event
+     *
+     * @param string $event Event name
+     * @param array $data Event data
+     * @return void
+     */
+    private function emitSSE(string $event, array $data): void {
+        echo "event: {$event}\n";
+        echo "data: " . json_encode($data) . "\n\n";
+        ob_flush();
+        flush();
+    }
+
+    /**
+     * Build Enterprise-Grade Prompt for PA Analysis
+     *
+     * Generates strategic consultant-level prompts with quantitative data extraction.
+     *
+     * @param string $query User query
+     * @param \Illuminate\Support\Collection $acts Acts to analyze
+     * @return string
+     */
+    private function buildEnterprisePrompt(string $query, $acts): string {
+        $actsCount = $acts->count();
+
+        return <<<PROMPT
+Sei un CONSULENTE STRATEGICO SENIOR specializzato in Pubblica Amministrazione italiana.
+
+**QUERY DELL'UTENTE:**
+"{$query}"
+
+**DATASET DISPONIBILE:**
+{$actsCount} atti amministrativi rilevanti.
+
+**OBIETTIVO:**
+Fornire un'analisi ENTERPRISE-GRADE con dati quantitativi estratti, non un indice generico.
+
+**REQUISITI OBBLIGATORI:**
+
+1. **ESTRAZIONE DATI QUANTITATIVI:**
+   - Per OGNI atto rilevante, estrai:
+     • Importi in EUR (esatti, non arrotondati)
+     • Date precise (pubblicazione, scadenza, esecuzione)
+     • Codici identificativi (CIG, CUP, numero determina/delibera)
+     • Fornitori/Beneficiari (nome completo)
+   - Crea tabelle formattate Markdown con questi dati
+   - Calcola TOTALI, MEDIE, TREND temporali
+
+2. **ANALISI FINANZIARIA REALE:**
+   - Budget complessivo investito (somma importi)
+   - Costo medio per intervento
+   - Trend spesa mensile/annuale
+   - Distribuzione budget per categoria
+   - ROI stimato dove applicabile
+
+3. **GAP ANALYSIS CONCRETA:**
+   - Identificare atti con problemi: ritardi, budget sforato, compliance issues
+   - Quantificare GAP: giorni di ritardo, EUR mancanti, % completamento
+   - Lista prioritizzata azioni correttive
+
+4. **PIANO IMPLEMENTAZIONE ESECUTIVO:**
+   - Timeline precisa con milestone
+   - Budget necessario per azioni correttive (stima in EUR)
+   - Risorse umane richieste (FTE)
+   - KPI misurabili
+
+5. **FORMATO OUTPUT:**
+   - Usa Markdown strutturato
+   - Tabelle con dati reali (NO esempio fittizi)
+   - Grafici ASCII dove utile
+   - Sezioni: Executive Summary → Dati Estratti → Analisi Finanziaria → Gap Analysis → Piano Azione
+
+**ESEMPIO TABELLA RICHIESTA:**
+
+| Atto | Data | Importo EUR | CIG | Fornitore | Status |
+|------|------|-------------|-----|-----------|--------|
+| DET-2024-123 | 2024-10-15 | 250.000,00 | 98765XYZ | Acme SPA | Completato |
+| DEL-2024-456 | 2024-09-20 | 180.500,00 | 12345ABC | Beta SRL | In corso |
+
+**TOTALE INVESTITO:** 430.500,00 EUR
+
+**NON FARE:**
+❌ Indici generici senza dati
+❌ Frasi vaghe tipo "si nota un trend positivo" (SPECIFICA: +12% YoY)
+❌ Citazioni atti senza estrarre dati quantitativi
+❌ Analisi qualitativa senza numeri
+
+**FAI:**
+✅ Estrai TUTTI i dati quantitativi disponibili
+✅ Calcola totali, medie, percentuali
+✅ Crea tabelle con dati reali
+✅ Fornisci raccomandazioni con budget stimato in EUR
+
+Procedi con l'analisi enterprise-grade.
+PROMPT;
+    }
+
+    /**
+     * Format acts for Claude context
+     *
+     * @param \Illuminate\Support\Collection $acts
+     * @return array
+     */
+    private function formatActsForClaude($acts): array {
+        return $acts->map(function ($act) {
+            return [
+                'id' => $act->id,
+                'number' => $act->jsonMetadata['pa_act']['number'] ?? 'N/A',
+                'title' => $act->title,
+                'description' => $act->description ?? '',
+                'date' => $act->jsonMetadata['pa_act']['date'] ?? null,
+                'category' => $act->jsonMetadata['pa_act']['category'] ?? null,
+                'url' => $act->jsonMetadata['pa_act']['url'] ?? null,
+                'amount' => $act->jsonMetadata['pa_act']['amount'] ?? null,
+                'cig' => $act->jsonMetadata['pa_act']['cig'] ?? null,
+                'cup' => $act->jsonMetadata['pa_act']['cup'] ?? null,
+            ];
+        })->toArray();
     }
 }

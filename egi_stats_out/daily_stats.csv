@@ -1,0 +1,2 @@
+date,commits,commits_weighted,files_modified,lines_added,lines_removed,lines_touched,lines_net,tags,cognitive_load,cl_components,productivity_index
+2025-10-28,12,16.8,18,3142,121,3263,3021,"{'FIX': 2, 'FEAT': 2, 'REFACTOR': 5, 'CHORE': 3}",2.2,"{'LI': 0.282, 'FM': 0.338, 'DP': 0.792}",222.95

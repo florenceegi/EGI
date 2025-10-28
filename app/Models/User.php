@@ -79,6 +79,12 @@ class User extends Authenticatable implements HasMedia {
         'natan_api_key',
         'natan_api_key_generated_at',
         'natan_api_key_last_used_at',
+        // AI Credits (Task 5)
+        'ai_credits_balance',
+        'ai_credits_lifetime_earned',
+        'ai_credits_lifetime_used',
+        'ai_subscription_tier',
+        'ai_subscription_ends_at',
     ];
 
     protected $casts = [

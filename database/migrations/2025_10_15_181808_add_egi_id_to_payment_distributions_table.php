@@ -39,38 +39,75 @@ return new class extends Migration {
 
         // Populate egi_id for existing records only if column was just created
         if (Schema::hasColumn('payment_distributions', 'egi_id')) {
-            DB::statement('
-                UPDATE payment_distributions pd
-                LEFT JOIN reservations r ON pd.reservation_id = r.id
-                LEFT JOIN egi_blockchain eb ON pd.egi_blockchain_id = eb.id
-                SET pd.egi_id = COALESCE(r.egi_id, eb.egi_id)
-                WHERE pd.egi_id IS NULL
-            ');
+            // Use Eloquent for SQLite compatibility
+            $connection = config('database.default');
 
-            // To change NOT NULL with foreign key, we need to drop and recreate
-            // Check if foreign key exists before dropping
-            $foreignKeys = DB::select("
-                SELECT CONSTRAINT_NAME
-                FROM information_schema.KEY_COLUMN_USAGE
-                WHERE TABLE_SCHEMA = DATABASE()
-                AND TABLE_NAME = 'payment_distributions'
-                AND COLUMN_NAME = 'egi_id'
-                AND REFERENCED_TABLE_NAME IS NOT NULL
-            ");
+            if ($connection === 'sqlite') {
+                // SQLite-compatible approach using Eloquent
+                $distributions = DB::table('payment_distributions')
+                    ->whereNull('egi_id')
+                    ->get();
 
-            if (!empty($foreignKeys)) {
-                $constraintName = $foreignKeys[0]->CONSTRAINT_NAME;
-                DB::statement("ALTER TABLE payment_distributions DROP FOREIGN KEY `{$constraintName}`");
+                foreach ($distributions as $dist) {
+                    $egiId = null;
+
+                    // Try get from reservation
+                    if ($dist->reservation_id) {
+                        $egiId = DB::table('reservations')
+                            ->where('id', $dist->reservation_id)
+                            ->value('egi_id');
+                    }
+
+                    // Fallback to egi_blockchain
+                    if (!$egiId && $dist->egi_blockchain_id) {
+                        $egiId = DB::table('egi_blockchain')
+                            ->where('id', $dist->egi_blockchain_id)
+                            ->value('egi_id');
+                    }
+
+                    if ($egiId) {
+                        DB::table('payment_distributions')
+                            ->where('id', $dist->id)
+                            ->update(['egi_id' => $egiId]);
+                    }
+                }
+            } else {
+                // MySQL-optimized query
+                DB::statement('
+                    UPDATE payment_distributions pd
+                    LEFT JOIN reservations r ON pd.reservation_id = r.id
+                    LEFT JOIN egi_blockchain eb ON pd.egi_blockchain_id = eb.id
+                    SET pd.egi_id = COALESCE(r.egi_id, eb.egi_id)
+                    WHERE pd.egi_id IS NULL
+                ');
             }
 
-            // Drop index if exists
-            $indexes = DB::select("
-                SHOW INDEX FROM payment_distributions
-                WHERE Key_name = 'idx_payment_dist_egi_source'
-            ");
+            // To change NOT NULL with foreign key, we need to drop and recreate
+            if ($connection !== 'sqlite') {
+                // Check if foreign key exists before dropping
+                $foreignKeys = DB::select("
+                    SELECT CONSTRAINT_NAME
+                    FROM information_schema.KEY_COLUMN_USAGE
+                    WHERE TABLE_SCHEMA = DATABASE()
+                    AND TABLE_NAME = 'payment_distributions'
+                    AND COLUMN_NAME = 'egi_id'
+                    AND REFERENCED_TABLE_NAME IS NOT NULL
+                ");
 
-            if (!empty($indexes)) {
-                DB::statement("ALTER TABLE payment_distributions DROP INDEX idx_payment_dist_egi_source");
+                if (!empty($foreignKeys)) {
+                    $constraintName = $foreignKeys[0]->CONSTRAINT_NAME;
+                    DB::statement("ALTER TABLE payment_distributions DROP FOREIGN KEY `{$constraintName}`");
+                }
+
+                // Drop index if exists
+                $indexes = DB::select("
+                    SHOW INDEX FROM payment_distributions
+                    WHERE Key_name = 'idx_payment_dist_egi_source'
+                ");
+
+                if (!empty($indexes)) {
+                    DB::statement("ALTER TABLE payment_distributions DROP INDEX idx_payment_dist_egi_source");
+                }
             }
 
             // Change column to NOT NULL
@@ -78,11 +115,13 @@ return new class extends Migration {
                 $table->unsignedBigInteger('egi_id')->nullable(false)->change();
             });
 
-            // Recreate foreign key and index
-            Schema::table('payment_distributions', function (Blueprint $table) {
-                $table->foreign('egi_id')->references('id')->on('egis')->onDelete('cascade');
-                $table->index(['egi_id', 'source_type'], 'idx_payment_dist_egi_source');
-            });
+            // Recreate foreign key and index (only for MySQL)
+            if ($connection !== 'sqlite') {
+                Schema::table('payment_distributions', function (Blueprint $table) {
+                    $table->foreign('egi_id')->references('id')->on('egis')->onDelete('cascade');
+                    $table->index(['egi_id', 'source_type'], 'idx_payment_dist_egi_source');
+                });
+            }
         }
     }
 
