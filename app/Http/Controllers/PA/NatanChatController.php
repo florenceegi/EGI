@@ -364,10 +364,9 @@ class NatanChatController extends Controller {
                 'suggestions' => $suggestions
             ]);
         } catch (\Exception $e) {
-            $this->logger->error('[NatanChatController] Failed to get suggestions', [
+            $this->errorManager->handle('NATAN_SUGGESTIONS_FAILED', [
                 'user_id' => auth()->id(),
-                'error' => $e->getMessage()
-            ]);
+            ], $e);
 
             return response()->json([
                 'success' => false,
@@ -389,15 +388,33 @@ class NatanChatController extends Controller {
      * @return JsonResponse
      */
     public function getHistory(Request $request): JsonResponse {
-        $user = auth()->user();
+        try {
+            $user = auth()->user();
 
-        $this->logger->info('[NATAN][Controller] Getting user history', [
-            'user_id' => $user->id,
-        ]);
+            // GDPR: Audit log data access
+            $result = $this->chatService->getUserChatHistory($user, 50);
 
-        $result = $this->chatService->getUserChatHistory($user, 50);
+            $this->auditService->logUserAction(
+                $user,
+                'natan_history_accessed',
+                [
+                    'sessions_count' => count($result['sessions'] ?? []),
+                ],
+                GdprActivityCategory::DATA_ACCESS
+            );
 
-        return response()->json($result);
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            $this->errorManager->handle('NATAN_HISTORY_ACCESS_FAILED', [
+                'user_id' => auth()->id(),
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'history_access_failed',
+            ], 500);
+        }
     }
 
     /**
@@ -410,16 +427,35 @@ class NatanChatController extends Controller {
      * @return JsonResponse
      */
     public function getSession(Request $request, string $sessionId): JsonResponse {
-        $user = auth()->user();
+        try {
+            $user = auth()->user();
 
-        $this->logger->info('[NATAN][Controller] Getting session messages', [
-            'user_id' => $user->id,
-            'session_id' => $sessionId,
-        ]);
+            // GDPR: Audit log session access
+            $result = $this->chatService->getSessionMessages($sessionId, $user);
 
-        $result = $this->chatService->getSessionMessages($sessionId, $user);
+            $this->auditService->logUserAction(
+                $user,
+                'natan_session_accessed',
+                [
+                    'session_id' => $sessionId,
+                    'messages_count' => count($result['messages'] ?? []),
+                ],
+                GdprActivityCategory::DATA_ACCESS
+            );
 
-        return response()->json($result);
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            $this->errorManager->handle('NATAN_SESSION_ACCESS_FAILED', [
+                'user_id' => auth()->id(),
+                'session_id' => $sessionId,
+            ], $e);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'session_access_failed',
+            ], 500);
+        }
     }
 
     /**
@@ -581,6 +617,18 @@ class NatanChatController extends Controller {
         try {
             $user = auth()->user();
 
+            // GDPR: Check AI processing consent
+            if (!$this->consentService->hasConsent($user, 'allow-ai-processing')) {
+                $this->errorManager->handle('NATAN_AI_CONSENT_REQUIRED', [
+                    'user_id' => $user->id,
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'error' => 'consent_required',
+                ], 403);
+            }
+
             $validated = $request->validate([
                 'query' => 'required|string|min:3|max:500',
                 'limit' => 'required|integer|min:' . config('natan.slider_min_acts', 50)
@@ -710,6 +758,21 @@ class NatanChatController extends Controller {
                     'chunks' => $chunks->count(),
                 ]);
 
+                // GDPR: Audit log analysis start
+                $this->auditService->logUserAction(
+                    $user,
+                    'natan_chunked_analysis_started',
+                    [
+                        'session_id' => $sessionId,
+                        'query' => $query,
+                        'total_acts' => $acts->count(),
+                        'total_chunks' => $chunks->count(),
+                        'strategy' => $strategy,
+                        'estimated_credits' => $costEstimation['estimated_credits'],
+                    ],
+                    GdprActivityCategory::AI_PROCESSING
+                );
+
                 return response()->json([
                     'success' => true,
                     'mode' => 'chunking',
@@ -732,6 +795,18 @@ class NatanChatController extends Controller {
                     'acts' => $acts->count(),
                 ]);
 
+                // GDPR: Audit log normal analysis
+                $this->auditService->logUserAction(
+                    $user,
+                    'natan_normal_analysis_started',
+                    [
+                        'session_id' => $sessionId,
+                        'query' => $query,
+                        'total_acts' => $acts->count(),
+                    ],
+                    GdprActivityCategory::AI_PROCESSING
+                );
+
                 // TODO: Process immediately with chatService
                 // For now, return ready status
                 return response()->json([
@@ -743,15 +818,15 @@ class NatanChatController extends Controller {
                 ]);
             }
         } catch (\Exception $e) {
-            $this->logger->error('[NATAN] Analysis failed', [
+            $this->errorManager->handle('NATAN_ANALYSIS_FAILED', [
                 'user_id' => auth()->id(),
-                'error' => $e->getMessage(),
-            ]);
+                'query' => $request->input('query', ''),
+                'limit' => $request->input('limit', 0),
+            ], $e);
 
             return response()->json([
                 'success' => false,
                 'error' => 'analysis_failed',
-                'message' => __('natan.errors.analysis_failed'),
             ], 500);
         }
     }
@@ -827,16 +902,14 @@ class NatanChatController extends Controller {
                 'status' => $session['status'],
             ]);
         } catch (\Exception $e) {
-            $this->logger->error('[NATAN Chunking] Progress poll failed', [
+            $this->errorManager->handle('NATAN_CHUNKING_PROGRESS_FAILED', [
                 'session_id' => $sessionId,
                 'user_id' => auth()->id(),
-                'error' => $e->getMessage(),
-            ]);
+            ], $e);
 
             return response()->json([
                 'success' => false,
                 'error' => 'progress_poll_failed',
-                'message' => 'Errore durante il recupero del progresso',
             ], 500);
         }
     }
@@ -899,6 +972,18 @@ class NatanChatController extends Controller {
                 'chunks_processed' => count($session['completed_chunks'] ?? []),
             ]);
 
+            // GDPR: Audit log completed chunked analysis retrieval
+            $this->auditService->logUserAction(
+                $user,
+                'natan_chunked_analysis_completed',
+                [
+                    'session_id' => $sessionId,
+                    'chunks_processed' => count($session['completed_chunks'] ?? []),
+                    'total_relevant_acts' => $session['total_relevant_acts'] ?? 0,
+                ],
+                GdprActivityCategory::AI_PROCESSING
+            );
+
             // Return final aggregated response
             return response()->json([
                 'success' => true,
@@ -914,16 +999,14 @@ class NatanChatController extends Controller {
                 ],
             ]);
         } catch (\Exception $e) {
-            $this->logger->error('[NATAN Chunking] Final response retrieval failed', [
+            $this->errorManager->handle('NATAN_CHUNKING_FINAL_FAILED', [
                 'session_id' => $sessionId,
                 'user_id' => auth()->id(),
-                'error' => $e->getMessage(),
-            ]);
+            ], $e);
 
             return response()->json([
                 'success' => false,
                 'error' => 'final_response_failed',
-                'message' => 'Errore durante il recupero della risposta finale',
             ], 500);
         }
     }

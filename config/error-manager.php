@@ -6669,5 +6669,60 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'NATAN_SUGGESTIONS_FAILED' => [
+            'type' => 'warning',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_suggestions_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_suggestions_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_HISTORY_ACCESS_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_history_access_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_history_access_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_SESSION_ACCESS_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_session_access_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_session_access_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_CHUNKING_PROGRESS_FAILED' => [
+            'type' => 'warning',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_chunking_progress_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_chunking_progress_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'NATAN_CHUNKING_FINAL_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.natan_chunking_final_failed',
+            'user_message_key' => 'error-manager::errors_2.user.natan_chunking_final_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];
