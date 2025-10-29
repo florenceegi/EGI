@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Blockchain\AlgorandClient;
 use App\Services\Security\KmsClient;
+use App\Services\Security\KmsHealthCheck;
 use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Illuminate\Support\Facades\DB;
@@ -32,19 +33,22 @@ class WalletProvisioningService
     protected AuditLogService $auditService;
     protected AlgorandClient $algorandClient;
     protected KmsClient $kms;
+    protected KmsHealthCheck $kmsHealth;
 
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
         AuditLogService $auditService,
         AlgorandClient $algorandClient,
-        KmsClient $kms
+        KmsClient $kms,
+        KmsHealthCheck $kmsHealth
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
         $this->algorandClient = $algorandClient;
         $this->kms = $kms;
+        $this->kmsHealth = $kmsHealth;
     }
 
     /**
@@ -62,6 +66,9 @@ class WalletProvisioningService
     public function provisionUserWallet(User $user, array $data = []): Wallet
     {
         try {
+            // 0. PRE-FLIGHT: Verify KMS is healthy before attempting wallet creation
+            $this->kmsHealth->ensureHealthy();
+
             // 1. ULM: Log start
             $this->logger->info('WalletProvisioning: Starting wallet creation', [
                 'user_id' => $user->id,

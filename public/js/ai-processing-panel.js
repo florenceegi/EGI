@@ -225,22 +225,46 @@ const AIProcessingPanel = {
      * Maps model names to user-friendly labels
      */
     updateModelDisplay(modelName) {
-        const statModel = document.getElementById('stat-model');
-        if (!statModel || !modelName) return;
+        const statModel = document.getElementById("stat-model");
+        const stageAiTitle = document.getElementById("stage-ai-title");
+
+        if (!modelName) return;
 
         // Map model names to display labels
         const modelLabels = {
-            'claude-3-5-sonnet-20241022': 'Claude 3.5<br>Sonnet (Oct 2024)',
-            'claude-3-5-sonnet-20240620': 'Claude 3.5<br>Sonnet (Jun 2024)',
-            'claude-3-opus-20240229': 'Claude 3<br>Opus (Feb 2024)',
-            'claude-3-sonnet-20240229': 'Claude 3<br>Sonnet (Feb 2024)',
-            'claude-3-haiku-20240307': 'Claude 3<br>Haiku (Mar 2024)',
+            "claude-3-5-sonnet-20241022": "Claude 3.5<br>Sonnet (Oct 2024)",
+            "claude-3-5-sonnet-20240620": "Claude 3.5<br>Sonnet (Jun 2024)",
+            "claude-3-opus-20240229": "Claude 3<br>Opus (Feb 2024)",
+            "claude-3-sonnet-20240229": "Claude 3<br>Sonnet (Feb 2024)",
+            "claude-3-haiku-20240307": "Claude 3<br>Haiku (Mar 2024)",
         };
 
-        const displayLabel = modelLabels[modelName] || modelName;
-        statModel.innerHTML = displayLabel;
+        const shortLabels = {
+            "claude-3-5-sonnet-20241022": "Claude 3.5 Sonnet (20241022)",
+            "claude-3-5-sonnet-20240620": "Claude 3.5 Sonnet (20240620)",
+            "claude-3-opus-20240229": "Claude 3 Opus (20240229)",
+            "claude-3-sonnet-20240229": "Claude 3 Sonnet (20240229)",
+            "claude-3-haiku-20240307": "Claude 3 Haiku (20240307)",
+        };
 
-        console.log('[AIProcessingPanel] Model updated:', modelName, '→', displayLabel);
+        // Update stat box
+        if (statModel) {
+            const displayLabel = modelLabels[modelName] || modelName;
+            statModel.innerHTML = displayLabel;
+        }
+
+        // Update stage title
+        if (stageAiTitle) {
+            const shortLabel = shortLabels[modelName] || modelName;
+            stageAiTitle.textContent = `Analisi AI con ${shortLabel}`;
+        }
+
+        console.log(
+            "[AIProcessingPanel] Model updated:",
+            modelName,
+            "→",
+            modelLabels[modelName] || modelName
+        );
     },
 
     /**
@@ -275,7 +299,7 @@ const AIProcessingPanel = {
             if (iconContainer) {
                 iconContainer.classList.remove("animate-spin");
             }
-        } else if (status === "processing") {
+        } else if (status === "processing" || status === "active") {
             stage.classList.add("bg-blue-50", "border-blue-200");
             if (icon) {
                 icon.textContent = "sync";
@@ -391,11 +415,23 @@ const AIProcessingPanel = {
 
     /**
      * Complete processing (success animation)
+     * @param {Object} options - Optional parameters
+     * @param {string} options.personaName - Persona name to display
+     * @param {number} options.personaConfidence - Persona confidence percentage
      */
-    complete() {
+    complete(options = {}) {
         this.updateProgress(100);
         this.updateStage("context", "completed", "Contesto ottimizzato");
-        this.updateStage("ai", "completed", "Analisi AI completata");
+
+        // Update AI stage with persona info if available
+        let aiDetail = "Analisi AI completata";
+        if (options.personaName && options.personaConfidence) {
+            aiDetail = `${options.personaName} (${options.personaConfidence}%)`;
+        } else if (options.personaName) {
+            aiDetail = options.personaName;
+        }
+        this.updateStage("ai", "completed", aiDetail);
+
         this.updateStage(
             "response",
             "processing",
@@ -407,7 +443,7 @@ const AIProcessingPanel = {
                 "✨ Analisi completata! Generazione risposta...";
         }
 
-        console.log("[AIProcessingPanel] Processing completed");
+        console.log("[AIProcessingPanel] Processing completed", options);
 
         // ❌ REMOVED auto-hide - User must manually close panel to see final stats
         // setTimeout(() => this.hide(), 2000);

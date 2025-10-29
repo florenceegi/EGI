@@ -21,7 +21,7 @@ class TestKmsConnection extends Command {
      *
      * @var string
      */
-    protected $signature = 'kms:test 
+    protected $signature = 'kms:test
                             {--mode=auto : Test mode: auto, mock, or aws}
                             {--detailed : Show detailed test output}';
 

@@ -115,8 +115,8 @@ class UpdateExchangeRateCommand extends Command {
 
         $this->newLine();
         $this->line('💱 Conversion Examples:');
-        $this->line("  • $1.00 USD = €{$info['1_usd_in_eur']}");
-        $this->line("  • €1.00 EUR = ${$info['1_eur_in_usd']} USD");
+        $this->line("  • \$1.00 USD = €{$info['1_usd_in_eur']}");
+        $this->line("  • €1.00 EUR = \$" . $info['1_eur_in_usd'] . " USD");
         $this->newLine();
 
         // Example cost calculation

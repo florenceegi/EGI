@@ -79,7 +79,7 @@ class AnthropicService {
 
     /**
      * Testa se un modello specifico è disponibile per questa API key
-     * 
+     *
      * @param string $model Nome del modello da testare
      * @return bool True se il modello risponde, false se not_found_error
      */
@@ -127,7 +127,6 @@ class AnthropicService {
                 'error' => $body['error'] ?? 'unknown',
             ]);
             return true;
-
         } catch (\Exception $e) {
             // Network error or similar - assume model exists
             $this->logger->error('[AnthropicService] Model test exception (assuming available)', [
@@ -140,7 +139,7 @@ class AnthropicService {
 
     /**
      * Trova il primo modello disponibile dalla chain di fallback
-     * 
+     *
      * @return string Nome del modello disponibile
      * @throws RuntimeException Se nessun modello è disponibile
      */
@@ -181,14 +180,14 @@ class AnthropicService {
 
         // Nessun modello disponibile!
         throw new RuntimeException(
-            'No Claude models available for this API key. Tried: ' . 
-            implode(', ', array_merge([$this->configuredModel], self::MODEL_FALLBACK_CHAIN))
+            'No Claude models available for this API key. Tried: ' .
+                implode(', ', array_merge([$this->configuredModel], self::MODEL_FALLBACK_CHAIN))
         );
     }
 
     /**
      * Ottiene il modello attivo (con lazy fallback al primo utilizzo)
-     * 
+     *
      * @return string Nome del modello da usare
      */
     private function getActiveModel(): string {
@@ -199,7 +198,7 @@ class AnthropicService {
 
         // Prima chiamata - verifica disponibilità e trova modello se necessario
         $this->activeModel = $this->findAvailableModel();
-        
+
         return $this->activeModel;
     }
 
@@ -231,10 +230,10 @@ class AnthropicService {
             $modelToUse = $this->getActiveModel();
 
             // Calcola timeout dinamico in base alla lunghezza del contenuto
-            $messageLength = strlen($systemPrompt) + array_reduce($messages, function($carry, $msg) {
+            $messageLength = strlen($systemPrompt) + array_reduce($messages, function ($carry, $msg) {
                 return $carry + strlen($msg['content'] ?? '');
             }, 0);
-            
+
             // Timeout base 60s, +30s ogni 1000 caratteri oltre i primi 1000
             $dynamicTimeout = $this->timeout;
             if ($messageLength > 1000) {

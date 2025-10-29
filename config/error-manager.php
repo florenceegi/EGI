@@ -6406,6 +6406,17 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'KMS_UNAVAILABLE' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.kms_unavailable',
+            'user_message_key' => 'error-manager::errors_2.user.kms_unavailable',
+            'http_status_code' => 503,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
         // ====================================================
         // N.A.T.A.N. WEB SEARCH ERRORS (v3.0)
         // ====================================================

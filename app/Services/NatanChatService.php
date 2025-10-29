@@ -299,17 +299,34 @@ class NatanChatService {
                     $this->logger->info('[NatanChatService] RAG context retrieved and sanitized (Generic PA mode)', $logContext);
                 }
             } else {
-                // No RAG: Empty context (for elaborations or general consulting)
-                $context = [
-                    'acts' => [],
-                    'acts_summary' => '',
-                    'stats' => [],
-                ];
+                // No RAG: Check if acts provided via referenceContext
+                // (analyzeActsStream provides acts directly to skip RAG overhead)
+                if ($referenceContext && isset($referenceContext['acts']) && !empty($referenceContext['acts'])) {
+                    // Use acts from referenceContext (provided by controller)
+                    $context = [
+                        'acts' => $referenceContext['acts'],
+                        'acts_summary' => '', // No summary needed, acts are pre-formatted
+                        'stats' => [],
+                    ];
 
-                $logContext['acts_count'] = 0;
-                $logContext['rag_skipped'] = true;
+                    $logContext['acts_count'] = count($referenceContext['acts']);
+                    $logContext['rag_skipped'] = false; // Acts provided directly
+                    $logContext['acts_source'] = 'referenceContext';
 
-                $this->logger->info('[NatanChatService] RAG skipped (elaboration or general query)', $logContext);
+                    $this->logger->info('[NatanChatService] Acts provided via referenceContext (analyzeActsStream)', $logContext);
+                } else {
+                    // Truly no acts (general consulting or elaboration on text-only message)
+                    $context = [
+                        'acts' => [],
+                        'acts_summary' => '',
+                        'stats' => [],
+                    ];
+
+                    $logContext['acts_count'] = 0;
+                    $logContext['rag_skipped'] = true;
+
+                    $this->logger->info('[NatanChatService] RAG skipped (elaboration or general query)', $logContext);
+                }
             }
 
             // STEP 2.5: Retrieve web search results (if enabled) ✨ NEW v3.0
@@ -380,11 +397,19 @@ class NatanChatService {
             }
 
             // STEP 3: GDPR Audit - Log what we're sending to AI
+            $fieldsToLog = [];
+            if (!empty($context['acts'])) {
+                $firstAct = reset($context['acts']); // Get first element safely
+                if (is_array($firstAct)) {
+                    $fieldsToLog = array_keys($firstAct);
+                }
+            }
+
             $this->logger->info('[NatanChatService][GDPR] Data sent to Anthropic AI', [
                 'user_id' => $user->id,
                 'acts_count' => count($context['acts']),
                 'acts_ids' => array_column($context['acts'], 'id'),
-                'fields_sent' => !empty($context['acts']) ? array_keys($context['acts'][0]) : [],
+                'fields_sent' => $fieldsToLog,
                 'persona_id' => $personaSelection['persona_id'],
                 'timestamp' => now()->toIso8601String(),
             ]);

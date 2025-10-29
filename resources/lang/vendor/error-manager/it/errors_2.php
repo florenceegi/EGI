@@ -352,6 +352,7 @@ return [
         'kms_provider_unavailable' => 'CRITICAL: KMS provider unavailable. Provider: :provider, Endpoint: :endpoint, Error: :error',
         'kms_configuration_invalid' => 'CRITICAL: KMS configuration invalid. Provider: :provider, Issue: :issue',
         'kms_audit_log_failed' => 'KMS audit logging failed. Operation: :operation, User: :user_id, Error: :error',
+        'kms_unavailable' => 'CRITICAL: KMS service unavailable - health check failed. Provider: :provider, Error: :error, Last test: :tested_at',
     ],
 
     'user' => [
@@ -410,6 +411,7 @@ return [
         'kms_provider_unavailable' => 'Il sistema di sicurezza non è al momento disponibile. Riprova tra qualche minuto o contatta l\'assistenza.',
         'kms_configuration_invalid' => 'Configurazione di sicurezza non valida. Contatta immediatamente l\'assistenza tecnica.',
         'kms_audit_log_failed' => 'Errore nel sistema di tracciamento sicurezza. L\'operazione è stata comunque completata.',
+        'kms_unavailable' => 'Il sistema di crittografia wallet non è al momento disponibile. Il nostro team è stato notificato. Riprova tra qualche minuto.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)
