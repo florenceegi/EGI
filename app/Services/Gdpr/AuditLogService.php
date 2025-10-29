@@ -300,15 +300,15 @@ class AuditLogService {
      */
     public function getUserActivityLog(
         User $user,
-        int $limit = 50,
+        int $perPage = 50,
         array $categories = [],
         ?Carbon $dateFrom = null,
         ?Carbon $dateTo = null
-    ): Collection {
+    ) {
         try {
             $this->logger->info('Audit Log Service: Getting user activity log', [
                 'user_id' => $user->id,
-                'limit' => $limit,
+                'per_page' => $perPage,
                 'categories' => $categories,
                 'log_category' => 'AUDIT_SERVICE_OPERATION'
             ]);
@@ -327,8 +327,8 @@ class AuditLogService {
                 $query->where('created_at', '<=', $dateTo);
             }
 
-            // Return Eloquent objects directly - view expects objects with methods
-            return $query->limit($limit)->get();
+            // Return paginated results - view uses ->links() for pagination
+            return $query->paginate($perPage);
         } catch (\Exception $e) {
             $this->logger->error('Audit Log Service: Failed to get activity log', [
                 'user_id' => $user->id,
@@ -583,8 +583,8 @@ class AuditLogService {
                 ->get()
                 ->map(function ($activity) {
                     // Get category value (enum object to string)
-                    $categoryValue = $activity->category instanceof \BackedEnum 
-                        ? $activity->category->value 
+                    $categoryValue = $activity->category instanceof \BackedEnum
+                        ? $activity->category->value
                         : $activity->category;
 
                     return [
@@ -692,8 +692,8 @@ class AuditLogService {
 
         return $query->get()->map(function ($activity) {
             // Get category value (enum object to string)
-            $categoryValue = $activity->category instanceof \BackedEnum 
-                ? $activity->category->value 
+            $categoryValue = $activity->category instanceof \BackedEnum
+                ? $activity->category->value
                 : $activity->category;
 
             return [
