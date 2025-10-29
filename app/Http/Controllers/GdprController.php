@@ -1420,7 +1420,7 @@ class GdprController extends Controller {
 
             $activities = $this->auditService->getUserActivityLog($user, 50);
             $activityStats = $this->auditService->getUserActivityStats($user);
-            $availableCategories = config('gdpr.activity_categories', []);
+            $availableCategories = array_keys(config('gdpr.activity_categories', []));
 
             $this->auditService->logUserAction($user, 'activity_log_viewed', [], GdprActivityCategory::GDPR_ACTIONS);
 

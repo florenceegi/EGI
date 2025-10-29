@@ -600,10 +600,15 @@ class AuditLogService {
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($activity) {
+                    // Get category value (enum object to string)
+                    $categoryValue = $activity->category instanceof \BackedEnum 
+                        ? $activity->category->value 
+                        : $activity->category;
+
                     return [
                         'timestamp' => $activity->created_at->toISOString(),
                         'action' => $activity->action,
-                        'category' => $activity->category,
+                        'category' => $categoryValue,
                         'context' => $activity->context,
                         'privacy_level' => $activity->privacy_level
                     ];
@@ -704,11 +709,16 @@ class AuditLogService {
         }
 
         return $query->get()->map(function ($activity) {
+            // Get category value (enum object to string)
+            $categoryValue = $activity->category instanceof \BackedEnum 
+                ? $activity->category->value 
+                : $activity->category;
+
             return [
                 'timestamp' => $activity->created_at->toISOString(),
                 'action' => $activity->action,
-                'category' => $activity->category,
-                'category_name' => $this->activityCategories[$activity->category]['name'] ?? 'Unknown',
+                'category' => $categoryValue,
+                'category_name' => $this->activityCategories[$categoryValue]['name'] ?? 'Unknown',
                 'context' => $activity->context,
                 'ip_address' => $activity->ip_address,
                 'privacy_level' => $activity->privacy_level,
