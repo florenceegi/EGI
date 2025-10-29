@@ -67,7 +67,7 @@
                     <span class="material-symbols-outlined text-green-600">check_circle</span>
                     <div class="flex-1">
                         <p class="text-sm font-medium text-gray-900">Ricerca semantica completata</p>
-                        <p class="text-xs text-gray-600" id="stage-search-detail">0 atti trovati nel database</p>
+                        <p class="text-xs text-gray-600" id="stage-search-detail">Ricerca su 0 atti</p>
                     </div>
                 </div>
 
@@ -105,31 +105,34 @@
                 <div class="text-center">
                     <div class="mb-1 flex items-center justify-center gap-1">
                         <p class="text-xs text-gray-600">Top atti per rilevanza</p>
-                        <button 
-                            type="button"
-                            class="group relative cursor-help"
-                            aria-label="Informazioni sulla selezione degli atti"
-                        >
-                            <span class="material-symbols-outlined text-[14px] text-gray-400 hover:text-[#1B365D]">help</span>
-                            
+                        <button type="button" class="group relative cursor-help"
+                            aria-label="Informazioni sulla selezione degli atti">
+                            <span
+                                class="material-symbols-outlined text-[14px] text-gray-400 hover:text-[#1B365D]">help</span>
+
                             {{-- Tooltip Dettagliato --}}
-                            <div class="absolute bottom-full left-1/2 z-50 mb-2 hidden w-80 -translate-x-1/2 rounded-lg border border-gray-200 bg-white p-4 shadow-xl group-hover:block">
+                            <div
+                                class="absolute bottom-full left-1/2 z-50 mb-2 hidden w-80 -translate-x-1/2 rounded-lg border border-gray-200 bg-white p-4 shadow-xl group-hover:block">
                                 <div class="mb-2 flex items-start gap-2">
                                     <span class="material-symbols-outlined text-[#1B365D]">info</span>
                                     <div>
-                                        <p class="mb-2 text-xs font-semibold text-gray-900">Come vengono selezionati gli atti:</p>
+                                        <p class="mb-2 text-xs font-semibold text-gray-900">Come vengono selezionati gli
+                                            atti:</p>
                                         <ol class="space-y-2 text-[11px] text-gray-700">
                                             <li class="flex gap-2">
                                                 <span class="font-mono text-[#2D5016]">1.</span>
-                                                <span><strong>Ricerca semantica</strong> su tutti gli atti del Comune con embeddings</span>
+                                                <span><strong>Ricerca semantica</strong> su tutti gli atti del Comune
+                                                    con embeddings</span>
                                             </li>
                                             <li class="flex gap-2">
                                                 <span class="font-mono text-[#2D5016]">2.</span>
-                                                <span><strong>Calcolo similarità</strong> (cosine similarity) tra query e contenuto atti</span>
+                                                <span><strong>Calcolo similarità</strong> (cosine similarity) tra query
+                                                    e contenuto atti</span>
                                             </li>
                                             <li class="flex gap-2">
                                                 <span class="font-mono text-[#2D5016]">3.</span>
-                                                <span><strong>Filtro qualitativo:</strong> solo atti con similarità ≥ 50%</span>
+                                                <span><strong>Filtro qualitativo:</strong> solo atti con similarità ≥
+                                                    50%</span>
                                             </li>
                                             <li class="flex gap-2">
                                                 <span class="font-mono text-[#2D5016]">4.</span>
@@ -137,17 +140,21 @@
                                             </li>
                                             <li class="flex gap-2">
                                                 <span class="font-mono text-[#2D5016]">5.</span>
-                                                <span><strong>Selezione Top N</strong> atti più pertinenti (limite impostato)</span>
+                                                <span><strong>Selezione Top N</strong> atti più pertinenti (limite
+                                                    impostato)</span>
                                             </li>
                                         </ol>
                                         <p class="mt-3 rounded bg-blue-50 px-2 py-1 text-[10px] text-blue-800">
-                                            <strong>Risultato:</strong> Gli atti mostrati sono i più rilevanti per la tua ricerca, non un campione casuale.
+                                            <strong>Risultato:</strong> Gli atti mostrati sono i più rilevanti per la
+                                            tua ricerca, non un campione casuale.
                                         </p>
                                     </div>
                                 </div>
                                 {{-- Freccia tooltip --}}
                                 <div class="absolute left-1/2 top-full -translate-x-1/2">
-                                    <div class="border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
+                                    <div
+                                        class="border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white">
+                                    </div>
                                 </div>
                             </div>
                         </button>
@@ -190,21 +197,21 @@
                 {{-- Cost Breakdown --}}
                 <div class="grid grid-cols-2 gap-3">
                     <div class="rounded-lg border-2 border-gray-200 bg-white p-3 text-center">
-                        <p class="text-xs text-gray-500 uppercase">Input</p>
+                        <p class="text-xs uppercase text-gray-500">Input</p>
                         <p class="text-lg font-bold text-blue-600" id="costInputTokens">0</p>
                         <p class="text-xs text-gray-500">tokens</p>
                     </div>
                     <div class="rounded-lg border-2 border-gray-200 bg-white p-3 text-center">
-                        <p class="text-xs text-gray-500 uppercase">Output</p>
+                        <p class="text-xs uppercase text-gray-500">Output</p>
                         <p class="text-lg font-bold text-purple-600" id="costOutputTokens">0</p>
                         <p class="text-xs text-gray-500">tokens</p>
                     </div>
                 </div>
 
                 {{-- Note PA --}}
-                <div class="mt-4 rounded-lg bg-blue-50 p-3 border border-blue-200">
+                <div class="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
                     <p class="text-xs text-blue-800">
-                        <span class="material-symbols-outlined text-sm align-middle">info</span>
+                        <span class="material-symbols-outlined align-middle text-sm">info</span>
                         <strong>Tracciamento costi:</strong> Costo reale addebitato da Anthropic per questa query.
                         Utile per rendicontazione interna PA.
                     </p>

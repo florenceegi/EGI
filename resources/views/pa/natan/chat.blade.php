@@ -909,29 +909,29 @@
 
                         personaBadgeDiv.innerHTML = `
                             ${message.is_elaboration ? `
-                                                                                                                                                                        <span class="elaboration-badge">
-                                                                                                                                                                            🔄 Elaborazione
-                                                                                                                                                                        </span>
-                                                                                                                                                                    ` : ''}
+                                                                                                                                                                                <span class="elaboration-badge">
+                                                                                                                                                                                    🔄 Elaborazione
+                                                                                                                                                                                </span>
+                                                                                                                                                                            ` : ''}
                             <span style="background-color: ${personaColor};"
                                   class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
                                 <span>${personaIcon}</span>
                                 <span>${message.persona.name}</span>
                             </span>
                             ${message.persona.confidence ? `
-                                                                                                                                                                                                <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
-                                                                                                                                                                                                    ${Math.round(message.persona.confidence * 100)}%
-                                                                                                                                                                                                </span>
-                                                                                                                                                                                            ` : ''}
+                                                                                                                                                                                                        <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
+                                                                                                                                                                                                            ${Math.round(message.persona.confidence * 100)}%
+                                                                                                                                                                                                        </span>
+                                                                                                                                                                                                    ` : ''}
                             ${message.persona.method === 'manual' ? `
-                                                                                                                                                                                                <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
-                                                                                                                                                                                                    ✓ Manuale
-                                                                                                                                                                                                </span>
-                                                                                                                                                                                            ` : message.persona.method === 'default' ? `
-                                                                                                                                                                                                <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
-                                                                                                                                                                                                    Auto (Default)
-                                                                                                                                                                                                </span>
-                                                                                                                                                                                            ` : ''}
+                                                                                                                                                                                                        <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
+                                                                                                                                                                                                            ✓ Manuale
+                                                                                                                                                                                                        </span>
+                                                                                                                                                                                                    ` : message.persona.method === 'default' ? `
+                                                                                                                                                                                                        <span class="rounded bg-yellow-100 px-2 py-0.5 text-yellow-700" title="Modalità predefinita">
+                                                                                                                                                                                                            Auto (Default)
+                                                                                                                                                                                                        </span>
+                                                                                                                                                                                                    ` : ''}
                         `;
                         bubbleDiv.appendChild(personaBadgeDiv);
 
@@ -977,13 +977,13 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-1">
                                 ${message.sources.map(source => `
-                                                                                                                                                                    <a href="${source.url}" target="_blank"
-                                                                                                                                                                       class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
-                                                                                                                                                                        <span class="font-medium">${source.protocol_number}</span>
-                                                                                                                                                                        <span class="text-gray-600"> - </span>
-                                                                                                                                                                        <span>${source.title}</span>
-                                                                                                                                                                    </a>
-                                                                                                                                                                `).join('')}
+                                                                                                                                                                            <a href="${source.url}" target="_blank"
+                                                                                                                                                                               class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
+                                                                                                                                                                                <span class="font-medium">${source.protocol_number}</span>
+                                                                                                                                                                                <span class="text-gray-600"> - </span>
+                                                                                                                                                                                <span>${source.title}</span>
+                                                                                                                                                                            </a>
+                                                                                                                                                                        `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(sourcesDiv);
@@ -1008,21 +1008,21 @@
                             </button>
                             <div id="${collapseId}" class="hidden space-y-2">
                                 ${message.web_sources.map((source, idx) => `
-                                                                                                                                            <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
-                                                                                                                                                <div class="flex items-start justify-between gap-2 mb-1">
-                                                                                                                                                    <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
-                                                                                                                                                    <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                                                                                                                        ${Math.round((source.relevance_score || 1) * 100)}%
-                                                                                                                                                    </span>
-                                                                                                                                                </div>
-                                                                                                                                                <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
-                                                                                                                                                <a href="${source.url}" target="_blank" rel="noopener noreferrer"
-                                                                                                                                                   class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                                                                                                                                    <span class="material-icons text-xs">open_in_new</span>
-                                                                                                                                                    <span class="truncate">${source.url}</span>
-                                                                                                                                                </a>
-                                                                                                                                            </div>
-                                                                                                                                        `).join('')}
+                                                                                                                                                    <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
+                                                                                                                                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                                                                                                                                            <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
+                                                                                                                                                            <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                                                                                                                                ${Math.round((source.relevance_score || 1) * 100)}%
+                                                                                                                                                            </span>
+                                                                                                                                                        </div>
+                                                                                                                                                        <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
+                                                                                                                                                        <a href="${source.url}" target="_blank" rel="noopener noreferrer"
+                                                                                                                                                           class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
+                                                                                                                                                            <span class="material-icons text-xs">open_in_new</span>
+                                                                                                                                                            <span class="truncate">${source.url}</span>
+                                                                                                                                                        </a>
+                                                                                                                                                    </div>
+                                                                                                                                                `).join('')}
                             </div>
                         `;
                         bubbleDiv.appendChild(webSourcesDiv);
@@ -1266,13 +1266,13 @@
                     console.log('🚀🚀🚀 [SSE] sendToApiWithSSE CALLED!', message);
 
                     this.setLoading(true);
-                    
+
                     // Check if AIProcessingPanel exists
                     if (typeof AIProcessingPanel === 'undefined') {
                         console.error('❌ AIProcessingPanel NOT LOADED!');
                         return;
                     }
-                    
+
                     console.log('✅ AIProcessingPanel exists, calling show()...');
                     AIProcessingPanel.show(0);
                     console.log('✅ AIProcessingPanel.show() completed');
@@ -1429,10 +1429,10 @@
 
                             // Add response to chat WITH sources and persona
                             this.addMessage(
-                                'assistant', 
+                                'assistant',
                                 data.response,
-                                data.sources || [],      // ✅ Sources array
-                                data.persona || null     // ✅ Persona object
+                                data.sources || [], // ✅ Sources array
+                                data.persona || null // ✅ Persona object
                             );
 
                             // ❌ REMOVED auto-hide - User must manually close panel to see final stats
@@ -1744,16 +1744,16 @@
                                 <div class="flex-1">
                                     <p class="text-sm text-red-800 font-medium mb-2">${errorMessage}</p>
                                     ${sessionId ? `
-                                                                <button
-                                                                    onclick="NatanChat.retryChunking('${sessionId}')"
-                                                                    class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200"
-                                                                >
-                                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                                                    </svg>
-                                                                    {{ __('natan.chunking.retry_button') }}
-                                                                </button>
-                                                            ` : ''}
+                                                                        <button
+                                                                            onclick="NatanChat.retryChunking('${sessionId}')"
+                                                                            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200"
+                                                                        >
+                                                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                                                            </svg>
+                                                                            {{ __('natan.chunking.retry_button') }}
+                                                                        </button>
+                                                                    ` : ''}
                                 </div>
                             </div>
                         </div>

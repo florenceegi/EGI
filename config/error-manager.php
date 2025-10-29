@@ -6724,6 +6724,17 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'ANTHROPIC_MODEL_FALLBACK' => [
+            'type' => 'warning',
+            'blocking' => 'non-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.anthropic_model_fallback',
+            'user_message_key' => 'error-manager::errors_2.user.anthropic_model_fallback',
+            'http_status_code' => 200,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'log',
+        ],
+
         'NATAN_API_CALL_FAILED' => [
             'type' => 'error',
             'blocking' => 'blocking',

@@ -25,26 +25,26 @@
 
 ---
 
-## 📝 REGOLE COMMIT
+    ## 📝 REGOLE COMMIT
 
-### Tag obbligatori:
+    ### Tag obbligatori:
 
--   `[FEAT]` - nuova feature o funzionalità
--   `[FIX]` - bug risolto
--   `[REFACTOR]` - refactoring del codice
--   `[DOC]` - documentazione aggiunta o aggiornata
--   `[TEST]` - aggiunta o modifica di test
--   `[CHORE]` - attività di manutenzione
+    -   `[FEAT]` - nuova feature o funzionalità
+    -   `[FIX]` - bug risolto
+    -   `[REFACTOR]` - refactoring del codice
+    -   `[DOC]` - documentazione aggiunta o aggiornata
+    -   `[TEST]` - aggiunta o modifica di test
+    -   `[CHORE]` - attività di manutenzione
 
-### Formato obbligatorio:
+    ### Formato obbligatorio:
 
-```
-[TAG] Descrizione breve e chiara
+    ```
+    [TAG] Descrizione breve e chiara
 
-- Dettaglio 1 (cosa modificato)
-- Dettaglio 2 (perché fatto)
-- Dettaglio 3 (effetti/note)
-- Max 4-5 punti
+    - Dettaglio 1 (cosa modificato)
+    - Dettaglio 2 (perché fatto)
+    - Dettaglio 3 (effetti/note)
+    - Max 4-5 punti
 ```
 
 ---

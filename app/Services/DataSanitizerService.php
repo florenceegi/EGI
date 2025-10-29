@@ -19,8 +19,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * AUDIT TRAIL:
  * Ogni operazione di sanitizzazione è loggata per compliance GDPR.
  */
-class DataSanitizerService
-{
+class DataSanitizerService {
     private UltraLogManager $logger;
 
     /**
@@ -56,8 +55,7 @@ class DataSanitizerService
         'metadata',                 // Potrebbe contenere dati non filtrati
     ];
 
-    public function __construct(UltraLogManager $logger)
-    {
+    public function __construct(UltraLogManager $logger) {
         $this->logger = $logger;
     }
 
@@ -67,8 +65,7 @@ class DataSanitizerService
      * @param Egi $act L'atto PA da sanitizzare
      * @return array Dati pubblici sicuri per l'AI
      */
-    public function sanitizeAct(Egi $act): array
-    {
+    public function sanitizeAct(Egi $act): array {
         // Estrai direzione da original_data se disponibile
         $direzione = null;
         if (isset($act->jsonMetadata['original_data']['direzione'])) {
@@ -94,15 +91,14 @@ class DataSanitizerService
         return $publicData;
     }
 
-        /**
+    /**
      * Sanitizza una collection di atti PA rimuovendo dati potenzialmente sensibili
      * PRESERVES similarity scores from RagService (needed for avg_relevance calculation)
      *
      * @param Collection $acts Collection of Egi or array['act' => Egi, 'similarity' => float]
      * @return array Sanitized acts with preserved similarity
      */
-    public function sanitizeActsCollection(Collection $acts): array
-    {
+    public function sanitizeActsCollection(Collection $acts): array {
         $sanitized = $acts->map(function ($item) {
             // Handle both old format (Egi object) and new format (array with 'act' and 'similarity')
             $act = is_array($item) ? ($item['act'] ?? $item) : $item;
@@ -136,8 +132,7 @@ class DataSanitizerService
      * NOTE: Gli atti PA sono pubblici per natura (albo pretorio),
      * ma applichiamo comunque sanitizzazione conservativa.
      */
-    private function sanitizeTitle(?string $title): ?string
-    {
+    private function sanitizeTitle(?string $title): ?string {
         if (empty($title)) {
             return null;
         }
@@ -156,7 +151,7 @@ class DataSanitizerService
 
         // NO logging per singole redactions - troppo verbose
         // Se serve debug, attivare temporaneamente
-        
+
         return $sanitized;
     }
 
@@ -166,8 +161,7 @@ class DataSanitizerService
      * @param Collection $acts Collezione di atti
      * @return string Riassunto testuale
      */
-    public function createActsSummary(Collection $acts): string
-    {
+    public function createActsSummary(Collection $acts): string {
         if ($acts->isEmpty()) {
             return "Nessun atto PA presente nel sistema.";
         }
@@ -229,8 +223,7 @@ class DataSanitizerService
      * @param Collection $acts Collezione di atti
      * @return array Statistiche pubbliche
      */
-    public function createStatsContext(Collection $acts, ?int $userId = null): array
-    {
+    public function createStatsContext(Collection $acts, ?int $userId = null): array {
         // Stats BASE dal campione
         $stats = [
             'total_acts_in_sample' => $acts->count(),  // Atti nel campione recuperato
@@ -299,8 +292,7 @@ class DataSanitizerService
      * @return bool True se i dati sono sicuri
      * @throws \RuntimeException Se sono presenti campi privati
      */
-    public function validateSafeData(array $data): bool
-    {
+    public function validateSafeData(array $data): bool {
         foreach (self::PRIVATE_FIELDS as $privateField) {
             if (array_key_exists($privateField, $data)) {
                 $this->logger->error('[DataSanitizer][GDPR VIOLATION] Private field detected in payload', [

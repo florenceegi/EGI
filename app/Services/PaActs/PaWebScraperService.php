@@ -65,8 +65,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @security GDPR compliance, PII sanitization, audit trail, input validation
  * @gdpr-compliant Public data only, legal basis tracking, audit logging
  */
-class PaWebScraperService
-{
+class PaWebScraperService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected DataSanitizerService $sanitizer;
@@ -119,8 +118,7 @@ class PaWebScraperService
      * - Records number of acts scraped
      * - Validates no PII in output
      */
-    public function execute(PaWebScraper $scraper, User $user, array $options = []): array
-    {
+    public function execute(PaWebScraper $scraper, User $user, array $options = []): array {
         $startTime = microtime(true);
 
         $this->logger->info('[PaWebScraperService] Starting scraper execution', [
@@ -244,8 +242,7 @@ class PaWebScraperService
      * @param array $options Options including 'year', 'limit'
      * @return array ['count' => int, 'first_act' => array|null, 'last_act' => array|null]
      */
-    public function preview(PaWebScraper $scraper, array $options = []): array
-    {
+    public function preview(PaWebScraper $scraper, array $options = []): array {
         $this->logger->info('[PaWebScraperService] Preview scraper (dry-run)', [
             'scraper_id' => $scraper->id,
             'scraper_name' => $scraper->name,
@@ -289,8 +286,7 @@ class PaWebScraperService
     /**
      * Format a single act for preview (summary info only)
      */
-    protected function formatActPreview(array $act): array
-    {
+    protected function formatActPreview(array $act): array {
         return [
             'numero' => $act['numeroAdozione'] ?? $act['numero'] ?? 'N/A',
             'data' => $act['dataAdozione'] ?? $act['data'] ?? 'N/A',
@@ -304,8 +300,7 @@ class PaWebScraperService
      *
      * @throws \Exception if not compliant
      */
-    protected function validateGdprCompliance(PaWebScraper $scraper): void
-    {
+    protected function validateGdprCompliance(PaWebScraper $scraper): void {
         if (!$scraper->gdpr_compliant) {
             throw new \Exception('Scraper not marked as GDPR compliant');
         }
@@ -333,8 +328,7 @@ class PaWebScraperService
      * @return mixed Raw response data
      * @throws GuzzleException
      */
-    protected function fetchData(PaWebScraper $scraper, array $options)
-    {
+    protected function fetchData(PaWebScraper $scraper, array $options) {
         $url = $scraper->getFullUrl();
 
         // Prepare request options
@@ -400,8 +394,7 @@ class PaWebScraperService
      * Replace template variables in payload
      * Es: {{year}} -> 2025
      */
-    protected function replaceTemplateVariables(array $payload, array $options): array
-    {
+    protected function replaceTemplateVariables(array $payload, array $options): array {
         $variables = array_merge([
             'year' => date('Y'),
             'month' => date('m'),
@@ -421,8 +414,7 @@ class PaWebScraperService
     /**
      * Parse raw data and extract acts
      */
-    protected function parseData($rawData, PaWebScraper $scraper): array
-    {
+    protected function parseData($rawData, PaWebScraper $scraper): array {
         if ($scraper->type === 'api') {
             return $this->parseApiData($rawData, $scraper);
         } elseif ($scraper->type === 'html') {
@@ -435,8 +427,7 @@ class PaWebScraperService
     /**
      * Parse JSON API response
      */
-    protected function parseApiData($data, PaWebScraper $scraper): array
-    {
+    protected function parseApiData($data, PaWebScraper $scraper): array {
         if (!is_array($data)) {
             // Log what we actually received for debugging
             $this->logger->error('[PaWebScraperService] API response is not an array', [
@@ -458,8 +449,7 @@ class PaWebScraperService
     /**
      * Parse HTML response (basic implementation)
      */
-    protected function parseHtmlData(string $html, PaWebScraper $scraper): array
-    {
+    protected function parseHtmlData(string $html, PaWebScraper $scraper): array {
         // TODO: Implement HTML parsing with DOMDocument/Symfony DomCrawler
         // For now, return empty array
         $this->logger->warning('[PaWebScraperService] HTML parsing not yet implemented');
@@ -469,8 +459,7 @@ class PaWebScraperService
     /**
      * Apply data mapping configuration
      */
-    protected function applyDataMapping(array $data, array $mapping): array
-    {
+    protected function applyDataMapping(array $data, array $mapping): array {
         // TODO: Implement JSONPath or similar for complex mapping
         // For now, return data as-is
         return $data;
@@ -479,8 +468,7 @@ class PaWebScraperService
     /**
      * Sanitize acts data (remove PII)
      */
-    protected function sanitizeActs(array $acts, PaWebScraper $scraper): array
-    {
+    protected function sanitizeActs(array $acts, PaWebScraper $scraper): array {
         $piiFieldsToExclude = $scraper->pii_fields_to_exclude ?? [];
 
         return array_map(function ($act) use ($piiFieldsToExclude) {
@@ -496,8 +484,7 @@ class PaWebScraperService
     /**
      * Convert scraped data to PA format
      */
-    protected function convertToPaFormat(array $acts, PaWebScraper $scraper): array
-    {
+    protected function convertToPaFormat(array $acts, PaWebScraper $scraper): array {
         return array_map(function ($act) use ($scraper) {
             return $this->convertSingleActToPaFormat($act, $scraper);
         }, $acts);
@@ -506,8 +493,7 @@ class PaWebScraperService
     /**
      * Convert single act to PA format
      */
-    protected function convertSingleActToPaFormat(array $act, PaWebScraper $scraper): array
-    {
+    protected function convertSingleActToPaFormat(array $act, PaWebScraper $scraper): array {
         // Map common fields (adapt based on source)
         $numeroAtto = $act['numeroAdozione'] ?? $act['numero'] ?? 'N/A';
         $dataAtto = $this->parseDate($act['dataAdozione'] ?? $act['data'] ?? null);
@@ -552,8 +538,7 @@ class PaWebScraperService
      * @param string $tipoAtto Full act type name (e.g. "Delibera di Giunta", "Determinazione Dirigenziale")
      * @return string Normalized enum value ('delibera', 'determina', 'ordinanza', 'decreto', 'atto')
      */
-    protected function normalizePaActType(string $tipoAtto): string
-    {
+    protected function normalizePaActType(string $tipoAtto): string {
         $tipoLower = strtolower($tipoAtto);
 
         if (str_contains($tipoLower, 'deliber')) {
@@ -572,8 +557,7 @@ class PaWebScraperService
     /**
      * Parse date (handles timestamps and strings)
      */
-    protected function parseDate($date): ?string
-    {
+    protected function parseDate($date): ?string {
         if (!$date) {
             return null;
         }
@@ -599,8 +583,7 @@ class PaWebScraperService
     /**
      * Convert allegati to standard format
      */
-    protected function convertAllegati(array $allegati): array
-    {
+    protected function convertAllegati(array $allegati): array {
         return array_map(function ($allegato) {
             return [
                 'nome' => $allegato['nome'] ?? 'Allegato',
@@ -614,8 +597,7 @@ class PaWebScraperService
     /**
      * Validate sanitized data (no PII fields)
      */
-    protected function validateSanitizedData(array $acts): void
-    {
+    protected function validateSanitizedData(array $acts): void {
         $privateFields = ['email', 'telefono', 'codice_fiscale', 'indirizzo', 'password', 'token'];
 
         foreach ($acts as $index => $act) {
@@ -650,8 +632,7 @@ class PaWebScraperService
      * @param User $user
      * @return array ['saved' => int, 'skipped' => int, 'errors' => array]
      */
-    protected function saveScrapedActsToDatabase(array $acts, PaWebScraper $scraper, User $user): array
-    {
+    protected function saveScrapedActsToDatabase(array $acts, PaWebScraper $scraper, User $user): array {
         $this->logger->info('[PaWebScraperService] Saving scraped acts to database', [
             'acts_count' => count($acts),
             'scraper_id' => $scraper->id,
@@ -820,8 +801,7 @@ class PaWebScraperService
      * @param User $user
      * @return Collection
      */
-    protected function getOrCreateWebScrapedCollection(User $user): Collection
-    {
+    protected function getOrCreateWebScrapedCollection(User $user): Collection {
         $collectionName = 'Atti Web (Acquisizione Automatica)';
 
         $collection = Collection::firstOrCreate(

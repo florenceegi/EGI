@@ -174,11 +174,7 @@ const AIProcessingPanel = {
         this.startTimer();
 
         // Update stages
-        this.updateStage(
-            "search",
-            "completed",
-            `Ricerca su ${actsCount} atti`
-        );
+        this.updateStage("search", "completed", `Ricerca su ${actsCount} atti`);
         this.updateStage(
             "context",
             "processing",
@@ -700,25 +696,34 @@ const AIProcessingPanel = {
 
         // HTML structure: <span class="material-symbols-outlined">icon</span>
         const icon = stageElement.querySelector(".material-symbols-outlined");
-        const detailElement = document.getElementById(`stage-${stageId}-detail`);
+        const detailElement = document.getElementById(
+            `stage-${stageId}-detail`
+        );
 
         if (!icon) {
-            console.warn(`[AIProcessingPanel] Icon not found in stage-${stageId}`);
+            console.warn(
+                `[AIProcessingPanel] Icon not found in stage-${stageId}`
+            );
             return;
         }
 
         // Remove all status classes from parent
         stageElement.classList.remove(
-            "border-gray-200", "bg-gray-50",
-            "border-blue-200", "bg-blue-50",
-            "border-green-200", "bg-green-50",
-            "border-red-200", "bg-red-50"
+            "border-gray-200",
+            "bg-gray-50",
+            "border-blue-200",
+            "bg-blue-50",
+            "border-green-200",
+            "bg-green-50",
+            "border-red-200",
+            "bg-red-50"
         );
 
         // Update icon and colors based on status
         if (status === "active") {
             icon.textContent = "progress_activity";
-            icon.className = "material-symbols-outlined animate-spin text-blue-500";
+            icon.className =
+                "material-symbols-outlined animate-spin text-blue-500";
             stageElement.classList.add("border-blue-200", "bg-blue-50");
         } else if (status === "completed") {
             icon.textContent = "check_circle";
@@ -802,8 +807,8 @@ const AIProcessingPanel = {
         }
 
         // SHOW the panel (remove 'hidden' class from HTML)
-        if (costPanel && costPanel.classList.contains('hidden')) {
-            costPanel.classList.remove('hidden');
+        if (costPanel && costPanel.classList.contains("hidden")) {
+            costPanel.classList.remove("hidden");
             console.log("[AIProcessingPanel] Cost panel now VISIBLE");
         }
 
@@ -813,12 +818,22 @@ const AIProcessingPanel = {
         const costEurEl = document.getElementById("costCurrentTotal");
 
         if (inputTokensEl) {
-            inputTokensEl.textContent = (costData.inputTokens || 0).toLocaleString("it-IT");
-            console.log("[AIProcessingPanel] Input tokens updated:", costData.inputTokens);
+            inputTokensEl.textContent = (
+                costData.inputTokens || 0
+            ).toLocaleString("it-IT");
+            console.log(
+                "[AIProcessingPanel] Input tokens updated:",
+                costData.inputTokens
+            );
         }
         if (outputTokensEl) {
-            outputTokensEl.textContent = (costData.outputTokens || 0).toLocaleString("it-IT");
-            console.log("[AIProcessingPanel] Output tokens updated:", costData.outputTokens);
+            outputTokensEl.textContent = (
+                costData.outputTokens || 0
+            ).toLocaleString("it-IT");
+            console.log(
+                "[AIProcessingPanel] Output tokens updated:",
+                costData.outputTokens
+            );
         }
         if (costEurEl) {
             const costEur = costData.costEur || costData.cost_eur || 0;
@@ -826,7 +841,10 @@ const AIProcessingPanel = {
             console.log("[AIProcessingPanel] Cost EUR updated:", costEur);
         }
 
-        console.log("[AIProcessingPanel] Cost tracking updated AND VISIBLE:", costData);
+        console.log(
+            "[AIProcessingPanel] Cost tracking updated AND VISIBLE:",
+            costData
+        );
     },
 };
 

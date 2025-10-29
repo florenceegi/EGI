@@ -7,6 +7,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 use Ultra\UltraLogManager\UltraLogManager;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
 /**
  * Service per interazione con Anthropic Claude API
@@ -15,19 +16,40 @@ use Ultra\UltraLogManager\UltraLogManager;
  * - Processa SOLO dati pubblici (metadati PA)
  * - Non invia MAI: firme digitali, nominativi, file_path, IP
  * - Logging audit completo di cosa viene inviato
+ *
+ * Model Fallback Strategy:
+ * - Tenta automaticamente modelli alternativi se quello configurato non è disponibile
+ * - Ordine: Claude 3.5 Sonnet (Oct/Jun) → Claude 3 Opus → Claude 3 Sonnet → Claude 3 Haiku
+ * - Notifica via ErrorManager quando usa modello diverso da quello configurato
  */
 class AnthropicService {
     private UltraLogManager $logger;
+    private ErrorManagerInterface $errorManager;
     private string $apiKey;
     private string $baseUrl;
-    private string $model;
+    private string $configuredModel;
+    private string $activeModel;
     private int $timeout;
 
-    public function __construct(UltraLogManager $logger) {
+    /**
+     * Modelli Claude in ordine di preferenza (dal più potente al più economico)
+     * Aggiornato con i modelli disponibili al 29/10/2025
+     */
+    private const MODEL_FALLBACK_CHAIN = [
+        'claude-3-5-sonnet-20241022',  // Latest (se disponibile)
+        'claude-3-5-sonnet-20240620',  // Stable 3.5
+        'claude-3-opus-20240229',      // Most capable Claude 3
+        'claude-3-sonnet-20240229',    // Balanced
+        'claude-3-haiku-20240307',     // Fast & economical
+    ];
+
+    public function __construct(UltraLogManager $logger, ErrorManagerInterface $errorManager) {
         $this->logger = $logger;
+        $this->errorManager = $errorManager;
         $this->apiKey = config('services.anthropic.api_key');
         $this->baseUrl = config('services.anthropic.base_url', 'https://api.anthropic.com');
-        $this->model = config('services.anthropic.model', 'claude-3-5-sonnet-20241022');
+        $this->configuredModel = config('services.anthropic.model', 'claude-3-opus-20240229');
+        $this->activeModel = $this->configuredModel;
         $this->timeout = config('services.anthropic.timeout', 60);
 
         if (empty($this->apiKey)) {
@@ -56,6 +78,132 @@ class AnthropicService {
     }
 
     /**
+     * Testa se un modello specifico è disponibile per questa API key
+     * 
+     * @param string $model Nome del modello da testare
+     * @return bool True se il modello risponde, false se not_found_error
+     */
+    private function testModelAvailability(string $model): bool {
+        try {
+            $this->logger->info('[AnthropicService] Testing model availability', [
+                'model' => $model,
+            ]);
+
+            $response = Http::withHeaders([
+                'x-api-key' => $this->apiKey,
+                'anthropic-version' => '2023-06-01',
+                'content-type' => 'application/json',
+            ])->timeout(10)->post($this->baseUrl . '/v1/messages', [
+                'model' => $model,
+                'max_tokens' => 10,
+                'messages' => [
+                    ['role' => 'user', 'content' => 'test']
+                ],
+            ]);
+
+            if ($response->successful()) {
+                $this->logger->info('[AnthropicService] ✅ Model available', [
+                    'model' => $model,
+                ]);
+                return true;
+            }
+
+            // Check if it's a not_found_error (model doesn't exist for this key)
+            $body = $response->json();
+            $isNotFound = isset($body['error']['type']) && $body['error']['type'] === 'not_found_error';
+
+            if ($isNotFound) {
+                $this->logger->warning('[AnthropicService] ❌ Model not available for this API key', [
+                    'model' => $model,
+                    'error_type' => $body['error']['type'] ?? 'unknown',
+                ]);
+                return false;
+            }
+
+            // Other errors (rate limit, etc.) - assume model exists but temporary issue
+            $this->logger->warning('[AnthropicService] ⚠️ Model test returned error (assuming available)', [
+                'model' => $model,
+                'status' => $response->status(),
+                'error' => $body['error'] ?? 'unknown',
+            ]);
+            return true;
+
+        } catch (\Exception $e) {
+            // Network error or similar - assume model exists
+            $this->logger->error('[AnthropicService] Model test exception (assuming available)', [
+                'model' => $model,
+                'error' => $e->getMessage(),
+            ]);
+            return true;
+        }
+    }
+
+    /**
+     * Trova il primo modello disponibile dalla chain di fallback
+     * 
+     * @return string Nome del modello disponibile
+     * @throws RuntimeException Se nessun modello è disponibile
+     */
+    private function findAvailableModel(): string {
+        // Prima prova il modello configurato
+        if ($this->testModelAvailability($this->configuredModel)) {
+            return $this->configuredModel;
+        }
+
+        // Il modello configurato non è disponibile - prova la fallback chain
+        $this->logger->warning('[AnthropicService] ⚠️ Configured model not available, trying fallbacks', [
+            'configured_model' => $this->configuredModel,
+        ]);
+
+        foreach (self::MODEL_FALLBACK_CHAIN as $fallbackModel) {
+            // Skip se è il modello già testato
+            if ($fallbackModel === $this->configuredModel) {
+                continue;
+            }
+
+            if ($this->testModelAvailability($fallbackModel)) {
+                // TROVATO! Notifica via ErrorManager
+                $this->errorManager->handle('ANTHROPIC_MODEL_FALLBACK', [
+                    'configured_model' => $this->configuredModel,
+                    'active_model' => $fallbackModel,
+                    'fallback_reason' => 'Configured model returned not_found_error',
+                    'api_key_prefix' => substr($this->apiKey, 0, 20) . '...',
+                ]);
+
+                $this->logger->warning('[AnthropicService] 🔄 Using fallback model', [
+                    'configured_model' => $this->configuredModel,
+                    'active_model' => $fallbackModel,
+                ]);
+
+                return $fallbackModel;
+            }
+        }
+
+        // Nessun modello disponibile!
+        throw new RuntimeException(
+            'No Claude models available for this API key. Tried: ' . 
+            implode(', ', array_merge([$this->configuredModel], self::MODEL_FALLBACK_CHAIN))
+        );
+    }
+
+    /**
+     * Ottiene il modello attivo (con lazy fallback al primo utilizzo)
+     * 
+     * @return string Nome del modello da usare
+     */
+    private function getActiveModel(): string {
+        // Se activeModel è diverso da configured, significa che abbiamo già fatto fallback
+        if ($this->activeModel !== $this->configuredModel) {
+            return $this->activeModel;
+        }
+
+        // Prima chiamata - verifica disponibilità e trova modello se necessario
+        $this->activeModel = $this->findAvailableModel();
+        
+        return $this->activeModel;
+    }
+
+    /**
      * Invia un messaggio a Claude e ottiene la risposta
      *
      * @param string $userMessage Il messaggio dell'utente
@@ -79,13 +227,22 @@ class AnthropicService {
             // Costruisci i messaggi per l'API
             $messages = $this->buildMessages($userMessage, $conversationHistory);
 
+            // Ottieni il modello attivo (con fallback automatico se necessario)
+            $modelToUse = $this->getActiveModel();
+
+            $this->logger->info('[AnthropicService] Sending request to Claude', [
+                'model' => $modelToUse,
+                'configured_model' => $this->configuredModel,
+                'is_fallback' => $modelToUse !== $this->configuredModel,
+            ]);
+
             // Chiamata API
             $response = Http::withHeaders([
                 'x-api-key' => $this->apiKey,
                 'anthropic-version' => '2023-06-01',
                 'content-type' => 'application/json',
             ])->timeout($this->timeout)->post($this->baseUrl . '/v1/messages', [
-                'model' => $this->model,
+                'model' => $modelToUse,
                 'max_tokens' => 4096,
                 'system' => $systemPrompt,
                 'messages' => $messages,
@@ -96,6 +253,7 @@ class AnthropicService {
                 $this->logger->error('[AnthropicService] API error', [
                     'status' => $response->status(),
                     'body' => $response->body(),
+                    'model_used' => $modelToUse,
                 ]);
                 throw new RuntimeException('Anthropic API error: ' . $response->body());
             }
@@ -107,6 +265,7 @@ class AnthropicService {
             $this->logger->info('[AnthropicService] Chat response received', [
                 'response_length' => strlen($assistantMessage),
                 'usage' => $usage,
+                'model_used' => $modelToUse,
             ]);
 
             // Return both message and usage for cost tracking

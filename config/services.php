@@ -55,15 +55,18 @@ return [
     | Anthropic AI Service (N.A.T.A.N.)
     |--------------------------------------------------------------------------
     |
-    | Cloud LLM service powered by Claude 3.5 Sonnet.
+    | Cloud LLM service powered by Claude 3 Opus.
     | GDPR-COMPLIANT: Processes ONLY public metadata (no PII, no signatures).
     | DPA: Anthropic has Data Processing Agreement with EU customers.
+    |
+    | NOTE: Switched from Claude 3.5 Sonnet to Claude 3 Opus due to API key permissions.
+    | Current key only has access to Claude 3 models (Opus/Sonnet/Haiku).
     |
     */
     'anthropic' => [
         'api_key' => env('ANTHROPIC_API_KEY'),
         'base_url' => env('ANTHROPIC_BASE_URL', 'https://api.anthropic.com'),
-        'model' => env('ANTHROPIC_MODEL', 'claude-3-5-sonnet-20241022'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-3-opus-20240229'),
         'timeout' => env('ANTHROPIC_TIMEOUT', 60), // seconds
     ],
 

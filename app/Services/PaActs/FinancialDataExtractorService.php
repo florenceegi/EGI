@@ -116,8 +116,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @security GDPR compliance, PII exclusion, input sanitization, ReDoS prevention
  * @gdpr-compliant Public financial data only, audit trail, privacy by design
  */
-class FinancialDataExtractorService
-{
+class FinancialDataExtractorService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
 
@@ -143,7 +142,7 @@ class FinancialDataExtractorService
             'boost' => 0.15,
             'priority' => 2
         ],
-        
+
         // MEDIA SPECIFICITÀ (confidence boost +0.1)
         'budget_progetto' => [
             'keywords' => ['budget', 'stanziament', 'dotazion', 'finanziament', 'assegnazion'],
@@ -160,7 +159,7 @@ class FinancialDataExtractorService
             'boost' => 0.1,
             'priority' => 4
         ],
-        
+
         // BASSA SPECIFICITÀ (no boost)
         'costo_totale' => [
             'keywords' => ['costo total', 'spesa complessiv', 'oner', 'costo'],
@@ -182,10 +181,10 @@ class FinancialDataExtractorService
     private const MONEY_PATTERNS_IT = [
         // €1.250.000,00 | € 1.250.000,00 | EUR 1.250.000,00
         '/(?:€|EUR)\s*(?>\d{1,3}(?:\.\d{3})*(?:,\d{2})?)/ui',
-        
+
         // 1.250.000,00 euro | 1.250.000 euro
         '/(?>\d{1,3}(?:\.\d{3})*(?:,\d{2})?)\s*(?:euro|eur)/ui',
-        
+
         // 1.250.000,00 (senza simbolo, ma con formato italiano chiaro)
         '/\b(?>\d{1,3}(?:\.\d{3})+,\d{2})\b/u',
     ];
@@ -196,10 +195,10 @@ class FinancialDataExtractorService
     private const MONEY_PATTERNS_INTL = [
         // $1,250,000.00 | USD 1,250,000.00
         '/(?:\$|USD)\s*(?>\d{1,3}(?:,\d{3})*(?:\.\d{2})?)/ui',
-        
+
         // 1,250,000.00 dollars
         '/(?>\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*(?:dollars?|usd)/ui',
-        
+
         // Notazioni abbreviate: 1.5M | 500K | 2.3B
         '/(?>\d+(?:\.\d+)?)\s*(?:M|K|B)(?:\s+(?:euro|eur|dollars?|usd))?/ui',
     ];
@@ -261,8 +260,7 @@ class FinancialDataExtractorService
      * - Audit trail: Full logging with UltraLogManager
      * - Data minimization: Only public financial metadata
      */
-    public function extractFromAct(array $act): ?array
-    {
+    public function extractFromAct(array $act): ?array {
         $startTime = microtime(true);
 
         $this->logger->info('[FinancialDataExtractor] Starting extraction', [
@@ -297,7 +295,7 @@ class FinancialDataExtractorService
             foreach ($textFields as $fieldName => $text) {
                 $fieldsScanned++;
                 $amounts = $this->extractAmountsFromText($text, $fieldName);
-                
+
                 if (!empty($amounts)) {
                     $patternsMatched += count($amounts);
                     $allAmounts = array_merge($allAmounts, $amounts);
@@ -343,7 +341,6 @@ class FinancialDataExtractorService
             ]);
 
             return $result;
-
         } catch (\Exception $e) {
             $this->logger->error('[FinancialDataExtractor] Extraction failed', [
                 'act_id' => $act['id'] ?? 'unknown',
@@ -362,8 +359,7 @@ class FinancialDataExtractorService
      * @param array $act
      * @return array ['field_name' => 'text content', ...]
      */
-    protected function aggregateTextFields(array $act): array
-    {
+    protected function aggregateTextFields(array $act): array {
         $fields = [];
 
         // Campo principale: oggetto/titolo
@@ -409,8 +405,7 @@ class FinancialDataExtractorService
      * @param string $fieldName Field name (for tracking)
      * @return array Array of extracted amounts with metadata
      */
-    protected function extractAmountsFromText(string $text, string $fieldName): array
-    {
+    protected function extractAmountsFromText(string $text, string $fieldName): array {
         // GDPR: Remove PII before processing
         $sanitizedText = $this->removePII($text);
 
@@ -431,7 +426,7 @@ class FinancialDataExtractorService
 
                     // Parse amount value
                     $value = $this->parseMonetaryValue($rawMatch);
-                    
+
                     if ($value === null || $value <= 0) {
                         continue; // Skip invalid amounts
                     }
@@ -466,7 +461,7 @@ class FinancialDataExtractorService
                     $position = $match[1];
 
                     $value = $this->parseMonetaryValue($rawMatch);
-                    
+
                     if ($value === null || $value <= 0) {
                         continue;
                     }
@@ -503,8 +498,7 @@ class FinancialDataExtractorService
      * @param string $text
      * @return string Sanitized text
      */
-    protected function removePII(string $text): string
-    {
+    protected function removePII(string $text): string {
         foreach (self::PII_EXCLUSION_PATTERNS as $pattern) {
             $text = preg_replace($pattern, '[REDACTED]', $text);
         }
@@ -520,8 +514,7 @@ class FinancialDataExtractorService
      * @param string $match Raw matched string
      * @return float|null Parsed value or null if invalid
      */
-    protected function parseMonetaryValue(string $match): ?float
-    {
+    protected function parseMonetaryValue(string $match): ?float {
         // Remove currency symbols
         $clean = preg_replace('/[€$£¥]|EUR|USD|GBP|JPY/ui', '', $match);
         $clean = trim($clean);
@@ -530,9 +523,9 @@ class FinancialDataExtractorService
         if (preg_match('/^([\d,.]+)\s*([MKB])$/ui', $clean, $abbr)) {
             $number = $abbr[1];
             $multiplier = strtoupper($abbr[2]);
-            
+
             $value = (float) str_replace(',', '.', str_replace('.', '', $number));
-            
+
             $multipliers = ['K' => 1000, 'M' => 1000000, 'B' => 1000000000];
             return $value * $multipliers[$multiplier];
         }
@@ -570,15 +563,14 @@ class FinancialDataExtractorService
      * @param string $match
      * @return string ISO 4217 currency code
      */
-    protected function detectCurrency(string $match): string
-    {
+    protected function detectCurrency(string $match): string {
         if (preg_match('/\$|USD|dollars?/ui', $match)) {
             return 'USD';
         }
         if (preg_match('/£|GBP|pounds?/ui', $match)) {
             return 'GBP';
         }
-        
+
         // Default: EUR (PA italiana)
         return 'EUR';
     }
@@ -591,12 +583,11 @@ class FinancialDataExtractorService
      * @param int $length Match length
      * @return array ['full' => '...', 'before' => '...', 'after' => '...']
      */
-    protected function extractContext(string $text, int $position, int $length): array
-    {
+    protected function extractContext(string $text, int $position, int $length): array {
         // Extract window before match
         $beforeStart = max(0, $position - 200); // 200 chars before
         $before = mb_substr($text, $beforeStart, $position - $beforeStart);
-        
+
         // Extract window after match
         $afterStart = $position + $length;
         $after = mb_substr($text, $afterStart, 200); // 200 chars after
@@ -624,8 +615,7 @@ class FinancialDataExtractorService
      * @param array $context Context array from extractContext()
      * @return array ['label' => '...', 'confidence' => 0.0-1.0]
      */
-    protected function classifyAmount(array $context): array
-    {
+    protected function classifyAmount(array $context): array {
         $fullContext = mb_strtolower($context['full']);
         $baseConfidence = 0.5; // Default: solo cifra senza contesto
 
@@ -637,12 +627,12 @@ class FinancialDataExtractorService
             foreach ($config['keywords'] as $keyword) {
                 if (mb_strpos($fullContext, mb_strtolower($keyword)) !== false) {
                     $confidence = $baseConfidence + $config['boost'];
-                    
+
                     // Bonus: keyword BEFORE amount = più preciso
                     if (mb_strpos(mb_strtolower($context['before']), mb_strtolower($keyword)) !== false) {
                         $confidence += 0.1;
                     }
-                    
+
                     return [
                         'label' => $label,
                         'confidence' => min(1.0, $confidence) // Cap a 1.0
@@ -664,8 +654,7 @@ class FinancialDataExtractorService
      * @param float $value
      * @return string Formatted amount (e.g., "1.250.000,00")
      */
-    protected function formatItalian(float $value): string
-    {
+    protected function formatItalian(float $value): string {
         return number_format($value, 2, ',', '.');
     }
 
@@ -675,15 +664,14 @@ class FinancialDataExtractorService
      * @param array $amounts
      * @return array Deduplicated amounts
      */
-    protected function deduplicateAmounts(array $amounts): array
-    {
+    protected function deduplicateAmounts(array $amounts): array {
         $unique = [];
         $seen = [];
 
         foreach ($amounts as $amount) {
             // Signature: value + first 50 chars of context
             $signature = $amount['value'] . '|' . mb_substr($amount['context'], 0, 50);
-            
+
             if (!in_array($signature, $seen)) {
                 $seen[] = $signature;
                 $unique[] = $amount;
@@ -699,8 +687,7 @@ class FinancialDataExtractorService
      * @param array $act
      * @return array ['cig' => [...], 'cup' => [...]]
      */
-    protected function extractCodesFromAct(array $act): array
-    {
+    protected function extractCodesFromAct(array $act): array {
         $codes = [
             'cig' => [],
             'cup' => [],
