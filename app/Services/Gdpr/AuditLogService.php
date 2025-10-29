@@ -330,11 +330,16 @@ class AuditLogService
             $activities = $query->limit($limit)->get();
 
             return $activities->map(function ($activity) {
+                // Get category value (enum object to string)
+                $categoryValue = $activity->category instanceof \BackedEnum 
+                    ? $activity->category->value 
+                    : $activity->category;
+
                 return [
                     'id' => $activity->id,
                     'action' => $activity->action,
-                    'category' => $activity->category,
-                    'category_name' => $this->activityCategories[$activity->category]['name'] ?? 'Unknown',
+                    'category' => $categoryValue,
+                    'category_name' => $this->activityCategories[$categoryValue]['name'] ?? 'Unknown',
                     'timestamp' => $activity->created_at->toISOString(),
                     'context' => $activity->context,
                     'ip_address' => $activity->ip_address, // Already masked
