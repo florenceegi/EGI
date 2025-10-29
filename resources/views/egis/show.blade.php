@@ -122,7 +122,8 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                     <div class="grid grid-cols-1 gap-0 md:grid-cols-12">
 
                         {{-- Left: Artwork Area - Ridotta quando CRUD visibile --}}
-                        <div class="relative p-2 @if($canUpdateEgi) md:col-span-7 lg:col-span-4 xl:col-span-5 @else md:col-span-7 lg:col-span-6 xl:col-span-7 @endif md:p-3 lg:p-4 xl:p-6">
+                        <div
+                            class="@if ($canUpdateEgi) md:col-span-7 lg:col-span-4 xl:col-span-5 @else md:col-span-7 lg:col-span-6 xl:col-span-7 @endif relative p-2 md:p-3 lg:p-4 xl:p-6">
 
                             {{-- Artwork Container con Floating Card - Sempre visibile completamente --}}
                             <div class="relative mx-auto w-full max-w-full">
@@ -335,13 +336,13 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             </script>
             {{-- Lightbox Zoom Overlay - Responsive ottimizzato per schermi piccoli --}}
             <div id="zoom-overlay"
-                class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 sm:p-6 md:p-8">
+                class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 p-4 backdrop-blur-sm sm:p-6 md:p-8">
                 <div id="zoom-content"
-                    class="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-h-[88vh] sm:max-w-[88vw] md:max-h-[85vh] md:max-w-[85vw]">
+                    class="relative h-full max-h-[85vh] w-full max-w-[90vw] sm:max-h-[88vh] sm:max-w-[88vw] md:max-h-[85vh] md:max-w-[85vw]">
                     <img id="zoom-overlay-image" src="" alt=""
                         class="user-select-none h-full w-full touch-none object-contain" />
                     <button id="zoom-close" aria-label="Chiudi ingrandimento"
-                        class="absolute right-1 top-1 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-2xl font-bold text-white shadow-xl transition-all hover:bg-black/90 hover:scale-110 sm:right-2 sm:top-2 sm:h-10 sm:w-10 sm:text-3xl md:right-3 md:top-3 md:h-11 md:w-11">
+                        class="absolute right-1 top-1 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-2xl font-bold text-white shadow-xl transition-all hover:scale-110 hover:bg-black/90 sm:right-2 sm:top-2 sm:h-10 sm:w-10 sm:text-3xl md:right-3 md:top-3 md:h-11 md:w-11">
                         ×
                     </button>
                 </div>
@@ -1393,8 +1394,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
 {{-- AI Art Advisor Modal Component --}}
 @if ($isCreator)
-<x-art-advisor-modal 
-    :context="[
+    <x-art-advisor-modal :context="[
         'egi_id' => $egi->id,
         'egi_number' => $egi->egi_number,
         'title' => $egi->title,
@@ -1409,9 +1409,5 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
         'traits_count' => $egi->traits->count(),
         'has_reservations' => $egi->reservations()->count() > 0,
         'is_minted' => !is_null($egi->token_EGI),
-    ]"
-    :mode="'general'"
-    :auto-open="false"
-/>
+    ]" :mode="'general'" :auto-open="false" />
 @endif
-
