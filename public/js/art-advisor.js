@@ -353,8 +353,8 @@
         }
 
         const textDiv = document.createElement("div");
-        textDiv.className = "whitespace-pre-wrap text-sm leading-relaxed";
-        
+        textDiv.className = "text-sm leading-relaxed"; // Removed whitespace-pre-wrap for HTML formatting
+
         // Format markdown for better readability
         textDiv.innerHTML = formatMarkdown(content);
 
@@ -658,8 +658,8 @@
         // Text content
         const textDiv = document.createElement("div");
         textDiv.className =
-            "whitespace-pre-wrap text-sm leading-relaxed text-gray-100";
-        textDiv.textContent = "...";
+            "text-sm leading-relaxed text-gray-100"; // Removed whitespace-pre-wrap
+        textDiv.innerHTML = "<span class='animate-pulse'>⏳</span> Sto pensando...";
         bubble.appendChild(textDiv);
 
         // Streaming indicator
@@ -685,48 +685,80 @@
         let html = text;
 
         // Escape HTML first
-        html = html.replace(/&/g, '&amp;')
-                   .replace(/</g, '&lt;')
-                   .replace(/>/g, '&gt;');
+        html = html
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
 
         // Code blocks FIRST (to protect them from other replacements)
-        html = html.replace(/```([\s\S]*?)```/g, 
-            '<pre class="bg-gray-800/50 border border-gray-600/30 rounded-lg p-3 my-3 overflow-x-auto"><code class="text-xs text-green-300 font-mono">$1</code></pre>');
+        html = html.replace(
+            /```([\s\S]*?)```/g,
+            '<pre class="bg-gray-800/50 border border-gray-600/30 rounded-lg p-3 my-3 overflow-x-auto"><code class="text-xs text-green-300 font-mono">$1</code></pre>'
+        );
 
         // Horizontal rules
         html = html.replace(/^---$/gm, '<hr class="my-4 border-gray-600/50">');
 
         // Bold BEFORE headers (to avoid conflicts)
-        html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>');
+        html = html.replace(
+            /\*\*(.+?)\*\*/g,
+            '<strong class="font-semibold text-white">$1</strong>'
+        );
 
         // Headers
-        html = html.replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-blue-300 mt-5 mb-2">$1</h3>');
-        html = html.replace(/^## (.+)$/gm, '<h2 class="text-lg font-bold text-blue-400 mt-5 mb-3">$1</h2>');
-        html = html.replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold text-white mt-5 mb-3">$1</h1>');
+        html = html.replace(
+            /^### (.+)$/gm,
+            '<h3 class="text-base font-bold text-blue-300 mt-5 mb-2">$1</h3>'
+        );
+        html = html.replace(
+            /^## (.+)$/gm,
+            '<h2 class="text-lg font-bold text-blue-400 mt-5 mb-3">$1</h2>'
+        );
+        html = html.replace(
+            /^# (.+)$/gm,
+            '<h1 class="text-xl font-bold text-white mt-5 mb-3">$1</h1>'
+        );
 
         // Emoji sections (🎨 TITLE or 📊 TITLE:) - Enhanced visual separation
-        html = html.replace(/^([🎨🎯📊💡✨📝💰🔍⚡🌟📋💼🎭🖼️])\s*\*?\*?(.+?)\*?\*?:?\s*$/gm, 
-            '<div class="mt-4 mb-2 flex items-baseline gap-2 border-l-2 border-blue-500 pl-3"><span class="text-2xl flex-shrink-0">$1</span><strong class="text-lg font-bold text-blue-300">$2</strong></div>');
+        html = html.replace(
+            /^([🎨🎯📊💡✨📝💰🔍⚡🌟📋💼🎭🖼️])\s*\*?\*?(.+?)\*?\*?:?\s*$/gm,
+            '<div class="mt-4 mb-2 flex items-baseline gap-2 border-l-2 border-blue-500 pl-3"><span class="text-2xl flex-shrink-0">$1</span><strong class="text-lg font-bold text-blue-300">$2</strong></div>'
+        );
 
         // Numbered lists with emoji (1. 💡 Title)
-        html = html.replace(/^(\d+)\.\s*([🎨🎯📊💡✨📝💰🔍⚡🌟📋💼🎭🖼️])\s*(.+)$/gm,
-            '<div class="mb-3 mt-2"><div class="flex items-start gap-3 mb-1"><span class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-600/30 text-sm font-bold text-blue-300">$1</span><span class="text-xl flex-shrink-0">$2</span><strong class="flex-1 font-semibold text-white">$3</strong></div>');
+        html = html.replace(
+            /^(\d+)\.\s*([🎨🎯📊💡✨📝💰🔍⚡🌟📋💼🎭🖼️])\s*(.+)$/gm,
+            '<div class="mb-3 mt-2"><div class="flex items-start gap-3 mb-1"><span class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-600/30 text-sm font-bold text-blue-300">$1</span><span class="text-xl flex-shrink-0">$2</span><strong class="flex-1 font-semibold text-white">$3</strong></div>'
+        );
 
         // Regular numbered lists (1. item)
-        html = html.replace(/^(\d+)\.\s*(.+)$/gm, 
-            '<div class="mb-2 flex gap-3"><span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-sm font-bold text-blue-400">$1</span><span class="flex-1">$2</span></div>');
+        html = html.replace(
+            /^(\d+)\.\s*(.+)$/gm,
+            '<div class="mb-2 flex gap-3"><span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-sm font-bold text-blue-400">$1</span><span class="flex-1">$2</span></div>'
+        );
 
         // Bullet lists (- item)
-        html = html.replace(/^-\s+(.+)$/gm, 
-            '<div class="mb-1.5 ml-6 flex gap-2"><span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-400"></span><span class="flex-1">$1</span></div>');
+        html = html.replace(
+            /^-\s+(.+)$/gm,
+            '<div class="mb-1.5 ml-6 flex gap-2"><span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-400"></span><span class="flex-1">$1</span></div>'
+        );
 
         // Paragraphs - Better spacing
-        html = html.split('\n\n').map(para => {
-            if (para.trim() && !para.includes('<div') && !para.includes('<h') && !para.includes('<hr') && !para.includes('<pre')) {
-                return `<p class="mb-3 leading-relaxed text-gray-200">${para}</p>`;
-            }
-            return para;
-        }).join('\n');
+        html = html
+            .split("\n\n")
+            .map((para) => {
+                if (
+                    para.trim() &&
+                    !para.includes("<div") &&
+                    !para.includes("<h") &&
+                    !para.includes("<hr") &&
+                    !para.includes("<pre")
+                ) {
+                    return `<p class="mb-3 leading-relaxed text-gray-200">${para}</p>`;
+                }
+                return para;
+            })
+            .join("\n");
 
         return html;
     }
@@ -735,7 +767,8 @@
      * Update streaming message content
      */
     function updateStreamingMessage(bubble, text, isError = false) {
-        const textDiv = bubble.querySelector("div.whitespace-pre-wrap");
+        // Updated selector - no longer using whitespace-pre-wrap
+        const textDiv = bubble.querySelector("div.leading-relaxed");
         if (textDiv) {
             // Use formatted markdown for better readability
             textDiv.innerHTML = formatMarkdown(text);
@@ -761,9 +794,9 @@
         }
 
         // Add action buttons if applicable
-        const textDiv = bubble.querySelector("div.whitespace-pre-wrap");
-        if (textDiv && shouldShowActions(textDiv.textContent)) {
-            const actions = createActionButtons(textDiv.textContent);
+        const textDiv = bubble.querySelector("div.leading-relaxed");
+        if (textDiv && shouldShowActions(textDiv.innerText || textDiv.textContent)) {
+            const actions = createActionButtons(textDiv.innerText || textDiv.textContent);
             bubble.appendChild(actions);
         }
     }
