@@ -1420,13 +1420,15 @@ class GdprController extends Controller {
 
             $activities = $this->auditService->getUserActivityLog($user, 50);
             $activityStats = $this->auditService->getUserActivityStats($user);
+            $availableCategories = config('gdpr.activity_categories', []);
 
             $this->auditService->logUserAction($user, 'activity_log_viewed', [], GdprActivityCategory::GDPR_ACTIONS);
 
             return view('gdpr.activity-log', [
                 'user' => $user,
                 'activities' => $activities,
-                'activityStats' => $activityStats
+                'activityStats' => $activityStats,
+                'availableCategories' => $availableCategories
             ]);
         } catch (\Exception $e) {
             return $this->errorManager->handle('GDPR_ACTIVITY_LOG_PAGE_FAILED', [
