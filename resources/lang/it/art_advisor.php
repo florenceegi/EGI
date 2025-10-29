@@ -9,6 +9,9 @@
  */
 
 return [
+    // General
+    'open_advisor' => 'Apri AI Art Advisor - Assistente Creativo',
+    
     // Modal UI
     'title' => 'AI Art Advisor',
     'subtitle' => 'Il tuo assistente creativo intelligente',
