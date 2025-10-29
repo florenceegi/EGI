@@ -17,22 +17,20 @@ use Illuminate\Support\Facades\File;
  * @date 2025-10-29
  * @purpose Proactive error detection for enum handling
  */
-class DiagnoseEnumIssues extends Command
-{
+class DiagnoseEnumIssues extends Command {
     protected $signature = 'diagnose:enums {--fix : Auto-fix issues where possible}';
     protected $description = 'Scan codebase for potential enum-related TypeError issues';
 
     private array $issues = [];
     private int $filesScanned = 0;
 
-    public function handle(): int
-    {
+    public function handle(): int {
         $this->info('🔍 Scanning codebase for enum-related issues...');
         $this->newLine();
 
         // Scan Services
         $this->scanDirectory('app/Services', 'Services');
-        
+
         // Scan Controllers
         $this->scanDirectory('app/Http/Controllers', 'Controllers');
 
@@ -57,8 +55,7 @@ class DiagnoseEnumIssues extends Command
         return Command::SUCCESS;
     }
 
-    private function scanDirectory(string $path, string $label): void
-    {
+    private function scanDirectory(string $path, string $label): void {
         $this->line("Scanning {$label}...");
 
         $files = File::allFiles(base_path($path));
@@ -75,8 +72,7 @@ class DiagnoseEnumIssues extends Command
         }
     }
 
-    private function scanBladeViews(): void
-    {
+    private function scanBladeViews(): void {
         $this->line("Scanning Blade views...");
 
         $files = File::allFiles(base_path('resources/views'));
@@ -93,8 +89,7 @@ class DiagnoseEnumIssues extends Command
         }
     }
 
-    private function checkEnumAsArrayKey(string $content, string $file): void
-    {
+    private function checkEnumAsArrayKey(string $content, string $file): void {
         // Pattern: $something[$variable->category] where category might be enum
         if (preg_match_all('/\$[\w]+\[\$[\w]+->category\]/', $content, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[0] as $match) {
@@ -111,13 +106,12 @@ class DiagnoseEnumIssues extends Command
         }
     }
 
-    private function checkCollectionReturnType(string $content, string $file): void
-    {
+    private function checkCollectionReturnType(string $content, string $file): void {
         // Pattern: ): Collection { ... ->map(
         if (preg_match_all('/function\s+\w+\([^)]*\)\s*:\s*Collection\s*\{[^}]*->map\(/s', $content, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[0] as $match) {
                 $line = substr_count(substr($content, 0, $match[1]), "\n") + 1;
-                
+
                 // Check if file imports both Collection types
                 $hasEloquentCollection = str_contains($content, 'use Illuminate\Database\Eloquent\Collection');
                 $hasSupportCollection = str_contains($content, 'use Illuminate\Support\Collection');
@@ -136,8 +130,7 @@ class DiagnoseEnumIssues extends Command
         }
     }
 
-    private function checkEnumInBladeOutput(string $content, string $file): void
-    {
+    private function checkEnumInBladeOutput(string $content, string $file): void {
         // Pattern: {{ $category }} in foreach over config array
         if (preg_match_all('/@foreach\(\$availableCategories[^)]*\)[\s\S]{0,200}\{\{\s*\$category\s*\}\}/', $content, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[0] as $match) {
@@ -154,8 +147,7 @@ class DiagnoseEnumIssues extends Command
         }
     }
 
-    private function checkUndefinedVariables(string $content, string $file): void
-    {
+    private function checkUndefinedVariables(string $content, string $file): void {
         // Extract variables used in blade
         preg_match_all('/\$(\w+)/', $content, $varMatches);
         $usedVars = array_unique($varMatches[1]);
@@ -178,8 +170,7 @@ class DiagnoseEnumIssues extends Command
         }
     }
 
-    private function displayIssues(): void
-    {
+    private function displayIssues(): void {
         // Group by severity
         $high = array_filter($this->issues, fn($i) => $i['severity'] === 'HIGH');
         $medium = array_filter($this->issues, fn($i) => $i['severity'] === 'MEDIUM');
@@ -218,4 +209,3 @@ class DiagnoseEnumIssues extends Command
         }
     }
 }
-
