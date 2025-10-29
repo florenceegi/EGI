@@ -56,6 +56,7 @@ return [
     // Bid history
     'history' => [
         'title' => 'Bid History',
+        'purchases_offers_title' => 'Purchase History / Offers',
         'entries' => 'Bid Entries',
         'view_certificate' => 'View Certificate',
         'no_entries' => 'No bids found.',

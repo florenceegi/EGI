@@ -56,6 +56,7 @@ return [
     // Storico offerte
     'history' => [
         'title' => 'Storico Offerte',
+        'purchases_offers_title' => 'Storico Acquisti / Offerte',
         'entries' => 'Voci di Offerta',
         'view_certificate' => 'Visualizza Certificato',
         'no_entries' => 'Nessuna offerta trovata.',
