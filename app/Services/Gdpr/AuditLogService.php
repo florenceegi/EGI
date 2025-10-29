@@ -327,26 +327,8 @@ class AuditLogService {
                 $query->where('created_at', '<=', $dateTo);
             }
 
-            $activities = $query->limit($limit)->get();
-
-            return $activities->map(function ($activity) {
-                // Get category value (enum object to string)
-                $categoryValue = $activity->category instanceof \BackedEnum
-                    ? $activity->category->value
-                    : $activity->category;
-
-                return [
-                    'id' => $activity->id,
-                    'action' => $activity->action,
-                    'category' => $categoryValue,
-                    'category_name' => $this->activityCategories[$categoryValue]['name'] ?? 'Unknown',
-                    'timestamp' => $activity->created_at->toISOString(),
-                    'context' => $activity->context,
-                    'ip_address' => $activity->ip_address, // Already masked
-                    'privacy_level' => $activity->privacy_level,
-                    'session_id' => substr($activity->session_id, 0, 8) . '...' // Partial session ID
-                ];
-            });
+            // Return Eloquent objects directly - view expects objects with methods
+            return $query->limit($limit)->get();
         } catch (\Exception $e) {
             $this->logger->error('Audit Log Service: Failed to get activity log', [
                 'user_id' => $user->id,
