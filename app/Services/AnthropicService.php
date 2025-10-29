@@ -312,7 +312,16 @@ class AnthropicService {
      * @param string $personaId Persona to use ('strategic', 'technical', 'legal', 'financial', 'urban_social', 'communication')
      */
     private function buildSystemPrompt(array $context, string $personaId = 'strategic'): string {
-        // Select the appropriate persona prompt
+        // CHECK FOR SYSTEM_OVERRIDE (Art Advisor, external systems)
+        if (isset($context['system_override'])) {
+            $this->logger->info('[AnthropicService] Using system_override prompt', [
+                'override_length' => strlen($context['system_override']),
+                'persona_id' => $personaId,
+            ]);
+            return $context['system_override'];
+        }
+
+        // Default: Select the appropriate N.A.T.A.N. persona prompt
         $basePrompt = match ($personaId) {
             'strategic' => $this->buildStrategicPrompt(),
             'technical' => $this->buildTechnicalPrompt(),
