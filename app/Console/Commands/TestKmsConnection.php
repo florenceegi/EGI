@@ -15,8 +15,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @date 2025-10-29
  * @purpose Verify KMS configuration and AWS connectivity
  */
-class TestKmsConnection extends Command
-{
+class TestKmsConnection extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -24,7 +23,7 @@ class TestKmsConnection extends Command
      */
     protected $signature = 'kms:test 
                             {--mode=auto : Test mode: auto, mock, or aws}
-                            {--verbose : Show detailed test output}';
+                            {--detailed : Show detailed test output}';
 
     /**
      * The console command description.
@@ -39,8 +38,7 @@ class TestKmsConnection extends Command
     /**
      * Execute the console command.
      */
-    public function handle(KmsClient $kmsClient, UltraLogManager $logger): int
-    {
+    public function handle(KmsClient $kmsClient, UltraLogManager $logger): int {
         $this->kmsClient = $kmsClient;
         $this->logger = $logger;
 
@@ -79,8 +77,7 @@ class TestKmsConnection extends Command
     /**
      * Show current KMS configuration
      */
-    private function showConfiguration(): void
-    {
+    private function showConfiguration(): void {
         $this->components->info('📋 Current Configuration');
 
         $appEnv = config('app.env');
@@ -114,8 +111,7 @@ class TestKmsConnection extends Command
     /**
      * Show AWS-specific configuration
      */
-    private function showAwsConfiguration(): void
-    {
+    private function showAwsConfiguration(): void {
         $region = config('kms.aws.region', 'not-set');
         $keyArn = config('kms.aws.kek_arn');
         $accessKeyId = config('kms.aws.key');
@@ -153,26 +149,31 @@ class TestKmsConnection extends Command
     /**
      * Test full encryption/decryption cycle
      */
-    private function testEncryptionCycle(): bool
-    {
+    private function testEncryptionCycle(): bool {
         $testData = 'FlorenceEGI KMS Test - ' . now()->toISOString();
         $additionalData = 'test-context-data';
 
         try {
             // Step 1: Encrypt
             $this->info('📤 Step 1: Encrypting test data...');
-            if ($this->option('verbose')) {
+            if ($this->option('detailed')) {
                 $this->line("   Test data: {$testData}");
                 $this->line("   Additional data: {$additionalData}");
             }
 
             $encrypted = $this->kmsClient->secureEncrypt($testData, null, $additionalData);
 
-            $this->components->task('   Generate DEK', function () { return true; });
-            $this->components->task('   Encrypt data with DEK', function () { return true; });
-            $this->components->task('   Encrypt DEK with KEK', function () { return true; });
+            $this->components->task('   Generate DEK', function () {
+                return true;
+            });
+            $this->components->task('   Encrypt data with DEK', function () {
+                return true;
+            });
+            $this->components->task('   Encrypt DEK with KEK', function () {
+                return true;
+            });
 
-            if ($this->option('verbose')) {
+            if ($this->option('detailed')) {
                 $this->newLine();
                 $this->line('   Encrypted package:');
                 $this->line('   - Algorithm: ' . ($encrypted['algorithm'] ?? 'unknown'));
@@ -188,11 +189,17 @@ class TestKmsConnection extends Command
 
             $decrypted = $this->kmsClient->secureDecrypt($encrypted);
 
-            $this->components->task('   Decrypt DEK with KEK', function () { return true; });
-            $this->components->task('   Decrypt data with DEK', function () { return true; });
-            $this->components->task('   Verify integrity', function () { return true; });
+            $this->components->task('   Decrypt DEK with KEK', function () {
+                return true;
+            });
+            $this->components->task('   Decrypt data with DEK', function () {
+                return true;
+            });
+            $this->components->task('   Verify integrity', function () {
+                return true;
+            });
 
-            if ($this->option('verbose')) {
+            if ($this->option('detailed')) {
                 $this->newLine();
                 $this->line("   Decrypted data: {$decrypted}");
             }
@@ -203,7 +210,9 @@ class TestKmsConnection extends Command
             $this->info('🔍 Step 3: Verifying data integrity...');
 
             if ($decrypted === $testData) {
-                $this->components->task('   Data match verification', function () { return true; });
+                $this->components->task('   Data match verification', function () {
+                    return true;
+                });
                 $this->newLine();
                 $this->info('✅ Encryption/Decryption cycle completed successfully!');
                 $this->newLine();
@@ -233,7 +242,7 @@ class TestKmsConnection extends Command
             $this->error('   ' . $e->getMessage());
             $this->newLine();
 
-            if ($this->option('verbose')) {
+            if ($this->option('detailed')) {
                 $this->error('Stack trace:');
                 $this->line($e->getTraceAsString());
             }
@@ -269,8 +278,7 @@ class TestKmsConnection extends Command
     /**
      * Mask sensitive string for display
      */
-    private function maskSecret(string $secret, int $visibleChars = 8): string
-    {
+    private function maskSecret(string $secret, int $visibleChars = 8): string {
         if (strlen($secret) <= $visibleChars) {
             return str_repeat('*', strlen($secret));
         }
@@ -278,4 +286,3 @@ class TestKmsConnection extends Command
         return substr($secret, 0, $visibleChars) . str_repeat('*', strlen($secret) - $visibleChars);
     }
 }
-
