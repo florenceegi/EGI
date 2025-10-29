@@ -6,7 +6,8 @@ use App\Models\User;
 use App\Models\UserActivity;
 use App\Models\SecurityEvent;
 use App\Models\GdprAuditLog;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -26,8 +27,7 @@ use App\Enums\Gdpr\GdprActivityCategory;
  * @version 1.0.0
  * @date 2025-05-22
  */
-class AuditLogService
-{
+class AuditLogService {
     /**
      * Logger instance for service operations
      * @var UltraLogManager
@@ -331,8 +331,8 @@ class AuditLogService
 
             return $activities->map(function ($activity) {
                 // Get category value (enum object to string)
-                $categoryValue = $activity->category instanceof \BackedEnum 
-                    ? $activity->category->value 
+                $categoryValue = $activity->category instanceof \BackedEnum
+                    ? $activity->category->value
                     : $activity->category;
 
                 return [
@@ -365,8 +365,7 @@ class AuditLogService
      * @return array
      * @privacy-safe Returns statistics for user's own activities
      */
-    public function getUserActivityStats(User $user): array
-    {
+    public function getUserActivityStats(User $user): array {
         try {
             $this->logger->info('Audit Log Service: Getting user activity statistics', [
                 'user_id' => $user->id,
@@ -445,8 +444,7 @@ class AuditLogService
      * @return StreamedResponse
      * @privacy-safe Exports user's own activity log only
      */
-    public function exportUserActivityLog(User $user, array $options = []): StreamedResponse
-    {
+    public function exportUserActivityLog(User $user, array $options = []): StreamedResponse {
         try {
             $this->logger->info('Audit Log Service: Exporting user activity log', [
                 'user_id' => $user->id,
@@ -528,8 +526,7 @@ class AuditLogService
      * @return array Cleanup statistics
      * @privacy-safe Cleans only expired logs according to retention policy
      */
-    public function cleanExpiredLogs(): array
-    {
+    public function cleanExpiredLogs(): array {
         try {
             $this->logger->info('Audit Log Service: Cleaning expired logs', [
                 'log_category' => 'AUDIT_SERVICE_MAINTENANCE'
@@ -588,8 +585,7 @@ class AuditLogService
      * @return Collection
      * @privacy-safe Returns audit trail for user's own entities only
      */
-    public function getEntityAuditTrail(User $user, string $entityType, int $entityId): Collection
-    {
+    public function getEntityAuditTrail(User $user, string $entityType, int $entityId): Collection {
         try {
             $this->logger->info('Audit Log Service: Getting entity audit trail', [
                 'user_id' => $user->id,
@@ -635,8 +631,7 @@ class AuditLogService
      * @return array
      * @privacy-safe Collects standard request metadata
      */
-    private function getRequestMetadata(): array
-    {
+    private function getRequestMetadata(): array {
         return [
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
@@ -656,8 +651,7 @@ class AuditLogService
      * @return array
      * @privacy-safe Removes sensitive data from context
      */
-    private function sanitizeContext(array $context): array
-    {
+    private function sanitizeContext(array $context): array {
         return $this->recursiveSanitize($context);
     }
 
@@ -668,8 +662,7 @@ class AuditLogService
      * @return mixed
      * @privacy-safe Recursively removes sensitive data
      */
-    private function recursiveSanitize($data)
-    {
+    private function recursiveSanitize($data) {
         if (is_array($data)) {
             $sanitized = [];
             foreach ($data as $key => $value) {
@@ -699,8 +692,7 @@ class AuditLogService
      * @return Collection
      * @privacy-safe Returns complete activity log for user
      */
-    private function getUserActivityLogForExport(User $user, ?Carbon $dateFrom, ?Carbon $dateTo): Collection
-    {
+    private function getUserActivityLogForExport(User $user, ?Carbon $dateFrom, ?Carbon $dateTo): Collection {
         $query = $user->activities()->orderBy('created_at', 'desc');
 
         if ($dateFrom) {
@@ -732,8 +724,7 @@ class AuditLogService
      * @return string|null
      * @privacy-safe Masks IP address while preserving general location
      */
-    private function maskIpAddress(?string $ipAddress): ?string
-    {
+    private function maskIpAddress(?string $ipAddress): ?string {
         if (!$ipAddress) {
             return null;
         }
