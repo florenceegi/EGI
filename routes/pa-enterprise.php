@@ -182,6 +182,16 @@ Route::prefix('pa')
 
             // AI Credits Cost Tracking (NEW v5.0)
             Route::post('/estimate-cost', [NatanChatController::class, 'estimateCost'])->name('estimate.cost');
+
+            // User Memory System (NEW v7.0 - 🧠 Persistent Memory)
+            Route::prefix('/memory')->name('memory.')->group(function () {
+                Route::get('/', [NatanChatController::class, 'getUserMemories'])->name('index');
+                Route::get('/stats', [NatanChatController::class, 'getMemoryStats'])->name('stats');
+                Route::get('/greeting', [NatanChatController::class, 'getGreeting'])->name('greeting');
+                Route::post('/store', [NatanChatController::class, 'storeMemoryManual'])->name('store');
+                Route::delete('/{memoryId}', [NatanChatController::class, 'deleteMemory'])->name('delete');
+                Route::patch('/toggle', [NatanChatController::class, 'toggleMemorySystem'])->name('toggle');
+            });
         });
 
         /**

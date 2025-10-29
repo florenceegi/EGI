@@ -1154,6 +1154,58 @@ class NatanChatController extends Controller {
                 $query = $validated['query'];
                 $limit = $validated['limit'];
 
+                // 🧠 MEMORY SYSTEM: Check if user wants to memorize something
+                $memoryService = app(\App\Services\NatanMemoryService::class);
+                $memoryCommand = $memoryService->detectMemoryCommand($query);
+
+                if ($memoryCommand && $memoryCommand['is_memory_command']) {
+                    // User wants to store something in memory
+                    $memory = $memoryService->storeMemory(
+                        $user->id,
+                        $memoryCommand['content']
+                    );
+
+                    // EVENT: Memory Stored
+                    $emitSSE('memory_stored', [
+                        'content' => $memoryCommand['content'],
+                        'timestamp' => now()->toISOString(),
+                    ]);
+
+                    // Send confirmation and close stream
+                    $confirmationMessage = $memoryService->generateConfirmationMessage($memoryCommand['content']);
+
+                    $emitSSE('response_generation_complete', [
+                        'response' => $confirmationMessage,
+                        'tokens_input' => 0,
+                        'tokens_output' => 0,
+                        'cost_eur' => 0,
+                    ]);
+
+                    $emitSSE('done', [
+                        'status' => 'memory_stored',
+                        'message' => 'Memoria salvata con successo',
+                    ]);
+
+                    return;
+                }
+
+                // 🧠 MEMORY SYSTEM: Retrieve relevant memories for this query
+                $relevantMemories = $memoryService->shouldUseMemory($query)
+                    ? $memoryService->getRelevantMemories($user->id, $query, 5)
+                    : collect();
+
+                if ($relevantMemories->isNotEmpty()) {
+                    // Mark memories as used
+                    $memoryService->markMemoriesAsUsed($relevantMemories);
+
+                    // EVENT: Memories Retrieved
+                    $emitSSE('memories_retrieved', [
+                        'count' => $relevantMemories->count(),
+                        'memories' => $relevantMemories->pluck('memory_content')->toArray(),
+                        'timestamp' => now()->toISOString(),
+                    ]);
+                }
+
                 // EVENT 1: Semantic Search Start
                 $emitSSE('semantic_search_start', [
                     'model' => 'text-embedding-3-small',
@@ -1226,15 +1278,63 @@ class NatanChatController extends Controller {
                 // Build enterprise-grade prompt for PA analysis
                 $strategicPrompt = call_user_func($buildEnterprisePrompt, $query, $acts);
 
+                // 🧠 Append user memories to prompt if available
+                if ($relevantMemories->isNotEmpty()) {
+                    $strategicPrompt .= $memoryService->formatMemoriesForPrompt($relevantMemories);
+                }
+
+                // ⚠️ CRITICAL FIX: PersonaSelector must analyze USER QUERY, not system prompt
+                // $query = user's actual question (e.g. "quali atti ci sono su Rifredi?")
+                // $strategicPrompt = system instructions + user query (e.g. "Sei un CONSULENTE STRATEGICO SENIOR...")
+                // PersonaSelector must receive $query to correctly identify intent keywords
+                $personaSelector = app(\App\Services\PersonaSelector::class);
+                $personaSelection = $personaSelector->selectPersona(
+                    $query, // ✅ Pass original user query for persona detection
+                    null,   // No manual override
+                    ['conversation_history' => []]
+                );
+
+                $this->logger->info('[SSE PersonaSelector] Persona selected from user query', [
+                    'user_query' => $query,
+                    'persona_id' => $personaSelection['persona_id'],
+                    'confidence' => $personaSelection['confidence'],
+                    'method' => $personaSelection['method'],
+                ]);
+
+                // ✨ NEW: Auto-detect if web search should be enabled
+                $webSearchDetector = app(\App\Services\WebSearch\WebSearchAutoDetector::class);
+                $webSearchDetection = $webSearchDetector->shouldEnableWebSearch(
+                    $query,
+                    $personaSelection['persona_id'],
+                    ['conversation_history' => []]
+                );
+
+                $useWebSearch = $webSearchDetection['should_enable'];
+
+                // EVENT: Web Search Detection (if enabled)
+                if ($useWebSearch) {
+                    $emitSSE('web_search_enabled', [
+                        'confidence' => $webSearchDetection['confidence'],
+                        'reasoning' => $webSearchDetection['reasoning'],
+                        'triggers' => $webSearchDetection['triggers'],
+                        'timestamp' => now()->toISOString(),
+                    ]);
+
+                    $this->logger->info('[SSE WebSearch] Auto-enabled', [
+                        'confidence' => $webSearchDetection['confidence'],
+                        'reasoning' => $webSearchDetection['reasoning'],
+                    ]);
+                }
+
                 // Call Claude via NatanChatService
-                // Let AI auto-select persona based on query (strategic, financial, legal, technical, urban, communication)
+                // Pass selected persona explicitly to bypass internal persona selection
                 $result = $chatService->processQuery(
-                    userQuery: $strategicPrompt,
+                    userQuery: $strategicPrompt, // Full system prompt for Claude
                     user: $user,
                     conversationHistory: [],
-                    manualPersonaId: null, // ✅ AUTO-SELECT persona (was hardcoded 'strategic')
+                    manualPersonaId: $personaSelection['persona_id'], // ✅ Use pre-selected persona from user query analysis
                     useRag: false, // We provide acts directly
-                    useWebSearch: false,
+                    useWebSearch: $useWebSearch, // ✅ Auto-detected web search
                     referenceContext: ['acts' => call_user_func($formatActsForClaude, $acts)]
                 );
 
@@ -1607,5 +1707,137 @@ PROMPT;
                 'cup' => $act->jsonMetadata['pa_act']['cup'] ?? null,
             ];
         })->toArray();
+    }
+
+    /**
+     * 🧠 MEMORY SYSTEM ENDPOINTS
+     */
+
+    /**
+     * Get all user memories
+     */
+    public function getUserMemories(Request $request) {
+        $memoryService = app(\App\Services\NatanMemoryService::class);
+        $memories = $memoryService->getAllUserMemories($request->user()->id);
+
+        return response()->json([
+            'success' => true,
+            'memories' => $memories->map(function ($memory) {
+                return [
+                    'id' => $memory->id,
+                    'content' => $memory->memory_content,
+                    'type' => $memory->memory_type,
+                    'usage_count' => $memory->usage_count,
+                    'created_at' => $memory->created_at->format('d/m/Y H:i'),
+                    'last_used_at' => $memory->last_used_at?->format('d/m/Y H:i'),
+                ];
+            }),
+        ]);
+    }
+
+    /**
+     * Get memory statistics for user
+     */
+    public function getMemoryStats(Request $request) {
+        $memoryService = app(\App\Services\NatanMemoryService::class);
+        $stats = $memoryService->getUserMemoryStats($request->user()->id);
+
+        return response()->json([
+            'success' => true,
+            'stats' => [
+                'total_memories' => $stats['total_memories'],
+                'most_used' => $stats['most_used'] ? [
+                    'content' => $stats['most_used']->memory_content,
+                    'usage_count' => $stats['most_used']->usage_count,
+                ] : null,
+                'recent' => $stats['recent']->map(fn($m) => [
+                    'content' => $m->memory_content,
+                    'created_at' => $m->created_at->format('d/m/Y H:i'),
+                ]),
+                'by_type' => $stats['by_type'],
+            ],
+        ]);
+    }
+
+    /**
+     * Get personalized greeting with memory count
+     */
+    public function getGreeting(Request $request) {
+        $user = $request->user();
+        $memoryService = app(\App\Services\NatanMemoryService::class);
+
+        $memoryCount = \App\Models\NatanUserMemory::forUser($user->id)
+            ->active()
+            ->count();
+
+        $greeting = $memoryService->generateGreeting($user->name, $memoryCount);
+
+        return response()->json([
+            'success' => true,
+            'greeting' => $greeting,
+            'user_name' => $user->name,
+            'memory_count' => $memoryCount,
+        ]);
+    }
+
+    /**
+     * Delete a specific memory
+     */
+    public function deleteMemory(Request $request, int $memoryId) {
+        $memoryService = app(\App\Services\NatanMemoryService::class);
+        $deleted = $memoryService->deleteMemory($memoryId, $request->user()->id);
+
+        return response()->json([
+            'success' => $deleted,
+            'message' => $deleted ? 'Memoria eliminata con successo' : 'Memoria non trovata',
+        ]);
+    }
+
+    /**
+     * Store memory manually (from settings modal)
+     */
+    public function storeMemoryManual(Request $request) {
+        $validated = $request->validate([
+            'content' => 'required|string|max:500',
+            'type' => 'nullable|string|in:preference,context,fact,instruction',
+        ]);
+
+        $memoryService = app(\App\Services\NatanMemoryService::class);
+        $memory = $memoryService->storeMemory(
+            $request->user()->id,
+            $validated['content'],
+            $validated['type'] ?? 'fact'
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => '✅ Memoria salvata con successo!',
+            'memory' => [
+                'id' => $memory->id,
+                'content' => $memory->memory_content,
+                'type' => $memory->memory_type,
+                'created_at' => $memory->created_at->format('d/m/Y H:i'),
+            ],
+        ]);
+    }
+
+    /**
+     * Toggle memory system (enable/disable for user)
+     */
+    public function toggleMemorySystem(Request $request) {
+        $validated = $request->validate([
+            'enabled' => 'required|boolean',
+        ]);
+
+        // Store preference in session (or user settings table if you have one)
+        session(['natan_memory_enabled' => $validated['enabled']]);
+
+        return response()->json([
+            'success' => true,
+            'enabled' => $validated['enabled'],
+            'message' => $validated['enabled']
+                ? '🧠 Sistema memoria attivato'
+                : '💤 Sistema memoria disattivato',
+        ]);
     }
 }

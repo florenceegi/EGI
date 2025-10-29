@@ -13,8 +13,7 @@ namespace App\Config;
  * - Manual override available via UI selector
  * - Confidence scoring for routing decisions
  */
-class NatanPersonas
-{
+class NatanPersonas {
     /**
      * All available personas with their configuration
      * 
@@ -31,8 +30,7 @@ class NatanPersonas
      * - tone: communication style
      * - frameworks: preferred analytical frameworks
      */
-    public static function getAll(): array
-    {
+    public static function getAll(): array {
         return [
             'strategic' => [
                 'id' => 'strategic',
@@ -62,6 +60,7 @@ class NatanPersonas
                     'obiettivi',
                     'kpi',
                     'performance'
+                    // NOTE: Keywords for people evaluation moved to Communication persona
                 ],
                 'expertise' => [
                     'Strategic planning & execution',
@@ -302,7 +301,37 @@ class NatanPersonas
                     'presentazione',
                     'pitch',
                     'narrativa',
-                    'storytelling'
+                    'storytelling',
+                    // Persone/ruoli/visibilità/valutazione (PRIORITÀ ASSOLUTA per query su persone)
+                    'assessor',
+                    'sindaco',
+                    'vice sindaco',
+                    'giunta',
+                    'politici',
+                    'amministratori',
+                    'funzionari',
+                    'dirigenti',
+                    'consiglier',
+                    'in evidenza',
+                    'distint',
+                    'visibilità',
+                    'notorietà',
+                    'riconoscimento',
+                    'reputazione',
+                    // Valutazione persone/performance/risultati (MOVED FROM STRATEGIC)
+                    'si sono messi in evidenza',
+                    'più effic',
+                    'più performan',
+                    'migliori',
+                    'apporto',
+                    'contributo',
+                    'valutazione',
+                    'assessment',
+                    'risultati ottenuti',
+                    'performance',
+                    'efficacia',
+                    'successi',
+                    'risultati'
                 ],
                 'expertise' => [
                     'Strategic communication planning',
@@ -322,14 +351,70 @@ class NatanPersonas
                 ],
                 'system_prompt_key' => 'communication_specialist'
             ],
+
+            'archivist' => [
+                'id' => 'archivist',
+                'name' => 'Archivista/Documentalista',
+                'name_en' => 'Archivist & Information Retrieval Specialist',
+                'icon' => '📚',
+                'color' => '#0891b2', // cyan-600
+                'description' => 'Esperto ricerca documentale - Classificazione, recupero informazioni, liste strutturate',
+                'keywords' => [
+                    'quali',
+                    'elenco',
+                    'lista',
+                    'trova',
+                    'cerca',
+                    'ricerca',
+                    'mostra',
+                    'visualizza',
+                    'documenti',
+                    'atti',
+                    'delibere',
+                    'determine',
+                    'classificazione',
+                    'catalogazione',
+                    'archivio',
+                    'riguardano',
+                    'relativi',
+                    'riferiti',
+                    'su',
+                    'per',
+                    'zona',
+                    'area',
+                    'settore',
+                    'tipo',
+                    'categoria',
+                    'anno',
+                    'periodo',
+                    'quando',
+                    'dove'
+                ],
+                'expertise' => [
+                    'Document classification & taxonomy',
+                    'Information retrieval & search',
+                    'Metadata management',
+                    'Archive organization',
+                    'Records management',
+                    'Structured listing & categorization'
+                ],
+                'tone' => 'Objective, organized, comprehensive',
+                'frameworks' => [
+                    'Dublin Core Metadata',
+                    'Faceted Classification',
+                    'Controlled Vocabulary',
+                    'Information Architecture',
+                    'ISAD(G) Archival Description'
+                ],
+                'system_prompt_key' => 'archivist'
+            ],
         ];
     }
 
     /**
      * Get persona by ID
      */
-    public static function get(string $personaId): ?array
-    {
+    public static function get(string $personaId): ?array {
         $personas = self::getAll();
         return $personas[$personaId] ?? null;
     }
@@ -337,32 +422,28 @@ class NatanPersonas
     /**
      * Get default persona (strategic consultant)
      */
-    public static function getDefault(): array
-    {
+    public static function getDefault(): array {
         return self::get('strategic');
     }
 
     /**
      * Get all persona IDs
      */
-    public static function getIds(): array
-    {
+    public static function getIds(): array {
         return array_keys(self::getAll());
     }
 
     /**
      * Validate persona ID
      */
-    public static function isValid(string $personaId): bool
-    {
+    public static function isValid(string $personaId): bool {
         return in_array($personaId, self::getIds(), true);
     }
 
     /**
      * Get persona name by ID (for display)
      */
-    public static function getName(string $personaId): string
-    {
+    public static function getName(string $personaId): string {
         $persona = self::get($personaId);
         return $persona['name'] ?? 'Unknown';
     }
@@ -373,8 +454,7 @@ class NatanPersonas
      * 
      * @return array ['keyword' => ['persona_id' => weight], ...]
      */
-    public static function getKeywordMap(): array
-    {
+    public static function getKeywordMap(): array {
         $map = [];
 
         foreach (self::getAll() as $personaId => $persona) {

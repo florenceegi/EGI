@@ -9,6 +9,9 @@
  */
 
 return [
+    // === GENERAL ===
+    'open_assistant' => 'Apri N.A.T.A.N. - Assistente AI',
+    
     // === CHAT INTERFACE ===
     'chat.title' => 'N.A.T.A.N. - Consulenza Strategica AI',
     'chat.subtitle' => 'Interroga i tuoi documenti amministrativi con intelligenza artificiale',

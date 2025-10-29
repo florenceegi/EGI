@@ -333,37 +333,46 @@ class NatanChatService {
             $webSearchResults = [];
             $webSearchMetadata = null;
             if ($useWebSearch) {
-                $webSearchResponse = $this->webSearch->search(
-                    $userQuery,
-                    $personaSelection['persona_id'],
-                    5 // Max 5 web results
-                );
+                try {
+                    $webSearchResponse = $this->webSearch->search(
+                        $userQuery,
+                        $personaSelection['persona_id'],
+                        5 // Max 5 web results
+                    );
 
-                if ($webSearchResponse['success']) {
-                    $webSearchResults = $webSearchResponse['results'];
-                    $webSearchMetadata = $webSearchResponse['metadata'];
+                    if (!empty($webSearchResponse['success'])) {
+                        $webSearchResults = $webSearchResponse['results'] ?? [];
+                        $webSearchMetadata = $webSearchResponse['metadata'] ?? null;
 
-                    $logContext['web_search_count'] = count($webSearchResults);
-                    $logContext['web_search_provider'] = $webSearchMetadata['provider'] ?? 'unknown';
-                    $logContext['web_search_from_cache'] = $webSearchMetadata['from_cache'] ?? false;
+                        $logContext['web_search_count'] = count($webSearchResults);
+                        $logContext['web_search_provider'] = $webSearchMetadata['provider'] ?? 'unknown';
+                        $logContext['web_search_from_cache'] = $webSearchMetadata['from_cache'] ?? false;
 
-                    $this->logger->info('[NatanChatService] Web search results retrieved', $logContext);
-
-                    // GDPR Audit - Log web search data
-                    $this->logger->info('[NatanChatService][GDPR] Web search query sent to external API', [
-                        'user_id' => $user->id,
-                        'provider' => $webSearchMetadata['provider'],
-                        'query_sanitized' => $webSearchMetadata['query_sanitized'],
-                        'keywords_removed' => $webSearchMetadata['keywords_removed'],
-                        'results_count' => count($webSearchResults),
-                        'from_cache' => $webSearchMetadata['from_cache'],
-                        'timestamp' => now()->toIso8601String(),
+                        $this->logger->info('[NatanChatService] Web search results retrieved', $logContext);
+                    } else {
+                        $this->logger->warning('[NatanChatService] Web search failed gracefully', [
+                            'error' => $webSearchResponse['error'] ?? 'unknown',
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    // Web search failed but don't block the entire response
+                    $this->logger->error('[NatanChatService] Web search exception - continuing without external sources', [
+                        'error' => $e->getMessage(),
+                        'query' => $userQuery,
                     ]);
-                } else {
-                    $this->logger->warning('[NatanChatService] Web search failed, continuing without web results', [
-                        'error' => $webSearchResponse['error'] ?? 'unknown',
-                    ]);
+                    // Continue with empty web search results - RAG data is still available
                 }
+
+                // GDPR Audit - Log web search data (use null-coalescing to avoid notices)
+                $this->logger->info('[NatanChatService][GDPR] Web search query sent to external API', [
+                    'user_id' => $user->id,
+                    'provider' => $webSearchMetadata['provider'] ?? null,
+                    'query_sanitized' => $webSearchMetadata['query_sanitized'] ?? null,
+                    'keywords_removed' => $webSearchMetadata['keywords_removed'] ?? null,
+                    'results_count' => count($webSearchResults),
+                    'from_cache' => $webSearchMetadata['from_cache'] ?? false,
+                    'timestamp' => now()->toIso8601String(),
+                ]);
             } else {
                 $logContext['web_search_disabled'] = true;
             }
@@ -376,6 +385,15 @@ class NatanChatService {
                 // Build web sources summary for prompt
                 $webSourcesSummary = $this->buildWebSourcesSummary($webSearchResults);
                 $context['web_sources_summary'] = $webSourcesSummary;
+
+                // 🚨 CRITICAL DEBUG LOG
+                $this->logger->critical('🌐🌐🌐 WEB SOURCES ADDED TO CONTEXT', [
+                    'web_sources_summary_length' => strlen($webSourcesSummary),
+                    'web_sources_summary_preview' => substr($webSourcesSummary, 0, 300),
+                    'internal_sources' => count($context['acts']),
+                    'external_sources' => count($webSearchResults),
+                    'total_sources' => count($context['acts']) + count($webSearchResults),
+                ]);
 
                 $this->logger->info('[NatanChatService] Context fusion completed (RAG + Web)', [
                     'internal_sources' => count($context['acts']),
@@ -536,6 +554,27 @@ class NatanChatService {
                             'retry_attempt' => $retryAttempt,
                         ], $e);
 
+                        // Check for credit balance error FIRST (most critical)
+                        $errorMessage = $e->getMessage();
+                        $isCreditError = str_contains($errorMessage, 'credit balance is too low') || 
+                                        str_contains($errorMessage, 'upgrade or purchase credits');
+
+                        if ($isCreditError) {
+                            // Critical: API credits exhausted
+                            return [
+                                'success' => false,
+                                'response' => "⚠️ **Credito API esaurito**\n\n" .
+                                    "Il servizio N.A.T.A.N. non può rispondere perché il credito Anthropic è terminato.\n\n" .
+                                    "**Azione richiesta dall'amministratore:**\n" .
+                                    "1. Accedi a [Anthropic Console](https://console.anthropic.com/settings/billing)\n" .
+                                    "2. Ricarica il credito o aggiorna il piano\n" .
+                                    "3. Verifica la carta di credito associata\n\n" .
+                                    "Tutti gli altri servizi (ricerca semantica, web search) funzionano correttamente.",
+                                'error' => 'credit_exhausted',
+                                'retry_attempts' => $retryAttempt,
+                            ];
+                        }
+
                         // User-friendly message for rate limit exhaustion
                         if ($isRateLimitError && $claudeContextLimit <= $minLimit) {
                             // Don't throw exception - return user-friendly response
@@ -685,10 +724,43 @@ class NatanChatService {
                 'history_count' => count($conversationHistory),
             ], $e);
 
+            // Detect specific error types for user-friendly messages
+            $errorMessage = $e->getMessage();
+            $userFriendlyMessage = "Mi dispiace, ho avuto un problema nell'elaborare la tua richiesta. Riprova tra poco.";
+
+            // Check for credit balance error
+            if (str_contains($errorMessage, 'credit balance is too low') || 
+                str_contains($errorMessage, 'upgrade or purchase credits')) {
+                $userFriendlyMessage = "⚠️ **Credito API esaurito**\n\n" .
+                    "Il servizio N.A.T.A.N. non può rispondere perché il credito Anthropic è terminato.\n\n" .
+                    "**Azione richiesta:**\n" .
+                    "- L'amministratore deve ricaricare il credito su [Anthropic Console](https://console.anthropic.com/settings/billing)\n" .
+                    "- Oppure aggiornare il piano di abbonamento\n\n" .
+                    "Tutti gli altri servizi (ricerca semantica, web search) funzionano correttamente. " .
+                    "Serve solo ricaricare il credito API per Claude.";
+            }
+            // Check for rate limit errors
+            elseif (str_contains($errorMessage, 'rate_limit_error') || 
+                    str_contains($errorMessage, '429') ||
+                    str_contains($errorMessage, 'rate limit')) {
+                $userFriendlyMessage = "⏱️ **Limite richieste raggiunto**\n\n" .
+                    "Troppo traffico API in questo momento. Il sistema sta rallentando automaticamente.\n\n" .
+                    "Riprova tra 30-60 secondi.";
+            }
+            // Check for timeout errors
+            elseif (str_contains($errorMessage, 'timeout') || 
+                    str_contains($errorMessage, 'timed out')) {
+                $userFriendlyMessage = "⏰ **Timeout connessione**\n\n" .
+                    "La richiesta ha impiegato troppo tempo. Prova a:\n" .
+                    "- Ridurre il numero di atti analizzati\n" .
+                    "- Formulare una domanda più specifica\n" .
+                    "- Riprovare tra qualche minuto";
+            }
+
             return [
                 'success' => false,
-                'response' => "Mi dispiace, ho avuto un problema nell'elaborare la tua richiesta. Riprova tra poco.",
-                'error' => $e->getMessage()
+                'response' => $userFriendlyMessage,
+                'error' => $errorMessage
             ];
         }
     }

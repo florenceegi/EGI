@@ -5,16 +5,19 @@
     {{-- AI Cost Preview Modal Component --}}
     @include('pa.natan._ai-cost-preview-modal')
 
+    {{-- ⚙️ Chat Settings Modal --}}
+    @include('pa.natan._chat-settings-modal')
+
     {{-- Chat History is now integrated in enterprise sidebar --}}
-    <div class="min-h-screen py-8 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div class="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
             {{-- Header - Ottimizzato per mobile --}}
             <div class="mb-4 sm:mb-8">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div class="flex items-center gap-3 sm:gap-4">
                         <a href="{{ route('pa.acts.index') }}"
-                            class="p-2 transition-all bg-white rounded-lg shadow-sm hover:shadow-md">
+                            class="rounded-lg bg-white p-2 shadow-sm transition-all hover:shadow-md">
                             <span class="material-icons text-[#1B365D]">arrow_back</span>
                         </a>
                         <div>
@@ -23,7 +26,7 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 rounded-lg bg-green-100 px-3 py-1.5 sm:px-4 sm:py-2">
-                        <span class="text-xs text-green-600 material-icons sm:text-sm">check_circle</span>
+                        <span class="material-icons text-xs text-green-600 sm:text-sm">check_circle</span>
                         <span class="text-xs font-medium text-green-800 sm:text-sm">AI Attiva</span>
                     </div>
                 </div>
@@ -35,7 +38,7 @@
                 {{-- Left Column: Chat (8/12 width on desktop, full width on mobile) --}}
                 <div class="lg:col-span-8">
                     {{-- Chat Window --}}
-                    <div class="bg-white shadow-xl rounded-2xl">
+                    <div class="rounded-2xl bg-white shadow-xl">
 
                         {{-- Chat Header - Ottimizzato per mobile --}}
                         <div
@@ -43,8 +46,8 @@
                             <div class="flex items-center justify-between gap-2 sm:gap-3">
                                 <div class="flex items-center gap-2 sm:gap-3">
                                     <div
-                                        class="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm sm:h-12 sm:w-12">
-                                        <span class="text-xl text-white material-icons sm:text-2xl">smart_toy</span>
+                                        class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm sm:h-12 sm:w-12">
+                                        <span class="material-icons text-xl text-white sm:text-2xl">smart_toy</span>
                                     </div>
                                     <div>
                                         <h2 class="text-base font-bold text-white sm:text-lg">N.A.T.A.N.</h2>
@@ -54,21 +57,39 @@
                                     </div>
                                 </div>
 
-                                {{-- ✨ NEW v4.0 - Active Project Badge --}}
-                                @if ($activeProject)
-                                    <div
-                                        class="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 backdrop-blur-sm">
-                                        <div class="flex items-center justify-center w-8 h-8 rounded-lg"
-                                            style="background-color: {{ $activeProject->color ?? '#D4A574' }}">
-                                            <span
-                                                class="text-sm text-white material-icons">{{ $activeProject->icon ?? 'folder' }}</span>
+                                <div class="flex items-center gap-2">
+                                    {{-- ⚙️ Settings Button --}}
+                                    <button onclick="ChatSettings.open()"
+                                        class="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-2 py-1 backdrop-blur-sm transition-all hover:bg-white/20"
+                                        title="Impostazioni Chat">
+                                        <span class="material-icons text-sm text-white">settings</span>
+                                    </button>
+
+                                    {{-- 🧠 Memory Badge (Always visible) --}}
+                                    <button id="memoryBadge" onclick="ChatSettings.openMemoryTab()"
+                                        class="flex items-center gap-1.5 rounded-lg border border-purple-300/30 bg-purple-500/20 px-2 py-1 backdrop-blur-sm transition-all hover:bg-purple-500/30"
+                                        title="Gestisci Memoria">
+                                        <span class="material-icons text-sm text-purple-200">psychology</span>
+                                        <span id="memoryCount" class="text-xs font-medium text-white">0</span>
+                                    </button>
+
+                                    {{-- ✨ NEW v4.0 - Active Project Badge --}}
+                                    @if ($activeProject)
+                                        <div
+                                            class="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 backdrop-blur-sm">
+                                            <div class="flex h-8 w-8 items-center justify-center rounded-lg"
+                                                style="background-color: {{ $activeProject->color ?? '#D4A574' }}">
+                                                <span
+                                                    class="material-icons text-sm text-white">{{ $activeProject->icon ?? 'folder' }}</span>
+                                            </div>
+                                            <div class="hidden sm:block">
+                                                <p class="text-xs font-medium text-white">{{ $activeProject->name }}</p>
+                                                <p class="text-[10px] text-white/60">{{ __('projects.active_context') }}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div class="hidden sm:block">
-                                            <p class="text-xs font-medium text-white">{{ $activeProject->name }}</p>
-                                            <p class="text-[10px] text-white/60">{{ __('projects.active_context') }}</p>
-                                        </div>
-                                    </div>
-                                @endif
+                                    @endif
+                                </div>
                             </div>
                         </div>
 
@@ -78,20 +99,20 @@
 
                             {{-- Welcome Message (will be hidden after first message) - Ottimizzato mobile --}}
                             <div id="welcomeMessage"
-                                class="flex flex-col items-center justify-center h-full px-2 text-center">
+                                class="flex h-full flex-col items-center justify-center px-2 text-center">
                                 <div
                                     class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#1B365D] to-[#2D5016] sm:mb-6 sm:h-20 sm:w-20">
-                                    <span class="text-3xl text-white material-icons sm:text-4xl">smart_toy</span>
+                                    <span class="material-icons text-3xl text-white sm:text-4xl">smart_toy</span>
                                 </div>
                                 <h3 class="mb-2 text-lg font-bold text-[#1B365D] sm:text-2xl">Ciao! Sono N.A.T.A.N.</h3>
-                                <p class="max-w-md mb-4 text-sm text-gray-600 sm:mb-8 sm:text-base">
+                                <p class="mb-4 max-w-md text-sm text-gray-600 sm:mb-8 sm:text-base">
                                     Posso aiutarti ad analizzare i tuoi atti amministrativi. Prova a chiedermi qualcosa!
                                 </p>
 
                                 {{-- Suggested Questions - Collassabile su mobile --}}
                                 <div class="w-full max-w-2xl">
                                     <button id="toggleSuggestedQuestions"
-                                        class="flex items-center justify-between w-full p-2 mb-2 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200 sm:hidden">
+                                        class="mb-2 flex w-full items-center justify-between rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 sm:hidden">
                                         <div class="flex items-center gap-2">
                                             <span class="material-icons text-sm text-[#2D5016]">auto_awesome</span>
                                             <span class="text-xs font-medium text-gray-700">Domande suggerite</span>
@@ -102,18 +123,18 @@
                                             </span>
                                         </div>
                                         <span id="toggleIcon"
-                                            class="text-sm text-gray-500 material-icons">expand_more</span>
+                                            class="material-icons text-sm text-gray-500">expand_more</span>
                                     </button>
 
                                     <div id="suggestedQuestionsContent" class="hidden sm:block">
                                         <div
-                                            class="flex-col hidden gap-1 mb-2 sm:mb-4 sm:flex sm:flex-row sm:items-center sm:gap-2">
+                                            class="mb-2 hidden flex-col gap-1 sm:mb-4 sm:flex sm:flex-row sm:items-center sm:gap-2">
                                             <p class="text-xs font-medium text-gray-700 sm:text-sm">Domande suggerite:
                                             </p>
                                             <div class="flex items-center gap-1">
                                                 <span
                                                     class="flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                                                    <span class="text-xs material-icons">shuffle</span>
+                                                    <span class="material-icons text-xs">shuffle</span>
                                                     Random
                                                 </span>
                                                 <span class="text-[10px] text-gray-400 sm:text-xs">(cambiano ad ogni
@@ -138,28 +159,28 @@
                         </div>
 
                         {{-- Persona Selector - Ottimizzato mobile --}}
-                        <div class="p-2 border-t border-gray-200 sm:p-4">
+                        <div class="border-t border-gray-200 p-2 sm:p-4">
                             <x-natan-persona-selector />
                         </div>
 
                         {{-- Input Area - Ottimizzato mobile --}}
-                        <div class="p-2 border-t border-gray-200 rounded-b-2xl bg-gray-50 sm:p-4">
+                        <div class="rounded-b-2xl border-t border-gray-200 bg-gray-50 p-2 sm:p-4">
                             {{-- Web Search Toggle ✨ NEW v3.0 --}}
                             <div
-                                class="flex items-center justify-between p-2 mb-2 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 sm:p-3">
+                                class="mb-2 flex items-center justify-between rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-2 sm:p-3">
                                 <div class="flex items-center gap-2">
-                                    <label for="webSearchToggle" class="flex items-center gap-2 cursor-pointer">
+                                    <label for="webSearchToggle" class="flex cursor-pointer items-center gap-2">
                                         <input type="checkbox" id="webSearchToggle"
-                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:ring-offset-0" />
+                                            class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0" />
                                         <span
                                             class="text-xs font-medium text-gray-700 sm:text-sm">{{ __('natan.web_search.toggle_label') }}</span>
                                     </label>
-                                    <span class="text-sm text-gray-400 material-icons cursor-help sm:text-base"
+                                    <span class="material-icons cursor-help text-sm text-gray-400 sm:text-base"
                                         title="{{ __('natan.web_search.toggle_hint') }}">info</span>
                                 </div>
                                 <span id="webSearchStatus"
-                                    class="items-center hidden gap-1 text-xs font-medium text-blue-600 sm:flex">
-                                    <span class="text-xs material-icons">public</span>
+                                    class="hidden items-center gap-1 text-xs font-medium text-blue-600 sm:flex">
+                                    <span class="material-icons text-xs">public</span>
                                     <span>{{ __('natan.web_search.enabled') }}</span>
                                 </span>
                             </div>
@@ -168,7 +189,7 @@
                             @if ($activeProject)
                                 <div
                                     class="mb-3 flex items-center gap-3 rounded-lg border-2 border-[#D4A574] bg-gradient-to-r from-[#D4A574]/10 to-white p-3">
-                                    <div class="flex items-center justify-center w-10 h-10 rounded-lg"
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg"
                                         style="background-color: {{ $activeProject->color ?? '#D4A574' }}20">
                                         <span class="material-icons"
                                             style="color: {{ $activeProject->color ?? '#D4A574' }}">{{ $activeProject->icon ?? 'folder' }}</span>
@@ -179,7 +200,7 @@
                                     </div>
                                     <button type="button" onclick="triggerDocumentUpload()"
                                         class="flex items-center gap-2 rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
-                                        <span class="text-sm material-icons">upload_file</span>
+                                        <span class="material-icons text-sm">upload_file</span>
                                         <span class="hidden sm:inline">{{ __('projects.upload_document') }}</span>
                                     </button>
                                     <input type="file" id="documentUploadInput" accept=".pdf,.docx,.txt,.md"
@@ -195,8 +216,8 @@
                                     class="flex items-center gap-1 self-end rounded-xl bg-[#2D5016] px-3 py-2 text-sm font-medium text-white transition-all hover:bg-[#3D6026] disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-6 sm:py-3 sm:text-base">
                                     <span id="sendBtnText"
                                         class="hidden sm:inline">{{ __('natan.chat.send_button') }}</span>
-                                    <span id="sendBtnLoader" class="items-center hidden gap-1 sm:gap-2">
-                                        <svg class="w-3 h-3 animate-spin sm:h-4 sm:w-4" fill="none"
+                                    <span id="sendBtnLoader" class="hidden items-center gap-1 sm:gap-2">
+                                        <svg class="h-3 w-3 animate-spin sm:h-4 sm:w-4" fill="none"
                                             viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10"
                                                 stroke="currentColor" stroke-width="4"></circle>
@@ -206,16 +227,16 @@
                                         </svg>
                                         <span class="hidden sm:inline">Invio...</span>
                                     </span>
-                                    <span class="text-lg material-icons sm:text-2xl">send</span>
+                                    <span class="material-icons text-lg sm:text-2xl">send</span>
                                 </button>
                             </form>
                         </div>
                     </div>
 
                     {{-- Info Footer - Ottimizzato mobile --}}
-                    <div class="p-2 mt-3 border border-blue-200 rounded-lg bg-blue-50 sm:mt-4 sm:p-3">
+                    <div class="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-2 sm:mt-4 sm:p-3">
                         <div class="flex items-start gap-1.5 sm:gap-2">
-                            <span class="text-xs text-blue-600 material-icons sm:text-sm">info</span>
+                            <span class="material-icons text-xs text-blue-600 sm:text-sm">info</span>
                             <div class="text-[10px] text-blue-800 sm:text-xs">
                                 <p class="font-medium">N.A.T.A.N. con Claude 3.5 Sonnet</p>
                                 <p class="text-blue-600">Sistema multi-persona · GDPR compliant</p>
@@ -234,13 +255,13 @@
                             class="mb-4 rounded-xl border-2 border-[#2D5016] bg-gradient-to-br from-[#1B365D] to-[#2D5016] p-4 text-white shadow-lg">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <span class="text-3xl material-icons">auto_awesome</span>
+                                    <span class="material-icons text-3xl">auto_awesome</span>
                                     <div>
                                         <h3 class="text-lg font-bold">Domande Strategiche</h3>
                                         <p class="text-xs text-white/80">Clicca per testare</p>
                                     </div>
                                 </div>
-                                <div class="px-3 py-1 text-xs font-bold text-yellow-900 bg-yellow-400 rounded-full">
+                                <div class="rounded-full bg-yellow-400 px-3 py-1 text-xs font-bold text-yellow-900">
                                     28
                                 </div>
                             </div>
@@ -248,6 +269,311 @@
 
                         {{-- Questions Scrollable Container --}}
                         <div class="max-h-[calc(100vh-200px)] overflow-y-auto rounded-xl bg-gray-50 p-3">
+
+                            {{-- N.A.T.A.N. Guide Section --}}
+                            <details open class="mb-3">
+                                <summary
+                                    class="cursor-pointer select-none rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 font-bold text-white shadow-md transition-all hover:from-emerald-700 hover:to-teal-700">
+                                    🎓 Come Usare N.A.T.A.N. al Meglio
+                                </summary>
+
+                                <div class="mt-3 space-y-3">
+                                    {{-- Potenziale N.A.T.A.N. --}}
+                                    <div
+                                        class="rounded-lg border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-4">
+                                        <div class="mb-3 flex items-center gap-2">
+                                            <span class="text-2xl">🚀</span>
+                                            <h4 class="text-sm font-bold text-emerald-900">Il Potenziale di N.A.T.A.N.
+                                            </h4>
+                                        </div>
+                                        <ul class="space-y-2 text-xs text-gray-700">
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-emerald-600">✓</span>
+                                                <span><strong>Analisi semantica avanzata:</strong> comprende il contesto
+                                                    e l'intento, non solo keywords</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-emerald-600">✓</span>
+                                                <span><strong>Multi-persona intelligente:</strong> risponde con
+                                                    expertise specifica (legale, tecnico, finanziario)</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-emerald-600">✓</span>
+                                                <span><strong>RAG su migliaia di atti:</strong> trova correlazioni
+                                                    nascoste e pattern temporali</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-emerald-600">✓</span>
+                                                <span><strong>Output strutturati:</strong> tabelle, timeline, grafici
+                                                    Mermaid, sintesi executive</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="text-emerald-600">✓</span>
+                                                <span><strong>Supporto decisionale:</strong> precedenti, best practices,
+                                                    lessons learned</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    {{-- Come Porre Domande Efficaci --}}
+                                    <div
+                                        class="rounded-lg border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+                                        <div class="mb-3 flex items-center gap-2">
+                                            <span class="text-2xl">💬</span>
+                                            <h4 class="text-sm font-bold text-blue-900">Come Formulare Domande Efficaci
+                                            </h4>
+                                        </div>
+                                        <div class="space-y-3 text-xs">
+                                            <div class="rounded-md bg-white p-3 shadow-sm">
+                                                <p class="mb-1 font-semibold text-green-700">✅ OTTIMO</p>
+                                                <p class="italic text-gray-700">"Trova atti su manutenzione strade del
+                                                    2023-2024 e crea timeline con date chiave"</p>
+                                                <p class="mt-1 text-xs text-gray-500">→ Specifico, con range temporale
+                                                    e output richiesto</p>
+                                            </div>
+                                            <div class="rounded-md bg-white p-3 shadow-sm">
+                                                <p class="mb-1 font-semibold text-orange-600">⚠️ MIGLIORABILE</p>
+                                                <p class="italic text-gray-700">"Dimmi qualcosa sulla manutenzione"</p>
+                                                <p class="mt-1 text-xs text-gray-500">→ Troppo generico, manca contesto
+                                                    e obiettivo</p>
+                                            </div>
+                                            <div class="rounded-md bg-white p-3 shadow-sm">
+                                                <p class="mb-1 font-semibold text-emerald-700">✅ OTTIMO</p>
+                                                <p class="italic text-gray-700">"Quali atti citano D.Lgs 50/2016?
+                                                    Elenca con riferimenti specifici"</p>
+                                                <p class="mt-1 text-xs text-gray-500">→ Normativa precisa, output
+                                                    strutturato richiesto</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Elementi di una Domanda Perfetta --}}
+                                    <div
+                                        class="rounded-lg border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+                                        <div class="mb-3 flex items-center gap-2">
+                                            <span class="text-2xl">🎯</span>
+                                            <h4 class="text-sm font-bold text-purple-900">Elementi di una Domanda
+                                                Perfetta</h4>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div class="flex items-start gap-2 text-xs">
+                                                <span
+                                                    class="rounded bg-purple-600 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">1</span>
+                                                <div>
+                                                    <strong class="text-purple-900">AMBITO:</strong>
+                                                    <span class="text-gray-700">Specifica il settore (urbanistica,
+                                                        sociale, ambiente, etc.)</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-start gap-2 text-xs">
+                                                <span
+                                                    class="rounded bg-purple-600 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">2</span>
+                                                <div>
+                                                    <strong class="text-purple-900">TEMPO:</strong>
+                                                    <span class="text-gray-700">Indica periodo (2023-2024, ultimi 6
+                                                        mesi, Q1 2024)</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-start gap-2 text-xs">
+                                                <span
+                                                    class="rounded bg-purple-600 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">3</span>
+                                                <div>
+                                                    <strong class="text-purple-900">FILTRI:</strong>
+                                                    <span class="text-gray-700">Usa criteri (CUP, normative, parole
+                                                        chiave specifiche)</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-start gap-2 text-xs">
+                                                <span
+                                                    class="rounded bg-purple-600 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">4</span>
+                                                <div>
+                                                    <strong class="text-purple-900">OUTPUT:</strong>
+                                                    <span class="text-gray-700">Richiedi formato (tabella, timeline,
+                                                        sintesi, grafico)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Limiti Attuali e Come Aggirarli --}}
+                                    <div
+                                        class="rounded-lg border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50 p-4">
+                                        <div class="mb-3 flex items-center gap-2">
+                                            <span class="text-2xl">⚠️</span>
+                                            <h4 class="text-sm font-bold text-amber-900">Limiti e Come Superarli</h4>
+                                        </div>
+                                        <div class="space-y-3 text-xs">
+                                            <div class="rounded-md bg-white p-3 shadow-sm">
+                                                <p class="mb-1 font-semibold text-amber-700">🚫 LIMITE: Dati finanziari
+                                                    spesso assenti</p>
+                                                <p class="text-gray-600">Molti atti non contengono importi, budget,
+                                                    costi</p>
+                                                <p class="mt-2 font-semibold text-emerald-700">✅ SOLUZIONE:</p>
+                                                <p class="text-gray-700">Chiedi "Elenca atti CON importi disponibili"
+                                                    oppure "Indica quali atti hanno dati finanziari mancanti"</p>
+                                            </div>
+                                            <div class="rounded-md bg-white p-3 shadow-sm">
+                                                <p class="mb-1 font-semibold text-amber-700">🚫 LIMITE: N.A.T.A.N. non
+                                                    inventa dati</p>
+                                                <p class="text-gray-600">Se un dato non esiste, risponderà "N/A"</p>
+                                                <p class="mt-2 font-semibold text-emerald-700">✅ SOLUZIONE:</p>
+                                                <p class="text-gray-700">Focalizzati su dati PRESENTI: titoli, date,
+                                                    CUP, categorie, normative, descrizioni</p>
+                                            </div>
+                                            <div class="rounded-md bg-white p-3 shadow-sm">
+                                                <p class="mb-1 font-semibold text-amber-700">🚫 LIMITE: Non può
+                                                    calcolare ROI senza dati</p>
+                                                <p class="text-gray-600">Analisi finanziarie richiedono importi</p>
+                                                <p class="mt-2 font-semibold text-emerald-700">✅ SOLUZIONE:</p>
+                                                <p class="text-gray-700">Chiedi analisi qualitative: "Quali progetti
+                                                    PNRR sono in corso? Timeline e
+                                                    milestone"</p>
+                                            </div>
+                                            <div class="rounded-md bg-white p-3 shadow-sm">
+                                                <p class="mb-1 font-semibold text-amber-700">🚫 LIMITE: Domande troppo
+                                                    ampie danno risposte
+                                                    generiche</p>
+                                                <p class="text-gray-600">"Dimmi tutto" → output poco utile</p>
+                                                <p class="mt-2 font-semibold text-emerald-700">✅ SOLUZIONE:</p>
+                                                <p class="text-gray-700">Usa domande incrementali: prima classifica,
+                                                    poi approfondisci singoli ambiti</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Strategie Avanzate --}}
+                                    <div
+                                        class="rounded-lg border-2 border-cyan-200 bg-gradient-to-br from-cyan-50 to-blue-50 p-4">
+                                        <div class="mb-3 flex items-center gap-2">
+                                            <span class="text-2xl">🧠</span>
+                                            <h4 class="text-sm font-bold text-cyan-900">Strategie Avanzate</h4>
+                                        </div>
+                                        <ul class="space-y-2 text-xs text-gray-700">
+                                            <li class="flex items-start gap-2">
+                                                <span class="font-bold text-cyan-600">1.</span>
+                                                <span><strong>Approccio a imbuto:</strong> Inizia con panoramica →
+                                                    affina con filtri → approfondisci
+                                                    specifici atti</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="font-bold text-cyan-600">2.</span>
+                                                <span><strong>Usa CUP/CIG:</strong> Codici univoci garantiscono
+                                                    risultati precisi e correlazioni
+                                                    esatte</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="font-bold text-cyan-600">3.</span>
+                                                <span><strong>Richiedi visualizzazioni:</strong> "Crea grafico Mermaid
+                                                    timeline" → output molto più
+                                                    chiaro</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="font-bold text-cyan-600">4.</span>
+                                                <span><strong>Analizza relazioni:</strong> "Mappa atti collegati" scopre
+                                                    dipendenze e pattern
+                                                    nascosti</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="font-bold text-cyan-600">5.</span>
+                                                <span><strong>Cerca precedenti:</strong> "Best practices su [tema]" →
+                                                    supporto decisionale
+                                                    concreto</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <span class="font-bold text-cyan-600">6.</span>
+                                                <span><strong>Analisi temporali:</strong> Trend e confronti anno-su-anno
+                                                    rivelano pattern
+                                                    strategici</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    {{-- Esempi Concreti --}}
+                                    <div
+                                        class="rounded-lg border-2 border-rose-200 bg-gradient-to-br from-rose-50 to-pink-50 p-4">
+                                        <div class="mb-3 flex items-center gap-2">
+                                            <span class="text-2xl">📝</span>
+                                            <h4 class="text-sm font-bold text-rose-900">Esempi Concreti di Domande
+                                                Potenti</h4>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div class="rounded border-l-4 border-emerald-500 bg-white p-2">
+                                                <p class="font-semibold text-gray-800">🔍 Ricerca Mirata:</p>
+                                                <p class="italic text-gray-600">"Trova atti su edilizia scolastica
+                                                    2023-2024 con CUP, crea tabella con
+                                                    titolo, data, stato"</p>
+                                            </div>
+                                            <div class="rounded border-l-4 border-blue-500 bg-white p-2">
+                                                <p class="font-semibold text-gray-800">📈 Trend Analysis:</p>
+                                                <p class="italic text-gray-600">"Confronta numero atti ambientali Q1-Q4
+                                                    2023 vs Q1-Q4 2024, mostra
+                                                    grafico"</p>
+                                            </div>
+                                            <div class="rounded border-l-4 border-purple-500 bg-white p-2">
+                                                <p class="font-semibold text-gray-800">⚖️ Compliance Check:</p>
+                                                <p class="italic text-gray-600">"Verifica quali atti PNRR citano D.Lgs
+                                                    50/2016, elenca normative
+                                                    correlate"</p>
+                                            </div>
+                                            <div class="rounded border-l-4 border-amber-500 bg-white p-2">
+                                                <p class="font-semibold text-gray-800">🔗 Relazioni:</p>
+                                                <p class="italic text-gray-600">"Mappa tutti gli atti collegati al PUG,
+                                                    mostra dipendenze con diagramma
+                                                    Mermaid"</p>
+                                            </div>
+                                            <div class="rounded border-l-4 border-cyan-500 bg-white p-2">
+                                                <p class="font-semibold text-gray-800">💡 Supporto Decisionale:</p>
+                                                <p class="italic text-gray-600">"Precedenti su affidamento mensa:
+                                                    procedure usate, criticità superate,
+                                                    lessons learned"</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Pro Tips --}}
+                                    <div
+                                        class="rounded-lg border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50 p-4">
+                                        <div class="mb-3 flex items-center gap-2">
+                                            <span class="text-2xl">💎</span>
+                                            <h4 class="text-sm font-bold text-indigo-900">Pro Tips</h4>
+                                        </div>
+                                        <div class="space-y-2 text-xs text-gray-700">
+                                            <div class="flex items-start gap-2">
+                                                <span class="text-lg">🎨</span>
+                                                <span><strong>Visualizzazioni:</strong> Chiedi sempre grafici Mermaid
+                                                    per dati complessi (timeline, pie
+                                                    chart, flowchart)</span>
+                                            </div>
+                                            <div class="flex items-start gap-2">
+                                                <span class="text-lg">📊</span>
+                                                <span><strong>Tabelle:</strong> Richiedi "formato tabella Excel-ready"
+                                                    per dati strutturati da
+                                                    esportare</span>
+                                            </div>
+                                            <div class="flex items-start gap-2">
+                                                <span class="text-lg">🔄</span>
+                                                <span><strong>Iterazione:</strong> Affina domande in base ai risultati:
+                                                    "Approfondisci atti con CUP
+                                                    X..."</span>
+                                            </div>
+                                            <div class="flex items-start gap-2">
+                                                <span class="text-lg">⚡</span>
+                                                <span><strong>Persona expertise:</strong> N.A.T.A.N. auto-seleziona
+                                                    expert (legale/tecnico/strategico)
+                                                    in base al contesto</span>
+                                            </div>
+                                            <div class="flex items-start gap-2">
+                                                <span class="text-lg">🎯</span>
+                                                <span><strong>Specificità:</strong> Più dettagli fornisci, più precisa
+                                                    sarà la risposta. Include date,
+                                                    codici, normative</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </details>
+
                             {{-- Main Collapsible Container --}}
                             <details open class="mb-3">
                                 <summary
@@ -791,15 +1117,15 @@
 
             {{-- Free Chat with AI Section --}}
             <div class="mt-8">
-                <div class="bg-white shadow-xl rounded-2xl">
+                <div class="rounded-2xl bg-white shadow-xl">
                     {{-- Free Chat Header --}}
                     <div
-                        class="p-6 border-b border-gray-200 rounded-t-2xl bg-gradient-to-r from-purple-600 to-pink-500">
+                        class="rounded-t-2xl border-b border-gray-200 bg-gradient-to-r from-purple-600 to-pink-500 p-6">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div
-                                    class="flex items-center justify-center w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm">
-                                    <span class="text-2xl text-white material-icons">chat</span>
+                                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                                    <span class="material-icons text-2xl text-white">chat</span>
                                 </div>
                                 <div>
                                     <h2 class="text-lg font-bold text-white">💬 Chat Libera con AI</h2>
@@ -808,7 +1134,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="px-3 py-2 rounded-lg bg-white/20 backdrop-blur-sm">
+                            <div class="rounded-lg bg-white/20 px-3 py-2 backdrop-blur-sm">
                                 <p class="text-xs font-medium text-white">Nessun RAG · Consulenza generale</p>
                             </div>
                         </div>
@@ -818,41 +1144,41 @@
                     <div id="freeChatMessages" class="h-[400px] space-y-4 overflow-y-auto p-6">
                         {{-- Welcome Message --}}
                         <div id="freeChatWelcome"
-                            class="flex flex-col items-center justify-center h-full text-center">
+                            class="flex h-full flex-col items-center justify-center text-center">
                             <div
-                                class="flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-gradient-to-br from-purple-600 to-pink-500">
-                                <span class="text-3xl text-white material-icons">forum</span>
+                                class="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-pink-500">
+                                <span class="material-icons text-3xl text-white">forum</span>
                             </div>
                             <h3 class="mb-2 text-xl font-bold text-purple-900">Chiacchiera liberamente con Claude</h3>
-                            <p class="max-w-md mb-4 text-sm text-gray-600">
+                            <p class="mb-4 max-w-md text-sm text-gray-600">
                                 Qui puoi fare <strong>qualsiasi domanda</strong> senza limitarti agli atti.
                                 Brainstorming,
                                 spiegazioni di concetti, consigli strategici, revisione testi...
                             </p>
                             <div class="flex flex-wrap justify-center gap-2">
                                 <span
-                                    class="px-3 py-1 text-xs font-medium text-purple-800 bg-purple-100 rounded-full">Brainstorming</span>
+                                    class="rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-800">Brainstorming</span>
                                 <span
-                                    class="px-3 py-1 text-xs font-medium text-pink-800 bg-pink-100 rounded-full">Spiegazioni</span>
+                                    class="rounded-full bg-pink-100 px-3 py-1 text-xs font-medium text-pink-800">Spiegazioni</span>
                                 <span
-                                    class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">Revisioni</span>
+                                    class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">Revisioni</span>
                                 <span
-                                    class="px-3 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Consigli</span>
+                                    class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">Consigli</span>
                             </div>
                         </div>
                     </div>
 
                     {{-- Free Chat Input --}}
-                    <div class="p-4 border-t border-gray-200 bg-gray-50">
+                    <div class="border-t border-gray-200 bg-gray-50 p-4">
                         <form id="freeChatForm" class="flex gap-3">
                             <textarea id="freeChatInput" rows="1" placeholder="Chiedi qualsiasi cosa a Claude... (Shift+Enter per inviare)"
-                                class="flex-1 px-4 py-3 text-sm border-2 border-gray-300 resize-none rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                class="flex-1 resize-none rounded-xl border-2 border-gray-300 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                                 style="max-height: 200px; overflow-y: auto;"></textarea>
                             <button type="submit" id="freeChatSendBtn"
-                                class="flex items-center self-end gap-2 px-6 py-3 font-medium text-white transition-all rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 hover:shadow-lg disabled:opacity-50">
+                                class="flex items-center gap-2 self-end rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-3 font-medium text-white transition-all hover:shadow-lg disabled:opacity-50">
                                 <span id="freeChatSendBtnText">Invia</span>
                                 <span id="freeChatSendBtnLoader" class="hidden">
-                                    <svg class="w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg"
+                                    <svg class="h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg"
                                         fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10"
                                             stroke="currentColor" stroke-width="4"></circle>
@@ -1108,86 +1434,157 @@
                  * Initialize chat
                  */
                 init() {
-                    console.log('[N.A.T.A.N.] Initializing chat...');
+                    try {
+                        console.log('[N.A.T.A.N.] Initializing chat...');
 
-                    // Cache DOM elements
-                    this.elements.chatMessages = document.getElementById('chatMessages');
-                    this.elements.welcomeMessage = document.getElementById('welcomeMessage');
-                    this.elements.userInput = document.getElementById('userInput');
-                    this.elements.sendBtn = document.getElementById('sendBtn');
-                    this.elements.sendBtnText = document.getElementById('sendBtnText');
-                    this.elements.sendBtnLoader = document.getElementById('sendBtnLoader');
-                    this.elements.chatForm = document.getElementById('chatForm');
+                        // Cache DOM elements
+                        this.elements.chatMessages = document.getElementById('chatMessages');
+                        this.elements.welcomeMessage = document.getElementById('welcomeMessage');
+                        this.elements.userInput = document.getElementById('userInput');
+                        this.elements.sendBtn = document.getElementById('sendBtn');
+                        this.elements.sendBtnText = document.getElementById('sendBtnText');
+                        this.elements.sendBtnLoader = document.getElementById('sendBtnLoader');
+                        this.elements.chatForm = document.getElementById('chatForm');
 
-                    // Bind events
-                    this.elements.chatForm.addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        this.handleSubmit();
-                    });
+                        // Check critical elements exist
+                        if (!this.elements.chatForm || !this.elements.userInput) {
+                            console.error('[N.A.T.A.N.] Critical elements missing, aborting init');
+                            return;
+                        }
 
-                    // Handle Enter key: Shift+Enter to submit, Enter for new line
-                    this.elements.userInput.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' && e.shiftKey) {
+                        // Bind events
+                        this.elements.chatForm.addEventListener('submit', (e) => {
                             e.preventDefault();
-                            this.elements.chatForm.dispatchEvent(new Event('submit'));
-                        }
-                        // Let normal Enter create a new line (default textarea behavior)
-                    });
-
-                    // Auto-resize textarea as user types
-                    this.elements.userInput.addEventListener('input', () => {
-                        this.autoResizeTextarea(this.elements.userInput);
-                    });
-
-                    // Web Search Toggle listener ✨ NEW v3.0
-                    const webSearchToggle = document.getElementById('webSearchToggle');
-                    const webSearchStatus = document.getElementById('webSearchStatus');
-                    if (webSearchToggle && webSearchStatus) {
-                        webSearchToggle.addEventListener('change', () => {
-                            if (webSearchToggle.checked) {
-                                webSearchStatus.classList.remove('hidden');
-                                webSearchStatus.classList.add('flex');
-                            } else {
-                                webSearchStatus.classList.add('hidden');
-                                webSearchStatus.classList.remove('flex');
-                            }
+                            this.handleSubmit();
                         });
-                    }
 
-                    // Event delegation for quick action buttons (dynamically created)
-                    this.elements.chatMessages.addEventListener('click', (e) => {
-                        // Quick actions
-                        if (e.target.classList.contains('quick-action-btn')) {
-                            const action = e.target.dataset.action;
-                            const messageId = parseInt(e.target.dataset.messageId);
-                            this.handleElaboration(action, messageId);
+                        // Handle Enter key: Shift+Enter to submit, Enter for new line
+                        this.elements.userInput.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter' && e.shiftKey) {
+                                e.preventDefault();
+                                this.elements.chatForm.dispatchEvent(new Event('submit'));
+                            }
+                            // Let normal Enter create a new line (default textarea behavior)
+                        });
+
+                        // Auto-resize textarea as user types
+                        this.elements.userInput.addEventListener('input', () => {
+                            this.autoResizeTextarea(this.elements.userInput);
+                        });
+
+                        // Web Search Toggle listener ✨ NEW v3.0
+                        const webSearchToggle = document.getElementById('webSearchToggle');
+                        const webSearchStatus = document.getElementById('webSearchStatus');
+                        if (webSearchToggle && webSearchStatus) {
+                            webSearchToggle.addEventListener('change', () => {
+                                if (webSearchToggle.checked) {
+                                    webSearchStatus.classList.remove('hidden');
+                                    webSearchStatus.classList.add('flex');
+                                } else {
+                                    webSearchStatus.classList.add('hidden');
+                                    webSearchStatus.classList.remove('flex');
+                                }
+                            });
                         }
 
-                        // Copy message button
-                        const copyBtn = e.target.closest('.copy-message-btn');
-                        if (copyBtn) {
-                            const content = copyBtn.dataset.content;
-                            this.copyToClipboard(content, copyBtn);
-                        }
+                        // Event delegation for quick action buttons (dynamically created)
+                        this.elements.chatMessages.addEventListener('click', (e) => {
+                            // Quick actions
+                            if (e.target.classList.contains('quick-action-btn')) {
+                                const action = e.target.dataset.action;
+                                const messageId = parseInt(e.target.dataset.messageId);
+                                this.handleElaboration(action, messageId);
+                            }
 
-                        // Toggle sources/reference collapse
-                        const toggleBtn = e.target.closest('.sources-toggle-btn, .reference-toggle-btn');
-                        if (toggleBtn) {
-                            const targetId = toggleBtn.dataset.target;
-                            const targetDiv = document.getElementById(targetId);
-                            const icon = document.querySelector(`[data-icon="${targetId}"]`);
+                            // Copy message button
+                            const copyBtn = e.target.closest('.copy-message-btn');
+                            if (copyBtn) {
+                                const content = copyBtn.dataset.content;
+                                this.copyToClipboard(content, copyBtn);
+                            }
 
-                            if (targetDiv) {
-                                targetDiv.classList.toggle('hidden');
-                                if (icon) {
-                                    icon.style.transform = targetDiv.classList.contains('hidden') ? 'rotate(0deg)' :
-                                        'rotate(180deg)';
+                            // Toggle sources/reference collapse
+                            const toggleBtn = e.target.closest('.sources-toggle-btn, .reference-toggle-btn');
+                            if (toggleBtn) {
+                                const targetId = toggleBtn.dataset.target;
+                                const targetDiv = document.getElementById(targetId);
+                                const icon = document.querySelector(`[data-icon="${targetId}"]`);
+
+                                if (targetDiv) {
+                                    targetDiv.classList.toggle('hidden');
+                                    if (icon) {
+                                        icon.style.transform = targetDiv.classList.contains('hidden') ?
+                                            'rotate(0deg)' :
+                                            'rotate(180deg)';
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
 
-                    console.log('[N.A.T.A.N.] Chat initialized successfully');
+                        // 🧠 Load personalized greeting with memory count
+                        this.loadPersonalizedGreeting();
+
+                        console.log('[N.A.T.A.N.] Chat initialized successfully');
+                    } catch (error) {
+                        console.error('[N.A.T.A.N.] Initialization error:', error);
+                        // Don't reload, just log the error
+                    }
+                },
+
+                /**
+                 * 🧠 Load personalized greeting from memory system
+                 */
+                async loadPersonalizedGreeting() {
+                    try {
+                        const response = await fetch('{{ route('pa.natan.memory.greeting') }}', {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': this.config.csrfToken
+                            }
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+
+                            if (data.success && data.greeting) {
+                                // Update welcome message with personalized greeting
+                                const welcomeTitle = this.elements.welcomeMessage?.querySelector('h3');
+                                const welcomeDesc = this.elements.welcomeMessage?.querySelector('p.text-gray-600');
+
+                                if (welcomeTitle) {
+                                    welcomeTitle.innerHTML = data.greeting;
+                                }
+
+                                // Add memory count info below description
+                                if (welcomeDesc && data.memory_count > 0) {
+                                    // Create or update memory info paragraph
+                                    let memoryInfo = document.getElementById('memoryInfoText');
+                                    if (!memoryInfo) {
+                                        memoryInfo = document.createElement('p');
+                                        memoryInfo.id = 'memoryInfoText';
+                                        memoryInfo.className = 'mt-1 mb-6 text-sm text-purple-700 font-medium';
+                                        welcomeDesc.parentNode.insertBefore(memoryInfo, welcomeDesc.nextSibling);
+                                    }
+                                    memoryInfo.innerHTML =
+                                        `🧠 Ho <strong>${data.memory_count} ricord${data.memory_count === 1 ? 'o' : 'i'}</strong> salvati per te`;
+                                }
+
+                                // Update memory badge in header (always visible)
+                                const memoryBadge = document.getElementById('memoryBadge');
+                                const memoryCount = document.getElementById('memoryCount');
+
+                                if (memoryCount) {
+                                    memoryCount.textContent = data.memory_count || 0;
+                                }
+
+                                console.log('[Memory] Personalized greeting loaded:', data.greeting);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('[Memory] Failed to load greeting:', error);
+                        // Non bloccare l'app se il saluto non carica
+                    }
                 },
 
                 /**
@@ -1263,80 +1660,80 @@
                     this.messages.push(message);
                     this.renderMessage(message);
                     this.scrollToBottom();
-                    
+
                     // ✅ Render Mermaid diagrams if present (async, non-blocking)
                     if (message.role === 'assistant' && message.content.includes('```mermaid')) {
-                        setTimeout(() => this.renderMermaidDiagrams(), 100); // Small delay to ensure DOM is ready
-                    }
-                },
+                setTimeout(() => this.renderMermaidDiagrams(), 100); // Small delay to ensure DOM is ready
+            }
+        },
 
-                /**
-                 * Clear chat and start new conversation
-                 * NEW v3.1 - Used by History Sidebar
-                 */
-                clearChat() {
-                    console.log('[N.A.T.A.N.] Clearing chat');
+        /**
+         * Clear chat and start new conversation
+         * NEW v3.1 - Used by History Sidebar
+         */
+        clearChat() {
+            console.log('[N.A.T.A.N.] Clearing chat');
 
-                    // Reset state
-                    this.messages = [];
-                    this.conversationHistory = [];
-                    this.config.sessionId = null;
+            // Reset state
+            this.messages = [];
+            this.conversationHistory = [];
+            this.config.sessionId = null;
 
-                    // Clear UI
-                    if (this.elements.chatMessages) {
-                        this.elements.chatMessages.innerHTML = '';
-                    }
+            // Clear UI
+            if (this.elements.chatMessages) {
+                this.elements.chatMessages.innerHTML = '';
+            }
 
-                    // Show welcome message
-                    if (this.elements.welcomeMessage) {
-                        this.elements.welcomeMessage.style.display = 'flex';
-                    }
+            // Show welcome message
+            if (this.elements.welcomeMessage) {
+                this.elements.welcomeMessage.style.display = 'flex';
+            }
 
-                    // Clear input
-                    if (this.elements.userInput) {
-                        this.elements.userInput.value = '';
-                    }
-                },
+            // Clear input
+            if (this.elements.userInput) {
+                this.elements.userInput.value = '';
+            }
+        },
 
-                /**
-                 * Render single message
-                 */
-                renderMessage(message) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = message.role === 'user' ? 'flex justify-end' : 'flex justify-start';
+        /**
+         * Render single message
+         */
+        renderMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = message.role === 'user' ? 'flex justify-end' : 'flex justify-start';
 
-                    const bubbleDiv = document.createElement('div');
-                    bubbleDiv.className = message.role === 'user' ?
-                        'bg-[#2D5016] text-white rounded-2xl rounded-tr-sm max-w-md px-4 py-3 shadow-sm' :
-                        'bg-white rounded-2xl rounded-tl-sm max-w-2xl px-4 py-3 shadow-md border border-gray-200';
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = message.role === 'user' ?
+                'bg-[#2D5016] text-white rounded-2xl rounded-tr-sm max-w-md px-4 py-3 shadow-sm' :
+                'bg-white rounded-2xl rounded-tl-sm max-w-2xl px-4 py-3 shadow-md border border-gray-200';
 
-                    // Persona Badge (for assistant messages)
-                    if (message.role === 'assistant' && message.persona) {
-                        const personaBadgeDiv = document.createElement('div');
-                        personaBadgeDiv.className = 'mb-2 flex flex-wrap items-center gap-2 text-xs';
+            // Persona Badge (for assistant messages)
+            if (message.role === 'assistant' && message.persona) {
+                const personaBadgeDiv = document.createElement('div');
+                personaBadgeDiv.className = 'mb-2 flex flex-wrap items-center gap-2 text-xs';
 
-                        // Get persona data from global window.personasData
-                        const personaData = window.personasData ? window.personasData[message.persona.id] : null;
-                        const personaIcon = personaData ? personaData.icon : '🎯';
-                        const personaColor = personaData ? personaData.color : '#2563eb';
+                // Get persona data from global window.personasData
+                const personaData = window.personasData ? window.personasData[message.persona.id] : null;
+                const personaIcon = personaData ? personaData.icon : '🎯';
+                const personaColor = personaData ? personaData.color : '#2563eb';
 
-                        personaBadgeDiv.innerHTML = `
-                            ${message.is_elaboration ? `
+                personaBadgeDiv.innerHTML = `
+                                                            ${message.is_elaboration ? `
                                                                                                                                                                                         <span class="elaboration-badge">
                                                                                                                                                                                             🔄 Elaborazione
                                                                                                                                                                                         </span>
                                                                                                                                                                                     ` : ''}
-                            <span style="background-color: ${personaColor};"
-                                  class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
-                                <span>${personaIcon}</span>
-                                <span>${message.persona.name}</span>
-                            </span>
-                            ${message.persona.confidence ? `
+                                                            <span style="background-color: ${personaColor};"
+                                                                  class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white">
+                                                                <span>${personaIcon}</span>
+                                                                <span>${message.persona.name}</span>
+                                                            </span>
+                                                            ${message.persona.confidence ? `
                                                                                                                                                                                                                 <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-600" title="Confidenza nella scelta automatica">
                                                                                                                                                                                                                     ${Math.round(message.persona.confidence * 100)}%
                                                                                                                                                                                                                 </span>
                                                                                                                                                                                                             ` : ''}
-                            ${message.persona.method === 'manual' ? `
+                                                            ${message.persona.method === 'manual' ? `
                                                                                                                                                                                                                 <span class="rounded bg-blue-100 px-2 py-0.5 text-blue-700" title="Selezione manuale">
                                                                                                                                                                                                                     ✓ Manuale
                                                                                                                                                                                                                 </span>
@@ -1345,51 +1742,51 @@
                                                                                                                                                                                                                     Auto (Default)
                                                                                                                                                                                                                 </span>
                                                                                                                                                                                                             ` : ''}
-                        `;
-                        bubbleDiv.appendChild(personaBadgeDiv);
+                                                        `;
+                bubbleDiv.appendChild(personaBadgeDiv);
 
-                        // Collapsible Reference Content (for elaborations)
-                        if (message.is_elaboration && message.reference_content) {
-                            const referenceDiv = document.createElement('div');
-                            referenceDiv.className = 'mb-3 rounded-lg border border-purple-200 bg-purple-50';
-                            const collapseId = `reference-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                            referenceDiv.innerHTML = `
-                                <button class="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-left text-purple-800 reference-toggle-btn hover:bg-purple-100"
-                                        data-target="${collapseId}">
-                                    <span>📄 Analisi originale elaborata</span>
-                                    <span class="text-sm transition-transform material-icons" data-icon="${collapseId}">expand_more</span>
-                                </button>
-                                <div id="${collapseId}" class="hidden px-3 py-2 text-xs text-purple-900 border-t border-purple-200">
-                                    ${message.reference_content.replace(/\n/g, '<br>').substring(0, 1000)}${message.reference_content.length > 1000 ? '...' : ''}
-                                </div>
-                            `;
-                            bubbleDiv.appendChild(referenceDiv);
-                        }
-                    }
+                // Collapsible Reference Content (for elaborations)
+                if (message.is_elaboration && message.reference_content) {
+                    const referenceDiv = document.createElement('div');
+                    referenceDiv.className = 'mb-3 rounded-lg border border-purple-200 bg-purple-50';
+                    const collapseId = `reference-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                    referenceDiv.innerHTML = `
+                                                                <button class="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-left text-purple-800 reference-toggle-btn hover:bg-purple-100"
+                                                                        data-target="${collapseId}">
+                                                                    <span>📄 Analisi originale elaborata</span>
+                                                                    <span class="text-sm transition-transform material-icons" data-icon="${collapseId}">expand_more</span>
+                                                                </button>
+                                                                <div id="${collapseId}" class="hidden px-3 py-2 text-xs text-purple-900 border-t border-purple-200">
+                                                                    ${message.reference_content.replace(/\n/g, '<br>').substring(0, 1000)}${message.reference_content.length > 1000 ? '...' : ''}
+                                                                </div>
+                                                            `;
+                    bubbleDiv.appendChild(referenceDiv);
+                }
+            }
 
-                    // Message content
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'prose prose-sm max-w-none';
-                    contentDiv.style.color = '#1B365D'; // Blu Algoritmo - massimo contrasto
-                    contentDiv.innerHTML = this.formatMessage(message.content);
-                    bubbleDiv.appendChild(contentDiv);
+            // Message content
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'prose prose-sm max-w-none';
+            contentDiv.style.color = '#1B365D'; // Blu Algoritmo - massimo contrasto
+            contentDiv.innerHTML = this.formatMessage(message.content);
+            bubbleDiv.appendChild(contentDiv);
 
-                    // Sources (for AI messages) - Collapsible
-                    if (message.sources && message.sources.length > 0) {
-                        const sourcesDiv = document.createElement('div');
-                        sourcesDiv.className = 'mt-3 border-t border-gray-200 pt-3';
+            // Sources (for AI messages) - Collapsible
+            if (message.sources && message.sources.length > 0) {
+                const sourcesDiv = document.createElement('div');
+                sourcesDiv.className = 'mt-3 border-t border-gray-200 pt-3';
 
-                        const collapseId = `sources-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                        const sourcesCount = message.sources.length;
+                const collapseId = `sources-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                const sourcesCount = message.sources.length;
 
-                        sourcesDiv.innerHTML = `
-                            <button class="sources-toggle-btn mb-2 flex w-full items-center justify-between text-left text-xs font-semibold text-gray-600 hover:text-[#2D5016]"
-                                    data-target="${collapseId}">
-                                <span>📚 Fonti (${sourcesCount})</span>
-                                <span class="text-sm transition-transform material-icons" data-icon="${collapseId}">expand_more</span>
-                            </button>
-                            <div id="${collapseId}" class="hidden space-y-1">
-                                ${message.sources.map(source => `
+                sourcesDiv.innerHTML = `
+                                                            <button class="sources-toggle-btn mb-2 flex w-full items-center justify-between text-left text-xs font-semibold text-gray-600 hover:text-[#2D5016]"
+                                                                    data-target="${collapseId}">
+                                                                <span>📚 Fonti (${sourcesCount})</span>
+                                                                <span class="text-sm transition-transform material-icons" data-icon="${collapseId}">expand_more</span>
+                                                            </button>
+                                                            <div id="${collapseId}" class="hidden space-y-1">
+                                                                ${message.sources.map(source => `
                                                                                                                                                                                     <a href="${source.url}" target="_blank"
                                                                                                                                                                                        class="block p-2 text-xs bg-white border border-gray-200 rounded hover:bg-gray-50">
                                                                                                                                                                                         <span class="font-medium">${source.protocol_number}</span>
@@ -1397,30 +1794,30 @@
                                                                                                                                                                                         <span>${source.title}</span>
                                                                                                                                                                                     </a>
                                                                                                                                                                                 `).join('')}
-                            </div>
-                        `;
-                        bubbleDiv.appendChild(sourcesDiv);
-                    }
+                                                            </div>
+                                                        `;
+                bubbleDiv.appendChild(sourcesDiv);
+            }
 
-                    // Web Sources (for AI messages with web search enabled) ✨ NEW v3.0
-                    if (message.web_sources && message.web_sources.length > 0) {
-                        const webSourcesDiv = document.createElement('div');
-                        webSourcesDiv.className = 'mt-3 border-t border-blue-200 pt-3 bg-blue-50/30 rounded-lg p-2';
+            // Web Sources (for AI messages with web search enabled) ✨ NEW v3.0
+            if (message.web_sources && message.web_sources.length > 0) {
+                const webSourcesDiv = document.createElement('div');
+                webSourcesDiv.className = 'mt-3 border-t border-blue-200 pt-3 bg-blue-50/30 rounded-lg p-2';
 
-                        const collapseId = `web-sources-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                        const webSourcesCount = message.web_sources.length;
+                const collapseId = `web-sources-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                const webSourcesCount = message.web_sources.length;
 
-                        webSourcesDiv.innerHTML = `
-                            <button class="flex items-center justify-between w-full mb-2 text-xs font-semibold text-left text-blue-700 sources-toggle-btn hover:text-blue-900"
-                                    data-target="${collapseId}">
-                                <span class="flex items-center gap-1">
-                                    <span class="text-sm material-icons">public</span>
-                                    <span>🌐 {{ __('natan.web_sources.title') }} (${webSourcesCount})</span>
-                                </span>
-                                <span class="text-sm transition-transform material-icons" data-icon="${collapseId}">expand_more</span>
-                            </button>
-                            <div id="${collapseId}" class="hidden space-y-2">
-                                ${message.web_sources.map((source, idx) => `
+                webSourcesDiv.innerHTML = `
+                                                            <button class="flex items-center justify-between w-full mb-2 text-xs font-semibold text-left text-blue-700 sources-toggle-btn hover:text-blue-900"
+                                                                    data-target="${collapseId}">
+                                                                <span class="flex items-center gap-1">
+                                                                    <span class="text-sm material-icons">public</span>
+                                                                    <span>🌐 {{ __('natan.web_sources.title') }} (${webSourcesCount})</span>
+                                                                </span>
+                                                                <span class="text-sm transition-transform material-icons" data-icon="${collapseId}">expand_more</span>
+                                                            </button>
+                                                            <div id="${collapseId}" class="hidden space-y-2">
+                                                                ${message.web_sources.map((source, idx) => `
                                                                                                                                                             <div class="p-3 transition-shadow bg-white border border-blue-200 rounded-lg shadow-sm hover:shadow-md">
                                                                                                                                                                 <div class="flex items-start justify-between gap-2 mb-1">
                                                                                                                                                                     <h4 class="text-sm font-semibold text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
@@ -1436,801 +1833,834 @@
                                                                                                                                                                 </a>
                                                                                                                                                             </div>
                                                                                                                                                         `).join('')}
-                            </div>
-                        `;
-                        bubbleDiv.appendChild(webSourcesDiv);
-                    }
+                                                            </div>
+                                                        `;
+                bubbleDiv.appendChild(webSourcesDiv);
+            }
 
-                    // Timestamp + Copy Button
-                    const timestampDiv = document.createElement('div');
-                    timestampDiv.className = message.role === 'user' ?
-                        'mt-2 flex items-center justify-between text-xs text-white/60' :
-                        'mt-2 flex items-center justify-between text-xs text-gray-600';
+            // Timestamp + Copy Button
+            const timestampDiv = document.createElement('div');
+            timestampDiv.className = message.role === 'user' ?
+                'mt-2 flex items-center justify-between text-xs text-white/60' :
+                'mt-2 flex items-center justify-between text-xs text-gray-600';
 
-                    const timeSpan = document.createElement('span');
-                    timeSpan.textContent = message.timestamp;
-                    timestampDiv.appendChild(timeSpan);
+            const timeSpan = document.createElement('span');
+            timeSpan.textContent = message.timestamp;
+            timestampDiv.appendChild(timeSpan);
 
-                    // Copy button (only for assistant messages)
-                    if (message.role === 'assistant') {
-                        const copyBtn = document.createElement('button');
-                        copyBtn.className =
-                            'copy-message-btn flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 hover:text-[#2D5016] transition-colors';
-                        copyBtn.innerHTML = '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
-                        copyBtn.dataset.content = message.content;
-                        timestampDiv.appendChild(copyBtn);
-                    }
+            // Copy button (only for assistant messages)
+            if (message.role === 'assistant') {
+                const copyBtn = document.createElement('button');
+                copyBtn.className =
+                    'copy-message-btn flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 hover:text-[#2D5016] transition-colors';
+                copyBtn.innerHTML = '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
+                copyBtn.dataset.content = message.content;
+                timestampDiv.appendChild(copyBtn);
+            }
 
-                    bubbleDiv.appendChild(timestampDiv);
+            bubbleDiv.appendChild(timestampDiv);
 
-                    // Quick Actions (for assistant messages only)
-                    if (message.role === 'assistant' && message.message_id) {
-                        const quickActionsDiv = document.createElement('div');
-                        quickActionsDiv.className =
-                            'mt-3 flex flex-wrap gap-2 border-t border-gray-100 pt-3';
-                        quickActionsDiv.innerHTML = `
-                            <span class="text-xs font-medium text-gray-500">💬 Elabora questa risposta:</span>
-                            <button class="quick-action-btn" data-action="simplify" data-message-id="${message.message_id}"
-                                    title="Semplifica per cittadini o non esperti">
-                                💡 Semplifica
-                            </button>
-                            <button class="quick-action-btn" data-action="deepen" data-message-id="${message.message_id}"
-                                    title="Approfondisci con analisi strategiche">
-                                🔍 Approfondisci
-                            </button>
-                            <button class="quick-action-btn" data-action="actionable" data-message-id="${message.message_id}"
-                                    title="Trasforma in azioni concrete">
-                                ✅ Azioni concrete
-                            </button>
-                            <button class="quick-action-btn" data-action="presentation" data-message-id="${message.message_id}"
-                                    title="Formato presentazione (slide, executive summary)">
-                                📊 Per presentazione
-                            </button>
-                            <button class="quick-action-btn" data-action="citizen" data-message-id="${message.message_id}"
-                                    title="Riscrivi per comunicato cittadini">
-                                👥 Per cittadini
-                            </button>
-                        `;
-                        bubbleDiv.appendChild(quickActionsDiv);
-                    }
+            // Quick Actions (for assistant messages only)
+            if (message.role === 'assistant' && message.message_id) {
+                const quickActionsDiv = document.createElement('div');
+                quickActionsDiv.className =
+                    'mt-3 flex flex-wrap gap-2 border-t border-gray-100 pt-3';
+                quickActionsDiv.innerHTML = `
+                                                            <span class="text-xs font-medium text-gray-500">💬 Elabora questa risposta:</span>
+                                                            <button class="quick-action-btn" data-action="simplify" data-message-id="${message.message_id}"
+                                                                    title="Semplifica per cittadini o non esperti">
+                                                                💡 Semplifica
+                                                            </button>
+                                                            <button class="quick-action-btn" data-action="deepen" data-message-id="${message.message_id}"
+                                                                    title="Approfondisci con analisi strategiche">
+                                                                🔍 Approfondisci
+                                                            </button>
+                                                            <button class="quick-action-btn" data-action="actionable" data-message-id="${message.message_id}"
+                                                                    title="Trasforma in azioni concrete">
+                                                                ✅ Azioni concrete
+                                                            </button>
+                                                            <button class="quick-action-btn" data-action="presentation" data-message-id="${message.message_id}"
+                                                                    title="Formato presentazione (slide, executive summary)">
+                                                                📊 Per presentazione
+                                                            </button>
+                                                            <button class="quick-action-btn" data-action="citizen" data-message-id="${message.message_id}"
+                                                                    title="Riscrivi per comunicato cittadini">
+                                                                👥 Per cittadini
+                                                            </button>
+                                                        `;
+                bubbleDiv.appendChild(quickActionsDiv);
+            }
 
-                    messageDiv.appendChild(bubbleDiv);
-                    this.elements.chatMessages.appendChild(messageDiv);
-                },
+            messageDiv.appendChild(bubbleDiv);
+            this.elements.chatMessages.appendChild(messageDiv);
+        },
 
-                /**
-                 * Format message (simple markdown-like)
-                 */
-                /**
-                 * Format message with professional Markdown + Mermaid rendering
-                 * Supports: Bold, Italic, Lists, Tables, Code blocks, Mermaid diagrams
-                 */
-                formatMessage(text) {
-                    // Configure marked.js for enhanced Markdown
-                    marked.setOptions({
-                        breaks: true, // Convert \n to <br>
-                        gfm: true, // GitHub Flavored Markdown
-                        tables: true, // Support tables
-                        headerIds: false, // No IDs in headers
-                        mangle: false // Don't mangle email addresses
+        /**
+         * Format message (simple markdown-like)
+         */
+        /**
+         * Format message with professional Markdown + Mermaid rendering
+         * Supports: Bold, Italic, Lists, Tables, Code blocks, Mermaid diagrams
+         */
+        formatMessage(text) {
+            // Configure marked.js for enhanced Markdown
+            marked.setOptions({
+                breaks: true, // Convert \n to <br>
+                gfm: true, // GitHub Flavored Markdown
+                tables: true, // Support tables
+                headerIds: false, // No IDs in headers
+                mangle: false // Don't mangle email addresses
+            });
+
+            // Parse Markdown to HTML
+            let html = marked.parse(text);
+
+            // Sanitize HTML to prevent XSS
+            html = DOMPurify.sanitize(html, {
+                ADD_TAGS: ['pre', 'code'], // Allow code blocks
+                ADD_ATTR: ['class', 'language'] // Allow class for syntax highlighting
+            });
+
+            // Process Mermaid diagrams after sanitization
+            // Mermaid syntax: ```mermaid ... ```
+            html = html.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, (match, code) => {
+                const graphId = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+                // Decode HTML entities
+                const decodedCode = code
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&quot;/g, '"')
+                    .trim();
+
+                return `<div class="mermaid-diagram" id="${graphId}">${decodedCode}</div>`;
+            });
+
+            return html;
+        },
+
+        /**
+         * Render Mermaid diagrams after message is added to DOM
+         */
+        async renderMermaidDiagrams() {
+            const diagrams = document.querySelectorAll('.mermaid-diagram');
+
+            for (const diagram of diagrams) {
+                try {
+                    const {
+                        svg
+                    } = await mermaid.render(diagram.id + '-svg', diagram.textContent);
+                    diagram.innerHTML = svg;
+                    diagram.classList.add('rendered');
+                } catch (error) {
+                    console.error('[Mermaid] Render error:', error);
+                    diagram.innerHTML = `<div class="p-2 text-sm text-red-600 border border-red-200 rounded bg-red-50">
+                                                                ⚠️ Errore nel rendering del diagramma Mermaid
+                                                            </div>`;
+                }
+            }
+        },
+
+        /**
+         * Send message to API
+         */
+        async sendToApi(message) {
+            this.setLoading(true);
+
+            // Show AI Processing Panel (enterprise UI for complex queries)
+            // Will be updated dynamically based on backend progress
+            AIProcessingPanel.show(0); // Will update with actual count from backend
+
+            try {
+                // Get web search toggle state ✨ NEW v3.0
+                const webSearchEnabled = document.getElementById('webSearchToggle')?.checked || false;
+
+                const response = await fetch(this.config.apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.config.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_history: this.getConversationHistory(),
+                        persona_id: window.selectedPersona || null, // From persona selector
+                        session_id: this.config.sessionId || null,
+                        use_web_search: webSearchEnabled // NEW v3.0
+                    })
+                });
+
+                // Log response status for debugging
+                console.log('[N.A.T.A.N.] Response status:', response.status, response.statusText);
+
+                // Check for specific HTTP errors before parsing
+                if (response.status === 504) {
+                    this.hideLoadingIndicator();
+                    this.addMessage('assistant',
+                        'La richiesta sta richiedendo più tempo del previsto. Il sistema potrebbe essere sotto carico. Per favore riprova tra qualche minuto.'
+                    );
+                    return;
+                }
+
+                // Read response body as text FIRST (can only read once!)
+                const responseText = await response.text();
+                console.log('[N.A.T.A.N.] Response length:', responseText.length, 'chars');
+
+                // Check if response looks like JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    // Server returned non-JSON (probably HTML error page)
+                    console.error('[N.A.T.A.N.] Server returned non-JSON response');
+                    console.log('[N.A.T.A.N.] Raw response:', responseText.substring(0, 500));
+
+                    this.hideLoadingIndicator();
+                    this.addMessage('assistant',
+                        'Si è verificato un errore del server. Il nostro team è stato notificato. Per favore riprova più tardi.'
+                    );
+                    return;
+                }
+
+                // Try to parse as JSON
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                    console.log('[N.A.T.A.N.] Parsed data:', {
+                        success: data.success,
+                        hasMessage: !!data.message,
+                        hasResponse: !!data.response,
+                        hasError: !!data.error,
+                        actsProcessed: data.acts_processed || 0
                     });
 
-                    // Parse Markdown to HTML
-                    let html = marked.parse(text);
-
-                    // Sanitize HTML to prevent XSS
-                    html = DOMPurify.sanitize(html, {
-                        ADD_TAGS: ['pre', 'code'], // Allow code blocks
-                        ADD_ATTR: ['class', 'language'] // Allow class for syntax highlighting
-                    });
-
-                    // Process Mermaid diagrams after sanitization
-                    // Mermaid syntax: ```mermaid ... ```
-                    html = html.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, (match, code) => {
-                        const graphId = 'mermaid-' + Math.random().toString(36).substr(2, 9);
-                        // Decode HTML entities
-                        const decodedCode = code
-                            .replace(/&lt;/g, '<')
-                            .replace(/&gt;/g, '>')
-                            .replace(/&amp;/g, '&')
-                            .replace(/&quot;/g, '"')
-                            .trim();
-                        
-                        return `<div class="mermaid-diagram" id="${graphId}">${decodedCode}</div>`;
-                    });
-
-                    return html;
-                },
-
-                /**
-                 * Render Mermaid diagrams after message is added to DOM
-                 */
-                async renderMermaidDiagrams() {
-                    const diagrams = document.querySelectorAll('.mermaid-diagram');
-                    
-                    for (const diagram of diagrams) {
-                        try {
-                            const { svg } = await mermaid.render(diagram.id + '-svg', diagram.textContent);
-                            diagram.innerHTML = svg;
-                            diagram.classList.add('rendered');
-                        } catch (error) {
-                            console.error('[Mermaid] Render error:', error);
-                            diagram.innerHTML = `<div class="p-2 text-sm text-red-600 border border-red-200 rounded bg-red-50">
-                                ⚠️ Errore nel rendering del diagramma Mermaid
-                            </div>`;
-                        }
-                    }
-                },
-
-                /**
-                 * Send message to API
-                 */
-                async sendToApi(message) {
-                    this.setLoading(true);
-
-                    // Show AI Processing Panel (enterprise UI for complex queries)
-                    // Will be updated dynamically based on backend progress
-                    AIProcessingPanel.show(0); // Will update with actual count from backend
-
-                    try {
-                        // Get web search toggle state ✨ NEW v3.0
-                        const webSearchEnabled = document.getElementById('webSearchToggle')?.checked || false;
-
-                        const response = await fetch(this.config.apiUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': this.config.csrfToken,
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                message: message,
-                                conversation_history: this.getConversationHistory(),
-                                persona_id: window.selectedPersona || null, // From persona selector
-                                session_id: this.config.sessionId || null,
-                                use_web_search: webSearchEnabled // NEW v3.0
-                            })
-                        });
-
-                        // Log response status for debugging
-                        console.log('[N.A.T.A.N.] Response status:', response.status, response.statusText);
-
-                        // Check for specific HTTP errors before parsing
-                        if (response.status === 504) {
-                            this.hideLoadingIndicator();
-                            this.addMessage('assistant',
-                                'La richiesta sta richiedendo più tempo del previsto. Il sistema potrebbe essere sotto carico. Per favore riprova tra qualche minuto.'
-                            );
-                            return;
-                        }
-
-                        // Read response body as text FIRST (can only read once!)
-                        const responseText = await response.text();
-                        console.log('[N.A.T.A.N.] Response length:', responseText.length, 'chars');
-
-                        // Check if response looks like JSON
-                        const contentType = response.headers.get('content-type');
-                        if (!contentType || !contentType.includes('application/json')) {
-                            // Server returned non-JSON (probably HTML error page)
-                            console.error('[N.A.T.A.N.] Server returned non-JSON response');
-                            console.log('[N.A.T.A.N.] Raw response:', responseText.substring(0, 500));
-
-                            this.hideLoadingIndicator();
-                            this.addMessage('assistant',
-                                'Si è verificato un errore del server. Il nostro team è stato notificato. Per favore riprova più tardi.'
-                            );
-                            return;
-                        }
-
-                        // Try to parse as JSON
-                        let data;
-                        try {
-                            data = JSON.parse(responseText);
-                            console.log('[N.A.T.A.N.] Parsed data:', {
-                                success: data.success,
-                                hasMessage: !!data.message,
-                                hasResponse: !!data.response,
-                                hasError: !!data.error,
-                                actsProcessed: data.acts_processed || 0
-                            });
-
-                            // Update AI Processing Panel with actual stats from backend
-                            if (data.acts_processed) {
-                                AIProcessingPanel.updateStats({
-                                    acts: data.acts_processed,
-                                    relevance: data.relevance_score || 0
-                                });
-                                AIProcessingPanel.updateProgress(50); // Mid-progress when data arrives
-                            }
-
-                        } catch (parseError) {
-                            console.error('[N.A.T.A.N.] JSON Parse Error:', parseError);
-                            console.log('[N.A.T.A.N.] First 500 chars:', responseText.substring(0, 500));
-
-                            AIProcessingPanel.hide();
-                            this.addMessage('assistant',
-                                'Errore nel parsing della risposta del server. Il nostro team è stato notificato.'
-                            );
-                            return;
-                        }
-
-                        // 🚀 PHASE 3: Detect chunking mode and start polling
-                        if (data.mode === 'chunking' && data.session_id) {
-                            console.log('[N.A.T.A.N.] 🔄 Chunking mode activated', {
-                                sessionId: data.session_id,
-                                totalChunks: data.total_chunks,
-                                totalActs: data.total_acts,
-                                strategy: data.strategy
-                            });
-
-                            // Show chunking panel instead of normal progress
-                            AIProcessingPanel.showChunking(data.total_chunks, data.total_acts);
-
-                            // Start polling loop
-                            this.startChunkingPoll(data.session_id);
-                            return; // Exit here, polling will handle completion
-                        }
-
-                        // DEBUG: Log AI model from response
-                        console.log('[N.A.T.A.N.] AI Model from backend:', data.ai_model);
-                        console.log('[N.A.T.A.N.] Persona from backend:', data.persona);
-
-                        if (data.success) {
-                            // Update AI model display BEFORE closing panel
-                            if (data.ai_model) {
-                                console.log('[N.A.T.A.N.] Updating model display to:', data.ai_model);
-                                AIProcessingPanel.updateModelDisplay(data.ai_model);
-                            } else {
-                                console.warn('[N.A.T.A.N.] No ai_model in response data');
-                            }
-                        }
-
-                        // Complete AI processing with persona info
-                        const completeOptions = {};
-                        if (data.persona) {
-                            completeOptions.personaName = data.persona.name;
-                            completeOptions.personaConfidence = data.persona.confidence;
-                        }
-                        AIProcessingPanel.complete(completeOptions);
-
-                        if (data.success) {
-                            // Pass persona info, message_id, elaboration flag, reference content, web_sources, and ai_model
-                            this.addMessage('assistant', data.response, data.sources, data.persona, data.message_ids
-                                ?.assistant, data.is_elaboration, data.reference_content, data.web_sources, data
-                                .ai_model);
-
-                            // Update session ID if provided
-                            if (data.session_id) {
-                                this.config.sessionId = data.session_id;
-                            }
-
-                            // Show persona suggestion if available
-                            if (data.persona && data.persona.suggestion) {
-                                this.showPersonaSuggestion(data.persona.suggestion);
-                            }
-                        } else {
-                            // Show error message from backend (localized or specific)
-                            this.addMessage('assistant', data.message ||
-                                'Mi dispiace, si è verificato un errore sconosciuto.');
-                        }
-
-                    } catch (error) {
-                        console.error('[N.A.T.A.N.] Network/Parsing Error:', error);
-                        console.error('[N.A.T.A.N.] Error type:', error.constructor.name);
-                        console.error('[N.A.T.A.N.] Error message:', error.message);
-                        console.error('[N.A.T.A.N.] Stack trace:', error.stack);
-
-                        this.hideLoadingIndicator();
-
-                        // Determine error type for better user feedback
-                        let errorMessage = 'Mi dispiace, si è verificato un errore imprevisto.';
-
-                        if (error.name === 'SyntaxError') {
-                            errorMessage =
-                                'Errore nel parsing della risposta del server. Il nostro team è stato notificato.';
-                            console.error('[N.A.T.A.N.] CRITICAL: Server returned non-JSON response');
-                        } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                            errorMessage =
-                                'Mi dispiace, non riesco a connettermi al servizio AI. Verifica la tua connessione e riprova.';
-                        } else if (error.message) {
-                            errorMessage = `Errore tecnico: ${error.message}`;
-                        }
-
-                        this.addMessage('assistant', errorMessage);
-                    } finally {
-                        this.setLoading(false);
-                    }
-                },
-
-                /**
-                 * Send to API with Server-Sent Events (SSE) streaming
-                 *
-                 * Real-time progress tracking for semantic search + AI analysis.
-                 *
-                 * @param {string} message - User query
-                 */
-                async sendToApiWithSSE(message) {
-                    console.log('🚀🚀🚀 [SSE] sendToApiWithSSE CALLED!', message);
-
-                    this.setLoading(true);
-
-                    // Check if AIProcessingPanel exists
-                    if (typeof AIProcessingPanel === 'undefined') {
-                        console.error('❌ AIProcessingPanel NOT LOADED!');
-                        return;
-                    }
-
-                    console.log('✅ AIProcessingPanel exists, calling show()...');
-                    AIProcessingPanel.show(0);
-                    console.log('✅ AIProcessingPanel.show() completed');
-
-                    try {
-                        // Use SSE endpoint instead of traditional POST
-                        const url = '/pa/natan/analyze-stream';
-
-                        // Get FRESH CSRF token from meta tag (not cached config)
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
-                            this.config.csrfToken;
-
-                        console.log('📡 [SSE] Calling URL:', url);
-                        console.log('📡 [SSE] Message:', message);
-                        console.log('🔐 [SSE] CSRF Token:', csrfToken ? 'Present' : 'MISSING!');
-
-                        const response = await fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'text/event-stream'
-                            },
-                            body: JSON.stringify({
-                                query: message,
-                                limit: 500 // Default limit, or get from slider
-                            })
-                        });
-
-                        console.log('✅ [SSE] Response received:', response.status, response.statusText);
-
-                        if (!response.ok) {
-                            console.error('❌ [SSE] Response not OK:', response.status);
-                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        }
-
-                        console.log('📖 [SSE] Starting to read stream...');
-
-                        // Create ReadableStream reader
-                        const reader = response.body.getReader();
-                        const decoder = new TextDecoder();
-                        let buffer = '';
-
-                        // Read stream
-                        while (true) {
-                            const {
-                                done,
-                                value
-                            } = await reader.read();
-
-                            if (done) break;
-
-                            // Decode chunk
-                            buffer += decoder.decode(value, {
-                                stream: true
-                            });
-
-                            // Process complete events (separated by \n\n)
-                            const events = buffer.split('\n\n');
-                            buffer = events.pop(); // Keep incomplete event in buffer
-
-                            for (const eventText of events) {
-                                if (!eventText.trim()) continue;
-
-                                // Parse SSE format: "event: name\ndata: {json}\n"
-                                const lines = eventText.split('\n');
-                                let eventName = '';
-                                let eventData = '';
-
-                                for (const line of lines) {
-                                    if (line.startsWith('event:')) {
-                                        eventName = line.substring(6).trim();
-                                    } else if (line.startsWith('data:')) {
-                                        eventData = line.substring(5).trim();
-                                    }
-                                }
-
-                                if (!eventName || !eventData) continue;
-
-                                // Parse event data
-                                let data;
-                                try {
-                                    data = JSON.parse(eventData);
-                                } catch (e) {
-                                    console.error('[SSE] Parse error:', e, eventData);
-                                    continue;
-                                }
-
-                                // Handle event
-                                this.handleSSEEvent(eventName, data);
-                            }
-                        }
-
-                    } catch (error) {
-                        console.error('[SSE] Error:', error);
-                        AIProcessingPanel.hide();
-                        this.addMessage('assistant', `Errore durante l'elaborazione: ${error.message}`);
-                    } finally {
-                        this.setLoading(false);
-                    }
-                },
-
-                /**
-                 * Handle SSE event
-                 *
-                 * @param {string} event - Event name
-                 * @param {object} data - Event data
-                 */
-                handleSSEEvent(event, data) {
-                    console.log(`[SSE] Event: ${event}`, data);
-
-                    switch (event) {
-                        case 'semantic_search_start':
-                            AIProcessingPanel.updateStage('search', 'active', `Ricerca con ${data.model}`);
-                            break;
-
-                        case 'semantic_search_complete':
-                            AIProcessingPanel.updateStage('search', 'completed', `${data.acts_found} atti trovati`);
-                            AIProcessingPanel.updateStats({
-                                acts: data.acts_found,
-                                relevance: data.avg_relevance
-                            });
-                            AIProcessingPanel.updateProgress(30);
-                            break;
-
-                        case 'ai_analysis_start':
-                            AIProcessingPanel.updateStage('ai', 'active', `Modello: ${data.model}`);
-                            AIProcessingPanel.updateProgress(50);
-                            break;
-
-                        case 'persona_selected':
-                            // Show which N.A.T.A.N. expert persona is responding
-                            console.log('[SSE] Persona selected:', data.persona_name, `(${data.confidence}% confidence)`);
-                            AIProcessingPanel.updateStage('ai', 'active', `${data.persona_name} (${data.confidence}%)`);
-                            break;
-
-                        case 'cost_update':
-                            // Show cost tracking panel (PA direct billing - EUR only)
-                            AIProcessingPanel.updateCostTracking({
-                                inputTokens: data.input_tokens,
-                                outputTokens: data.output_tokens,
-                                costEur: data.cost_eur
-                            });
-                            break;
-
-                        case 'response_generation_start':
-                            AIProcessingPanel.updateStage('response', 'active', 'Generazione risposta');
-                            AIProcessingPanel.updateProgress(75);
-                            break;
-
-                        case 'response_generation_complete':
-                            AIProcessingPanel.updateStage('response', 'completed', 'Completata');
-                            AIProcessingPanel.updateProgress(100);
-
-                            // Add response to chat WITH sources and persona
-                            this.addMessage(
-                                'assistant',
-                                data.response,
-                                data.sources || [], // ✅ Sources array
-                                data.persona || null // ✅ Persona object
-                            );
-
-                            // ❌ REMOVED auto-hide - User must manually close panel to see final stats
-                            // setTimeout(() => {
-                            //     AIProcessingPanel.hide();
-                            // }, 3000);
-                            break;
-
-                        case 'done':
-                            console.log('[SSE] Stream completed:', data);
-                            if (data.status === 'no_acts') {
-                                this.addMessage('assistant', data.message);
-                                AIProcessingPanel.hide();
-                            }
-                            // ❌ REMOVED auto-hide on success - User closes manually with button
-                            break;
-
-                        case 'error':
-                            console.error('[SSE] Error event:', data);
-                            AIProcessingPanel.hide();
-                            this.addMessage('assistant', `Errore: ${data.message}`);
-                            break;
-
-                        default:
-                            console.warn('[SSE] Unknown event:', event, data);
-                    }
-                },
-
-                /**
-                 * Show loading indicator
-                 */
-                showLoadingIndicator() {
-                    const loadingDiv = document.createElement('div');
-                    loadingDiv.id = 'loadingIndicator';
-                    loadingDiv.className = 'flex justify-start';
-                    loadingDiv.innerHTML = `
-                        <div class="max-w-2xl px-4 py-3 bg-gray-100 rounded-tl-sm shadow-sm rounded-2xl">
-                            <div class="flex items-center gap-2">
-                                <div class="flex space-x-1">
-                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
-                                </div>
-                                <span class="text-xs text-gray-500">N.A.T.A.N. sta pensando...</span>
-                            </div>
-                        </div>
-                    `;
-                    this.elements.chatMessages.appendChild(loadingDiv);
-                    this.scrollToBottom();
-                },
-
-                /**
-                 * Hide loading indicator
-                 */
-                hideLoadingIndicator() {
-                    const loadingIndicator = document.getElementById('loadingIndicator');
-                    if (loadingIndicator) {
-                        loadingIndicator.remove();
-                    }
-                },
-
-                /**
-                 * Handle elaboration quick action
-                 */
-                handleElaboration(action, messageId) {
-                    console.log('[N.A.T.A.N.] Elaboration requested:', action, messageId);
-
-                    // Define elaboration prompts
-                    const prompts = {
-                        simplify: 'Semplifica questa analisi rendendola comprensibile anche a chi non è esperto del settore. Usa un linguaggio accessibile, evita termini tecnici dove possibile, e fornisci esempi concreti.',
-                        deepen: 'Approfondisci ulteriormente questa analisi, aggiungendo considerazioni strategiche, implicazioni a lungo termine, e possibili scenari alternativi. Mantieni un approccio analitico da consulente senior.',
-                        actionable: 'Trasforma questa analisi in 3-5 azioni concrete e prioritizzate che possiamo eseguire nei prossimi 3-6 mesi. Per ogni azione fornisci: obiettivo, timeline, risorse necessarie, e KPI di successo.',
-                        presentation: 'Ristruttura questa analisi in formato presentation-ready con: executive summary (3 bullet points), key findings, dati numerici evidenziati, raccomandazioni prioritizzate. Usa un formato adatto a slide.',
-                        citizen: 'Riscrivi questa analisi come comunicato per i cittadini, usando linguaggio semplice, tono rassicurante e trasparente. Spiega cosa significa per loro e quali benefici concreti porterà.'
-                    };
-
-                    const prompt = prompts[action];
-                    if (!prompt) {
-                        console.error('[N.A.T.A.N.] Unknown elaboration action:', action);
-                        return;
-                    }
-
-                    // Send elaboration request
-                    this.sendToApiWithElaboration(prompt, messageId);
-                },
-
-                /**
-                 * Start polling for chunking progress
-                 *
-                 * @param {string} sessionId - The chunking session ID
-                 * @package App\PA\NatanChat
-                 * @author Padmin D. Curtis (AI Partner OS3.0)
-                 * @version 1.0.0 (FlorenceEGI - NATAN Intelligent Chunking Phase 3)
-                 * @date 2025-01-27
-                 * @purpose Poll backend for chunk processing progress until completion
-                 */
-                startChunkingPoll(sessionId) {
-                    console.log('[N.A.T.A.N.] 🔄 Starting polling for session:', sessionId);
-
-                    let pollAttempts = 0;
-                    const maxPollAttempts = 150; // 150 attempts × 2 seconds = 5 minutes max
-                    const pollInterval = 2000; // 2 seconds
-
-                    const pollProgress = async () => {
-                        pollAttempts++;
-
-                        // Timeout check
-                        if (pollAttempts >= maxPollAttempts) {
-                            console.error('[N.A.T.A.N.] ⏱️ Polling timeout after 5 minutes');
-                            AIProcessingPanel.hide();
-                            this.showChunkingError(
-                                '⚠️ {{ __('natan.chunking.timeout_error') }}. Il processamento potrebbe ancora essere in corso in background.',
-                                sessionId
-                            );
-                            this.setLoading(false);
-                            return;
-                        }
-
-                        try {
-                            const response = await fetch(`/pa/natan/chunking-progress/${sessionId}`, {
-                                method: 'GET',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'X-CSRF-TOKEN': this.config.csrfToken
-                                }
-                            });
-
-                            if (!response.ok) {
-                                if (response.status === 404) {
-                                    console.error('[N.A.T.A.N.] ❌ Session not found');
-                                    AIProcessingPanel.hide();
-                                    this.showChunkingError('{{ __('natan.chunking.session_not_found') }}', null);
-                                    this.setLoading(false);
-                                    return;
-                                } else if (response.status === 403) {
-                                    console.error('[N.A.T.A.N.] 🔒 Unauthorized access');
-                                    AIProcessingPanel.hide();
-                                    this.showChunkingError('{{ __('natan.chunking.unauthorized') }}', null);
-                                    this.setLoading(false);
-                                    return;
-                                } else if (response.status === 429) {
-                                    console.warn('[N.A.T.A.N.] ⚠️ Rate limit hit, continuing polling...');
-                                    setTimeout(pollProgress, pollInterval);
-                                    return;
-                                }
-                                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                            }
-
-                            const data = await response.json();
-                            console.log('[N.A.T.A.N.] 📊 Progress update:', {
-                                currentChunk: data.current_chunk,
-                                chunkProgress: data.chunk_progress,
-                                actsInChunk: data.acts_in_chunk,
-                                completedChunks: data.completed_chunks?.length || 0,
-                                allCompleted: data.all_completed
-                            });
-
-                            // Update chunk progress bar
-                            AIProcessingPanel.updateChunkProgress(data.current_chunk, data.chunk_progress);
-
-                            // Update acts counter
-                            if (data.acts_in_chunk) {
-                                AIProcessingPanel.updateStats({
-                                    acts: data.acts_in_chunk,
-                                    relevance: 0 // Will be updated on final
-                                });
-                            }
-
-                            // Mark completed chunks
-                            if (data.last_completed && data.last_completed_index !== undefined) {
-                                AIProcessingPanel.completeChunk(data.last_completed_index);
-                            }
-
-                            // Check if all chunks completed
-                            if (data.all_completed) {
-                                console.log('[N.A.T.A.N.] ✅ All chunks completed, fetching final result...');
-                                await this.fetchChunkingFinal(sessionId);
-                                return; // Stop polling
-                            }
-
-                            // Continue polling
-                            setTimeout(pollProgress, pollInterval);
-
-                        } catch (error) {
-                            console.error('[N.A.T.A.N.] ❌ Polling error:', error);
-
-                            // Retry on network errors
-                            if (pollAttempts < maxPollAttempts) {
-                                console.log('[N.A.T.A.N.] 🔄 Retrying after error...');
-                                setTimeout(pollProgress, pollInterval);
-                            } else {
-                                AIProcessingPanel.hide();
-                                this.showChunkingError(
-                                    `{{ __('natan.chunking.polling_error') }}: ${error.message}`,
-                                    sessionId
-                                );
-                                this.setLoading(false);
-                            }
-                        }
-                    };
-
-                    // Start polling immediately
-                    pollProgress();
-                },
-
-                /**
-                 * Fetch final aggregated chunking result
-                 *
-                 * @param {string} sessionId - The chunking session ID
-                 * @package App\PA\NatanChat
-                 * @author Padmin D. Curtis (AI Partner OS3.0)
-                 * @version 1.0.0 (FlorenceEGI - NATAN Intelligent Chunking Phase 3)
-                 * @date 2025-01-27
-                 * @purpose Retrieve and display final aggregated response after all chunks processed
-                 */
-                async fetchChunkingFinal(sessionId) {
-                    console.log('[N.A.T.A.N.] 📦 Fetching final result for session:', sessionId);
-
-                    try {
-                        const response = await fetch(`/pa/natan/chunking-final/${sessionId}`, {
-                            method: 'GET',
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': this.config.csrfToken
-                            }
-                        });
-
-                        if (!response.ok) {
-                            if (response.status === 425) {
-                                console.warn('[N.A.T.A.N.] ⚠️ Processing not complete yet, waiting...');
-                                // Wait and poll progress again
-                                setTimeout(() => this.startChunkingPoll(sessionId), 2000);
-                                return;
-                            }
-                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        }
-
-                        const data = await response.json();
-                        console.log('[N.A.T.A.N.] ✅ Final result received:', {
-                            totalRelevantActs: data.total_relevant_acts,
-                            chunksProcessed: data.chunks_processed,
-                            sourcesCount: data.sources?.length || 0
-                        });
-
-                        // Update final stats
+                    // Update AI Processing Panel with actual stats from backend
+                    if (data.acts_processed) {
                         AIProcessingPanel.updateStats({
-                            acts: data.total_relevant_acts || 0,
+                            acts: data.acts_processed,
                             relevance: data.relevance_score || 0
                         });
+                        AIProcessingPanel.updateProgress(50); // Mid-progress when data arrives
+                    }
 
-                        // Complete processing
-                        AIProcessingPanel.complete();
+                } catch (parseError) {
+                    console.error('[N.A.T.A.N.] JSON Parse Error:', parseError);
+                    console.log('[N.A.T.A.N.] First 500 chars:', responseText.substring(0, 500));
 
-                        // Display aggregated response in chat
-                        if (data.aggregated_response) {
-                            this.addMessage(
-                                'assistant',
-                                data.aggregated_response,
-                                data.sources,
-                                data.persona,
-                                data.message_id,
-                                false, // not elaboration
-                                null, // no reference content
-                                data.web_sources || null
-                            );
+                    AIProcessingPanel.hide();
+                    this.addMessage('assistant',
+                        'Errore nel parsing della risposta del server. Il nostro team è stato notificato.'
+                    );
+                    return;
+                }
 
-                            // Update session ID if provided
-                            if (data.session_id) {
-                                this.config.sessionId = data.session_id;
+                // 🚀 PHASE 3: Detect chunking mode and start polling
+                if (data.mode === 'chunking' && data.session_id) {
+                    console.log('[N.A.T.A.N.] 🔄 Chunking mode activated', {
+                        sessionId: data.session_id,
+                        totalChunks: data.total_chunks,
+                        totalActs: data.total_acts,
+                        strategy: data.strategy
+                    });
+
+                    // Show chunking panel instead of normal progress
+                    AIProcessingPanel.showChunking(data.total_chunks, data.total_acts);
+
+                    // Start polling loop
+                    this.startChunkingPoll(data.session_id);
+                    return; // Exit here, polling will handle completion
+                }
+
+                // DEBUG: Log AI model from response
+                console.log('[N.A.T.A.N.] AI Model from backend:', data.ai_model);
+                console.log('[N.A.T.A.N.] Persona from backend:', data.persona);
+
+                if (data.success) {
+                    // Update AI model display BEFORE closing panel
+                    if (data.ai_model) {
+                        console.log('[N.A.T.A.N.] Updating model display to:', data.ai_model);
+                        AIProcessingPanel.updateModelDisplay(data.ai_model);
+                    } else {
+                        console.warn('[N.A.T.A.N.] No ai_model in response data');
+                    }
+                }
+
+                // Complete AI processing with persona info
+                const completeOptions = {};
+                if (data.persona) {
+                    completeOptions.personaName = data.persona.name;
+                    completeOptions.personaConfidence = data.persona.confidence;
+                }
+                AIProcessingPanel.complete(completeOptions);
+
+                if (data.success) {
+                    // DEBUG: Log message_ids structure
+                    console.log('[N.A.T.A.N.] message_ids from backend:', data.message_ids);
+                    console.log('[N.A.T.A.N.] assistant ID:', data.message_ids?.assistant);
+
+                    // Pass persona info, message_id, elaboration flag, reference content, web_sources, and ai_model
+                    this.addMessage('assistant', data.response, data.sources, data.persona, data.message_ids
+                        ?.assistant, data.is_elaboration, data.reference_content, data.web_sources, data
+                        .ai_model);
+
+                    // Update session ID if provided
+                    if (data.session_id) {
+                        this.config.sessionId = data.session_id;
+                    }
+
+                    // Show persona suggestion if available
+                    if (data.persona && data.persona.suggestion) {
+                        this.showPersonaSuggestion(data.persona.suggestion);
+                    }
+                } else {
+                    // Show error message from backend (localized or specific)
+                    this.addMessage('assistant', data.message ||
+                        'Mi dispiace, si è verificato un errore sconosciuto.');
+                }
+
+            } catch (error) {
+                console.error('[N.A.T.A.N.] Network/Parsing Error:', error);
+                console.error('[N.A.T.A.N.] Error type:', error.constructor.name);
+                console.error('[N.A.T.A.N.] Error message:', error.message);
+                console.error('[N.A.T.A.N.] Stack trace:', error.stack);
+
+                this.hideLoadingIndicator();
+
+                // Determine error type for better user feedback
+                let errorMessage = 'Mi dispiace, si è verificato un errore imprevisto.';
+
+                if (error.name === 'SyntaxError') {
+                    errorMessage =
+                        'Errore nel parsing della risposta del server. Il nostro team è stato notificato.';
+                    console.error('[N.A.T.A.N.] CRITICAL: Server returned non-JSON response');
+                } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMessage =
+                        'Mi dispiace, non riesco a connettermi al servizio AI. Verifica la tua connessione e riprova.';
+                } else if (error.message) {
+                    errorMessage = `Errore tecnico: ${error.message}`;
+                }
+
+                this.addMessage('assistant', errorMessage);
+            } finally {
+                this.setLoading(false);
+            }
+        },
+
+        /**
+         * Send to API with Server-Sent Events (SSE) streaming
+         *
+         * Real-time progress tracking for semantic search + AI analysis.
+         *
+         * @param {string} message - User query
+         */
+        async sendToApiWithSSE(message) {
+            console.log('🚀🚀🚀 [SSE] sendToApiWithSSE CALLED!', message);
+
+            this.setLoading(true);
+
+            // Check if AIProcessingPanel exists
+            if (typeof AIProcessingPanel === 'undefined') {
+                console.error('❌ AIProcessingPanel NOT LOADED!');
+                return;
+            }
+
+            console.log('✅ AIProcessingPanel exists, calling show()...');
+            AIProcessingPanel.show(0);
+            console.log('✅ AIProcessingPanel.show() completed');
+
+            try {
+                // Use SSE endpoint instead of traditional POST
+                const url = '/pa/natan/analyze-stream';
+
+                // Get FRESH CSRF token from meta tag (not cached config)
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                    this.config.csrfToken;
+
+                console.log('📡 [SSE] Calling URL:', url);
+                console.log('📡 [SSE] Message:', message);
+                console.log('🔐 [SSE] CSRF Token:', csrfToken ? 'Present' : 'MISSING!');
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'text/event-stream'
+                    },
+                    body: JSON.stringify({
+                        query: message,
+                        limit: 500 // Default limit, or get from slider
+                    })
+                });
+
+                console.log('✅ [SSE] Response received:', response.status, response.statusText);
+
+                if (!response.ok) {
+                    console.error('❌ [SSE] Response not OK:', response.status);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                console.log('📖 [SSE] Starting to read stream...');
+
+                // Create ReadableStream reader
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                // Read stream
+                while (true) {
+                    const {
+                        done,
+                        value
+                    } = await reader.read();
+
+                    if (done) break;
+
+                    // Decode chunk
+                    buffer += decoder.decode(value, {
+                        stream: true
+                    });
+
+                    // Process complete events (separated by \n\n)
+                    const events = buffer.split('\n\n');
+                    buffer = events.pop(); // Keep incomplete event in buffer
+
+                    for (const eventText of events) {
+                        if (!eventText.trim()) continue;
+
+                        // Parse SSE format: "event: name\ndata: {json}\n"
+                        const lines = eventText.split('\n');
+                        let eventName = '';
+                        let eventData = '';
+
+                        for (const line of lines) {
+                            if (line.startsWith('event:')) {
+                                eventName = line.substring(6).trim();
+                            } else if (line.startsWith('data:')) {
+                                eventData = line.substring(5).trim();
                             }
-                        } else {
-                            throw new Error('No aggregated response in final result');
                         }
 
-                    } catch (error) {
-                        console.error('[N.A.T.A.N.] ❌ Error fetching final result:', error);
+                        if (!eventName || !eventData) continue;
+
+                        // Parse event data
+                        let data;
+                        try {
+                            data = JSON.parse(eventData);
+                        } catch (e) {
+                            console.error('[SSE] Parse error:', e, eventData);
+                            continue;
+                        }
+
+                        // Handle event
+                        this.handleSSEEvent(eventName, data);
+                    }
+                }
+
+            } catch (error) {
+                console.error('[SSE] Error:', error);
+                AIProcessingPanel.hide();
+                this.addMessage('assistant', `Errore durante l'elaborazione: ${error.message}`);
+            } finally {
+                this.setLoading(false);
+            }
+        },
+
+        /**
+         * Handle SSE event
+         *
+         * @param {string} event - Event name
+         * @param {object} data - Event data
+         */
+        handleSSEEvent(event, data) {
+            console.log(`[SSE] Event: ${event}`, data);
+
+            switch (event) {
+                case 'semantic_search_start':
+                    AIProcessingPanel.updateStage('search', 'active', `Ricerca con ${data.model}`);
+                    break;
+
+                case 'semantic_search_complete':
+                    AIProcessingPanel.updateStage('search', 'completed', `${data.acts_found} atti trovati`);
+                    AIProcessingPanel.updateStats({
+                        acts: data.acts_found,
+                        relevance: data.avg_relevance
+                    });
+                    AIProcessingPanel.updateProgress(30);
+                    break;
+
+                case 'web_search_enabled':
+                    // ✨ NEW: Show web search stage when auto-enabled
+                    console.log('[SSE] Web search auto-enabled:', data.reasoning);
+                    AIProcessingPanel.updateStage('search', 'active',
+                        `🌐 Ricerca web attivata (${Math.round(data.confidence * 100)}%)`);
+                    // Optional: show tooltip with reasoning
+                    break;
+
+                case 'ai_analysis_start':
+                    AIProcessingPanel.updateStage('ai', 'active', `Modello: ${data.model}`);
+                    AIProcessingPanel.updateProgress(50);
+                    break;
+
+                case 'persona_selected':
+                    // Show which N.A.T.A.N. expert persona is responding
+                    console.log('[SSE] Persona selected:', data.persona_name, `(${data.confidence}% confidence)`);
+                    AIProcessingPanel.updateStage('ai', 'active', `${data.persona_name} (${data.confidence}%)`);
+                    break;
+
+                case 'cost_update':
+                    // Show cost tracking panel (PA direct billing - EUR only)
+                    AIProcessingPanel.updateCostTracking({
+                        inputTokens: data.input_tokens,
+                        outputTokens: data.output_tokens,
+                        costEur: data.cost_eur
+                    });
+                    break;
+
+                case 'response_generation_start':
+                    AIProcessingPanel.updateStage('response', 'active', 'Generazione risposta');
+                    AIProcessingPanel.updateProgress(75);
+                    break;
+
+                case 'response_generation_complete':
+                    AIProcessingPanel.updateStage('response', 'completed', 'Completata');
+                    AIProcessingPanel.updateProgress(100);
+
+                    // Store response temporarily - will add message_id when 'done' event arrives
+                    this._pendingSSEMessage = {
+                        response: data.response,
+                        sources: data.sources || [],
+                        persona: data.persona || null,
+                        timestamp: data.timestamp
+                    };
+
+                    // ❌ REMOVED auto-hide - User must manually close panel to see final stats
+                    // setTimeout(() => {
+                    //     AIProcessingPanel.hide();
+                    // }, 3000);
+                    break;
+
+                case 'done':
+                    console.log('[SSE] Stream completed:', data);
+
+                    if (data.status === 'no_acts') {
+                        this.addMessage('assistant', data.message);
+                        AIProcessingPanel.hide();
+                    } else if (data.status === 'completed' && this._pendingSSEMessage) {
+                        // Now we have message_ids from backend - add message with full data
+                        console.log('[SSE] Adding message with ID:', data.message_ids?.assistant);
+
+                        this.addMessage(
+                            'assistant',
+                            this._pendingSSEMessage.response,
+                            this._pendingSSEMessage.sources,
+                            this._pendingSSEMessage.persona,
+                            data.message_ids?.assistant, // ✅ Message ID for quick actions
+                            false, // is_elaboration
+                            null, // reference_content
+                            null, // web_sources
+                            null // ai_model
+                        );
+
+                        // Clear pending message
+                        delete this._pendingSSEMessage;
+                    }
+                    // ❌ REMOVED auto-hide on success - User closes manually with button
+                    break;
+
+                case 'error':
+                    console.error('[SSE] Error event:', data);
+                    AIProcessingPanel.hide();
+                    this.addMessage('assistant', `Errore: ${data.message}`);
+                    break;
+
+                default:
+                    console.warn('[SSE] Unknown event:', event, data);
+            }
+        },
+
+        /**
+         * Show loading indicator
+         */
+        showLoadingIndicator() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingIndicator';
+            loadingDiv.className = 'flex justify-start';
+            loadingDiv.innerHTML = `
+                                                        <div class="max-w-2xl px-4 py-3 bg-gray-100 rounded-tl-sm shadow-sm rounded-2xl">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="flex space-x-1">
+                                                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                                                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                                                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                                                                </div>
+                                                                <span class="text-xs text-gray-500">N.A.T.A.N. sta pensando...</span>
+                                                            </div>
+                                                        </div>
+                                                    `;
+            this.elements.chatMessages.appendChild(loadingDiv);
+            this.scrollToBottom();
+        },
+
+        /**
+         * Hide loading indicator
+         */
+        hideLoadingIndicator() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+        },
+
+        /**
+         * Handle elaboration quick action
+         */
+        handleElaboration(action, messageId) {
+            console.log('[N.A.T.A.N.] Elaboration requested:', action, messageId);
+
+            // Define elaboration prompts
+            const prompts = {
+                simplify: 'Semplifica questa analisi rendendola comprensibile anche a chi non è esperto del settore. Usa un linguaggio accessibile, evita termini tecnici dove possibile, e fornisci esempi concreti.',
+                deepen: 'Approfondisci ulteriormente questa analisi, aggiungendo considerazioni strategiche, implicazioni a lungo termine, e possibili scenari alternativi. Mantieni un approccio analitico da consulente senior.',
+                actionable: 'Trasforma questa analisi in 3-5 azioni concrete e prioritizzate che possiamo eseguire nei prossimi 3-6 mesi. Per ogni azione fornisci: obiettivo, timeline, risorse necessarie, e KPI di successo.',
+                presentation: 'Ristruttura questa analisi in formato presentation-ready con: executive summary (3 bullet points), key findings, dati numerici evidenziati, raccomandazioni prioritizzate. Usa un formato adatto a slide.',
+                citizen: 'Riscrivi questa analisi come comunicato per i cittadini, usando linguaggio semplice, tono rassicurante e trasparente. Spiega cosa significa per loro e quali benefici concreti porterà.'
+            };
+
+            const prompt = prompts[action];
+            if (!prompt) {
+                console.error('[N.A.T.A.N.] Unknown elaboration action:', action);
+                return;
+            }
+
+            // Send elaboration request
+            this.sendToApiWithElaboration(prompt, messageId);
+        },
+
+        /**
+         * Start polling for chunking progress
+         *
+         * @param {string} sessionId - The chunking session ID
+         * @package App\PA\NatanChat
+         * @author Padmin D. Curtis (AI Partner OS3.0)
+         * @version 1.0.0 (FlorenceEGI - NATAN Intelligent Chunking Phase 3)
+         * @date 2025-01-27
+         * @purpose Poll backend for chunk processing progress until completion
+         */
+        startChunkingPoll(sessionId) {
+            console.log('[N.A.T.A.N.] 🔄 Starting polling for session:', sessionId);
+
+            let pollAttempts = 0;
+            const maxPollAttempts = 150; // 150 attempts × 2 seconds = 5 minutes max
+            const pollInterval = 2000; // 2 seconds
+
+            const pollProgress = async () => {
+                pollAttempts++;
+
+                // Timeout check
+                if (pollAttempts >= maxPollAttempts) {
+                    console.error('[N.A.T.A.N.] ⏱️ Polling timeout after 5 minutes');
+                    AIProcessingPanel.hide();
+                    this.showChunkingError(
+                        '⚠️ {{ __('natan.chunking.timeout_error') }}. Il processamento potrebbe ancora essere in corso in background.',
+                        sessionId
+                    );
+                    this.setLoading(false);
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/pa/natan/chunking-progress/${sessionId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': this.config.csrfToken
+                        }
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            console.error('[N.A.T.A.N.] ❌ Session not found');
+                            AIProcessingPanel.hide();
+                            this.showChunkingError('{{ __('natan.chunking.session_not_found') }}', null);
+                            this.setLoading(false);
+                            return;
+                        } else if (response.status === 403) {
+                            console.error('[N.A.T.A.N.] 🔒 Unauthorized access');
+                            AIProcessingPanel.hide();
+                            this.showChunkingError('{{ __('natan.chunking.unauthorized') }}', null);
+                            this.setLoading(false);
+                            return;
+                        } else if (response.status === 429) {
+                            console.warn('[N.A.T.A.N.] ⚠️ Rate limit hit, continuing polling...');
+                            setTimeout(pollProgress, pollInterval);
+                            return;
+                        }
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('[N.A.T.A.N.] 📊 Progress update:', {
+                        currentChunk: data.current_chunk,
+                        chunkProgress: data.chunk_progress,
+                        actsInChunk: data.acts_in_chunk,
+                        completedChunks: data.completed_chunks?.length || 0,
+                        allCompleted: data.all_completed
+                    });
+
+                    // Update chunk progress bar
+                    AIProcessingPanel.updateChunkProgress(data.current_chunk, data.chunk_progress);
+
+                    // Update acts counter
+                    if (data.acts_in_chunk) {
+                        AIProcessingPanel.updateStats({
+                            acts: data.acts_in_chunk,
+                            relevance: 0 // Will be updated on final
+                        });
+                    }
+
+                    // Mark completed chunks
+                    if (data.last_completed && data.last_completed_index !== undefined) {
+                        AIProcessingPanel.completeChunk(data.last_completed_index);
+                    }
+
+                    // Check if all chunks completed
+                    if (data.all_completed) {
+                        console.log('[N.A.T.A.N.] ✅ All chunks completed, fetching final result...');
+                        await this.fetchChunkingFinal(sessionId);
+                        return; // Stop polling
+                    }
+
+                    // Continue polling
+                    setTimeout(pollProgress, pollInterval);
+
+                } catch (error) {
+                    console.error('[N.A.T.A.N.] ❌ Polling error:', error);
+
+                    // Retry on network errors
+                    if (pollAttempts < maxPollAttempts) {
+                        console.log('[N.A.T.A.N.] 🔄 Retrying after error...');
+                        setTimeout(pollProgress, pollInterval);
+                    } else {
                         AIProcessingPanel.hide();
                         this.showChunkingError(
-                            `{{ __('natan.chunking.final_error') }}: ${error.message}`,
+                            `{{ __('natan.chunking.polling_error') }}: ${error.message}`,
                             sessionId
                         );
-                    } finally {
                         this.setLoading(false);
                     }
-                },
+                }
+            };
 
-                /**
-                 * Show chunking error with retry button
-                 *
-                 * @param {string} errorMessage - The error message to display
-                 * @param {string} sessionId - The chunking session ID (optional, for retry)
-                 * @package App\PA\NatanChat
-                 * @author Padmin D. Curtis (AI Partner OS3.0)
-                 * @version 1.0.0 (FlorenceEGI - NATAN Chunking Error Recovery)
-                 * @date 2025-01-27
-                 * @purpose Display error message with retry button for chunking failures
-                 */
-                showChunkingError(errorMessage, sessionId = null) {
-                    console.log('[N.A.T.A.N.] 🚨 Showing chunking error with retry option');
+            // Start polling immediately
+            pollProgress();
+        },
 
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'flex justify-start mb-4';
-                    errorDiv.innerHTML = `
-                        <div class="max-w-2xl px-4 py-3 border-l-4 border-red-500 rounded-tl-sm shadow-sm rounded-2xl bg-red-50">
-                            <div class="flex items-start gap-3">
-                                <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <div class="flex-1">
-                                    <p class="mb-2 text-sm font-medium text-red-800">${errorMessage}</p>
-                                    ${sessionId ? `
+        /**
+         * Fetch final aggregated chunking result
+         *
+         * @param {string} sessionId - The chunking session ID
+         * @package App\PA\NatanChat
+         * @author Padmin D. Curtis (AI Partner OS3.0)
+         * @version 1.0.0 (FlorenceEGI - NATAN Intelligent Chunking Phase 3)
+         * @date 2025-01-27
+         * @purpose Retrieve and display final aggregated response after all chunks processed
+         */
+        async fetchChunkingFinal(sessionId) {
+            console.log('[N.A.T.A.N.] 📦 Fetching final result for session:', sessionId);
+
+            try {
+                const response = await fetch(`/pa/natan/chunking-final/${sessionId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.config.csrfToken
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 425) {
+                        console.warn('[N.A.T.A.N.] ⚠️ Processing not complete yet, waiting...');
+                        // Wait and poll progress again
+                        setTimeout(() => this.startChunkingPoll(sessionId), 2000);
+                        return;
+                    }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('[N.A.T.A.N.] ✅ Final result received:', {
+                    totalRelevantActs: data.total_relevant_acts,
+                    chunksProcessed: data.chunks_processed,
+                    sourcesCount: data.sources?.length || 0
+                });
+
+                // Update final stats
+                AIProcessingPanel.updateStats({
+                    acts: data.total_relevant_acts || 0,
+                    relevance: data.relevance_score || 0
+                });
+
+                // Complete processing
+                AIProcessingPanel.complete();
+
+                // Display aggregated response in chat
+                if (data.aggregated_response) {
+                    this.addMessage(
+                        'assistant',
+                        data.aggregated_response,
+                        data.sources,
+                        data.persona,
+                        data.message_id,
+                        false, // not elaboration
+                        null, // no reference content
+                        data.web_sources || null
+                    );
+
+                    // Update session ID if provided
+                    if (data.session_id) {
+                        this.config.sessionId = data.session_id;
+                    }
+                } else {
+                    throw new Error('No aggregated response in final result');
+                }
+
+            } catch (error) {
+                console.error('[N.A.T.A.N.] ❌ Error fetching final result:', error);
+                AIProcessingPanel.hide();
+                this.showChunkingError(
+                    `{{ __('natan.chunking.final_error') }}: ${error.message}`,
+                    sessionId
+                );
+            } finally {
+                this.setLoading(false);
+            }
+        },
+
+        /**
+         * Show chunking error with retry button
+         *
+         * @param {string} errorMessage - The error message to display
+         * @param {string} sessionId - The chunking session ID (optional, for retry)
+         * @package App\PA\NatanChat
+         * @author Padmin D. Curtis (AI Partner OS3.0)
+         * @version 1.0.0 (FlorenceEGI - NATAN Chunking Error Recovery)
+         * @date 2025-01-27
+         * @purpose Display error message with retry button for chunking failures
+         */
+        showChunkingError(errorMessage, sessionId = null) {
+            console.log('[N.A.T.A.N.] 🚨 Showing chunking error with retry option');
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'flex justify-start mb-4';
+            errorDiv.innerHTML = `
+                                                        <div class="max-w-2xl px-4 py-3 border-l-4 border-red-500 rounded-tl-sm shadow-sm rounded-2xl bg-red-50">
+                                                            <div class="flex items-start gap-3">
+                                                                <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                                </svg>
+                                                                <div class="flex-1">
+                                                                    <p class="mb-2 text-sm font-medium text-red-800">${errorMessage}</p>
+                                                                    ${sessionId ? `
                                                                                 <button
                                                                                     onclick="NatanChat.retryChunking('${sessionId}')"
                                                                                     class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200"
@@ -2241,502 +2671,970 @@
                                                                                     {{ __('natan.chunking.retry_button') }}
                                                                                 </button>
                                                                             ` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    `;
 
-                    this.elements.chatMessages.appendChild(errorDiv);
-                    this.scrollToBottom();
-                },
+            this.elements.chatMessages.appendChild(errorDiv);
+            this.scrollToBottom();
+        },
 
-                /**
-                 * Retry chunking analysis
-                 *
-                 * @param {string} sessionId - The failed session ID
-                 * @package App\PA\NatanChat
-                 * @author Padmin D. Curtis (AI Partner OS3.0)
-                 * @version 1.0.0 (FlorenceEGI - NATAN Chunking Error Recovery)
-                 * @date 2025-01-27
-                 * @purpose Restart polling for a failed chunking session
-                 */
-                retryChunking(sessionId) {
-                    console.log('[N.A.T.A.N.] 🔄 Retrying chunking for session:', sessionId);
+        /**
+         * Retry chunking analysis
+         *
+         * @param {string} sessionId - The failed session ID
+         * @package App\PA\NatanChat
+         * @author Padmin D. Curtis (AI Partner OS3.0)
+         * @version 1.0.0 (FlorenceEGI - NATAN Chunking Error Recovery)
+         * @date 2025-01-27
+         * @purpose Restart polling for a failed chunking session
+         */
+        retryChunking(sessionId) {
+            console.log('[N.A.T.A.N.] 🔄 Retrying chunking for session:', sessionId);
 
-                    // Clear loading state
-                    this.setLoading(false);
+            // Clear loading state
+            this.setLoading(false);
 
-                    // Re-show chunking panel
-                    AIProcessingPanel.show(0);
-                    AIProcessingPanel.showChunking(5, 0); // Will be updated by first poll
+            // Re-show chunking panel
+            AIProcessingPanel.show(0);
+            AIProcessingPanel.showChunking(5, 0); // Will be updated by first poll
 
-                    // Restart polling
-                    this.startChunkingPoll(sessionId);
-                },
+            // Restart polling
+            this.startChunkingPoll(sessionId);
+        },
 
-                /**
-                 * Send elaboration to API
-                 */
-                async sendToApiWithElaboration(message, referenceMessageId) {
-                    this.setLoading(true);
-                    this.showLoadingIndicator();
+        /**
+         * Send elaboration to API
+         */
+        async sendToApiWithElaboration(message, referenceMessageId) {
+            this.setLoading(true);
+            this.showLoadingIndicator();
 
-                    try {
-                        const response = await fetch(this.config.apiUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': this.config.csrfToken,
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                message: message,
-                                conversation_history: this.getConversationHistory(),
-                                persona_id: window.selectedPersona || null,
-                                session_id: this.config.sessionId || null,
-                                use_rag: true, // ✅ Enable RAG for elaborations (get real data from 500 acts)
-                                reference_message_id: referenceMessageId // Reference the previous message
-                            })
-                        });
+            try {
+                const response = await fetch(this.config.apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.config.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_history: this.getConversationHistory(),
+                        persona_id: window.selectedPersona || null,
+                        session_id: this.config.sessionId || null,
+                        use_rag: true, // ✅ Enable RAG for elaborations (get real data from 500 acts)
+                        reference_message_id: referenceMessageId // Reference the previous message
+                    })
+                });
 
-                        const data = await response.json();
-                        this.hideLoadingIndicator();
+                const data = await response.json();
+                this.hideLoadingIndicator();
 
-                        if (data.success) {
-                            // Add elaborated message with elaboration flag and reference content
-                            this.addMessage('assistant', data.response, data.sources, data.persona, data.message_ids
-                                ?.assistant, true, data.reference_content);
+                if (data.success) {
+                    // Add elaborated message with elaboration flag and reference content
+                    this.addMessage('assistant', data.response, data.sources, data.persona, data.message_ids
+                        ?.assistant, true, data.reference_content);
 
-                            if (data.session_id) {
-                                this.config.sessionId = data.session_id;
-                            }
-                        } else {
-                            this.addMessage('assistant', 'Mi dispiace, si è verificato un errore nell\'elaborazione: ' +
-                                (data.message || 'Errore sconosciuto'));
-                        }
-                    } catch (error) {
-                        console.error('[N.A.T.A.N.] Elaboration API Error:', error);
-                        this.hideLoadingIndicator();
-                        this.addMessage('assistant',
-                            'Mi dispiace, non riesco a elaborare la risposta. Riprova tra poco.');
-                    } finally {
-                        this.setLoading(false);
+                    if (data.session_id) {
+                        this.config.sessionId = data.session_id;
                     }
-                },
-
-                /**
-                 * Set loading state
-                 */
-                setLoading(loading) {
-                    this.isLoading = loading;
-                    this.elements.userInput.disabled = loading;
-                    this.elements.sendBtn.disabled = loading;
-
-                    if (loading) {
-                        this.elements.sendBtnText.classList.add('hidden');
-                        this.elements.sendBtnLoader.classList.remove('hidden');
-                    } else {
-                        this.elements.sendBtnText.classList.remove('hidden');
-                        this.elements.sendBtnLoader.classList.add('hidden');
-                    }
-                },
-
-                /**
-                 * Get conversation history (last N messages)
-                 */
-                getConversationHistory() {
-                    return this.messages
-                        .slice(-this.config.maxHistoryLength)
-                        .map(msg => ({
-                            role: msg.role,
-                            content: msg.content.replace(/<[^>]*>/g, '') // Strip HTML
-                        }));
-                },
-
-                /**
-                 * Scroll to bottom of chat
-                 */
-                scrollToBottom() {
-                    setTimeout(() => {
-                        this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
-                    }, 100);
-                },
-
-                /**
-                 * Auto-resize textarea based on content
-                 */
-                autoResizeTextarea(textarea) {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
-                },
-
-                /**
-                 * Copy message content to clipboard
-                 */
-                async copyToClipboard(content, button) {
-                    try {
-                        // Strip HTML tags for plain text copy
-                        const plainText = content.replace(/<[^>]*>/g, '').replace(/<br\s*\/?>/gi, '\n');
-                        await navigator.clipboard.writeText(plainText);
-
-                        // Visual feedback
-                        const originalHTML = button.innerHTML;
-                        button.innerHTML = '<span class="text-sm material-icons">check</span><span>Copiato!</span>';
-                        button.classList.add('text-green-600');
-
-                        setTimeout(() => {
-                            button.innerHTML = originalHTML;
-                            button.classList.remove('text-green-600');
-                        }, 2000);
-                    } catch (err) {
-                        console.error('[N.A.T.A.N.] Copy failed:', err);
-                        button.innerHTML = '<span class="text-sm material-icons">error</span><span>Errore</span>';
-                        setTimeout(() => {
-                            button.innerHTML =
-                                '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
-                        }, 2000);
-                    }
-                },
-
-                /**
-                 * Show persona suggestion
-                 * Displays a suggestion banner when a different persona might be better
-                 */
-                showPersonaSuggestion(suggestionText) {
-                    // Remove any existing suggestion
-                    const existing = document.getElementById('personaSuggestionBanner');
-                    if (existing) existing.remove();
-
-                    // Create suggestion banner
-                    const suggestionDiv = document.createElement('div');
-                    suggestionDiv.id = 'personaSuggestionBanner';
-                    suggestionDiv.className =
-                        'mx-4 mb-4 animate-fade-in rounded-lg border border-blue-300 bg-blue-50 p-3 shadow-sm';
-                    suggestionDiv.innerHTML = `
-                        <div class="flex items-start gap-3">
-                            <span class="text-blue-600 material-icons">lightbulb</span>
-                            <div class="flex-1">
-                                <p class="text-sm text-blue-800">${suggestionText}</p>
-                            </div>
-                            <button onclick="document.getElementById('personaSuggestionBanner').remove()"
-                                    class="text-blue-400 hover:text-blue-600">
-                                <span class="text-sm material-icons">close</span>
-                            </button>
-                        </div>
-                    `;
-
-                    // Insert before chat messages
-                    const chatWindow = document.querySelector('.rounded-2xl.bg-white.shadow-xl');
-                    if (chatWindow) {
-                        chatWindow.insertAdjacentElement('beforebegin', suggestionDiv);
-
-                        // Auto-remove after 10 seconds
-                        setTimeout(() => {
-                            const banner = document.getElementById('personaSuggestionBanner');
-                            if (banner) {
-                                banner.classList.add('animate-fade-out');
-                                setTimeout(() => banner.remove(), 300);
-                            }
-                        }, 10000);
-                    }
+                } else {
+                    this.addMessage('assistant', 'Mi dispiace, si è verificato un errore nell\'elaborazione: ' +
+                        (data.message || 'Errore sconosciuto'));
                 }
-            };
-
-            // Expose globally for History Sidebar access (NEW v3.1)
-            window.NatanChat = NatanChat;
-
-            // Initialize on DOM ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => NatanChat.init());
-            } else {
-                NatanChat.init();
+            } catch (error) {
+                console.error('[N.A.T.A.N.] Elaboration API Error:', error);
+                this.hideLoadingIndicator();
+                this.addMessage('assistant',
+                    'Mi dispiace, non riesco a elaborare la risposta. Riprova tra poco.');
+            } finally {
+                this.setLoading(false);
             }
+        },
 
-            // Toggle Suggested Questions on Mobile
-            document.addEventListener('DOMContentLoaded', function() {
-                const toggleBtn = document.getElementById('toggleSuggestedQuestions');
-                const content = document.getElementById('suggestedQuestionsContent');
-                const icon = document.getElementById('toggleIcon');
+        /**
+         * Set loading state
+         */
+        setLoading(loading) {
+            this.isLoading = loading;
+            this.elements.userInput.disabled = loading;
+            this.elements.sendBtn.disabled = loading;
 
-                if (toggleBtn && content && icon) {
-                    toggleBtn.addEventListener('click', function() {
-                        const isHidden = content.classList.contains('hidden');
+            if (loading) {
+                this.elements.sendBtnText.classList.add('hidden');
+                this.elements.sendBtnLoader.classList.remove('hidden');
+            } else {
+                this.elements.sendBtnText.classList.remove('hidden');
+                this.elements.sendBtnLoader.classList.add('hidden');
+            }
+        },
 
-                        if (isHidden) {
-                            content.classList.remove('hidden');
-                            icon.textContent = 'expand_less';
-                        } else {
-                            content.classList.add('hidden');
-                            icon.textContent = 'expand_more';
-                        }
-                    });
+        /**
+         * Get conversation history (last N messages)
+         */
+        getConversationHistory() {
+            return this.messages
+                .slice(-this.config.maxHistoryLength)
+                .map(msg => ({
+                    role: msg.role,
+                    content: msg.content.replace(/<[^>]*>/g, '') // Strip HTML
+                }));
+        },
+
+        /**
+         * Scroll to bottom of chat
+         */
+        scrollToBottom() {
+            setTimeout(() => {
+                this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
+            }, 100);
+        },
+
+        /**
+         * Auto-resize textarea based on content
+         */
+        autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+        },
+
+        /**
+         * Copy message content to clipboard
+         */
+        async copyToClipboard(content, button) {
+            try {
+                // Strip HTML tags for plain text copy
+                const plainText = content.replace(/<[^>]*>/g, '').replace(/<br\s*\/?>/gi, '\n');
+                await navigator.clipboard.writeText(plainText);
+
+                // Visual feedback
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<span class="text-sm material-icons">check</span><span>Copiato!</span>';
+                button.classList.add('text-green-600');
+
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('text-green-600');
+                }, 2000);
+            } catch (err) {
+                console.error('[N.A.T.A.N.] Copy failed:', err);
+                button.innerHTML = '<span class="text-sm material-icons">error</span><span>Errore</span>';
+                setTimeout(() => {
+                    button.innerHTML =
+                        '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
+                }, 2000);
+            }
+        },
+
+        /**
+         * Show persona suggestion
+         * Displays a suggestion banner when a different persona might be better
+         */
+        showPersonaSuggestion(suggestionText) {
+            // Remove any existing suggestion
+            const existing = document.getElementById('personaSuggestionBanner');
+            if (existing) existing.remove();
+
+            // Create suggestion banner
+            const suggestionDiv = document.createElement('div');
+            suggestionDiv.id = 'personaSuggestionBanner';
+            suggestionDiv.className =
+                'mx-4 mb-4 animate-fade-in rounded-lg border border-blue-300 bg-blue-50 p-3 shadow-sm';
+            suggestionDiv.innerHTML = `
+                                                        <div class="flex items-start gap-3">
+                                                            <span class="text-blue-600 material-icons">lightbulb</span>
+                                                            <div class="flex-1">
+                                                                <p class="text-sm text-blue-800">${suggestionText}</p>
+                                                            </div>
+                                                            <button onclick="document.getElementById('personaSuggestionBanner').remove()"
+                                                                    class="text-blue-400 hover:text-blue-600">
+                                                                <span class="text-sm material-icons">close</span>
+                                                            </button>
+                                                        </div>
+                                                    `;
+
+            // Insert before chat messages
+            const chatWindow = document.querySelector('.rounded-2xl.bg-white.shadow-xl');
+            if (chatWindow) {
+                chatWindow.insertAdjacentElement('beforebegin', suggestionDiv);
+
+                // Auto-remove after 10 seconds
+                setTimeout(() => {
+                    const banner = document.getElementById('personaSuggestionBanner');
+                    if (banner) {
+                        banner.classList.add('animate-fade-out');
+                        setTimeout(() => banner.remove(), 300);
+                    }
+                }, 10000);
+            }
+        }
+    };
+
+    // Expose globally for History Sidebar access (NEW v3.1)
+    window.NatanChat = NatanChat;
+
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => NatanChat.init());
+    } else {
+        NatanChat.init();
+    }
+
+    // Toggle Suggested Questions on Mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggleSuggestedQuestions');
+        const content = document.getElementById('suggestedQuestionsContent');
+        const icon = document.getElementById('toggleIcon');
+
+        if (toggleBtn && content && icon) {
+            toggleBtn.addEventListener('click', function() {
+                const isHidden = content.classList.contains('hidden');
+
+                if (isHidden) {
+                    content.classList.remove('hidden');
+                    icon.textContent = 'expand_less';
+                } else {
+                    content.classList.add('hidden');
+                    icon.textContent = 'expand_more';
+                }
+            });
+        }
+    });
+
+    /**
+     * Free Chat - Pure Claude conversation (no RAG)
+     */
+    const FreeChat = {
+        messages: [],
+        isLoading: false,
+        elements: {},
+        config: {
+            apiUrl: '{{ route('pa.natan.chat.message') }}',
+            csrfToken: '{{ csrf_token() }}',
+            sessionId: null
+        },
+
+        init() {
+            console.log('[FreeChat] Initializing...');
+            this.elements.chatMessages = document.getElementById('freeChatMessages');
+            this.elements.welcomeMessage = document.getElementById('freeChatWelcome');
+            this.elements.userInput = document.getElementById('freeChatInput');
+            this.elements.sendBtn = document.getElementById('freeChatSendBtn');
+            this.elements.sendBtnText = document.getElementById('freeChatSendBtnText');
+            this.elements.sendBtnLoader = document.getElementById('freeChatSendBtnLoader');
+            this.elements.chatForm = document.getElementById('freeChatForm');
+
+            this.elements.chatForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleSubmit();
+            });
+
+            // Handle Enter key: Shift+Enter to submit, Enter for new line
+            this.elements.userInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.shiftKey) {
+                    e.preventDefault();
+                    this.elements.chatForm.dispatchEvent(new Event('submit'));
                 }
             });
 
-            /**
-             * Free Chat - Pure Claude conversation (no RAG)
-             */
-            const FreeChat = {
-                messages: [],
-                isLoading: false,
-                elements: {},
-                config: {
-                    apiUrl: '{{ route('pa.natan.chat.message') }}',
-                    csrfToken: '{{ csrf_token() }}',
-                    sessionId: null
-                },
+            // Auto-resize textarea as user types
+            this.elements.userInput.addEventListener('input', () => {
+                this.autoResizeTextarea(this.elements.userInput);
+            });
 
-                init() {
-                    console.log('[FreeChat] Initializing...');
-                    this.elements.chatMessages = document.getElementById('freeChatMessages');
-                    this.elements.welcomeMessage = document.getElementById('freeChatWelcome');
-                    this.elements.userInput = document.getElementById('freeChatInput');
-                    this.elements.sendBtn = document.getElementById('freeChatSendBtn');
-                    this.elements.sendBtnText = document.getElementById('freeChatSendBtnText');
-                    this.elements.sendBtnLoader = document.getElementById('freeChatSendBtnLoader');
-                    this.elements.chatForm = document.getElementById('freeChatForm');
+            // Event delegation for copy buttons
+            this.elements.chatMessages.addEventListener('click', (e) => {
+                const copyBtn = e.target.closest('.free-copy-btn');
+                if (copyBtn) {
+                    const content = copyBtn.dataset.content;
+                    this.copyToClipboard(content, copyBtn);
+                }
+            });
+        },
 
-                    this.elements.chatForm.addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        this.handleSubmit();
-                    });
+        autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+        },
 
-                    // Handle Enter key: Shift+Enter to submit, Enter for new line
-                    this.elements.userInput.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' && e.shiftKey) {
-                            e.preventDefault();
-                            this.elements.chatForm.dispatchEvent(new Event('submit'));
+        async copyToClipboard(content, button) {
+            try {
+                const plainText = content.replace(/<[^>]*>/g, '').replace(/<br\s*\/?>/gi, '\n');
+                await navigator.clipboard.writeText(plainText);
+
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<span class="text-sm material-icons">check</span><span>Copiato!</span>';
+                button.classList.add('text-green-600');
+
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('text-green-600');
+                }, 2000);
+            } catch (err) {
+                console.error('[FreeChat] Copy failed:', err);
+                button.innerHTML = '<span class="text-sm material-icons">error</span><span>Errore</span>';
+                setTimeout(() => {
+                    button.innerHTML =
+                        '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
+                }, 2000);
+            }
+        },
+
+        async handleSubmit() {
+            const message = this.elements.userInput.value.trim();
+            if (!message || this.isLoading) return;
+
+            this.elements.userInput.value = '';
+            if (this.elements.welcomeMessage) {
+                this.elements.welcomeMessage.style.display = 'none';
+            }
+
+            this.addMessage('user', message);
+            await this.sendToApi(message);
+        },
+
+        addMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = role === 'user' ?
+                'bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-2xl rounded-tr-sm max-w-md px-4 py-3 shadow-sm' :
+                'bg-white rounded-2xl rounded-tl-sm max-w-2xl px-4 py-3 shadow-md border border-purple-200';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'prose prose-sm max-w-none';
+            contentDiv.style.color = role === 'user' ? '#ffffff' : '#7c3aed';
+            contentDiv.innerHTML = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g,
+                '<br>');
+            bubbleDiv.appendChild(contentDiv);
+
+            const timestampDiv = document.createElement('div');
+            timestampDiv.className = role === 'user' ?
+                'mt-2 flex items-center justify-between text-xs text-white/60' :
+                'mt-2 flex items-center justify-between text-xs text-purple-600';
+
+            const timeSpan = document.createElement('span');
+            timeSpan.textContent = new Date().toLocaleTimeString('it-IT', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            timestampDiv.appendChild(timeSpan);
+
+            // Copy button (only for assistant messages)
+            if (role === 'assistant') {
+                const copyBtn = document.createElement('button');
+                copyBtn.className =
+                    'free-copy-btn flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-purple-600 hover:bg-purple-100 transition-colors';
+                copyBtn.innerHTML = '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
+                copyBtn.dataset.content = content;
+                timestampDiv.appendChild(copyBtn);
+            }
+
+            bubbleDiv.appendChild(timestampDiv);
+
+            messageDiv.appendChild(bubbleDiv);
+            this.elements.chatMessages.appendChild(messageDiv);
+            this.messages.push({
+                role,
+                content
+            });
+            this.scrollToBottom();
+        },
+
+        async sendToApi(message) {
+            this.setLoading(true);
+            this.showLoadingIndicator();
+
+            try {
+                // ✨ NEW v4.0 - Get active project ID for Priority RAG
+                const activeProjectId = window.activeProject?.id || null;
+
+                const response = await fetch(this.config.apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.config.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_history: this.getConversationHistory(),
+                        use_rag: false, // No RAG for free chat
+                        session_id: this.config.sessionId,
+                        project_id: activeProjectId // ✨ NEW v4.0 - Project context for Priority RAG
+                    })
+                });
+
+                const data = await response.json();
+                this.hideLoadingIndicator();
+
+                if (data.success) {
+                    this.addMessage('assistant', data.response);
+                    if (data.session_id) {
+                        this.config.sessionId = data.session_id;
+                    }
+                } else {
+                    this.addMessage('assistant', 'Mi dispiace, si è verificato un errore: ' + (data.message ||
+                        'Errore sconosciuto'));
+                }
+            } catch (error) {
+                console.error('[FreeChat] API Error:', error);
+                this.hideLoadingIndicator();
+                this.addMessage('assistant', 'Mi dispiace, non riesco a connettermi al servizio AI.');
+            } finally {
+                this.setLoading(false);
+            }
+        },
+
+        showLoadingIndicator() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'freeChatLoadingIndicator';
+            loadingDiv.className = 'flex justify-start';
+            loadingDiv.innerHTML = `
+                                                        <div class="max-w-2xl px-4 py-3 bg-gray-100 rounded-tl-sm shadow-sm rounded-2xl">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="flex space-x-1">
+                                                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                                                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                                                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                                                                </div>
+                                                                <span class="text-xs text-gray-600">Claude sta pensando...</span>
+                                                            </div>
+                                                        </div>
+                                                    `;
+            this.elements.chatMessages.appendChild(loadingDiv);
+            this.scrollToBottom();
+        },
+
+        hideLoadingIndicator() {
+            const indicator = document.getElementById('freeChatLoadingIndicator');
+            if (indicator) indicator.remove();
+        },
+
+        setLoading(loading) {
+            this.isLoading = loading;
+            this.elements.userInput.disabled = loading;
+            this.elements.sendBtn.disabled = loading;
+
+            if (loading) {
+                this.elements.sendBtnText.classList.add('hidden');
+                this.elements.sendBtnLoader.classList.remove('hidden');
+            } else {
+                this.elements.sendBtnText.classList.remove('hidden');
+                this.elements.sendBtnLoader.classList.add('hidden');
+            }
+        },
+
+        getConversationHistory() {
+            return this.messages.slice(-10).map(msg => ({
+                role: msg.role,
+                content: msg.content.replace(/<[^>]*>/g, '')
+            }));
+        },
+
+        scrollToBottom() {
+            setTimeout(() => {
+                this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
+            }, 100);
+        }
+    };
+
+    // Initialize Free Chat
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => FreeChat.init());
+    } else {
+        FreeChat.init();
+    }
+
+    /**
+     * Chat Settings Manager
+     * Gestisce modale impostazioni con tabs: Parametri, Memoria, Avanzate
+     */
+    const ChatSettings = {
+        // State
+        memories: [],
+        stats: {},
+        currentTab: 'parameters',
+
+        // Config
+        config: {
+            memoriesUrl: '{{ route('pa.natan.memory.index') }}',
+            statsUrl: '{{ route('pa.natan.memory.stats') }}',
+            storeUrl: '{{ route('pa.natan.memory.store') }}',
+            deleteUrl: '{{ route('pa.natan.memory.delete', ':id') }}',
+            toggleUrl: '{{ route('pa.natan.memory.toggle') }}',
+            csrfToken: '{{ csrf_token() }}'
+        },
+
+        /**
+         * Open modal
+         */
+        open() {
+            console.log('[Settings] Opening modal');
+            document.getElementById('chatSettingsModal').classList.remove('hidden');
+            this.loadMemories();
+            this.loadStats();
+            this.updateDebugInfo();
+        },
+
+        /**
+         * Close modal
+         */
+        close() {
+            console.log('[Settings] Closing modal');
+            document.getElementById('chatSettingsModal').classList.add('hidden');
+            this.saveSettings();
+        },
+
+        /**
+         * Open modal with Memory tab active
+         */
+        openMemoryTab() {
+            this.open();
+            this.switchTab('memory');
+        },
+
+        /**
+         * Switch between tabs
+         */
+        switchTab(tabName) {
+            console.log('[Settings] Switching to tab:', tabName);
+            this.currentTab = tabName;
+
+            // Update tab buttons
+            document.querySelectorAll('.settings-tab').forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update tab content
+            document.querySelectorAll('.settings-tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`${tabName}Tab`).classList.remove('hidden');
+
+            // Load data for specific tabs
+            if (tabName === 'memory') {
+                this.loadMemories();
+                this.loadStats();
+            }
+        },
+
+        /**
+         * Load all user memories
+         */
+        async loadMemories() {
+            console.log('[Settings] Loading memories...');
+            try {
+                const response = await fetch(this.config.memoriesUrl, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.config.csrfToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.memories = data.memories || [];
+                    this.renderMemories();
+
+                    // Update badge
+                    document.getElementById('memoryCount').textContent = this.memories.length;
+                    document.getElementById('memoryTabBadge').textContent = this.memories.length;
+
+                    console.log('[Settings] Loaded memories:', this.memories.length);
+                }
+            } catch (error) {
+                console.error('[Settings] Failed to load memories:', error);
+                this.showError('Errore caricamento memorie');
+            }
+        },
+
+        /**
+         * Load memory statistics
+         */
+        async loadStats() {
+            console.log('[Settings] Loading stats...');
+            try {
+                const response = await fetch(this.config.statsUrl, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.config.csrfToken
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.stats = data.stats || {};
+                    this.updateStatsUI();
+                    console.log('[Settings] Loaded stats:', this.stats);
+                }
+            } catch (error) {
+                console.error('[Settings] Failed to load stats:', error);
+            }
+        },
+
+        /**
+         * Update stats UI
+         */
+        updateStatsUI() {
+            document.getElementById('totalMemoriesCount').textContent = this.stats.total_memories || 0;
+            document.getElementById('mostUsedMemoryCount').textContent = this.stats.most_used?.usage_count || 0;
+            document.getElementById('recentMemoriesCount').textContent = this.stats.recent?.length || 0;
+        },
+
+        /**
+         * Render memories list
+         */
+        renderMemories() {
+            const container = document.getElementById('memoriesList');
+
+            if (this.memories.length === 0) {
+                container.innerHTML = `
+                                                            <div class="flex items-center justify-center py-8 text-gray-400">
+                                                                <div class="text-center">
+                                                                    <span class="text-4xl material-icons">inventory_2</span>
+                                                                    <p class="mt-2 text-sm">Nessuna memoria salvata</p>
+                                                                    <p class="text-xs text-gray-400">Usa "Ricorda che..." nella chat o aggiungi manualmente</p>
+                                                                </div>
+                                                            </div>
+                                                        `;
+                return;
+            }
+
+            container.innerHTML = this.memories.map(memory => `
+                                                        <div class="memory-card ${memory.type}" data-memory-id="${memory.id}">
+                                                            <div class="flex items-start justify-between gap-3">
+                                                                <div class="flex-1">
+                                                                    <div class="flex items-center gap-2 mb-1">
+                                                                        <span class="text-xs font-bold text-gray-600 uppercase">${this.getMemoryTypeLabel(memory.type)}</span>
+                                                                        <span class="text-xs text-gray-400">•</span>
+                                                                        <span class="text-xs text-gray-500">${memory.created_at}</span>
+                                                                    </div>
+                                                                    <p class="text-sm text-gray-800">${memory.content}</p>
+                                                                    <div class="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                                                                        <span class="flex items-center gap-1">
+                                                                            <span class="text-xs material-icons">repeat</span>
+                                                                            Usata ${memory.usage_count} volte
+                                                                        </span>
+                                                                        ${memory.last_used_at ? `
+                                            <span class="flex items-center gap-1">
+                                                <span class="text-xs material-icons">schedule</span>
+                                                Ultima: ${memory.last_used_at}
+                                            </span>
+                                        ` : ''}
+                                                                    </div>
+                                                                </div>
+                                                                <button onclick="ChatSettings.deleteMemory(${memory.id})"
+                                                                    class="flex items-center justify-center w-8 h-8 text-red-600 transition-all bg-white border border-red-200 rounded-lg hover:bg-red-50 active:scale-95"
+                                                                    title="Elimina memoria">
+                                                                    <span class="text-sm material-icons">delete</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    `).join('');
+        },
+
+        /**
+         * Get memory type label
+         */
+        getMemoryTypeLabel(type) {
+            const labels = {
+                'fact': '📝 Fatto',
+                'preference': '⭐ Preferenza',
+                'context': '🏢 Contesto',
+                'instruction': '📋 Istruzione'
+            };
+            return labels[type] || type;
+        },
+
+        /**
+         * Delete memory
+         */
+        async deleteMemory(memoryId) {
+            if (!confirm('Sei sicuro di voler eliminare questa memoria?')) {
+                return;
+            }
+
+            console.log('[Settings] Deleting memory:', memoryId);
+            try {
+                const url = this.config.deleteUrl.replace(':id', memoryId);
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.config.csrfToken
+                    }
+                });
+
+                if (response.ok) {
+                    this.showSuccess('Memoria eliminata');
+                    this.loadMemories();
+                    this.loadStats();
+                } else {
+                    this.showError('Errore eliminazione');
+                }
+            } catch (error) {
+                console.error('[Settings] Delete failed:', error);
+                this.showError('Errore di rete');
+            }
+        },
+
+        /**
+         * Refresh memories (reload)
+         */
+        refreshMemories() {
+            console.log('[Settings] Refreshing memories...');
+            this.loadMemories();
+            this.loadStats();
+        },
+
+        /**
+         * Export memories as JSON
+         */
+        exportMemories() {
+            console.log('[Settings] Exporting memories...');
+            const data = {
+                exported_at: new Date().toISOString(),
+                user_id: {{ auth()->id() }},
+                memories: this.memories
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], {
+                type: 'application/json'
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `natan-memories-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            this.showSuccess('Memorie esportate!');
+        },
+
+        /**
+         * Import memories from JSON
+         */
+        async importMemories(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            console.log('[Settings] Importing memories from:', file.name);
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+
+                if (!data.memories || !Array.isArray(data.memories)) {
+                    this.showError('File non valido');
+                    return;
+                }
+
+                // Import each memory
+                let imported = 0;
+                for (const memory of data.memories) {
+                    const success = await this.storeMemory(memory.content, memory.type);
+                    if (success) imported++;
+                }
+
+                this.showSuccess(`${imported} memorie importate!`);
+                this.loadMemories();
+                this.loadStats();
+            } catch (error) {
+                console.error('[Settings] Import failed:', error);
+                this.showError('Errore lettura file');
+            }
+        },
+
+        /**
+         * Store new memory
+         */
+        async storeMemory(content, type = 'fact') {
+            try {
+                const response = await fetch(this.config.storeUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.config.csrfToken
+                    },
+                    body: JSON.stringify({
+                        content,
+                        type
+                    })
+                });
+
+                return response.ok;
+            } catch (error) {
+                console.error('[Settings] Store failed:', error);
+                return false;
+            }
+        },
+
+        /**
+         * Clear all memories
+         */
+        async clearAllMemories() {
+            if (!confirm('⚠️ ATTENZIONE: Questa azione eliminerà TUTTE le tue memorie. Sei sicuro?')) {
+                return;
+            }
+
+            console.log('[Settings] Clearing all memories...');
+            let deleted = 0;
+            for (const memory of this.memories) {
+                const url = this.config.deleteUrl.replace(':id', memory.id);
+                try {
+                    const response = await fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': this.config.csrfToken
                         }
                     });
+                    if (response.ok) deleted++;
+                } catch (error) {
+                    console.error('[Settings] Delete failed:', error);
+                }
+            }
 
-                    // Auto-resize textarea as user types
-                    this.elements.userInput.addEventListener('input', () => {
-                        this.autoResizeTextarea(this.elements.userInput);
-                    });
-
-                    // Event delegation for copy buttons
-                    this.elements.chatMessages.addEventListener('click', (e) => {
-                        const copyBtn = e.target.closest('.free-copy-btn');
-                        if (copyBtn) {
-                            const content = copyBtn.dataset.content;
-                            this.copyToClipboard(content, copyBtn);
-                        }
-                    });
+            this.showSuccess(`${deleted} memorie eliminate`);
+                    this.loadMemories();
+                    this.loadStats();
                 },
 
-                autoResizeTextarea(textarea) {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
-                },
-
-                async copyToClipboard(content, button) {
-                    try {
-                        const plainText = content.replace(/<[^>]*>/g, '').replace(/<br\s*\/?>/gi, '\n');
-                        await navigator.clipboard.writeText(plainText);
-
-                        const originalHTML = button.innerHTML;
-                        button.innerHTML = '<span class="text-sm material-icons">check</span><span>Copiato!</span>';
-                        button.classList.add('text-green-600');
-
-                        setTimeout(() => {
-                            button.innerHTML = originalHTML;
-                            button.classList.remove('text-green-600');
-                        }, 2000);
-                    } catch (err) {
-                        console.error('[FreeChat] Copy failed:', err);
-                        button.innerHTML = '<span class="text-sm material-icons">error</span><span>Errore</span>';
-                        setTimeout(() => {
-                            button.innerHTML =
-                                '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
-                        }, 2000);
-                    }
-                },
-
-                async handleSubmit() {
-                    const message = this.elements.userInput.value.trim();
-                    if (!message || this.isLoading) return;
-
-                    this.elements.userInput.value = '';
-                    if (this.elements.welcomeMessage) {
-                        this.elements.welcomeMessage.style.display = 'none';
+                /**
+                 * Reset to default settings
+                 */
+                resetToDefaults() {
+                    if (!confirm('Ripristinare le impostazioni predefinite?')) {
+                        return;
                     }
 
-                    this.addMessage('user', message);
-                    await this.sendToApi(message);
+                    console.log('[Settings] Resetting to defaults...');
+                    document.getElementById('webSearchToggleSetting').checked = false;
+                    document.getElementById('streamingModeSetting').checked = true;
+                    document.getElementById('shiftEnterSetting').checked = true;
+                    document.getElementById('memorySystemToggle').checked = true;
+
+                    this.showSuccess('Impostazioni ripristinate');
                 },
 
-                addMessage(role, content) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+                /**
+                 * Save settings to localStorage and sync toggles
+                 */
+                saveSettings() {
+                    const settings = {
+                        webSearch: document.getElementById('webSearchToggleSetting').checked,
+                        streaming: document.getElementById('streamingModeSetting').checked,
+                        shiftEnter: document.getElementById('shiftEnterSetting').checked,
+                        memoryEnabled: document.getElementById('memorySystemToggle').checked
+                    };
 
-                    const bubbleDiv = document.createElement('div');
-                    bubbleDiv.className = role === 'user' ?
-                        'bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-2xl rounded-tr-sm max-w-md px-4 py-3 shadow-sm' :
-                        'bg-white rounded-2xl rounded-tl-sm max-w-2xl px-4 py-3 shadow-md border border-purple-200';
+                    localStorage.setItem('natan_settings', JSON.stringify(settings));
 
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'prose prose-sm max-w-none';
-                    contentDiv.style.color = role === 'user' ? '#ffffff' : '#7c3aed';
-                    contentDiv.innerHTML = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g,
-                        '<br>');
-                    bubbleDiv.appendChild(contentDiv);
-
-                    const timestampDiv = document.createElement('div');
-                    timestampDiv.className = role === 'user' ?
-                        'mt-2 flex items-center justify-between text-xs text-white/60' :
-                        'mt-2 flex items-center justify-between text-xs text-purple-600';
-
-                    const timeSpan = document.createElement('span');
-                    timeSpan.textContent = new Date().toLocaleTimeString('it-IT', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    timestampDiv.appendChild(timeSpan);
-
-                    // Copy button (only for assistant messages)
-                    if (role === 'assistant') {
-                        const copyBtn = document.createElement('button');
-                        copyBtn.className =
-                            'free-copy-btn flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-purple-600 hover:bg-purple-100 transition-colors';
-                        copyBtn.innerHTML = '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
-                        copyBtn.dataset.content = content;
-                        timestampDiv.appendChild(copyBtn);
+                    // Sync with main chat toggle
+                    const mainWebSearchToggle = document.getElementById('webSearchToggle');
+                    if (mainWebSearchToggle) {
+                        mainWebSearchToggle.checked = settings.webSearch;
                     }
 
-                    bubbleDiv.appendChild(timestampDiv);
-
-                    messageDiv.appendChild(bubbleDiv);
-                    this.elements.chatMessages.appendChild(messageDiv);
-                    this.messages.push({
-                        role,
-                        content
-                    });
-                    this.scrollToBottom();
+                    console.log('[Settings] Saved:', settings);
                 },
 
-                async sendToApi(message) {
-                    this.setLoading(true);
-                    this.showLoadingIndicator();
-
-                    try {
-                        // ✨ NEW v4.0 - Get active project ID for Priority RAG
-                        const activeProjectId = window.activeProject?.id || null;
-
-                        const response = await fetch(this.config.apiUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': this.config.csrfToken,
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                message: message,
-                                conversation_history: this.getConversationHistory(),
-                                use_rag: false, // No RAG for free chat
-                                session_id: this.config.sessionId,
-                                project_id: activeProjectId // ✨ NEW v4.0 - Project context for Priority RAG
-                            })
-                        });
-
-                        const data = await response.json();
-                        this.hideLoadingIndicator();
-
-                        if (data.success) {
-                            this.addMessage('assistant', data.response);
-                            if (data.session_id) {
-                                this.config.sessionId = data.session_id;
-                            }
-                        } else {
-                            this.addMessage('assistant', 'Mi dispiace, si è verificato un errore: ' + (data.message ||
-                                'Errore sconosciuto'));
-                        }
-                    } catch (error) {
-                        console.error('[FreeChat] API Error:', error);
-                        this.hideLoadingIndicator();
-                        this.addMessage('assistant', 'Mi dispiace, non riesco a connettermi al servizio AI.');
-                    } finally {
-                        this.setLoading(false);
-                    }
+                /**
+                 * Update debug info
+                 */
+                updateDebugInfo() {
+                    const settings = JSON.parse(localStorage.getItem('natan_settings') || '{}');
+                    document.getElementById('debugSessionId').textContent = NatanChat.config.sessionId || 'N/A';
+                    document.getElementById('debugMemoryEnabled').textContent = settings.memoryEnabled ? 'Yes' : 'No';
+                    document.getElementById('debugWebSearch').textContent = settings.webSearch ? 'Enabled' : 'Disabled';
+                    document.getElementById('debugStreaming').textContent = settings.streaming ? 'Enabled' : 'Disabled';
                 },
 
-                showLoadingIndicator() {
-                    const loadingDiv = document.createElement('div');
-                    loadingDiv.id = 'freeChatLoadingIndicator';
-                    loadingDiv.className = 'flex justify-start';
-                    loadingDiv.innerHTML = `
-                        <div class="max-w-2xl px-4 py-3 bg-gray-100 rounded-tl-sm shadow-sm rounded-2xl">
-                            <div class="flex items-center gap-2">
-                                <div class="flex space-x-1">
-                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
-                                </div>
-                                <span class="text-xs text-gray-600">Claude sta pensando...</span>
-                            </div>
-                        </div>
-                    `;
-                    this.elements.chatMessages.appendChild(loadingDiv);
-                    this.scrollToBottom();
+                /**
+                 * Show success message
+                 */
+                showSuccess(message) {
+                    // Simple alert for now - can be replaced with toast notification
+                    alert('✅ ' + message);
                 },
 
-                hideLoadingIndicator() {
-                    const indicator = document.getElementById('freeChatLoadingIndicator');
-                    if (indicator) indicator.remove();
-                },
-
-                setLoading(loading) {
-                    this.isLoading = loading;
-                    this.elements.userInput.disabled = loading;
-                    this.elements.sendBtn.disabled = loading;
-
-                    if (loading) {
-                        this.elements.sendBtnText.classList.add('hidden');
-                        this.elements.sendBtnLoader.classList.remove('hidden');
-                    } else {
-                        this.elements.sendBtnText.classList.remove('hidden');
-                        this.elements.sendBtnLoader.classList.add('hidden');
-                    }
-                },
-
-                getConversationHistory() {
-                    return this.messages.slice(-10).map(msg => ({
-                        role: msg.role,
-                        content: msg.content.replace(/<[^>]*>/g, '')
-                    }));
-                },
-
-                scrollToBottom() {
-                    setTimeout(() => {
-                        this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
-                    }, 100);
+                /**
+                 * Show error message
+                 */
+                showError(message) {
+                    // Simple alert for now - can be replaced with toast notification
+                    alert('❌ ' + message);
                 }
             };
 
-            // Initialize Free Chat
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => FreeChat.init());
-            } else {
-                FreeChat.init();
-            }
+            // Handle Add Memory Form Submit
+            document.getElementById('addMemoryForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const content = document.getElementById('newMemoryContent').value.trim();
+                const type = document.getElementById('newMemoryType').value;
+
+                if (!content) {
+                    ChatSettings.showError('Inserisci un contenuto');
+                    return;
+                }
+
+                const success = await ChatSettings.storeMemory(content, type);
+                if (success) {
+                    ChatSettings.showSuccess('Memoria salvata!');
+                    document.getElementById('newMemoryContent').value = '';
+                    document.getElementById('newMemoryType').value = 'fact';
+                    ChatSettings.loadMemories();
+                    ChatSettings.loadStats();
+                } else {
+                    ChatSettings.showError('Errore salvataggio');
+                }
+            });
+
+            // Load settings from localStorage on init
+            window.addEventListener('DOMContentLoaded', () => {
+                const settings = JSON.parse(localStorage.getItem('natan_settings') || '{}');
+
+                if (settings.webSearch !== undefined) {
+                    document.getElementById('webSearchToggleSetting').checked = settings.webSearch;
+                }
+                if (settings.streaming !== undefined) {
+                    document.getElementById('streamingModeSetting').checked = settings.streaming;
+                }
+                if (settings.shiftEnter !== undefined) {
+                    document.getElementById('shiftEnterSetting').checked = settings.shiftEnter;
+                }
+                if (settings.memoryEnabled !== undefined) {
+                    document.getElementById('memorySystemToggle').checked = settings.memoryEnabled;
+                }
+            });
         </script>
     @endpush
 
     {{-- Projects Modal --}}
     <div id="projectsModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm"
         role="dialog" aria-labelledby="projectsModalTitle" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="w-full max-w-4xl transition-all transform bg-white shadow-2xl rounded-2xl">
+        <div class="flex min-h-screen items-center justify-center p-4">
+            <div class="w-full max-w-4xl transform rounded-2xl bg-white shadow-2xl transition-all">
                 {{-- Modal Header --}}
                 <div
                     class="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-[#1B365D] to-[#2D5016] px-6 py-4">
                     <div class="flex items-center gap-3">
-                        <span class="text-3xl text-white material-icons">folder_special</span>
+                        <span class="material-icons text-3xl text-white">folder_special</span>
                         <h2 id="projectsModalTitle" class="text-2xl font-bold text-white">
                             {{ __('projects.projects') }}
                         </h2>
                     </div>
                     <button type="button" onclick="closeProjectsModal()"
-                        class="p-2 transition-colors rounded-lg text-white/80 hover:bg-white/10 hover:text-white">
+                        class="rounded-lg p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white">
                         <span class="material-icons">close</span>
                     </button>
                 </div>
@@ -2745,7 +3643,7 @@
                 <div class="p-6">
                     {{-- Projects List --}}
                     @if ($projects->count() > 0)
-                        <div class="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2">
+                        <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                             @foreach ($projects as $project)
                                 <div
                                     class="{{ $activeProject && $activeProject->id === $project->id ? 'border-[#D4A574] bg-gradient-to-br from-[#D4A574]/10 to-white shadow-lg' : 'border-gray-200 bg-white hover:border-[#D4A574]/50 hover:shadow-md' }} group relative overflow-hidden rounded-xl border-2 p-4 transition-all">
@@ -2753,16 +3651,16 @@
                                     @if ($activeProject && $activeProject->id === $project->id)
                                         <div
                                             class="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-[#D4A574] px-2 py-1">
-                                            <span class="text-xs text-white material-icons">check_circle</span>
+                                            <span class="material-icons text-xs text-white">check_circle</span>
                                             <span class="text-xs font-medium text-white">Attivo</span>
                                         </div>
                                     @endif
 
                                     {{-- Project Header --}}
-                                    <div class="flex items-center gap-3 mb-3">
-                                        <div class="flex items-center justify-center w-12 h-12 rounded-lg"
+                                    <div class="mb-3 flex items-center gap-3">
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-lg"
                                             style="background-color: {{ $project->color ?? '#1B365D' }}20">
-                                            <span class="text-2xl material-icons"
+                                            <span class="material-icons text-2xl"
                                                 style="color: {{ $project->color ?? '#1B365D' }}">{{ $project->icon ?? 'folder' }}</span>
                                         </div>
                                         <div class="flex-1">
@@ -2777,30 +3675,30 @@
 
                                     {{-- Project Description --}}
                                     @if ($project->description)
-                                        <p class="mb-3 text-sm text-gray-600 line-clamp-2">
+                                        <p class="mb-3 line-clamp-2 text-sm text-gray-600">
                                             {{ $project->description }}
                                         </p>
                                     @endif
 
                                     {{-- Project Stats --}}
-                                    <div class="flex items-center gap-4 mb-3 text-xs text-gray-500">
+                                    <div class="mb-3 flex items-center gap-4 text-xs text-gray-500">
                                         <div class="flex items-center gap-1">
-                                            <span class="text-sm material-icons">description</span>
+                                            <span class="material-icons text-sm">description</span>
                                             <span>{{ $project->documents()->count() }} documenti</span>
                                         </div>
                                         <div class="flex items-center gap-1">
-                                            <span class="text-sm material-icons">chat</span>
+                                            <span class="material-icons text-sm">chat</span>
                                             <span>{{ $project->chatMessages()->count() }} chat</span>
                                         </div>
                                     </div>
 
                                     {{-- Action Buttons --}}
-                                    <div class="flex items-center gap-2 pt-3 border-t border-gray-200">
+                                    <div class="flex items-center gap-2 border-t border-gray-200 pt-3">
                                         {{-- Upload Document Button --}}
                                         <button type="button"
                                             onclick="event.stopPropagation(); triggerProjectUpload({{ $project->id }})"
                                             class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#D4A574] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
-                                            <span class="text-sm material-icons">upload_file</span>
+                                            <span class="material-icons text-sm">upload_file</span>
                                             <span>{{ __('projects.upload_document') }}</span>
                                         </button>
 
@@ -2808,7 +3706,7 @@
                                         @if (!$activeProject || $activeProject->id !== $project->id)
                                             <button type="button" onclick="selectProject({{ $project->id }})"
                                                 class="flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-[#1B365D] bg-white px-3 py-2 text-sm font-medium text-[#1B365D] transition-colors hover:bg-[#1B365D] hover:text-white">
-                                                <span class="text-sm material-icons">check_circle</span>
+                                                <span class="material-icons text-sm">check_circle</span>
                                                 <span>{{ __('projects.activate') }}</span>
                                             </button>
                                         @endif
@@ -2817,8 +3715,8 @@
                             @endforeach
                         </div>
                     @else
-                        <div class="p-8 mb-6 text-center border-2 border-gray-300 border-dashed rounded-xl bg-gray-50">
-                            <span class="mb-3 text-5xl text-gray-400 material-icons">folder_open</span>
+                        <div class="mb-6 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                            <span class="material-icons mb-3 text-5xl text-gray-400">folder_open</span>
                             <h4 class="mb-2 font-bold text-gray-700">{{ __('projects.no_projects') }}</h4>
                             <p class="text-sm text-gray-500">{{ __('projects.create_first') }}</p>
                         </div>
@@ -2827,9 +3725,9 @@
                     {{-- Create Project Form --}}
                     <div id="createProjectForm"
                         class="hidden rounded-xl border-2 border-[#D4A574] bg-gradient-to-br from-[#D4A574]/5 to-white p-6">
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="mb-4 flex items-center justify-between">
                             <h3 class="text-lg font-bold text-[#1B365D]">
-                                <span class="mr-2 align-middle material-icons">add_circle</span>
+                                <span class="material-icons mr-2 align-middle">add_circle</span>
                                 {{ __('projects.new_project') }}
                             </h3>
                             <button type="button" onclick="toggleCreateForm()"
@@ -2843,7 +3741,7 @@
                             {{-- Name --}}
                             <div>
                                 <label for="projectName"
-                                    class="block mb-1 text-sm font-medium text-gray-700">{{ __('projects.name') }}
+                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.name') }}
                                     <span class="text-red-500">*</span></label>
                                 <input type="text" id="projectName" name="name" required maxlength="100"
                                     class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]/20"
@@ -2854,7 +3752,7 @@
                             {{-- Description --}}
                             <div>
                                 <label for="projectDescription"
-                                    class="block mb-1 text-sm font-medium text-gray-700">{{ __('projects.description') }}</label>
+                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.description') }}</label>
                                 <textarea id="projectDescription" name="description" rows="3" maxlength="1000"
                                     class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]/20"
                                     placeholder="{{ __('projects.description_placeholder') }}"></textarea>
@@ -2863,15 +3761,15 @@
                             {{-- Icon Picker --}}
                             <div>
                                 <label
-                                    class="block mb-1 text-sm font-medium text-gray-700">{{ __('projects.icon') }}</label>
+                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.icon') }}</label>
                                 <input type="hidden" id="projectIcon" name="icon" value="folder">
-                                <div class="grid grid-cols-8 gap-2 p-3 bg-white border border-gray-300 rounded-lg"
+                                <div class="grid grid-cols-8 gap-2 rounded-lg border border-gray-300 bg-white p-3"
                                     style="max-height: 150px; overflow-y: auto;">
                                     @foreach (['folder', 'folder_special', 'work', 'school', 'account_balance', 'gavel', 'description', 'assignment', 'assessment', 'business_center', 'library_books', 'event_note'] as $icon)
                                         <button type="button" onclick="selectIcon('{{ $icon }}')"
                                             class="icon-option {{ $icon === 'folder' ? 'border-[#D4A574] bg-[#D4A574]/10' : 'hover:bg-gray-50' }} flex h-10 w-10 items-center justify-center rounded-lg border-2 border-transparent transition-all hover:border-[#D4A574]"
                                             data-icon="{{ $icon }}">
-                                            <span class="text-gray-700 material-icons">{{ $icon }}</span>
+                                            <span class="material-icons text-gray-700">{{ $icon }}</span>
                                         </button>
                                     @endforeach
                                 </div>
@@ -2880,7 +3778,7 @@
                             {{-- Color Picker --}}
                             <div>
                                 <label
-                                    class="block mb-1 text-sm font-medium text-gray-700">{{ __('projects.color') }}</label>
+                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.color') }}</label>
                                 <input type="hidden" id="projectColor" name="color" value="#1B365D">
                                 <div class="flex flex-wrap gap-2">
                                     @foreach (['#1B365D', '#2D5016', '#D4A574', '#6B6B6B', '#C13120', '#E67E22', '#8E44AD'] as $color)
@@ -2896,12 +3794,12 @@
                             {{-- Submit Button --}}
                             <div class="flex justify-end gap-3 pt-4">
                                 <button type="button" onclick="toggleCreateForm()"
-                                    class="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                    class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
                                     {{ __('projects.cancel') }}
                                 </button>
                                 <button type="submit" id="submitProjectBtn"
                                     class="rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968] disabled:cursor-not-allowed disabled:opacity-50">
-                                    <span class="mr-2 text-sm align-middle material-icons">save</span>
+                                    <span class="material-icons mr-2 align-middle text-sm">save</span>
                                     {{ __('projects.create') }}
                                 </button>
                             </div>
@@ -2910,21 +3808,21 @@
                 </div>
 
                 {{-- Modal Footer --}}
-                <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
                     @if ($activeProject)
                         <button type="button" onclick="removeProject()"
-                            class="px-4 py-2 text-sm font-medium text-red-600 transition-colors bg-white border border-red-300 rounded-lg hover:bg-red-50">
-                            <span class="mr-2 text-sm material-icons">close</span>
+                            class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50">
+                            <span class="material-icons mr-2 text-sm">close</span>
                             {{ __('projects.remove_context') }}
                         </button>
                     @endif
                     <button type="button" onclick="closeProjectsModal()"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
                         {{ __('projects.close') }}
                     </button>
                     <button type="button" onclick="toggleCreateForm()"
                         class="rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
-                        <span class="mr-2 text-sm material-icons">add</span>
+                        <span class="material-icons mr-2 text-sm">add</span>
                         {{ __('projects.create_new') }}
                     </button>
                 </div>
