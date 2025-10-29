@@ -21,8 +21,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-10-29
  * @purpose AI assistant API for creators and collectors
  */
-class ArtAdvisorController extends Controller
-{
+class ArtAdvisorController extends Controller {
     protected ArtAdvisorService $artAdvisor;
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
@@ -35,7 +34,7 @@ class ArtAdvisorController extends Controller
         $this->artAdvisor = $artAdvisor;
         $this->logger = $logger;
         $this->errorManager = $errorManager;
-        
+
         $this->middleware('auth');
     }
 
@@ -45,8 +44,7 @@ class ArtAdvisorController extends Controller
      * @param Request $request
      * @return StreamedResponse
      */
-    public function chat(Request $request): StreamedResponse
-    {
+    public function chat(Request $request): StreamedResponse {
         // Validate request
         $validated = $request->validate([
             'expert' => 'required|string|in:creative,platform',
@@ -77,7 +75,7 @@ class ArtAdvisorController extends Controller
         return response()->stream(function () use ($expertId, $userMessage, $context, $useVision) {
             // Disable output buffering
             if (ob_get_level()) ob_end_clean();
-            
+
             // Set SSE headers (already set by StreamedResponse, but ensure)
             header('X-Accel-Buffering: no');
 
@@ -105,7 +103,6 @@ class ArtAdvisorController extends Controller
                     'model' => $response['model'] ?? 'unknown',
                     'usage' => $response['usage'] ?? null,
                 ]);
-
             } catch (\Exception $e) {
                 $this->logger->error('[ArtAdvisorController] Chat error', [
                     'error' => $e->getMessage(),
@@ -132,15 +129,14 @@ class ArtAdvisorController extends Controller
      * @param string $message Complete message to stream
      * @return void
      */
-    private function streamResponse(string $message): void
-    {
+    private function streamResponse(string $message): void {
         // Split message into sentences for natural streaming
         $sentences = preg_split('/(?<=[.!?])\s+/', $message, -1, PREG_SPLIT_NO_EMPTY);
-        
+
         foreach ($sentences as $sentence) {
             $this->sendSSE('chunk', ['text' => $sentence . ' ']);
             flush();
-            
+
             // Small delay for natural feel (10ms per sentence)
             usleep(10000);
         }
@@ -153,8 +149,7 @@ class ArtAdvisorController extends Controller
      * @param array $data Event data
      * @return void
      */
-    private function sendSSE(string $event, array $data): void
-    {
+    private function sendSSE(string $event, array $data): void {
         echo "event: {$event}\n";
         echo 'data: ' . json_encode($data) . "\n\n";
         flush();
@@ -165,8 +160,7 @@ class ArtAdvisorController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function test(): \Illuminate\Http\JsonResponse
-    {
+    public function test(): \Illuminate\Http\JsonResponse {
         return response()->json([
             'status' => 'ok',
             'service' => 'AI Art Advisor',
@@ -175,4 +169,3 @@ class ArtAdvisorController extends Controller
         ]);
     }
 }
-

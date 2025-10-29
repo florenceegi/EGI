@@ -706,7 +706,7 @@ class GdprController extends Controller {
             return view('gdpr.export-data', [
                 'user' => $user,
                 'exportHistory' => $exportHistory,
-                'availableCategories' => $availableCategories,
+                'availableCategories' => array_keys($availableCategories),
                 'canRequestExport' => $canRequestExport,
             ]);
         } catch (\Exception $e) {

@@ -247,249 +247,539 @@
                         </div>
 
                         {{-- Questions Scrollable Container --}}
-                        <div class="max-h-[calc(100vh-200px)] space-y-3 overflow-y-auto rounded-xl bg-gray-50 p-3">
-                            {{-- Strategic Questions --}}
-                            <div class="p-3 border border-blue-100 rounded-lg bg-blue-50">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">🎯</span>
-                                    <h4 class="text-sm font-bold text-[#1B365D]">Strategia</h4>
-                                </div>
-                                <div class="space-y-2">
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Analizza le principali aree di investimento del Comune negli ultimi 12 mesi e suggerisci una strategia di ottimizzazione basata su ROI e priorità strategiche"
-                                        class="question-btn">
-                                        <span class="material-icons">trending_up</span>
-                                        <span>Ottimizzazione Investimenti & ROI</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Identifica i ritardi nei progetti PNRR e proponi un piano di recovery con milestone specifiche e azioni correttive immediate"
-                                        class="question-btn">
-                                        <span class="material-icons">schedule</span>
-                                        <span>Recovery Plan PNRR</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Crea una matrice decisionale per prioritizzare i progetti in base a impatto, urgenza, costo e fattibilità tecnica"
-                                        class="question-btn">
-                                        <span class="material-icons">grid_on</span>
-                                        <span>Decision Matrix Progetti</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Confronta le performance del Comune con best practices nazionali e internazionali, identificando gap e opportunità di miglioramento"
-                                        class="question-btn">
-                                        <span class="material-icons">compare</span>
-                                        <span>Benchmarking Best Practices</span>
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="max-h-[calc(100vh-200px)] overflow-y-auto rounded-xl bg-gray-50 p-3">
+                            {{-- Main Collapsible Container --}}
+                            <details open class="mb-3">
+                                <summary
+                                    class="cursor-pointer select-none rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3 font-bold text-white shadow-md transition-all hover:from-blue-700 hover:to-blue-800">
+                                    💡 Domande Suggerite
+                                </summary>
 
-                            {{-- Technical Questions --}}
-                            <div class="p-3 border border-red-100 rounded-lg bg-red-50">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">⚙️</span>
-                                    <h4 class="text-sm font-bold text-[#1B365D]">Tecnico</h4>
-                                </div>
-                                <div class="space-y-2">
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Valuta la fattibilità tecnica dei progetti infrastrutturali in corso e identifica rischi critici con strategie di mitigazione"
-                                        class="question-btn">
-                                        <span class="material-icons">engineering</span>
-                                        <span>Feasibility & Risk Assessment</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Analizza lo stato manutentivo delle infrastrutture pubbliche e proponi un piano di manutenzione predittiva basato su priorità"
-                                        class="question-btn">
-                                        <span class="material-icons">build</span>
-                                        <span>Piano Manutenzione Predittiva</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Identifica progetti con problemi di compliance normativa tecnica e proponi azioni correttive con timeline"
-                                        class="question-btn">
-                                        <span class="material-icons">verified</span>
-                                        <span>Compliance Normativa Tecnica</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Valuta le specifiche tecniche degli appalti recenti e suggerisci miglioramenti per future gare"
-                                        class="question-btn">
-                                        <span class="material-icons">description</span>
-                                        <span>Ottimizzazione Specifiche Appalti</span>
-                                    </button>
-                                </div>
-                            </div>
+                                <div class="mt-3 space-y-3">
+                                    {{-- Strategic Questions --}}
+                                    <details open>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-blue-100">
+                                            <span class="text-xl">🎯</span> Strategia
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza le principali aree di investimento del Comune negli ultimi 12 mesi e suggerisci una strategia di ottimizzazione basata su ROI e priorità strategiche"
+                                                class="question-btn">
+                                                <span class="material-icons">trending_up</span>
+                                                <span>Ottimizzazione Investimenti & ROI</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica i ritardi nei progetti PNRR e proponi un piano di recovery con milestone specifiche e azioni correttive immediate"
+                                                class="question-btn">
+                                                <span class="material-icons">schedule</span>
+                                                <span>Recovery Plan PNRR</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Crea una matrice decisionale per prioritizzare i progetti in base a impatto, urgenza, costo e fattibilità tecnica"
+                                                class="question-btn">
+                                                <span class="material-icons">grid_on</span>
+                                                <span>Decision Matrix Progetti</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Confronta le performance del Comune con best practices nazionali e internazionali, identificando gap e opportunità di miglioramento"
+                                                class="question-btn">
+                                                <span class="material-icons">compare</span>
+                                                <span>Benchmarking Best Practices</span>
+                                            </button>
+                                        </div>
+                                    </details>
 
-                            {{-- Financial Questions --}}
-                            <div class="p-3 border border-green-100 rounded-lg bg-green-50">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">💰</span>
-                                    <h4 class="text-sm font-bold text-[#1B365D]">Finanziario</h4>
-                                </div>
-                                <div class="space-y-2">
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Analizza l'efficienza della spesa pubblica per settore, calcola costo per cittadino servito e identifica aree di ottimizzazione"
-                                        class="question-btn">
-                                        <span class="material-icons">analytics</span>
-                                        <span>Efficienza Spesa Pubblica</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Identifica tutte le opportunità di funding EU disponibili (PNRR, PON, FSE) e valuta quali progetti possono candidarsi"
-                                        class="question-btn">
-                                        <span class="material-icons">euro</span>
-                                        <span>Strategia Funding EU</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Crea un modello finanziario NPV/IRR per i progetti a lungo termine e calcola il break-even point"
-                                        class="question-btn">
-                                        <span class="material-icons">calculate</span>
-                                        <span>Financial Modeling NPV/IRR</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Analizza il budget variance degli ultimi 3 anni e proponi strategie per migliorare la previsione finanziaria"
-                                        class="question-btn">
-                                        <span class="material-icons">account_balance</span>
-                                        <span>Budget Variance Analysis</span>
-                                    </button>
-                                </div>
-                            </div>
+                                    {{-- Technical Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-red-100">
+                                            <span class="text-xl">⚙️</span> Tecnico
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Valuta la fattibilità tecnica dei progetti infrastrutturali in corso e identifica rischi critici con strategie di mitigazione"
+                                                class="question-btn">
+                                                <span class="material-icons">engineering</span>
+                                                <span>Feasibility & Risk Assessment</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza lo stato manutentivo delle infrastrutture pubbliche e proponi un piano di manutenzione predittiva basato su priorità"
+                                                class="question-btn">
+                                                <span class="material-icons">build</span>
+                                                <span>Piano Manutenzione Predittiva</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica progetti con problemi di compliance normativa tecnica e proponi azioni correttive con timeline"
+                                                class="question-btn">
+                                                <span class="material-icons">verified</span>
+                                                <span>Compliance Normativa Tecnica</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Valuta le specifiche tecniche degli appalti recenti e suggerisci miglioramenti per future gare"
+                                                class="question-btn">
+                                                <span class="material-icons">description</span>
+                                                <span>Ottimizzazione Specifiche Appalti</span>
+                                            </button>
+                                        </div>
+                                    </details>
 
-                            {{-- Legal Questions --}}
-                            <div class="p-3 border border-purple-100 rounded-lg bg-purple-50">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">⚖️</span>
-                                    <h4 class="text-sm font-bold text-[#1B365D]">Legale</h4>
-                                </div>
-                                <div class="space-y-2">
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Verifica la compliance GDPR di tutti gli atti che trattano dati personali e identifica eventuali violazioni con azioni correttive"
-                                        class="question-btn">
-                                        <span class="material-icons">privacy_tip</span>
-                                        <span>Audit GDPR Compliance</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Analizza i procedimenti amministrativi con rischio contenzioso e proponi strategie di de-risking legale"
-                                        class="question-btn">
-                                        <span class="material-icons">gavel</span>
-                                        <span>Risk Assessment Contenzioso</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Identifica tutti gli atti con problemi di trasparenza o anticorruzione secondo la normativa vigente"
-                                        class="question-btn">
-                                        <span class="material-icons">policy</span>
-                                        <span>Compliance Trasparenza</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Valuta la regolarità delle procedure di gara recenti e suggerisci best practices per future procedure"
-                                        class="question-btn">
-                                        <span class="material-icons">assignment</span>
-                                        <span>Audit Procedure Gara</span>
-                                    </button>
-                                </div>
-                            </div>
+                                    {{-- Financial Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-green-100 bg-green-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-green-100">
+                                            <span class="text-xl">💰</span> Finanziario
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza l'efficienza della spesa pubblica per settore, calcola costo per cittadino servito e identifica aree di ottimizzazione"
+                                                class="question-btn">
+                                                <span class="material-icons">analytics</span>
+                                                <span>Efficienza Spesa Pubblica</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica tutte le opportunità di funding EU disponibili (PNRR, PON, FSE) e valuta quali progetti possono candidarsi"
+                                                class="question-btn">
+                                                <span class="material-icons">euro</span>
+                                                <span>Strategia Funding EU</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Crea un modello finanziario NPV/IRR per i progetti a lungo termine e calcola il break-even point"
+                                                class="question-btn">
+                                                <span class="material-icons">calculate</span>
+                                                <span>Financial Modeling NPV/IRR</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza il budget variance degli ultimi 3 anni e proponi strategie per migliorare la previsione finanziaria"
+                                                class="question-btn">
+                                                <span class="material-icons">account_balance</span>
+                                                <span>Budget Variance Analysis</span>
+                                            </button>
+                                        </div>
+                                    </details>
 
-                            {{-- Urban & Social Questions --}}
-                            <div class="p-3 border border-orange-100 rounded-lg bg-orange-50">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">🏙️</span>
-                                    <h4 class="text-sm font-bold text-[#1B365D]">Urban & Social</h4>
-                                </div>
-                                <div class="space-y-2">
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Analizza l'impatto sociale dei progetti di rigenerazione urbana e calcola il SROI (Social Return on Investment)"
-                                        class="question-btn">
-                                        <span class="material-icons">people</span>
-                                        <span>Social Impact & SROI</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Identifica le aree sottoutilizzate della città e proponi strategie di riqualificazione con focus su accessibilità e inclusione"
-                                        class="question-btn">
-                                        <span class="material-icons">location_city</span>
-                                        <span>Strategia Riqualificazione Aree</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Valuta l'equità territoriale nella distribuzione dei servizi pubblici e proponi azioni per ridurre i gap"
-                                        class="question-btn">
-                                        <span class="material-icons">balance</span>
-                                        <span>Equity Analysis Servizi</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Crea un piano di partecipazione cittadina per i prossimi progetti urbani con metodologie innovative"
-                                        class="question-btn">
-                                        <span class="material-icons">forum</span>
-                                        <span>Piano Partecipazione Cittadina</span>
-                                    </button>
-                                </div>
-                            </div>
+                                    {{-- Legal Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-purple-100 bg-purple-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-purple-100">
+                                            <span class="text-xl">⚖️</span> Legale
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Verifica la compliance GDPR di tutti gli atti che trattano dati personali e identifica eventuali violazioni con azioni correttive"
+                                                class="question-btn">
+                                                <span class="material-icons">privacy_tip</span>
+                                                <span>Audit GDPR Compliance</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza i procedimenti amministrativi con rischio contenzioso e proponi strategie di de-risking legale"
+                                                class="question-btn">
+                                                <span class="material-icons">gavel</span>
+                                                <span>Risk Assessment Contenzioso</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica tutti gli atti con problemi di trasparenza o anticorruzione secondo la normativa vigente"
+                                                class="question-btn">
+                                                <span class="material-icons">policy</span>
+                                                <span>Compliance Trasparenza</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Valuta la regolarità delle procedure di gara recenti e suggerisci best practices per future procedure"
+                                                class="question-btn">
+                                                <span class="material-icons">assignment</span>
+                                                <span>Audit Procedure Gara</span>
+                                            </button>
+                                        </div>
+                                    </details>
 
-                            {{-- Communication Questions --}}
-                            <div class="p-3 border border-pink-100 rounded-lg bg-pink-50">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">📢</span>
-                                    <h4 class="text-sm font-bold text-[#1B365D]">Comunicazione</h4>
-                                </div>
-                                <div class="space-y-2">
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Crea una strategia di comunicazione per annunciare i risultati dei progetti PNRR con key messages e piano media"
-                                        class="question-btn">
-                                        <span class="material-icons">campaign</span>
-                                        <span>Strategia Comunicazione PNRR</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Identifica i progetti con maggior potenziale mediatico e sviluppa storytelling efficace per massimizzare l'impatto"
-                                        class="question-btn">
-                                        <span class="material-icons">auto_stories</span>
-                                        <span>Storytelling Progetti High-Impact</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Analizza il sentiment pubblico sui progetti in corso e proponi strategie di engagement per aumentare il supporto"
-                                        class="question-btn">
-                                        <span class="material-icons">sentiment_satisfied</span>
-                                        <span>Sentiment Analysis & Engagement</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Sviluppa un piano di crisis communication per gestire eventuali controversie su progetti sensibili"
-                                        class="question-btn">
-                                        <span class="material-icons">crisis_alert</span>
-                                        <span>Crisis Communication Plan</span>
-                                    </button>
-                                </div>
-                            </div>
+                                    {{-- Urban & Social Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-orange-100 bg-orange-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-orange-100">
+                                            <span class="text-xl">🏙️</span> Urban & Social
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza l'impatto sociale dei progetti di rigenerazione urbana e calcola il SROI (Social Return on Investment)"
+                                                class="question-btn">
+                                                <span class="material-icons">people</span>
+                                                <span>Social Impact & SROI</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica le aree sottoutilizzate della città e proponi strategie di riqualificazione con focus su accessibilità e inclusione"
+                                                class="question-btn">
+                                                <span class="material-icons">location_city</span>
+                                                <span>Strategia Riqualificazione Aree</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Valuta l'equità territoriale nella distribuzione dei servizi pubblici e proponi azioni per ridurre i gap"
+                                                class="question-btn">
+                                                <span class="material-icons">balance</span>
+                                                <span>Equity Analysis Servizi</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Crea un piano di partecipazione cittadina per i prossimi progetti urbani con metodologie innovative"
+                                                class="question-btn">
+                                                <span class="material-icons">forum</span>
+                                                <span>Piano Partecipazione Cittadina</span>
+                                            </button>
+                                        </div>
+                                    </details>
 
-                            {{-- Power Questions (Wow Factor) --}}
-                            <div
-                                class="rounded-lg border-2 border-[#2D5016] bg-gradient-to-r from-[#2D5016]/5 to-[#1B365D]/5 p-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xl">⚡</span>
-                                        <h4 class="text-sm font-bold text-[#1B365D]">Power Questions</h4>
-                                    </div>
-                                    <span
-                                        class="rounded-full bg-yellow-400 px-2 py-0.5 text-xs font-bold text-yellow-900">WOW</span>
+                                    {{-- Communication Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-pink-100 bg-pink-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-pink-100">
+                                            <span class="text-xl">📢</span> Comunicazione
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Crea una strategia di comunicazione per annunciare i risultati dei progetti PNRR con key messages e piano media"
+                                                class="question-btn">
+                                                <span class="material-icons">campaign</span>
+                                                <span>Strategia Comunicazione PNRR</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica i progetti con maggior potenziale mediatico e sviluppa storytelling efficace per massimizzare l'impatto"
+                                                class="question-btn">
+                                                <span class="material-icons">auto_stories</span>
+                                                <span>Storytelling Progetti High-Impact</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza il sentiment pubblico sui progetti in corso e proponi strategie di engagement per aumentare il supporto"
+                                                class="question-btn">
+                                                <span class="material-icons">sentiment_satisfied</span>
+                                                <span>Sentiment Analysis & Engagement</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Sviluppa un piano di crisis communication per gestire eventuali controversie su progetti sensibili"
+                                                class="question-btn">
+                                                <span class="material-icons">crisis_alert</span>
+                                                <span>Crisis Communication Plan</span>
+                                            </button>
+                                        </div>
+                                    </details>
+
+                                    {{-- Ricerca & Classificazione Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-cyan-100 bg-cyan-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-cyan-100">
+                                            <span class="text-xl">🔍</span> Ricerca & Classificazione
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Trova tutti gli atti relativi a manutenzione stradale e infrastrutture pubblicati tra gennaio 2023 e ottobre 2024"
+                                                class="question-btn">
+                                                <span class="material-icons">search</span>
+                                                <span>Ricerca Atti Manutenzione Strade</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Classifica gli atti per settore di intervento (urbanistica, sociale, ambiente, cultura) e mostra la distribuzione"
+                                                class="question-btn">
+                                                <span class="material-icons">category</span>
+                                                <span>Classificazione per Settore</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica tutti gli atti che contengono codici CUP e raggruppali per tipologia di progetto"
+                                                class="question-btn">
+                                                <span class="material-icons">pin</span>
+                                                <span>Raggruppamento Progetti CUP</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Cerca atti relativi a progetti di rigenerazione urbana e crea un elenco strutturato con titoli e date"
+                                                class="question-btn">
+                                                <span class="material-icons">apartment</span>
+                                                <span>Elenco Rigenerazione Urbana</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Filtra gli atti per tipologia amministrativa (delibere, determinazioni, decreti) e mostra statistiche"
+                                                class="question-btn">
+                                                <span class="material-icons">filter_list</span>
+                                                <span>Filtra per Tipologia Atti</span>
+                                            </button>
+                                        </div>
+                                    </details>
+
+                                    {{-- Analisi Temporale Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-indigo-100">
+                                            <span class="text-xl">📈</span> Analisi Temporale
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza l'evoluzione dell'attività normativa negli ultimi 24 mesi: quanti atti per mese e quali trend emergono?"
+                                                class="question-btn">
+                                                <span class="material-icons">timeline</span>
+                                                <span>Trend Attività Normativa</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Crea una timeline dei progetti PNRR: quando sono stati approvati, quali sono in corso, quali completati"
+                                                class="question-btn">
+                                                <span class="material-icons">event</span>
+                                                <span>Timeline Progetti PNRR</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Confronta l'attività amministrativa del 2023 vs 2024: differenze nei settori di intervento"
+                                                class="question-btn">
+                                                <span class="material-icons">compare_arrows</span>
+                                                <span>Confronto Anno su Anno</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica i periodi di maggiore attività legislativa e correlali con eventi o scadenze importanti"
+                                                class="question-btn">
+                                                <span class="material-icons">insights</span>
+                                                <span>Picchi Attività Legislativa</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Mostra la frequenza di pubblicazione atti per trimestre negli ultimi 2 anni con un grafico temporale"
+                                                class="question-btn">
+                                                <span class="material-icons">bar_chart</span>
+                                                <span>Frequenza Trimestrale Atti</span>
+                                            </button>
+                                        </div>
+                                    </details>
+
+                                    {{-- Compliance & Normativa Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-amber-100">
+                                            <span class="text-xl">⚖️</span> Compliance & Normativa
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Quali atti citano il D.Lgs 50/2016 (Codice Appalti)? Crea un elenco con riferimenti normativi specifici"
+                                                class="question-btn">
+                                                <span class="material-icons">gavel</span>
+                                                <span>Atti Codice Appalti</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica gli atti relativi a procedure di gara e verifica se contengono riferimenti a CIG/CUP"
+                                                class="question-btn">
+                                                <span class="material-icons">assignment</span>
+                                                <span>Verifica Procedure Gara</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Trova atti che menzionano normative GDPR o privacy e categorizzali per tipologia di trattamento dati"
+                                                class="question-btn">
+                                                <span class="material-icons">privacy_tip</span>
+                                                <span>Atti GDPR Privacy</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Cerca atti relativi a trasparenza amministrativa e anticorruzione secondo D.Lgs 33/2013"
+                                                class="question-btn">
+                                                <span class="material-icons">visibility</span>
+                                                <span>Trasparenza Anticorruzione</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Elenca atti che citano normative ambientali (VIA, VAS, AIA) e mostra i riferimenti legislativi"
+                                                class="question-btn">
+                                                <span class="material-icons">eco</span>
+                                                <span>Normativa Ambientale</span>
+                                            </button>
+                                        </div>
+                                    </details>
+
+                                    {{-- Anomalie & Controllo Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-yellow-100 bg-yellow-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-yellow-100">
+                                            <span class="text-xl">🔎</span> Anomalie & Controllo
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica eventuali codici CUP duplicati o anomalie nei riferimenti progettuali"
+                                                class="question-btn">
+                                                <span class="material-icons">error_outline</span>
+                                                <span>Verifica CUP Duplicati</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Trova atti con informazioni mancanti o incomplete (senza date, CUP, o descrizioni dettagliate)"
+                                                class="question-btn">
+                                                <span class="material-icons">report_problem</span>
+                                                <span>Atti Informazioni Incomplete</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica atti che potrebbero essere collegati ma non hanno riferimenti incrociati espliciti"
+                                                class="question-btn">
+                                                <span class="material-icons">link_off</span>
+                                                <span>Rileva Collegamenti Mancanti</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Cerca atti pubblicati con delay significativo rispetto alla data di adozione"
+                                                class="question-btn">
+                                                <span class="material-icons">schedule</span>
+                                                <span>Ritardi Pubblicazione</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza la consistenza delle categorizzazioni: atti simili hanno classificazioni coerenti?"
+                                                class="question-btn">
+                                                <span class="material-icons">rule</span>
+                                                <span>Consistenza Classificazioni</span>
+                                            </button>
+                                        </div>
+                                    </details>
+
+                                    {{-- Sintesi & Reporting Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-teal-100 bg-teal-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-teal-100">
+                                            <span class="text-xl">📊</span> Sintesi & Reporting
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Crea una sintesi esecutiva delle politiche ambientali adottate tra 2023 e 2024"
+                                                class="question-btn">
+                                                <span class="material-icons">summarize</span>
+                                                <span>Sintesi Politiche Ambientali</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Genera un report sui principali interventi urbanistici: progetti, localizzazioni, stato avanzamento"
+                                                class="question-btn">
+                                                <span class="material-icons">description</span>
+                                                <span>Report Interventi Urbanistici</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Riassumi l'attività del settore sociale: quali servizi, quali target, quali iniziative principali"
+                                                class="question-btn">
+                                                <span class="material-icons">groups</span>
+                                                <span>Sintesi Attività Sociale</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Crea un quadro sinottico dei progetti culturali approvati negli ultimi 18 mesi"
+                                                class="question-btn">
+                                                <span class="material-icons">theater_comedy</span>
+                                                <span>Quadro Progetti Culturali</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Genera statistiche aggregate: totale atti per settore, periodo medio tra adozione e pubblicazione"
+                                                class="question-btn">
+                                                <span class="material-icons">analytics</span>
+                                                <span>Statistiche Aggregate</span>
+                                            </button>
+                                        </div>
+                                    </details>
+
+                                    {{-- Relazioni & Collegamenti Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-lime-100 bg-lime-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-lime-100">
+                                            <span class="text-xl">🔗</span> Relazioni & Collegamenti
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Mappa tutti gli atti collegati al Piano Urbanistico Generale (PUG) e mostra le relazioni"
+                                                class="question-btn">
+                                                <span class="material-icons">account_tree</span>
+                                                <span>Mappa Collegamenti PUG</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica atti che modificano o integrano delibere precedenti e crea una catena temporale"
+                                                class="question-btn">
+                                                <span class="material-icons">link</span>
+                                                <span>Catena Modifiche Atti</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Trova atti correlati per tema anche se non esplicitamente collegati (stesso CUP, stessa area, stesso settore)"
+                                                class="question-btn">
+                                                <span class="material-icons">hub</span>
+                                                <span>Correlazioni Tematiche</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza le dipendenze tra progetti: quali atti devono essere completati prima di altri"
+                                                class="question-btn">
+                                                <span class="material-icons">device_hub</span>
+                                                <span>Analisi Dipendenze Progetti</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Crea un grafo delle relazioni tra atti di finanziamento e atti di esecuzione progetti"
+                                                class="question-btn">
+                                                <span class="material-icons">share</span>
+                                                <span>Grafo Finanziamenti-Progetti</span>
+                                            </button>
+                                        </div>
+                                    </details>
+
+                                    {{-- Supporto Decisionale Questions --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border border-rose-100 bg-rose-50 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:bg-rose-100">
+                                            <span class="text-xl">💡</span> Supporto Decisionale
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Cerca precedenti amministrativi su affidamenti di servizi mensa scolastica: come sono stati gestiti?"
+                                                class="question-btn">
+                                                <span class="material-icons">history</span>
+                                                <span>Precedenti Affidamento Mensa</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica best practices utilizzate in progetti di mobilità sostenibile negli ultimi 2 anni"
+                                                class="question-btn">
+                                                <span class="material-icons">directions_bike</span>
+                                                <span>Best Practice Mobilità</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Quali modelli contrattuali sono stati usati per appalti di manutenzione ordinaria?"
+                                                class="question-btn">
+                                                <span class="material-icons">handshake</span>
+                                                <span>Modelli Contrattuali Manutenzione</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza le modalità di partecipazione cittadina usate nei progetti di riqualificazione urbana"
+                                                class="question-btn">
+                                                <span class="material-icons">how_to_vote</span>
+                                                <span>Partecipazione Cittadina</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Trova esempi di progetti simili completati: quali lezioni apprese, quali criticità superate?"
+                                                class="question-btn">
+                                                <span class="material-icons">school</span>
+                                                <span>Lessons Learned Progetti</span>
+                                            </button>
+                                        </div>
+                                    </details>
+
+                                    {{-- Power Questions (Wow Factor) --}}
+                                    <details>
+                                        <summary
+                                            class="cursor-pointer select-none rounded-lg border-2 border-[#2D5016] bg-gradient-to-r from-[#2D5016]/5 to-[#1B365D]/5 px-3 py-2 text-sm font-bold text-[#1B365D] transition-all hover:from-[#2D5016]/10 hover:to-[#1B365D]/10">
+                                            <span class="text-xl">⚡</span> Power Questions
+                                            <span
+                                                class="ml-2 rounded-full bg-yellow-400 px-2 py-0.5 text-xs font-bold text-yellow-900">WOW</span>
+                                        </summary>
+                                        <div class="ml-4 mt-2 space-y-2">
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Crea una dashboard strategica per il Sindaco con i 10 KPI più critici della città, analisi trend e early warning systems"
+                                                class="question-btn border-2 border-[#2D5016] bg-white font-semibold">
+                                                <span class="material-icons">dashboard</span>
+                                                <span>Executive Dashboard Sindaco</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Identifica le 3 azioni quick-win con massimo impatto politico e minimo costo, con timeline 60 giorni e piano esecutivo dettagliato"
+                                                class="question-btn border-2 border-[#2D5016] bg-white font-semibold">
+                                                <span class="material-icons">bolt</span>
+                                                <span>Top 3 Quick Wins Strategiche</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Analizza tutti i progetti e crea una roadmap strategica 2024-2026 con prioritization matrix, dependencies e critical path"
+                                                class="question-btn border-2 border-[#2D5016] bg-white font-semibold">
+                                                <span class="material-icons">map</span>
+                                                <span>Strategic Roadmap 2024-2026</span>
+                                            </button>
+                                            <button onclick="askQuestion(this)"
+                                                data-question="Simula 3 scenari futuri (ottimistico, realistico, pessimistico) per il portfolio progetti e proponi strategie di adattamento per ciascuno"
+                                                class="question-btn border-2 border-[#2D5016] bg-white font-semibold">
+                                                <span class="material-icons">query_stats</span>
+                                                <span>Scenario Planning Avanzato</span>
+                                            </button>
+                                        </div>
+                                    </details>
+
                                 </div>
-                                <div class="space-y-2">
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Crea una dashboard strategica per il Sindaco con i 10 KPI più critici della città, analisi trend e early warning systems"
-                                        class="question-btn border-2 border-[#2D5016] bg-white font-semibold">
-                                        <span class="material-icons">dashboard</span>
-                                        <span>Executive Dashboard Sindaco</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Identifica le 3 azioni quick-win con massimo impatto politico e minimo costo, con timeline 60 giorni e piano esecutivo dettagliato"
-                                        class="question-btn border-2 border-[#2D5016] bg-white font-semibold">
-                                        <span class="material-icons">bolt</span>
-                                        <span>Top 3 Quick Wins Strategiche</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Analizza tutti i progetti e crea una roadmap strategica 2024-2026 con prioritization matrix, dependencies e critical path"
-                                        class="question-btn border-2 border-[#2D5016] bg-white font-semibold">
-                                        <span class="material-icons">map</span>
-                                        <span>Strategic Roadmap 2024-2026</span>
-                                    </button>
-                                    <button onclick="askQuestion(this)"
-                                        data-question="Simula 3 scenari futuri (ottimistico, realistico, pessimistico) per il portfolio progetti e proponi strategie di adattamento per ciascuno"
-                                        class="question-btn border-2 border-[#2D5016] bg-white font-semibold">
-                                        <span class="material-icons">query_stats</span>
-                                        <span>Scenario Planning Avanzato</span>
-                                    </button>
-                                </div>
-                            </div>
+                                {{-- End category sections --}}
+                            </details>
+                            {{-- End main collapsible --}}
                         </div>
                         {{-- End Questions Scrollable Container --}}
                     </div>
@@ -583,6 +873,47 @@
     </div>
 
     <style>
+        /* Collapsible Details Styling */
+        details>summary {
+            list-style: none;
+        }
+
+        details>summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details>summary::before {
+            content: '▶';
+            display: inline-block;
+            margin-right: 0.5rem;
+            transition: transform 0.2s ease;
+        }
+
+        details[open]>summary::before {
+            transform: rotate(90deg);
+        }
+
+        details>summary:hover {
+            @apply shadow-sm;
+        }
+
+        /* Nested details animation */
+        details>div {
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .question-btn {
             @apply flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-left text-xs leading-tight text-gray-700 transition-all hover:border-[#2D5016] hover:bg-[#2D5016] hover:text-white hover:shadow-md;
         }
