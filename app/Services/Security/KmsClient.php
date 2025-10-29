@@ -131,7 +131,7 @@ class KmsClient {
 
             return $result;
         } catch (\Exception $e) {
-            $this->errorManager->handle('KMS_SECURE_ENCRYPTION_FAILED', [
+            $this->errorManager->handle('KMS_SECURE_ENCRYPT_FAILED', [
                 'error' => $e->getMessage(),
                 'user_id' => $user?->id
             ], $e);
@@ -364,7 +364,7 @@ class KmsClient {
 
             return $plaintext;
         } catch (\Exception $e) {
-            $this->errorManager->handle('KMS_SECURE_DECRYPTION_FAILED', [
+            $this->errorManager->handle('KMS_SECURE_DECRYPT_FAILED', [
                 'error' => $e->getMessage(),
                 'user_id' => $user?->id
             ], $e);
