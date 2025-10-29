@@ -21,6 +21,59 @@
     'autoOpen' => false,
 ])
 
+@push('styles')
+<style>
+    /* Art Advisor - Enhanced Message Formatting */
+    #art-advisor-messages h1,
+    #art-advisor-messages h2,
+    #art-advisor-messages h3 {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+
+    #art-advisor-messages h1 { font-size: 1.25rem; }
+    #art-advisor-messages h2 { font-size: 1.125rem; }
+    #art-advisor-messages h3 { font-size: 1rem; }
+
+    #art-advisor-messages p {
+        margin-bottom: 0.75rem;
+        line-height: 1.6;
+    }
+
+    #art-advisor-messages ul,
+    #art-advisor-messages ol {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+
+    #art-advisor-messages li {
+        margin-bottom: 0.25rem;
+    }
+
+    #art-advisor-messages strong {
+        font-weight: 600;
+        color: #fff;
+    }
+
+    #art-advisor-messages code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.875rem;
+    }
+
+    #art-advisor-messages hr {
+        margin: 1.5rem 0;
+        border-color: rgba(156, 163, 175, 0.3);
+    }
+
+    /* Emoji sections spacing */
+    #art-advisor-messages .emoji-section {
+        margin-top: 1rem;
+        padding-top: 0.5rem;
+    }
+</style>
+@endpush
+
 {{-- Modal Overlay --}}
 <div id="art-advisor-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm"
     data-context="{{ json_encode($context) }}" data-mode="{{ $mode }}"

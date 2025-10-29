@@ -689,39 +689,44 @@
                    .replace(/</g, '&lt;')
                    .replace(/>/g, '&gt;');
 
-        // Headers (# Title)
-        html = html.replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-blue-300 mt-4 mb-2">$1</h3>');
-        html = html.replace(/^## (.+)$/gm, '<h2 class="text-lg font-bold text-blue-400 mt-4 mb-2">$1</h2>');
-        html = html.replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold text-white mt-4 mb-3">$1</h1>');
+        // Code blocks FIRST (to protect them from other replacements)
+        html = html.replace(/```([\s\S]*?)```/g, 
+            '<pre class="bg-gray-800/50 border border-gray-600/30 rounded-lg p-3 my-3 overflow-x-auto"><code class="text-xs text-green-300 font-mono">$1</code></pre>');
 
-        // Bold (**text**)
-        html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>');
-
-        // Italic (*text*)
-        html = html.replace(/\*(.+?)\*/g, '<em class="italic text-gray-300">$1</em>');
-
-        // Horizontal rules (---)
+        // Horizontal rules
         html = html.replace(/^---$/gm, '<hr class="my-4 border-gray-600/50">');
 
-        // Lists with numbers (1. item)
+        // Bold BEFORE headers (to avoid conflicts)
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>');
+
+        // Headers
+        html = html.replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-blue-300 mt-5 mb-2">$1</h3>');
+        html = html.replace(/^## (.+)$/gm, '<h2 class="text-lg font-bold text-blue-400 mt-5 mb-3">$1</h2>');
+        html = html.replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold text-white mt-5 mb-3">$1</h1>');
+
+        // Emoji sections (🎨 TITLE or 📊 TITLE:) - Enhanced visual separation
+        html = html.replace(/^([🎨🎯📊💡✨📝💰🔍⚡🌟📋💼🎭🖼️])\s*\*?\*?(.+?)\*?\*?:?\s*$/gm, 
+            '<div class="mt-4 mb-2 flex items-baseline gap-2 border-l-2 border-blue-500 pl-3"><span class="text-2xl flex-shrink-0">$1</span><strong class="text-lg font-bold text-blue-300">$2</strong></div>');
+
+        // Numbered lists with emoji (1. 💡 Title)
+        html = html.replace(/^(\d+)\.\s*([🎨🎯📊💡✨📝💰🔍⚡🌟📋💼🎭🖼️])\s*(.+)$/gm,
+            '<div class="mb-3 mt-2"><div class="flex items-start gap-3 mb-1"><span class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-600/30 text-sm font-bold text-blue-300">$1</span><span class="text-xl flex-shrink-0">$2</span><strong class="flex-1 font-semibold text-white">$3</strong></div>');
+
+        // Regular numbered lists (1. item)
         html = html.replace(/^(\d+)\.\s*(.+)$/gm, 
-            '<div class="flex gap-2 mb-2 ml-2"><span class="font-bold text-blue-400 flex-shrink-0">$1.</span><span>$2</span></div>');
+            '<div class="mb-2 flex gap-3"><span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-600/20 text-sm font-bold text-blue-400">$1</span><span class="flex-1">$2</span></div>');
 
-        // Lists with dashes (- item)
+        // Bullet lists (- item)
         html = html.replace(/^-\s+(.+)$/gm, 
-            '<div class="flex gap-2 mb-1 ml-4"><span class="text-blue-400 flex-shrink-0">•</span><span>$1</span></div>');
+            '<div class="mb-1.5 ml-6 flex gap-2"><span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-400"></span><span class="flex-1">$1</span></div>');
 
-        // Code blocks (```code```)
-        html = html.replace(/```([\s\S]*?)```/g, 
-            '<pre class="bg-gray-800/50 border border-gray-600/30 rounded-lg p-3 my-2 overflow-x-auto"><code class="text-xs text-green-300">$1</code></pre>');
-
-        // Emoji sections (📊 TITLE: or 🎨 Title)
-        html = html.replace(/^([🎨🎯📊💡✨📝💰🔍⚡🌟📋💼🎭])\s*(.+?):/gm, 
-            '<div class="mt-3 mb-1"><span class="text-xl mr-2">$1</span><strong class="text-white font-semibold">$2:</strong></div>');
-
-        // Line breaks (double newline = paragraph)
-        html = html.replace(/\n\n/g, '</p><p class="mb-2">');
-        html = '<p class="mb-2">' + html + '</p>';
+        // Paragraphs - Better spacing
+        html = html.split('\n\n').map(para => {
+            if (para.trim() && !para.includes('<div') && !para.includes('<h') && !para.includes('<hr') && !para.includes('<pre')) {
+                return `<p class="mb-3 leading-relaxed text-gray-200">${para}</p>`;
+            }
+            return para;
+        }).join('\n');
 
         return html;
     }
