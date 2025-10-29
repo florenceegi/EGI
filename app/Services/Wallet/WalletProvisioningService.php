@@ -26,8 +26,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @purpose Enterprise-grade custodial wallet provisioning
  * @source docs/ai/blockchain/nuova_logica_wallet.md
  */
-class WalletProvisioningService
-{
+class WalletProvisioningService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
@@ -63,8 +62,7 @@ class WalletProvisioningService
      * @return Wallet The created Algorand wallet
      * @throws \Exception if provisioning fails
      */
-    public function provisionUserWallet(User $user, array $data = []): Wallet
-    {
+    public function provisionUserWallet(User $user, array $data = []): Wallet {
         try {
             // 0. PRE-FLIGHT: Verify KMS is healthy before attempting wallet creation
             $this->kmsHealth->ensureHealthy();
@@ -141,8 +139,7 @@ class WalletProvisioningService
      * @return Wallet The created wallet
      * @throws \Exception
      */
-    public function provisionWallet(?int $userId = null, ?int $collectionId = null, array $data = []): Wallet
-    {
+    public function provisionWallet(?int $userId = null, ?int $collectionId = null, array $data = []): Wallet {
         try {
             // 1. ULM: Log start
             $this->logger->info('WalletProvisioning: Starting flexible wallet creation', [
@@ -216,8 +213,7 @@ class WalletProvisioningService
      * @return Wallet
      * @throws \Exception
      */
-    protected function createAlgorandWalletFlexible(?int $userId, ?int $collectionId): Wallet
-    {
+    protected function createAlgorandWalletFlexible(?int $userId, ?int $collectionId): Wallet {
         try {
             // 1. Generate real Algorand account
             $accountData = $this->algorandClient->createAccount();
@@ -298,8 +294,7 @@ class WalletProvisioningService
      * @return Wallet
      * @throws \Exception
      */
-    protected function createAlgorandWallet(User $user, ?int $collectionId = null): Wallet
-    {
+    protected function createAlgorandWallet(User $user, ?int $collectionId = null): Wallet {
         try {
             // 1. Generate real Algorand account
             $accountData = $this->algorandClient->createAccount();
@@ -375,8 +370,7 @@ class WalletProvisioningService
      * @return Wallet
      * @throws \Exception
      */
-    protected function addIbanToWalletInternal(Wallet $wallet, string $iban): Wallet
-    {
+    protected function addIbanToWalletInternal(Wallet $wallet, string $iban): Wallet {
         try {
             // 1. Normalize IBAN (remove spaces, uppercase)
             $ibanNorm = strtoupper(preg_replace('/\s+/', '', $iban));
@@ -441,8 +435,7 @@ class WalletProvisioningService
      * @param string $iban Normalized IBAN
      * @return bool
      */
-    protected function validateIban(string $iban): bool
-    {
+    protected function validateIban(string $iban): bool {
         // Basic length check
         if (strlen($iban) < 15 || strlen($iban) > 34) {
             return false;
@@ -477,8 +470,7 @@ class WalletProvisioningService
      * @return Wallet The updated wallet
      * @throws \Exception
      */
-    public function addIbanToWallet(int $walletId, string $iban): Wallet
-    {
+    public function addIbanToWallet(int $walletId, string $iban): Wallet {
         try {
             // 1. Find wallet by ID
             $wallet = Wallet::findOrFail($walletId);
@@ -514,8 +506,7 @@ class WalletProvisioningService
      * @return string Decrypted mnemonic
      * @throws \Exception
      */
-    public function retrieveMnemonic(Wallet $wallet, User $user): string
-    {
+    public function retrieveMnemonic(Wallet $wallet, User $user): string {
         try {
             if (!$wallet->hasMnemonic()) {
                 throw new \Exception("Wallet does not have encrypted mnemonic");

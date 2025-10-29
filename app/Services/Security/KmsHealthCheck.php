@@ -18,8 +18,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-10-29
  * @purpose Pre-flight validation of KMS availability and functionality
  */
-class KmsHealthCheck
-{
+class KmsHealthCheck {
     private KmsClient $kmsClient;
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
@@ -49,8 +48,7 @@ class KmsHealthCheck
      * @param bool $forceRefresh Force new test, bypass cache
      * @return array ['healthy' => bool, 'error' => string|null, 'provider' => string, 'tested_at' => string]
      */
-    public function check(bool $forceRefresh = false): array
-    {
+    public function check(bool $forceRefresh = false): array {
         // Try cache first (unless forced refresh)
         if (!$forceRefresh) {
             $cached = Cache::get(self::CACHE_KEY);
@@ -78,8 +76,7 @@ class KmsHealthCheck
      * @param bool $forceRefresh Force new test, bypass cache
      * @return bool True if KMS is healthy and operational
      */
-    public function isHealthy(bool $forceRefresh = false): bool
-    {
+    public function isHealthy(bool $forceRefresh = false): bool {
         $status = $this->check($forceRefresh);
         return $status['healthy'];
     }
@@ -93,8 +90,7 @@ class KmsHealthCheck
      * @throws \RuntimeException If KMS is not healthy
      * @return void
      */
-    public function ensureHealthy(): void
-    {
+    public function ensureHealthy(): void {
         $status = $this->check();
 
         if (!$status['healthy']) {
@@ -124,8 +120,7 @@ class KmsHealthCheck
      *
      * @return void
      */
-    public function invalidateCache(): void
-    {
+    public function invalidateCache(): void {
         Cache::forget(self::CACHE_KEY);
         $this->logger->info('[KmsHealthCheck] Health check cache invalidated');
     }
@@ -135,8 +130,7 @@ class KmsHealthCheck
      *
      * @return array Health status with details
      */
-    private function performHealthTest(): array
-    {
+    private function performHealthTest(): array {
         $startTime = microtime(true);
 
         try {
@@ -197,8 +191,7 @@ class KmsHealthCheck
      *
      * @return array Detailed health information
      */
-    public function getDetailedStatus(): array
-    {
+    public function getDetailedStatus(): array {
         $health = $this->check();
 
         $kmsEnv = env('KMS_ENVIRONMENT', config('app.env'));
@@ -216,4 +209,3 @@ class KmsHealthCheck
         ]);
     }
 }
-
