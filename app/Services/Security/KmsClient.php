@@ -72,8 +72,127 @@ class KmsClient {
     }
 
     /**
-     * Generate new Data Encryption Key (DEK)
+     * High-level secure encrypt operation
      *
+     * Implements envelope encryption: generates DEK, encrypts data with DEK,
+     * encrypts DEK with KEK. Returns complete encrypted package.
+     *
+     * @param string $plaintext Data to encrypt
+     * @param User|null $user Optional user context for audit logging
+     * @param string $additionalData Optional authenticated additional data
+     * @return array Complete envelope encryption result with all metadata
+     * @throws \Exception If encryption fails
+     */
+    public function secureEncrypt(string $plaintext, ?User $user = null, string $additionalData = ''): array {
+        try {
+            $this->logger->info('Starting secure encryption', [
+                'user_id' => $user?->id,
+                'plaintext_length' => strlen($plaintext),
+                'has_additional_data' => !empty($additionalData)
+            ]);
+
+            // Step 1: Generate new DEK (256-bit)
+            $dek = random_bytes(32);
+            
+            // Step 2: Encrypt plaintext with DEK using XChaCha20-Poly1305
+            $nonce = random_bytes(24); // 192-bit nonce for XChaCha20
+            
+            $ciphertext = sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(
+                $plaintext,
+                $additionalData,
+                $nonce,
+                $dek
+            );
+
+            if ($ciphertext === false) {
+                throw new \Exception('Data encryption failed');
+            }
+
+            // Step 3: Encrypt DEK with KEK (via KMS)
+            $encryptedDekData = $this->encryptDEK($dek, $user);
+
+            // Step 4: Clear DEK from memory
+            sodium_memzero($dek);
+
+            // Step 5: Build complete encrypted package
+            $result = [
+                'ciphertext' => base64_encode($ciphertext),
+                'nonce' => base64_encode($nonce),
+                'encrypted_dek' => $encryptedDekData,
+                'algorithm' => 'xchacha20poly1305',
+                'additional_data' => $additionalData,
+                'created_at' => now()->toISOString()
+            ];
+
+            $this->logger->info('Secure encryption completed successfully', [
+                'ciphertext_length' => strlen($ciphertext),
+                'kms_provider' => $encryptedDekData['provider'] ?? 'unknown'
+            ]);
+
+            return $result;
+        } catch (\Exception $e) {
+            $this->errorManager->handle('KMS_SECURE_ENCRYPTION_FAILED', [
+                'error' => $e->getMessage(),
+                'user_id' => $user?->id
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Encrypt Data Encryption Key (DEK) using KEK
+     *
+     * Routes to appropriate KMS provider (production or mock development).
+     * Returns encrypted DEK with metadata for future decryption.
+     *
+     * @param string $dek Raw DEK bytes to encrypt
+     * @param User|null $user Optional user context for audit logging
+     * @return array Encrypted DEK data with provider metadata
+     * @throws \Exception If DEK encryption fails
+     */
+    private function encryptDEK(string $dek, ?User $user = null): array {
+        if ($this->developmentMode) {
+            $this->logger->debug('Using mock KMS for DEK encryption (development mode)');
+            return $this->encryptDEKMock($dek);
+        } else {
+            $this->logger->info('Using production KMS for DEK encryption', [
+                'kek_id' => $this->kekId,
+                'user_id' => $user?->id
+            ]);
+            return $this->encryptDEKProduction($dek);
+        }
+    }
+
+    /**
+     * Decrypt Data Encryption Key (DEK) from encrypted DEK data
+     *
+     * Routes to appropriate KMS provider based on encrypted data metadata.
+     * Returns raw DEK bytes for data decryption.
+     *
+     * @param array $encryptedDekData Encrypted DEK with provider metadata
+     * @param User|null $user Optional user context for audit logging
+     * @return string Raw DEK bytes (base64 encoded for safe handling)
+     * @throws \Exception If DEK decryption fails
+     */
+    private function decryptDEK(array $encryptedDekData, ?User $user = null): string {
+        $provider = $encryptedDekData['provider'] ?? 'MOCK_KMS_DEVELOPMENT';
+        
+        if ($provider === 'MOCK_KMS_DEVELOPMENT' || $this->developmentMode) {
+            $this->logger->debug('Using mock KMS for DEK decryption (development mode)');
+            $dek = $this->decryptDEKMock($encryptedDekData);
+        } else {
+            $this->logger->info('Using production KMS for DEK decryption', [
+                'provider' => $provider,
+                'kek_id' => $encryptedDekData['kek_id'] ?? 'unknown',
+                'user_id' => $user?->id
+            ]);
+            $dek = $this->decryptDEKProduction($encryptedDekData);
+        }
+
+        return base64_encode($dek);
+    }
+
     /**
      * AWS KMS DEK encryption
      *
