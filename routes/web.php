@@ -152,6 +152,16 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+// ====================================================
+// AI ART ADVISOR - Multi-Expert Chat Assistant
+// ====================================================
+Route::prefix('art-advisor')->name('art-advisor.')->middleware('auth')->group(function () {
+    Route::post('/chat', [App\Http\Controllers\ArtAdvisorController::class, 'chat'])
+        ->name('chat');
+    Route::get('/test', [App\Http\Controllers\ArtAdvisorController::class, 'test'])
+        ->name('test');
+});
+
 // Aggiungi questa route in web.php per debug
 Route::get('/debug-user-lookup', function () {
     $userId = session('connected_user_id');
