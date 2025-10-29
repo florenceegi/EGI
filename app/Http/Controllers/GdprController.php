@@ -1421,7 +1421,7 @@ class GdprController extends Controller {
             $activities = $this->auditService->getUserActivityLog($user, 50);
             $activityStats = $this->auditService->getUserActivityStats($user);
             $availableCategories = array_keys(config('gdpr.activity_categories', []));
-            
+
             // Extract unique action types from activities
             $availableActionTypes = $activities->pluck('action')->unique()->sort()->values()->toArray();
 
@@ -1432,7 +1432,9 @@ class GdprController extends Controller {
                 'activities' => $activities,
                 'activityStats' => $activityStats,
                 'availableCategories' => $availableCategories,
-                'availableActionTypes' => $availableActionTypes
+                'availableActionTypes' => $availableActionTypes,
+                'pageTitle' => __('gdpr.activity_log.title'),
+                'pageDescription' => __('gdpr.activity_log.subtitle')
             ]);
         } catch (\Exception $e) {
             return $this->errorManager->handle('GDPR_ACTIVITY_LOG_PAGE_FAILED', [
