@@ -27,6 +27,7 @@
         context: {},
         mode: 'general',
         isStreaming: false,
+        currentReader: null, // Track active stream reader
     };
 
     // ====================================
@@ -153,8 +154,9 @@
         state.modal.classList.remove('hidden');
         state.modal.classList.add('flex');
         
-        // Show welcome message if no messages yet
-        if (state.messagesContainer && state.messagesContainer.children.length === 0) {
+        // ALWAYS clear messages when opening (fresh start)
+        if (state.messagesContainer) {
+            state.messagesContainer.innerHTML = '';
             showWelcomeMessage();
         }
 
@@ -169,6 +171,21 @@
      */
     function closeModal() {
         if (!state.modal) return;
+
+        // Cancel active stream if any
+        if (state.currentReader) {
+            try {
+                state.currentReader.cancel();
+                console.log('[ArtAdvisor] Stream cancelled on modal close');
+            } catch (e) {
+                console.warn('[ArtAdvisor] Failed to cancel stream', e);
+            }
+            state.currentReader = null;
+        }
+
+        // Reset streaming state
+        state.isStreaming = false;
+        updateSendButton(false);
 
         state.modal.classList.add('hidden');
         state.modal.classList.remove('flex');
@@ -474,6 +491,7 @@
         })
         .then(body => {
             const reader = body.getReader();
+            state.currentReader = reader; // Track reader for cancellation
             const decoder = new TextDecoder();
             let buffer = '';
 
@@ -485,6 +503,7 @@
         })
         .finally(() => {
             state.isStreaming = false;
+            state.currentReader = null; // Clear reader reference
             updateSendButton(false);
         });
     }
