@@ -268,10 +268,11 @@ class AnthropicService {
                 'model_used' => $modelToUse,
             ]);
 
-            // Return both message and usage for cost tracking
+            // Return message, usage AND model_used for tracking and display
             return [
                 'message' => $assistantMessage,
                 'usage' => $usage,
+                'model' => $modelToUse,
             ];
         } catch (\Exception $e) {
             $this->logger->error('[AnthropicService] Chat error', [

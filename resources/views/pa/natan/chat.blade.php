@@ -834,7 +834,7 @@
                  * Add message to chat
                  */
                 addMessage(role, content, sources = null, persona = null, message_id = null, is_elaboration = false,
-                    reference_content = null, web_sources = null) {
+                    reference_content = null, web_sources = null, ai_model = null) {
                     const timestamp = new Date().toLocaleTimeString('it-IT', {
                         hour: '2-digit',
                         minute: '2-digit'
@@ -849,6 +849,7 @@
                         message_id, // Database ID for elaborations
                         is_elaboration, // Is this an elaboration of a previous message?
                         reference_content, // Original message that was elaborated (if any)
+                        ai_model, // NEW: Model actually used (may differ from config if fallback)
                         timestamp
                     };
 
@@ -1208,9 +1209,14 @@
                         AIProcessingPanel.complete();
 
                         if (data.success) {
-                            // Pass persona info, message_id, elaboration flag, reference content, and web_sources ✨ v3.0
+                            // Pass persona info, message_id, elaboration flag, reference content, web_sources, and ai_model
                             this.addMessage('assistant', data.response, data.sources, data.persona, data.message_ids
-                                ?.assistant, data.is_elaboration, data.reference_content, data.web_sources);
+                                ?.assistant, data.is_elaboration, data.reference_content, data.web_sources, data.ai_model);
+
+                            // Update AI model display in stats panel
+                            if (data.ai_model) {
+                                AIProcessingPanel.updateModelDisplay(data.ai_model);
+                            }
 
                             // Update session ID if provided
                             if (data.session_id) {

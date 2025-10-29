@@ -549,6 +549,7 @@ class NatanChatService {
             // Extract message and usage from response
             $aiResponse = $aiResponseData['message'] ?? $aiResponseData; // Backward compatibility
             $usage = $aiResponseData['usage'] ?? null;
+            $modelUsed = $aiResponseData['model'] ?? config('services.anthropic.model'); // NEW: track actual model used
 
             // Update context['acts'] with final limited version for accurate logging
             if ($claudeContextLimit < $originalActsCount) {
@@ -563,6 +564,7 @@ class NatanChatService {
                 'response_time_ms' => $responseTime,
                 'tokens_input' => $usage['input_tokens'] ?? null,
                 'tokens_output' => $usage['output_tokens'] ?? null,
+                'model_used' => $modelUsed,
             ]);
 
             // STEP 5: Build response with sources (sanitized)
@@ -614,7 +616,7 @@ class NatanChatService {
                 'web_search_results' => !empty($webSearchResults) ? $webSearchResults : null, // NEW v3.0
                 'web_search_count' => count($webSearchResults), // NEW v3.0
                 'web_search_from_cache' => $webSearchMetadata['from_cache'] ?? false, // NEW v3.0
-                'ai_model' => config('services.anthropic.model'),
+                'ai_model' => $modelUsed, // UPDATED: use actual model from API response
                 'tokens_input' => $usage['input_tokens'] ?? null, // Track tokens for cost monitoring
                 'tokens_output' => $usage['output_tokens'] ?? null, // Track tokens for cost monitoring
                 'response_time_ms' => $responseTime,
@@ -647,6 +649,8 @@ class NatanChatService {
                     'input_tokens' => 0,
                     'output_tokens' => 0,
                 ],
+                // ✨ NEW: Model actually used (may differ from config due to fallback)
+                'ai_model' => $modelUsed,
             ];
         } catch (\Throwable $e) {
             // UEM handles logging + user notification

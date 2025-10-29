@@ -221,6 +221,29 @@ const AIProcessingPanel = {
     },
 
     /**
+     * Update AI model display
+     * Maps model names to user-friendly labels
+     */
+    updateModelDisplay(modelName) {
+        const statModel = document.getElementById('stat-model');
+        if (!statModel || !modelName) return;
+
+        // Map model names to display labels
+        const modelLabels = {
+            'claude-3-5-sonnet-20241022': 'Claude 3.5<br>Sonnet (Oct 2024)',
+            'claude-3-5-sonnet-20240620': 'Claude 3.5<br>Sonnet (Jun 2024)',
+            'claude-3-opus-20240229': 'Claude 3<br>Opus (Feb 2024)',
+            'claude-3-sonnet-20240229': 'Claude 3<br>Sonnet (Feb 2024)',
+            'claude-3-haiku-20240307': 'Claude 3<br>Haiku (Mar 2024)',
+        };
+
+        const displayLabel = modelLabels[modelName] || modelName;
+        statModel.innerHTML = displayLabel;
+
+        console.log('[AIProcessingPanel] Model updated:', modelName, '→', displayLabel);
+    },
+
+    /**
      * Update processing stage
      */
     updateStage(stageId, status, detail) {

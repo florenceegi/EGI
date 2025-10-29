@@ -313,6 +313,8 @@ class NatanChatController extends Controller {
                 'is_elaboration' => $referenceContext !== null,
                 'reference_message_id' => $referenceMessageId,
                 'reference_content' => $referenceContext['content'] ?? null,
+                'ai_model' => $result['ai_model'] ?? null, // NEW: actual model used
+                'usage' => $result['usage'] ?? null, // Token usage for cost tracking
                 'timestamp' => now()->toIso8601String()
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
