@@ -230,10 +230,26 @@ class AnthropicService {
             // Ottieni il modello attivo (con fallback automatico se necessario)
             $modelToUse = $this->getActiveModel();
 
+            // Calcola timeout dinamico in base alla lunghezza del contenuto
+            $messageLength = strlen($systemPrompt) + array_reduce($messages, function($carry, $msg) {
+                return $carry + strlen($msg['content'] ?? '');
+            }, 0);
+            
+            // Timeout base 60s, +30s ogni 1000 caratteri oltre i primi 1000
+            $dynamicTimeout = $this->timeout;
+            if ($messageLength > 1000) {
+                $extraChars = $messageLength - 1000;
+                $dynamicTimeout += (int) ceil($extraChars / 1000) * 30;
+            }
+            // Cap massimo a 180 secondi (3 minuti)
+            $dynamicTimeout = min($dynamicTimeout, 180);
+
             $this->logger->info('[AnthropicService] Sending request to Claude', [
                 'model' => $modelToUse,
                 'configured_model' => $this->configuredModel,
                 'is_fallback' => $modelToUse !== $this->configuredModel,
+                'message_length' => $messageLength,
+                'timeout' => $dynamicTimeout,
             ]);
 
             // Chiamata API
@@ -241,7 +257,7 @@ class AnthropicService {
                 'x-api-key' => $this->apiKey,
                 'anthropic-version' => '2023-06-01',
                 'content-type' => 'application/json',
-            ])->timeout($this->timeout)->post($this->baseUrl . '/v1/messages', [
+            ])->timeout($dynamicTimeout)->post($this->baseUrl . '/v1/messages', [
                 'model' => $modelToUse,
                 'max_tokens' => 4096,
                 'system' => $systemPrompt,
@@ -1488,12 +1504,15 @@ $pdfText
 Rispondi SOLO con il JSON, senza commenti aggiuntivi.
 PROMPT;
 
+            // Get active model (with automatic fallback)
+            $modelToUse = $this->getActiveModel();
+
             $response = Http::withHeaders([
                 'x-api-key' => $this->apiKey,
                 'anthropic-version' => '2023-06-01',
                 'content-type' => 'application/json',
             ])->timeout($this->timeout)->post($this->baseUrl . '/v1/messages', [
-                'model' => $this->model,
+                'model' => $modelToUse,
                 'max_tokens' => 1024,
                 'messages' => [
                     ['role' => 'user', 'content' => $prompt],
@@ -1582,13 +1601,16 @@ PROMPT;
                 ],
             ];
 
+            // Get active model (with automatic fallback)
+            $modelToUse = $this->getActiveModel();
+
             // Call Claude Vision API (longer timeout for image analysis: 120s)
             $response = Http::withHeaders([
                 'x-api-key' => $this->apiKey,
                 'anthropic-version' => '2023-06-01',
                 'content-type' => 'application/json',
             ])->timeout(120)->post($this->baseUrl . '/v1/messages', [
-                'model' => $this->model,
+                'model' => $modelToUse,
                 'max_tokens' => 4096,
                 'system' => $systemPrompt,
                 'messages' => $messages,
@@ -1845,13 +1867,16 @@ PROMPT;
                 ],
             ];
 
+            // Get active model (with automatic fallback)
+            $modelToUse = $this->getActiveModel();
+
             // Call Claude Vision API with extended timeout for complex analysis
             $response = Http::withHeaders([
                 'x-api-key' => $this->apiKey,
                 'anthropic-version' => '2023-06-01',
                 'content-type' => 'application/json',
             ])->timeout(120)->post($this->baseUrl . '/v1/messages', [
-                'model' => $this->model,
+                'model' => $modelToUse,
                 'max_tokens' => 4096,
                 'system' => $systemPrompt,
                 'messages' => $messages,
