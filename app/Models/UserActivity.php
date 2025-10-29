@@ -18,8 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @version 1.0.0
  * @date 2025-05-22
  */
-class UserActivity extends Model
-{
+class UserActivity extends Model {
     use HasFactory;
 
     /**
@@ -81,8 +80,7 @@ class UserActivity extends Model
      * @return BelongsTo
      * @privacy-safe Returns owning user relationship
      */
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
 
@@ -93,8 +91,7 @@ class UserActivity extends Model
      * @return mixed
      * @privacy-safe Filters by activity category
      */
-    public function scopeCategory($query, string $category)
-    {
+    public function scopeCategory($query, string $category) {
         return $query->where('category', $category);
     }
 
@@ -105,8 +102,7 @@ class UserActivity extends Model
      * @return mixed
      * @privacy-safe Filters by privacy level
      */
-    public function scopePrivacyLevel($query, string $level)
-    {
+    public function scopePrivacyLevel($query, string $level) {
         return $query->where('privacy_level', $level);
     }
 
@@ -116,8 +112,7 @@ class UserActivity extends Model
      * @return mixed
      * @privacy-safe Filters for expired activities
      */
-    public function scopeExpired($query)
-    {
+    public function scopeExpired($query) {
         return $query->where('expires_at', '<', now());
     }
 
@@ -128,8 +123,7 @@ class UserActivity extends Model
      * @return mixed
      * @privacy-safe Filters for recent activities
      */
-    public function scopeRecent($query, int $days = 30)
-    {
+    public function scopeRecent($query, int $days = 30) {
         return $query->where('created_at', '>=', now()->subDays($days));
     }
 
@@ -138,8 +132,7 @@ class UserActivity extends Model
      * @return string
      * @privacy-safe Returns friendly category name
      */
-    public function getCategoryNameAttribute(): string
-    {
+    public function getCategoryNameAttribute(): string {
         return self::$categories[$this->category]['name'] ?? 'Unknown Category';
     }
 
@@ -148,8 +141,7 @@ class UserActivity extends Model
      * @return string
      * @privacy-safe Returns friendly privacy level name
      */
-    public function getPrivacyLevelNameAttribute(): string
-    {
+    public function getPrivacyLevelNameAttribute(): string {
         return self::$privacyLevels[$this->privacy_level] ?? 'Unknown Privacy Level';
     }
 
@@ -158,8 +150,7 @@ class UserActivity extends Model
      * @return bool
      * @privacy-safe Checks expiration status
      */
-    public function isExpired(): bool
-    {
+    public function isExpired(): bool {
         return $this->expires_at && $this->expires_at->isPast();
     }
 
@@ -167,9 +158,8 @@ class UserActivity extends Model
      * Get CSS class based on privacy/risk level
      * @return string
      */
-    public function getRiskLevelClass(): string
-    {
-        return match($this->privacy_level) {
+    public function getRiskLevelClass(): string {
+        return match ($this->privacy_level) {
             'critical' => 'risk-critical',
             'high' => 'risk-high',
             'immutable' => 'risk-immutable',
@@ -181,13 +171,12 @@ class UserActivity extends Model
      * Get icon CSS class based on category
      * @return string
      */
-    public function getIconClass(): string
-    {
-        $categoryValue = $this->category instanceof \BackedEnum 
-            ? $this->category->value 
+    public function getIconClass(): string {
+        $categoryValue = $this->category instanceof \BackedEnum
+            ? $this->category->value
             : $this->category;
 
-        return match($categoryValue) {
+        return match ($categoryValue) {
             'authentication', 'authentication_login' => 'icon-auth',
             'gdpr_actions', 'data_access' => 'icon-gdpr',
             'security_events' => 'icon-security',
@@ -201,13 +190,12 @@ class UserActivity extends Model
      * Get SVG icon based on category
      * @return string
      */
-    public function getIconSvg(): string
-    {
-        $categoryValue = $this->category instanceof \BackedEnum 
-            ? $this->category->value 
+    public function getIconSvg(): string {
+        $categoryValue = $this->category instanceof \BackedEnum
+            ? $this->category->value
             : $this->category;
 
-        return match($categoryValue) {
+        return match ($categoryValue) {
             'authentication', 'authentication_login' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>',
             'gdpr_actions' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>',
             'security_events' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>',
@@ -221,15 +209,14 @@ class UserActivity extends Model
      * Get formatted device info
      * @return string
      */
-    public function getFormattedDeviceInfo(): string
-    {
+    public function getFormattedDeviceInfo(): string {
         if (empty($this->user_agent)) {
             return __('gdpr.activity_log.unknown_device');
         }
 
         // Basic user agent parsing
         $userAgent = $this->user_agent;
-        
+
         if (str_contains($userAgent, 'Mobile')) {
             return '📱 ' . __('gdpr.activity_log.mobile_device');
         } elseif (str_contains($userAgent, 'Tablet')) {
@@ -243,8 +230,7 @@ class UserActivity extends Model
      * Get action_type attribute (alias for action)
      * @return string
      */
-    public function getActionTypeAttribute(): string
-    {
+    public function getActionTypeAttribute(): string {
         return $this->action;
     }
 
@@ -252,8 +238,7 @@ class UserActivity extends Model
      * Get description attribute (from metadata or context)
      * @return string|null
      */
-    public function getDescriptionAttribute(): ?string
-    {
+    public function getDescriptionAttribute(): ?string {
         return $this->metadata['description'] ?? $this->context['description'] ?? null;
     }
 
@@ -261,8 +246,7 @@ class UserActivity extends Model
      * Get location attribute (from context or metadata)
      * @return string|null
      */
-    public function getLocationAttribute(): ?string
-    {
+    public function getLocationAttribute(): ?string {
         return $this->context['location'] ?? $this->metadata['location'] ?? null;
     }
 
@@ -270,8 +254,7 @@ class UserActivity extends Model
      * Get device_info attribute (alias for user_agent)
      * @return string|null
      */
-    public function getDeviceInfoAttribute(): ?string
-    {
+    public function getDeviceInfoAttribute(): ?string {
         return $this->user_agent;
     }
 
@@ -279,9 +262,8 @@ class UserActivity extends Model
      * Get risk_level attribute (derived from privacy_level)
      * @return string
      */
-    public function getRiskLevelAttribute(): string
-    {
-        return match($this->privacy_level) {
+    public function getRiskLevelAttribute(): string {
+        return match ($this->privacy_level) {
             'critical' => 'critical',
             'high' => 'high',
             'immutable' => 'immutable',
@@ -293,8 +275,7 @@ class UserActivity extends Model
      * Check if activity is sensitive
      * @return bool
      */
-    public function getIsSensitiveAttribute(): bool
-    {
+    public function getIsSensitiveAttribute(): bool {
         return in_array($this->privacy_level, ['high', 'critical', 'immutable']);
     }
 
@@ -302,18 +283,16 @@ class UserActivity extends Model
      * Check if activity requires attention
      * @return bool
      */
-    public function getRequiresAttentionAttribute(): bool
-    {
-        return $this->privacy_level === 'critical' || 
-               ($this->context['requires_attention'] ?? false);
+    public function getRequiresAttentionAttribute(): bool {
+        return $this->privacy_level === 'critical' ||
+            ($this->context['requires_attention'] ?? false);
     }
 
     /**
      * Get context_data attribute (alias for context)
      * @return array|null
      */
-    public function getContextDataAttribute(): ?array
-    {
+    public function getContextDataAttribute(): ?array {
         return $this->context;
     }
 }
