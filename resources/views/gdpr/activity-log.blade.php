@@ -426,7 +426,7 @@
                             <div class="activity-detail-item">
                                 <span class="activity-detail-label">{{ __('gdpr.activity_log.details.category') }}</span>
                                 <span class="activity-detail-value">
-                                    {{ __('gdpr.activity_log.categories.' . $activity->category) }}
+                                    {{ __('gdpr.activity_log.categories.' . $activity->category->value) }}
                                 </span>
                             </div>
 
@@ -474,8 +474,8 @@
                     @endif
 
                     <div class="activity-tags">
-                        <span class="activity-tag category-{{ $activity->category }}">
-                            {{ __('gdpr.activity_log.categories.' . $activity->category) }}
+                        <span class="activity-tag category-{{ $activity->category->value }}">
+                            {{ __('gdpr.activity_log.categories.' . $activity->category->value) }}
                         </span>
 
                         @if($activity->is_sensitive)
