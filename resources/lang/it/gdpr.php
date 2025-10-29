@@ -631,6 +631,95 @@ return [
         ],
     ],
 
+    // Activity Log (Detailed)
+    'activity_log' => [
+        'title' => 'Registro Attività GDPR',
+        'subtitle' => 'Visualizza tutte le tue attività e richieste GDPR',
+        'breadcrumb' => 'Registro Attività',
+        'export' => 'Esporta Attività',
+        'no_activities' => 'Nessuna attività trovata',
+        'no_activities_description' => 'Non ci sono attività da visualizzare per i filtri selezionati',
+        'sensitive_data' => 'Dati Sensibili',
+        'requires_attention' => 'Richiede Attenzione',
+        'unknown_device' => 'Dispositivo Sconosciuto',
+        'mobile_device' => 'Dispositivo Mobile',
+        'tablet_device' => 'Tablet',
+        'desktop_device' => 'Computer Desktop',
+
+        'summary' => [
+            'total' => 'Totale Attività',
+            'this_month' => 'Questo Mese',
+            'security_events' => 'Eventi di Sicurezza',
+            'gdpr_actions' => 'Azioni GDPR',
+        ],
+
+        'filters' => [
+            'category' => 'Categoria',
+            'action_type' => 'Tipo Azione',
+            'date_from' => 'Data Inizio',
+            'date_to' => 'Data Fine',
+            'apply' => 'Applica Filtri',
+            'all_categories' => 'Tutte le Categorie',
+            'all_actions' => 'Tutte le Azioni',
+        ],
+
+        'details' => [
+            'category' => 'Categoria',
+            'ip_address' => 'Indirizzo IP',
+            'location' => 'Posizione',
+            'device' => 'Dispositivo',
+            'risk_level' => 'Livello di Rischio',
+        ],
+
+        'categories' => [
+            'authentication' => 'Autenticazione',
+            'authentication_login' => 'Login',
+            'authentication_logout' => 'Logout',
+            'gdpr_actions' => 'Azioni GDPR',
+            'data_access' => 'Accesso Dati',
+            'data_deletion' => 'Cancellazione Dati',
+            'security_events' => 'Eventi di Sicurezza',
+            'admin_access' => 'Accesso Amministrativo',
+            'admin_action' => 'Azione Amministrativa',
+            'blockchain_activity' => 'Attività Blockchain',
+            'platform_usage' => 'Utilizzo Piattaforma',
+            'content_creation' => 'Creazione Contenuti',
+            'content_modification' => 'Modifica Contenuti',
+            'personal_data_update' => 'Aggiornamento Dati Personali',
+            'wallet_management' => 'Gestione Wallet',
+            'media_management' => 'Gestione Media',
+            'privacy_management' => 'Gestione Privacy',
+        ],
+
+        'actions' => [
+            'activity_log_viewed' => 'Visualizzazione Registro Attività',
+            'consent_updated' => 'Consensi Aggiornati',
+            'data_exported' => 'Dati Esportati',
+            'account_deleted' => 'Account Eliminato',
+            'password_changed' => 'Password Modificata',
+            'profile_updated' => 'Profilo Aggiornato',
+        ],
+
+        'action_types' => [
+            'activity_log_viewed' => 'Visualizzazione Registro',
+            'consent_updated' => 'Aggiornamento Consensi',
+            'data_exported' => 'Esportazione Dati',
+        ],
+
+        'default_descriptions' => [
+            'activity_log_viewed' => 'L\'utente ha visualizzato il registro delle attività GDPR',
+            'consent_updated' => 'L\'utente ha aggiornato le preferenze di consenso',
+            'data_exported' => 'L\'utente ha richiesto un\'esportazione dei dati',
+        ],
+
+        'risk_levels' => [
+            'standard' => 'Standard',
+            'high' => 'Alto',
+            'critical' => 'Critico',
+            'immutable' => 'Immutabile',
+        ],
+    ],
+
     // Validazione
     'validation' => [
         'consents_required' => 'Le preferenze di consenso sono obbligatorie.',
