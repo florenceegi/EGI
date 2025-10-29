@@ -67,13 +67,13 @@
                 </section>
             @endisset
 
-            {{-- Content Slot --}}
-            <div class="px-4 pb-8 sm:px-6 lg:px-8">
-                <div class="mx-auto max-w-7xl">
-                    {{ $slot }}
-                </div>
+        {{-- Content Section --}}
+        <div class="px-4 pb-8 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl">
+                @yield('content')
             </div>
-        </main>
+        </div>
+    </main>
 
         {{-- Footer --}}
        @include('components.info-footer')
