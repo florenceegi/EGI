@@ -432,15 +432,11 @@ const AIProcessingPanel = {
         }
         this.updateStage("ai", "completed", aiDetail);
 
-        this.updateStage(
-            "response",
-            "processing",
-            "Generazione risposta in corso..."
-        );
+        // ✅ Complete response stage (stop spinner)
+        this.updateStage("response", "completed", "Risposta generata");
 
         if (this.elements.title) {
-            this.elements.title.textContent =
-                "✨ Analisi completata! Generazione risposta...";
+            this.elements.title.textContent = "✨ Analisi completata!";
         }
 
         console.log("[AIProcessingPanel] Processing completed", options);

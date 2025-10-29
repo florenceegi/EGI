@@ -6,15 +6,15 @@
     @include('pa.natan._ai-cost-preview-modal')
 
     {{-- Chat History is now integrated in enterprise sidebar --}}
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
-        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen py-8 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
 
             {{-- Header - Ottimizzato per mobile --}}
             <div class="mb-4 sm:mb-8">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div class="flex items-center gap-3 sm:gap-4">
                         <a href="{{ route('pa.acts.index') }}"
-                            class="rounded-lg bg-white p-2 shadow-sm transition-all hover:shadow-md">
+                            class="p-2 transition-all bg-white rounded-lg shadow-sm hover:shadow-md">
                             <span class="material-icons text-[#1B365D]">arrow_back</span>
                         </a>
                         <div>
@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 rounded-lg bg-green-100 px-3 py-1.5 sm:px-4 sm:py-2">
-                        <span class="material-icons text-xs text-green-600 sm:text-sm">check_circle</span>
+                        <span class="text-xs text-green-600 material-icons sm:text-sm">check_circle</span>
                         <span class="text-xs font-medium text-green-800 sm:text-sm">AI Attiva</span>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                 {{-- Left Column: Chat (8/12 width on desktop, full width on mobile) --}}
                 <div class="lg:col-span-8">
                     {{-- Chat Window --}}
-                    <div class="rounded-2xl bg-white shadow-xl">
+                    <div class="bg-white shadow-xl rounded-2xl">
 
                         {{-- Chat Header - Ottimizzato per mobile --}}
                         <div
@@ -43,8 +43,8 @@
                             <div class="flex items-center justify-between gap-2 sm:gap-3">
                                 <div class="flex items-center gap-2 sm:gap-3">
                                     <div
-                                        class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm sm:h-12 sm:w-12">
-                                        <span class="material-icons text-xl text-white sm:text-2xl">smart_toy</span>
+                                        class="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm sm:h-12 sm:w-12">
+                                        <span class="text-xl text-white material-icons sm:text-2xl">smart_toy</span>
                                     </div>
                                     <div>
                                         <h2 class="text-base font-bold text-white sm:text-lg">N.A.T.A.N.</h2>
@@ -58,10 +58,10 @@
                                 @if ($activeProject)
                                     <div
                                         class="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 backdrop-blur-sm">
-                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg"
+                                        <div class="flex items-center justify-center w-8 h-8 rounded-lg"
                                             style="background-color: {{ $activeProject->color ?? '#D4A574' }}">
                                             <span
-                                                class="material-icons text-sm text-white">{{ $activeProject->icon ?? 'folder' }}</span>
+                                                class="text-sm text-white material-icons">{{ $activeProject->icon ?? 'folder' }}</span>
                                         </div>
                                         <div class="hidden sm:block">
                                             <p class="text-xs font-medium text-white">{{ $activeProject->name }}</p>
@@ -78,20 +78,20 @@
 
                             {{-- Welcome Message (will be hidden after first message) - Ottimizzato mobile --}}
                             <div id="welcomeMessage"
-                                class="flex h-full flex-col items-center justify-center px-2 text-center">
+                                class="flex flex-col items-center justify-center h-full px-2 text-center">
                                 <div
                                     class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#1B365D] to-[#2D5016] sm:mb-6 sm:h-20 sm:w-20">
-                                    <span class="material-icons text-3xl text-white sm:text-4xl">smart_toy</span>
+                                    <span class="text-3xl text-white material-icons sm:text-4xl">smart_toy</span>
                                 </div>
                                 <h3 class="mb-2 text-lg font-bold text-[#1B365D] sm:text-2xl">Ciao! Sono N.A.T.A.N.</h3>
-                                <p class="mb-4 max-w-md text-sm text-gray-600 sm:mb-8 sm:text-base">
+                                <p class="max-w-md mb-4 text-sm text-gray-600 sm:mb-8 sm:text-base">
                                     Posso aiutarti ad analizzare i tuoi atti amministrativi. Prova a chiedermi qualcosa!
                                 </p>
 
                                 {{-- Suggested Questions - Collassabile su mobile --}}
                                 <div class="w-full max-w-2xl">
                                     <button id="toggleSuggestedQuestions"
-                                        class="mb-2 flex w-full items-center justify-between rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 sm:hidden">
+                                        class="flex items-center justify-between w-full p-2 mb-2 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200 sm:hidden">
                                         <div class="flex items-center gap-2">
                                             <span class="material-icons text-sm text-[#2D5016]">auto_awesome</span>
                                             <span class="text-xs font-medium text-gray-700">Domande suggerite</span>
@@ -102,18 +102,18 @@
                                             </span>
                                         </div>
                                         <span id="toggleIcon"
-                                            class="material-icons text-sm text-gray-500">expand_more</span>
+                                            class="text-sm text-gray-500 material-icons">expand_more</span>
                                     </button>
 
                                     <div id="suggestedQuestionsContent" class="hidden sm:block">
                                         <div
-                                            class="mb-2 hidden flex-col gap-1 sm:mb-4 sm:flex sm:flex-row sm:items-center sm:gap-2">
+                                            class="flex-col hidden gap-1 mb-2 sm:mb-4 sm:flex sm:flex-row sm:items-center sm:gap-2">
                                             <p class="text-xs font-medium text-gray-700 sm:text-sm">Domande suggerite:
                                             </p>
                                             <div class="flex items-center gap-1">
                                                 <span
                                                     class="flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
-                                                    <span class="material-icons text-xs">shuffle</span>
+                                                    <span class="text-xs material-icons">shuffle</span>
                                                     Random
                                                 </span>
                                                 <span class="text-[10px] text-gray-400 sm:text-xs">(cambiano ad ogni
@@ -138,28 +138,28 @@
                         </div>
 
                         {{-- Persona Selector - Ottimizzato mobile --}}
-                        <div class="border-t border-gray-200 p-2 sm:p-4">
+                        <div class="p-2 border-t border-gray-200 sm:p-4">
                             <x-natan-persona-selector />
                         </div>
 
                         {{-- Input Area - Ottimizzato mobile --}}
-                        <div class="rounded-b-2xl border-t border-gray-200 bg-gray-50 p-2 sm:p-4">
+                        <div class="p-2 border-t border-gray-200 rounded-b-2xl bg-gray-50 sm:p-4">
                             {{-- Web Search Toggle ✨ NEW v3.0 --}}
                             <div
-                                class="mb-2 flex items-center justify-between rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-2 sm:p-3">
+                                class="flex items-center justify-between p-2 mb-2 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 sm:p-3">
                                 <div class="flex items-center gap-2">
-                                    <label for="webSearchToggle" class="flex cursor-pointer items-center gap-2">
+                                    <label for="webSearchToggle" class="flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" id="webSearchToggle"
-                                            class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0" />
+                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:ring-offset-0" />
                                         <span
                                             class="text-xs font-medium text-gray-700 sm:text-sm">{{ __('natan.web_search.toggle_label') }}</span>
                                     </label>
-                                    <span class="material-icons cursor-help text-sm text-gray-400 sm:text-base"
+                                    <span class="text-sm text-gray-400 material-icons cursor-help sm:text-base"
                                         title="{{ __('natan.web_search.toggle_hint') }}">info</span>
                                 </div>
                                 <span id="webSearchStatus"
-                                    class="hidden items-center gap-1 text-xs font-medium text-blue-600 sm:flex">
-                                    <span class="material-icons text-xs">public</span>
+                                    class="items-center hidden gap-1 text-xs font-medium text-blue-600 sm:flex">
+                                    <span class="text-xs material-icons">public</span>
                                     <span>{{ __('natan.web_search.enabled') }}</span>
                                 </span>
                             </div>
@@ -168,7 +168,7 @@
                             @if ($activeProject)
                                 <div
                                     class="mb-3 flex items-center gap-3 rounded-lg border-2 border-[#D4A574] bg-gradient-to-r from-[#D4A574]/10 to-white p-3">
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-lg"
+                                    <div class="flex items-center justify-center w-10 h-10 rounded-lg"
                                         style="background-color: {{ $activeProject->color ?? '#D4A574' }}20">
                                         <span class="material-icons"
                                             style="color: {{ $activeProject->color ?? '#D4A574' }}">{{ $activeProject->icon ?? 'folder' }}</span>
@@ -179,7 +179,7 @@
                                     </div>
                                     <button type="button" onclick="triggerDocumentUpload()"
                                         class="flex items-center gap-2 rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
-                                        <span class="material-icons text-sm">upload_file</span>
+                                        <span class="text-sm material-icons">upload_file</span>
                                         <span class="hidden sm:inline">{{ __('projects.upload_document') }}</span>
                                     </button>
                                     <input type="file" id="documentUploadInput" accept=".pdf,.docx,.txt,.md"
@@ -195,8 +195,8 @@
                                     class="flex items-center gap-1 self-end rounded-xl bg-[#2D5016] px-3 py-2 text-sm font-medium text-white transition-all hover:bg-[#3D6026] disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-6 sm:py-3 sm:text-base">
                                     <span id="sendBtnText"
                                         class="hidden sm:inline">{{ __('natan.chat.send_button') }}</span>
-                                    <span id="sendBtnLoader" class="hidden items-center gap-1 sm:gap-2">
-                                        <svg class="h-3 w-3 animate-spin sm:h-4 sm:w-4" fill="none"
+                                    <span id="sendBtnLoader" class="items-center hidden gap-1 sm:gap-2">
+                                        <svg class="w-3 h-3 animate-spin sm:h-4 sm:w-4" fill="none"
                                             viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10"
                                                 stroke="currentColor" stroke-width="4"></circle>
@@ -206,16 +206,16 @@
                                         </svg>
                                         <span class="hidden sm:inline">Invio...</span>
                                     </span>
-                                    <span class="material-icons text-lg sm:text-2xl">send</span>
+                                    <span class="text-lg material-icons sm:text-2xl">send</span>
                                 </button>
                             </form>
                         </div>
                     </div>
 
                     {{-- Info Footer - Ottimizzato mobile --}}
-                    <div class="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-2 sm:mt-4 sm:p-3">
+                    <div class="p-2 mt-3 border border-blue-200 rounded-lg bg-blue-50 sm:mt-4 sm:p-3">
                         <div class="flex items-start gap-1.5 sm:gap-2">
-                            <span class="material-icons text-xs text-blue-600 sm:text-sm">info</span>
+                            <span class="text-xs text-blue-600 material-icons sm:text-sm">info</span>
                             <div class="text-[10px] text-blue-800 sm:text-xs">
                                 <p class="font-medium">N.A.T.A.N. con Claude 3.5 Sonnet</p>
                                 <p class="text-blue-600">Sistema multi-persona · GDPR compliant</p>
@@ -234,13 +234,13 @@
                             class="mb-4 rounded-xl border-2 border-[#2D5016] bg-gradient-to-br from-[#1B365D] to-[#2D5016] p-4 text-white shadow-lg">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <span class="material-icons text-3xl">auto_awesome</span>
+                                    <span class="text-3xl material-icons">auto_awesome</span>
                                     <div>
                                         <h3 class="text-lg font-bold">Domande Strategiche</h3>
                                         <p class="text-xs text-white/80">Clicca per testare</p>
                                     </div>
                                 </div>
-                                <div class="rounded-full bg-yellow-400 px-3 py-1 text-xs font-bold text-yellow-900">
+                                <div class="px-3 py-1 text-xs font-bold text-yellow-900 bg-yellow-400 rounded-full">
                                     28
                                 </div>
                             </div>
@@ -249,8 +249,8 @@
                         {{-- Questions Scrollable Container --}}
                         <div class="max-h-[calc(100vh-200px)] space-y-3 overflow-y-auto rounded-xl bg-gray-50 p-3">
                             {{-- Strategic Questions --}}
-                            <div class="rounded-lg border border-blue-100 bg-blue-50 p-3">
-                                <div class="mb-2 flex items-center gap-2">
+                            <div class="p-3 border border-blue-100 rounded-lg bg-blue-50">
+                                <div class="flex items-center gap-2 mb-2">
                                     <span class="text-xl">🎯</span>
                                     <h4 class="text-sm font-bold text-[#1B365D]">Strategia</h4>
                                 </div>
@@ -283,8 +283,8 @@
                             </div>
 
                             {{-- Technical Questions --}}
-                            <div class="rounded-lg border border-red-100 bg-red-50 p-3">
-                                <div class="mb-2 flex items-center gap-2">
+                            <div class="p-3 border border-red-100 rounded-lg bg-red-50">
+                                <div class="flex items-center gap-2 mb-2">
                                     <span class="text-xl">⚙️</span>
                                     <h4 class="text-sm font-bold text-[#1B365D]">Tecnico</h4>
                                 </div>
@@ -317,8 +317,8 @@
                             </div>
 
                             {{-- Financial Questions --}}
-                            <div class="rounded-lg border border-green-100 bg-green-50 p-3">
-                                <div class="mb-2 flex items-center gap-2">
+                            <div class="p-3 border border-green-100 rounded-lg bg-green-50">
+                                <div class="flex items-center gap-2 mb-2">
                                     <span class="text-xl">💰</span>
                                     <h4 class="text-sm font-bold text-[#1B365D]">Finanziario</h4>
                                 </div>
@@ -351,8 +351,8 @@
                             </div>
 
                             {{-- Legal Questions --}}
-                            <div class="rounded-lg border border-purple-100 bg-purple-50 p-3">
-                                <div class="mb-2 flex items-center gap-2">
+                            <div class="p-3 border border-purple-100 rounded-lg bg-purple-50">
+                                <div class="flex items-center gap-2 mb-2">
                                     <span class="text-xl">⚖️</span>
                                     <h4 class="text-sm font-bold text-[#1B365D]">Legale</h4>
                                 </div>
@@ -385,8 +385,8 @@
                             </div>
 
                             {{-- Urban & Social Questions --}}
-                            <div class="rounded-lg border border-orange-100 bg-orange-50 p-3">
-                                <div class="mb-2 flex items-center gap-2">
+                            <div class="p-3 border border-orange-100 rounded-lg bg-orange-50">
+                                <div class="flex items-center gap-2 mb-2">
                                     <span class="text-xl">🏙️</span>
                                     <h4 class="text-sm font-bold text-[#1B365D]">Urban & Social</h4>
                                 </div>
@@ -419,8 +419,8 @@
                             </div>
 
                             {{-- Communication Questions --}}
-                            <div class="rounded-lg border border-pink-100 bg-pink-50 p-3">
-                                <div class="mb-2 flex items-center gap-2">
+                            <div class="p-3 border border-pink-100 rounded-lg bg-pink-50">
+                                <div class="flex items-center gap-2 mb-2">
                                     <span class="text-xl">📢</span>
                                     <h4 class="text-sm font-bold text-[#1B365D]">Comunicazione</h4>
                                 </div>
@@ -455,7 +455,7 @@
                             {{-- Power Questions (Wow Factor) --}}
                             <div
                                 class="rounded-lg border-2 border-[#2D5016] bg-gradient-to-r from-[#2D5016]/5 to-[#1B365D]/5 p-3">
-                                <div class="mb-2 flex items-center justify-between">
+                                <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-2">
                                         <span class="text-xl">⚡</span>
                                         <h4 class="text-sm font-bold text-[#1B365D]">Power Questions</h4>
@@ -501,15 +501,15 @@
 
             {{-- Free Chat with AI Section --}}
             <div class="mt-8">
-                <div class="rounded-2xl bg-white shadow-xl">
+                <div class="bg-white shadow-xl rounded-2xl">
                     {{-- Free Chat Header --}}
                     <div
-                        class="rounded-t-2xl border-b border-gray-200 bg-gradient-to-r from-purple-600 to-pink-500 p-6">
+                        class="p-6 border-b border-gray-200 rounded-t-2xl bg-gradient-to-r from-purple-600 to-pink-500">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div
-                                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                                    <span class="material-icons text-2xl text-white">chat</span>
+                                    class="flex items-center justify-center w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm">
+                                    <span class="text-2xl text-white material-icons">chat</span>
                                 </div>
                                 <div>
                                     <h2 class="text-lg font-bold text-white">💬 Chat Libera con AI</h2>
@@ -518,7 +518,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="rounded-lg bg-white/20 px-3 py-2 backdrop-blur-sm">
+                            <div class="px-3 py-2 rounded-lg bg-white/20 backdrop-blur-sm">
                                 <p class="text-xs font-medium text-white">Nessun RAG · Consulenza generale</p>
                             </div>
                         </div>
@@ -528,41 +528,41 @@
                     <div id="freeChatMessages" class="h-[400px] space-y-4 overflow-y-auto p-6">
                         {{-- Welcome Message --}}
                         <div id="freeChatWelcome"
-                            class="flex h-full flex-col items-center justify-center text-center">
+                            class="flex flex-col items-center justify-center h-full text-center">
                             <div
-                                class="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-pink-500">
-                                <span class="material-icons text-3xl text-white">forum</span>
+                                class="flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-gradient-to-br from-purple-600 to-pink-500">
+                                <span class="text-3xl text-white material-icons">forum</span>
                             </div>
                             <h3 class="mb-2 text-xl font-bold text-purple-900">Chiacchiera liberamente con Claude</h3>
-                            <p class="mb-4 max-w-md text-sm text-gray-600">
+                            <p class="max-w-md mb-4 text-sm text-gray-600">
                                 Qui puoi fare <strong>qualsiasi domanda</strong> senza limitarti agli atti.
                                 Brainstorming,
                                 spiegazioni di concetti, consigli strategici, revisione testi...
                             </p>
                             <div class="flex flex-wrap justify-center gap-2">
                                 <span
-                                    class="rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-800">Brainstorming</span>
+                                    class="px-3 py-1 text-xs font-medium text-purple-800 bg-purple-100 rounded-full">Brainstorming</span>
                                 <span
-                                    class="rounded-full bg-pink-100 px-3 py-1 text-xs font-medium text-pink-800">Spiegazioni</span>
+                                    class="px-3 py-1 text-xs font-medium text-pink-800 bg-pink-100 rounded-full">Spiegazioni</span>
                                 <span
-                                    class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">Revisioni</span>
+                                    class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">Revisioni</span>
                                 <span
-                                    class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">Consigli</span>
+                                    class="px-3 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Consigli</span>
                             </div>
                         </div>
                     </div>
 
                     {{-- Free Chat Input --}}
-                    <div class="border-t border-gray-200 bg-gray-50 p-4">
+                    <div class="p-4 border-t border-gray-200 bg-gray-50">
                         <form id="freeChatForm" class="flex gap-3">
                             <textarea id="freeChatInput" rows="1" placeholder="Chiedi qualsiasi cosa a Claude... (Shift+Enter per inviare)"
-                                class="flex-1 resize-none rounded-xl border-2 border-gray-300 px-4 py-3 text-sm focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                class="flex-1 px-4 py-3 text-sm border-2 border-gray-300 resize-none rounded-xl focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                                 style="max-height: 200px; overflow-y: auto;"></textarea>
                             <button type="submit" id="freeChatSendBtn"
-                                class="flex items-center gap-2 self-end rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-3 font-medium text-white transition-all hover:shadow-lg disabled:opacity-50">
+                                class="flex items-center self-end gap-2 px-6 py-3 font-medium text-white transition-all rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 hover:shadow-lg disabled:opacity-50">
                                 <span id="freeChatSendBtnText">Invia</span>
                                 <span id="freeChatSendBtnLoader" class="hidden">
-                                    <svg class="h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg"
+                                    <svg class="w-5 h-5 text-white animate-spin" xmlns="http://www.w3.org/2000/svg"
                                         fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10"
                                             stroke="currentColor" stroke-width="4"></circle>
@@ -627,6 +627,82 @@
         /* Elaboration badge */
         .elaboration-badge {
             @apply inline-flex items-center gap-1.5 rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-800;
+        }
+
+        /* ✨ Mermaid Diagram Styling */
+        .mermaid-diagram {
+            @apply my-4 overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 p-4;
+            max-width: 100%;
+        }
+
+        .mermaid-diagram.rendered {
+            @apply bg-white;
+        }
+
+        .mermaid-diagram svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Enhanced Markdown Styling */
+        .prose h1 {
+            @apply mb-4 mt-6 text-2xl font-bold text-[#1B365D];
+        }
+
+        .prose h2 {
+            @apply mb-3 mt-5 text-xl font-bold text-[#2D5016];
+        }
+
+        .prose h3 {
+            @apply mb-2 mt-4 text-lg font-semibold text-gray-800;
+        }
+
+        .prose table {
+            @apply w-full border-collapse overflow-hidden rounded-lg border border-gray-300 text-sm;
+        }
+
+        .prose thead {
+            @apply bg-[#1B365D] text-white;
+        }
+
+        .prose th {
+            @apply border border-gray-300 px-4 py-2 text-left font-semibold;
+        }
+
+        .prose td {
+            @apply border border-gray-200 px-4 py-2;
+        }
+
+        .prose tbody tr:nth-child(even) {
+            @apply bg-gray-50;
+        }
+
+        .prose tbody tr:hover {
+            @apply bg-blue-50;
+        }
+
+        .prose code {
+            @apply rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-[#2D5016];
+        }
+
+        .prose pre {
+            @apply my-3 overflow-x-auto rounded-lg bg-gray-900 p-4;
+        }
+
+        .prose pre code {
+            @apply bg-transparent text-gray-100;
+        }
+
+        .prose ul {
+            @apply my-3 ml-6 list-disc space-y-1;
+        }
+
+        .prose ol {
+            @apply my-3 ml-6 list-decimal space-y-1;
+        }
+
+        .prose blockquote {
+            @apply my-3 border-l-4 border-[#D4A574] bg-amber-50 py-2 pl-4 italic text-gray-700;
         }
     </style>
 
@@ -856,6 +932,11 @@
                     this.messages.push(message);
                     this.renderMessage(message);
                     this.scrollToBottom();
+                    
+                    // ✅ Render Mermaid diagrams if present (async, non-blocking)
+                    if (message.role === 'assistant' && message.content.includes('```mermaid')) {
+                        setTimeout(() => this.renderMermaidDiagrams(), 100); // Small delay to ensure DOM is ready
+                    }
                 },
 
                 /**
@@ -942,12 +1023,12 @@
                             referenceDiv.className = 'mb-3 rounded-lg border border-purple-200 bg-purple-50';
                             const collapseId = `reference-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
                             referenceDiv.innerHTML = `
-                                <button class="reference-toggle-btn flex w-full items-center justify-between px-3 py-2 text-left text-xs font-medium text-purple-800 hover:bg-purple-100"
+                                <button class="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-left text-purple-800 reference-toggle-btn hover:bg-purple-100"
                                         data-target="${collapseId}">
                                     <span>📄 Analisi originale elaborata</span>
-                                    <span class="material-icons text-sm transition-transform" data-icon="${collapseId}">expand_more</span>
+                                    <span class="text-sm transition-transform material-icons" data-icon="${collapseId}">expand_more</span>
                                 </button>
-                                <div id="${collapseId}" class="hidden border-t border-purple-200 px-3 py-2 text-xs text-purple-900">
+                                <div id="${collapseId}" class="hidden px-3 py-2 text-xs text-purple-900 border-t border-purple-200">
                                     ${message.reference_content.replace(/\n/g, '<br>').substring(0, 1000)}${message.reference_content.length > 1000 ? '...' : ''}
                                 </div>
                             `;
@@ -974,12 +1055,12 @@
                             <button class="sources-toggle-btn mb-2 flex w-full items-center justify-between text-left text-xs font-semibold text-gray-600 hover:text-[#2D5016]"
                                     data-target="${collapseId}">
                                 <span>📚 Fonti (${sourcesCount})</span>
-                                <span class="material-icons text-sm transition-transform" data-icon="${collapseId}">expand_more</span>
+                                <span class="text-sm transition-transform material-icons" data-icon="${collapseId}">expand_more</span>
                             </button>
                             <div id="${collapseId}" class="hidden space-y-1">
                                 ${message.sources.map(source => `
                                                                                                                                                                                     <a href="${source.url}" target="_blank"
-                                                                                                                                                                                       class="block rounded border border-gray-200 bg-white p-2 text-xs hover:bg-gray-50">
+                                                                                                                                                                                       class="block p-2 text-xs bg-white border border-gray-200 rounded hover:bg-gray-50">
                                                                                                                                                                                         <span class="font-medium">${source.protocol_number}</span>
                                                                                                                                                                                         <span class="text-gray-600"> - </span>
                                                                                                                                                                                         <span>${source.title}</span>
@@ -999,27 +1080,27 @@
                         const webSourcesCount = message.web_sources.length;
 
                         webSourcesDiv.innerHTML = `
-                            <button class="sources-toggle-btn mb-2 flex w-full items-center justify-between text-left text-xs font-semibold text-blue-700 hover:text-blue-900"
+                            <button class="flex items-center justify-between w-full mb-2 text-xs font-semibold text-left text-blue-700 sources-toggle-btn hover:text-blue-900"
                                     data-target="${collapseId}">
                                 <span class="flex items-center gap-1">
-                                    <span class="material-icons text-sm">public</span>
+                                    <span class="text-sm material-icons">public</span>
                                     <span>🌐 {{ __('natan.web_sources.title') }} (${webSourcesCount})</span>
                                 </span>
-                                <span class="material-icons text-sm transition-transform" data-icon="${collapseId}">expand_more</span>
+                                <span class="text-sm transition-transform material-icons" data-icon="${collapseId}">expand_more</span>
                             </button>
                             <div id="${collapseId}" class="hidden space-y-2">
                                 ${message.web_sources.map((source, idx) => `
-                                                                                                                                                            <div class="rounded-lg border border-blue-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow">
+                                                                                                                                                            <div class="p-3 transition-shadow bg-white border border-blue-200 rounded-lg shadow-sm hover:shadow-md">
                                                                                                                                                                 <div class="flex items-start justify-between gap-2 mb-1">
-                                                                                                                                                                    <h4 class="font-semibold text-sm text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
+                                                                                                                                                                    <h4 class="text-sm font-semibold text-blue-900">${source.title || 'Source ' + (idx + 1)}</h4>
                                                                                                                                                                     <span class="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
                                                                                                                                                                         ${Math.round((source.relevance_score || 1) * 100)}%
                                                                                                                                                                     </span>
                                                                                                                                                                 </div>
-                                                                                                                                                                <p class="text-xs text-gray-700 mb-2 line-clamp-3">${source.snippet || ''}</p>
+                                                                                                                                                                <p class="mb-2 text-xs text-gray-700 line-clamp-3">${source.snippet || ''}</p>
                                                                                                                                                                 <a href="${source.url}" target="_blank" rel="noopener noreferrer"
-                                                                                                                                                                   class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                                                                                                                                                    <span class="material-icons text-xs">open_in_new</span>
+                                                                                                                                                                   class="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                                                                                                                                                    <span class="text-xs material-icons">open_in_new</span>
                                                                                                                                                                     <span class="truncate">${source.url}</span>
                                                                                                                                                                 </a>
                                                                                                                                                             </div>
@@ -1044,7 +1125,7 @@
                         const copyBtn = document.createElement('button');
                         copyBtn.className =
                             'copy-message-btn flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 hover:text-[#2D5016] transition-colors';
-                        copyBtn.innerHTML = '<span class="material-icons text-sm">content_copy</span><span>Copia</span>';
+                        copyBtn.innerHTML = '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
                         copyBtn.dataset.content = message.content;
                         timestampDiv.appendChild(copyBtn);
                     }
@@ -1089,11 +1170,65 @@
                 /**
                  * Format message (simple markdown-like)
                  */
+                /**
+                 * Format message with professional Markdown + Mermaid rendering
+                 * Supports: Bold, Italic, Lists, Tables, Code blocks, Mermaid diagrams
+                 */
                 formatMessage(text) {
-                    return text
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\n/g, '<br>')
-                        .replace(/• /g, '<br>• ');
+                    // Configure marked.js for enhanced Markdown
+                    marked.setOptions({
+                        breaks: true, // Convert \n to <br>
+                        gfm: true, // GitHub Flavored Markdown
+                        tables: true, // Support tables
+                        headerIds: false, // No IDs in headers
+                        mangle: false // Don't mangle email addresses
+                    });
+
+                    // Parse Markdown to HTML
+                    let html = marked.parse(text);
+
+                    // Sanitize HTML to prevent XSS
+                    html = DOMPurify.sanitize(html, {
+                        ADD_TAGS: ['pre', 'code'], // Allow code blocks
+                        ADD_ATTR: ['class', 'language'] // Allow class for syntax highlighting
+                    });
+
+                    // Process Mermaid diagrams after sanitization
+                    // Mermaid syntax: ```mermaid ... ```
+                    html = html.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, (match, code) => {
+                        const graphId = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+                        // Decode HTML entities
+                        const decodedCode = code
+                            .replace(/&lt;/g, '<')
+                            .replace(/&gt;/g, '>')
+                            .replace(/&amp;/g, '&')
+                            .replace(/&quot;/g, '"')
+                            .trim();
+                        
+                        return `<div class="mermaid-diagram" id="${graphId}">${decodedCode}</div>`;
+                    });
+
+                    return html;
+                },
+
+                /**
+                 * Render Mermaid diagrams after message is added to DOM
+                 */
+                async renderMermaidDiagrams() {
+                    const diagrams = document.querySelectorAll('.mermaid-diagram');
+                    
+                    for (const diagram of diagrams) {
+                        try {
+                            const { svg } = await mermaid.render(diagram.id + '-svg', diagram.textContent);
+                            diagram.innerHTML = svg;
+                            diagram.classList.add('rendered');
+                        } catch (error) {
+                            console.error('[Mermaid] Render error:', error);
+                            diagram.innerHTML = `<div class="p-2 text-sm text-red-600 border border-red-200 rounded bg-red-50">
+                                ⚠️ Errore nel rendering del diagramma Mermaid
+                            </div>`;
+                        }
+                    }
                 },
 
                 /**
@@ -1490,12 +1625,12 @@
                     loadingDiv.id = 'loadingIndicator';
                     loadingDiv.className = 'flex justify-start';
                     loadingDiv.innerHTML = `
-                        <div class="max-w-2xl rounded-2xl rounded-tl-sm bg-gray-100 px-4 py-3 shadow-sm">
+                        <div class="max-w-2xl px-4 py-3 bg-gray-100 rounded-tl-sm shadow-sm rounded-2xl">
                             <div class="flex items-center gap-2">
                                 <div class="flex space-x-1">
-                                    <div class="h-2 w-2 animate-bounce rounded-full bg-gray-400" style="animation-delay: 0ms"></div>
-                                    <div class="h-2 w-2 animate-bounce rounded-full bg-gray-400" style="animation-delay: 150ms"></div>
-                                    <div class="h-2 w-2 animate-bounce rounded-full bg-gray-400" style="animation-delay: 300ms"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
                                 </div>
                                 <span class="text-xs text-gray-500">N.A.T.A.N. sta pensando...</span>
                             </div>
@@ -1757,19 +1892,19 @@
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'flex justify-start mb-4';
                     errorDiv.innerHTML = `
-                        <div class="max-w-2xl rounded-2xl rounded-tl-sm bg-red-50 border-l-4 border-red-500 px-4 py-3 shadow-sm">
+                        <div class="max-w-2xl px-4 py-3 border-l-4 border-red-500 rounded-tl-sm shadow-sm rounded-2xl bg-red-50">
                             <div class="flex items-start gap-3">
                                 <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                                 <div class="flex-1">
-                                    <p class="text-sm text-red-800 font-medium mb-2">${errorMessage}</p>
+                                    <p class="mb-2 text-sm font-medium text-red-800">${errorMessage}</p>
                                     ${sessionId ? `
                                                                                 <button
                                                                                     onclick="NatanChat.retryChunking('${sessionId}')"
                                                                                     class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors duration-200"
                                                                                 >
-                                                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                                                                     </svg>
                                                                                     {{ __('natan.chunking.retry_button') }}
@@ -1915,7 +2050,7 @@
 
                         // Visual feedback
                         const originalHTML = button.innerHTML;
-                        button.innerHTML = '<span class="material-icons text-sm">check</span><span>Copiato!</span>';
+                        button.innerHTML = '<span class="text-sm material-icons">check</span><span>Copiato!</span>';
                         button.classList.add('text-green-600');
 
                         setTimeout(() => {
@@ -1924,10 +2059,10 @@
                         }, 2000);
                     } catch (err) {
                         console.error('[N.A.T.A.N.] Copy failed:', err);
-                        button.innerHTML = '<span class="material-icons text-sm">error</span><span>Errore</span>';
+                        button.innerHTML = '<span class="text-sm material-icons">error</span><span>Errore</span>';
                         setTimeout(() => {
                             button.innerHTML =
-                                '<span class="material-icons text-sm">content_copy</span><span>Copia</span>';
+                                '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
                         }, 2000);
                     }
                 },
@@ -1948,13 +2083,13 @@
                         'mx-4 mb-4 animate-fade-in rounded-lg border border-blue-300 bg-blue-50 p-3 shadow-sm';
                     suggestionDiv.innerHTML = `
                         <div class="flex items-start gap-3">
-                            <span class="material-icons text-blue-600">lightbulb</span>
+                            <span class="text-blue-600 material-icons">lightbulb</span>
                             <div class="flex-1">
                                 <p class="text-sm text-blue-800">${suggestionText}</p>
                             </div>
                             <button onclick="document.getElementById('personaSuggestionBanner').remove()"
                                     class="text-blue-400 hover:text-blue-600">
-                                <span class="material-icons text-sm">close</span>
+                                <span class="text-sm material-icons">close</span>
                             </button>
                         </div>
                     `;
@@ -2069,7 +2204,7 @@
                         await navigator.clipboard.writeText(plainText);
 
                         const originalHTML = button.innerHTML;
-                        button.innerHTML = '<span class="material-icons text-sm">check</span><span>Copiato!</span>';
+                        button.innerHTML = '<span class="text-sm material-icons">check</span><span>Copiato!</span>';
                         button.classList.add('text-green-600');
 
                         setTimeout(() => {
@@ -2078,10 +2213,10 @@
                         }, 2000);
                     } catch (err) {
                         console.error('[FreeChat] Copy failed:', err);
-                        button.innerHTML = '<span class="material-icons text-sm">error</span><span>Errore</span>';
+                        button.innerHTML = '<span class="text-sm material-icons">error</span><span>Errore</span>';
                         setTimeout(() => {
                             button.innerHTML =
-                                '<span class="material-icons text-sm">content_copy</span><span>Copia</span>';
+                                '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
                         }, 2000);
                     }
                 },
@@ -2132,7 +2267,7 @@
                         const copyBtn = document.createElement('button');
                         copyBtn.className =
                             'free-copy-btn flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-purple-600 hover:bg-purple-100 transition-colors';
-                        copyBtn.innerHTML = '<span class="material-icons text-sm">content_copy</span><span>Copia</span>';
+                        copyBtn.innerHTML = '<span class="text-sm material-icons">content_copy</span><span>Copia</span>';
                         copyBtn.dataset.content = content;
                         timestampDiv.appendChild(copyBtn);
                     }
@@ -2198,12 +2333,12 @@
                     loadingDiv.id = 'freeChatLoadingIndicator';
                     loadingDiv.className = 'flex justify-start';
                     loadingDiv.innerHTML = `
-                        <div class="max-w-2xl rounded-2xl rounded-tl-sm bg-gray-100 px-4 py-3 shadow-sm">
+                        <div class="max-w-2xl px-4 py-3 bg-gray-100 rounded-tl-sm shadow-sm rounded-2xl">
                             <div class="flex items-center gap-2">
                                 <div class="flex space-x-1">
-                                    <div class="h-2 w-2 animate-bounce rounded-full bg-purple-400" style="animation-delay: 0ms"></div>
-                                    <div class="h-2 w-2 animate-bounce rounded-full bg-purple-400" style="animation-delay: 150ms"></div>
-                                    <div class="h-2 w-2 animate-bounce rounded-full bg-purple-400" style="animation-delay: 300ms"></div>
+                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
                                 </div>
                                 <span class="text-xs text-gray-600">Claude sta pensando...</span>
                             </div>
@@ -2258,19 +2393,19 @@
     {{-- Projects Modal --}}
     <div id="projectsModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm"
         role="dialog" aria-labelledby="projectsModalTitle" aria-modal="true">
-        <div class="flex min-h-screen items-center justify-center p-4">
-            <div class="w-full max-w-4xl transform rounded-2xl bg-white shadow-2xl transition-all">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="w-full max-w-4xl transition-all transform bg-white shadow-2xl rounded-2xl">
                 {{-- Modal Header --}}
                 <div
                     class="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-[#1B365D] to-[#2D5016] px-6 py-4">
                     <div class="flex items-center gap-3">
-                        <span class="material-icons text-3xl text-white">folder_special</span>
+                        <span class="text-3xl text-white material-icons">folder_special</span>
                         <h2 id="projectsModalTitle" class="text-2xl font-bold text-white">
                             {{ __('projects.projects') }}
                         </h2>
                     </div>
                     <button type="button" onclick="closeProjectsModal()"
-                        class="rounded-lg p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white">
+                        class="p-2 transition-colors rounded-lg text-white/80 hover:bg-white/10 hover:text-white">
                         <span class="material-icons">close</span>
                     </button>
                 </div>
@@ -2279,7 +2414,7 @@
                 <div class="p-6">
                     {{-- Projects List --}}
                     @if ($projects->count() > 0)
-                        <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2">
                             @foreach ($projects as $project)
                                 <div
                                     class="{{ $activeProject && $activeProject->id === $project->id ? 'border-[#D4A574] bg-gradient-to-br from-[#D4A574]/10 to-white shadow-lg' : 'border-gray-200 bg-white hover:border-[#D4A574]/50 hover:shadow-md' }} group relative overflow-hidden rounded-xl border-2 p-4 transition-all">
@@ -2287,16 +2422,16 @@
                                     @if ($activeProject && $activeProject->id === $project->id)
                                         <div
                                             class="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-[#D4A574] px-2 py-1">
-                                            <span class="material-icons text-xs text-white">check_circle</span>
+                                            <span class="text-xs text-white material-icons">check_circle</span>
                                             <span class="text-xs font-medium text-white">Attivo</span>
                                         </div>
                                     @endif
 
                                     {{-- Project Header --}}
-                                    <div class="mb-3 flex items-center gap-3">
-                                        <div class="flex h-12 w-12 items-center justify-center rounded-lg"
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="flex items-center justify-center w-12 h-12 rounded-lg"
                                             style="background-color: {{ $project->color ?? '#1B365D' }}20">
-                                            <span class="material-icons text-2xl"
+                                            <span class="text-2xl material-icons"
                                                 style="color: {{ $project->color ?? '#1B365D' }}">{{ $project->icon ?? 'folder' }}</span>
                                         </div>
                                         <div class="flex-1">
@@ -2311,30 +2446,30 @@
 
                                     {{-- Project Description --}}
                                     @if ($project->description)
-                                        <p class="mb-3 line-clamp-2 text-sm text-gray-600">
+                                        <p class="mb-3 text-sm text-gray-600 line-clamp-2">
                                             {{ $project->description }}
                                         </p>
                                     @endif
 
                                     {{-- Project Stats --}}
-                                    <div class="mb-3 flex items-center gap-4 text-xs text-gray-500">
+                                    <div class="flex items-center gap-4 mb-3 text-xs text-gray-500">
                                         <div class="flex items-center gap-1">
-                                            <span class="material-icons text-sm">description</span>
+                                            <span class="text-sm material-icons">description</span>
                                             <span>{{ $project->documents()->count() }} documenti</span>
                                         </div>
                                         <div class="flex items-center gap-1">
-                                            <span class="material-icons text-sm">chat</span>
+                                            <span class="text-sm material-icons">chat</span>
                                             <span>{{ $project->chatMessages()->count() }} chat</span>
                                         </div>
                                     </div>
 
                                     {{-- Action Buttons --}}
-                                    <div class="flex items-center gap-2 border-t border-gray-200 pt-3">
+                                    <div class="flex items-center gap-2 pt-3 border-t border-gray-200">
                                         {{-- Upload Document Button --}}
                                         <button type="button"
                                             onclick="event.stopPropagation(); triggerProjectUpload({{ $project->id }})"
                                             class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#D4A574] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
-                                            <span class="material-icons text-sm">upload_file</span>
+                                            <span class="text-sm material-icons">upload_file</span>
                                             <span>{{ __('projects.upload_document') }}</span>
                                         </button>
 
@@ -2342,7 +2477,7 @@
                                         @if (!$activeProject || $activeProject->id !== $project->id)
                                             <button type="button" onclick="selectProject({{ $project->id }})"
                                                 class="flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-[#1B365D] bg-white px-3 py-2 text-sm font-medium text-[#1B365D] transition-colors hover:bg-[#1B365D] hover:text-white">
-                                                <span class="material-icons text-sm">check_circle</span>
+                                                <span class="text-sm material-icons">check_circle</span>
                                                 <span>{{ __('projects.activate') }}</span>
                                             </button>
                                         @endif
@@ -2351,8 +2486,8 @@
                             @endforeach
                         </div>
                     @else
-                        <div class="mb-6 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center">
-                            <span class="material-icons mb-3 text-5xl text-gray-400">folder_open</span>
+                        <div class="p-8 mb-6 text-center border-2 border-gray-300 border-dashed rounded-xl bg-gray-50">
+                            <span class="mb-3 text-5xl text-gray-400 material-icons">folder_open</span>
                             <h4 class="mb-2 font-bold text-gray-700">{{ __('projects.no_projects') }}</h4>
                             <p class="text-sm text-gray-500">{{ __('projects.create_first') }}</p>
                         </div>
@@ -2361,9 +2496,9 @@
                     {{-- Create Project Form --}}
                     <div id="createProjectForm"
                         class="hidden rounded-xl border-2 border-[#D4A574] bg-gradient-to-br from-[#D4A574]/5 to-white p-6">
-                        <div class="mb-4 flex items-center justify-between">
+                        <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold text-[#1B365D]">
-                                <span class="material-icons mr-2 align-middle">add_circle</span>
+                                <span class="mr-2 align-middle material-icons">add_circle</span>
                                 {{ __('projects.new_project') }}
                             </h3>
                             <button type="button" onclick="toggleCreateForm()"
@@ -2377,7 +2512,7 @@
                             {{-- Name --}}
                             <div>
                                 <label for="projectName"
-                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.name') }}
+                                    class="block mb-1 text-sm font-medium text-gray-700">{{ __('projects.name') }}
                                     <span class="text-red-500">*</span></label>
                                 <input type="text" id="projectName" name="name" required maxlength="100"
                                     class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]/20"
@@ -2388,7 +2523,7 @@
                             {{-- Description --}}
                             <div>
                                 <label for="projectDescription"
-                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.description') }}</label>
+                                    class="block mb-1 text-sm font-medium text-gray-700">{{ __('projects.description') }}</label>
                                 <textarea id="projectDescription" name="description" rows="3" maxlength="1000"
                                     class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#D4A574] focus:outline-none focus:ring-2 focus:ring-[#D4A574]/20"
                                     placeholder="{{ __('projects.description_placeholder') }}"></textarea>
@@ -2397,15 +2532,15 @@
                             {{-- Icon Picker --}}
                             <div>
                                 <label
-                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.icon') }}</label>
+                                    class="block mb-1 text-sm font-medium text-gray-700">{{ __('projects.icon') }}</label>
                                 <input type="hidden" id="projectIcon" name="icon" value="folder">
-                                <div class="grid grid-cols-8 gap-2 rounded-lg border border-gray-300 bg-white p-3"
+                                <div class="grid grid-cols-8 gap-2 p-3 bg-white border border-gray-300 rounded-lg"
                                     style="max-height: 150px; overflow-y: auto;">
                                     @foreach (['folder', 'folder_special', 'work', 'school', 'account_balance', 'gavel', 'description', 'assignment', 'assessment', 'business_center', 'library_books', 'event_note'] as $icon)
                                         <button type="button" onclick="selectIcon('{{ $icon }}')"
                                             class="icon-option {{ $icon === 'folder' ? 'border-[#D4A574] bg-[#D4A574]/10' : 'hover:bg-gray-50' }} flex h-10 w-10 items-center justify-center rounded-lg border-2 border-transparent transition-all hover:border-[#D4A574]"
                                             data-icon="{{ $icon }}">
-                                            <span class="material-icons text-gray-700">{{ $icon }}</span>
+                                            <span class="text-gray-700 material-icons">{{ $icon }}</span>
                                         </button>
                                     @endforeach
                                 </div>
@@ -2414,7 +2549,7 @@
                             {{-- Color Picker --}}
                             <div>
                                 <label
-                                    class="mb-1 block text-sm font-medium text-gray-700">{{ __('projects.color') }}</label>
+                                    class="block mb-1 text-sm font-medium text-gray-700">{{ __('projects.color') }}</label>
                                 <input type="hidden" id="projectColor" name="color" value="#1B365D">
                                 <div class="flex flex-wrap gap-2">
                                     @foreach (['#1B365D', '#2D5016', '#D4A574', '#6B6B6B', '#C13120', '#E67E22', '#8E44AD'] as $color)
@@ -2430,12 +2565,12 @@
                             {{-- Submit Button --}}
                             <div class="flex justify-end gap-3 pt-4">
                                 <button type="button" onclick="toggleCreateForm()"
-                                    class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                                     {{ __('projects.cancel') }}
                                 </button>
                                 <button type="submit" id="submitProjectBtn"
                                     class="rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968] disabled:cursor-not-allowed disabled:opacity-50">
-                                    <span class="material-icons mr-2 align-middle text-sm">save</span>
+                                    <span class="mr-2 text-sm align-middle material-icons">save</span>
                                     {{ __('projects.create') }}
                                 </button>
                             </div>
@@ -2444,21 +2579,21 @@
                 </div>
 
                 {{-- Modal Footer --}}
-                <div class="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+                <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
                     @if ($activeProject)
                         <button type="button" onclick="removeProject()"
-                            class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50">
-                            <span class="material-icons mr-2 text-sm">close</span>
+                            class="px-4 py-2 text-sm font-medium text-red-600 transition-colors bg-white border border-red-300 rounded-lg hover:bg-red-50">
+                            <span class="mr-2 text-sm material-icons">close</span>
                             {{ __('projects.remove_context') }}
                         </button>
                     @endif
                     <button type="button" onclick="closeProjectsModal()"
-                        class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+                        class="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                         {{ __('projects.close') }}
                     </button>
                     <button type="button" onclick="toggleCreateForm()"
                         class="rounded-lg border-0 bg-[#D4A574] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#B89968]">
-                        <span class="material-icons mr-2 text-sm">add</span>
+                        <span class="mr-2 text-sm material-icons">add</span>
                         {{ __('projects.create_new') }}
                     </button>
                 </div>
@@ -2591,7 +2726,7 @@
                         // Disable submit button
                         submitBtn.disabled = true;
                         submitBtn.innerHTML =
-                            '<span class="material-icons mr-2 text-sm align-middle animate-spin">hourglass_empty</span>{{ __('projects.creating') }}';
+                            '<span class="mr-2 text-sm align-middle material-icons animate-spin">hourglass_empty</span>{{ __('projects.creating') }}';
 
                         const formData = {
                             name: nameInput.value.trim(),
@@ -2626,7 +2761,7 @@
                                 // Re-enable button
                                 submitBtn.disabled = false;
                                 submitBtn.innerHTML =
-                                    '<span class="material-icons mr-2 text-sm align-middle">save</span>{{ __('projects.create') }}';
+                                    '<span class="mr-2 text-sm align-middle material-icons">save</span>{{ __('projects.create') }}';
                             }
                         } catch (error) {
                             console.error('[ProjectForm] Error:', error);
@@ -2636,7 +2771,7 @@
                             // Re-enable button
                             submitBtn.disabled = false;
                             submitBtn.innerHTML =
-                                '<span class="material-icons mr-2 text-sm align-middle">save</span>{{ __('projects.create') }}';
+                                '<span class="mr-2 text-sm align-middle material-icons">save</span>{{ __('projects.create') }}';
                         }
                     });
                 }
@@ -2745,7 +2880,7 @@
                 const originalHTML = uploadBtn.innerHTML;
                 uploadBtn.disabled = true;
                 uploadBtn.innerHTML =
-                    '<span class="material-icons text-sm animate-spin">hourglass_empty</span><span class="hidden sm:inline">{{ __('projects.uploading') }}</span>';
+                    '<span class="text-sm material-icons animate-spin">hourglass_empty</span><span class="hidden sm:inline">{{ __('projects.uploading') }}</span>';
 
                 const formData = new FormData();
                 formData.append('document', file);
@@ -2824,7 +2959,7 @@
                 if (uploadBtn) {
                     uploadBtn.disabled = true;
                     uploadBtn.innerHTML =
-                        '<span class="material-icons text-sm animate-spin">hourglass_empty</span><span>{{ __('projects.uploading') }}</span>';
+                        '<span class="text-sm material-icons animate-spin">hourglass_empty</span><span>{{ __('projects.uploading') }}</span>';
                 }
 
                 const formData = new FormData();
@@ -2871,5 +3006,20 @@
 
         {{-- AI Processing Panel Controller --}}
         <script src="{{ asset('js/ai-processing-panel.js') }}?v={{ time() }}"></script>
+
+        {{-- ✨ Markdown + Mermaid.js for Professional Rendering --}}
+        <script src="https://cdn.jsdelivr.net/npm/marked@11.1.0/marked.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+        <script>
+            // Initialize Mermaid for diagram rendering
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'default',
+                securityLevel: 'loose',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                fontSize: 14
+            });
+        </script>
     @endpush
 </x-pa-layout>

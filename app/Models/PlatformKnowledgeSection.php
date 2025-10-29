@@ -30,8 +30,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @date 2025-10-29
  * @purpose Knowledge base for AI platform guidance
  */
-class PlatformKnowledgeSection extends Model
-{
+class PlatformKnowledgeSection extends Model {
     use HasFactory;
 
     /**
@@ -76,8 +75,7 @@ class PlatformKnowledgeSection extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeActive($query)
-    {
+    public function scopeActive($query) {
         return $query->where('is_active', true);
     }
 
@@ -88,8 +86,7 @@ class PlatformKnowledgeSection extends Model
      * @param string $category
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeCategory($query, string $category)
-    {
+    public function scopeCategory($query, string $category) {
         return $query->where('category', $category);
     }
 
@@ -100,8 +97,7 @@ class PlatformKnowledgeSection extends Model
      * @param string $locale
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeLocale($query, string $locale)
-    {
+    public function scopeLocale($query, string $locale) {
         return $query->where('locale', $locale);
     }
 
@@ -112,12 +108,11 @@ class PlatformKnowledgeSection extends Model
      * @param string $search
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSearch($query, string $search)
-    {
+    public function scopeSearch($query, string $search) {
         return $query->where(function ($q) use ($search) {
             $q->where('title', 'like', "%{$search}%")
-              ->orWhere('content', 'like', "%{$search}%")
-              ->orWhereJsonContains('keywords', $search);
+                ->orWhere('content', 'like', "%{$search}%")
+                ->orWhereJsonContains('keywords', $search);
         });
     }
 
@@ -130,8 +125,7 @@ class PlatformKnowledgeSection extends Model
      * @param string $locale Locale filter (default: it)
      * @return string Formatted knowledge base for AI
      */
-    public static function getFormattedForAI(?string $category = null, string $locale = 'it'): string
-    {
+    public static function getFormattedForAI(?string $category = null, string $locale = 'it'): string {
         $query = self::active()->locale($locale)->orderBy('priority');
 
         if ($category) {
@@ -182,17 +176,33 @@ class PlatformKnowledgeSection extends Model
      * @param int $limit Max sections to return
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function findRelevant(string $question, string $locale = 'it', int $limit = 5)
-    {
+    public static function findRelevant(string $question, string $locale = 'it', int $limit = 5) {
         // Extract potential keywords from question
         $questionLower = strtolower($question);
-        
+
         // Common words to skip
-        $stopWords = ['come', 'cosa', 'dove', 'quando', 'perché', 'qual', 'quale', 'quanto', 
-                      'posso', 'devo', 'voglio', 'fare', 'è', 'il', 'la', 'un', 'una'];
+        $stopWords = [
+            'come',
+            'cosa',
+            'dove',
+            'quando',
+            'perché',
+            'qual',
+            'quale',
+            'quanto',
+            'posso',
+            'devo',
+            'voglio',
+            'fare',
+            'è',
+            'il',
+            'la',
+            'un',
+            'una'
+        ];
 
         $words = preg_split('/\s+/', $questionLower);
-        $keywords = array_filter($words, function($word) use ($stopWords) {
+        $keywords = array_filter($words, function ($word) use ($stopWords) {
             return strlen($word) > 3 && !in_array($word, $stopWords);
         });
 
@@ -202,12 +212,11 @@ class PlatformKnowledgeSection extends Model
         foreach ($keywords as $keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('title', 'like', "%{$keyword}%")
-                  ->orWhere('content', 'like', "%{$keyword}%")
-                  ->orWhereJsonContains('keywords', $keyword);
+                    ->orWhere('content', 'like', "%{$keyword}%")
+                    ->orWhereJsonContains('keywords', $keyword);
             });
         }
 
         return $query->orderBy('priority')->limit($limit)->get();
     }
 }
-

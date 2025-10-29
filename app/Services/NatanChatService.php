@@ -875,13 +875,29 @@ class NatanChatService {
                 ->limit($limit ?? 50)
                 ->get();
 
-            // For each session, get first user message as preview
+            // For each session, get first user message as preview + calculate total cost
             $sessionsWithPreview = $sessions->map(function ($session) use ($user) {
                 $firstMessage = NatanChatMessage::forSession($session->session_id)
                     ->forUser($user->id)
                     ->userMessages()
                     ->orderBy('created_at', 'asc')
                     ->first();
+
+                // Calculate total tokens and cost for this session
+                $sessionMessages = NatanChatMessage::forSession($session->session_id)
+                    ->forUser($user->id)
+                    ->assistantMessages() // Only assistant messages have token counts
+                    ->get();
+
+                $totalInputTokens = $sessionMessages->sum('tokens_input') ?? 0;
+                $totalOutputTokens = $sessionMessages->sum('tokens_output') ?? 0;
+
+                // Calculate cost in EUR using AiCreditsService
+                $totalCostEUR = 0;
+                if ($totalInputTokens > 0 || $totalOutputTokens > 0) {
+                    $creditsService = app(\App\Services\AiCreditsService::class);
+                    $totalCostEUR = $creditsService->calculateCostEUR($totalInputTokens, $totalOutputTokens);
+                }
 
                 return [
                     'session_id' => $session->session_id,
@@ -890,6 +906,8 @@ class NatanChatService {
                     'message_count' => $session->message_count,
                     'preview' => $firstMessage ? \Illuminate\Support\Str::limit($firstMessage->content, 100) : null,
                     'first_persona' => $firstMessage ? $firstMessage->persona_name : null,
+                    'total_tokens' => $totalInputTokens + $totalOutputTokens,
+                    'total_cost_eur' => round($totalCostEUR, 4), // 4 decimals for precision
                 ];
             });
 
@@ -968,6 +986,16 @@ class NatanChatService {
                 ->orderBy('created_at', 'asc')
                 ->get()
                 ->map(function ($message) {
+                    // Calculate cost for this specific message (if assistant)
+                    $messageCostEUR = 0;
+                    if ($message->role === 'assistant' && ($message->tokens_input || $message->tokens_output)) {
+                        $creditsService = app(\App\Services\AiCreditsService::class);
+                        $messageCostEUR = $creditsService->calculateCostEUR(
+                            $message->tokens_input ?? 0,
+                            $message->tokens_output ?? 0
+                        );
+                    }
+
                     // Return sanitized message (hide internal AI metadata)
                     return [
                         'id' => $message->id,
@@ -977,6 +1005,9 @@ class NatanChatService {
                         'rag_info' => $message->getRagInfo(),
                         'web_search_enabled' => $message->web_search_enabled,
                         'web_search_count' => $message->web_search_count,
+                        'tokens_input' => $message->tokens_input,
+                        'tokens_output' => $message->tokens_output,
+                        'cost_eur' => round($messageCostEUR, 4), // Cost for this single message
                         'created_at' => $message->created_at->toIso8601String(),
                         'was_helpful' => $message->was_helpful,
                     ];

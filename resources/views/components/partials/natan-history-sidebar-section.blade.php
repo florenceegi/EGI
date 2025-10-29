@@ -75,8 +75,12 @@
             <p class="truncate text-xs font-medium text-white/60" data-first-message></p>
         </div>
         <div class="line-clamp-2 text-xs leading-tight text-white/50" data-preview></div>
-        <div class="mt-1.5 flex items-center gap-1">
+        <div class="mt-1.5 flex items-center justify-between gap-2">
             <span class="text-[10px] text-white/40" data-persona></span>
+            <div class="flex items-center gap-2 text-[10px]">
+                <span class="text-white/30" data-tokens></span>
+                <span class="font-medium text-[#D4A574]" data-cost></span>
+            </div>
         </div>
     </div>
 </template>
@@ -200,6 +204,12 @@
                     card.querySelector('[data-persona]').textContent = session.first_persona ?
                         `{{ __('natan.history.with_persona', ['persona' => '']) }}`.replace('', session
                             .first_persona) : '';
+
+                    // ✅ NEW: Show tokens and cost
+                    card.querySelector('[data-tokens]').textContent = session.total_tokens ?
+                        `${session.total_tokens.toLocaleString()} tokens` : '';
+                    card.querySelector('[data-cost]').textContent = session.total_cost_eur ?
+                        `€${session.total_cost_eur.toFixed(4)}` : '€0.00';
 
                     // Set delete button ID
                     const deleteBtn = card.querySelector('.delete-session-btn');

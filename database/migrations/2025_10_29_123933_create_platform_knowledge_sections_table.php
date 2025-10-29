@@ -16,30 +16,28 @@ use Illuminate\Support\Facades\Schema;
  * @date 2025-10-29
  * @purpose Knowledge base for platform guidance and help
  */
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('platform_knowledge_sections', function (Blueprint $table) {
             $table->id();
 
             // Section identification
             $table->string('section_key')->unique()->comment('Unique key (es: egis.create, wallet.connect)');
             $table->string('category', 50)->index()->comment('Category: egis, collections, wallet, marketplace, general');
-            
+
             // Content
             $table->string('title')->comment('Section title (es: "Come creare un EGI")');
             $table->text('content')->comment('Detailed help content for AI context');
             $table->text('keywords')->nullable()->comment('Searchable keywords (JSON array)');
-            
+
             // Metadata
             $table->integer('priority')->default(100)->comment('Display priority (lower = higher priority)');
             $table->boolean('is_active')->default(true)->index()->comment('Active sections only');
             $table->string('locale', 5)->default('it')->comment('Language: it, en, de, es, fr, pt');
-            
+
             // Timestamps
             $table->timestamps();
 
@@ -52,8 +50,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('platform_knowledge_sections');
     }
 };

@@ -1142,6 +1142,9 @@ class NatanChatController extends Controller {
             try {
                 $user = auth()->user();
 
+                // Generate session ID for conversation tracking
+                $sessionId = 'natan_' . uniqid() . '.' . mt_rand(10000000, 99999999);
+
                 // Validate input
                 $validated = $request->validate([
                     'query' => 'required|string|min:3|max:500',
@@ -1241,7 +1244,7 @@ class NatanChatController extends Controller {
                     $emitSSE('persona_selected', [
                         'persona_id' => $personaInfo['id'],
                         'persona_name' => $personaInfo['name'],
-                        'confidence' => $personaInfo['confidence'],
+                        'confidence' => round($personaInfo['confidence'] * 100), // Convert 0-1 to 0-100%
                         'method' => $personaInfo['method'],
                         'timestamp' => now()->toISOString(),
                     ]);
@@ -1315,8 +1318,59 @@ class NatanChatController extends Controller {
                 $emitSSE('response_generation_complete', [
                     'response' => $result['response'] ?? '',
                     'sources' => $sources, // ✅ Sources from sanitized acts (not from processQuery which has useRag=false)
-                    'persona' => $personaInfo, // ✅ Persona info for badge
+                    'persona' => $personaInfo ? [
+                        'id' => $personaInfo['id'],
+                        'name' => $personaInfo['name'],
+                        'confidence' => round($personaInfo['confidence'] * 100), // Convert 0-1 to 0-100%
+                        'method' => $personaInfo['method'],
+                    ] : null, // ✅ Persona info for badge (with percentage)
                     'timestamp' => now()->toISOString(),
+                ]);
+
+                // ✅ SAVE MESSAGES TO DATABASE (was missing!)
+                $responseTimeMs = isset($result['response_time_ms']) ? $result['response_time_ms'] : null;
+
+                // Save user message
+                $userMessage = \App\Models\NatanChatMessage::create([
+                    'user_id' => $user->id,
+                    'session_id' => $sessionId,
+                    'role' => 'user',
+                    'content' => $query,
+                    'reference_message_id' => null, // Fresh query (not elaboration)
+                    'persona_id' => null,
+                    'persona_name' => null,
+                    'rag_sources' => null,
+                    'rag_acts_count' => 0,
+                    'ai_model' => null,
+                    'tokens_input' => null,
+                    'tokens_output' => null,
+                    'response_time_ms' => null,
+                ]);
+
+                // Save assistant message
+                $assistantMessage = \App\Models\NatanChatMessage::create([
+                    'user_id' => $user->id,
+                    'session_id' => $sessionId,
+                    'role' => 'assistant',
+                    'content' => $result['response'] ?? '',
+                    'reference_message_id' => null,
+                    'persona_id' => $personaInfo['id'] ?? null,
+                    'persona_name' => $personaInfo['name'] ?? null,
+                    'persona_confidence' => isset($personaInfo['confidence']) ? $personaInfo['confidence'] : null,
+                    'persona_selection_method' => $personaInfo['method'] ?? null,
+                    'rag_sources' => $sources, // Full sources array
+                    'rag_acts_count' => $acts->count(),
+                    'rag_method' => 'semantic', // SSE route always uses semantic search
+                    'ai_model' => $result['model_used'] ?? config('services.anthropic.model'),
+                    'tokens_input' => $usage['input_tokens'] ?? null,
+                    'tokens_output' => $usage['output_tokens'] ?? null,
+                    'response_time_ms' => $responseTimeMs,
+                ]);
+
+                $this->logger->info('[SSE] Messages saved to database', [
+                    'user_message_id' => $userMessage->id,
+                    'assistant_message_id' => $assistantMessage->id,
+                    'session_id' => $sessionId,
                 ]);
 
                 // EVENT 7: Done
@@ -1324,6 +1378,10 @@ class NatanChatController extends Controller {
                     'status' => 'completed',
                     'total_acts' => $acts->count(),
                     'avg_relevance' => round($avgRelevance * 100, 1),
+                    'message_ids' => [
+                        'user' => $userMessage->id,
+                        'assistant' => $assistantMessage->id,
+                    ], // ✅ Send message IDs to frontend
                     'timestamp' => now()->toISOString(),
                 ]);
             } catch (\Exception $e) {
@@ -1430,12 +1488,96 @@ Fornire un'analisi ENTERPRISE-GRADE con dati quantitativi estratti, non un indic
 ❌ Frasi vaghe tipo "si nota un trend positivo" (SPECIFICA: +12% YoY)
 ❌ Citazioni atti senza estrarre dati quantitativi
 ❌ Analisi qualitativa senza numeri
+❌ **INVENTARE DATI** che non sono presenti negli atti (es: importi, date, CIG se N/A)
 
 **FAI:**
 ✅ Estrai TUTTI i dati quantitativi disponibili
-✅ Calcola totali, medie, percentuali
+✅ Calcola totali, medie, percentuali SOLO su dati reali presenti
 ✅ Crea tabelle con dati reali
-✅ Fornisci raccomandazioni con budget stimato in EUR
+✅ **Se un dato manca scrivi "N/A" o "Dato non disponibile"**
+✅ **NON calcolare totali/medie se la maggior parte dei dati è N/A**
+✅ Fornisci raccomandazioni con budget stimato SOLO se hai dati sufficienti
+
+**⚠️ REGOLA ANTI-ALLUCINAZIONE CRITICA:**
+- Se un atto NON ha campo "amount" → scrivi "N/A" nella tabella, NON inventare cifre
+- Se NON hai abbastanza importi reali → NON calcolare "Budget complessivo", usa sezione DATI MANCANTI
+- Se NON hai date scadenza → NON inventare ritardi, scrivi "Dato non disponibile"
+- Se NON hai % avanzamento → NON inventare ROI/proiezioni, segnala nella sezione DATI MANCANTI
+- **REGOLA ORO: MEGLIO "N/A" che un numero inventato!**
+
+**SE DATI MANCANTI PER ANALISI COMPLETA:**
+
+Se i dati negli atti sono insufficienti per rispondere completamente alla query, aggiungi alla fine della risposta una sezione:
+
+---
+
+### ⚠️ DATI MANCANTI PER ANALISI COMPLETA
+
+**Per fornire un'analisi più approfondita mancano:**
+- [Elenco puntato SPECIFICO di dati mancanti con esempi concreti]
+- [Es: "Importi finanziari dettagliati (budget previsto, speso, residuo)"]
+- [Es: "Stati avanzamento lavori (% completamento fisico, SAL approvati)"]
+- [Es: "Cronoprogramma finanziario (cashflow previsto per trimestre)"]
+
+**Senza questi dati NON posso fornire:**
+- [Lista analisi impossibili senza dati completi]
+- [Es: "Calcolo ROI (Return on Investment) preciso"]
+- [Es: "Analisi scostamenti budget vs actual per identificare sforamenti"]
+- [Es: "Proiezione data completamento basata su velocity attuale"]
+
+**💡 CONSIGLIO OPERATIVO:**
+
+Per ottenere un'analisi enterprise completa:
+
+1. **Crea un N.A.T.A.N. Project** dedicato (es: "Rigenerazione Urbana 2020-2025")
+
+2. **Carica in questo Project i seguenti documenti:**
+   - [Lista SPECIFICA documenti che contengono i dati mancanti]
+   - [Es: "Quadri economici dettagliati dei progetti (importi per capitolo spesa)"]
+   - [Es: "SAL - Stati Avanzamento Lavori approvati"]
+   - [Es: "Delibere di variazione di bilancio con motivazioni"]
+   - [Es: "Report finanziari trimestrali/semestrali"]
+   - [Es: "Cronoprogrammi aggiornati con milestone"]
+
+3. **Rilancia questa query nel contesto del Project**
+
+**Con i dati completi potrai ottenere:**
+- ✅ [Lista benefici concreti con dati completi]
+- ✅ [Es: "Analisi costi-benefici con ROI calcolato per singolo progetto"]
+- ✅ [Es: "Trend di spesa mensile con forecast completamento"]
+- ✅ [Es: "Mappa termica progetti a rischio sforamento budget"]
+- ✅ [Es: "Dashboard KPI esecutiva con semafori rosso/giallo/verde"]
+
+---
+
+**FORMATO SEZIONE DATI MANCANTI:**
+- Usa linguaggio preciso e tecnico (PA-oriented)
+- Suggerisci ESATTAMENTE quali documenti caricare
+- Specifica i benefici MISURABILI che l'utente otterrebbe
+- Rendi chiaro il workflow: Crea Project → Carica docs → Rilancia query
+
+**📊 VISUALIZZAZIONI AVANZATE (Mermaid.js):**
+
+Quando appropriato, usa diagrammi Mermaid per rappresentare visivamente dati complessi:
+
+**Esempi supportati:**
+```mermaid
+pie title Distribuzione Budget per Categoria
+    "Riqualificazione" : 45
+    "Restauro" : 30
+    "Viabilità" : 25
+```
+
+```mermaid
+gantt
+    title Timeline Progetti 2024-2025
+    dateFormat YYYY-MM-DD
+    section Fase 1
+    Progetto A :2024-01-01, 90d
+    Progetto B :2024-04-01, 120d
+```
+
+Usa Mermaid per timeline, distribuzioni budget, workflow, organigrammi. Migliora la chiarezza dell'analisi.
 
 Procedi con l'analisi enterprise-grade.
 PROMPT;

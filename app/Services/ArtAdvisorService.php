@@ -20,8 +20,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-10-29
  * @purpose Multi-expert AI assistant for creators and collectors
  */
-class ArtAdvisorService
-{
+class ArtAdvisorService {
     private AnthropicService $anthropic;
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
@@ -114,8 +113,7 @@ class ArtAdvisorService
      * @param array $context Context with image_url
      * @return array Response with vision analysis
      */
-    private function getVisionResponse(string $systemPrompt, string $userMessage, array $context): array
-    {
+    private function getVisionResponse(string $systemPrompt, string $userMessage, array $context): array {
         try {
             $this->logger->info('[ArtAdvisorService] Using Vision API for image analysis', [
                 'image_url' => $context['image_url'] ?? 'missing',
@@ -151,8 +149,7 @@ class ArtAdvisorService
      * @param array $context Context data
      * @return string Complete system prompt
      */
-    private function buildExpertPrompt(string $expertId, array $context): string
-    {
+    private function buildExpertPrompt(string $expertId, array $context): string {
         $basePrompt = match ($expertId) {
             'creative' => $this->buildCreativeAdvisorPrompt(),
             'platform' => $this->buildPlatformAssistantPrompt(),
@@ -168,8 +165,7 @@ class ArtAdvisorService
     /**
      * Build Creative Advisor prompt (Art + NFT + Marketing unified)
      */
-    private function buildCreativeAdvisorPrompt(): string
-    {
+    private function buildCreativeAdvisorPrompt(): string {
         return <<<PROMPT
 # IDENTITY & ROLE
 
@@ -341,8 +337,7 @@ PROMPT;
     /**
      * Build Platform Assistant prompt (Help & Guide)
      */
-    private function buildPlatformAssistantPrompt(): string
-    {
+    private function buildPlatformAssistantPrompt(): string {
         // Get knowledge base for platform assistant
         $knowledgeBase = PlatformKnowledgeSection::getFormattedForAI(null, 'it');
 
@@ -479,8 +474,7 @@ PROMPT;
      * @param array $context Context data
      * @return string Context section for prompt
      */
-    private function buildContextSection(array $context): string
-    {
+    private function buildContextSection(array $context): string {
         if (empty($context)) {
             return "\n\n# CONTEXT\n\nNo specific context provided. Provide general guidance.\n";
         }
@@ -491,52 +485,52 @@ PROMPT;
         if (isset($context['egi_id'])) {
             $contextPrompt .= "## EGI Being Worked On:\n\n";
             $contextPrompt .= "- **ID**: #" . ($context['egi_number'] ?? $context['egi_id']) . "\n";
-            
+
             if (isset($context['title'])) {
                 $contextPrompt .= "- **Title**: " . $context['title'] . "\n";
             }
-            
+
             if (isset($context['current_description'])) {
                 $contextPrompt .= "- **Current Description**: " . $context['current_description'] . "\n";
             }
-            
+
             if (isset($context['price_eur'])) {
                 $contextPrompt .= "- **Price**: €" . number_format($context['price_eur'], 2) . "\n";
             }
-            
+
             if (isset($context['collection_name'])) {
                 $contextPrompt .= "- **Collection**: " . $context['collection_name'] . "\n";
             }
-            
+
             if (isset($context['collection_type'])) {
                 $contextPrompt .= "- **Collection Type**: " . $context['collection_type'] . "\n";
             }
-            
+
             if (isset($context['existing_traits']) && !empty($context['existing_traits'])) {
                 $contextPrompt .= "- **Existing Traits** (" . count($context['existing_traits']) . "):\n";
                 foreach ($context['existing_traits'] as $category => $value) {
                     $contextPrompt .= "  - {$category}: {$value}\n";
                 }
             }
-            
+
             if (isset($context['is_minted'])) {
                 $contextPrompt .= "- **Status**: " . ($context['is_minted'] ? 'Minted on-chain (immutable)' : 'Pre-Mint (editable)') . "\n";
             }
-            
+
             $contextPrompt .= "\n";
         }
 
         // Mode-specific context
         if (isset($context['mode'])) {
             $contextPrompt .= "## User Intent:\n\n";
-            
+
             $modeDescriptions = [
                 'generate_description' => 'User wants AI to generate professional description for the artwork',
                 'suggest_traits' => 'User wants AI to suggest NFT traits based on visual analysis',
                 'pricing_advice' => 'User wants pricing recommendations for their EGI',
                 'general' => 'General assistance needed',
             ];
-            
+
             $contextPrompt .= "**Mode**: " . ($modeDescriptions[$context['mode']] ?? $context['mode']) . "\n\n";
         }
 
@@ -556,12 +550,21 @@ PROMPT;
      * @param string $question User's question
      * @return bool True if vision should be used
      */
-    public function shouldUseVision(string $question): bool
-    {
+    public function shouldUseVision(string $question): bool {
         $visionKeywords = [
-            'guarda', 'osserva', 'vedi', 'analizza visivamente', 'nell\'immagine',
-            'colori', 'composizione', 'stile visivo', 'che vedi',
-            'look at', 'analyze image', 'visual', 'colors in the',
+            'guarda',
+            'osserva',
+            'vedi',
+            'analizza visivamente',
+            'nell\'immagine',
+            'colori',
+            'composizione',
+            'stile visivo',
+            'che vedi',
+            'look at',
+            'analyze image',
+            'visual',
+            'colors in the',
         ];
 
         $questionLower = strtolower($question);
@@ -580,8 +583,7 @@ PROMPT;
      *
      * @return array Expert ID => Name mapping
      */
-    public static function getAvailableExperts(): array
-    {
+    public static function getAvailableExperts(): array {
         return self::EXPERTS;
     }
 
@@ -591,9 +593,7 @@ PROMPT;
      * @param string $expertId Expert to validate
      * @return bool True if valid
      */
-    public static function isValidExpert(string $expertId): bool
-    {
+    public static function isValidExpert(string $expertId): bool {
         return isset(self::EXPERTS[$expertId]);
     }
 }
-
