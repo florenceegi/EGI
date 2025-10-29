@@ -192,6 +192,19 @@
                         <textarea id="description" name="description" rows="4" {{ $egi->token_EGI ? 'disabled readonly' : '' }}
                             class="{{ $egi->token_EGI ? 'bg-black/10 cursor-not-allowed border-gray-600' : 'bg-black/30 border-emerald-700/50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500' }} w-full resize-none rounded-lg border px-3 py-2 text-white placeholder-gray-400"
                             placeholder="{{ __('egi.crud.description_placeholder') }}">{{ old('description', $egi->description) }}</textarea>
+                        
+                        {{-- AI Generate Description Button --}}
+                        @if (!$egi->token_EGI)
+                        <button type="button" 
+                                onclick="openArtAdvisor({ mode: 'generate_description' })"
+                                class="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-blue-600/50 bg-gradient-to-r from-blue-600/20 to-purple-600/20 px-3 py-2 text-sm font-medium text-blue-400 transition-all hover:from-blue-600/30 hover:to-purple-600/30 hover:border-blue-500">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                            <span>🤖 {{ __('egi.crud.generate_description_ai') }}</span>
+                        </button>
+                        @endif
+
                         <div class="{{ $egi->token_EGI ? 'text-amber-400' : 'text-gray-400' }} mt-1 text-xs">
                             @if ($egi->token_EGI)
                                 🔒 {{ __('egi.crud.field_immutable_hint') }}

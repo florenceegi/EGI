@@ -1387,3 +1387,27 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
     {{-- Also try in push for redundancy --}}
     @vite('resources/js/coa/vocabulary-modal.js')
 @endpush
+
+{{-- AI Art Advisor Modal Component --}}
+@if ($isCreator)
+<x-art-advisor-modal 
+    :context="[
+        'egi_id' => $egi->id,
+        'egi_number' => $egi->egi_number,
+        'title' => $egi->title,
+        'current_description' => $egi->description,
+        'creation_date' => $egi->creation_date?->format('Y-m-d'),
+        'price_eur' => $egi->price,
+        'has_image' => !empty($egi->image_url),
+        'image_url' => $egi->image_url,
+        'collection_name' => $collection->collection_name,
+        'collection_type' => $collection->type,
+        'existing_traits' => $egi->traits->mapWithKeys(fn($t) => [$t->category => $t->display_value])->toArray(),
+        'traits_count' => $egi->traits->count(),
+        'has_reservations' => $egi->reservations()->count() > 0,
+        'is_minted' => !is_null($egi->token_EGI),
+    ]"
+    :mode="'general'"
+    :auto-open="false"
+/>
+@endif

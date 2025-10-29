@@ -196,6 +196,7 @@ return [
         'description' => 'Descrizione',
         'description_placeholder' => 'Descrivi la tua opera, la sua storia e il suo significato...',
         'description_hint' => 'Racconta la storia dietro la tua creazione',
+        'generate_description_ai' => 'Genera con AI',
 
         // Campo Prezzo
         'price' => 'Prezzo',

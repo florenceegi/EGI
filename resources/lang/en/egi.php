@@ -194,6 +194,7 @@ return [
         'description' => 'Description',
         'description_placeholder' => 'Describe your artwork, its story, and its meaning...',
         'description_hint' => 'Tell the story behind your creation',
+        'generate_description_ai' => 'Generate with AI',
 
         // Price Field
         'price' => 'Price',
