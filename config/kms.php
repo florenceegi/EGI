@@ -9,6 +9,13 @@ return [
     | Configuration for envelope encryption and key management.
     | Supports development mode with mock KMS and production integration.
     |
+    | KMS_ENVIRONMENT Controls which KMS to use:
+    | - 'production' = Use cloud KMS (AWS, Azure, GCP, Vault)
+    | - 'local'/'development' = Use mock KMS (local encryption)
+    |
+    | This is separate from APP_ENV to allow testing with real KMS
+    | in local environment (APP_ENV=local + KMS_ENVIRONMENT=production)
+    |
     */
 
     /**

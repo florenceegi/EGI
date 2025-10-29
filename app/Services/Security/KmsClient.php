@@ -57,7 +57,9 @@ class KmsClient {
         $this->auditService = $auditService;
 
         // Environment configuration
-        $this->developmentMode = config('app.env') !== 'production';
+        // Use dedicated KMS_ENVIRONMENT or fall back to APP_ENV
+        $kmsEnv = env('KMS_ENVIRONMENT', config('app.env'));
+        $this->developmentMode = $kmsEnv !== 'production';
         $this->kekId = config('kms.kek_id', 'egi-wallet-master-key');
 
         // Initialize mock KEK for development
@@ -66,8 +68,11 @@ class KmsClient {
         }
 
         $this->logger->info('KmsClient initialized', [
-            'mode' => $this->developmentMode ? 'DEVELOPMENT' : 'PRODUCTION',
-            'kek_id' => $this->kekId
+            'mode' => $this->developmentMode ? 'DEVELOPMENT (Mock KMS)' : 'PRODUCTION (Cloud KMS)',
+            'kms_environment' => $kmsEnv,
+            'app_environment' => config('app.env'),
+            'kek_id' => $this->kekId,
+            'provider' => $this->developmentMode ? 'MOCK' : config('kms.provider', 'aws')
         ]);
     }
 
@@ -93,10 +98,10 @@ class KmsClient {
 
             // Step 1: Generate new DEK (256-bit)
             $dek = random_bytes(32);
-            
+
             // Step 2: Encrypt plaintext with DEK using XChaCha20-Poly1305
             $nonce = random_bytes(24); // 192-bit nonce for XChaCha20
-            
+
             $ciphertext = sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(
                 $plaintext,
                 $additionalData,
@@ -177,7 +182,7 @@ class KmsClient {
      */
     private function decryptDEK(array $encryptedDekData, ?User $user = null): string {
         $provider = $encryptedDekData['provider'] ?? 'MOCK_KMS_DEVELOPMENT';
-        
+
         if ($provider === 'MOCK_KMS_DEVELOPMENT' || $this->developmentMode) {
             $this->logger->debug('Using mock KMS for DEK decryption (development mode)');
             $dek = $this->decryptDEKMock($encryptedDekData);
