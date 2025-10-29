@@ -238,40 +238,64 @@ class WebSearchService {
             throw new RuntimeException('Perplexity API key not configured');
         }
 
-        // Add domain hints from persona preferences
-        $domainHints = $this->getPersonaDomains($personaId);
-        if (!empty($domainHints)) {
-            $query .= ' site:' . implode(' OR site:', array_slice($domainHints, 0, 3));
-        }
+        try {
+            // Add domain hints from persona preferences
+            $domainHints = $this->getPersonaDomains($personaId);
+            if (!empty($domainHints)) {
+                $query .= ' site:' . implode(' OR site:', array_slice($domainHints, 0, 3));
+            }
 
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$apiKey}",
-            'Content-Type' => 'application/json',
-        ])
-            ->timeout($config['timeout'] ?? 30)
-            ->post($config['base_url'] . '/chat/completions', [
-                'model' => $config['model'] ?? 'llama-3.1-sonar-large-128k-online',
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => $query,
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$apiKey}",
+                'Content-Type' => 'application/json',
+            ])
+                ->timeout($config['timeout'] ?? 30)
+                ->connectTimeout(10) // Add connection timeout
+                ->retry(2, 1000) // Retry 2 times with 1s delay
+                ->post($config['base_url'] . '/chat/completions', [
+                    'model' => $config['model'] ?? 'llama-3.1-sonar-large-128k-online',
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $query,
+                        ],
                     ],
-                ],
-                'max_tokens' => 1000,
-                'temperature' => 0.2,
-                'top_p' => 0.9,
-                'return_citations' => true,
-                'search_domain_filter' => $domainHints,
+                    'max_tokens' => 1000,
+                    'temperature' => 0.2,
+                    'top_p' => 0.9,
+                    'return_citations' => true,
+                    'search_domain_filter' => $domainHints,
+                ]);
+
+            if (!$response->successful()) {
+                \Log::error('[WebSearchService] Perplexity API error', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                    'query' => $query,
+                ]);
+                throw new RuntimeException("Perplexity API error: " . $response->status());
+            }
+
+            $data = $response->json();
+
+            // Parse Perplexity response
+            return $this->parsePerplexityResponse($data, $maxResults);
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            // Connection timeout or network error
+            \Log::error('[WebSearchService] Perplexity connection failed', [
+                'error' => $e->getMessage(),
+                'query' => $query,
+                'timeout' => $config['timeout'] ?? 30,
             ]);
-
-        if (!$response->successful()) {
-            throw new RuntimeException("Perplexity API error: " . $response->status());
+            throw new RuntimeException('Perplexity connection timeout. Please try again.', 0, $e);
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            // HTTP request failed
+            \Log::error('[WebSearchService] Perplexity request failed', [
+                'error' => $e->getMessage(),
+                'query' => $query,
+            ]);
+            throw new RuntimeException('Perplexity request failed. Please try again.', 0, $e);
         }
-
-        $data = $response->json();
-
-        // Parse Perplexity response
-        return $this->parsePerplexityResponse($data, $maxResults);
     }
 
     /**
@@ -285,6 +309,13 @@ class WebSearchService {
 
         // Extract citations
         $citations = $data['citations'] ?? [];
+
+        // 🚨 DEBUG LOG - See what Perplexity actually returns
+        $this->logger->critical('🔍 PERPLEXITY RAW CITATIONS', [
+            'citations_count' => count($citations),
+            'first_citation' => $citations[0] ?? 'NO CITATIONS',
+            'data_keys' => array_keys($data),
+        ]);
 
         foreach (array_slice($citations, 0, $maxResults) as $index => $citation) {
             $results[] = [

@@ -1,0 +1,128 @@
+┌─────────────────────────────────────────────────────────────┐
+│         🌐 PERPLEXITY AI - QUICK REFERENCE CARD            │
+└─────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════
+ 📋 CONFIGURAZIONE .env
+═══════════════════════════════════════════════════════════════
+
+WEB_SEARCH_ENABLED=true
+WEB_SEARCH_PROVIDER=perplexity
+PERPLEXITY_API_KEY=pplx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+═══════════════════════════════════════════════════════════════
+ 🔗 LINK UTILI
+═══════════════════════════════════════════════════════════════
+
+🔑 Ottieni API Key:
+   https://www.perplexity.ai/settings/api
+
+💰 Dashboard & Billing:
+   https://www.perplexity.ai/settings/api
+
+📚 Documentazione:
+   https://docs.perplexity.ai/
+
+🚨 Status:
+   https://status.perplexity.ai/
+
+═══════════════════════════════════════════════════════════════
+ ⚡ COMANDI RAPIDI
+═══════════════════════════════════════════════════════════════
+
+# Setup automatico (raccomandato)
+cd /home/fabio/EGI
+./scripts/setup-perplexity.sh
+
+# Setup manuale
+nano .env                          # Modifica config
+php artisan config:clear           # Pulisci cache
+php artisan config:cache           # Rigenera cache
+
+# Test connessione
+php artisan tinker
+>>> $s = app(\App\Services\WebSearchService::class);
+>>> $s->search('PNRR PA 2024');
+
+# Verifica config
+grep PERPLEXITY .env
+
+═══════════════════════════════════════════════════════════════
+ 💰 COSTI INDICATIVI
+═══════════════════════════════════════════════════════════════
+
+Model                          Costo/Ricerca    Use Case
+─────────────────────────────────────────────────────────────
+sonar-small-128k-online        ~€0.0005         Testing
+sonar-large-128k-online ✓      ~€0.002          Production
+sonar-huge-128k-online         ~€0.008          Advanced
+
+Budget consigliato:
+  • Testing (2 settimane):       €10
+  • Produzione light (100/g):    €20/mese
+  • Produzione std (500/g):      €80/mese
+
+Cache attiva: Ricerche duplicate = GRATIS (1h TTL)
+
+═══════════════════════════════════════════════════════════════
+ ✅ COME TESTARE
+═══════════════════════════════════════════════════════════════
+
+1. Apri N.A.T.A.N. chat: /pa/natan/chat
+
+2. Attiva toggle "Web Search" (blu in alto) 🌐
+
+3. Fai domanda che richiede info recenti:
+   "Quali sono i nuovi bandi PNRR per la PA nel 2024?"
+
+4. Verifica presenza box "🌐 Fonti Web" nella risposta
+
+═══════════════════════════════════════════════════════════════
+ 🛡️ PRIVACY & GDPR
+═══════════════════════════════════════════════════════════════
+
+✅ INVIATO a Perplexity:
+  • Keywords generiche sanitizzate
+  • Esempio: "bandi PNRR digitalizzazione"
+
+❌ MAI INVIATO:
+  • Contenuto documenti interni
+  • Numeri protocollo
+  • Nomi persone
+  • Riferimenti interni PA
+
+═══════════════════════════════════════════════════════════════
+ 🔧 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════
+
+Errore: "Invalid API Key"
+→ Verifica chiave in .env
+→ Rigenera cache: php artisan config:cache
+
+Errore: "Insufficient credits"
+→ Aggiungi credito su dashboard
+
+Errore: "Timeout"
+→ Aumenta PERPLEXITY_TIMEOUT=60 in .env
+
+Debug avanzato:
+→ tail -f storage/logs/laravel.log | grep -i perplexity
+
+═══════════════════════════════════════════════════════════════
+ 📊 MONITORING
+═══════════════════════════════════════════════════════════════
+
+Dashboard costi real-time:
+https://www.perplexity.ai/settings/api
+
+Configura alert budget:
+Settings → Billing → Set Budget Alert
+
+Verifica usage giornaliero:
+Dashboard → Usage → Last 7 days
+
+═══════════════════════════════════════════════════════════════
+
+📚 Documentazione completa: /home/fabio/EGI/docs/perplexity-setup.md
+
+═══════════════════════════════════════════════════════════════

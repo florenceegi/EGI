@@ -116,6 +116,27 @@ class WebSearchAutoDetector {
             }
         }
 
+        // TRIGGER 3b: People/Officials/Roles keywords (high confidence - NOT in acts)
+        $peopleKeywords = [
+            'assessor', // assessore/assessori
+            'sindaco',
+            'vice sindaco',
+            'giunta',
+            'consiglier',
+            'dirigente',
+            'funzionari',
+            'personale politico',
+            'amministratori',
+            'politici',
+        ];
+
+        foreach ($peopleKeywords as $keyword) {
+            if (str_contains($query, $keyword)) {
+                $score += 0.4; // High weight (people info not in acts)
+                $triggers[] = "people_keyword:{$keyword}";
+            }
+        }
+
         // TRIGGER 4: Question patterns (medium confidence)
         $questionPatterns = [
             'come possiamo' => 0.2, // Strategy question
@@ -123,6 +144,13 @@ class WebSearchAutoDetector {
             'dove troviamo' => 0.25, // External resource search
             'chi ha fatto' => 0.2, // Case study search
             'come migliorare' => 0.2, // Optimization (benefits from benchmarks)
+            'chi è' => 0.3, // Person identification (needs external sources)
+            'chi sono' => 0.3, // People identification
+            'quali assessor' => 0.4, // Specific officials (not in acts)
+            'quale sindaco' => 0.4, // Mayor info
+            'si sono messi in evidenza' => 0.35, // Performance/reputation (external)
+            'più apprezzat' => 0.3, // Reputation/sentiment
+            'più effic' => 0.25, // Performance evaluation
         ];
 
         foreach ($questionPatterns as $pattern => $weight) {
@@ -213,6 +241,9 @@ class WebSearchAutoDetector {
                     break;
                 case 'funding_keyword':
                     $reasons[] = "Funding opportunities search detected";
+                    break;
+                case 'people_keyword':
+                    $reasons[] = "Query about people/officials (not in acts database)";
                     break;
                 case 'question_pattern':
                     $reasons[] = "Question pattern suggests external research";
