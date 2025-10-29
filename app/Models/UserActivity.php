@@ -307,4 +307,13 @@ class UserActivity extends Model
         return $this->privacy_level === 'critical' || 
                ($this->context['requires_attention'] ?? false);
     }
+
+    /**
+     * Get context_data attribute (alias for context)
+     * @return array|null
+     */
+    public function getContextDataAttribute(): ?array
+    {
+        return $this->context;
+    }
 }
