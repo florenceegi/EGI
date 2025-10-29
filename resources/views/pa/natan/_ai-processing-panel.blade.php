@@ -171,7 +171,19 @@
                 </div>
                 <div class="text-center">
                     <p class="mb-1 text-xs text-gray-600">Modello AI</p>
-                    <p class="text-xs font-semibold text-gray-700" id="stat-model">Claude 3.5<br>Sonnet (Oct 2024)</p>
+                    <p class="text-xs font-semibold text-gray-700" id="stat-model">
+                        @php
+                            $configuredModel = config('services.anthropic.model', 'claude-3-opus-20240229');
+                            $modelLabels = [
+                                'claude-3-5-sonnet-20241022' => 'Claude 3.5<br>Sonnet (Oct 2024)',
+                                'claude-3-5-sonnet-20240620' => 'Claude 3.5<br>Sonnet (Jun 2024)',
+                                'claude-3-opus-20240229' => 'Claude 3<br>Opus (Feb 2024)',
+                                'claude-3-sonnet-20240229' => 'Claude 3<br>Sonnet (Feb 2024)',
+                                'claude-3-haiku-20240307' => 'Claude 3<br>Haiku (Mar 2024)',
+                            ];
+                            echo $modelLabels[$configuredModel] ?? $configuredModel;
+                        @endphp
+                    </p>
                 </div>
             </div>
 

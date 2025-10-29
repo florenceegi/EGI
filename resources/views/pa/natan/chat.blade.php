@@ -1205,6 +1205,19 @@
                             return; // Exit here, polling will handle completion
                         }
 
+                        // DEBUG: Log AI model from response
+                        console.log('[N.A.T.A.N.] AI Model from backend:', data.ai_model);
+
+                        if (data.success) {
+                            // Update AI model display BEFORE closing panel
+                            if (data.ai_model) {
+                                console.log('[N.A.T.A.N.] Updating model display to:', data.ai_model);
+                                AIProcessingPanel.updateModelDisplay(data.ai_model);
+                            } else {
+                                console.warn('[N.A.T.A.N.] No ai_model in response data');
+                            }
+                        }
+
                         // Complete AI processing and hide panel (normal mode)
                         AIProcessingPanel.complete();
 
@@ -1212,11 +1225,6 @@
                             // Pass persona info, message_id, elaboration flag, reference content, web_sources, and ai_model
                             this.addMessage('assistant', data.response, data.sources, data.persona, data.message_ids
                                 ?.assistant, data.is_elaboration, data.reference_content, data.web_sources, data.ai_model);
-
-                            // Update AI model display in stats panel
-                            if (data.ai_model) {
-                                AIProcessingPanel.updateModelDisplay(data.ai_model);
-                            }
 
                             // Update session ID if provided
                             if (data.session_id) {
