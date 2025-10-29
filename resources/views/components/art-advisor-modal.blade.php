@@ -173,13 +173,12 @@
 
 {{-- Floating Trigger Button (optional - can be customized per page) --}}
 <button id="art-advisor-trigger" 
+        onclick="openArtAdvisor({ mode: 'general' })"
         class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-2xl text-white shadow-2xl transition-all hover:scale-110 hover:shadow-blue-500/50"
-        title="{{ __('art_advisor.title') }}">
+        title="{{ __('art_advisor.title') }}"
+        aria-label="{{ __('art_advisor.title') }}">
     🎨
 </button>
 
-{{-- Include JavaScript --}}
-@push('scripts')
-<script src="{{ asset('js/art-advisor.js') }}"></script>
-@endpush
+{{-- JavaScript already included in parent view --}}
 

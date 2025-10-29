@@ -1383,6 +1383,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 {{-- Direct Vite inclusion --}}
 @vite('resources/js/coa/vocabulary-modal.js')
 
+{{-- Art Advisor JavaScript - Load before component --}}
+<script src="{{ asset('js/art-advisor.js') }}"></script>
+
 @push('scripts')
     {{-- Also try in push for redundancy --}}
     @vite('resources/js/coa/vocabulary-modal.js')
@@ -1412,12 +1415,3 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 />
 @endif
 
-{{-- NATAN Floating Button (AI Assistant) - Bottom Left --}}
-@auth
-<a href="{{ route('pa.natan.chat') }}" 
-   class="fixed bottom-6 left-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-600 to-blue-600 text-2xl shadow-2xl transition-all hover:scale-110 hover:shadow-emerald-500/50"
-   title="{{ __('natan.open_assistant') }}"
-   aria-label="{{ __('natan.open_assistant') }}">
-    🎩
-</a>
-@endauth
