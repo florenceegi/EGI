@@ -1431,6 +1431,7 @@ class GdprController extends Controller {
                 'user' => $user,
                 'activities' => $activities,
                 'activityStats' => $activityStats,
+                'activitySummary' => $activityStats, // Alias for view compatibility
                 'availableCategories' => $availableCategories,
                 'availableActionTypes' => $availableActionTypes,
                 'pageTitle' => __('gdpr.activity_log.title'),
