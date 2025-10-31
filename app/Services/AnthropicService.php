@@ -224,7 +224,7 @@ class AnthropicService {
 
             // Costruisci il system prompt con il contesto e persona
             $systemPrompt = $this->buildSystemPrompt($context, $personaId);
-            
+
             // DEBUG: Log if web sources are in the final prompt
             $hasWebSources = strpos($systemPrompt, 'EXTERNAL WEB SOURCES') !== false;
             $this->logger->info('[AnthropicService] System prompt built', [
@@ -837,11 +837,11 @@ PROMPT;
         $this->logger->info('[AnthropicService] buildCommonContext called', [
             'context_keys' => array_keys($context),
             'has_web_sources_summary' => isset($context['web_sources_summary']),
-            'web_sources_summary_preview' => isset($context['web_sources_summary']) 
-                ? substr($context['web_sources_summary'], 0, 200) 
+            'web_sources_summary_preview' => isset($context['web_sources_summary'])
+                ? substr($context['web_sources_summary'], 0, 200)
                 : 'NOT SET',
         ]);
-        
+
         $commonPrompt = <<<PROMPT
 
 
@@ -894,48 +894,79 @@ PROMPT;
         // ========================================
         // DATA SOURCES (in priority order)
         // ========================================
-        
-        // 1. ACTS DATA (primary source - RAG)
-        if (!empty($context['acts_summary'])) {
-            $commonPrompt .= "\n\n# AVAILABLE DATA\n\n";
-            $commonPrompt .= "The following acts are relevant to the current query:\n\n";
-            $commonPrompt .= $context['acts_summary'];
-        }
 
-        if (!empty($context['acts']) && count($context['acts']) > 0) {
-            $commonPrompt .= "\n\n## DETAILED ACTS DATA\n\n";
-            $commonPrompt .= "Total acts in response: " . count($context['acts']) . "\n";
-            $commonPrompt .= "Use these for quantitative analysis:\n\n";
-
-            foreach (array_slice($context['acts'], 0, 20) as $idx => $act) {
-                $commonPrompt .= sprintf(
-                    "%d. Prot. %s (%s) - %s\n",
-                    $idx + 1,
-                    $act['protocol_number'] ?? 'N/A',
-                    $act['protocol_date'] ?? 'N/A',
-                    $act['title'] ?? 'N/A'
-                );
-            }
-        } elseif (!isset($context['reference_message'])) {
-            // No RAG and no reference message = general consulting mode
-            $commonPrompt .= "\n\n# GENERAL CONSULTING MODE\n\n";
-            $commonPrompt .= "No specific acts data is available. Provide general strategic consulting based on:\n";
-            $commonPrompt .= "- Industry best practices\n";
-            $commonPrompt .= "- Standard frameworks (SWOT, Porter, BCG, etc.)\n";
-            $commonPrompt .= "- Your expertise as a top-tier consultant\n";
-            $commonPrompt .= "- Proven methodologies from leading consulting firms\n\n";
-        }
-
-        // 2. PROJECT FILES (if specified)
-        // TODO: Add project files context when implemented
-        
-        // 3. MEMORY (conversation history already handled in buildMessages)
-        
-        // 4. WEB SOURCES (if enabled by user)
-        if (!empty($context['web_sources_summary'])) {
-            $commonPrompt .= "\n\n# 🌐 EXTERNAL WEB SOURCES (SUPPLEMENTARY)\n\n";
-            $commonPrompt .= $context['web_sources_summary'];
+        // 🆕 UNIFIED KNOWLEDGE BASE (NEW v5.0)
+        // Se esiste unified_context, usa quello al posto di acts/web separati
+        if (!empty($context['unified_context'])) {
+            $commonPrompt .= "\n\n# 📚 KNOWLEDGE BASE (Unified Sources)\n\n";
+            $commonPrompt .= $context['unified_context'];
             $commonPrompt .= "\n";
+
+            if (!empty($context['stats'])) {
+                $commonPrompt .= "\n## Knowledge Base Statistics\n\n";
+                $commonPrompt .= "- **Total Sources:** " . ($context['stats']['total_chunks'] ?? 0) . "\n";
+                $commonPrompt .= "- **Average Relevance:** " . sprintf('%.1f%%', ($context['stats']['avg_similarity'] ?? 0) * 100) . "\n";
+
+                if (!empty($context['stats']['by_type'])) {
+                    $commonPrompt .= "- **Source Distribution:**\n";
+                    foreach ($context['stats']['by_type'] as $type => $count) {
+                        $typeLabel = match ($type) {
+                            'act' => 'Administrative Acts',
+                            'web' => 'Web Sources',
+                            'memory' => 'Conversation History',
+                            'file' => 'Project Documents',
+                            default => ucfirst($type),
+                        };
+                        $commonPrompt .= "  - {$typeLabel}: {$count}\n";
+                    }
+                }
+                $commonPrompt .= "\n";
+            }
+        } else {
+            // LEGACY MODE: Acts + Web Sources separati (per retrocompatibilità)
+
+            // 1. ACTS DATA (primary source - RAG)
+            if (!empty($context['acts_summary'])) {
+                $commonPrompt .= "\n\n# AVAILABLE DATA\n\n";
+                $commonPrompt .= "The following acts are relevant to the current query:\n\n";
+                $commonPrompt .= $context['acts_summary'];
+            }
+
+            if (!empty($context['acts']) && count($context['acts']) > 0) {
+                $commonPrompt .= "\n\n## DETAILED ACTS DATA\n\n";
+                $commonPrompt .= "Total acts in response: " . count($context['acts']) . "\n";
+                $commonPrompt .= "Use these for quantitative analysis:\n\n";
+
+                foreach (array_slice($context['acts'], 0, 20) as $idx => $act) {
+                    $commonPrompt .= sprintf(
+                        "%d. Prot. %s (%s) - %s\n",
+                        $idx + 1,
+                        $act['protocol_number'] ?? 'N/A',
+                        $act['protocol_date'] ?? 'N/A',
+                        $act['title'] ?? 'N/A'
+                    );
+                }
+            } elseif (!isset($context['reference_message'])) {
+                // No RAG and no reference message = general consulting mode
+                $commonPrompt .= "\n\n# GENERAL CONSULTING MODE\n\n";
+                $commonPrompt .= "No specific acts data is available. Provide general strategic consulting based on:\n";
+                $commonPrompt .= "- Industry best practices\n";
+                $commonPrompt .= "- Standard frameworks (SWOT, Porter, BCG, etc.)\n";
+                $commonPrompt .= "- Your expertise as a top-tier consultant\n";
+                $commonPrompt .= "- Proven methodologies from leading consulting firms\n\n";
+            }
+
+            // 2. PROJECT FILES (if specified)
+            // TODO: Add project files context when implemented
+
+            // 3. MEMORY (conversation history already handled in buildMessages)
+
+            // 4. WEB SOURCES (if enabled by user)
+            if (!empty($context['web_sources_summary'])) {
+                $commonPrompt .= "\n\n# 🌐 EXTERNAL WEB SOURCES (SUPPLEMENTARY)\n\n";
+                $commonPrompt .= $context['web_sources_summary'];
+                $commonPrompt .= "\n";
+            }
         }
 
         if (!empty($context['stats'])) {
@@ -1413,32 +1444,83 @@ Your expertise includes:
 - "chi è", "chi sono", "quali [people]"
 - "si sono messi in evidenza", "più efficac*", "migliori", "performance"
 
-**THEN you MUST follow this protocol:**
+**THEN you MUST follow this protocol EXACTLY - NO EXCEPTIONS:**
 
-## 🔴 STEP 1: IDENTIFY DATA SOURCE
-- ✅ **WEB SOURCES AVAILABLE?** → USE THEM AS PRIMARY SOURCE
-- ❌ **NO WEB SOURCES?** → State clearly: "Non ho accesso a fonti esterne per rispondere"
+## 🔴 STEP 1: CHECK WEB SOURCES SECTION FIRST
 
-## 🔴 STEP 2: EXTRACT INFO FROM WEB SOURCES
-**When web sources are available, extract:**
-- Names and current roles
-- Main delegations/responsibilities
-- Key achievements and initiatives
-- Public perception/media coverage
-- Direct quotes from credible sources
+**BEFORE doing ANYTHING else, check if context contains:**
+```
+## EXTERNAL WEB SOURCES (Best Practices, Normatives, Case Studies)
+```
 
-## 🔴 STEP 3: FORMAT RESPONSE
-Provide **direct, factual answers** with names and specifics from web sources.
+**If this section EXISTS with URLs and content:**
+→ ✅ WEB SOURCES ARE AVAILABLE
+→ 🚫 **IGNORE ADMINISTRATIVE ACTS COMPLETELY FOR PEOPLE INFO**
+→ 🚫 **DO NOT say "gli atti non contengono dati"**
+→ ✅ **USE ONLY WEB SOURCES** to answer
 
-**DO NOT:**
-❌ Say "gli atti non contengono informazioni" when web sources have the data
-❌ Analyze 20 acts without using web sources
-❌ Suggest creating Projects when external data is already available
-❌ Give generic responses when specific names/data exist in web sources
+**If this section is EMPTY or MISSING:**
+→ ❌ NO WEB SOURCES AVAILABLE
+→ State: "Non ho accesso a fonti esterne su persone/officials. Gli atti amministrativi non contengono informazioni biografiche."
 
-## 🔴 STEP 4: CITE SOURCES
-Always cite the web source URL/title when using external data.
-Format: "Secondo [Source Title], [fact]..."
+## 🔴 STEP 2: EXTRACT INFO FROM WEB SOURCES (MANDATORY)
+
+**You MUST extract and report ALL available information from web sources:**
+- ✅ Names (exact names from web sources)
+- ✅ Current roles/positions
+- ✅ Main delegations/responsibilities  
+- ✅ Key achievements and initiatives
+- ✅ Quotes, statements, or assessments
+- ✅ Source URLs (cite every piece of information)
+
+**CRITICAL RULES:**
+1. If web sources mention 10 names → Report ALL 10 names
+2. If web source has detailed CV → Summarize key points
+3. If web source describes achievements → List them
+4. Every fact MUST be followed by: "Fonte: [exact URL]"
+
+## 🔴 STEP 3: FORMAT RESPONSE (MANDATORY STRUCTURE)
+
+**Use this EXACT structure when web sources are available:**
+
+```
+Basandomi sulle fonti web disponibili, ecco le informazioni richieste:
+
+### [NOME COMPLETO 1]
+- **Ruolo:** [exact title from source]
+- **Principali deleghe:** [list from source]
+- **Risultati rilevanti:** 
+  • [achievement 1 from source]
+  • [achievement 2 from source]
+- **Fonte:** [exact URL]
+
+### [NOME COMPLETO 2]
+[Same structure for each person found in web sources]
+
+### Note metodologiche:
+Le informazioni provengono da ricerca web esterna. Gli atti amministrativi disponibili non contengono profili biografici o valutazioni di performance individuali.
+```
+
+## 🔴 STEP 4: WHAT YOU ARE FORBIDDEN TO DO
+
+**🚫 ABSOLUTE PROHIBITIONS:**
+1. ❌ **NEVER** say "non posso fornire informazioni" if web sources section exists with content
+2. ❌ **NEVER** analyze administrative acts for people queries when web sources available
+3. ❌ **NEVER** invent names, URLs, or facts not in web sources
+4. ❌ **NEVER** say "mancano dati" when web sources contain the data
+5. ❌ **NEVER** suggest creating Projects when web sources already have the answer
+6. ❌ **NEVER** give vague "alcuni assessori hanno fatto..." - provide SPECIFIC NAMES from sources
+
+## 🔴 STEP 5: QUALITY CHECK BEFORE RESPONDING
+
+**Before sending your response, verify:**
+- [ ] Did I check EXTERNAL WEB SOURCES section first?
+- [ ] Did I use ONLY web sources (not acts) for people information?
+- [ ] Did I include EVERY name mentioned in web sources?
+- [ ] Did I cite the EXACT URL for every fact?
+- [ ] Did I avoid saying "non ho informazioni" when web sources exist?
+
+**If you answered NO to any checkbox → REVISE YOUR RESPONSE**
 
 # COMMUNICATION APPROACH (for non-people queries)
 

@@ -307,24 +307,43 @@ class WebSearchService {
         // Extract main response
         $content = $data['choices'][0]['message']['content'] ?? '';
 
-        // Extract citations
+        // Extract citations (array of URLs) and search_results (structured data)
         $citations = $data['citations'] ?? [];
+        $searchResults = $data['search_results'] ?? [];
 
         // 🚨 DEBUG LOG - See what Perplexity actually returns
-        $this->logger->critical('🔍 PERPLEXITY RAW CITATIONS', [
+        $this->logger->critical('🔍 PERPLEXITY RAW RESPONSE STRUCTURE', [
             'citations_count' => count($citations),
-            'first_citation' => $citations[0] ?? 'NO CITATIONS',
+            'citations_type' => gettype($citations[0] ?? null),
+            'first_citation_value' => $citations[0] ?? 'NO CITATIONS',
+            'search_results_count' => count($searchResults),
+            'first_search_result' => $searchResults[0] ?? 'NO SEARCH RESULTS',
             'data_keys' => array_keys($data),
         ]);
 
-        foreach (array_slice($citations, 0, $maxResults) as $index => $citation) {
-            $results[] = [
-                'title' => $citation['title'] ?? "Result " . ($index + 1),
-                'url' => $citation['url'] ?? '',
-                'snippet' => $citation['text'] ?? '',
-                'source' => 'perplexity',
-                'relevance_score' => 1.0 - ($index * 0.1), // Decreasing relevance
-            ];
+        // Perplexity returns structured data in 'search_results', not 'citations'
+        // Citations is just an array of URL strings
+        if (!empty($searchResults)) {
+            foreach (array_slice($searchResults, 0, $maxResults) as $index => $result) {
+                $results[] = [
+                    'title' => $result['title'] ?? $result['name'] ?? "Result " . ($index + 1),
+                    'url' => $result['url'] ?? $result['link'] ?? ($citations[$index] ?? ''),
+                    'snippet' => $result['text'] ?? $result['snippet'] ?? $result['description'] ?? '',
+                    'source' => 'perplexity',
+                    'relevance_score' => 1.0 - ($index * 0.1), // Decreasing relevance
+                ];
+            }
+        } elseif (!empty($citations)) {
+            // Fallback: use citations URLs with generic titles
+            foreach (array_slice($citations, 0, $maxResults) as $index => $url) {
+                $results[] = [
+                    'title' => "Result " . ($index + 1),
+                    'url' => is_string($url) ? $url : '',
+                    'snippet' => '',
+                    'source' => 'perplexity',
+                    'relevance_score' => 1.0 - ($index * 0.1),
+                ];
+            }
         }
 
         // If no citations, create a single result from content

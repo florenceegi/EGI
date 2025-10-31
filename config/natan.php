@@ -134,4 +134,24 @@ return [
     'rate_limit_max_retries' => env('NATAN_RATE_LIMIT_MAX_RETRIES', 3),
     'rate_limit_initial_delay_seconds' => env('NATAN_RATE_LIMIT_INITIAL_DELAY', 2),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Unified Knowledge Base (NEW v5.0)
+    |--------------------------------------------------------------------------
+    |
+    | Enable unified knowledge retrieval system that merges all sources
+    | (Acts, Web, Memory, Files) into a single semantic search.
+    |
+    | Benefits:
+    | - Single source of truth for Claude (no prioritization conflicts)
+    | - Automatic source citation in responses
+    | - Better semantic relevance across all sources
+    | - Intelligent caching (Acts 30d, Web 6h, Memory 7d, Files 90d)
+    |
+    | Set to TRUE to enable the new system.
+    | Set to FALSE to use legacy RAG + Web Search (separate sources).
+    |
+    */
+    'enable_unified_knowledge' => env('NATAN_ENABLE_UNIFIED_KNOWLEDGE', false),
+
 ];

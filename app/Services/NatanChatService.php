@@ -51,6 +51,7 @@ class NatanChatService {
     protected PersonaSelector $personaSelector;
     protected ConsentService $consentService;
     protected AuditLogService $auditService;
+    protected UnifiedKnowledgeService $unifiedKnowledge;
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
 
@@ -63,6 +64,7 @@ class NatanChatService {
         PersonaSelector $personaSelector,
         ConsentService $consentService,
         AuditLogService $auditService,
+        UnifiedKnowledgeService $unifiedKnowledge,
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager
     ) {
@@ -74,6 +76,7 @@ class NatanChatService {
         $this->personaSelector = $personaSelector;
         $this->consentService = $consentService;
         $this->auditService = $auditService;
+        $this->unifiedKnowledge = $unifiedKnowledge;
         $this->logger = $logger;
         $this->errorManager = $errorManager;
     }
@@ -204,214 +207,274 @@ class NatanChatService {
                 }
             }
 
-            // STEP 2: Retrieve relevant acts using RAG system (if enabled)
-            // Uses semantic search (vector embeddings) with keyword search fallback
-            // REGOLA STATISTICS: No limit hardcoded → scandaglia TUTTE le fonti
-            // ✨ NEW v4.0: Priority RAG when project_id is active
-            $ragMethod = null;
-            if ($useRag) {
-                if ($projectId) {
-                    // ✨ NEW v4.0: Priority RAG with 3-tier search (Project Docs > Project Chat > PA Acts)
-                    // STEP 2.1: Load Project model
-                    $project = \App\Models\Project::find($projectId);
+            // STEP 2: Retrieve context using Unified Knowledge Base or Legacy RAG+Web
+            // ✨ NEW v5.0: Unified Knowledge Base (single source of truth, semantic ranking across all sources)
+            // 📚 LEGACY v4.0: Priority RAG + Web Search (separate source management)
+            if (config('natan.enable_unified_knowledge')) {
+                // 🆕 NEW v5.0: Unified Knowledge Base
+                // Single pipeline: gather all sources → chunk → embed → semantic search → format with citations
+                try {
+                    $unifiedOptions = [
+                        'use_rag' => $useRag,
+                        'use_web_search' => $useWebSearch,
+                        'project_id' => $projectId,
+                        'acts_from_reference' => $referenceContext['acts'] ?? null,
+                        'web_results' => null, // Will be fetched internally if needed
+                        'top_k' => 20, // Top 20 most relevant chunks across all sources
+                    ];
 
-                    if (!$project) {
-                        $this->logger->warning('[NatanChatService] Project not found for RAG', [
-                            'project_id' => $projectId,
-                            'user_id' => $user->id,
-                        ]);
+                    $unifiedResult = $this->getUnifiedContext($userQuery, $user, $unifiedOptions);
 
-                        // Fallback to standard RAG if project not found
-                        $context = $this->rag->getContextForQuery($userQuery, $user);
-                        $ragMethod = 'semantic';
-                    } else {
-                        // STEP 2.2: Priority RAG - Search in ALL available sources
-                        // NO LIMIT on search = scans entire archive (10k, 100k, 1M acts if present)
-                        // Then takes top N by similarity for Claude context (prevent rate limit)
-                        $ragResults = app(\App\Services\Projects\ProjectRagService::class)
-                            ->searchProjectContext($userQuery, $project, null); // null = search ALL
+                    // Prepare context in unified format
+                    $context = [
+                        'unified_sources' => $unifiedResult['unified_sources'] ?? [],
+                        'unified_context' => $unifiedResult['unified_context'] ?? '',
+                        'stats' => $unifiedResult['stats'] ?? [],
+                    ];
 
-                        $ragMethod = 'priority_rag'; // Project context mode
+                    // Add reference context if provided (for elaborations)
+                    if ($referenceContext) {
+                        $context['reference_message'] = $referenceContext;
+                    }
 
-                        // Extract results and stats
-                        $rawResults = $ragResults['results'] ?? [];
-                        $stats = $ragResults['stats'] ?? [];
+                    $logContext['unified_knowledge_enabled'] = true;
+                    $logContext['total_chunks'] = $context['stats']['total_chunks'] ?? 0;
+                    $logContext['avg_similarity'] = $context['stats']['avg_similarity'] ?? 0;
+                    $logContext['source_distribution'] = $context['stats']['by_type'] ?? [];
 
-                        // STEP 2.3: Transform ProjectRag results to standard RAG format
-                        // ProjectRag returns: ['type' => 'document'|'chat'|'pa_act', 'text' => '...', 'similarity' => X]
-                        // Standard RAG expects: ['id' => X, 'content' => '...', ...]
-                        $transformedResults = array_map(function ($result, $index) {
-                            return [
-                                'id' => $result['type'] . '_' . ($result['chunk_id'] ?? $result['message_id'] ?? $result['act_id'] ?? $index),
-                                'content' => $result['text'] ?? '',
-                                'source_type' => $result['type'],
-                                'similarity' => $result['similarity'],
-                                'metadata' => $result,
+                    $this->logger->info('[NatanChatService] ✨ Unified Knowledge Base context retrieved', $logContext);
+                } catch (\Exception $e) {
+                    // Fallback to empty context on error
+                    $this->logger->error('[NatanChatService] Unified Knowledge Base failed - using empty context', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+
+                    $context = [
+                        'unified_sources' => [],
+                        'unified_context' => '',
+                        'stats' => [],
+                    ];
+
+                    if ($referenceContext) {
+                        $context['reference_message'] = $referenceContext;
+                    }
+
+                    $logContext['unified_knowledge_enabled'] = true;
+                    $logContext['unified_knowledge_error'] = true;
+                }
+            } else {
+                // 📚 LEGACY v4.0: Priority RAG + Web Search (separate source management)
+                // Uses semantic search (vector embeddings) with keyword search fallback
+                // REGOLA STATISTICS: No limit hardcoded → scandaglia TUTTE le fonti
+                // ✨ NEW v4.0: Priority RAG when project_id is active
+                $ragMethod = null;
+                if ($useRag) {
+                    if ($projectId) {
+                        // ✨ NEW v4.0: Priority RAG with 3-tier search (Project Docs > Project Chat > PA Acts)
+                        // STEP 2.1: Load Project model
+                        $project = \App\Models\Project::find($projectId);
+
+                        if (!$project) {
+                            $this->logger->warning('[NatanChatService] Project not found for RAG', [
+                                'project_id' => $projectId,
+                                'user_id' => $user->id,
+                            ]);
+
+                            // Fallback to standard RAG if project not found
+                            $context = $this->rag->getContextForQuery($userQuery, $user);
+                            $ragMethod = 'semantic';
+                        } else {
+                            // STEP 2.2: Priority RAG - Search in ALL available sources
+                            // NO LIMIT on search = scans entire archive (10k, 100k, 1M acts if present)
+                            // Then takes top N by similarity for Claude context (prevent rate limit)
+                            $ragResults = app(\App\Services\Projects\ProjectRagService::class)
+                                ->searchProjectContext($userQuery, $project, null); // null = search ALL
+
+                            $ragMethod = 'priority_rag'; // Project context mode
+
+                            // Extract results and stats
+                            $rawResults = $ragResults['results'] ?? [];
+                            $stats = $ragResults['stats'] ?? [];
+
+                            // STEP 2.3: Transform ProjectRag results to standard RAG format
+                            // ProjectRag returns: ['type' => 'document'|'chat'|'pa_act', 'text' => '...', 'similarity' => X]
+                            // Standard RAG expects: ['id' => X, 'content' => '...', ...]
+                            $transformedResults = array_map(function ($result, $index) {
+                                return [
+                                    'id' => $result['type'] . '_' . ($result['chunk_id'] ?? $result['message_id'] ?? $result['act_id'] ?? $index),
+                                    'content' => $result['text'] ?? '',
+                                    'source_type' => $result['type'],
+                                    'similarity' => $result['similarity'],
+                                    'metadata' => $result,
+                                ];
+                            }, $rawResults, array_keys($rawResults));
+
+                            // STEP 2.4: Prepare context with ALL results
+                            // NO pre-filtering! Adaptive retry will reduce if rate limited
+                            $this->logger->info('[NatanChatService] Priority RAG - prepared ALL results for Claude', [
+                                'total_found' => count($transformedResults),
+                                'strategy' => 'SEND_ALL_THEN_ADAPT',
+                            ]);
+
+                            $context = [
+                                'acts' => $transformedResults, // ALL results - adaptive retry will reduce if needed
+                                'acts_summary' => $this->buildProjectContextSummary($transformedResults),
+                                'stats' => $stats,
                             ];
-                        }, $rawResults, array_keys($rawResults));
 
-                        // STEP 2.4: Prepare context with ALL results
-                        // NO pre-filtering! Adaptive retry will reduce if rate limited
-                        $this->logger->info('[NatanChatService] Priority RAG - prepared ALL results for Claude', [
-                            'total_found' => count($transformedResults),
+                            $logContext['project_id'] = $projectId;
+                            $logContext['total_results'] = $stats['total'] ?? 0;
+                            $logContext['project_docs_count'] = $stats['documents'] ?? 0;
+                            $logContext['project_chat_count'] = $stats['chat'] ?? 0;
+
+                            $this->logger->info('[NatanChatService] Priority RAG context retrieved (Project mode)', $logContext);
+                        }
+                    } else {
+                        // Generic PA chat: Standard RAG with SMART LIMIT
+                        // RAG will rank by relevance, we take top 20 most relevant
+                        $smartLimit = 20; // Top 20 most relevant acts
+                        $contextRaw = $this->rag->getContextForQuery($userQuery, $user, $smartLimit);
+
+                        // Send top 20 ranked acts to Claude
+                        $allActs = $contextRaw['acts'] ?? [];
+
+                        $this->logger->info('[NatanChatService] Standard RAG - prepared ALL results for Claude', [
+                            'total_found' => count($allActs),
                             'strategy' => 'SEND_ALL_THEN_ADAPT',
                         ]);
 
                         $context = [
-                            'acts' => $transformedResults, // ALL results - adaptive retry will reduce if needed
-                            'acts_summary' => $this->buildProjectContextSummary($transformedResults),
-                            'stats' => $stats,
+                            'acts' => $allActs, // ALL acts - adaptive retry will reduce if needed
+                            'acts_summary' => $contextRaw['acts_summary'] ?? '',
+                            'stats' => $contextRaw['stats'] ?? [],
                         ];
 
-                        $logContext['project_id'] = $projectId;
-                        $logContext['total_results'] = $stats['total'] ?? 0;
-                        $logContext['project_docs_count'] = $stats['documents'] ?? 0;
-                        $logContext['project_chat_count'] = $stats['chat'] ?? 0;
+                        $ragMethod = 'semantic'; // Default to semantic
 
-                        $this->logger->info('[NatanChatService] Priority RAG context retrieved (Project mode)', $logContext);
+                        $logContext['acts_count'] = count($allActs);
+                        $logContext['context_summary_length'] = strlen($context['acts_summary']);
+                        $logContext['rag_method'] = $ragMethod;
+
+                        $this->logger->info('[NatanChatService] RAG context retrieved and sanitized (Generic PA mode)', $logContext);
                     }
                 } else {
-                    // Generic PA chat: Standard RAG with SMART LIMIT
-                    // RAG will rank by relevance, we take top 20 most relevant
-                    $smartLimit = 20; // Top 20 most relevant acts
-                    $contextRaw = $this->rag->getContextForQuery($userQuery, $user, $smartLimit);
+                    // No RAG: Check if acts provided via referenceContext
+                    // (analyzeActsStream provides acts directly to skip RAG overhead)
+                    if ($referenceContext && isset($referenceContext['acts']) && !empty($referenceContext['acts'])) {
+                        // Use acts from referenceContext (provided by controller)
+                        $context = [
+                            'acts' => $referenceContext['acts'],
+                            'acts_summary' => '', // No summary needed, acts are pre-formatted
+                            'stats' => [],
+                        ];
 
-                    // Send top 20 ranked acts to Claude
-                    $allActs = $contextRaw['acts'] ?? [];
+                        $logContext['acts_count'] = count($referenceContext['acts']);
+                        $logContext['rag_skipped'] = false; // Acts provided directly
+                        $logContext['acts_source'] = 'referenceContext';
 
-                    $this->logger->info('[NatanChatService] Standard RAG - prepared ALL results for Claude', [
-                        'total_found' => count($allActs),
-                        'strategy' => 'SEND_ALL_THEN_ADAPT',
-                    ]);
-
-                    $context = [
-                        'acts' => $allActs, // ALL acts - adaptive retry will reduce if needed
-                        'acts_summary' => $contextRaw['acts_summary'] ?? '',
-                        'stats' => $contextRaw['stats'] ?? [],
-                    ];
-
-                    $ragMethod = 'semantic'; // Default to semantic
-
-                    $logContext['acts_count'] = count($allActs);
-                    $logContext['context_summary_length'] = strlen($context['acts_summary']);
-                    $logContext['rag_method'] = $ragMethod;
-
-                    $this->logger->info('[NatanChatService] RAG context retrieved and sanitized (Generic PA mode)', $logContext);
-                }
-            } else {
-                // No RAG: Check if acts provided via referenceContext
-                // (analyzeActsStream provides acts directly to skip RAG overhead)
-                if ($referenceContext && isset($referenceContext['acts']) && !empty($referenceContext['acts'])) {
-                    // Use acts from referenceContext (provided by controller)
-                    $context = [
-                        'acts' => $referenceContext['acts'],
-                        'acts_summary' => '', // No summary needed, acts are pre-formatted
-                        'stats' => [],
-                    ];
-
-                    $logContext['acts_count'] = count($referenceContext['acts']);
-                    $logContext['rag_skipped'] = false; // Acts provided directly
-                    $logContext['acts_source'] = 'referenceContext';
-
-                    $this->logger->info('[NatanChatService] Acts provided via referenceContext (analyzeActsStream)', $logContext);
-                } else {
-                    // Truly no acts (general consulting or elaboration on text-only message)
-                    $context = [
-                        'acts' => [],
-                        'acts_summary' => '',
-                        'stats' => [],
-                    ];
-
-                    $logContext['acts_count'] = 0;
-                    $logContext['rag_skipped'] = true;
-
-                    $this->logger->info('[NatanChatService] RAG skipped (elaboration or general query)', $logContext);
-                }
-            }
-
-            // STEP 2.5: Retrieve web search results (if enabled) ✨ NEW v3.0
-            $webSearchResults = [];
-            $webSearchMetadata = null;
-            if ($useWebSearch) {
-                try {
-                    $webSearchResponse = $this->webSearch->search(
-                        $userQuery,
-                        $personaSelection['persona_id'],
-                        5 // Max 5 web results
-                    );
-
-                    if (!empty($webSearchResponse['success'])) {
-                        $webSearchResults = $webSearchResponse['results'] ?? [];
-                        $webSearchMetadata = $webSearchResponse['metadata'] ?? null;
-
-                        $logContext['web_search_count'] = count($webSearchResults);
-                        $logContext['web_search_provider'] = $webSearchMetadata['provider'] ?? 'unknown';
-                        $logContext['web_search_from_cache'] = $webSearchMetadata['from_cache'] ?? false;
-
-                        $this->logger->info('[NatanChatService] Web search results retrieved', $logContext);
+                        $this->logger->info('[NatanChatService] Acts provided via referenceContext (analyzeActsStream)', $logContext);
                     } else {
-                        $this->logger->warning('[NatanChatService] Web search failed gracefully', [
-                            'error' => $webSearchResponse['error'] ?? 'unknown',
-                        ]);
+                        // Truly no acts (general consulting or elaboration on text-only message)
+                        $context = [
+                            'acts' => [],
+                            'acts_summary' => '',
+                            'stats' => [],
+                        ];
+
+                        $logContext['acts_count'] = 0;
+                        $logContext['rag_skipped'] = true;
+
+                        $this->logger->info('[NatanChatService] RAG skipped (elaboration or general query)', $logContext);
                     }
-                } catch (\Exception $e) {
-                    // Web search failed but don't block the entire response
-                    $this->logger->error('[NatanChatService] Web search exception - continuing without external sources', [
-                        'error' => $e->getMessage(),
-                        'query' => $userQuery,
+                }
+
+                // STEP 2.5: Retrieve web search results (if enabled) ✨ NEW v3.0
+                $webSearchResults = [];
+                $webSearchMetadata = null;
+                if ($useWebSearch) {
+                    try {
+                        $webSearchResponse = $this->webSearch->search(
+                            $userQuery,
+                            $personaSelection['persona_id'],
+                            5 // Max 5 web results
+                        );
+
+                        if (!empty($webSearchResponse['success'])) {
+                            $webSearchResults = $webSearchResponse['results'] ?? [];
+                            $webSearchMetadata = $webSearchResponse['metadata'] ?? null;
+
+                            $logContext['web_search_count'] = count($webSearchResults);
+                            $logContext['web_search_provider'] = $webSearchMetadata['provider'] ?? 'unknown';
+                            $logContext['web_search_from_cache'] = $webSearchMetadata['from_cache'] ?? false;
+
+                            $this->logger->info('[NatanChatService] Web search results retrieved', $logContext);
+                        } else {
+                            $this->logger->warning('[NatanChatService] Web search failed gracefully', [
+                                'error' => $webSearchResponse['error'] ?? 'unknown',
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        // Web search failed but don't block the entire response
+                        $this->logger->error('[NatanChatService] Web search exception - continuing without external sources', [
+                            'error' => $e->getMessage(),
+                            'query' => $userQuery,
+                        ]);
+                        // Continue with empty web search results - RAG data is still available
+                    }
+
+                    // GDPR Audit - Log web search data (use null-coalescing to avoid notices)
+                    $this->logger->info('[NatanChatService][GDPR] Web search query sent to external API', [
+                        'user_id' => $user->id,
+                        'provider' => $webSearchMetadata['provider'] ?? null,
+                        'query_sanitized' => $webSearchMetadata['query_sanitized'] ?? null,
+                        'keywords_removed' => $webSearchMetadata['keywords_removed'] ?? null,
+                        'results_count' => count($webSearchResults),
+                        'from_cache' => $webSearchMetadata['from_cache'] ?? false,
+                        'timestamp' => now()->toIso8601String(),
                     ]);
-                    // Continue with empty web search results - RAG data is still available
+                } else {
+                    $logContext['web_search_disabled'] = true;
                 }
 
-                // GDPR Audit - Log web search data (use null-coalescing to avoid notices)
-                $this->logger->info('[NatanChatService][GDPR] Web search query sent to external API', [
-                    'user_id' => $user->id,
-                    'provider' => $webSearchMetadata['provider'] ?? null,
-                    'query_sanitized' => $webSearchMetadata['query_sanitized'] ?? null,
-                    'keywords_removed' => $webSearchMetadata['keywords_removed'] ?? null,
-                    'results_count' => count($webSearchResults),
-                    'from_cache' => $webSearchMetadata['from_cache'] ?? false,
-                    'timestamp' => now()->toIso8601String(),
-                ]);
-            } else {
-                $logContext['web_search_disabled'] = true;
-            }
+                // STEP 2.6: Fusion - Merge RAG + Web Search into unified context ✨ NEW v3.0
+                if (!empty($webSearchResults)) {
+                    // Add web_sources to context for Claude
+                    $context['web_sources'] = $webSearchResults;
 
-            // STEP 2.6: Fusion - Merge RAG + Web Search into unified context ✨ NEW v3.0
-            if (!empty($webSearchResults)) {
-                // Add web_sources to context for Claude
-                $context['web_sources'] = $webSearchResults;
+                    // Build web sources summary for prompt
+                    $webSourcesSummary = $this->buildWebSourcesSummary($webSearchResults);
+                    $context['web_sources_summary'] = $webSourcesSummary;
 
-                // Build web sources summary for prompt
-                $webSourcesSummary = $this->buildWebSourcesSummary($webSearchResults);
-                $context['web_sources_summary'] = $webSourcesSummary;
+                    // 🚨 CRITICAL DEBUG LOG
+                    $this->logger->critical('🌐🌐🌐 WEB SOURCES ADDED TO CONTEXT', [
+                        'web_sources_summary_length' => strlen($webSourcesSummary),
+                        'web_sources_summary_preview' => substr($webSourcesSummary, 0, 300),
+                        'internal_sources' => count($context['acts']),
+                        'external_sources' => count($webSearchResults),
+                        'total_sources' => count($context['acts']) + count($webSearchResults),
+                    ]);
 
-                // 🚨 CRITICAL DEBUG LOG
-                $this->logger->critical('🌐🌐🌐 WEB SOURCES ADDED TO CONTEXT', [
-                    'web_sources_summary_length' => strlen($webSourcesSummary),
-                    'web_sources_summary_preview' => substr($webSourcesSummary, 0, 300),
-                    'internal_sources' => count($context['acts']),
-                    'external_sources' => count($webSearchResults),
-                    'total_sources' => count($context['acts']) + count($webSearchResults),
-                ]);
-
-                $this->logger->info('[NatanChatService] Context fusion completed (RAG + Web)', [
-                    'internal_sources' => count($context['acts']),
-                    'external_sources' => count($webSearchResults),
-                    'total_sources' => count($context['acts']) + count($webSearchResults),
-                ]);
-            }
-
-            // Add reference context if provided (for elaborations)
-            if ($referenceContext) {
-                $context['reference_message'] = $referenceContext;
-
-                // Only log reference ID if it exists (not all reference contexts have IDs)
-                if (isset($referenceContext['id'])) {
-                    $logContext['reference_message_id'] = $referenceContext['id'];
+                    $this->logger->info('[NatanChatService] Context fusion completed (RAG + Web)', [
+                        'internal_sources' => count($context['acts']),
+                        'external_sources' => count($webSearchResults),
+                        'total_sources' => count($context['acts']) + count($webSearchResults),
+                    ]);
                 }
 
-                $this->logger->info('[NatanChatService] Reference context included for elaboration', $logContext);
+                // Add reference context if provided (for elaborations)
+                if ($referenceContext) {
+                    $context['reference_message'] = $referenceContext;
+
+                    // Only log reference ID if it exists (not all reference contexts have IDs)
+                    if (isset($referenceContext['id'])) {
+                        $logContext['reference_message_id'] = $referenceContext['id'];
+                    }
+
+                    $this->logger->info('[NatanChatService] Reference context included for elaboration', $logContext);
+                }
+
+                $logContext['unified_knowledge_enabled'] = false;
             }
 
             // STEP 3: GDPR Audit - Log what we're sending to AI
@@ -556,8 +619,8 @@ class NatanChatService {
 
                         // Check for credit balance error FIRST (most critical)
                         $errorMessage = $e->getMessage();
-                        $isCreditError = str_contains($errorMessage, 'credit balance is too low') || 
-                                        str_contains($errorMessage, 'upgrade or purchase credits');
+                        $isCreditError = str_contains($errorMessage, 'credit balance is too low') ||
+                            str_contains($errorMessage, 'upgrade or purchase credits');
 
                         if ($isCreditError) {
                             // Critical: API credits exhausted
@@ -729,8 +792,10 @@ class NatanChatService {
             $userFriendlyMessage = "Mi dispiace, ho avuto un problema nell'elaborare la tua richiesta. Riprova tra poco.";
 
             // Check for credit balance error
-            if (str_contains($errorMessage, 'credit balance is too low') || 
-                str_contains($errorMessage, 'upgrade or purchase credits')) {
+            if (
+                str_contains($errorMessage, 'credit balance is too low') ||
+                str_contains($errorMessage, 'upgrade or purchase credits')
+            ) {
                 $userFriendlyMessage = "⚠️ **Credito API esaurito**\n\n" .
                     "Il servizio N.A.T.A.N. non può rispondere perché il credito Anthropic è terminato.\n\n" .
                     "**Azione richiesta:**\n" .
@@ -740,16 +805,20 @@ class NatanChatService {
                     "Serve solo ricaricare il credito API per Claude.";
             }
             // Check for rate limit errors
-            elseif (str_contains($errorMessage, 'rate_limit_error') || 
-                    str_contains($errorMessage, '429') ||
-                    str_contains($errorMessage, 'rate limit')) {
+            elseif (
+                str_contains($errorMessage, 'rate_limit_error') ||
+                str_contains($errorMessage, '429') ||
+                str_contains($errorMessage, 'rate limit')
+            ) {
                 $userFriendlyMessage = "⏱️ **Limite richieste raggiunto**\n\n" .
                     "Troppo traffico API in questo momento. Il sistema sta rallentando automaticamente.\n\n" .
                     "Riprova tra 30-60 secondi.";
             }
             // Check for timeout errors
-            elseif (str_contains($errorMessage, 'timeout') || 
-                    str_contains($errorMessage, 'timed out')) {
+            elseif (
+                str_contains($errorMessage, 'timeout') ||
+                str_contains($errorMessage, 'timed out')
+            ) {
                 $userFriendlyMessage = "⏰ **Timeout connessione**\n\n" .
                     "La richiesta ha impiegato troppo tempo. Prova a:\n" .
                     "- Ridurre il numero di atti analizzati\n" .
@@ -1178,6 +1247,86 @@ class NatanChatService {
             return [
                 'success' => false,
                 'error' => 'deletion_failed',
+            ];
+        }
+    }
+
+    /**
+     * Retrieve unified context using UnifiedKnowledgeService
+     * 
+     * Sostituisce il flusso RAG + Web Search + Fusion con un'unica chiamata
+     * che unifica tutte le fonti (Acts, Web, Memory, Files) con semantic search.
+     * 
+     * @param string $query User query
+     * @param User $user Current user
+     * @param array $options Search options
+     * @return array Context for Claude with unified sources
+     */
+    protected function getUnifiedContext(string $query, User $user, array $options = []): array {
+        $this->logger->info('[NatanChatService] Starting unified knowledge retrieval', [
+            'query_length' => strlen($query),
+            'user_id' => $user->id,
+            'options' => $options,
+        ]);
+
+        try {
+            // Prepare options for UnifiedKnowledgeService
+            $searchOptions = [
+                'search_acts' => $options['use_rag'] ?? true,
+                'search_web' => $options['use_web_search'] ?? false,
+                'search_memory' => true, // Always search conversation history
+                'project_id' => $options['project_id'] ?? null,
+                'limit' => 50, // Top 50 most relevant chunks across all sources
+            ];
+
+            // Se abbiamo già recuperato acts o web_results, passali direttamente
+            if (isset($options['acts_from_reference'])) {
+                $searchOptions['acts'] = $options['acts_from_reference'];
+            }
+
+            if (isset($options['web_results'])) {
+                $searchOptions['web_results'] = $options['web_results'];
+            }
+
+            // Call UnifiedKnowledgeService
+            $unifiedResults = $this->unifiedKnowledge->search($query, $searchOptions);
+
+            $this->logger->info('[NatanChatService] Unified knowledge retrieved', [
+                'total_chunks' => $unifiedResults->count(),
+                'top_similarity' => $unifiedResults->first()?->similarity_score,
+                'avg_similarity' => $unifiedResults->avg('similarity_score'),
+                'sources_breakdown' => $unifiedResults->groupBy('source_type')->map->count()->toArray(),
+            ]);
+
+            // Format per Claude prompt
+            $formattedContext = $this->unifiedKnowledge->formatForPrompt($unifiedResults);
+
+            // Build context array for Anthropic chat()
+            return [
+                'unified_sources' => $unifiedResults->toArray(),
+                'unified_context' => $formattedContext,
+                'stats' => [
+                    'total_chunks' => $unifiedResults->count(),
+                    'by_type' => $unifiedResults->groupBy('source_type')->map->count()->toArray(),
+                    'top_similarity' => $unifiedResults->first()?->similarity_score ?? 0,
+                    'avg_similarity' => round($unifiedResults->avg('similarity_score'), 4),
+                ],
+            ];
+        } catch (\Exception $e) {
+            $this->logger->error('[NatanChatService] Unified knowledge retrieval failed', [
+                'error' => $e->getMessage(),
+                'query' => substr($query, 0, 100),
+            ]);
+
+            // Fallback: return empty context
+            return [
+                'unified_sources' => [],
+                'unified_context' => '',
+                'stats' => [
+                    'total_chunks' => 0,
+                    'by_type' => [],
+                    'error' => $e->getMessage(),
+                ],
             ];
         }
     }
