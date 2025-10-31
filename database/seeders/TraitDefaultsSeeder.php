@@ -18,31 +18,19 @@ class TraitDefaultsSeeder extends Seeder {
      * Run the database seeds.
      */
     public function run(): void {
-        // Delete existing data respecting FK constraints
-        // Order matters: delete child tables first, then parent
-        try {
-            // Disable FK checks for clean truncate
-            if (DB::getDriverName() === 'mysql') {
-                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-            }
-            
-            // Truncate in reverse dependency order
-            DB::table('ai_trait_proposals')->truncate();  // Has FK to trait_categories, trait_types
-            DB::table('egi_traits')->truncate();           // Has FK to trait_categories, trait_types
-            DB::table('trait_types')->truncate();          // Has FK to trait_categories
-            DB::table('trait_categories')->truncate();     // Parent table
-            
-            // Re-enable FK checks
-            if (DB::getDriverName() === 'mysql') {
-                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-            }
-        } catch (\Exception $e) {
-            // Re-enable FK checks in case of error
-            if (DB::getDriverName() === 'mysql') {
-                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-            }
-            throw $e;
-        }
+        // Clean existing data using DELETE instead of TRUNCATE
+        // DELETE respects FK constraints better than TRUNCATE, especially on MariaDB
+        
+        $this->command->info('🧹 Cleaning existing trait data...');
+        
+        // Delete in reverse dependency order (children first, then parents)
+        // This works without disabling FK checks
+        DB::table('ai_trait_proposals')->delete();  // Has FK to trait tables
+        DB::table('egi_traits')->delete();          // Has FK to trait tables  
+        DB::table('trait_types')->delete();         // Has FK to trait_categories
+        DB::table('trait_categories')->delete();    // Parent table
+        
+        $this->command->info('✅ Existing trait data cleaned');
 
         // Default Categories with colors
         $categories = [
