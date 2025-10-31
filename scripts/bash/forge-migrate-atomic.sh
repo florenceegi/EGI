@@ -24,7 +24,17 @@ NC='\033[0m'
 
 # Configuration variables (Forge-compatible)
 TRANSACTION_ACTIVE=false
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../.."
+
+# Determine PROJECT_ROOT intelligently
+if [ -f "artisan" ]; then
+    # Already in project root
+    PROJECT_ROOT="$(pwd)"
+else
+    # Calculate from script location
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+fi
+
 STORAGE_PATH="$PROJECT_ROOT/storage/app/public"
 CLEANUP_LOG="/tmp/egi_forge_cleanup_$(date +%Y%m%d_%H%M%S).log"
 
@@ -508,7 +518,24 @@ execute_choice() {
 # ========================================
 main() {
     echo -e "${BLUE}🔍 Working directory: $PROJECT_ROOT${NC}"
-    cd "$PROJECT_ROOT"
+    
+    # Ensure we're in the project root
+    if [ ! -d "$PROJECT_ROOT" ]; then
+        echo -e "${RED}❌ Project root directory not found: $PROJECT_ROOT${NC}" >&2
+        exit 1
+    fi
+    
+    cd "$PROJECT_ROOT" || {
+        echo -e "${RED}❌ Failed to change to project root: $PROJECT_ROOT${NC}" >&2
+        exit 1
+    }
+    
+    # Verify we're in a Laravel project
+    if [ ! -f "artisan" ]; then
+        echo -e "${RED}❌ Not in Laravel project root (artisan not found)${NC}" >&2
+        echo -e "${CYAN}💡 Current directory: $(pwd)${NC}" >&2
+        exit 1
+    fi
 
     if [ $# -eq 0 ]; then
         show_menu
