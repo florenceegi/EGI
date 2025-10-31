@@ -7,7 +7,7 @@
 #              head/ e tutte le altre sottocartelle.
 #
 # Percorso: storage/app/public/users_files/collections_*/creator_*/
-# 
+#
 # CANCELLA:
 #   ✅ Tutti i file immagine (jpg, jpeg, png, webp, gif, bmp, svg) nella radice
 #      di collections_{id}/creator_{id}/
@@ -17,13 +17,15 @@
 #   ❌ Qualsiasi altra sottocartella
 #   ❌ File non-immagine
 #
-# Uso: bash bash_files/clean-creator-images.sh [--dry-run]
+# Uso: bash bash_files/clean-creator-images.sh [--dry-run] [--force]
 #
 # Opzioni:
 #   --dry-run    Mostra cosa verrebbe cancellato senza effettuare la cancellazione
+#   --force      Cancella senza chiedere conferma (per Forge/automazione)
 #
 # Autore: EGI Team
 # Data: 2025-10-29
+# Aggiornato: 2025-10-31 (aggiunto --force per Forge)
 ################################################################################
 
 set -e  # Exit on error
@@ -44,17 +46,40 @@ if [ ! -d "$BASE_DIR" ]; then
     exit 1
 fi
 
-# Modalità dry-run
+# Modalità dry-run e force
 DRY_RUN=false
-if [ "$1" == "--dry-run" ]; then
-    DRY_RUN=true
+FORCE=false
+
+# Parse parametri
+for arg in "$@"; do
+    case $arg in
+        --dry-run)
+            DRY_RUN=true
+            ;;
+        --force|-f)
+            FORCE=true
+            ;;
+        *)
+            echo -e "${RED}❌ Parametro non riconosciuto: $arg${NC}"
+            echo -e "${YELLOW}Uso: $0 [--dry-run] [--force]${NC}"
+            exit 1
+            ;;
+    esac
+done
+
+if [ "$DRY_RUN" = true ]; then
     echo -e "${YELLOW}🔍 Modalità DRY-RUN attivata - nessun file verrà cancellato${NC}"
     echo ""
 fi
 
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+if [ "$FORCE" = true ] && [ "$DRY_RUN" = false ]; then
+    echo -e "${YELLOW}⚡ Modalità FORCE attivata - cancellazione senza conferma${NC}"
+    echo ""
+fi
+
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}  🗑️  Clean Creator Images - EGI Storage Cleanup${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
 # Conta i file prima della cancellazione
@@ -102,13 +127,13 @@ if [ "$FILE_COUNT" -gt 10 ]; then
 fi
 echo ""
 
-# Conferma (solo se non è dry-run)
-if [ "$DRY_RUN" = false ]; then
+# Conferma (solo se non è dry-run e non è force)
+if [ "$DRY_RUN" = false ] && [ "$FORCE" = false ]; then
     echo -e "${YELLOW}⚠️  ATTENZIONE: Questa operazione cancellerà ${FILE_COUNT} file per un totale di ${TOTAL_SIZE}!${NC}"
     echo -e "${YELLOW}   Le cartelle head/ e le altre sottocartelle NON saranno toccate.${NC}"
     echo ""
     read -p "Sei sicuro di voler procedere? (yes/no): " CONFIRM
-    
+
     if [ "$CONFIRM" != "yes" ]; then
         echo -e "${BLUE}❌ Operazione annullata dall'utente.${NC}"
         exit 0
@@ -141,7 +166,7 @@ echo "$FILES" | while read -r file; do
 done
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 # Ricalcola file rimanenti (solo se non è dry-run)
 if [ "$DRY_RUN" = false ]; then
@@ -156,7 +181,7 @@ if [ "$DRY_RUN" = false ]; then
            -iname "*.bmp" -o \
            -iname "*.svg" \) \
         2>/dev/null | wc -l)
-    
+
     echo -e "${GREEN}✅ Operazione completata!${NC}"
     echo ""
     echo -e "${BLUE}📊 Statistiche:${NC}"
@@ -175,7 +200,7 @@ else
     echo -e "${GREEN}💡 Esegui senza --dry-run per cancellare effettivamente i file${NC}"
 fi
 
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
 # Mostra cartelle head/ mantenute
