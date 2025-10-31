@@ -20,16 +20,16 @@ class TraitDefaultsSeeder extends Seeder {
     public function run(): void {
         // Clean existing data using DELETE instead of TRUNCATE
         // DELETE respects FK constraints better than TRUNCATE, especially on MariaDB
-        
+
         $this->command->info('🧹 Cleaning existing trait data...');
-        
+
         // Delete in reverse dependency order (children first, then parents)
         // This works without disabling FK checks
         DB::table('ai_trait_proposals')->delete();  // Has FK to trait tables
-        DB::table('egi_traits')->delete();          // Has FK to trait tables  
+        DB::table('egi_traits')->delete();          // Has FK to trait tables
         DB::table('trait_types')->delete();         // Has FK to trait_categories
         DB::table('trait_categories')->delete();    // Parent table
-        
+
         $this->command->info('✅ Existing trait data cleaned');
 
         // Default Categories with colors
