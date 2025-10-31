@@ -18,14 +18,30 @@ class TraitDefaultsSeeder extends Seeder {
      * Run the database seeds.
      */
     public function run(): void {
-        // Truncate tables to start fresh
-        if (DB::getDriverName() === 'mysql') {
-            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        }
-        DB::table('trait_types')->truncate();
-        DB::table('trait_categories')->truncate();
-        if (DB::getDriverName() === 'mysql') {
-            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // Delete existing data respecting FK constraints
+        // Order matters: delete child tables first, then parent
+        try {
+            // Disable FK checks for clean truncate
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            }
+            
+            // Truncate in reverse dependency order
+            DB::table('ai_trait_proposals')->truncate();  // Has FK to trait_categories, trait_types
+            DB::table('egi_traits')->truncate();           // Has FK to trait_categories, trait_types
+            DB::table('trait_types')->truncate();          // Has FK to trait_categories
+            DB::table('trait_categories')->truncate();     // Parent table
+            
+            // Re-enable FK checks
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            }
+        } catch (\Exception $e) {
+            // Re-enable FK checks in case of error
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            }
+            throw $e;
         }
 
         // Default Categories with colors
