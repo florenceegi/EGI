@@ -97,14 +97,13 @@ validate_prerequisites() {
         exit 1
     fi
 
-    # Test database connection
+    # Test database connection (warning only on Forge, don't block)
     if ! php artisan db:show --quiet >/dev/null 2>&1; then
-        echo -e "${YELLOW}⚠️ Database connection issues detected${NC}" >&2
-        echo -e "${CYAN}💡 Check your database configuration in Forge panel${NC}" >&2
-        read -p "Continue anyway? (y/N): " continue_choice
-        if [[ ! "$continue_choice" =~ ^[Yy]$ ]]; then
-            exit 1
-        fi
+        echo -e "${YELLOW}⚠️ Database connection test failed (might be a false positive)${NC}" >&2
+        echo -e "${CYAN}💡 Continuing anyway - migrations will fail if DB is really down${NC}" >&2
+        echo -e "${CYAN}   If you see this and migrations fail, check database config in Forge panel${NC}" >&2
+        # On Forge/CI environments, we can't ask for user input, so we continue
+        # If DB is really down, migrations will fail immediately with clear error
     fi
 
     echo -e "${GREEN}✅ Prerequisites validated (Forge environment)${NC}"
@@ -518,18 +517,18 @@ execute_choice() {
 # ========================================
 main() {
     echo -e "${BLUE}🔍 Working directory: $PROJECT_ROOT${NC}"
-    
+
     # Ensure we're in the project root
     if [ ! -d "$PROJECT_ROOT" ]; then
         echo -e "${RED}❌ Project root directory not found: $PROJECT_ROOT${NC}" >&2
         exit 1
     fi
-    
+
     cd "$PROJECT_ROOT" || {
         echo -e "${RED}❌ Failed to change to project root: $PROJECT_ROOT${NC}" >&2
         exit 1
     }
-    
+
     # Verify we're in a Laravel project
     if [ ! -f "artisan" ]; then
         echo -e "${RED}❌ Not in Laravel project root (artisan not found)${NC}" >&2
