@@ -24,15 +24,28 @@ class DatabaseSeeder extends Seeder {
      * Seeder execution order (CRITICAL - rispettare ordine dipendenze)
      */
     private array $seederSequence = [
+        // === CORE INFRASTRUCTURE ===
         RolesAndPermissionsSeeder::class,       // 1. ruoli e permessi
         SystemUsersSeeder::class,               // 2. utenti di sistema (usa ruoli)
         ConsentTypeSeeder::class,               // 3. tipi consenso GDPR (completi)
-        // GdprSeeder::class,                   // REMOVED - duplicato e inferiore al FlorenceEgiPrivacyPolicySeeder
         IconSeeder::class,                      // 4. icone sistema
         FlorenceEgiPrivacyPolicySeeder::class, // 5. privacy policy GDPR-compliant e localizzata (it/en)
         VocabularyTermSeeder::class,            // 6. termini artistici (549 righe vocabolario)
         TraitDefaultsSeeder::class,             // 7. categorie e tipi trait NFT (858 righe)
-        // FakeUserSeeder::class,             // OPZIONALE - solo per development
+
+        // === AI FEATURES ===
+        PlatformKnowledgeSectionSeeder::class,  // 8. knowledge base AI Art Advisor (15 sezioni)
+        AiFeaturePricingSeeder::class,          // 9. pricing feature AI (tokenomics)
+
+        // === PA/ENTERPRISE FEATURES ===
+        PaWebScraperSeeder::class,              // 10. web scrapers PA (demo Firenze)
+
+        // === OPTIONAL DEMO DATA ===
+        // FakeUserSeeder::class,               // OPZIONALE - solo per development
+        // PAEnterpriseDemoSeeder::class,       // OPZIONALE - demo PA/Enterprise
+        // EgiBlockchainSeeder::class,          // OPZIONALE - blockchain data testing
+        // InitialSetupSeeder::class,           // OPZIONALE - setup iniziale legacy
+        // SuperAdminUserSeeder::class,         // OPZIONALE - setup admin legacy
     ];
 
     /**

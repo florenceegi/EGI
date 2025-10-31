@@ -60,6 +60,13 @@ class SystemUsersSeeder extends Seeder {
             'usertype' => 'epp',
             'role' => 'epp_entity'
         ],
+        [
+            'id' => 3,
+            'name' => 'frangette',
+            'email' => 'frangette@gmail.com',
+            'usertype' => 'frangette',
+            'role' => 'frangette_entity'
+        ],
     ];
 
     /**
@@ -404,6 +411,7 @@ class SystemUsersSeeder extends Seeder {
             'patron' => "Patronato di {$firstName}",
             'collector' => "Collezione di {$firstName}",
             'epp' => "EPP {$firstName} Gallery",
+            'frangette' => "{$firstName}'s Collection",
         ];
 
         return $typeNames[$userType] ?? "{$firstName}'s Collection";
@@ -432,7 +440,7 @@ class SystemUsersSeeder extends Seeder {
             // Organization Data (for all system users) - using correct ENUM values
             $businessTypeMapping = [
                 'natan' => 'individual',
-                'fabio' => 'individual',
+                'frangette' => 'individual',
                 'epp' => 'corporation',
             ];
 

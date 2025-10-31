@@ -767,6 +767,104 @@ class RolesAndPermissionsSeeder extends Seeder {
 
         ],
 
+        'frangette_entity' => [
+            // ✅ STESSI PERMESSI DI CREATOR (temporaneo - verrà rivisto in futuro)
+
+            // Team management
+            'create_team',
+            'update_team',
+            'delete_team',
+            'read_collection',
+            'add_team_member',
+            'remove_team_member',
+            'modify_team_roles',
+
+            // Collection management
+            'create_collection',
+            'update_collection',
+            'delete_collection',
+            'update_collection_image_header',
+            'open_collection',
+
+            // EGI management
+            'create_EGI',
+            'update_EGI',
+            'delete_EGI',
+            'manage_EGI',
+
+            // Wallet management
+            'create_wallet',
+            'update_wallet',
+            'approve_wallet',
+            'reject_wallet',
+            'delete_wallet',
+
+            // View permissions
+            'view_user',
+            'view_profile',
+            'view_team',
+            'view_dashboard',
+            'view_bio',
+            'view_settings',
+            'view_notifications',
+            'view_logs',
+            'view_collection',
+            'view_EGI',
+            'view_collection_header',
+            'view_wallet',
+            'view_statistics',
+
+            // Account management
+            'manage_profile',
+            'manage_account',
+            'delete_account',
+            'view_documentation',
+
+            // GDPR & Privacy
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'view_activity_log',
+            'view_breach_reports',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
+            'can_request_export',
+            'can_request_deletion',
+
+            // Dashboard access
+            'access_dashboard',
+            'access_full_dashboard',
+
+            // Own data management
+            'edit_own_profile_data',
+            'edit_own_personal_data',
+            'edit_own_organization_data',
+            'manage_own_documents',
+            'manage_own_invoice_preferences',
+            'upload_identity_documents',
+            'verify_document_status',
+            'download_own_documents',
+            'configure_invoice_preferences',
+            'view_own_invoices',
+            'download_own_invoices',
+            'view_own_wallet_address',
+
+            // Advanced features
+            'create_multiple_collections',
+            'priority_reservations',
+            'full_auction_access',
+            'manage_advanced_settings',
+            'manage_own_biographies',
+            'manage_bio_profile',
+
+            // CoA / QES
+            'sign_coa',
+
+            // Blockchain operations
+            'allow-blockchain-operations',
+        ],
+
         'weak_connect' => [
             // Accesso base
             'view_own_profile',
