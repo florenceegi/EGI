@@ -63,3 +63,12 @@ Schedule::command('ai-credits:update-exchange-rate')
     ->withoutOverlapping()
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/exchange-rate.log'));
+
+### 📌 6️⃣ JOB AUTOMATICO: UNIFIED CONTEXT CLEANUP ###
+// Cleanup expired chunks from natan_unified_context table
+// TTL: acts 30 days, web 6 hours, memory 7 days, files 90 days
+Schedule::command('natan:cleanup-unified-context --force')
+    ->hourly() // Run every hour to keep DB lean
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/unified-context-cleanup.log'));
