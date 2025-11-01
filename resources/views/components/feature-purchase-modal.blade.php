@@ -1,7 +1,7 @@
 @props(['featureCode'])
 
 @php
-    // Pricing dal catalog (SINGLE SOURCE OF TRUTH)
+    // Pricing dal catalog (può essere null, lo gestiamo nel JS)
     $pricing = DB::table('ai_feature_pricing')
         ->where('feature_code', $featureCode)
         ->where('is_active', true)
@@ -10,8 +10,6 @@
     // User Egili balance
     $user = Auth::user();
     $egiliBalance = $user?->wallet->egili_balance ?? 0;
-    $canAfford = $pricing && $egiliBalance >= ($pricing->cost_egili ?? 0);
-    $deficit = $pricing ? max(0, $pricing->cost_egili - $egiliBalance) : 0;
 @endphp
 
 {{-- Feature Purchase Modal --}}
@@ -22,19 +20,23 @@
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
          onclick="event.stopPropagation()">
         
-        @if($pricing)
+        {{-- MODALE SEMPRE VISIBILE (anche senza pricing) --}}
             {{-- Header --}}
             <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-6 text-white rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        @if($pricing->icon_name)
+                        @if($pricing && $pricing->icon_name)
                             <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4">
                                 <span class="text-2xl">{{ $pricing->icon_name }}</span>
                             </div>
+                        @else
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-2xl">🧠</span>
+                            </div>
                         @endif
                         <div>
-                            <h2 class="text-2xl font-bold">{{ $pricing->feature_name }}</h2>
-                            <p class="text-purple-100 text-sm">{{ $pricing->feature_description }}</p>
+                            <h2 class="text-2xl font-bold">{{ $pricing->feature_name ?? 'EGI Living Subscription' }}</h2>
+                            <p class="text-purple-100 text-sm">{{ $pricing->feature_description ?? 'Sblocca funzionalità avanzate per i tuoi EGI' }}</p>
                         </div>
                     </div>
                     <button onclick="closeFeaturePurchaseModal('{{ $featureCode }}')" 
@@ -47,8 +49,24 @@
             </div>
             
             <div class="p-6">
+                {{-- STEP 1: Quanti EGI vuoi caricare? --}}
+                <div class="mb-6">
+                    <h3 class="font-semibold text-lg mb-3" style="color: #8E44AD;">
+                        {{ __('features.how_many_egi') }}
+                    </h3>
+                    <div class="flex items-center gap-4">
+                        <input type="number" 
+                               id="egi-quantity-{{ $featureCode }}"
+                               min="1" 
+                               value="1"
+                               class="w-32 px-4 py-2 text-lg font-bold text-center border-2 border-purple-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                               onchange="updatePriceCalculation('{{ $featureCode }}', {{ $pricing->cost_egili ?? 500 }}, {{ $egiliBalance }})">
+                        <span class="text-gray-600">× {{ __('features.egi_smartcontract') }}</span>
+                    </div>
+                </div>
+                
                 {{-- Benefits --}}
-                @if($pricing->benefits)
+                @if($pricing && $pricing->benefits)
                     <div class="mb-6">
                         <h3 class="font-semibold text-lg mb-3" style="color: #8E44AD;">
                             {{ __('features.what_you_get') }}
@@ -64,21 +82,51 @@
                             @endforeach
                         </ul>
                     </div>
+                @else
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-lg mb-3" style="color: #8E44AD;">
+                            {{ __('features.egi_living_benefits_title') }}
+                        </h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 mr-2 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span class="text-gray-700">{{ __('features.egi_living_benefit_curator') }}</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 mr-2 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span class="text-gray-700">{{ __('features.egi_living_benefit_promoter') }}</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-5 h-5 mr-2 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span class="text-gray-700">{{ __('features.egi_living_benefit_provenance') }}</span>
+                            </li>
+                        </ul>
+                    </div>
                 @endif
                 
-                {{-- Pricing Section --}}
+                {{-- Pricing Section (Dynamic) --}}
                 <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 mb-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
+                            <div class="text-sm text-gray-600 mb-1">{{ __('features.total_cost') }}</div>
                             <div class="text-3xl font-bold" style="color: #8E44AD;">
-                                {{ number_format($pricing->cost_egili) }} Egili
+                                <span id="total-egili-{{ $featureCode }}">{{ number_format($pricing->cost_egili ?? 500) }}</span> Egili
                             </div>
                             <div class="text-sm text-gray-600">
-                                ≈ €{{ number_format($pricing->cost_egili * 0.1, 2) }}
+                                ≈ €<span id="total-eur-{{ $featureCode }}">{{ number_format(($pricing->cost_egili ?? 500) * 0.1, 2) }}</span>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                (<span id="price-per-egi-{{ $featureCode }}">{{ number_format($pricing->cost_egili ?? 500) }}</span> {{ __('features.egili_per_egi') }})
                             </div>
                         </div>
                         
-                        @if(!$pricing->is_recurring)
+                        @if(!$pricing || !$pricing->is_recurring)
                             <div class="bg-white px-3 py-1 rounded-full text-sm font-semibold text-purple-700">
                                 ♾️ {{ __('payment.lifetime') }}
                             </div>
@@ -89,13 +137,13 @@
                     <div class="border-t border-gray-200 pt-4">
                         <div class="flex items-center justify-between text-sm mb-2">
                             <span class="text-gray-600">{{ __('payment.your_egili_balance') }}:</span>
-                            <span class="font-bold {{ $canAfford ? 'text-green-600' : 'text-red-600' }}">
+                            <span id="user-balance-{{ $featureCode }}" class="font-bold text-gray-700">
                                 {{ number_format($egiliBalance) }} Egili
                             </span>
                         </div>
                         
-                        @if(!$canAfford)
-                            <div class="bg-red-50 border border-red-200 rounded-lg p-3 mt-3">
+                        <div id="insufficient-warning-{{ $featureCode }}" class="hidden">
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-3">
                                 <div class="flex items-start">
                                     <svg class="w-5 h-5 text-red-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
@@ -105,18 +153,19 @@
                                             {{ __('payment.insufficient_egili_title') }}
                                         </p>
                                         <p class="text-red-700 text-xs mt-1">
-                                            {{ __('payment.need_more_egili', ['amount' => number_format($deficit)]) }}
+                                            {{ __('features.need_more_egili_prefix') }} <span id="deficit-amount-{{ $featureCode }}">0</span> Egili
                                         </p>
                                     </div>
                                 </div>
                                 
-                                {{-- Link per comprare Egili (futuro) --}}
-                                <a href="{{ route('egili.purchase') ?? '#' }}" 
-                                   class="block w-full mt-3 bg-red-600 hover:bg-red-700 text-white text-center py-2 px-4 rounded-lg text-sm font-semibold transition-colors">
+                                {{-- Button per aprire modale Egili (non redirect!) --}}
+                                <button onclick="openEgiliPurchaseModal()" 
+                                        type="button"
+                                        class="block w-full mt-3 bg-red-600 hover:bg-red-700 text-white text-center py-2 px-4 rounded-lg text-sm font-semibold transition-colors">
                                     {{ __('egili.buy_more') }}
-                                </a>
+                                </button>
                             </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
                 
@@ -127,11 +176,12 @@
                     @csrf
                     <input type="hidden" name="feature_code" value="{{ $featureCode }}">
                     <input type="hidden" name="payment_method" value="egili">
+                    <input type="hidden" name="quantity" id="quantity-hidden-{{ $featureCode }}" value="1">
                     
                     {{-- Action Buttons --}}
                     <div class="flex gap-3">
                         <button type="submit" 
-                                {{ !$canAfford ? 'disabled' : '' }}
+                                id="submit-btn-{{ $featureCode }}"
                                 class="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-all">
                             <span class="flex items-center justify-center">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,19 +199,6 @@
                     </div>
                 </form>
             </div>
-            
-        @else
-            {{-- Pricing non trovato --}}
-            <div class="p-6">
-                <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-                    <p class="text-red-800">{{ __('errors.feature_not_configured') }}</p>
-                </div>
-                <button onclick="closeFeaturePurchaseModal('{{ $featureCode }}')" 
-                        class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg">
-                    {{ __('common.close') }}
-                </button>
-            </div>
-        @endif
     </div>
 </div>
 
@@ -172,6 +209,10 @@ window.openFeaturePurchaseModal = function(featureCode) {
     if (modal) {
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+        // Initialize calculation on open
+        const pricePerEgi = {{ $pricing->cost_egili ?? 500 }};
+        const userBalance = {{ $egiliBalance }};
+        updatePriceCalculation(featureCode, pricePerEgi, userBalance);
     }
 };
 
@@ -181,6 +222,42 @@ window.closeFeaturePurchaseModal = function(featureCode) {
     if (modal) {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
+    }
+};
+
+// Update price calculation
+window.updatePriceCalculation = function(featureCode, pricePerEgi, userBalance) {
+    const quantityInput = document.getElementById(`egi-quantity-${featureCode}`);
+    const quantity = parseInt(quantityInput.value) || 1;
+    
+    // Calculate totals
+    const totalEgili = quantity * pricePerEgi;
+    const totalEur = (totalEgili * 0.1).toFixed(2);
+    
+    // Update display
+    document.getElementById(`total-egili-${featureCode}`).textContent = totalEgili.toLocaleString();
+    document.getElementById(`total-eur-${featureCode}`).textContent = totalEur;
+    document.getElementById(`price-per-egi-${featureCode}`).textContent = pricePerEgi.toLocaleString();
+    document.getElementById(`quantity-hidden-${featureCode}`).value = quantity;
+    
+    // Check affordability
+    const canAfford = userBalance >= totalEgili;
+    const submitBtn = document.getElementById(`submit-btn-${featureCode}`);
+    const warningDiv = document.getElementById(`insufficient-warning-${featureCode}`);
+    const balanceSpan = document.getElementById(`user-balance-${featureCode}`);
+    
+    if (canAfford) {
+        submitBtn.disabled = false;
+        warningDiv.classList.add('hidden');
+        balanceSpan.classList.remove('text-red-600');
+        balanceSpan.classList.add('text-green-600');
+    } else {
+        submitBtn.disabled = true;
+        warningDiv.classList.remove('hidden');
+        const deficit = totalEgili - userBalance;
+        document.getElementById(`deficit-amount-${featureCode}`).textContent = deficit.toLocaleString();
+        balanceSpan.classList.remove('text-green-600');
+        balanceSpan.classList.add('text-red-600');
     }
 };
 </script>
