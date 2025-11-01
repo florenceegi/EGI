@@ -123,11 +123,11 @@
                     </div>
                 </div>
                 
-                {{-- CTA Button (Generic feature purchase route) --}}
-                <a href="{{ route('features.purchase', ['code' => $livingPricing->feature_code]) }}" 
-                   class="block w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg text-center transition-all transform hover:scale-105 shadow-lg">
+                {{-- CTA Button (Apre modale generica) --}}
+                <button onclick="openFeaturePurchaseModal('{{ $livingPricing->feature_code }}')" 
+                        class="block w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg text-center transition-all transform hover:scale-105 shadow-lg">
                     {{ __('features.unlock_now') }}
-                </a>
+                </button>
                 
                 {{-- One-time/Recurring badge --}}
                 @if(!$livingPricing->is_recurring)
