@@ -1395,6 +1395,11 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
     @vite('resources/js/coa/vocabulary-modal.js')
 @endpush
 
+{{-- Feature Purchase Modal (EGI Living) --}}
+@if ($isCreator && $egi->egi_type === 'SmartContract')
+    <x-feature-purchase-modal featureCode="egi_living_subscription" />
+@endif
+
 {{-- AI Art Advisor Modal Component --}}
 @if ($isCreator)
     <x-art-advisor-modal :context="[
