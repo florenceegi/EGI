@@ -195,7 +195,7 @@ class AppConfigController extends Controller
             'AppConfig' => [
                 'isAuthenticated' => $isAuthenticated, // Nome pulito
                 'isWeakAuth' => $isWeakAuth, // Indica se l'utente è in modalità weak auth
-                'loggedInUserWallet' => $user?->wallet,
+                'loggedInUserWallet' => $user?->wallet?->wallet, // wallet (relation) -> wallet (field address)
                 'initialUserData' => $userData,
                 'routes' => $routes,
                 'translations' => $translations,
