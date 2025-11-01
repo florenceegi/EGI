@@ -13,6 +13,8 @@ return [
     'not_found' => 'Feature non trovata o non disponibile',
     'already_owned' => 'Hai già acquistato questa feature',
     'unlock_now' => 'Sblocca Ora',
+    'unlock_with_egili' => 'Sblocca con Egili',
+    'what_you_get' => 'Cosa ottieni',
     'benefits_included' => 'Cosa ottieni',
     
     'purchase' => [

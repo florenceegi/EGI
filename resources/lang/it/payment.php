@@ -26,7 +26,11 @@ return [
     'crypto_nowpayments' => 'NOWPayments',
     
     'your_balance' => 'Il tuo saldo',
+    'your_egili_balance' => 'Il tuo saldo Egili',
     'insufficient_egili' => 'Saldo Egili insufficiente',
+    'insufficient_egili_title' => 'Saldo Egili insufficiente',
+    'need_more_egili' => 'Ti servono altri :amount Egili',
+    'lifetime' => 'Accesso lifetime',
     
     'pay_now' => 'Paga Ora',
     'cancel' => 'Annulla',

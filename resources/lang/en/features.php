@@ -13,6 +13,8 @@ return [
     'not_found' => 'Feature not found or unavailable',
     'already_owned' => 'You already own this feature',
     'unlock_now' => 'Unlock Now',
+    'unlock_with_egili' => 'Unlock with Egili',
+    'what_you_get' => 'What you get',
     'benefits_included' => 'What you get',
     
     'purchase' => [

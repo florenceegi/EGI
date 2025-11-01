@@ -129,6 +129,7 @@ return [
     ],
 
     'id_epp_not_found' => 'Id EPP non trovato',
+    'feature_not_configured' => 'Questa feature non è stata ancora configurata. Contatta il supporto.',
 
     'minting' => [
         'error_generating_token' => 'Errore durante la generazione del token',

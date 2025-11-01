@@ -133,6 +133,7 @@ return [
         'string' => 'The field must be at most :max characters.',
     ],
     'id_epp_not_found' => 'ID EPP not found',
+    'feature_not_configured' => 'This feature has not been configured yet. Contact support.',
     'minting' => [
         'error_generating_token' => 'Error generating token',
         'insufficient_wallet_balance' => 'Insufficient balance in wallet to purchase this EcoNFT',
