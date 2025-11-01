@@ -3,14 +3,14 @@
 /**
  * @package App\Http\Controllers\Upload\Config
  * @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
- * @version 1.2.0 (FlorenceEGI - OS3 Compliant)
+ * @version 1.3.0 (FlorenceEGI - OS3 Compliant + Complete)
  * @date 2025-11-01
  * @purpose Global configuration controller - Override vendor to expand JS translations
- *
+ * 
  * OS3 COMPLIANCE:
- * - NO Facades (dependency injection only)
- * - ULM + UEM properly injected
- * - GDPR audit trail
+ * - NO ULTRA Facades (dependency injection only)
+ * - ULM + UEM + GDPR properly injected
+ * - GDPR audit trail for operations
  */
 
 namespace App\Http\Controllers\Upload\Config;
@@ -18,6 +18,8 @@ namespace App\Http\Controllers\Upload\Config;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UploadManager\Services\SizeParser;
@@ -25,9 +27,15 @@ use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Exception;
 
-class GlobalConfigController extends Controller {
+class GlobalConfigController extends Controller
+{
     /**
-     * Dependencies (OS3 - NO Facades!)
+     * The logging channel name
+     */
+    protected string $channel = 'upload';
+    
+    /**
+     * Dependencies (OS3 pattern)
      */
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
@@ -35,7 +43,7 @@ class GlobalConfigController extends Controller {
     protected SizeParser $sizeParser;
 
     /**
-     * Constructor with dependency injection (OS3 pattern + GDPR)
+     * Constructor with dependency injection (OS3 + GDPR)
      */
     public function __construct(
         UltraLogManager $logger,
@@ -51,11 +59,9 @@ class GlobalConfigController extends Controller {
 
     /**
      * Get global upload configuration
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function getGlobalConfig(Request $request): JsonResponse {
+    public function getGlobalConfig(Request $request): JsonResponse
+    {
         try {
             $lang = app()->getLocale();
             $defaultHostingService = getDefaultHostingService() ?? 'default';
@@ -66,6 +72,8 @@ class GlobalConfigController extends Controller {
                 'hosting_service' => $defaultHostingService,
                 'log_category' => 'UPLOAD_CONFIG_REQUEST'
             ]);
+            
+            Log::channel($this->channel)->info('Default Hosting Service: ' . $defaultHostingService);
 
             // Get JS translations and expand them to root level for window.* access
             $jsTranslations = trans('uploadmanager::uploadmanager.js');
@@ -112,62 +120,116 @@ class GlobalConfigController extends Controller {
             ];
 
             // Merge JS translations directly into config root for window.* access
-            // This way window.uploadProcessingError exists instead of window.translations.js.uploadProcessingError
             $config = array_merge($config, $jsTranslations);
 
-            // GDPR: Audit trail for config access (if user authenticated)
+            // GDPR: Audit trail (if user authenticated)
             if ($user = auth()->user()) {
                 $this->auditService->logUserAction(
                     $user,
                     'upload_config_accessed',
-                    [
-                        'lang' => $lang,
-                        'hosting_service' => $defaultHostingService,
-                    ],
+                    ['lang' => $lang, 'hosting_service' => $defaultHostingService],
                     GdprActivityCategory::CONTENT_CREATION
                 );
             }
 
             return response()->json($config);
+            
         } catch (Exception $e) {
-            // UEM: Handle error (OS3 pattern)
-            $this->errorManager->handle('UPLOAD_CONFIG_ERROR', [
+            Log::channel($this->channel)->error('Error in getGlobalConfig: ' . $e->getMessage());
+            
+            // UEM: Handle error
+            return $this->errorManager->handle('UPLOAD_CONFIG_ERROR', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ], $e);
-
-            return response()->json([
-                'error' => 'Configuration error',
-                'message' => $e->getMessage()
-            ], 500);
         }
     }
 
     /**
-     * Check upload authorization
-     *
-     * @param Request $request
-     * @return JsonResponse
+     * Get upload limits (server vs app config)
      */
-    public function checkUploadAuthorization(Request $request): JsonResponse {
-        try {
-            $user = auth()->user();
+    public function getUploadLimits(): JsonResponse
+    {
+        // Server limits (php.ini)
+        $serverPostMaxSize = $this->sizeParser->parse(ini_get('post_max_size'));
+        $serverUploadMaxFilesize = $this->sizeParser->parse(ini_get('upload_max_filesize'));
+        $serverMaxFileUploads = (int)ini_get('max_file_uploads');
 
+        Log::channel($this->channel)->info('Raw Server Limits: ', [
+            'post_max_size' => $serverPostMaxSize,
+            'upload_max_filesize' => $serverUploadMaxFilesize,
+            'max_file_uploads' => $serverMaxFileUploads
+        ]);
+
+        // Application limits (config)
+        $appMaxTotalSize = $this->sizeParser->parse(config('upload-manager.max_total_size', ini_get('post_max_size')));
+        $appMaxFileSize = $this->sizeParser->parse(config('upload-manager.max_file_size', ini_get('upload_max_filesize')));
+        $appMaxFiles = (int)config('upload-manager.max_files', ini_get('max_file_uploads'));
+
+        $effectiveTotalSize = min($serverPostMaxSize, $appMaxTotalSize);
+        $effectiveFileSize = min($serverUploadMaxFilesize, $appMaxFileSize);
+        $effectiveMaxFiles = min($serverMaxFileUploads, $appMaxFiles);
+
+        Log::channel($this->channel)->info('Effective Limits: ', [
+            'max_total_size' => $effectiveTotalSize,
+            'max_file_size' => $effectiveFileSize,
+            'max_files' => $effectiveMaxFiles
+        ]);
+
+        return response()->json([
+            'max_total_size' => $effectiveTotalSize,
+            'max_file_size' => $effectiveFileSize,
+            'max_files' => $effectiveMaxFiles,
+            'max_total_size_formatted' => $this->formatSize($effectiveTotalSize),
+            'max_file_size_formatted' => $this->formatSize($effectiveFileSize),
+        ]);
+    }
+
+    /**
+     * Check upload authorization
+     */
+    public function checkUploadAuthorization(Request $request): JsonResponse
+    {
+        try {
+            $user = Auth::user();
+            
             // ULM: Log authorization check
             $this->logger->info('Upload authorization check', [
                 'user_id' => $user?->id,
                 'authenticated' => (bool) $user,
                 'log_category' => 'UPLOAD_AUTH_CHECK'
             ]);
+            
+            Log::channel($this->channel)->info('CheckUploadAuthorization', [
+                'user_id' => $user ? $user->id : 'guest',
+                'ip' => $request->ip()
+            ]);
 
             if (!$user) {
-                return response()->json([
+                $response = [
                     'authorized' => false,
-                    'message' => 'Authentication required'
-                ], 401);
+                    'reason' => trans('uploadmanager::uploadmanager.unauthenticated'),
+                    'redirect' => route('login'),
+                ];
+                
+                Log::channel($this->channel)->warning('UnauthorizedAccessAttempt', [
+                    'ip' => $request->ip(),
+                    'response' => $response
+                ]);
+                
+                return response()->json($response, 401);
             }
 
-            // GDPR: Audit trail for authorization check
+            // Email verification check (commented out as per original)
+            // if (!$user->hasVerifiedEmail()) {
+            //     return response()->json([
+            //         'authorized' => false,
+            //         'reason' => trans('uploadmanager::uploadmanager.email_not_verified'),
+            //         'redirect' => route('verification.notice'),
+            //     ], 403);
+            // }
+
+            // GDPR: Audit trail
             $this->auditService->logUserAction(
                 $user,
                 'upload_authorization_checked',
@@ -178,20 +240,41 @@ class GlobalConfigController extends Controller {
                 GdprActivityCategory::CONTENT_CREATION
             );
 
+            Log::channel($this->channel)->info('AuthorizationSuccess', [
+                'user_id' => $user->id
+            ]);
+
             return response()->json([
                 'authorized' => true,
                 'user_id' => $user->id,
-            ]);
+            ], 200);
+            
         } catch (Exception $e) {
+            Log::channel($this->channel)->error('AuthorizationCheckFailed', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            
             // UEM: Handle error
-            $this->errorManager->handle('UPLOAD_AUTH_CHECK_ERROR', [
+            return $this->errorManager->handle('UPLOAD_AUTH_CHECK_ERROR', [
                 'error' => $e->getMessage(),
             ], $e);
-
-            return response()->json([
-                'authorized' => false,
-                'error' => $e->getMessage()
-            ], 500);
         }
+    }
+
+    /**
+     * Format bytes to human-readable size
+     */
+    private function formatSize(int $bytes): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+
+        $bytes /= pow(1024, $pow);
+
+        return round($bytes, 2) . ' ' . $units[$pow];
     }
 }
