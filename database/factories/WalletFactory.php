@@ -18,6 +18,9 @@ class WalletFactory extends Factory
             'wallet' => $this->faker->unique()->regexify('[a-zA-Z0-9]{42}'),
             'royalty_mint' => $this->faker->randomFloat(2, 0, 50),
             'royalty_rebind' => $this->faker->randomFloat(2, 0, 10),
+            'egili_balance' => $this->faker->numberBetween(0, 10000),
+            'egili_lifetime_earned' => $this->faker->numberBetween(0, 50000),
+            'egili_lifetime_spent' => $this->faker->numberBetween(0, 40000),
         ];
     }
 }

@@ -116,55 +116,56 @@ class EgiLivingPaymentService
             'log_category' => 'LIVING_PAYMENT_EGILI_START'
         ]);
         
-        return DB::transaction(function () use ($user, $egi, $priceEgili) {
-            // 1. Spend Egili
-            $transaction = $this->egiliService->spend(
-                $user,
-                $priceEgili,
-                'egi_living_subscription',
-                'service',
-                [
-                    'egi_id' => $egi->id,
-                    'subscription_type' => 'one_time',
-                ],
-                $egi
-            );
-            
-            // 2. Activate Living features
-            $egi->update([
-                'egi_living_enabled' => true,
-                'egi_living_activated_at' => now(),
-            ]);
-            
-            // 3. GDPR: Audit trail
-            $this->auditService->logUserAction(
-                $user,
-                'egi_living_purchased_egili',
-                [
-                    'egi_id' => $egi->id,
-                    'price_egili' => $priceEgili,
-                    'egili_transaction_id' => $transaction->id,
-                    'balance_after' => $this->egiliService->getBalance($user),
-                ],
-                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
-            );
-            
-            // 4. ULM: Log success
-            $this->logger->info('EGI Living payment with Egili completed', [
-                'user_id' => $user->id,
+        // NOTE: EgiliService->spend() already uses DB::transaction()
+        // We don't wrap in another transaction to avoid nesting
+        
+        // 1. Spend Egili (atomic transaction handled by EgiliService)
+        $transaction = $this->egiliService->spend(
+            $user,
+            $priceEgili,
+            'egi_living_subscription',
+            'service',
+            [
                 'egi_id' => $egi->id,
+                'subscription_type' => 'one_time',
+            ],
+            $egi
+        );
+        
+        // 2. Activate Living features (separate transaction after Egili spent)
+        $egi->update([
+            'egi_living_enabled' => true,
+            'egi_living_activated_at' => now(),
+        ]);
+        
+        // 3. GDPR: Audit trail
+        $this->auditService->logUserAction(
+            $user,
+            'egi_living_purchased_egili',
+            [
+                'egi_id' => $egi->id,
+                'price_egili' => $priceEgili,
                 'egili_transaction_id' => $transaction->id,
-                'log_category' => 'LIVING_PAYMENT_EGILI_SUCCESS'
-            ]);
-            
-            return [
-                'success' => true,
-                'payment_method' => 'egili',
-                'egi_id' => $egi->id,
-                'transaction_id' => $transaction->id,
-                'message' => __('egi_living.payment.egili_success'),
-            ];
-        });
+                'balance_after' => $this->egiliService->getBalance($user),
+            ],
+            GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+        );
+        
+        // 4. ULM: Log success
+        $this->logger->info('EGI Living payment with Egili completed', [
+            'user_id' => $user->id,
+            'egi_id' => $egi->id,
+            'egili_transaction_id' => $transaction->id,
+            'log_category' => 'LIVING_PAYMENT_EGILI_SUCCESS'
+        ]);
+        
+        return [
+            'success' => true,
+            'payment_method' => 'egili',
+            'egi_id' => $egi->id,
+            'transaction_id' => $transaction->id,
+            'message' => __('egi_living.payment.egili_success'),
+        ];
     }
     
     /**

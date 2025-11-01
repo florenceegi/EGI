@@ -565,6 +565,16 @@ class User extends Authenticatable implements HasMedia {
         return $this->hasMany(Wallet::class);
     }
 
+    /**
+     * Get user's primary wallet (first wallet)
+     * 
+     * @return Wallet|null
+     */
+    public function getWalletAttribute(): ?Wallet
+    {
+        return $this->wallets()->first();
+    }
+
     public function customNotifications() {
         return $this->morphMany(CustomDatabaseNotification::class, 'notifiable');
     }
