@@ -46,7 +46,7 @@ use Illuminate\Support\Facades\Request;
 use Livewire\Livewire;
 use Ultra\EgiModule\Http\Controllers\EgiUploadController;
 use Ultra\EgiModule\Http\Controllers\EgiUploadPageController;
-use Ultra\UploadManager\Controllers\Config\ConfigController;
+use App\Http\Controllers\Upload\Config\GlobalConfigController;
 use App\Http\Controllers\Web\BiographyWebController;
 
 /*
@@ -579,8 +579,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::delete('/profile/delete-banner', [App\Http\Controllers\ProfileImageController::class, 'deleteBanner'])
             ->name('profile.delete-banner');
 
-        // Upload authorization check
-        Route::get('/api/check-upload-authorization', [Ultra\UploadManager\Controllers\Config\ConfigController::class, 'checkUploadAuthorization'])
+        // Upload configuration and authorization (override vendor routes)
+        Route::get('/config/global-config', [GlobalConfigController::class, 'getGlobalConfig'])
+            ->name('global.config');
+        Route::get('/api/check-upload-authorization', [GlobalConfigController::class, 'checkUploadAuthorization'])
             ->name('upload.authorization');
 
         // Dashboard statica temporanea per test

@@ -338,6 +338,7 @@ class EgiUploadHandler {
             'egi-date' => ['nullable', 'date_format:Y-m-d'],
             'egi-position' => ['nullable', 'integer', 'min:1'],
             'egi-publish' => ['nullable', 'boolean'],
+            'egi-type' => ['nullable', 'in:ASA,SmartContract'], // NEW: Dual Architecture support
         ]);
     }
 
@@ -433,6 +434,9 @@ class EgiUploadHandler {
         $isPublished = $validatedData['egi-publish'] ?? false;
         $publishDate = $validatedData['egi-date'] ?? Carbon::now()->toDateTimeString();
 
+        // NEW: Dual Architecture - EGI Type (defaults to ASA if not specified)
+        $egiType = $validatedData['egi-type'] ?? 'ASA';
+
         // Image dimensions
         $dimensions = @getimagesize($tempPath);
         $dimensionString = ($dimensions !== false) ? 'w:' . $dimensions[0] . ' x h:' . $dimensions[1] : 'N/A';
@@ -451,7 +455,8 @@ class EgiUploadHandler {
             'size' => $this->formatSizeInMegabytes($file->getSize()),
             'dimensions' => $dimensionString,
             'file_hash' => hash_file('md5', $tempPath),
-            'upload_id' => Str::uuid()->toString()
+            'upload_id' => Str::uuid()->toString(),
+            'egi_type' => $egiType, // NEW: Store intended EGI type for dual architecture
         ];
     }
 
@@ -494,6 +499,11 @@ class EgiUploadHandler {
         $egi->file_crypt = $egiData['crypt_filename'];
         $egi->file_hash = $egiData['file_hash'];
         $egi->file_mime = $egiData['mime_type'];
+
+        // NEW: Dual Architecture - Set EGI type and PreMint mode
+        $egi->egi_type = $egiData['egi_type']; // ASA or SmartContract
+        $egi->pre_mint_mode = true; // Always starts as PreMint (not yet on blockchain)
+        $egi->pre_mint_created_at = Carbon::now(); // Track PreMint creation time
 
         $egi->save(); // First save to get ID
 

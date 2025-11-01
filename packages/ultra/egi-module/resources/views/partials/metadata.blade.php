@@ -100,6 +100,66 @@
                 {{-- Testo informativo. --}}
                 <p class="text-[10px] text-gray-400 mt-0.5">{{ trans('uploadmanager::uploadmanager.metadata_notice') }}</p>
             </div>
+
+            {{-- Riga 4: EGI Type Selector (occupa 2 colonne) --}}
+            <div class="md:col-span-2 mt-3">
+                <label class="block text-sm font-medium text-gray-300 mb-2">
+                    {{ trans('uploadmanager::uploadmanager.egi_type_label') }}
+                    <span class="text-xs text-gray-400 ml-1">({{ trans('uploadmanager::uploadmanager.egi_type_help') }})</span>
+                </label>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {{-- ASA Classic Option --}}
+                    <label class="relative flex items-start p-3 border-2 border-gray-600 rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-500 hover:bg-gray-700/30 group">
+                        <input type="radio" 
+                               name="egi-type" 
+                               id="egi-type-asa"
+                               value="ASA" 
+                               checked
+                               class="mt-1 h-4 w-4 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
+                               aria-label="{{ trans('uploadmanager::uploadmanager.egi_type_asa') }}">
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-white">
+                                    🛡️ {{ trans('uploadmanager::uploadmanager.egi_type_asa') }}
+                                </span>
+                                <span class="px-2 py-0.5 text-[10px] font-medium bg-blue-600 text-white rounded-full">
+                                    {{ trans('uploadmanager::uploadmanager.free') }}
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">
+                                {{ trans('uploadmanager::uploadmanager.egi_type_asa_desc') }}
+                            </p>
+                        </div>
+                    </label>
+
+                    {{-- SmartContract Living Option --}}
+                    <label class="relative flex items-start p-3 border-2 border-gray-600 rounded-lg cursor-pointer transition-all duration-200 hover:border-purple-500 hover:bg-gray-700/30 group">
+                        <input type="radio" 
+                               name="egi-type" 
+                               id="egi-type-sc"
+                               value="SmartContract"
+                               class="mt-1 h-4 w-4 text-purple-500 focus:ring-purple-500 focus:ring-offset-gray-900"
+                               aria-label="{{ trans('uploadmanager::uploadmanager.egi_type_smart_contract') }}">
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-white">
+                                    🧠 {{ trans('uploadmanager::uploadmanager.egi_type_smart_contract') }}
+                                </span>
+                                <span class="px-2 py-0.5 text-[10px] font-medium bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full">
+                                    PREMIUM
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">
+                                {{ trans('uploadmanager::uploadmanager.egi_type_smart_contract_desc') }}
+                            </p>
+                        </div>
+                    </label>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-1.5">
+                    {{ trans('uploadmanager::uploadmanager.egi_type_notice') }}
+                </p>
+            </div>
         </div>
         <div class="flex items-center justify-end gap-2 my-4">
             {{-- Switch publish. Ha già role="switch" e l'attributo 'checked' per lo stato iniziale. --}}

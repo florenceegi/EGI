@@ -124,96 +124,74 @@ return [
     'no_file_uploaded' => 'Nessun file caricato',
 
     // Traduzioni JavaScript
+    // JavaScript translations - camelCase per compatibilità TypeScript
     'js' => [
-        'upload_processing_error' => 'Errore durante l\'elaborazione dell\'upload',
-        'invalid_server_response' => 'Il server ha restituito una risposta non valida o inaspettata.',
-        'unexpected_upload_error' => 'Errore imprevisto durante il caricamento.',
-        'critical_upload_error' => 'Errore critico durante l\'upload',
-        'file_not_found_for_scan' => 'File non trovato per la scansione antivirus',
-        'scan_error' => 'Errore durante la scansione antivirus',
-        'no_file_specified' => 'Nessun file specificato',
-        'confirm_cancel' => 'Vuoi cancellare?',
-        'upload_waiting' => 'Stato Upload: In attesa...',
-        'server_error' => 'Il server ha restituito una risposta non valida o inaspettata.',
-        'save_error' => 'Impossibile salvare il file dopo aver ricreato la directory.',
-        'config_error' => 'Configurazione globale non caricata. Assicurati che i dati siano stati recuperati.',
-        'starting_upload' => 'Inizio caricamento',
-        'loading' => 'Caricamento in corso',
-        'upload_finished' => 'Caricamento completato',
-        'upload_and_scan' => 'Caricamento e scansione completati',
-        'virus_scan_advice' => 'La scansione virus potrebbe rallentare il processo di caricamento',
-        'enable_virus_scanning' => 'Scansione virus abilitata',
-        'disable_virus_scanning' => 'Scansione virus disabilitata',
-        'delete_button' => 'Elimina',
-        'of' => 'di',
-        'delete_file_error' => 'Errore durante l\'eliminazione del file',
-        'some_error' => 'Si sono verificati alcuni errori',
-        'complete_failure' => 'Caricamento completamente fallito',
+        // Upload processing
+        'uploadProcessingError' => 'Errore durante l\'elaborazione dell\'upload',
+        'invalidServerResponse' => 'Il server ha restituito una risposta non valida o inaspettata.',
+        'unexpectedUploadError' => 'Errore imprevisto durante il caricamento.',
+        'criticalUploadError' => 'Errore critico durante l\'upload',
+        'errorDuringUpload' => 'Errore durante il caricamento',
+        'errorDuringUploadRequest' => 'Errore durante la richiesta di upload',
 
-        // Traduzioni aggiunte per feedback emoji
-        'emoji_happy' => 'Caricamento completato con successo',
-        'emoji_sad' => 'Alcuni file hanno avuto errori durante il caricamento',
-        'emoji_angry' => 'Caricamento completamente fallito',
-
-        // Traduzioni aggiunte per il processo di caricamento
-        'starting_saving' => 'Inizio salvataggio file',
-        'starting_scan' => 'Inizio scansione virus',
-        'scanning_complete' => 'Scansione completata',
+        // Virus scanning
+        'fileNotFoundForScan' => 'File non trovato per la scansione antivirus',
+        'scanError' => 'Errore durante la scansione antivirus',
+        'enableVirusScanning' => 'Scansione virus abilitata',
+        'disableVirusScanning' => 'Scansione virus disabilitata',
+        'virusScanAdvise' => 'La scansione virus potrebbe rallentare il processo di caricamento',
         'Scanning_stopped' => 'Scansione interrotta',
-        'scanning_success' => 'Scansione riuscita :fileCaricato',
 
-        // Traduzioni aggiunte per la gestione degli errori
-        'error_during_upload' => 'Errore durante l\'elaborazione del caricamento',
-        'error_delete_temp_local' => 'Errore durante l\'eliminazione del file temporaneo locale',
-        'error_delete_temp_ext' => 'Errore durante l\'eliminazione del file temporaneo esterno',
-        'error_during_upload_request' => 'Errore durante la richiesta di caricamento',
+        // Upload states
+        'noFileSpecified' => 'Nessun file specificato',
+        'confirmCancel' => 'Vuoi cancellare?',
+        'uploadWaiting' => 'Stato Upload: In attesa...',
+        'startingUpload' => 'Inizio caricamento',
+        'startingSaving' => 'Inizio salvataggio',
+        'startingScan' => 'Inizio scansione',
+        'loading' => 'Caricamento in corso',
+        'uploadFinished' => 'Caricamento completato',
+        'uploadAndScan' => 'Caricamento e scansione completati',
+        'scanningComplete' => 'Scansione completata',
+        'scanningSuccess' => 'Scansione completata con successo',
+
+        // Errors
+        'serverError' => 'Errore del server',
+        'saveError' => 'Errore durante il salvataggio',
+        'configError' => 'Errore di configurazione',
+        'someError' => 'Si sono verificati alcuni errori',
+        'completeFailure' => 'Fallimento completo',
         'unknownError' => 'Errore sconosciuto',
         'unspecifiedError' => 'Errore non specificato',
 
-        // Validation messages
-        'invalidFilesTitle' => 'File non validi',
-        'invalidFilesMessage' => 'I seguenti file non possono essere caricati',
-        'checkFilesGuide' => 'Controlla i tipi di file, le dimensioni e i nomi.',
+        // File operations
+        'deleteButton' => 'Elimina',
+        'deleteFileError' => 'Errore durante l\'eliminazione del file',
+        'errorDeleteTempLocal' => 'Errore durante l\'eliminazione del file temporaneo locale',
+        'errorDeleteTempExt' => 'Errore durante l\'eliminazione del file temporaneo esterno',
+
+        // UI elements
+        'of' => 'di',
         'okButton' => 'OK',
+        'checkFilesGuide' => 'Controlla la guida sui file',
 
-        // File type labels
-        'file_type_image' => 'Immagine',
-        'file_type_document' => 'Documento',
-        'file_type_audio' => 'Audio',
-        'file_type_video' => 'Video',
-        'file_type_archive' => 'Archivio',
-        'file_type_3d_model' => 'Modello 3D',
+        // Validation
+        'invalidFilesTitle' => 'File non validi',
+        'invalidFilesMessage' => 'Alcuni file non sono validi',
 
-        // Archive file extensions
-        'ext_zip' => 'Archivio ZIP',
-        'ext_rar' => 'Archivio RAR',
-        'ext_7z' => 'Archivio 7-Zip',
-        'ext_tar' => 'Archivio TAR',
-        'ext_gz' => 'Archivio GZip',
+        // Emoji
+        'emojiHappy' => '😊',
+        'emojiSad' => '😢',
+        'emojiAngry' => '😠',
+    ],
 
-        // 3D Model file extensions
-        'ext_obj' => 'Modello 3D OBJ',
-        'ext_fbx' => 'Modello 3D FBX',
-        'ext_stl' => 'Modello 3D STL',
-        'ext_glb' => 'Modello 3D GLB',
-        'ext_gltf' => 'Modello 3D glTF',
-
-        // Additional audio formats
-        'ext_aac' => 'Audio AAC',
-        'ext_ogg' => 'Audio OGG',
-        'ext_wma' => 'Audio WMA',
-
-        // Additional video formats
-        'ext_wmv' => 'Video WMV',
-        'ext_flv' => 'Video Flash',
-        'ext_webm' => 'Video WebM',
-
-        // Validation error messages
-        'error_unsupported_type' => 'Tipo di file non supportato',
-        'error_archive_too_large' => 'Il file di archivio è troppo grande (dimensione massima: {size}MB)',
-        'error_3d_model_too_large' => 'Il file del modello 3D è troppo grande (dimensione massima: {size}MB)',
-        'error_security_blocked' => 'Questo tipo di file è stato bloccato per motivi di sicurezza',
-
-
-        ],
+    // EGI Type Selection (Dual Architecture)
+    'egi_type_label' => 'Tipo di EGI',
+    'egi_type_help' => 'Scegli come verrà mintato il tuo EGI',
+    'egi_type_asa' => 'EGI Classico (ASA)',
+    'egi_type_asa_desc' => 'Asset statico su blockchain Algorand. Certificato permanente, autenticità garantita.',
+    'egi_type_smart_contract' => 'EGI Vivente (SmartContract)',
+    'egi_type_smart_contract_desc' => 'Asset intelligente con AI integrata. Analisi automatica, promozione e memoria evolutiva.',
+    'free' => 'Gratuito',
+    'egi_type_notice' => 'Il tipo scelto determinerà le funzionalità disponibili per il tuo EGI. Potrai sempre mintarlo in seguito.',
 ];

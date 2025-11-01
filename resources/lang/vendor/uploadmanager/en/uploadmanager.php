@@ -131,100 +131,74 @@ return [
 
 
     // JavaScript translations
+    // JavaScript translations - camelCase for TypeScript compatibility
     'js' => [
-
-        'upload_processing_error' => 'Error processing the upload',
-        'invalid_server_response' => 'The server returned an invalid or unexpected response.',
-        'unexpected_upload_error' => 'Unexpected error during upload.',
-        'critical_upload_error' => 'Critical error during upload',
-        'file_not_found_for_scan' => 'File not found for antivirus scan',
-        'scan_error' => 'Error during antivirus scan',
-        'no_file_specified' => 'No file specified',
-        'confirm_cancel' => 'Do you want to cancel?',
-        'upload_waiting' => 'Upload Status: Waiting...',
-        'server_error' => 'The server returned an invalid or unexpected response.',
-        'save_error' => 'Unable to save the file after recreating the directory.',
-        'config_error' => 'Global configuration not loaded. Make sure data has been fetched.',
-        'starting_upload' => 'Starting upload',
-        'loading' => 'Loading',
-        'upload_finished' => 'Upload completed',
-        'upload_and_scan' => 'Upload and scan completed',
-        'virus_scan_advice' => 'Virus scanning may slow down the upload process',
-        'enable_virus_scanning' => 'Virus scanning enabled',
-        'disable_virus_scanning' => 'Virus scanning disabled',
-        'delete_button' => 'Delete',
-        'of' => 'of',
-        'delete_file_error' => 'Error deleting file',
-        'some_error' => 'Some errors occurred',
-        'complete_failure' => 'Upload completely failed',
-
-        // Added translations for emoji feedback
-        'emoji_happy' => 'Upload completed successfully',
-        'emoji_sad' => 'Some files had errors during upload',
-        'emoji_angry' => 'Upload completely failed',
-
-        // Added translations for upload process
-        'starting_saving' => 'Starting to save files',
-        'starting_scan' => 'Starting virus scan',
-        'scanning_complete' => 'Scan completed',
+        // Upload processing
+        'uploadProcessingError' => 'Error processing the upload',
+        'invalidServerResponse' => 'The server returned an invalid or unexpected response.',
+        'unexpectedUploadError' => 'Unexpected error during upload.',
+        'criticalUploadError' => 'Critical upload error',
+        'errorDuringUpload' => 'Error during upload',
+        'errorDuringUploadRequest' => 'Error during upload request',
+        
+        // Virus scanning
+        'fileNotFoundForScan' => 'File not found for antivirus scan',
+        'scanError' => 'Error during antivirus scan',
+        'enableVirusScanning' => 'Virus scanning enabled',
+        'disableVirusScanning' => 'Virus scanning disabled',
+        'virusScanAdvise' => 'Virus scanning may slow down the upload process',
         'Scanning_stopped' => 'Scanning stopped',
-        'scanning_success' => 'Scan successful :fileCaricato',
-
-        // Added translations for error handling
-        'error_during_upload' => 'Error during upload processing',
-        'error_delete_temp_local' => 'Error deleting local temporary file',
-        'error_delete_temp_ext' => 'Error deleting external temporary file',
-        'error_during_upload_request' => 'Error during upload request',
-        'unknown_error' => 'Unknown error',
+        
+        // Upload states
+        'noFileSpecified' => 'No file specified',
+        'confirmCancel' => 'Do you want to cancel?',
+        'uploadWaiting' => 'Upload Status: Waiting...',
+        'startingUpload' => 'Starting upload',
+        'startingSaving' => 'Starting save',
+        'startingScan' => 'Starting scan',
+        'loading' => 'Loading',
+        'uploadFinished' => 'Upload finished',
+        'uploadAndScan' => 'Upload and scan completed',
+        'scanningComplete' => 'Scanning complete',
+        'scanningSuccess' => 'Scanning completed successfully',
+        
+        // Errors
+        'serverError' => 'Server error',
+        'saveError' => 'Error during save',
+        'configError' => 'Configuration error',
+        'someError' => 'Some errors occurred',
+        'completeFailure' => 'Complete failure',
+        'unknownError' => 'Unknown error',
         'unspecifiedError' => 'Unspecified error',
-
-        // Validation messages
-        'invalidFilesTitle' => 'Invalid Files Detected',
-        'invalidFilesMessage' => 'The following files could not be uploaded',
-        'checkFilesGuide' => 'Please check file types, sizes, and names.',
+        
+        // File operations
+        'deleteButton' => 'Delete',
+        'deleteFileError' => 'Error deleting file',
+        'errorDeleteTempLocal' => 'Error deleting local temporary file',
+        'errorDeleteTempExt' => 'Error deleting external temporary file',
+        
+        // UI elements
+        'of' => 'of',
         'okButton' => 'OK',
-
-        'file_types' => [
-        'image' => 'Image',
-        'document' => 'Document',
-        'audio' => 'Audio',
-        'video' => 'Video',
-        'archive' => 'Archive',
-        '3d-model' => '3D Model',
-        ],
-
-        'file_extensions' => [
-            // Archives
-            'zip' => 'ZIP Archive',
-            'rar' => 'RAR Archive',
-            '7z' => '7-Zip Archive',
-            'tar' => 'TAR Archive',
-            'gz' => 'GZip Archive',
-
-            // 3D Models
-            'obj' => 'OBJ 3D Model',
-            'fbx' => 'FBX 3D Model',
-            'stl' => 'STL 3D Model',
-            'glb' => 'GLB 3D Model',
-            'gltf' => 'glTF 3D Model',
-
-            // Additional audio formats
-            'aac' => 'AAC Audio',
-            'ogg' => 'OGG Audio',
-            'wma' => 'WMA Audio',
-
-            // Additional video formats
-            'wmv' => 'WMV Video',
-            'flv' => 'Flash Video',
-            'webm' => 'WebM Video'
-        ],
-
-        'validation_errors' => [
-            'unsupported_type' => 'File type not supported',
-            'archive_too_large' => 'Archive file is too large (maximum size: :size MB)',
-            '3d_model_too_large' => '3D model file is too large (maximum size: :size MB)',
-            'security_blocked' => 'This file type has been blocked for security reasons',
-        ],
-
+        'checkFilesGuide' => 'Check the files guide',
+        
+        // Validation
+        'invalidFilesTitle' => 'Invalid Files',
+        'invalidFilesMessage' => 'Some files are invalid',
+        
+        // Emoji
+        'emojiHappy' => '😊',
+        'emojiSad' => '😢',
+        'emojiAngry' => '😠',
     ],
+
+    // EGI Type Selection (Dual Architecture)
+    'egi_type_label' => 'EGI Type',
+    'egi_type_help' => 'Choose how your EGI will be minted',
+    'egi_type_asa' => 'Classic EGI (ASA)',
+    'egi_type_asa_desc' => 'Static asset on Algorand blockchain. Permanent certificate, guaranteed authenticity.',
+    'egi_type_smart_contract' => 'Living EGI (SmartContract)',
+    'egi_type_smart_contract_desc' => 'Intelligent asset with integrated AI. Automatic analysis, promotion and evolutionary memory.',
+    'free' => 'Free',
+    'egi_type_notice' => 'The chosen type will determine the features available for your EGI. You can always mint it later.',
 ];
