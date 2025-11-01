@@ -44,6 +44,11 @@ class Wallet extends Model
         'iban_hash',
         'iban_last4',
 
+        // ═══ EGILI TOKEN BALANCE ═══
+        'egili_balance',
+        'egili_lifetime_earned',
+        'egili_lifetime_spent',
+
         // ═══ VERSIONING ═══
         'version',
         'wallet_type',
@@ -53,6 +58,9 @@ class Wallet extends Model
         'is_anonymous' => 'boolean',
         'metadata' => 'array',
         'iban_encrypted' => 'encrypted', // Laravel encrypted cast
+        'egili_balance' => 'integer',
+        'egili_lifetime_earned' => 'integer',
+        'egili_lifetime_spent' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -98,6 +106,16 @@ class Wallet extends Model
     public function notificationPayload()
     {
         return $this->belongsTo(NotificationPayloadWallet::class, 'notification_payload_wallets_id', 'id');
+    }
+
+    /**
+     * Get all Egili transactions for this wallet
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function egiliTransactions()
+    {
+        return $this->hasMany(EgiliTransaction::class, 'wallet_id');
     }
 
     /**
