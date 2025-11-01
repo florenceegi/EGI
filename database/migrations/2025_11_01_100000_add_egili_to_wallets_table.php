@@ -32,7 +32,7 @@ return new class extends Migration {
             // === EGILI BALANCE ===
             $table->unsignedBigInteger('egili_balance')
                 ->default(0)
-                ->after('algorand_address')
+                ->after('metadata')
                 ->comment('Saldo Egili disponibili (token utility piattaforma)');
             
             $table->unsignedBigInteger('egili_lifetime_earned')
