@@ -6,7 +6,7 @@
  * @version 1.3.0 (FlorenceEGI - OS3 Compliant + Complete)
  * @date 2025-11-01
  * @purpose Global configuration controller - Override vendor to expand JS translations
- * 
+ *
  * OS3 COMPLIANCE:
  * - NO ULTRA Facades (dependency injection only)
  * - ULM + UEM + GDPR properly injected
@@ -27,13 +27,12 @@ use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Exception;
 
-class GlobalConfigController extends Controller
-{
+class GlobalConfigController extends Controller {
     /**
      * The logging channel name
      */
     protected string $channel = 'upload';
-    
+
     /**
      * Dependencies (OS3 pattern)
      */
@@ -60,8 +59,7 @@ class GlobalConfigController extends Controller
     /**
      * Get global upload configuration
      */
-    public function getGlobalConfig(Request $request): JsonResponse
-    {
+    public function getGlobalConfig(Request $request): JsonResponse {
         try {
             $lang = app()->getLocale();
             $defaultHostingService = getDefaultHostingService() ?? 'default';
@@ -72,7 +70,7 @@ class GlobalConfigController extends Controller
                 'hosting_service' => $defaultHostingService,
                 'log_category' => 'UPLOAD_CONFIG_REQUEST'
             ]);
-            
+
             Log::channel($this->channel)->info('Default Hosting Service: ' . $defaultHostingService);
 
             // Get JS translations and expand them to root level for window.* access
@@ -133,10 +131,9 @@ class GlobalConfigController extends Controller
             }
 
             return response()->json($config);
-            
         } catch (Exception $e) {
             Log::channel($this->channel)->error('Error in getGlobalConfig: ' . $e->getMessage());
-            
+
             // UEM: Handle error
             return $this->errorManager->handle('UPLOAD_CONFIG_ERROR', [
                 'error' => $e->getMessage(),
@@ -148,8 +145,7 @@ class GlobalConfigController extends Controller
     /**
      * Get upload limits (server vs app config)
      */
-    public function getUploadLimits(): JsonResponse
-    {
+    public function getUploadLimits(): JsonResponse {
         // Server limits (php.ini)
         $serverPostMaxSize = $this->sizeParser->parse(ini_get('post_max_size'));
         $serverUploadMaxFilesize = $this->sizeParser->parse(ini_get('upload_max_filesize'));
@@ -188,18 +184,17 @@ class GlobalConfigController extends Controller
     /**
      * Check upload authorization
      */
-    public function checkUploadAuthorization(Request $request): JsonResponse
-    {
+    public function checkUploadAuthorization(Request $request): JsonResponse {
         try {
             $user = Auth::user();
-            
+
             // ULM: Log authorization check
             $this->logger->info('Upload authorization check', [
                 'user_id' => $user?->id,
                 'authenticated' => (bool) $user,
                 'log_category' => 'UPLOAD_AUTH_CHECK'
             ]);
-            
+
             Log::channel($this->channel)->info('CheckUploadAuthorization', [
                 'user_id' => $user ? $user->id : 'guest',
                 'ip' => $request->ip()
@@ -211,12 +206,12 @@ class GlobalConfigController extends Controller
                     'reason' => trans('uploadmanager::uploadmanager.unauthenticated'),
                     'redirect' => route('login'),
                 ];
-                
+
                 Log::channel($this->channel)->warning('UnauthorizedAccessAttempt', [
                     'ip' => $request->ip(),
                     'response' => $response
                 ]);
-                
+
                 return response()->json($response, 401);
             }
 
@@ -248,14 +243,13 @@ class GlobalConfigController extends Controller
                 'authorized' => true,
                 'user_id' => $user->id,
             ], 200);
-            
         } catch (Exception $e) {
             Log::channel($this->channel)->error('AuthorizationCheckFailed', [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
             ]);
-            
+
             // UEM: Handle error
             return $this->errorManager->handle('UPLOAD_AUTH_CHECK_ERROR', [
                 'error' => $e->getMessage(),
@@ -266,8 +260,7 @@ class GlobalConfigController extends Controller
     /**
      * Format bytes to human-readable size
      */
-    private function formatSize(int $bytes): string
-    {
+    private function formatSize(int $bytes): string {
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
