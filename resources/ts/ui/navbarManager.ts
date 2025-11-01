@@ -34,8 +34,11 @@ export function updateNavbarUI(config: AppConfig, DOM: typeof DOMElements, uem: 
 
 
     const authStatus = getAuthStatus(config);
-    const walletAddress = getConnectedWalletAddress(config);
-    const shortAddress = walletAddress
+    const walletAddressRaw = getConnectedWalletAddress(config);
+    // CRITICAL FIX: Ensure walletAddress is a string before using substring
+    // Sometimes it might be an object or other type due to payment system changes
+    const walletAddress = (typeof walletAddressRaw === 'string' ? walletAddressRaw : (walletAddressRaw ? String(walletAddressRaw) : null));
+    const shortAddress = walletAddress && typeof walletAddress === 'string' && walletAddress.length > 0
         ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`
         : appTranslate('walletDefaultText', config.translations);
 

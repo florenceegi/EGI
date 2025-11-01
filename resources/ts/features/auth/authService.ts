@@ -138,11 +138,28 @@
      */
     export function getConnectedWalletAddress(config: AppConfig): string | null {
         const authStatus = getAuthStatus(config); // Riusa la logica di getAuthStatus
+        let walletAddress: string | null = null;
+        
         if (authStatus === 'logged-in') {
-            return config.loggedInUserWallet || null;
+            walletAddress = config.loggedInUserWallet || null;
+        } else {
+            // Per 'connected' o 'disconnected', il fallback è sempre localStorage
+            walletAddress = localStorage.getItem('connected_wallet');
         }
-        // Per 'connected' o 'disconnected', il fallback è sempre localStorage
-        return localStorage.getItem('connected_wallet');
+        
+        // CRITICAL FIX: Ensure we always return a string or null, never an object
+        // Payment system might store wallet address as object, convert to string
+        if (walletAddress && typeof walletAddress !== 'string') {
+            // If it's an object, try to extract address property or stringify
+            if (typeof walletAddress === 'object' && walletAddress !== null) {
+                walletAddress = (walletAddress as any).address || (walletAddress as any).walletAddress || String(walletAddress);
+            } else {
+                walletAddress = String(walletAddress);
+            }
+        }
+        
+        // Final validation: ensure it's a valid string or null
+        return (walletAddress && typeof walletAddress === 'string' && walletAddress.trim().length > 0) ? walletAddress.trim() : null;
     }
 
     /**
