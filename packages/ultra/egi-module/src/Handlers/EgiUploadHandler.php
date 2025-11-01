@@ -616,7 +616,7 @@ class EgiUploadHandler {
         $userMsgFallback = "File '{$originalName}' (EGI ID: {$egi->id}) processed successfully.";
         $successUserMessage = trans($userMsgKey, ['fileCaricato' => $originalName]) ?: $userMsgFallback;
 
-        return [
+        $response = [
             'success' => true,
             'userMessage' => $successUserMessage,
             'egiData' => [
@@ -636,6 +636,15 @@ class EgiUploadHandler {
                 'created_at' => $egi->created_at->toIso8601String(),
             ]
         ];
+
+        // Dual Architecture: If SmartContract selected, add Living payment redirect
+        if ($egi->egi_type === 'SmartContract') {
+            $response['requires_living_payment'] = true;
+            $response['living_payment_url'] = route('egi-living.payment.form', ['egiId' => $egi->id]);
+            $response['userMessage'] = __('uploadmanager::uploadmanager.smart_contract_requires_payment');
+        }
+
+        return $response;
     }
 
     /**

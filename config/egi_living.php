@@ -94,6 +94,7 @@ return [
         'one_time' => [
             'name' => 'Attivazione Singola',
             'price_eur' => 49.99,
+            'price_egili' => 500,  // Equivalent in Egili (1 Egilo = €0.10)
             'duration_days' => null, // lifetime
             'features' => ['curator', 'promoter', 'provenance', 'passport', 'anchoring'],
             'trigger_interval' => 'standard',

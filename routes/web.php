@@ -141,6 +141,18 @@ Route::middleware('auth')->group(function () {
             ->name('traits.generate');
     });
 
+    // EGI Living Subscription Payment (FIAT/Crypto/Egili)
+    Route::prefix('egi-living')->name('egi-living.')->group(function () {
+        Route::get('/payment/{egiId}', [App\Http\Controllers\EgiLivingSubscriptionController::class, 'showPaymentForm'])
+            ->name('payment.form');
+        Route::post('/payment/process', [App\Http\Controllers\EgiLivingSubscriptionController::class, 'processPayment'])
+            ->name('payment.process');
+        Route::get('/payment/success/{egiId}', [App\Http\Controllers\EgiLivingSubscriptionController::class, 'paymentSuccess'])
+            ->name('payment.success');
+        Route::get('/payment/cancel/{egiId}', [App\Http\Controllers\EgiLivingSubscriptionController::class, 'paymentCancel'])
+            ->name('payment.cancel');
+    });
+
     // AI Traits Management (outside egi prefix for easier access)
     Route::prefix('traits/generations')->name('traits.generations.')->group(function () {
         Route::get('/{generation}', [App\Http\Controllers\AiTraitController::class, 'show'])
