@@ -1,48 +1,62 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-EGI Commit Statistics Exporter v6.0.0 - HYBRID EDITION
+EGI Commit Statistics Exporter v6.1.0 - DUAL REPO EDITION
 Author: Fabio Cherici & Padmin D. Curtis (AI Partner OS3.0)
 License: MIT
-Version: 6.0.0 (FlorenceEGI - PA/Enterprise Analytics)
-Date: 2025-10-28
+Version: 6.1.0 (FlorenceEGI - Dual Repository Analytics)
+Date: 2025-11-02
 
 Overview
 --------
-HYBRID combining best of v3.py (weekly analytics) + v5.py (modern code).
+Analizza commit da 2 repository separati (EGI + NATAN_LOC) e fornisce stats unificate.
 
-Features from v3.py:
-- Weekly aggregation from 2025-08-19 to today
+DUAL REPOSITORY SUPPORT:
+- EGI repo: /home/fabio/EGI
+- NATAN_LOC repo: /home/fabio/NATAN_LOC (auto-detect)
+- Query Git separate per ogni repository
+- Somma automatica per totali combined
+- Excel con colonne separate per EGI e NATAN_LOC
+
+TERMINAL OUTPUT:
+1. GIORNALIERO (sempre):
+   - TOT GIORNALIERO EGI (commits, righe nette)
+   - TOT GIORNALIERO NATAN_LOC (commits, righe nette)
+   - SOMMA GIORNALIERA (commits totali, righe totali)
+
+2. SETTIMANALE (solo se range > 1 giorno):
+   - TOTALE SETTIMANALE EGI
+   - TOTALE SETTIMANALE NATAN_LOC
+   - SOMMA SETTIMANALE (EGI + NATAN_LOC)
+
+EXCEL OUTPUT (solo se range > 1 giorno):
+- UNA RIGA per periodo (weekly/daily)
+- Colonne separate: Commits EGI | Righe EGI | Commits NATAN | Righe NATAN | Totali
+- 3 sheets: Summary, Weekly, Daily
+
+MODES:
+- Single day (--since X --until X): Solo echo giornaliero, NO Excel, NO settimanale
+- Range/Default: Echo giornaliero + settimanale + Excel completo
+
+Features from v3.py + v5.py:
 - Multi-dimensional productivity scoring
 - Day type classification (REFACTORING, BUG_FIXING, FEATURE_DEV, etc.)
-- Cognitive load estimation with components
-- Tag-weighted commits with advanced weights
+- Cognitive load estimation
+- Tag-weighted commits (REFACTOR=2x, FIX=1.5x, FEAT=1.0x)
 - Comprehensive exclude patterns (deps + testing data)
-- 3-sheet Excel: Weekly, Daily, Testing Summary
-
-Features from v5.py:
 - Modern Python 3.10+ with dataclasses
-- Clean timezone parsing (fixes +0100 issue)
-- Flexible date handling
-- Optional pandas/openpyxl (graceful degradation)
-- CLI arguments support
-
-Improvements v6:
-- Parametrizable: --since/--until override default (2025-08-19 to today)
-- Better error handling
-- Unified exclude patterns
-- Combined cognitive load + productivity index
+- Clean timezone parsing
 
 Usage
 -----
-# Default: Process ALL from 2025-08-19 to today
+# Single day analysis (solo echo, no Excel)
+python egi_productivity_v6.py --since 2025-11-01 --until 2025-11-01
+
+# Full report (default: 2025-08-19 to today, genera Excel)
 python egi_productivity_v6.py
 
-# Override date range
+# Custom range
 python egi_productivity_v6.py --since 2025-10-01 --until 2025-10-28
-
-# Custom output
-python egi_productivity_v6.py --xlsx /custom/path.xlsx
 """
 
 from __future__ import annotations
@@ -197,6 +211,13 @@ class CommitEntry:
 @dataclass
 class DayStats:
     date: dt.date
+    # EGI stats (repo root - excluding docs/NATAN_LOC)
+    commits_egi: int
+    lines_net_egi: int
+    # NATAN_LOC stats (docs/NATAN_LOC only)
+    commits_natan: int
+    lines_net_natan: int
+    # Combined stats
     commits: int
     commits_weighted: float
     files_modified: int
@@ -218,6 +239,13 @@ class WeekStats:
     description: str
     start_date: dt.date
     end_date: dt.date
+    # EGI stats (repo root - excluding docs/NATAN_LOC)
+    commits_egi: int
+    lines_net_egi: int
+    # NATAN_LOC stats (docs/NATAN_LOC only)
+    commits_natan: int
+    lines_net_natan: int
+    # Combined stats
     commits: int
     commits_weighted: float
     files_modified: int
@@ -323,6 +351,7 @@ class GitRepo:
 
     def __init__(self, repo_path: Path):
         self.repo_path = repo_path
+        self.natan_repo_path = repo_path.parent / 'NATAN_LOC'
 
     def run_command(self, cmd: str) -> str:
         """Execute git command and return output."""
@@ -418,6 +447,89 @@ class GitRepo:
         next_day = (date + dt.timedelta(days=1)).isoformat()
 
         return self.get_commits(date_str, date_str)
+    
+    def get_commits_from_repo(self, repo_path: Path, since: str, until: str) -> List[CommitEntry]:
+        """Get commits from specific repository."""
+        commits = []
+        cmd = f'git log --oneline --since="{since} 00:00:00" --until="{until} 23:59:59"'
+        
+        try:
+            result = subprocess.run(
+                cmd,
+                shell=True,
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            output = result.stdout.strip()
+        except subprocess.CalledProcessError:
+            return commits
+        
+        if not output:
+            return commits
+
+        for line in output.strip().split('\n'):
+            if not line:
+                continue
+            sha = line.split()[0]
+            
+            # Get commit details
+            cmd_show = f'git show --no-patch --format="%an|%ai|%s" {sha}'
+            try:
+                result = subprocess.run(cmd_show, shell=True, cwd=repo_path, capture_output=True, text=True, check=True)
+                details = result.stdout.strip()
+            except:
+                continue
+            
+            parts = details.split('|', 2)
+            if len(parts) < 3:
+                continue
+            
+            author, date_str, message = parts
+            
+            try:
+                commit_date = parse_git_date(date_str)
+            except:
+                continue
+            
+            # Get file stats
+            cmd_numstat = f'git show --numstat --format="" {sha}'
+            try:
+                result = subprocess.run(cmd_numstat, shell=True, cwd=repo_path, capture_output=True, text=True, check=True)
+                numstat_output = result.stdout.strip()
+            except:
+                numstat_output = ""
+            
+            files = []
+            for stat_line in numstat_output.strip().split('\n'):
+                if not stat_line:
+                    continue
+                parts = stat_line.split('\t')
+                if len(parts) < 3:
+                    continue
+                added_str, removed_str, filepath = parts
+                
+                # Skip excluded files
+                if should_exclude_file(filepath):
+                    continue
+                
+                try:
+                    added = int(added_str) if added_str != '-' else 0
+                    removed = int(removed_str) if removed_str != '-' else 0
+                    files.append((filepath, added, removed))
+                except ValueError:
+                    continue
+            
+            commits.append(CommitEntry(
+                sha=sha,
+                author=author,
+                date=commit_date,
+                message=message,
+                files=files
+            ))
+        
+        return commits
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -431,12 +543,39 @@ class ProductivityAnalyzer:
         self.repo = GitRepo(repo_path)
 
     def analyze_day(self, date: dt.date) -> DayStats:
-        """Analyze single day statistics."""
-        commits = self.repo.get_commits_for_day(date)
+        """Analyze single day statistics with EGI/NATAN_LOC separation."""
+        date_str = date.isoformat()
+        
+        # Query EGI repo (/home/fabio/EGI)
+        commits_egi = self.repo.get_commits_from_repo(self.repo.repo_path, date_str, date_str)
+        
+        # Query NATAN_LOC repo (/home/fabio/NATAN_LOC) se esiste
+        commits_natan = []
+        if self.repo.natan_repo_path.exists():
+            commits_natan = self.repo.get_commits_from_repo(self.repo.natan_repo_path, date_str, date_str)
+        
+        # Calculate EGI stats
+        lines_net_egi = 0
+        for commit in commits_egi:
+            for filepath, added, removed in commit.files:
+                lines_net_egi += (added - removed)
+        
+        # Calculate NATAN stats
+        lines_net_natan = 0
+        for commit in commits_natan:
+            for filepath, added, removed in commit.files:
+                lines_net_natan += (added - removed)
+        
+        # Combine commits
+        commits = commits_egi + commits_natan
 
         if not commits:
             return DayStats(
                 date=date,
+                commits_egi=0,
+                lines_net_egi=0,
+                commits_natan=0,
+                lines_net_natan=0,
                 commits=0,
                 commits_weighted=0.0,
                 files_modified=0,
@@ -470,7 +609,7 @@ class ProductivityAnalyzer:
             for tag, count in tag_counter.items()
         )
 
-        # File statistics
+        # File statistics (COMBINED)
         all_files = set()
         lines_added = 0
         lines_removed = 0
@@ -501,6 +640,10 @@ class ProductivityAnalyzer:
 
         return DayStats(
             date=date,
+            commits_egi=len(commits_egi),
+            lines_net_egi=lines_net_egi,
+            commits_natan=len(commits_natan),
+            lines_net_natan=lines_net_natan,
             commits=total_commits,
             commits_weighted=commits_weighted,
             files_modified=len(all_files),
@@ -531,7 +674,12 @@ class ProductivityAnalyzer:
             daily_stats.append(day_stat)
             current_date += dt.timedelta(days=1)
 
-        # Aggregate weekly stats
+        # Aggregate weekly stats (SEPARATED + COMBINED)
+        total_commits_egi = sum(d.commits_egi for d in daily_stats)
+        total_lines_net_egi = sum(d.lines_net_egi for d in daily_stats)
+        total_commits_natan = sum(d.commits_natan for d in daily_stats)
+        total_lines_net_natan = sum(d.lines_net_natan for d in daily_stats)
+        
         total_commits = sum(d.commits for d in daily_stats)
         total_commits_weighted = sum(d.commits_weighted for d in daily_stats)
         total_files = sum(d.files_modified for d in daily_stats)
@@ -586,6 +734,10 @@ class ProductivityAnalyzer:
             description=description,
             start_date=start_date,
             end_date=end_date,
+            commits_egi=total_commits_egi,
+            lines_net_egi=total_lines_net_egi,
+            commits_natan=total_commits_natan,
+            lines_net_natan=total_lines_net_natan,
             commits=total_commits,
             commits_weighted=total_commits_weighted,
             files_modified=total_files,
@@ -610,7 +762,11 @@ class ProductivityAnalyzer:
         all_daily_stats = []
 
         week_number = 1
-        current_monday = start_date
+        
+        # Calculate MONDAY of the week containing start_date
+        # weekday(): 0 = Monday, 6 = Sunday
+        days_since_monday = start_date.weekday()
+        current_monday = start_date - dt.timedelta(days=days_since_monday)
 
         # Week descriptions (from v3)
         week_descriptions = {
@@ -667,18 +823,25 @@ def create_excel_report(
         print("⚠️ pandas/openpyxl not available. Skipping Excel export.", file=sys.stderr)
         return
 
-    # Prepare weekly data
+    # Prepare weekly data (UNA SOLA RIGA per settimana con colonne separate)
     weekly_data = []
     for week in weekly_stats:
         weekly_data.append({
             'Settimana': f'Settimana {week.week_number}',
             'Periodo': week.period,
             'Descrizione': week.description,
-            'Commits': week.commits,
+            # EGI columns
+            'Commits EGI': week.commits_egi,
+            'Righe Nette EGI': week.lines_net_egi,
+            # NATAN_LOC columns
+            'Commits NATAN_LOC': week.commits_natan,
+            'Righe Nette NATAN_LOC': week.lines_net_natan,
+            # Combined columns
+            'Commits TOTALI': week.commits,
             'Commits Pesati': round(week.commits_weighted, 1),
             'Files Modificati': week.files_modified,
             'Righe Toccate': week.lines_touched,
-            'Righe Nette': week.lines_net,
+            'Righe Nette TOTALI': week.lines_net,
             'TAG Coverage %': round(week.tag_coverage_pct, 1),
             'Cognitive Load': round(week.avg_cognitive_load, 2),
             'Productivity Index': round(week.avg_productivity, 2),
@@ -686,7 +849,7 @@ def create_excel_report(
             'Coding Time (h)': round(week.coding_minutes / 60, 1)
         })
 
-    # Prepare daily data
+    # Prepare daily data (UNA SOLA RIGA per giorno con colonne separate)
     daily_data = []
     for day in daily_stats:
         if day.commits == 0:
@@ -697,13 +860,20 @@ def create_excel_report(
         daily_data.append({
             'Data': day.date.isoformat(),
             'Giorno': day.date.strftime('%A'),
-            'Commits': day.commits,
+            # EGI columns
+            'Commits EGI': day.commits_egi,
+            'Righe Nette EGI': day.lines_net_egi,
+            # NATAN_LOC columns
+            'Commits NATAN_LOC': day.commits_natan,
+            'Righe Nette NATAN_LOC': day.lines_net_natan,
+            # Combined columns
+            'Commits TOTALI': day.commits,
             'Commits Pesati': round(day.commits_weighted, 1),
             'Files': day.files_modified,
             'Righe +': day.lines_added,
             'Righe -': day.lines_removed,
             'Righe Toccate': day.lines_touched,
-            'Righe Nette': day.lines_net,
+            'Righe Nette TOTALI': day.lines_net,
             'TAG Distribution': tags_str,
             'Day Type': f"{day.day_type_icon} {day.day_type}",
             'Cognitive Load': round(day.cognitive_load, 2),
@@ -762,50 +932,76 @@ def create_excel_report(
 # TERMINAL OUTPUT
 # ═══════════════════════════════════════════════════════════════
 
-def print_terminal_summary(weekly_stats: List[WeekStats], daily_stats: List[DayStats]) -> None:
-    """Print summary to terminal."""
-    today_stats = [d for d in daily_stats if d.date == dt.date.today()]
+def print_terminal_summary(weekly_stats: List[WeekStats], daily_stats: List[DayStats], is_single_day: bool = False) -> None:
+    """Print summary to terminal with EGI/NATAN_LOC separation."""
+    # Se single day, prendi quel giorno. Altrimenti cerca oggi, o ultimo giorno con commit.
+    if is_single_day and daily_stats:
+        target_day = daily_stats[0]
+    else:
+        today_list = [d for d in daily_stats if d.date == dt.date.today()]
+        if today_list:
+            target_day = today_list[0]
+        else:
+            # Prendi ultimo giorno con commit
+            days_with_commits = [d for d in daily_stats if d.commits > 0]
+            target_day = days_with_commits[-1] if days_with_commits else None
 
-    if today_stats:
-        today = today_stats[0]
+    if target_day:
         print("\n" + "="*70)
-        print("📊 STATISTICHE OGGI")
+        if is_single_day:
+            print("📊 STATISTICHE GIORNO ANALIZZATO")
+        else:
+            print("📊 STATISTICHE OGGI")
         print("="*70)
-        print(f"📅 Data: {today.date.isoformat()}")
-        print(f"✨ Commits: {today.commits} (pesati: {today.commits_weighted:.1f})")
-        print(f"📁 Files modificati: {today.files_modified}")
-        print(f"📈 Righe aggiunte: +{today.lines_added:,}")
-        print(f"📉 Righe rimosse: -{today.lines_removed:,}")
-        print(f"🔢 Righe toccate: {today.lines_touched:,}")
-        print(f"💯 Righe nette: {today.lines_net:+,}")
-        print(f"{today.day_type_icon} Tipo giornata: {today.day_type}")
-        print(f"🧠 Cognitive Load: {today.cognitive_load:.2f}x")
-        print(f"🚀 Productivity Index: {today.productivity_index:.2f}")
+        print(f"📅 Data: {target_day.date.isoformat()}")
+        print()
+        print("📊 TOT GIORNALIERO EGI:")
+        print(f"   ✨ Commits EGI: {target_day.commits_egi}")
+        print(f"   💯 Righe nette EGI: {target_day.lines_net_egi:+,}")
+        print()
+        print("📊 TOT GIORNALIERO NATAN_LOC:")
+        print(f"   ✨ Commits NATAN_LOC: {target_day.commits_natan}")
+        print(f"   💯 Righe nette NATAN_LOC: {target_day.lines_net_natan:+,}")
+        print()
+        print("📊 SOMMA GIORNALIERA (EGI + NATAN_LOC):")
+        print(f"   ✨ Commits totali: {target_day.commits} (pesati: {target_day.commits_weighted:.1f})")
+        print(f"   📁 Files modificati: {target_day.files_modified}")
+        print(f"   📈 Righe aggiunte: +{target_day.lines_added:,}")
+        print(f"   📉 Righe rimosse: -{target_day.lines_removed:,}")
+        print(f"   🔢 Righe toccate: {target_day.lines_touched:,}")
+        print(f"   💯 Righe nette: {target_day.lines_net:+,}")
+        print(f"   {target_day.day_type_icon} Tipo giornata: {target_day.day_type}")
+        print(f"   🧠 Cognitive Load: {target_day.cognitive_load:.2f}x")
+        print(f"   🚀 Productivity Index: {target_day.productivity_index:.2f}")
 
-        if today.tags:
+        if target_day.tags:
             print(f"\n🏷️ TAG Distribution:")
-            for tag, count in sorted(today.tags.items(), key=lambda x: -x[1]):
+            for tag, count in sorted(target_day.tags.items(), key=lambda x: -x[1]):
                 weight = TAG_WEIGHTS.get(tag, 0.5)
                 print(f"   [{tag}]: {count} commits (weight: {weight}x)")
 
-    # Weekly summary
-    print("\n" + "="*70)
-    print("📊 RIEPILOGO SETTIMANALE")
-    print("="*70)
-
-    total_commits = sum(w.commits for w in weekly_stats)
-    total_weighted = sum(w.commits_weighted for w in weekly_stats)
-    total_lines_net = sum(w.lines_net for w in weekly_stats)
-
-    print(f"🗓️ Periodo analizzato: {weekly_stats[0].start_date.isoformat()} → {weekly_stats[-1].end_date.isoformat()}")
-    print(f"📊 Settimane totali: {len(weekly_stats)}")
-    print(f"✨ Commit totali: {total_commits} (pesati: {total_weighted:.1f})")
-    print(f"💯 Righe nette totali: {total_lines_net:+,}")
-
-    print("\n📈 Top 3 settimane per produttività:")
-    top_weeks = sorted(weekly_stats, key=lambda w: w.avg_productivity, reverse=True)[:3]
-    for i, week in enumerate(top_weeks, 1):
-        print(f"   {i}. {week.period} - Productivity: {week.avg_productivity:.2f}")
+    # Weekly summary (SOLO se range > 1 giorno) - MOSTRA ULTIMA SETTIMANA
+    if not is_single_day and weekly_stats:
+        last_week = weekly_stats[-1]
+        
+        print("\n" + "="*70)
+        print("📊 RIEPILOGO ULTIMA SETTIMANA")
+        print("="*70)
+        print(f"🗓️ Periodo: {last_week.period}")
+        print()
+        print("📊 TOTALE SETTIMANALE EGI:")
+        print(f"   ✨ Commits EGI: {last_week.commits_egi}")
+        print(f"   💯 Righe nette EGI: {last_week.lines_net_egi:+,}")
+        print()
+        print("📊 TOTALE SETTIMANALE NATAN_LOC:")
+        print(f"   ✨ Commits NATAN_LOC: {last_week.commits_natan}")
+        print(f"   💯 Righe nette NATAN_LOC: {last_week.lines_net_natan:+,}")
+        print()
+        print("📊 SOMMA SETTIMANALE (EGI + NATAN_LOC):")
+        print(f"   ✨ Commit totali: {last_week.commits} (pesati: {last_week.commits_weighted:.1f})")
+        print(f"   💯 Righe nette totali: {last_week.lines_net:+,}")
+        print(f"   📊 Settimane analizzate: {len(weekly_stats)} (Excel completo)")
+        print(f"   🗓️ Periodo completo: {weekly_stats[0].start_date.isoformat()} → {weekly_stats[-1].end_date.isoformat()}")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -852,10 +1048,10 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     """Main execution."""
-    print("🚀 EGI Commit Statistics Excel Exporter v6.0.0")
-    print("   HYBRID EDITION - Best of v3 + v5")
+    print("🚀 EGI Commit Statistics Excel Exporter v6.1.0")
+    print("   DUAL REPO EDITION - EGI + NATAN_LOC")
     print("   Multi-Dimensional Productivity Analytics")
-    print("   🔧 Accurate line counting (excludes deps + testing data)")
+    print("   🔧 Dual repository support with unified stats")
     print("="*70)
 
     args = parse_args()
@@ -896,29 +1092,41 @@ def main() -> int:
     print(f"💾 Output: {args.xlsx}")
     print()
 
+    # Detect single day analysis
+    is_single_day = (start_date == end_date)
+    
     # Run analysis
     try:
         analyzer = ProductivityAnalyzer(args.repo)
 
-        print("🔍 Generazione report completo...")
+        if is_single_day:
+            print("🔍 Analisi singolo giorno...")
+        else:
+            print("🔍 Generazione report completo...")
+            
         weekly_stats, daily_stats = analyzer.generate_full_report(start_date, end_date)
 
-        print(f"✅ Analizzate {len(weekly_stats)} settimane, {len([d for d in daily_stats if d.commits > 0])} giorni con commit")
+        if not is_single_day:
+            print(f"✅ Analizzate {len(weekly_stats)} settimane, {len([d for d in daily_stats if d.commits > 0])} giorni con commit")
 
-        # Terminal output
-        print_terminal_summary(weekly_stats, daily_stats)
+        # Terminal output (giornaliero sempre, settimanale solo se NOT single day)
+        print_terminal_summary(weekly_stats, daily_stats, is_single_day)
 
-        # Excel export
-        if HAVE_PANDAS:
-            print("\n📊 Creazione file Excel...")
-            create_excel_report(weekly_stats, daily_stats, args.xlsx)
+        # Excel export (SOLO se NOT single day)
+        if not is_single_day:
+            if HAVE_PANDAS:
+                print("\n📊 Creazione file Excel...")
+                create_excel_report(weekly_stats, daily_stats, args.xlsx)
 
-            if args.xlsx.exists():
-                file_size = args.xlsx.stat().st_size
-                print(f"📁 Dimensione file: {file_size:,} bytes")
+                if args.xlsx.exists():
+                    file_size = args.xlsx.stat().st_size
+                    print(f"✅ Excel file created: {args.xlsx}")
+                    print(f"📁 Dimensione file: {file_size:,} bytes")
+            else:
+                print("\n⚠️ pandas/openpyxl non disponibili. Excel export skipped.")
+                print("   Installa con: pip install pandas openpyxl")
         else:
-            print("\n⚠️ pandas/openpyxl non disponibili. Excel export skipped.")
-            print("   Installa con: pip install pandas openpyxl")
+            print("\n💡 Analisi singolo giorno - Excel export skipped")
 
         print("\n🎉 Analisi completata con successo!")
         return 0
