@@ -226,6 +226,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                     'egis.partials.sidebar.reservation-history-section',
                                     compact('egi'))
 
+                                {{-- EGI Living Features - HYBRID APPROACH with @can() --}}
+                                @include('egis.partials.sidebar.living-features-hybrid', compact('egi', 'isCreator'))
+
                                 {{-- CoA (Certificate of Authenticity) Section - Badge compatto se assente --}}
                                 @include('egis.partials.sidebar.coa-section', compact('egi', 'isCreator'))
 

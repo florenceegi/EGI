@@ -62,6 +62,43 @@ return [
     
     'already_active' => 'EGI Living is already active for this EGI',
     
+    'cta' => [
+        'title' => '⚡ Activate EGI Living',
+        'subtitle' => 'Premium features pending',
+        'or_egili' => 'or',
+        'activate_now' => '⚡ Activate Now',
+        'lifetime' => 'One-time payment, lifetime features',
+    ],
+    
+    'features' => [
+        'curator_short' => 'Automatic AI Curator',
+        'promoter_short' => 'Smart Marketing',
+        'provenance_short' => 'Complete Provenance Graph',
+    ],
+    
+    'curator' => [
+        'title' => 'AI Curator',
+        'description_short' => 'Automatic artwork analysis',
+        'run_now' => 'Run Curator',
+    ],
+    
+    'promoter' => [
+        'title' => 'AI Promoter',
+        'description_short' => 'Smart marketing',
+        'run_now' => 'Run Promoter',
+    ],
+    
+    'provenance' => [
+        'title' => 'Provenance Graph',
+        'description_short' => 'Complete artwork history',
+        'view' => 'View Provenance',
+    ],
+    
+    'status' => [
+        'active' => '✅ EGI Living Active',
+        'active_since' => 'Active since',
+    ],
+    
     'errors' => [
         'unauthorized' => 'Only the creator can activate EGI Living',
         'insufficient_balance' => 'Insufficient Egili balance',

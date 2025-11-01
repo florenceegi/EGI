@@ -141,16 +141,16 @@ Route::middleware('auth')->group(function () {
             ->name('traits.generate');
     });
 
-    // EGI Living Subscription Payment (FIAT/Crypto/Egili)
-    Route::prefix('egi-living')->name('egi-living.')->group(function () {
-        Route::get('/payment/{egiId}', [App\Http\Controllers\EgiLivingSubscriptionController::class, 'showPaymentForm'])
-            ->name('payment.form');
-        Route::post('/payment/process', [App\Http\Controllers\EgiLivingSubscriptionController::class, 'processPayment'])
-            ->name('payment.process');
-        Route::get('/payment/success/{egiId}', [App\Http\Controllers\EgiLivingSubscriptionController::class, 'paymentSuccess'])
-            ->name('payment.success');
-        Route::get('/payment/cancel/{egiId}', [App\Http\Controllers\EgiLivingSubscriptionController::class, 'paymentCancel'])
-            ->name('payment.cancel');
+    // Feature Purchase System (Hybrid Approach - Generic for ALL features)
+    Route::prefix('features')->name('features.')->group(function () {
+        Route::get('/{code}/purchase', [App\Http\Controllers\FeaturePurchaseController::class, 'showPurchaseForm'])
+            ->name('purchase');
+        Route::post('/purchase/process', [App\Http\Controllers\FeaturePurchaseController::class, 'processPurchase'])
+            ->name('purchase.process');
+        Route::get('/purchase/success', [App\Http\Controllers\FeaturePurchaseController::class, 'purchaseSuccess'])
+            ->name('purchase.success');
+        Route::get('/purchase/cancel', [App\Http\Controllers\FeaturePurchaseController::class, 'purchaseCancel'])
+            ->name('purchase.cancel');
     });
 
     // AI Traits Management (outside egi prefix for easier access)

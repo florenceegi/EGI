@@ -62,6 +62,43 @@ return [
     
     'already_active' => 'EGI Vivente è già attivo per questo EGI',
     
+    'cta' => [
+        'title' => '⚡ Attiva EGI Vivente',
+        'subtitle' => 'Feature premium in attesa',
+        'or_egili' => 'oppure',
+        'activate_now' => '⚡ Attiva Ora',
+        'lifetime' => 'Pagamento unico, feature lifetime',
+    ],
+    
+    'features' => [
+        'curator_short' => 'AI Curator automatico',
+        'promoter_short' => 'Marketing intelligente',
+        'provenance_short' => 'Provenance Graph completa',
+    ],
+    
+    'curator' => [
+        'title' => 'AI Curator',
+        'description_short' => 'Analisi automatica opera',
+        'run_now' => 'Esegui Curator',
+    ],
+    
+    'promoter' => [
+        'title' => 'AI Promoter',
+        'description_short' => 'Marketing intelligente',
+        'run_now' => 'Esegui Promoter',
+    ],
+    
+    'provenance' => [
+        'title' => 'Provenance Graph',
+        'description_short' => 'Storia completa opera',
+        'view' => 'Visualizza Provenance',
+    ],
+    
+    'status' => [
+        'active' => '✅ EGI Vivente Attivo',
+        'active_since' => 'Attivo dal',
+    ],
+    
     'errors' => [
         'unauthorized' => 'Solo il creator può attivare EGI Vivente',
         'insufficient_balance' => 'Saldo Egili insufficiente',
