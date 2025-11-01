@@ -161,6 +161,26 @@
                 </p>
             </div>
         </div>
+        
+        <script>
+        // Listen to SmartContract selection → Open payment modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const smartContractRadio = document.getElementById('egi-type-sc');
+            
+            if (smartContractRadio) {
+                smartContractRadio.addEventListener('change', function() {
+                    if (this.checked) {
+                        // Open Feature Purchase Modal
+                        if (typeof openFeaturePurchaseModal === 'function') {
+                            openFeaturePurchaseModal('egi_living_subscription');
+                        } else {
+                            console.error('openFeaturePurchaseModal function not found');
+                        }
+                    }
+                });
+            }
+        });
+        </script>
         <div class="flex items-center justify-end gap-2 my-4">
             {{-- Switch publish. Ha già role="switch" e l'attributo 'checked' per lo stato iniziale. --}}
             {{-- Aggiunto aria-checked per comunicare lo stato iniziale alle tecnologie assistive. --}}

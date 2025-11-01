@@ -67,6 +67,9 @@
 
 <body id="uploading_files">
 
+    {{-- Feature Purchase Modal (Egili Living) - MUST be loaded BEFORE radio listener --}}
+    <x-feature-purchase-modal featureCode="egi_living_subscription" />
+
     <div class="drawer lg:drawer-open">
         <!-- Questo checkbox controlla lo stato del drawer -->
         <input id="main-drawer" type="checkbox" class="drawer-toggle" />
