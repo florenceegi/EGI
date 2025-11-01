@@ -125,9 +125,7 @@ class FeaturePurchaseController extends Controller
             
             $validated = $request->validate([
                 'feature_code' => 'required|string|exists:ai_feature_pricing,feature_code',
-                'payment_method' => 'required|string|in:fiat,crypto,egili',
-                'fiat_provider' => 'nullable|required_if:payment_method,fiat|in:stripe,paypal',
-                'crypto_provider' => 'nullable|required_if:payment_method,crypto',
+                'payment_method' => 'required|string|in:egili',  // SOLO Egili
                 'source_type' => 'nullable|string',
                 'source_id' => 'nullable|integer',
             ]);
@@ -145,31 +143,15 @@ class FeaturePurchaseController extends Controller
                 'source_id' => $validated['source_id'] ?? null,
             ];
             
-            // Route to appropriate payment method
-            if ($validated['payment_method'] === 'egili') {
-                $purchase = $this->purchaseService->purchaseWithEgili(
-                    $user,
-                    $validated['feature_code'],
-                    $metadata
-                );
-                
-                return redirect()->back()
-                    ->with('success', __('features.purchase.egili_success'));
-            }
+            // SIMPLIFIED: Solo Egili payment
+            $purchase = $this->purchaseService->purchaseWithEgili(
+                $user,
+                $validated['feature_code'],
+                $metadata
+            );
             
-            if ($validated['payment_method'] === 'fiat') {
-                $session = $this->purchaseService->purchaseWithFiat(
-                    $user,
-                    $validated['feature_code'],
-                    $validated['fiat_provider'],
-                    $metadata
-                );
-                
-                return redirect($session['redirect_url']);
-            }
-            
-            // Crypto - TODO: implement
-            throw new \Exception('Crypto payment not yet implemented');
+            return redirect()->back()
+                ->with('success', __('features.purchase.egili_success'));
             
         } catch (\Exception $e) {
             return $this->errorManager->handle('FEATURE_PURCHASE_PROCESS_ERROR', [
