@@ -72,3 +72,35 @@ Schedule::command('natan:cleanup-unified-context --force')
     ->withoutOverlapping()
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/unified-context-cleanup.log'));
+
+### 📌 7️⃣ JOB AUTOMATICO: FEATURED/HYPER SCHEDULING ###
+// Activate scheduled Featured/Hyper slots (daily at 00:01)
+Schedule::call(function () {
+    app()->make(\App\Services\FeaturedSchedulingService::class)->activateScheduledSlots();
+})
+    ->name('featured-activate-slots')
+    ->dailyAt('00:01')
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/featured-scheduling.log'));
+
+// Deactivate expired Featured/Hyper slots (daily at 23:59)
+Schedule::call(function () {
+    app()->make(\App\Services\FeaturedSchedulingService::class)->deactivateExpiredSlots();
+})
+    ->name('featured-deactivate-slots')
+    ->dailyAt('23:59')
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/featured-scheduling.log'));
+
+### 📌 8️⃣ JOB AUTOMATICO: GIFT EGILI EXPIRATION ###
+// Expire Gift Egili (daily at 00:05)
+Schedule::call(function () {
+    app()->make(\App\Services\EgiliService::class)->expireGiftEgili();
+})
+    ->name('egili-expire-gifts')
+    ->dailyAt('00:05')
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/egili-expiration.log'));
