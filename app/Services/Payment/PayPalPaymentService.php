@@ -97,22 +97,7 @@ class PayPalPaymentService implements PaymentServiceInterface {
             $result = $this->simulatePayPalPayment($request, $paymentId);
 
             if ($result['success']) {
-                // 6. GDPR: Audit successful payment
-                $this->auditService->logActivity(
-                    null, // No specific user for mock
-                    GdprActivityCategory::PAYMENT_PROCESSING,
-                    'Mock PayPal payment completed',
-                    [
-                        'payment_id' => $paymentId,
-                        'amount' => $request->amount,
-                        'currency' => $request->currency,
-                        'egi_id' => $request->egiId,
-                        'provider' => 'paypal_mock',
-                        'processing_time' => $this->mockProcessingDelay
-                    ]
-                );
-
-                // 7. ULM: Log success
+                // 6. ULM: Log success (mock payment - no user audit needed)
                 $this->logger->info('Mock PayPal payment completed successfully', [
                     'payment_id' => $paymentId,
                     'amount' => $request->amount,
@@ -187,18 +172,13 @@ class PayPalPaymentService implements PaymentServiceInterface {
             // 3. Simulate PayPal signature verification (always pass in mock)
             $mockSignatureValid = $this->simulatePayPalSignatureVerification($payload);
 
-            // 4. GDPR: Audit webhook verification
-            $this->auditService->logActivity(
-                null,
-                GdprActivityCategory::PAYMENT_PROCESSING,
-                'Mock PayPal webhook verified',
-                [
-                    'event_type' => $payload['event_type'] ?? 'unknown',
-                    'webhook_id' => $payload['id'] ?? 'unknown',
-                    'signature_valid' => $mockSignatureValid,
-                    'provider' => 'paypal_mock'
-                ]
-            );
+            // 4. ULM: Log webhook verification (mock - no user audit needed)
+            $this->logger->info('Mock PayPal webhook verified', [
+                'event_type' => $payload['event_type'] ?? 'unknown',
+                'webhook_id' => $payload['id'] ?? 'unknown',
+                'signature_valid' => $mockSignatureValid,
+                'provider' => 'paypal_mock'
+            ]);
 
             return $mockSignatureValid;
         } catch (\Exception $e) {
@@ -232,19 +212,7 @@ class PayPalPaymentService implements PaymentServiceInterface {
             $shouldFail = (fake()->numberBetween(0, 100) / 100) < $this->mockRefundFailureRate;
 
             if (!$shouldFail) {
-                // 5. GDPR: Audit successful refund
-                $this->auditService->logActivity(
-                    null,
-                    GdprActivityCategory::PAYMENT_PROCESSING,
-                    'Mock PayPal refund completed',
-                    [
-                        'payment_id' => $paymentId,
-                        'refund_id' => $refundId,
-                        'provider' => 'paypal_mock'
-                    ]
-                );
-
-                // 6. ULM: Log success
+                // 5. ULM: Log success (mock refund - no user audit needed)
                 $this->logger->info('Mock PayPal refund completed successfully', [
                     'payment_id' => $paymentId,
                     'refund_id' => $refundId
@@ -330,17 +298,12 @@ class PayPalPaymentService implements PaymentServiceInterface {
 
             $status = $this->getWeightedRandomStatus($statusWeights);
 
-            // 4. GDPR: Audit status check
-            $this->auditService->logActivity(
-                null,
-                GdprActivityCategory::PAYMENT_PROCESSING,
-                'Mock PayPal payment status checked',
-                [
-                    'payment_id' => $paymentId,
-                    'status' => $status->status,
-                    'provider' => 'paypal_mock'
-                ]
-            );
+            // 4. ULM: Log status check (mock - no user audit needed)
+            $this->logger->info('Mock PayPal payment status checked', [
+                'payment_id' => $paymentId,
+                'status' => $status->status,
+                'provider' => 'paypal_mock'
+            ]);
 
             return $status;
         } catch (\Exception $e) {
@@ -551,22 +514,7 @@ class PayPalPaymentService implements PaymentServiceInterface {
      * @return void
      */
     private function handlePayPalPaymentFailure(PaymentRequest $request, string $errorCode, string $errorMessage): void {
-        // GDPR: Audit payment failure
-        $this->auditService->logActivity(
-            null,
-            GdprActivityCategory::PAYMENT_PROCESSING,
-            'Mock PayPal payment failed',
-            [
-                'error_code' => $errorCode,
-                'error_message' => $errorMessage,
-                'amount' => $request->amount,
-                'currency' => $request->currency,
-                'egi_id' => $request->egiId,
-                'provider' => 'paypal_mock'
-            ]
-        );
-
-        // ULM: Log failure
+        // ULM: Log failure (mock payment - no user audit needed)
         $this->logger->warning('Mock PayPal payment failed', [
             'error_code' => $errorCode,
             'error_message' => $errorMessage,

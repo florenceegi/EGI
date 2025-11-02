@@ -84,21 +84,7 @@ class StripePaymentService implements PaymentServiceInterface {
             $isSuccess = $this->shouldSimulateSuccess();
 
             if ($isSuccess) {
-                // 5. GDPR: Audit successful payment
-                $this->auditService->logActivity(
-                    null, // No specific user for mock
-                    GdprActivityCategory::PAYMENT_PROCESSING,
-                    'Mock Stripe payment completed',
-                    [
-                        'payment_id' => $paymentId,
-                        'amount' => $request->amount,
-                        'currency' => $request->currency,
-                        'egi_id' => $request->egiId,
-                        'provider' => 'stripe_mock'
-                    ]
-                );
-
-                // 6. ULM: Log success
+                // 5. ULM: Log success (mock payment - no user audit needed)
                 $this->logger->info('Stripe payment completed successfully (MOCK)', [
                     'payment_id' => $paymentId,
                     'amount' => $request->amount,
