@@ -13,4 +13,5 @@ return [
     'next' => 'Avanti',
     'submit' => 'Invia',
     'buy' => 'Acquista',
+    'actions' => 'Azioni',
 ];

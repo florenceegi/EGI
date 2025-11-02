@@ -32,5 +32,7 @@ return [
         'crypto_success' => 'Crypto payment confirmed! Feature activated.',
         'failed' => 'Purchase failed, please try again',
     ],
+    
+    'continue_purchase' => 'Continue Purchase',
 ];
 
