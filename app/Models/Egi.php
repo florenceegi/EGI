@@ -148,6 +148,12 @@ class Egi extends Model {
         'file_hash',
         'file_size',
         'file_IPFS',
+        // Featured/Hyper fields (Task 3.1)
+        'featured_until',
+        'featured_by_admin_id',
+        'hyper_until',
+        'hyper_activated_at',
+        'hyper_by_admin_id',
         'file_mime',
         'status',
         'hyper',
@@ -205,6 +211,10 @@ class Egi extends Model {
         'pre_mint_created_at'   => 'datetime',
         'egi_living_enabled'    => 'boolean',
         'egi_living_activated_at' => 'datetime',
+        // Featured/Hyper casts (Task 3.1)
+        'featured_until'        => 'datetime',
+        'hyper_until'           => 'datetime',
+        'hyper_activated_at'    => 'datetime',
     ];
 
     //--------------------------------------------------------------------------
@@ -1154,5 +1164,105 @@ class Egi extends Model {
     }
 
     // Add other relationships as needed (e.g., with Auction, Drop models later)
+    
+    //--------------------------------------------------------------------------
+    // Featured/Hyper Relationships (Task 3.1)
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Get the admin who approved featured status
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function featuredByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'featured_by_admin_id');
+    }
+    
+    /**
+     * Get the admin who approved hyper mode
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function hyperByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'hyper_by_admin_id');
+    }
+    
+    //--------------------------------------------------------------------------
+    // Featured/Hyper Helper Methods (Task 3.1)
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Check if EGI is currently featured
+     * 
+     * @return bool
+     */
+    public function isFeatured(): bool
+    {
+        return $this->featured_until !== null && $this->featured_until > now();
+    }
+    
+    /**
+     * Check if EGI is currently in hyper mode
+     * 
+     * @return bool
+     */
+    public function isHyper(): bool
+    {
+        return $this->hyper_until !== null && $this->hyper_until > now();
+    }
+    
+    /**
+     * Get featured days remaining
+     * 
+     * @return int Days remaining (0 if not featured or expired)
+     */
+    public function getFeaturedDaysRemaining(): int
+    {
+        if (!$this->isFeatured()) {
+            return 0;
+        }
+        
+        return max(0, now()->diffInDays($this->featured_until, false));
+    }
+    
+    /**
+     * Get hyper days remaining
+     * 
+     * @return int Days remaining (0 if not hyper or expired)
+     */
+    public function getHyperDaysRemaining(): int
+    {
+        if (!$this->isHyper()) {
+            return 0;
+        }
+        
+        return max(0, now()->diffInDays($this->hyper_until, false));
+    }
+    
+    /**
+     * Scope: Featured EGIs only
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFeatured($query)
+    {
+        return $query->whereNotNull('featured_until')
+                     ->where('featured_until', '>', now());
+    }
+    
+    /**
+     * Scope: Hyper EGIs only
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeHyperMode($query)
+    {
+        return $query->whereNotNull('hyper_until')
+                     ->where('hyper_until', '>', now());
+    }
 
 }
