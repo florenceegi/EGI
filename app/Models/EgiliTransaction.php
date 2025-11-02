@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * - Balance snapshots before/after
  * - Polymorphic source tracking
  * - GDPR-compliant logging
+ * - Lifetime vs Gift Egili tracking
+ * - Expiration management for Gift Egili
  *
  * @property int $id
  * @property int $wallet_id
@@ -36,6 +38,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string|null $error_message
  * @property string|null $ip_address
  * @property string|null $user_agent
+ * @property string $egili_type (lifetime|gift)
+ * @property \Carbon\Carbon|null $expires_at
+ * @property bool $is_expired
+ * @property int|null $granted_by_admin_id
+ * @property string|null $grant_reason
+ * @property int $priority_order
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  *
@@ -43,12 +51,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property-read User $user
  * @property-read Model|null $source
  * @property-read User|null $admin
+ * @property-read User|null $grantedByAdmin
  *
  * @package FlorenceEGI\Models
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Egili Token System)
- * @date 2025-11-01
- * @purpose Egili transaction tracking with GDPR compliance
+ * @version 1.1.0 (FlorenceEGI - Egili System Foundation)
+ * @date 2025-11-02
+ * @purpose Egili transaction tracking with GDPR compliance and Gift/Lifetime support
  */
 class EgiliTransaction extends Model
 {
@@ -81,6 +90,13 @@ class EgiliTransaction extends Model
         'error_message',
         'ip_address',
         'user_agent',
+        // Gift/Lifetime fields
+        'egili_type',
+        'expires_at',
+        'is_expired',
+        'granted_by_admin_id',
+        'grant_reason',
+        'priority_order',
     ];
     
     /**
@@ -93,6 +109,10 @@ class EgiliTransaction extends Model
         'metadata' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        // Gift/Lifetime casts
+        'expires_at' => 'datetime',
+        'is_expired' => 'boolean',
+        'priority_order' => 'integer',
     ];
     
     // === RELATIONSHIPS ===
@@ -128,6 +148,14 @@ class EgiliTransaction extends Model
     public function admin(): BelongsTo
     {
         return $this->belongsTo(User::class, 'admin_user_id');
+    }
+    
+    /**
+     * Get the admin who granted gift Egili
+     */
+    public function grantedByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'granted_by_admin_id');
     }
     
     // === QUERY SCOPES ===
@@ -170,6 +198,66 @@ class EgiliTransaction extends Model
     public function scopeRecent($query, int $days = 30)
     {
         return $query->where('created_at', '>=', now()->subDays($days));
+    }
+    
+    /**
+     * Scope: Lifetime Egili only
+     */
+    public function scopeLifetime($query)
+    {
+        return $query->where('egili_type', 'lifetime');
+    }
+    
+    /**
+     * Scope: Gift Egili only
+     */
+    public function scopeGift($query)
+    {
+        return $query->where('egili_type', 'gift');
+    }
+    
+    /**
+     * Scope: Non-expired Egili (lifetime + gift not expired)
+     */
+    public function scopeNonExpired($query)
+    {
+        return $query->where(function($q) {
+            $q->where('egili_type', 'lifetime')
+              ->orWhere(function($sub) {
+                  $sub->where('egili_type', 'gift')
+                      ->where('is_expired', false)
+                      ->where(function($exp) {
+                          $exp->whereNull('expires_at')
+                              ->orWhere('expires_at', '>', now());
+                      });
+              });
+        });
+    }
+    
+    /**
+     * Scope: Expired gift Egili
+     */
+    public function scopeExpired($query)
+    {
+        return $query->where('egili_type', 'gift')
+                     ->where(function($q) {
+                         $q->where('is_expired', true)
+                           ->orWhere(function($sub) {
+                               $sub->whereNotNull('expires_at')
+                                   ->where('expires_at', '<=', now());
+                           });
+                     });
+    }
+    
+    /**
+     * Scope: Gift Egili expiring soon (next N days)
+     */
+    public function scopeExpiringSoon($query, int $days = 7)
+    {
+        return $query->where('egili_type', 'gift')
+                     ->where('is_expired', false)
+                     ->whereNotNull('expires_at')
+                     ->whereBetween('expires_at', [now(), now()->addDays($days)]);
     }
     
     // === ACCESSORS ===
