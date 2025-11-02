@@ -182,7 +182,4 @@
 {{-- Feature Purchase Modal (Egili Living) --}}
 <x-feature-purchase-modal featureCode="egi_living_subscription" />
 
-{{-- Egili Purchase Modal (nested above Feature Purchase) --}}
-<x-egili-purchase-modal />
-
 @vite(['resources/js/components/create-collection-modal.js'])

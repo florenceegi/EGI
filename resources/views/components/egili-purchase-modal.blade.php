@@ -216,8 +216,8 @@
 </div>
 
 <script>
-// Configuration from backend
-const EGILI_CONFIG = {
+// Configuration from backend (avoid redeclaration if script runs multiple times)
+window.EGILI_CONFIG = window.EGILI_CONFIG || {
     unitPrice: {{ $unitPrice }},
     minPurchase: {{ $minPurchase }},
     maxPurchase: {{ $maxPurchase }},
@@ -226,7 +226,7 @@ const EGILI_CONFIG = {
 
 console.log('💎 Egili Purchase Modal script loaded', {
     modal: document.getElementById('egili-purchase-modal') ? 'FOUND' : 'NOT FOUND',
-    config: EGILI_CONFIG
+    config: window.EGILI_CONFIG
 });
 
 // Open Egili Purchase Modal
@@ -243,8 +243,11 @@ window.openEgiliPurchaseModal = function() {
         console.log('✅ Modal found, removing hidden class...');
         modal.classList.remove('hidden');
         
+        // CRITICAL: Remove inline style that overrides classes
+        modal.style.display = '';
+        
         console.log('Modal classes after:', modal.className);
-        console.log('Modal display after:', modal.style.display || 'NOT SET');
+        console.log('Modal display after:', modal.style.display || 'NOT SET (using classes)');
         console.log('Modal computed style after:', window.getComputedStyle(modal).display);
         
         // Focus on input
@@ -265,7 +268,7 @@ window.closeEgiliPurchaseModal = function() {
     const modal = document.getElementById('egili-purchase-modal');
     if (modal) {
         modal.classList.add('hidden');
-        modal.style.display = 'none';
+        // Don't set inline style - let Tailwind 'hidden' class handle it
         // Reset form
         document.getElementById('egili-purchase-form').reset();
         updateTotalPrice();
@@ -299,7 +302,7 @@ function updateTotalPrice() {
     const amount = parseInt(amountInput.value) || 0;
     
     if (amount > 0) {
-        const total = (amount * EGILI_CONFIG.unitPrice).toFixed(2);
+        const total = (amount * window.EGILI_CONFIG.unitPrice).toFixed(2);
         totalPriceEl.textContent = '€' + total;
         egiliQtyEl.textContent = amount.toLocaleString();
         totalEurEl.textContent = '€' + total;
@@ -344,7 +347,7 @@ document.getElementById('egili-purchase-form').addEventListener('submit', async 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': EGILI_CONFIG.csrf,
+                'X-CSRF-TOKEN': window.EGILI_CONFIG.csrf,
                 'Accept': 'application/json',
             },
             body: JSON.stringify({
