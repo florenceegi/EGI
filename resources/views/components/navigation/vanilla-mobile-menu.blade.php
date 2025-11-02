@@ -279,6 +279,12 @@
                             {{ __('statistics.statistics_dashboard') }}
                         </a>
                         @endcan
+                        
+                        {{-- Egili Purchase Link --}}
+                        <button onclick="openEgiliPurchaseModal()" 
+                                class="block w-full text-left rounded-lg px-2 py-1 text-sm text-gray-300 transition-colors duration-200 hover:bg-black/20 hover:text-purple-400">
+                            💎 {{ __('egili.buy_more') }}
+                        </button>
                     </div>
                 </div>
 
