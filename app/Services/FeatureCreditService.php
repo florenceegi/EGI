@@ -14,7 +14,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 /**
  * @package App\Services
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Egili System Foundation)
+ * @version 1.1.0 (FlorenceEGI - Egili System with Dynamic Pricing)
  * @date 2025-11-02
  * @purpose Manage feature credits (purchase, consumption, conversion)
  * 
@@ -27,6 +27,11 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * Integration with EgiliService:
  * - Uses EgiliService->spend() to pay for credits
  * - Uses EgiliService->earn() to refund on conversion
+ * 
+ * NEW IN v1.1.0: Dynamic Pricing Integration
+ * - Uses FeaturePricingService for tier discounts and promotions
+ * - Uses FeaturePromotionService to track promo usage
+ * - Stores pricing breakdown in purchase metadata
  */
 class FeatureCreditService
 {
@@ -34,17 +39,23 @@ class FeatureCreditService
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
     private EgiliService $egiliService;
+    private FeaturePricingService $pricingService;
+    private FeaturePromotionService $promotionService;
     
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
         AuditLogService $auditService,
-        EgiliService $egiliService
+        EgiliService $egiliService,
+        FeaturePricingService $pricingService,
+        FeaturePromotionService $promotionService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
         $this->egiliService = $egiliService;
+        $this->pricingService = $pricingService;
+        $this->promotionService = $promotionService;
     }
     
     /**
@@ -76,44 +87,30 @@ class FeatureCreditService
             'log_category' => 'FEATURE_CREDIT_PURCHASE_START'
         ]);
         
-        // Get feature pricing (will be handled by FeaturePricingService in future)
-        // For now, simplified: assume ai_feature_pricing exists
-        $pricing = DB::table('ai_feature_pricing')
-            ->where('feature_code', $featureCode)
-            ->first();
+        // Calculate dynamic pricing (tier discounts + promotions)
+        $pricingBreakdown = $this->pricingService->calculatePrice($featureCode, $user, $quantity);
+        $finalCost = $pricingBreakdown['final_cost'];
         
-        if (!$pricing) {
-            throw new \Exception("Feature '{$featureCode}' not found in pricing table");
-        }
-        
-        if (!$pricing->is_active) {
-            throw new \Exception("Feature '{$featureCode}' is not currently available");
-        }
-        
-        // Calculate total cost (simplified - will use FeaturePricingService for discounts/promos later)
-        $costPerUse = $pricing->cost_per_use ?? $pricing->cost_egili;
-        $totalCost = $costPerUse * $quantity;
-        
-        // Check if user can afford
-        if (!$this->egiliService->canSpend($user, $totalCost)) {
+        // Check if user can afford (final price after all discounts)
+        if (!$this->egiliService->canSpend($user, $finalCost)) {
             $currentBalance = $this->egiliService->getBalance($user);
             throw new \Exception(
                 "Saldo Egili insufficiente per acquistare {$quantity}x {$featureCode}. " .
-                "Costo: {$totalCost} Egili, Disponibili: {$currentBalance} Egili"
+                "Costo finale: {$finalCost} Egili, Disponibili: {$currentBalance} Egili"
             );
         }
         
-        return DB::transaction(function () use ($user, $featureCode, $quantity, $totalCost, $costPerUse) {
-            // Spend Egili
+        return DB::transaction(function () use ($user, $featureCode, $quantity, $finalCost, $pricingBreakdown) {
+            // Spend Egili (final cost after all discounts)
             $egiliTransaction = $this->egiliService->spend(
                 $user,
-                $totalCost,
+                $finalCost,
                 "purchase_feature_credits_{$featureCode}",
                 'feature_purchase',
                 [
                     'feature_code' => $featureCode,
                     'quantity' => $quantity,
-                    'cost_per_use' => $costPerUse,
+                    'pricing_breakdown' => $pricingBreakdown,
                 ]
             );
             
@@ -122,7 +119,7 @@ class FeatureCreditService
                 'user_id' => $user->id,
                 'feature_code' => $featureCode,
                 'payment_method' => 'egili',
-                'amount_paid_egili' => $totalCost,
+                'amount_paid_egili' => $finalCost,
                 'quantity_purchased' => $quantity,
                 'quantity_used' => 0,
                 'purchased_at' => now(),
@@ -130,13 +127,26 @@ class FeatureCreditService
                 'is_active' => true,
                 'status' => 'active',
                 'is_lifetime' => false, // Consumable, not lifetime
+                'promo_code' => $pricingBreakdown['promo_applied'] ?? null,
                 'metadata' => [
                     'egili_transaction_id' => $egiliTransaction->id,
-                    'cost_per_use' => $costPerUse,
+                    'pricing_breakdown' => $pricingBreakdown,
                 ],
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ]);
+            
+            // Record promotion usage (if promo was applied)
+            if ($pricingBreakdown['promo_applied']) {
+                $promo = \App\Models\FeaturePromotion::where('promo_code', $pricingBreakdown['promo_applied'])->first();
+                if ($promo) {
+                    $this->promotionService->recordPromoUsage(
+                        $promo,
+                        $user,
+                        $pricingBreakdown['total_savings']
+                    );
+                }
+            }
             
             // GDPR: Audit trail (TODO: Add FEATURE_PURCHASED to GdprActivityCategory)
             $this->auditService->logUserAction(
@@ -145,7 +155,10 @@ class FeatureCreditService
                 [
                     'feature_code' => $featureCode,
                     'quantity' => $quantity,
-                    'total_cost_egili' => $totalCost,
+                    'final_cost_egili' => $finalCost,
+                    'base_cost' => $pricingBreakdown['base_cost_total'],
+                    'total_savings' => $pricingBreakdown['total_savings'],
+                    'promo_applied' => $pricingBreakdown['promo_applied'],
                     'purchase_id' => $purchase->id,
                     'egili_transaction_id' => $egiliTransaction->id,
                 ],
@@ -158,7 +171,9 @@ class FeatureCreditService
                 'feature_code' => $featureCode,
                 'purchase_id' => $purchase->id,
                 'quantity' => $quantity,
-                'cost_egili' => $totalCost,
+                'final_cost_egili' => $finalCost,
+                'total_savings' => $pricingBreakdown['total_savings'],
+                'promo_applied' => $pricingBreakdown['promo_applied'],
                 'log_category' => 'FEATURE_CREDIT_PURCHASE_SUCCESS'
             ]);
             
