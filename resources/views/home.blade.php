@@ -35,11 +35,11 @@
             <x-list-switcher :collections="$featuredCollections" defaultTab="collections" />
         </div>
 
-        {{-- <x-desktop-egi-carousel :egis="$hyperEgis" /> --}}
+        <x-desktop-egi-carousel :egis="$hyperEgis" />
     </x-slot>
 
     {{-- Desktop: EGI Cards Carousel - SOLO desktop --}}
-    <x-slot name="egiCarousel">
+    <x-slot name="belowHeroContent">
         <div class="hidden lg:block">
             <x-desktop-egi-carousel :egis="$featuredEgis" />
             <x-creators-carousel :creators="$featuredCreators" title="{{ __('guest_home.featured_creators_title') }}"
