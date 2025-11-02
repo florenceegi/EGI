@@ -218,6 +218,11 @@
     console.log('✅ HEIC Detection function loaded and available globally');
 </script>
 
+{{-- Egili Purchase Modal (global - accessible from menu) --}}
+@auth
+    <x-egili-purchase-modal />
+@endauth
+
 @stack('scripts')
 </body>
 

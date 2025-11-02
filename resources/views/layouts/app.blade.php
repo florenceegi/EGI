@@ -195,6 +195,11 @@ Using proper HTML5 landmarks for accessibility (Pillar #4 - Interpretable by Ass
     {{-- Universal Search Modal (global singleton) --}}
     <x-universal-search-modal />
 
+    {{-- Egili Purchase Modal (global - accessible from menu) --}}
+    @auth
+        <x-egili-purchase-modal />
+    @endauth
+
     <!-- OS1 User Collection Data for Dashboard Context -->
     @auth
         <script type="application/json" id="user-collection-data">
