@@ -371,14 +371,14 @@ class EgiliPurchaseWorkflowService
      */
     private function validateUserConsents(User $user): void
     {
-        if (!$this->consentService->hasConsent($user, 'payment-processing')) {
-            throw new \Exception('Payment processing consent required to purchase Egili');
+        if (!$this->consentService->hasConsent($user, 'allow-personal-data-processing')) {
+            throw new \Exception('Personal data processing consent required to purchase Egili');
         }
 
         // Log consent check
         $this->logger->info('GDPR consent validated for Egili purchase', [
             'user_id' => $user->id,
-            'consent_type' => 'payment-processing',
+            'consent_type' => 'allow-personal-data-processing',
             'log_category' => 'EGILI_PURCHASE_CONSENT'
         ]);
     }
