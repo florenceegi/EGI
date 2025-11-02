@@ -6,7 +6,7 @@
 @endphp
 
 <div id="egili-purchase-modal" 
-     class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center hidden"
+     class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center hidden"
      onclick="if(event.target === this) closeEgiliPurchaseModal()">
     
     <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto"
@@ -232,11 +232,29 @@ console.log('💎 Egili Purchase Modal script loaded', {
 // Open Egili Purchase Modal
 window.openEgiliPurchaseModal = function() {
     console.log('💎 openEgiliPurchaseModal() called');
+    
+    // Close mega menu if open
+    const megaMenus = document.querySelectorAll('[class*="mega-menu"]');
+    megaMenus.forEach(menu => {
+        if (menu.classList.contains('visible') || !menu.classList.contains('invisible')) {
+            menu.classList.add('invisible', 'opacity-0', 'scale-95');
+            menu.classList.remove('visible', 'opacity-100', 'scale-100');
+        }
+    });
+    
     const modal = document.getElementById('egili-purchase-modal');
     if (modal) {
         console.log('✅ Modal found, opening...');
         modal.classList.remove('hidden');
-        document.getElementById('egili-amount')?.focus();
+        
+        // Force display and ensure it's visible
+        modal.style.display = 'flex';
+        modal.style.zIndex = '9999';
+        
+        // Focus on input after a small delay to ensure modal is rendered
+        setTimeout(() => {
+            document.getElementById('egili-amount')?.focus();
+        }, 100);
     } else {
         console.error('❌ Modal #egili-purchase-modal NOT FOUND in DOM');
     }
@@ -249,6 +267,7 @@ window.closeEgiliPurchaseModal = function() {
     const modal = document.getElementById('egili-purchase-modal');
     if (modal) {
         modal.classList.add('hidden');
+        modal.style.display = 'none';
         // Reset form
         document.getElementById('egili-purchase-form').reset();
         updateTotalPrice();
