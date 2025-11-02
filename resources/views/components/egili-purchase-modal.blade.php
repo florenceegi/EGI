@@ -233,27 +233,25 @@ console.log('💎 Egili Purchase Modal script loaded', {
 window.openEgiliPurchaseModal = function() {
     console.log('💎 openEgiliPurchaseModal() called');
     
-    // Close mega menu if open
-    const megaMenus = document.querySelectorAll('[class*="mega-menu"]');
-    megaMenus.forEach(menu => {
-        if (menu.classList.contains('visible') || !menu.classList.contains('invisible')) {
-            menu.classList.add('invisible', 'opacity-0', 'scale-95');
-            menu.classList.remove('visible', 'opacity-100', 'scale-100');
-        }
-    });
-    
     const modal = document.getElementById('egili-purchase-modal');
+    console.log('Modal element:', modal);
+    console.log('Modal classes before:', modal?.className);
+    console.log('Modal display before:', modal?.style.display);
+    console.log('Modal computed style:', modal ? window.getComputedStyle(modal).display : 'N/A');
+    
     if (modal) {
-        console.log('✅ Modal found, opening...');
+        console.log('✅ Modal found, removing hidden class...');
         modal.classList.remove('hidden');
         
-        // Force display and ensure it's visible
-        modal.style.display = 'flex';
-        modal.style.zIndex = '9999';
+        console.log('Modal classes after:', modal.className);
+        console.log('Modal display after:', modal.style.display || 'NOT SET');
+        console.log('Modal computed style after:', window.getComputedStyle(modal).display);
         
-        // Focus on input after a small delay to ensure modal is rendered
+        // Focus on input
         setTimeout(() => {
-            document.getElementById('egili-amount')?.focus();
+            const input = document.getElementById('egili-amount');
+            console.log('Input field:', input);
+            input?.focus();
         }, 100);
     } else {
         console.error('❌ Modal #egili-purchase-modal NOT FOUND in DOM');
