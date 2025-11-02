@@ -112,6 +112,9 @@ function initializeMobileMenu() {
         // Return focus to trigger
         trigger.focus();
     }
+    
+    // Export globally for modal integration
+    window.closeMobileMenu = closeMobileMenu;
 
     // Event listeners
     trigger.addEventListener('click', toggleMenu);

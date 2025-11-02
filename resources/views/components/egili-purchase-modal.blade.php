@@ -233,6 +233,12 @@ console.log('💎 Egili Purchase Modal script loaded', {
 window.openEgiliPurchaseModal = function() {
     console.log('💎 openEgiliPurchaseModal() called');
     
+    // Close mobile menu if open (critical for mobile UX)
+    if (typeof window.closeMobileMenu === 'function') {
+        console.log('📱 Closing mobile menu first...');
+        window.closeMobileMenu();
+    }
+    
     const modal = document.getElementById('egili-purchase-modal');
     console.log('Modal element:', modal);
     console.log('Modal classes before:', modal?.className);
@@ -250,12 +256,12 @@ window.openEgiliPurchaseModal = function() {
         console.log('Modal display after:', modal.style.display || 'NOT SET (using classes)');
         console.log('Modal computed style after:', window.getComputedStyle(modal).display);
         
-        // Focus on input
+        // Focus on input after mobile menu closes (400ms delay for animation)
         setTimeout(() => {
             const input = document.getElementById('egili-amount');
             console.log('Input field:', input);
             input?.focus();
-        }, 100);
+        }, 400);
     } else {
         console.error('❌ Modal #egili-purchase-modal NOT FOUND in DOM');
     }
