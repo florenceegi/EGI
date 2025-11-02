@@ -141,10 +141,17 @@ Route::middleware('auth')->group(function () {
             ->name('traits.generate');
     });
 
-    // Egili Purchase System (Coming Soon - EUR/Crypto → Egili)
-    Route::get('/egili/purchase', function() {
-        return view('egili.purchase-placeholder');
-    })->name('egili.purchase');
+    // Egili Purchase System (EUR/Crypto → Egili)
+    Route::prefix('egili')->name('egili.')->group(function () {
+        Route::post('/purchase/process', [App\Http\Controllers\EgiliPurchaseController::class, 'processPurchase'])
+            ->name('purchase.process');
+        
+        Route::get('/purchase/{orderReference}/confirmation', [App\Http\Controllers\EgiliPurchaseController::class, 'showConfirmation'])
+            ->name('purchase.confirmation');
+        
+        Route::get('/purchase/pricing', [App\Http\Controllers\EgiliPurchaseController::class, 'getPricing'])
+            ->name('purchase.pricing');
+    });
 
     // Feature Purchase System (Hybrid Approach - Generic for ALL features)
     Route::prefix('features')->name('features.')->group(function () {
