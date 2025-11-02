@@ -34,6 +34,16 @@ return [
         'initial_bonus' => 'Initial Bonus',
     ],
     
+    // Wallet Card (Navigation Menu)
+    'wallet' => [
+        'title' => 'Egili Wallet',
+        'current_balance' => 'Current Balance',
+        'buy_more' => 'Buy Egili',
+        'recent_transactions' => 'Recent Transactions',
+        'view_all' => 'View All',
+        'no_transactions' => 'No transactions',
+    ],
+    
     // Purchase System
     'purchase' => [
         'title' => 'Buy Egili',

@@ -34,6 +34,16 @@ return [
         'initial_bonus' => 'Bonus Iniziale',
     ],
     
+    // Wallet Card (Navigation Menu)
+    'wallet' => [
+        'title' => 'Portafoglio Egili',
+        'current_balance' => 'Saldo Attuale',
+        'buy_more' => 'Acquista Egili',
+        'recent_transactions' => 'Ultimi Movimenti',
+        'view_all' => 'Vedi Tutti',
+        'no_transactions' => 'Nessuna transazione',
+    ],
+    
     // Purchase System
     'purchase' => [
         'title' => 'Acquista Egili',
