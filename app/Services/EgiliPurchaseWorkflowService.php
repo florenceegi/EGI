@@ -119,7 +119,8 @@ class EgiliPurchaseWorkflowService
                 $egiliAmount,
                 $pricing,
                 'fiat',
-                $provider
+                $provider,
+                $paymentData['return_url'] ?? null
             );
 
             // 6. Process FIAT payment
@@ -214,7 +215,8 @@ class EgiliPurchaseWorkflowService
                 $egiliAmount,
                 $pricing,
                 'crypto',
-                $cryptoProvider
+                $cryptoProvider,
+                $cryptoData['return_url'] ?? null
             );
 
             // 6. Create crypto payment request
@@ -444,7 +446,8 @@ class EgiliPurchaseWorkflowService
         int $egiliAmount,
         array $pricing,
         string $paymentMethod,
-        string $provider
+        string $provider,
+        ?string $returnUrl = null
     ): EgiliMerchantPurchase {
         return EgiliMerchantPurchase::create([
             'user_id' => $user->id,
@@ -457,6 +460,7 @@ class EgiliPurchaseWorkflowService
             'payment_status' => 'pending',
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
+            'return_url' => $returnUrl,
             'purchased_at' => now(),
         ]);
     }

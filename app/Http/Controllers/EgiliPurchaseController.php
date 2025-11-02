@@ -80,6 +80,7 @@ class EgiliPurchaseController extends Controller
                 'payment_method' => 'required|string|in:fiat,crypto',
                 'fiat_provider' => 'nullable|required_if:payment_method,fiat|string|in:stripe,paypal',
                 'crypto_provider' => 'nullable|required_if:payment_method,crypto|string',
+                'return_url' => 'nullable|string|max:512',
             ]);
 
             // 2. ULM: Log purchase initiation
@@ -111,7 +112,9 @@ class EgiliPurchaseController extends Controller
                     $user,
                     $validated['egili_amount'],
                     $validated['fiat_provider'],
-                    $request->all()
+                    array_merge($request->all(), [
+                        'return_url' => $validated['return_url'] ?? url()->previous()
+                    ])
                 );
 
                 // FIAT completes immediately - redirect to confirmation
@@ -130,7 +133,9 @@ class EgiliPurchaseController extends Controller
                     $user,
                     $validated['egili_amount'],
                     $validated['crypto_provider'],
-                    $request->all()
+                    array_merge($request->all(), [
+                        'return_url' => $validated['return_url'] ?? url()->previous()
+                    ])
                 );
 
                 // Crypto requires redirect to gateway

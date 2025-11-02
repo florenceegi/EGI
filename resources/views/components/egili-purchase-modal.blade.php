@@ -324,6 +324,7 @@ document.getElementById('egili-purchase-form').addEventListener('submit', async 
                 payment_method: paymentMethod,
                 fiat_provider: paymentMethod === 'fiat' ? formData.get('fiat_provider') : null,
                 crypto_provider: paymentMethod === 'crypto' ? formData.get('crypto_provider') : null,
+                return_url: window.location.href, // Current page URL
             })
         });
         

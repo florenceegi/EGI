@@ -86,6 +86,7 @@ class EgiliMerchantPurchase extends Model
         'invoice_pdf_path',
         'ip_address',
         'user_agent',
+        'return_url',
         'notes',
         'purchased_at',
         'completed_at',

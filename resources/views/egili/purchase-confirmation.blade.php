@@ -212,9 +212,13 @@
                             🎯 {{ __('common.actions') }}
                         </h3>
                         <div class="space-y-3">
-                            <a href="{{ route('dashboard') }}" 
+                            <a href="{{ $purchase->return_url ?? route('dashboard') }}" 
                                class="block w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg text-center transition-all shadow-lg">
-                                {{ __('egili.confirmation.back_to_dashboard') }}
+                                @if($purchase->return_url)
+                                    ← {{ __('common.back') }}
+                                @else
+                                    {{ __('egili.confirmation.back_to_dashboard') }}
+                                @endif
                             </a>
                             
                             @if(request()->has('feature_code'))
