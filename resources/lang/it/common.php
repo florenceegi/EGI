@@ -14,4 +14,15 @@ return [
     'submit' => 'Invia',
     'buy' => 'Acquista',
     'actions' => 'Azioni',
+    
+    // Status
+    'all' => 'Tutti',
+    'active' => 'Attivo',
+    'inactive' => 'Inattivo',
+    'status' => 'Stato',
+    
+    // Actions
+    'activate' => 'Attiva',
+    'deactivate' => 'Disattiva',
+    'apply_filters' => 'Applica Filtri',
 ];

@@ -14,4 +14,15 @@ return [
     'submit' => 'Submit',
     'buy' => 'Buy',
     'actions' => 'Actions',
+    
+    // Status
+    'all' => 'All',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'status' => 'Status',
+    
+    // Actions
+    'activate' => 'Activate',
+    'deactivate' => 'Deactivate',
+    'apply_filters' => 'Apply Filters',
 ];
