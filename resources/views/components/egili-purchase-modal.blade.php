@@ -224,14 +224,25 @@ const EGILI_CONFIG = {
     csrf: document.querySelector('meta[name="csrf-token"]')?.content || '',
 };
 
+console.log('💎 Egili Purchase Modal script loaded', {
+    modal: document.getElementById('egili-purchase-modal') ? 'FOUND' : 'NOT FOUND',
+    config: EGILI_CONFIG
+});
+
 // Open Egili Purchase Modal
 window.openEgiliPurchaseModal = function() {
+    console.log('💎 openEgiliPurchaseModal() called');
     const modal = document.getElementById('egili-purchase-modal');
     if (modal) {
+        console.log('✅ Modal found, opening...');
         modal.classList.remove('hidden');
-        document.getElementById('egili-amount').focus();
+        document.getElementById('egili-amount')?.focus();
+    } else {
+        console.error('❌ Modal #egili-purchase-modal NOT FOUND in DOM');
     }
 };
+
+console.log('✅ window.openEgiliPurchaseModal is now available:', typeof window.openEgiliPurchaseModal);
 
 // Close Egili Purchase Modal
 window.closeEgiliPurchaseModal = function() {
