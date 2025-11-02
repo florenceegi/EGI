@@ -128,12 +128,13 @@ class EgiliPurchaseWorkflowService
             $paymentRequest = new PaymentRequest(
                 amount: $pricing['total_eur'],
                 currency: 'EUR',
-                description: "Egili Purchase - {$egiliAmount} Egili",
+                customerEmail: $user->email,
+                egiId: null, // Not linked to specific EGI
+                userId: $user->id,
                 metadata: [
-                    'user_id' => $user->id,
                     'order_reference' => $merchantPurchase->order_reference,
                     'egili_amount' => $egiliAmount,
-                    'type' => 'egili_purchase'
+                    'description' => "Egili Purchase - {$egiliAmount} Egili"
                 ]
             );
 

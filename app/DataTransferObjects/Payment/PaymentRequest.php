@@ -21,7 +21,7 @@ readonly class PaymentRequest {
         public float $amount,
         public string $currency,
         public string $customerEmail,
-        public int $egiId,
+        public ?int $egiId = null,
         public ?int $reservationId = null,
         public ?int $userId = null,
         public array $metadata = [],
@@ -32,7 +32,10 @@ readonly class PaymentRequest {
         $this->validateAmount($amount);
         $this->validateCurrency($currency);
         $this->validateEmail($customerEmail);
-        $this->validateEgiId($egiId);
+        
+        if ($egiId !== null) {
+            $this->validateEgiId($egiId);
+        }
     }
 
     /**
@@ -47,7 +50,7 @@ readonly class PaymentRequest {
             amount: (float) ($data['amount'] ?? 0),
             currency: strtoupper($data['currency'] ?? 'EUR'),
             customerEmail: $data['customer_email'] ?? '',
-            egiId: (int) ($data['egi_id'] ?? 0),
+            egiId: isset($data['egi_id']) ? (int) $data['egi_id'] : null,
             reservationId: isset($data['reservation_id']) ? (int) $data['reservation_id'] : null,
             userId: isset($data['user_id']) ? (int) $data['user_id'] : null,
             metadata: $data['metadata'] ?? [],
@@ -93,10 +96,13 @@ readonly class PaymentRequest {
      */
     public function getPspMetadata(): array {
         $base = [
-            'egi_id' => (string) $this->egiId,
             'platform' => 'FlorenceEGI',
-            'type' => 'egi_purchase'
+            'type' => $this->egiId ? 'egi_purchase' : 'egili_purchase'
         ];
+
+        if ($this->egiId) {
+            $base['egi_id'] = (string) $this->egiId;
+        }
 
         if ($this->reservationId) {
             $base['reservation_id'] = (string) $this->reservationId;
