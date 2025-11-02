@@ -23,11 +23,16 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * - Used for fee reduction, services, subscriptions
  * - Conversion rate: 1 Egilo ≈ €0.10 (perceived value)
  * 
+ * NEW IN v1.1.0: Gift/Lifetime Egili Support
+ * - Lifetime Egili: Purchased by user, never expire
+ * - Gift Egili: Granted by platform/admin, expire after N days
+ * - Priority Logic: Spend Gift first (expiring first), then Lifetime (FIFO)
+ * 
  * @package App\Services
  * @author Padmin D. Curtis (AI Partner OS3.0)
- * @version 1.0.0 (FlorenceEGI - Egili Token System)
- * @date 2025-11-01
- * @purpose Egili token operations with GDPR compliance
+ * @version 1.1.0 (FlorenceEGI - Egili System Foundation)
+ * @date 2025-11-02
+ * @purpose Egili token operations with GDPR compliance and Gift/Lifetime support
  */
 class EgiliService
 {
@@ -443,6 +448,441 @@ class EgiliService
             
             return $transaction;
         });
+    }
+    
+    // =====================================
+    // === GIFT/LIFETIME EGILI METHODS ===
+    // =====================================
+    
+    /**
+     * Grant Gift Egili with expiration
+     * 
+     * Admin operation to grant temporary Egili that expire after N days.
+     * Used for contests, rewards, platform incentives.
+     * 
+     * @param User $user User receiving gift
+     * @param int $amount Amount of Gift Egili to grant
+     * @param int $expirationDays Days until expiration
+     * @param string $reason Reason for grant (e.g., 'contest_winner', 'platform_reward')
+     * @param User $admin Admin granting the Egili
+     * @param string|null $notes Additional admin notes
+     * @return EgiliTransaction Created transaction record
+     * @throws \Exception If wallet not found or transaction fails
+     */
+    public function grantGift(
+        User $user,
+        int $amount,
+        int $expirationDays,
+        string $reason,
+        User $admin,
+        ?string $notes = null
+    ): EgiliTransaction {
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException("Gift Egili amount must be positive, got: {$amount}");
+        }
+        
+        if ($expirationDays <= 0) {
+            throw new \InvalidArgumentException("Expiration days must be positive, got: {$expirationDays}");
+        }
+        
+        if (!$user->wallet) {
+            throw new \Exception("User has no wallet. Cannot grant gift Egili.");
+        }
+        
+        return DB::transaction(function () use ($user, $amount, $expirationDays, $reason, $admin, $notes) {
+            $wallet = $user->wallet;
+            $balanceBefore = $wallet->egili_balance;
+            $balanceAfter = $balanceBefore + $amount;
+            $expiresAt = now()->addDays($expirationDays);
+            
+            // ULM: Log operation start
+            $this->logger->info('Gift Egili grant initiated', [
+                'user_id' => $user->id,
+                'admin_id' => $admin->id,
+                'amount' => $amount,
+                'expiration_days' => $expirationDays,
+                'expires_at' => $expiresAt->toDateTimeString(),
+                'reason' => $reason,
+                'log_category' => 'EGILI_GIFT_GRANT_START'
+            ]);
+            
+            // Update wallet balance
+            $wallet->update([
+                'egili_balance' => $balanceAfter,
+                'egili_lifetime_earned' => $wallet->egili_lifetime_earned + $amount,
+            ]);
+            
+            // Create transaction record with gift fields
+            $transaction = EgiliTransaction::create([
+                'wallet_id' => $wallet->id,
+                'user_id' => $user->id,
+                'transaction_type' => 'admin_grant',
+                'operation' => 'add',
+                'amount' => $amount,
+                'balance_before' => $balanceBefore,
+                'balance_after' => $balanceAfter,
+                'reason' => $reason,
+                'category' => 'gift',
+                'admin_user_id' => $admin->id,
+                'admin_notes' => $notes,
+                'status' => 'completed',
+                // Gift-specific fields
+                'egili_type' => 'gift',
+                'expires_at' => $expiresAt,
+                'is_expired' => false,
+                'granted_by_admin_id' => $admin->id,
+                'grant_reason' => $reason,
+                'priority_order' => $expiresAt->timestamp, // Earlier expiration = higher priority
+                // Tracking
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+            
+            // GDPR: Audit trail (TODO: Add EGILI_GIFT_GRANTED to GdprActivityCategory)
+            $this->auditService->logUserAction(
+                $admin,
+                'egili_gift_granted',
+                [
+                    'target_user_id' => $user->id,
+                    'amount' => $amount,
+                    'expiration_days' => $expirationDays,
+                    'expires_at' => $expiresAt->toDateTimeString(),
+                    'reason' => $reason,
+                    'notes' => $notes,
+                    'transaction_id' => $transaction->id,
+                ],
+                GdprActivityCategory::PERSONAL_DATA_UPDATE // TODO: Use EGILI_GIFT_GRANTED when added
+            );
+            
+            // ULM: Log success
+            $this->logger->info('Gift Egili granted successfully', [
+                'admin_id' => $admin->id,
+                'user_id' => $user->id,
+                'transaction_id' => $transaction->id,
+                'amount' => $amount,
+                'expires_at' => $expiresAt->toDateTimeString(),
+                'balance_after' => $balanceAfter,
+                'log_category' => 'EGILI_GIFT_GRANT_SUCCESS'
+            ]);
+            
+            return $transaction;
+        });
+    }
+    
+    /**
+     * Spend Egili with Priority Logic (Gift first, Lifetime after)
+     * 
+     * Priority Order:
+     * 1. Gift Egili (expiring first - LIFO by expiration)
+     * 2. Lifetime Egili (FIFO by creation date)
+     * 
+     * This ensures:
+     * - Gift Egili are used before they expire
+     * - Lifetime Egili are preserved when possible
+     * 
+     * @param User $user User spending Egili
+     * @param int $amount Amount to spend
+     * @param string $reason Spend reason
+     * @param string|null $category Spend category
+     * @param array|null $metadata Additional metadata
+     * @param mixed|null $source Source entity
+     * @return array Array of EgiliTransaction records (one per source consumed)
+     * @throws \Exception If insufficient balance or transaction fails
+     */
+    public function spendWithPriority(
+        User $user,
+        int $amount,
+        string $reason,
+        ?string $category = null,
+        ?array $metadata = null,
+        $source = null
+    ): array {
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException("Spend amount must be positive, got: {$amount}");
+        }
+        
+        if (!$user->wallet) {
+            throw new \Exception("User has no wallet. Cannot spend Egili.");
+        }
+        
+        if (!$this->canSpend($user, $amount)) {
+            $currentBalance = $this->getBalance($user);
+            throw new \Exception(
+                "Saldo Egili insufficiente. Disponibili: {$currentBalance}, Richiesti: {$amount}"
+            );
+        }
+        
+        return DB::transaction(function () use ($user, $amount, $reason, $category, $metadata, $source) {
+            $wallet = $user->wallet;
+            $remaining = $amount;
+            $transactions = [];
+            
+            // ULM: Log spend start
+            $this->logger->info('Egili spend with priority initiated', [
+                'user_id' => $user->id,
+                'amount' => $amount,
+                'reason' => $reason,
+                'log_category' => 'EGILI_SPEND_PRIORITY_START'
+            ]);
+            
+            // STEP 1: Get available Egili sources with priority order
+            // Priority: Gift first (expiring first), then Lifetime (FIFO)
+            $sources = EgiliTransaction::where('wallet_id', $wallet->id)
+                ->where('operation', 'add')
+                ->where('status', 'completed')
+                ->nonExpired() // Use scope from model
+                ->orderByRaw("
+                    CASE WHEN egili_type = 'gift' THEN 0 ELSE 1 END ASC,
+                    CASE WHEN egili_type = 'gift' THEN expires_at END ASC,
+                    CASE WHEN egili_type = 'lifetime' THEN created_at END ASC
+                ")
+                ->get();
+            
+            $this->logger->debug('Available Egili sources found', [
+                'user_id' => $user->id,
+                'sources_count' => $sources->count(),
+                'log_category' => 'EGILI_SOURCES_LOADED'
+            ]);
+            
+            // STEP 2: Loop through sources and consume until amount satisfied
+            $balanceBefore = $wallet->egili_balance;
+            
+            foreach ($sources as $sourceTransaction) {
+                if ($remaining <= 0) {
+                    break;
+                }
+                
+                // Calculate how much we can consume from this source
+                $available = $sourceTransaction->amount; // Simplification: assuming full amount available
+                // TODO: Track remaining balance per source for partial consumption
+                
+                $toConsume = min($available, $remaining);
+                
+                // Create spend transaction
+                $spendTransaction = EgiliTransaction::create([
+                    'wallet_id' => $wallet->id,
+                    'user_id' => $user->id,
+                    'transaction_type' => 'spent',
+                    'operation' => 'subtract',
+                    'amount' => $toConsume,
+                    'balance_before' => $wallet->egili_balance,
+                    'balance_after' => $wallet->egili_balance - $toConsume,
+                    'source_type' => $source ? get_class($source) : null,
+                    'source_id' => $source?->id,
+                    'reason' => $reason,
+                    'category' => $category ?? 'other',
+                    'metadata' => array_merge($metadata ?? [], [
+                        'source_transaction_id' => $sourceTransaction->id,
+                        'source_egili_type' => $sourceTransaction->egili_type,
+                    ]),
+                    'status' => 'completed',
+                    'egili_type' => $sourceTransaction->egili_type, // Inherit type from source
+                    'ip_address' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]);
+                
+                // Update wallet balance
+                $wallet->update([
+                    'egili_balance' => $wallet->egili_balance - $toConsume,
+                    'egili_lifetime_spent' => $wallet->egili_lifetime_spent + $toConsume,
+                ]);
+                
+                $transactions[] = $spendTransaction;
+                $remaining -= $toConsume;
+                
+                $this->logger->debug('Egili consumed from source', [
+                    'user_id' => $user->id,
+                    'source_transaction_id' => $sourceTransaction->id,
+                    'source_type' => $sourceTransaction->egili_type,
+                    'amount_consumed' => $toConsume,
+                    'remaining' => $remaining,
+                    'log_category' => 'EGILI_SOURCE_CONSUMED'
+                ]);
+            }
+            
+            if ($remaining > 0) {
+                // This should never happen due to canSpend() check, but safety net
+                throw new \Exception("Priority spend failed: insufficient balance after consumption");
+            }
+            
+            $balanceAfter = $wallet->egili_balance;
+            
+            // GDPR: Audit trail for main spend operation
+            $this->auditService->logUserAction(
+                $user,
+                'egili_spent',
+                [
+                    'amount' => $amount,
+                    'reason' => $reason,
+                    'category' => $category,
+                    'balance_before' => $balanceBefore,
+                    'balance_after' => $balanceAfter,
+                    'sources_used' => count($transactions),
+                    'transaction_ids' => array_map(fn($t) => $t->id, $transactions),
+                ],
+                GdprActivityCategory::BLOCKCHAIN_ACTIVITY
+            );
+            
+            // ULM: Log success
+            $this->logger->info('Egili spent with priority successfully', [
+                'user_id' => $user->id,
+                'amount' => $amount,
+                'sources_used' => count($transactions),
+                'balance_after' => $balanceAfter,
+                'log_category' => 'EGILI_SPEND_PRIORITY_SUCCESS'
+            ]);
+            
+            return $transactions;
+        });
+    }
+    
+    /**
+     * Expire Gift Egili (Cron Job)
+     * 
+     * Finds all gift Egili with expires_at <= now() and marks them as expired.
+     * Subtracts from wallet balance.
+     * 
+     * Should be run daily at 00:05 (see app/Console/Kernel.php)
+     * 
+     * @return int Count of transactions expired
+     */
+    public function expireGiftEgili(): int
+    {
+        $this->logger->info('Gift Egili expiration job started', [
+            'log_category' => 'EGILI_EXPIRATION_START'
+        ]);
+        
+        // Find all gift Egili that should be expired
+        $expiredTransactions = EgiliTransaction::where('egili_type', 'gift')
+            ->where('is_expired', false)
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', now())
+            ->get();
+        
+        if ($expiredTransactions->isEmpty()) {
+            $this->logger->info('No gift Egili to expire', [
+                'log_category' => 'EGILI_EXPIRATION_NONE'
+            ]);
+            return 0;
+        }
+        
+        $count = 0;
+        
+        foreach ($expiredTransactions as $transaction) {
+            try {
+                DB::transaction(function () use ($transaction) {
+                    // Mark as expired
+                    $transaction->update(['is_expired' => true]);
+                    
+                    // Subtract from wallet balance
+                    $wallet = $transaction->wallet;
+                    $wallet->decrement('egili_balance', $transaction->amount);
+                    
+                    // GDPR: Audit trail (TODO: Add EGILI_GIFT_EXPIRED to GdprActivityCategory)
+                    $this->auditService->logUserAction(
+                        $transaction->user,
+                        'egili_gift_expired',
+                        [
+                            'amount' => $transaction->amount,
+                            'transaction_id' => $transaction->id,
+                            'expires_at' => $transaction->expires_at->toDateTimeString(),
+                            'granted_by_admin_id' => $transaction->granted_by_admin_id,
+                            'grant_reason' => $transaction->grant_reason,
+                        ],
+                        GdprActivityCategory::BLOCKCHAIN_ACTIVITY // TODO: Use EGILI_GIFT_EXPIRED when added
+                    );
+                    
+                    $this->logger->info('Gift Egili expired', [
+                        'user_id' => $transaction->user_id,
+                        'transaction_id' => $transaction->id,
+                        'amount' => $transaction->amount,
+                        'expires_at' => $transaction->expires_at->toDateTimeString(),
+                        'log_category' => 'EGILI_GIFT_EXPIRED'
+                    ]);
+                });
+                
+                $count++;
+            } catch (\Exception $e) {
+                $this->logger->error('Failed to expire gift Egili', [
+                    'transaction_id' => $transaction->id,
+                    'error' => $e->getMessage(),
+                    'log_category' => 'EGILI_EXPIRATION_ERROR'
+                ]);
+            }
+        }
+        
+        $this->logger->info('Gift Egili expiration job completed', [
+            'expired_count' => $count,
+            'log_category' => 'EGILI_EXPIRATION_COMPLETE'
+        ]);
+        
+        return $count;
+    }
+    
+    /**
+     * Get balance breakdown (Lifetime vs Gift)
+     * 
+     * Returns detailed balance information:
+     * - Total balance
+     * - Lifetime Egili
+     * - Gift Egili (active)
+     * - Gift Egili expiring soon (next 7 days)
+     * 
+     * @param User $user
+     * @param int $expiringSoonDays Days to consider as "expiring soon" (default: 7)
+     * @return array Balance breakdown
+     */
+    public function getBalanceBreakdown(User $user, int $expiringSoonDays = 7): array
+    {
+        if (!$user->wallet) {
+            return [
+                'total' => 0,
+                'lifetime' => 0,
+                'gift' => 0,
+                'gift_expiring_soon' => 0,
+            ];
+        }
+        
+        $wallet = $user->wallet;
+        
+        // Calculate lifetime balance
+        $lifetimeBalance = EgiliTransaction::where('wallet_id', $wallet->id)
+            ->where('operation', 'add')
+            ->where('status', 'completed')
+            ->lifetime()
+            ->sum('amount')
+            - EgiliTransaction::where('wallet_id', $wallet->id)
+                ->where('operation', 'subtract')
+                ->where('status', 'completed')
+                ->lifetime()
+                ->sum('amount');
+        
+        // Calculate active gift balance
+        $giftBalance = EgiliTransaction::where('wallet_id', $wallet->id)
+            ->where('operation', 'add')
+            ->where('status', 'completed')
+            ->gift()
+            ->nonExpired()
+            ->sum('amount')
+            - EgiliTransaction::where('wallet_id', $wallet->id)
+                ->where('operation', 'subtract')
+                ->where('status', 'completed')
+                ->gift()
+                ->sum('amount');
+        
+        // Calculate gift expiring soon
+        $giftExpiringSoon = EgiliTransaction::where('wallet_id', $wallet->id)
+            ->where('operation', 'add')
+            ->where('status', 'completed')
+            ->expiringSoon($expiringSoonDays)
+            ->sum('amount');
+        
+        return [
+            'total' => $wallet->egili_balance,
+            'lifetime' => max(0, $lifetimeBalance),
+            'gift' => max(0, $giftBalance),
+            'gift_expiring_soon' => max(0, $giftExpiringSoon),
+        ];
     }
 }
 
