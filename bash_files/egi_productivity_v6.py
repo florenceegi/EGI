@@ -447,12 +447,12 @@ class GitRepo:
         next_day = (date + dt.timedelta(days=1)).isoformat()
 
         return self.get_commits(date_str, date_str)
-    
+
     def get_commits_from_repo(self, repo_path: Path, since: str, until: str) -> List[CommitEntry]:
         """Get commits from specific repository."""
         commits = []
         cmd = f'git log --oneline --since="{since} 00:00:00" --until="{until} 23:59:59"'
-        
+
         try:
             result = subprocess.run(
                 cmd,
@@ -465,7 +465,7 @@ class GitRepo:
             output = result.stdout.strip()
         except subprocess.CalledProcessError:
             return commits
-        
+
         if not output:
             return commits
 
@@ -473,7 +473,7 @@ class GitRepo:
             if not line:
                 continue
             sha = line.split()[0]
-            
+
             # Get commit details
             cmd_show = f'git show --no-patch --format="%an|%ai|%s" {sha}'
             try:
@@ -481,18 +481,18 @@ class GitRepo:
                 details = result.stdout.strip()
             except:
                 continue
-            
+
             parts = details.split('|', 2)
             if len(parts) < 3:
                 continue
-            
+
             author, date_str, message = parts
-            
+
             try:
                 commit_date = parse_git_date(date_str)
             except:
                 continue
-            
+
             # Get file stats
             cmd_numstat = f'git show --numstat --format="" {sha}'
             try:
@@ -500,7 +500,7 @@ class GitRepo:
                 numstat_output = result.stdout.strip()
             except:
                 numstat_output = ""
-            
+
             files = []
             for stat_line in numstat_output.strip().split('\n'):
                 if not stat_line:
@@ -509,18 +509,18 @@ class GitRepo:
                 if len(parts) < 3:
                     continue
                 added_str, removed_str, filepath = parts
-                
+
                 # Skip excluded files
                 if should_exclude_file(filepath):
                     continue
-                
+
                 try:
                     added = int(added_str) if added_str != '-' else 0
                     removed = int(removed_str) if removed_str != '-' else 0
                     files.append((filepath, added, removed))
                 except ValueError:
                     continue
-            
+
             commits.append(CommitEntry(
                 sha=sha,
                 author=author,
@@ -528,7 +528,7 @@ class GitRepo:
                 message=message,
                 files=files
             ))
-        
+
         return commits
 
 
@@ -545,27 +545,27 @@ class ProductivityAnalyzer:
     def analyze_day(self, date: dt.date) -> DayStats:
         """Analyze single day statistics with EGI/NATAN_LOC separation."""
         date_str = date.isoformat()
-        
+
         # Query EGI repo (/home/fabio/EGI)
         commits_egi = self.repo.get_commits_from_repo(self.repo.repo_path, date_str, date_str)
-        
+
         # Query NATAN_LOC repo (/home/fabio/NATAN_LOC) se esiste
         commits_natan = []
         if self.repo.natan_repo_path.exists():
             commits_natan = self.repo.get_commits_from_repo(self.repo.natan_repo_path, date_str, date_str)
-        
+
         # Calculate EGI stats
         lines_net_egi = 0
         for commit in commits_egi:
             for filepath, added, removed in commit.files:
                 lines_net_egi += (added - removed)
-        
+
         # Calculate NATAN stats
         lines_net_natan = 0
         for commit in commits_natan:
             for filepath, added, removed in commit.files:
                 lines_net_natan += (added - removed)
-        
+
         # Combine commits
         commits = commits_egi + commits_natan
 
@@ -679,7 +679,7 @@ class ProductivityAnalyzer:
         total_lines_net_egi = sum(d.lines_net_egi for d in daily_stats)
         total_commits_natan = sum(d.commits_natan for d in daily_stats)
         total_lines_net_natan = sum(d.lines_net_natan for d in daily_stats)
-        
+
         total_commits = sum(d.commits for d in daily_stats)
         total_commits_weighted = sum(d.commits_weighted for d in daily_stats)
         total_files = sum(d.files_modified for d in daily_stats)
@@ -762,7 +762,7 @@ class ProductivityAnalyzer:
         all_daily_stats = []
 
         week_number = 1
-        
+
         # Calculate MONDAY of the week containing start_date
         # weekday(): 0 = Monday, 6 = Sunday
         days_since_monday = start_date.weekday()
@@ -983,7 +983,7 @@ def print_terminal_summary(weekly_stats: List[WeekStats], daily_stats: List[DayS
     # Weekly summary (SOLO se range > 1 giorno) - MOSTRA ULTIMA SETTIMANA
     if not is_single_day and weekly_stats:
         last_week = weekly_stats[-1]
-        
+
         print("\n" + "="*70)
         print("📊 RIEPILOGO ULTIMA SETTIMANA")
         print("="*70)
@@ -1094,7 +1094,7 @@ def main() -> int:
 
     # Detect single day analysis
     is_single_day = (start_date == end_date)
-    
+
     # Run analysis
     try:
         analyzer = ProductivityAnalyzer(args.repo)
@@ -1103,7 +1103,7 @@ def main() -> int:
             print("🔍 Analisi singolo giorno...")
         else:
             print("🔍 Generazione report completo...")
-            
+
         weekly_stats, daily_stats = analyzer.generate_full_report(start_date, end_date)
 
         if not is_single_day:
