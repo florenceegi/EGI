@@ -58,6 +58,12 @@ return [
         'natan_job_user_not_found' => 'N.A.T.A.N. background job could not find user for session :session_id (user_id: :user_id).',
     ],
 
+        // Egili Purchase System Errors (Dev Messages)
+        'egili_purchase_process_failed' => '[EGILI] Purchase process failed. User :user_id, Amount: :egili_amount Egili, Payment Method: :payment_method, Error: :error_message',
+        'egili_purchase_confirmation_error' => '[EGILI] Purchase confirmation page error. User :user_id, Order Reference: :order_reference, Error: :error',
+        'egili_consent_missing' => '[EGILI] Missing payment-processing consent. User :user_id, Egili Amount: :egili_amount, Consent Status: :consent_status',
+        'egili_amount_invalid' => '[EGILI] Invalid purchase amount. User :user_id, Requested: :egili_amount, Min: :min_amount, Max: :max_amount',
+
     'user' => [
         // ProfileImage Controller User Messages
         'profile_image_upload_validation_error' => 'Image data is invalid. Please check format and dimensions.',
@@ -106,6 +112,12 @@ return [
         'natan_job_session_not_found' => 'Analysis session expired or not found. Please start a new analysis.',
         'natan_job_analysis_failed' => 'Background analysis failed. Your credits have been refunded. Please try again or contact support.',
         'natan_job_user_not_found' => 'User session invalid. Please log in again and retry.',
+
+        // Egili Purchase System Errors (User Messages)
+        'egili_purchase_process_failed' => 'An error occurred while processing your Egili purchase. Please try again later or contact support.',
+        'egili_purchase_confirmation_error' => 'Unable to display order details. Check your email or contact support.',
+        'egili_consent_missing' => 'You must consent to payment processing to purchase Egili. Go to privacy settings and accept the required consents.',
+        'egili_amount_invalid' => 'The requested Egili amount is not valid. Check the minimum and maximum purchase limits.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

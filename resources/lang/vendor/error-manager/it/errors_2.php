@@ -175,6 +175,12 @@ return [
         'dual_arch_promotion_failed' => '[DUAL_ARCH] Pre-Mint promotion to on-chain failed. EGI :egi_id, Target Type: :target_type, Exception: :exception_class - :error_message',
     ],
 
+        // Egili Purchase System Errors (Dev Messages)
+        'egili_purchase_process_failed' => '[EGILI] Purchase process failed. User :user_id, Amount: :egili_amount Egili, Payment Method: :payment_method, Error: :error_message',
+        'egili_purchase_confirmation_error' => '[EGILI] Purchase confirmation page error. User :user_id, Order Reference: :order_reference, Error: :error',
+        'egili_consent_missing' => '[EGILI] Missing payment-processing consent. User :user_id, Egili Amount: :egili_amount, Consent Status: :consent_status',
+        'egili_amount_invalid' => '[EGILI] Invalid purchase amount. User :user_id, Requested: :egili_amount, Min: :min_amount, Max: :max_amount',
+
     'user' => [
         // ProfileImage Controller User Messages
         'profile_image_upload_validation_error' => 'I dati dell\'immagine non sono validi. Controlla il formato e le dimensioni.',
@@ -412,6 +418,12 @@ return [
         'kms_configuration_invalid' => 'Configurazione di sicurezza non valida. Contatta immediatamente l\'assistenza tecnica.',
         'kms_audit_log_failed' => 'Errore nel sistema di tracciamento sicurezza. L\'operazione è stata comunque completata.',
         'kms_unavailable' => 'Il sistema di crittografia wallet non è al momento disponibile. Il nostro team è stato notificato. Riprova tra qualche minuto.',
+        
+        // Egili Purchase System Errors (User Messages)
+        'egili_purchase_process_failed' => 'Si è verificato un errore durante l\'elaborazione del tuo acquisto di Egili. Riprova più tardi o contatta l\'assistenza.',
+        'egili_purchase_confirmation_error' => 'Impossibile visualizzare i dettagli dell\'ordine. Controlla la tua email o contatta l\'assistenza.',
+        'egili_consent_missing' => 'Devi acconsentire all\'elaborazione dei pagamenti per acquistare Egili. Vai alle impostazioni privacy e accetta i consensi necessari.',
+        'egili_amount_invalid' => 'La quantità di Egili richiesta non è valida. Controlla i limiti minimi e massimi di acquisto.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

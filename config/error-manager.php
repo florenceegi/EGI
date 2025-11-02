@@ -6801,5 +6801,53 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // ========================================
+        // EGILI PURCHASE SYSTEM ERROR CODES
+        // ========================================
+
+        'EGILI_PURCHASE_PROCESS_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.egili_purchase_process_failed',
+            'user_message_key' => 'error-manager::errors_2.user.egili_purchase_process_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'EGILI_PURCHASE_CONFIRMATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors_2.dev.egili_purchase_confirmation_error',
+            'user_message_key' => 'error-manager::errors_2.user.egili_purchase_confirmation_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'EGILI_CONSENT_MISSING' => [
+            'type' => 'warning',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.egili_consent_missing',
+            'user_message_key' => 'error-manager::errors_2.user.egili_consent_missing',
+            'http_status_code' => 403,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'EGILI_AMOUNT_INVALID' => [
+            'type' => 'warning',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.egili_amount_invalid',
+            'user_message_key' => 'error-manager::errors_2.user.egili_amount_invalid',
+            'http_status_code' => 400,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];
