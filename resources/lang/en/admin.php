@@ -33,5 +33,52 @@ return [
         ],
     ],
     
+    // === PROMOTIONS MANAGER ===
+    'promotions' => [
+        'title' => 'Promotions Management',
+        'create_new' => 'New Promotion',
+        'active' => 'Active',
+        'upcoming' => 'Upcoming',
+        'expired' => 'Expired',
+        'featured' => 'Featured',
+        'discount' => 'Discount',
+        'scope' => 'Scope',
+        'global' => 'Global',
+        'period' => 'Period',
+        'uses' => 'Uses',
+        'savings' => 'Savings',
+        'view_stats' => 'Statistics',
+        'no_promotions' => 'No promotions found',
+        'created_successfully' => 'Promotion created successfully',
+        'activated_successfully' => 'Promotion activated successfully',
+        'deactivated_successfully' => 'Promotion deactivated successfully',
+        'create_todo' => 'Create promo coming soon',
+        'stats_todo' => 'Promo stats ID:',
+    ],
+    
+    // === EGILI MANAGEMENT ===
+    'egili' => [
+        'title' => 'Egili Management',
+        'grant_lifetime' => 'Grant Lifetime',
+        'grant_gift' => 'Grant Gift',
+        'search_user' => 'Search user',
+        'amount' => 'Amount',
+        'expiration_days' => 'Expiration Days',
+        'reason' => 'Reason',
+        'grant' => 'Grant',
+        'granted_successfully' => 'Egili granted successfully',
+    ],
+    
+    // === FEATURED CALENDAR ===
+    'featured' => [
+        'title' => 'Featured EGI Calendar',
+        'calendar_view' => 'Calendar View',
+        'pending_requests' => 'Pending Requests',
+        'approve' => 'Approve',
+        'reject' => 'Reject',
+        'approved_successfully' => 'Request approved successfully',
+        'rejected_successfully' => 'Request rejected successfully',
+    ],
+    
 ];
 

@@ -647,6 +647,52 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             Route::post('/assign-permissions', [RoleController::class, 'assignPermissions'])
                 ->name('assign.permissions')
                 ->middleware(['role_or_permission:manage_roles']);
+            
+            // Feature Pricing Manager (Task 4.1)
+            Route::prefix('pricing')->name('pricing.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Admin\FeaturePricingController::class, 'index'])
+                    ->name('index');
+                Route::post('/', [\App\Http\Controllers\Admin\FeaturePricingController::class, 'store'])
+                    ->name('store');
+                Route::put('/{id}', [\App\Http\Controllers\Admin\FeaturePricingController::class, 'update'])
+                    ->name('update');
+                Route::post('/{id}/toggle', [\App\Http\Controllers\Admin\FeaturePricingController::class, 'toggleActive'])
+                    ->name('toggle');
+            });
+            
+            // Feature Promotions Manager (Task 4.2)
+            Route::prefix('promotions')->name('promotions.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Admin\FeaturePromotionController::class, 'index'])
+                    ->name('index');
+                Route::post('/', [\App\Http\Controllers\Admin\FeaturePromotionController::class, 'store'])
+                    ->name('store');
+                Route::post('/{id}/activate', [\App\Http\Controllers\Admin\FeaturePromotionController::class, 'activate'])
+                    ->name('activate');
+                Route::post('/{id}/deactivate', [\App\Http\Controllers\Admin\FeaturePromotionController::class, 'deactivate'])
+                    ->name('deactivate');
+            });
+            
+            // Egili Management (Task 4.3 - SuperAdmin only)
+            Route::prefix('egili')->name('egili.')->middleware('role:superadmin')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Admin\EgiliManagementController::class, 'index'])
+                    ->name('index');
+                Route::post('/grant-lifetime', [\App\Http\Controllers\Admin\EgiliManagementController::class, 'grantLifetime'])
+                    ->name('grant.lifetime');
+                Route::post('/grant-gift', [\App\Http\Controllers\Admin\EgiliManagementController::class, 'grantGift'])
+                    ->name('grant.gift');
+            });
+            
+            // Featured EGI Calendar (Task 4.4)
+            Route::prefix('featured')->name('featured.')->group(function () {
+                Route::get('/calendar', [\App\Http\Controllers\Admin\FeaturedCalendarController::class, 'calendar'])
+                    ->name('calendar');
+                Route::get('/pending', [\App\Http\Controllers\Admin\FeaturedCalendarController::class, 'pending'])
+                    ->name('pending');
+                Route::post('/{id}/approve', [\App\Http\Controllers\Admin\FeaturedCalendarController::class, 'approve'])
+                    ->name('approve');
+                Route::post('/{id}/reject', [\App\Http\Controllers\Admin\FeaturedCalendarController::class, 'reject'])
+                    ->name('reject');
+            });
         });
 
         /*
