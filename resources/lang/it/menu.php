@@ -113,6 +113,8 @@ return [
     'superadmin_platform_management' => 'Gestione Piattaforma',
     'superadmin_roles' => 'Ruoli & Permessi',
     'superadmin_feature_pricing' => 'Pricing Features',
+    'admin_promotions' => 'Gestione Promozioni',
+    'admin_featured' => 'Calendario Featured EGI',
 
     // Padmin Analyzer Menu
     'superadmin_padmin' => 'Padmin Analyzer',

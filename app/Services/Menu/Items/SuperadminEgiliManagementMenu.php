@@ -17,9 +17,9 @@ class SuperadminEgiliManagementMenu extends MenuItem
     {
         parent::__construct(
             translationKey: 'menu.superadmin_egili_management',
-            route: 'superadmin.egili.index',
+            route: 'admin.egili.index', // Fixed: admin.* instead of superadmin.*
             icon: 'superadmin-egili-token',
-            permission: null // No permission check - protected by superadmin role via middleware
+            permission: 'role:superadmin' // SuperAdmin ONLY
         );
     }
 }

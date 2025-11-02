@@ -17,9 +17,9 @@ class SuperadminFeaturePricingMenu extends MenuItem
     {
         parent::__construct(
             translationKey: 'menu.superadmin_feature_pricing',
-            route: 'superadmin.pricing.index',
+            route: 'admin.pricing.index', // Fixed: admin.* instead of superadmin.*
             icon: 'superadmin-egili-token',
-            permission: null // No permission check - protected by superadmin role via middleware
+            permission: 'role:admin|superadmin' // Admin + SuperAdmin access
         );
     }
 }

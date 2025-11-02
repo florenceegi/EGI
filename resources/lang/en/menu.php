@@ -67,4 +67,33 @@ return [
     'egis' => 'Cultural Heritage',
     'heritage_list' => 'Cultural Assets List',
     'heritage_create' => 'Upload Asset',
+    
+    // SuperAdmin
+    'superadmin' => 'SuperAdmin Management',
+    'superadmin_overview' => 'SuperAdmin Dashboard',
+    'superadmin_dashboard' => 'Dashboard',
+    'superadmin_ai_management' => 'AI Management',
+    'superadmin_ai_consultations' => 'AI Consultations',
+    'superadmin_ai_credits' => 'AI Credits',
+    'superadmin_ai_features' => 'AI Configuration',
+    'superadmin_ai_statistics' => 'AI Statistics',
+    'superadmin_tokenomics' => 'Tokenomics',
+    'superadmin_egili_management' => 'Egili Management',
+    'superadmin_equilibrium_management' => 'Equilibrium Management',
+    'superadmin_egi_management' => 'EGI Management',
+    'superadmin_user_management' => 'User Management',
+    'superadmin_platform_statistics' => 'Platform Statistics',
+    'superadmin_platform_management' => 'Platform Management',
+    'superadmin_roles' => 'Roles & Permissions',
+    'superadmin_feature_pricing' => 'Feature Pricing',
+    'admin_promotions' => 'Promotions Management',
+    'admin_featured' => 'Featured EGI Calendar',
+    
+    // Padmin Analyzer Menu
+    'superadmin_padmin' => 'Padmin Analyzer',
+    'superadmin_padmin_dashboard' => 'Padmin Dashboard',
+    'superadmin_padmin_violations' => 'OS3 Violations',
+    'superadmin_padmin_symbols' => 'Symbols Registry',
+    'superadmin_padmin_search' => 'Semantic Search',
+    'superadmin_padmin_statistics' => 'Statistics',
 ];
