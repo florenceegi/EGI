@@ -1,20 +1,11 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-base-content leading-tight">
-                {{ __('admin.promotions.title') }}
-            </h2>
-            <button onclick="openCreatePromoModal()" class="btn btn-primary btn-sm gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-                {{ __('admin.promotions.create_new') }}
-            </button>
-        </div>
-    </x-slot>
+<x-layouts.superadmin pageTitle="{{ __('admin.promotions.title') }}">
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-base-content">🎁 {{ __('admin.promotions.title') }}</h1>
+        <p class="text-base-content/60 mt-2">{{ __('admin.promotions.subtitle') }}</p>
+    </div>
+
+    <div class="space-y-6">
             
             {{-- Status Tabs --}}
             <div class="tabs tabs-boxed mb-6">
@@ -144,7 +135,8 @@
         </div>
     </div>
 
-</x-app-layout>
+    </div>
+</x-layouts.superadmin>
 
 <script>
 function openCreatePromoModal() {
@@ -155,4 +147,6 @@ function viewPromoStats(promoId) {
     alert('{{ __('admin.promotions.stats_todo') }} ' + promoId);
 }
 </script>
+
+
 

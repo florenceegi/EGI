@@ -36,6 +36,7 @@ return [
     // === PROMOTIONS MANAGER ===
     'promotions' => [
         'title' => 'Gestione Promozioni',
+        'subtitle' => 'Gestisci sconti e promozioni temporanee',
         'create_new' => 'Nuova Promozione',
         'active' => 'Attive',
         'upcoming' => 'Programmate',
@@ -59,26 +60,57 @@ return [
     // === EGILI MANAGEMENT ===
     'egili' => [
         'title' => 'Gestione Egili',
+        'subtitle' => 'Gestione Egili Lifetime e Gift (Solo SuperAdmin)',
         'grant_lifetime' => 'Regala Lifetime',
         'grant_gift' => 'Regala Gift',
+        'grant_lifetime_desc' => 'Regala Egili Lifetime (senza scadenza) a un utente',
+        'grant_gift_desc' => 'Regala Egili Gift (con scadenza) come reward temporaneo',
         'search_user' => 'Cerca utente',
         'amount' => 'Quantità',
         'expiration_days' => 'Giorni scadenza',
         'reason' => 'Motivo',
         'grant' => 'Regala',
         'granted_successfully' => 'Egili regalati con successo',
+        'recent_transactions' => 'Transazioni Recenti',
+        'user' => 'Utente',
+        'type' => 'Tipo',
+        'expires' => 'Scadenza',
+        'granted_by' => 'Regalato da',
+        'date' => 'Data',
+        'expired' => 'Scaduto',
+        'never' => 'Mai',
+        'no_transactions' => 'Nessuna transazione trovata',
+        'grant_lifetime_todo' => 'Form grant Lifetime in arrivo',
+        'grant_gift_todo' => 'Form grant Gift in arrivo',
     ],
     
     // === FEATURED CALENDAR ===
     'featured' => [
         'title' => 'Calendario Featured EGI',
+        'pending_subtitle' => 'Approva o rifiuta richieste Featured EGI',
+        'calendar_title' => 'Calendario Featured EGI',
+        'calendar_subtitle' => 'Visualizza slot programmati e disponibilità',
         'calendar_view' => 'Vista Calendario',
         'pending_requests' => 'Richieste Pendenti',
+        'view_pending' => 'Vedi Richieste',
         'approve' => 'Approva',
         'reject' => 'Rifiuta',
         'approved_successfully' => 'Richiesta approvata con successo',
         'rejected_successfully' => 'Richiesta rifiutata con successo',
+        'egi_title' => 'EGI',
+        'creator' => 'Creator',
+        'requested_period' => 'Periodo Richiesto',
+        'egili_reserved' => 'Egili Riservati',
+        'requested_at' => 'Richiesto il',
+        'no_pending' => 'Nessuna richiesta in attesa',
+        'calendar_coming_soon' => 'Vista Calendario in Arrivo',
+        'calendar_desc' => 'La vista calendario interattiva sarà disponibile nella prossima iterazione',
+        'view_pending_requests' => 'Vedi Richieste Pendenti',
+        'approve_todo' => 'Approvazione richiesta ID:',
+        'reject_todo' => 'Rifiuto richiesta ID:',
     ],
     
 ];
 
+
+    'subtitle' => 'Gestisci i prezzi delle feature della piattaforma',

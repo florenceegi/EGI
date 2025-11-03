@@ -1,9 +1,7 @@
-<x-app-layout>
-    <x-slot name="header">
+<x-layouts.superadmin pageTitle="{{ __('admin.pricing.title') }}">
+    <div class="mb-8">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-base-content leading-tight">
-                {{ __('admin.pricing.title') }}
-            </h2>
+            <h1 class="text-4xl font-bold text-base-content">💰 {{ __('admin.pricing.title') }}</h1>
             <button 
                 onclick="openCreateModal()"
                 class="btn btn-primary btn-sm gap-2"
@@ -14,10 +12,9 @@
                 {{ __('admin.pricing.create_new') }}
             </button>
         </div>
-    </x-slot>
+    </div>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="space-y-6">
             
             {{-- Filters --}}
             <div class="bg-base-100 shadow-xl rounded-lg p-6 mb-6">
@@ -212,11 +209,10 @@
                 </div>
                 
             </div>
-            
-        </div>
+
     </div>
 
-</x-app-layout>
+</x-layouts.superadmin>
 
 <script>
 function openCreateModal() {
