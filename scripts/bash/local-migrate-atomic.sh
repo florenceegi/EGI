@@ -7,8 +7,8 @@
 # Gestisce il database locale e storage per test e sviluppo
 #
 # @author Padmin D. Curtis (AI Partner OS3.0) for Fabio Cherici
-# @version 1.1.0 (Local Migrations + Seeding + Storage Cleanup)
-# @date 2025-08-16
+# @version 1.2.0 (Local Migrations + Seeding + Storage Cleanup + Path Fixes)
+# @date 2025-11-03
 # ========================================
 
 set -euo pipefail
@@ -23,12 +23,22 @@ PURPLE='\033[0;35m'
 NC='\033[0m'
 
 # Configuration variables
-ORIGINAL_ENV=".env"
-BACKUP_ENV=".env.backup.$(date +%Y%m%d_%H%M%S)"
 TRANSACTION_ACTIVE=false
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Determine PROJECT_ROOT intelligently
+if [ -f "artisan" ]; then
+    # Already in project root
+    PROJECT_ROOT="$(pwd)"
+else
+    # Calculate from script location
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+fi
+
+ORIGINAL_ENV="$PROJECT_ROOT/.env"
+BACKUP_ENV="$PROJECT_ROOT/.env.backup.$(date +%Y%m%d_%H%M%S)"
 STORAGE_PATH="$PROJECT_ROOT/storage/app/public"
-CLEANUP_LOG="/tmp/egi_cleanup_$(date +%Y%m%d_%H%M%S).log"
+CLEANUP_LOG="/tmp/egi_local_cleanup_$(date +%Y%m%d_%H%M%S).log"
 
 # ========================================
 # 🛡️ CLEANUP FUNCTION
@@ -556,7 +566,24 @@ execute_choice() {
 # ========================================
 main() {
     echo -e "${BLUE}🔍 Working directory: $PROJECT_ROOT${NC}"
-    cd "$PROJECT_ROOT"
+
+    # Ensure we're in the project root
+    if [ ! -d "$PROJECT_ROOT" ]; then
+        echo -e "${RED}❌ Project root directory not found: $PROJECT_ROOT${NC}" >&2
+        exit 1
+    fi
+
+    cd "$PROJECT_ROOT" || {
+        echo -e "${RED}❌ Failed to change to project root: $PROJECT_ROOT${NC}" >&2
+        exit 1
+    }
+
+    # Verify we're in a Laravel project
+    if [ ! -f "artisan" ]; then
+        echo -e "${RED}❌ Not in Laravel project root (artisan not found)${NC}" >&2
+        echo -e "${CYAN}💡 Current directory: $(pwd)${NC}" >&2
+        exit 1
+    fi
 
     if [ $# -eq 0 ]; then
         # Interactive mode

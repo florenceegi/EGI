@@ -103,6 +103,10 @@ return new class extends Migration
                 ->nullable()
                 ->comment('Buyer user agent string');
             
+            $table->string('return_url', 512)
+                ->nullable()
+                ->comment('URL to return user after purchase completion');
+            
             $table->text('notes')
                 ->nullable()
                 ->comment('Internal notes for merchant');
@@ -136,4 +140,8 @@ return new class extends Migration
         Schema::dropIfExists('egili_merchant_purchases');
     }
 };
+
+
+
+
 
