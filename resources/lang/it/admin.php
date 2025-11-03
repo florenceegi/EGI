@@ -109,8 +109,7 @@ return [
         'approve_todo' => 'Approvazione richiesta ID:',
         'reject_todo' => 'Rifiuto richiesta ID:',
     ],
-
-];    
+    
     // === CONSUMPTION LEDGER ===
     'consumption' => [
         'title' => 'Consumption Ledger',
@@ -140,5 +139,5 @@ return [
         'view_by_feature' => 'Visualizza per Feature',
         'view_by_user' => 'Visualizza per Utente',
     ],
-    
-];
+
+];    
