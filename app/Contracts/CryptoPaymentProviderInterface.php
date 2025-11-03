@@ -77,3 +77,7 @@ interface CryptoPaymentProviderInterface
     public function isConfigured(): bool;
 }
 
+
+
+
+
