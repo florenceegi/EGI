@@ -102,7 +102,8 @@ class EgiDualArchitectureController extends Controller
             }
 
             // 3. ✅ Validate EGI is NOT minted (egi_type must be NULL)
-            if (!is_null($egi->egi_type)) {
+            // ✅ FIX: Check token_EGI not egi_type (egi_type='ASA' anche prima mint)
+            if (!is_null($egi->token_EGI)) {
                 return $this->errorManager->handle('DUAL_ARCH_NOT_PRE_MINT', [
                     'egi_id' => $egi->id,
                     'current_type' => $egi->egi_type ?? 'NULL',
@@ -249,7 +250,8 @@ class EgiDualArchitectureController extends Controller
             }
 
             // ✅ Validate EGI is NOT minted (egi_type must be NULL)
-            if (!is_null($egi->egi_type)) {
+            // ✅ FIX: Check token_EGI not egi_type (egi_type='ASA' anche prima mint)
+            if (!is_null($egi->token_EGI)) {
                 return $this->errorManager->handle('DUAL_ARCH_NOT_PRE_MINT', [
                     'egi_id' => $egi->id,
                     'current_type' => $egi->egi_type ?? 'NULL',
@@ -354,7 +356,8 @@ class EgiDualArchitectureController extends Controller
             }
 
             // ✅ Validate EGI is NOT minted (egi_type must be NULL)
-            if (!is_null($egi->egi_type)) {
+            // ✅ FIX: Check token_EGI not egi_type (egi_type='ASA' anche prima mint)
+            if (!is_null($egi->token_EGI)) {
                 return $this->errorManager->handle('DUAL_ARCH_NOT_PRE_MINT', [
                     'egi_id' => $egi->id,
                     'current_type' => $egi->egi_type ?? 'NULL',
@@ -460,29 +463,37 @@ class EgiDualArchitectureController extends Controller
                 ]);
             }
 
-            // 3. Validation: EGI must not be minted yet (egi_type === NULL)
-            if (!is_null($egi->egi_type)) {
+            // 3. Validation: EGI must not be minted yet (token_EGI === NULL)
+            // ✅ FIX: Check token_EGI not egi_type (egi_type='ASA' anche prima mint)
+            if (!is_null($egi->token_EGI)) {
                 return $this->errorManager->handle('DUAL_ARCH_NOT_PRE_MINT', [
                     'egi_id' => $egi->id,
                     'operation' => 'generate_description',
                     'egi_type' => $egi->egi_type,
+                    'token_EGI' => $egi->token_EGI,
                     'user_id' => FegiAuth::id(),
                     'ip_address' => $request->ip(),
                     'timestamp' => now()->toIso8601String()
                 ]);
             }
 
-            // 4. Prepare request metadata for GDPR audit
+            // 4. Extract creator guidelines from request (optional)
+            $creatorGuidelines = $request->input('guidelines');
+            
+            // 5. Prepare request metadata for GDPR audit
             $requestMetadata = [
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
+                'has_guidelines' => !empty($creatorGuidelines),
+                'guidelines_length' => $creatorGuidelines ? strlen($creatorGuidelines) : 0,
             ];
 
-            // 5. Delegate to service layer (SOLID: Single Responsibility)
+            // 6. Delegate to service layer (SOLID: Single Responsibility)
             $result = $this->preMintManagementService->generateDescription(
                 $egi,
                 FegiAuth::user(),
-                $requestMetadata
+                $requestMetadata,
+                $creatorGuidelines // ✅ NEW: Pass creator guidelines to service
             );
 
             // 6. ULM: Log successful operation
@@ -553,7 +564,8 @@ class EgiDualArchitectureController extends Controller
             }
 
             // 3. Validation: EGI must not be minted yet (egi_type === NULL)
-            if (!is_null($egi->egi_type)) {
+            // ✅ FIX: Check token_EGI not egi_type (egi_type='ASA' anche prima mint)
+            if (!is_null($egi->token_EGI)) {
                 return $this->errorManager->handle('DUAL_ARCH_NOT_PRE_MINT', [
                     'egi_id' => $egi->id,
                     'operation' => 'improve_description',

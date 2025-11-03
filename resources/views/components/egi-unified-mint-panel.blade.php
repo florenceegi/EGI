@@ -269,9 +269,17 @@
                 egiId
             });
 
+            // Read current description as guidelines (from CRUD panel textarea)
+            const descriptionField = document.getElementById('description');
+            const currentGuidelines = descriptionField ? descriptionField.value.trim() : '';
+            
+            console.log('[AI Description] Current guidelines:', currentGuidelines);
+
             Swal.fire({
                 title: 'Generare descrizione con AI?',
-                html: '<p class="text-sm text-gray-600">N.A.T.A.N analizzerà la tua opera e creerà una descrizione professionale</p>',
+                html: currentGuidelines 
+                    ? '<p class="text-sm text-gray-600">N.A.T.A.N analizzerà la tua opera e creerà una descrizione seguendo le tue linee guida</p><div class="mt-3 rounded bg-purple-50 p-3 text-left text-xs"><strong>Le tue linee guida:</strong><br><em class="text-gray-600">' + currentGuidelines.substring(0, 150) + (currentGuidelines.length > 150 ? '...' : '') + '</em></div>'
+                    : '<p class="text-sm text-gray-600">N.A.T.A.N analizzerà la tua opera e creerà una descrizione professionale</p>',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#9333ea',
@@ -282,7 +290,9 @@
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'N.A.T.A.N al lavoro...',
-                        html: 'Sto analizzando la tua opera...',
+                        html: currentGuidelines 
+                            ? 'Sto analizzando la tua opera seguendo le tue linee guida...'
+                            : 'Sto analizzando la tua opera...',
                         allowOutsideClick: false,
                         showConfirmButton: false,
                         willOpen: () => {
@@ -298,7 +308,9 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                             },
-                            body: JSON.stringify({})
+                            body: JSON.stringify({
+                                guidelines: currentGuidelines || null
+                            })
                         })
                         .then(response => response.json())
                         .then(data => {

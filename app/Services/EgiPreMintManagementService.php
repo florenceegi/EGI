@@ -444,13 +444,15 @@ class EgiPreMintManagementService {
      * @throws \Exception When AI generation fails
      * @privacy-safe Logs AI content generation with GDPR audit trail
      */
-    public function generateDescription(Egi $egi, User $user, array $requestMetadata): array {
+    public function generateDescription(Egi $egi, User $user, array $requestMetadata, ?string $creatorGuidelines = null): array {
         try {
             // 1. ULM: Log service operation start
             $this->logger->info('[PRE_MINT_SERVICE] Generating AI description', [
                 'egi_id' => $egi->id,
                 'user_id' => $user->id,
                 'has_existing_description' => !empty($egi->description),
+                'has_creator_guidelines' => !empty($creatorGuidelines),
+                'guidelines_length' => $creatorGuidelines ? strlen($creatorGuidelines) : 0,
                 'log_category' => 'PRE_MINT_GENERATE_DESCRIPTION_START'
             ]);
 
@@ -482,7 +484,7 @@ class EgiPreMintManagementService {
                 'creation_date' => $egi->creation_date?->format('Y-m-d'),
             ];
 
-            // 5. Call N.A.T.A.N AI Vision to analyze image and generate description
+            // 5. Build AI prompt with optional creator guidelines
             $aiPrompt = "Analizza questa opera d'arte e genera una descrizione professionale, coinvolgente e ottimizzata per il marketplace FlorenceEGI. "
                 . "Basandoti sull'analisi visiva dell'immagine, crea una descrizione che: "
                 . "(1) Descriva accuratamente ciò che vedi nell'opera, "
@@ -491,9 +493,26 @@ class EgiPreMintManagementService {
                 . "(4) Sia accattivante per potenziali acquirenti/collezionisti, "
                 . "(5) Evidenzi il valore e l'unicità dell'opera, "
                 . "(6) Sia lunga 2-3 paragrafi (150-250 parole), "
-                . "(7) Usi linguaggio italiano professionale ma accessibile. "
-                . "Fornisci SOLO il testo della descrizione, senza titoli o prefissi.";
+                . "(7) Usi linguaggio italiano professionale ma accessibile. ";
+            
+            // ✅ NEW: Include creator guidelines if provided
+            if (!empty($creatorGuidelines)) {
+                $aiPrompt .= "\n\n**LINEE GUIDA DEL CREATOR (DA SEGUIRE RIGOROSAMENTE):**\n"
+                    . $creatorGuidelines . "\n\n"
+                    . "IMPORTANTE: La tua descrizione DEVE rispettare le linee guida del creator sopra, "
+                    . "integrandole con la tua analisi visiva dell'immagine. "
+                    . "Combina le indicazioni del creator con le tue osservazioni artistiche per creare una descrizione completa e coerente.";
+                
+                $this->logger->info('[PRE_MINT_SERVICE] Creator guidelines included in prompt', [
+                    'egi_id' => $egi->id,
+                    'guidelines_preview' => substr($creatorGuidelines, 0, 100),
+                    'log_category' => 'PRE_MINT_DESCRIPTION_WITH_GUIDELINES'
+                ]);
+            }
+            
+            $aiPrompt .= "\n\nFornisci SOLO il testo della descrizione finale, senza titoli, prefissi o note.";
 
+            // 6. Call N.A.T.A.N AI Vision to analyze image and generate description
             $generatedDescription = $this->anthropicService->analyzeImage($imageUrl, $aiPrompt, $egiContext);
 
             // 5. Log description before save
