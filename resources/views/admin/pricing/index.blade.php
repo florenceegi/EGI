@@ -125,10 +125,10 @@
                                         <code class="badge badge-ghost font-mono text-xs">{{ $feature->feature_code }}</code>
                                     </td>
                                     <td>
-                                        <div class="font-medium">{{ __($feature->name_key) }}</div>
-                                        @if($feature->description_key)
+                                        <div class="font-medium">{{ $feature->feature_name }}</div>
+                                        @if($feature->feature_description)
                                             <div class="text-xs text-base-content/60 mt-1">
-                                                {{ Str::limit(__($feature->description_key), 50) }}
+                                                {{ Str::limit($feature->feature_description, 50) }}
                                             </div>
                                         @endif
                                     </td>

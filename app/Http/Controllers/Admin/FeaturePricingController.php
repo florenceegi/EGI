@@ -81,8 +81,8 @@ class FeaturePricingController extends Controller
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('feature_code', 'like', "%{$search}%")
-                  ->orWhere('name_key', 'like', "%{$search}%")
-                  ->orWhere('description_key', 'like', "%{$search}%");
+                  ->orWhere('feature_name', 'like', "%{$search}%")
+                  ->orWhere('feature_description', 'like', "%{$search}%");
             });
         }
         
@@ -116,8 +116,8 @@ class FeaturePricingController extends Controller
         try {
             $validated = $request->validate([
                 'feature_code' => 'required|string|max:100|unique:ai_feature_pricing,feature_code',
-                'name_key' => 'required|string|max:255',
-                'description_key' => 'nullable|string|max:500',
+                'feature_name' => 'required|string|max:255',
+                'feature_description' => 'nullable|string|max:500',
                 'feature_category' => 'required|string|max:100',
                 'feature_type' => 'required|in:lifetime,consumable,temporal',
                 'cost_egili' => 'required|integer|min:0',
@@ -186,8 +186,8 @@ class FeaturePricingController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name_key' => 'sometimes|string|max:255',
-                'description_key' => 'nullable|string|max:500',
+                'feature_name' => 'sometimes|string|max:255',
+                'feature_description' => 'nullable|string|max:500',
                 'feature_category' => 'sometimes|string|max:100',
                 'feature_type' => 'sometimes|in:lifetime,consumable,temporal',
                 'cost_egili' => 'sometimes|integer|min:0',
