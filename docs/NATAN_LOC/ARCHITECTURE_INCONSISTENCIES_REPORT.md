@@ -478,3 +478,7 @@ LINGUE:    IT (principale) + EN (secondario)
 Tutti gli altri documenti parlano di NATAN_PA (demo esistente), NON di NATAN_LOC (nuovo sistema).
 
 
+
+
+
+
