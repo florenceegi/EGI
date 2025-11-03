@@ -227,7 +227,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                     compact('egi'))
 
                                 {{-- EGI Living Features - HYBRID APPROACH with @can() --}}
-                                @include('egis.partials.sidebar.living-features-hybrid', compact('egi', 'isCreator'))
+                                @include(
+                                    'egis.partials.sidebar.living-features-hybrid',
+                                    compact('egi', 'isCreator'))
 
                                 {{-- CoA (Certificate of Authenticity) Section - Badge compatto se assente --}}
                                 @include('egis.partials.sidebar.coa-section', compact('egi', 'isCreator'))
@@ -1413,7 +1415,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
         'image_url' => $egi->image_url,
         'collection_name' => $collection->collection_name,
         'collection_type' => $collection->type,
-        'existing_traits' => $egi->traits->mapWithKeys(fn($t) => [$t->category => $t->display_value])->toArray(),
+        'existing_traits' => $egi->traits
+            ->mapWithKeys(fn($t) => [$t->category?->name ?? $t->category_id => $t->display_value])
+            ->toArray(),
         'traits_count' => $egi->traits->count(),
         'has_reservations' => $egi->reservations()->count() > 0,
         'is_minted' => !is_null($egi->token_EGI),

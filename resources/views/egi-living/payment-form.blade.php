@@ -237,3 +237,7 @@ document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
 @endpush
 @endsection
 
+
+
+
+
