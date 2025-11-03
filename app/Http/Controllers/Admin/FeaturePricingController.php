@@ -65,7 +65,7 @@ class FeaturePricingController extends Controller
             ->orderBy('created_at', 'desc');
         
         if ($category) {
-            $query->where('category', $category);
+            $query->where('feature_category', $category);
         }
         
         if ($featureType) {
@@ -91,7 +91,7 @@ class FeaturePricingController extends Controller
         // Get categories for filter
         $categories = DB::table('ai_feature_pricing')
             ->distinct()
-            ->pluck('category')
+            ->pluck('feature_category')
             ->filter()
             ->sort();
         
@@ -118,7 +118,7 @@ class FeaturePricingController extends Controller
                 'feature_code' => 'required|string|max:100|unique:ai_feature_pricing,feature_code',
                 'name_key' => 'required|string|max:255',
                 'description_key' => 'nullable|string|max:500',
-                'category' => 'required|string|max:100',
+                'feature_category' => 'required|string|max:100',
                 'feature_type' => 'required|in:lifetime,consumable,temporal',
                 'cost_egili' => 'required|integer|min:0',
                 'cost_per_use' => 'nullable|integer|min:0',
@@ -188,7 +188,7 @@ class FeaturePricingController extends Controller
             $validated = $request->validate([
                 'name_key' => 'sometimes|string|max:255',
                 'description_key' => 'nullable|string|max:500',
-                'category' => 'sometimes|string|max:100',
+                'feature_category' => 'sometimes|string|max:100',
                 'feature_type' => 'sometimes|in:lifetime,consumable,temporal',
                 'cost_egili' => 'sometimes|integer|min:0',
                 'cost_per_use' => 'nullable|integer|min:0',
