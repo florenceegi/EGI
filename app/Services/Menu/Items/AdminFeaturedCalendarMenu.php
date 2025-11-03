@@ -20,7 +20,7 @@ class AdminFeaturedCalendarMenu extends MenuItem
             translationKey: 'menu.admin_featured',
             route: 'admin.featured.pending',
             icon: 'superadmin-dashboard',
-            permission: 'role:admin|superadmin'
+            permission: null
         );
     }
 }

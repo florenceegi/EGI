@@ -11,6 +11,7 @@ use App\Http\Controllers\Superadmin\SuperadminNatanConfigController;
 use App\Http\Controllers\Superadmin\PadminController;
 use App\Http\Controllers\Superadmin\SuperadminFeaturePricingController;
 use App\Http\Controllers\Superadmin\SuperadminRolesController;
+use App\Http\Controllers\Superadmin\MigrationOrchestratorController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -126,4 +127,17 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
 
     // Feature Pricing Management (CRUD completo)
     Route::resource('pricing', SuperadminFeaturePricingController::class)->except(['show']);
+
+    // Migration Orchestrator - Gestione centralizzata migration database condiviso
+    Route::prefix('migration-orchestrator')->name('migration-orchestrator.')->group(function () {
+        Route::get('/', [MigrationOrchestratorController::class, 'index'])->name('index');
+        Route::get('/status/{project}', [MigrationOrchestratorController::class, 'status'])->name('status');
+        Route::post('/execute', [MigrationOrchestratorController::class, 'execute'])->name('execute');
+        Route::get('/backups', [MigrationOrchestratorController::class, 'backups'])->name('backups');
+        Route::post('/backups/create', [MigrationOrchestratorController::class, 'createBackup'])->name('backups.create');
+        Route::post('/backups/restore', [MigrationOrchestratorController::class, 'restoreBackup'])->name('backups.restore');
+        Route::delete('/backups/delete', [MigrationOrchestratorController::class, 'deleteBackup'])->name('backups.delete');
+        Route::get('/backup-config', [MigrationOrchestratorController::class, 'getBackupConfig'])->name('backup-config.get');
+        Route::post('/backup-config', [MigrationOrchestratorController::class, 'updateBackupConfig'])->name('backup-config.update');
+    });
 });

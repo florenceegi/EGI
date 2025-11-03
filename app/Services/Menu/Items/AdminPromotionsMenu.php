@@ -20,7 +20,7 @@ class AdminPromotionsMenu extends MenuItem
             translationKey: 'menu.admin_promotions',
             route: 'admin.promotions.index',
             icon: 'superadmin-egili-token',
-            permission: 'role:admin|superadmin'
+            permission: null
         );
     }
 }

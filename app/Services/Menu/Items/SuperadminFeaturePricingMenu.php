@@ -19,7 +19,7 @@ class SuperadminFeaturePricingMenu extends MenuItem
             translationKey: 'menu.superadmin_feature_pricing',
             route: 'admin.pricing.index', // Fixed: admin.* instead of superadmin.*
             icon: 'superadmin-egili-token',
-            permission: 'role:admin|superadmin' // Admin + SuperAdmin access
+            permission: null // Admin + SuperAdmin access
         );
     }
 }
