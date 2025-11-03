@@ -693,6 +693,18 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
                 Route::post('/{id}/reject', [\App\Http\Controllers\Admin\FeaturedCalendarController::class, 'reject'])
                     ->name('reject');
             });
+            
+            // Consumption Ledger Dashboard (Granular Tracking)
+            Route::prefix('consumption')->name('consumption.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Admin\ConsumptionLedgerController::class, 'summary'])
+                    ->name('summary');
+                Route::get('/by-feature/{featureCode?}', [\App\Http\Controllers\Admin\ConsumptionLedgerController::class, 'byFeature'])
+                    ->name('by-feature');
+                Route::get('/by-user/{userId?}', [\App\Http\Controllers\Admin\ConsumptionLedgerController::class, 'byUser'])
+                    ->name('by-user');
+                Route::get('/entry/{id}', [\App\Http\Controllers\Admin\ConsumptionLedgerController::class, 'details'])
+                    ->name('entry-detail');
+            });
         });
 
         /*

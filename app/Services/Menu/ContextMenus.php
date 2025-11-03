@@ -58,10 +58,10 @@ use App\Services\Menu\Items\SuperadminPadminViolationsMenu;
 use App\Services\Menu\Items\SuperadminPadminSymbolsMenu;
 use App\Services\Menu\Items\SuperadminPadminSearchMenu;
 use App\Services\Menu\Items\SuperadminPadminStatisticsMenu;
-use App\Services\Menu\Items\SuperadminMigrationOrchestratorMenu;
 // Admin Menu Items (Egili System - Tasks 4.2, 4.4)
 use App\Services\Menu\Items\AdminPromotionsMenu;
 use App\Services\Menu\Items\AdminFeaturedCalendarMenu;
+use App\Services\Menu\Items\AdminConsumptionLedgerMenu;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -305,6 +305,7 @@ class ContextMenus {
             case 'admin.promotions':
             case 'admin.egili':
             case 'admin.featured':
+            case 'admin.consumption':
                 // SuperAdmin Context - AI & Platform Management
                 Log::channel('upload')->info('🔍 CONTEXT MENUS - SUPERADMIN CONTEXT', [
                     'context' => $context,
@@ -338,7 +339,7 @@ class ContextMenus {
                     new SuperadminFeaturePricingMenu(),
                     new AdminPromotionsMenu(),
                     new AdminFeaturedCalendarMenu(),
-                    new SuperadminMigrationOrchestratorMenu(),
+                    new AdminConsumptionLedgerMenu(),
                 ]);
                 $menus[] = $platformMenu;
 

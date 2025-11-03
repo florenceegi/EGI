@@ -110,4 +110,35 @@ return [
         'reject_todo' => 'Rifiuto richiesta ID:',
     ],
 
+];    
+    // === CONSUMPTION LEDGER ===
+    'consumption' => [
+        'title' => 'Consumption Ledger',
+        'subtitle' => 'Tracking granulare consumi feature (token-based, unit-based)',
+        'billing_status' => 'Stato Fatturazione',
+        'pending' => 'In Attesa',
+        'batched' => 'Raggruppato',
+        'charged' => 'Addebitato',
+        'total_entries' => 'Entry Totali',
+        'consumption_records' => 'Record di consumo',
+        'total_cost' => 'Costo Totale',
+        'pending_debt' => 'Debt Pendente',
+        'not_charged_yet' => 'Non ancora addebitato',
+        'charged_cost' => 'Già Addebitato',
+        'unique_users' => 'Utenti Unici',
+        'unique_features' => 'Feature Uniche',
+        'top_features' => 'Top Feature per Costo',
+        'top_users' => 'Top Utenti per Costo',
+        'daily_trend' => 'Trend Giornaliero (30gg)',
+        'feature' => 'Feature',
+        'uses' => 'Usi',
+        'user' => 'Utente',
+        'cost' => 'Costo',
+        'drill_down' => 'Dettagli',
+        'no_data' => 'Nessun dato',
+        'no_trend_data' => 'Nessun dato trend',
+        'view_by_feature' => 'Visualizza per Feature',
+        'view_by_user' => 'Visualizza per Utente',
+    ],
+    
 ];
