@@ -564,9 +564,12 @@ class WalletConnectController extends Controller {
      */
     public function status(Request $request): JsonResponse {
         if (auth()->check()) {
+            // Use getAttributes to bypass the wallet accessor
+            $walletAddress = auth()->user()->getAttributes()['wallet'] ?? null;
+            
             return response()->json([
                 'success' => true,
-                'connected_wallet' => auth()->user()->wallet,
+                'connected_wallet' => $walletAddress,
                 'is_authenticated' => true,
                 'is_weak_auth' => false
             ]);

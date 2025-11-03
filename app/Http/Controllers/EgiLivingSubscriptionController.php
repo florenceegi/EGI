@@ -241,3 +241,7 @@ class EgiLivingSubscriptionController extends Controller
     }
 }
 
+
+
+
+

@@ -42,8 +42,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @date 2025-06-04
  * @solution Permission-based ecosystem setup + domain separation + Algorand integration
  */
-class RegisteredUserController extends Controller
-{
+class RegisteredUserController extends Controller {
     /**
      * Constructor with complete dependency injection
      */
@@ -58,15 +57,15 @@ class RegisteredUserController extends Controller
         protected LegalContentService $legalContentService,
         protected AuthRedirectService $authRedirectService,
         protected WalletProvisioningService $walletProvisioningService
-    ) {}
+    ) {
+    }
 
     /**
      * Display registration view with GDPR context
      *
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function create()
-    {
+    public function create() {
         try {
             $consentTypes = $this->consentService->getConsentTypes();
             $privacyPolicyVersion = config('gdpr.current_policy_version', '1.0.0');
@@ -101,8 +100,7 @@ class RegisteredUserController extends Controller
      * @param RegistrationRequest $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function store(RegistrationRequest $request): \Illuminate\Http\RedirectResponse|\Illuminate\View\View
-    {
+    public function store(RegistrationRequest $request): \Illuminate\Http\RedirectResponse|\Illuminate\View\View {
         $userId = null;
         $collectionId = null;
 
@@ -127,7 +125,8 @@ class RegisteredUserController extends Controller
                 $user = $this->createUserWithAlgorandWallet($validated);
                 $userId = $user->id;
                 $logContext['user_id'] = $userId;
-                $logContext['algorand_wallet'] = $user->wallet;
+                // Use getAttributes to bypass the wallet accessor
+                $logContext['algorand_wallet'] = $user->getAttributes()['wallet'] ?? null;
 
                 $this->logger->info('[Registration] User created with Algorand wallet', $logContext);
 
@@ -210,8 +209,7 @@ class RegisteredUserController extends Controller
      * Validate registration form with GDPR consents
      * @oracode-pillar: Interrogabilità Totale
      */
-    protected function validateRegistration(Request $request): array
-    {
+    protected function validateRegistration(Request $request): array {
         // 🎯 Dynamic user types from config with fallback
         $allowedUserTypes = config('app.fegi_user_type', []);
 
@@ -255,8 +253,7 @@ class RegisteredUserController extends Controller
      * @oracode-pillar: Esplicitamente Intenzionale
      * @version 2.0.0 - REAL BLOCKCHAIN WALLET with KMS encryption
      */
-    protected function createUserWithAlgorandWallet(array $validated): User
-    {
+    protected function createUserWithAlgorandWallet(array $validated): User {
         try {
             // 1. Create user without wallet first
             $user = User::create([
@@ -292,14 +289,15 @@ class RegisteredUserController extends Controller
 
             $algorandWallet = $this->walletProvisioningService->provisionUserWallet($user, $walletData);
 
-            // 3. Update user with real Algorand address
+            // 3. Update user with real Algorand address (use getAttributes to bypass accessor)
             $user->update([
-                'wallet' => $algorandWallet->wallet
+                'wallet' => $algorandWallet->getAttributes()['wallet']
             ]);
 
             $this->logger->info('[Registration] REAL Algorand wallet provisioned', [
                 'user_id' => $user->id,
-                'address' => $algorandWallet->wallet,
+                // Use getAttributes to bypass the wallet accessor
+                'address' => $algorandWallet->getAttributes()['wallet'],
                 'has_iban' => !empty($walletData['iban']),
                 'wallet_id' => $algorandWallet->id
             ]);
@@ -321,8 +319,7 @@ class RegisteredUserController extends Controller
      * Generate valid Algorand address format (58 chars, Base32 [A-Z2-7])
      * @oracode-pillar: Semplicità Potenziante
      */
-    private function generateValidAlgorandAddress(): string
-    {
+    private function generateValidAlgorandAddress(): string {
         try {
             $maxAttempts = 10; // Limite per evitare loop infiniti
             $attempt = 0;
@@ -383,8 +380,7 @@ class RegisteredUserController extends Controller
      * Build consent summary for user record
      * @oracode-pillar: Coerenza Semantica
      */
-    private function buildConsentSummary(array $validated): string
-    {
+    private function buildConsentSummary(array $validated): string {
         return json_encode([
             'privacy_policy' => $validated['privacy_policy_accepted'] ?? false,
             'terms' => $validated['terms_accepted'] ?? false,
@@ -400,8 +396,7 @@ class RegisteredUserController extends Controller
      * Assign role and check ecosystem creation permissions
      * @oracode-pillar: Coerenza Semantica
      */
-    protected function assignRoleAndCheckPermissions(User $user, string $userType): bool
-    {
+    protected function assignRoleAndCheckPermissions(User $user, string $userType): bool {
         try {
             // Map user type to Spatie role
             $roleMapping = config('app.role_mapping');
@@ -438,8 +433,7 @@ class RegisteredUserController extends Controller
      * Create complete ecosystem: collection + wallets + relationships
      * @oracode-pillar: Circolarità Virtuosa
      */
-    protected function createFullEcosystem(User $user, array $validated, array $logContext): \App\Models\Collection
-    {
+    protected function createFullEcosystem(User $user, array $validated, array $logContext): \App\Models\Collection {
         try {
             // 1. Create Collection using existing CollectionService
             $collectionName = $this->getCollectionNameForUserType($validated['user_type'], $validated['name']);
@@ -519,8 +513,7 @@ class RegisteredUserController extends Controller
      * Generate collection name based on user type and name
      * @oracode-pillar: Semplicità Potenziante
      */
-    private function getCollectionNameForUserType(string $userType, string $userName): string
-    {
+    private function getCollectionNameForUserType(string $userType, string $userName): string {
         $firstName = explode(' ', trim($userName), 2)[0];
 
         $typeNames = [
@@ -537,8 +530,7 @@ class RegisteredUserController extends Controller
      * Determine the correct collection role based on user type
      * @oracode-pillar: Coerenza Semantica
      */
-    private function determineCollectionRole(string $userType): string
-    {
+    private function determineCollectionRole(string $userType): string {
         // Map user types to their collection roles
         $collectionRoleMapping = [
             'commissioner' => 'commissioner',
@@ -558,8 +550,7 @@ class RegisteredUserController extends Controller
      * Initialize all user domain tables
      * @oracode-pillar: Evoluzione Ricorsiva
      */
-    protected function initializeUserDomains(User $user, array $validated, array $logContext): void
-    {
+    protected function initializeUserDomains(User $user, array $validated, array $logContext): void {
         try {
             // User Profile (always)
             UserProfile::create(['user_id' => $user->id]);
@@ -632,8 +623,7 @@ class RegisteredUserController extends Controller
      * making it robust and automatically adaptable to future changes.
      * @oracode-pillar: Dignità Preservata, Coerenza Semantica
      */
-    protected function processGdprConsents(User $user, array $validated, array $logContext): void
-    {
+    protected function processGdprConsents(User $user, array $validated, array $logContext): void {
         try {
             // 1. Otteniamo la versione corrente dei ToS, necessaria per la registrazione specifica.
             $currentTermsVersion = $this->legalContentService->getCurrentVersionString();
@@ -702,8 +692,7 @@ class RegisteredUserController extends Controller
      * Create comprehensive audit record for registration
      * @oracode-pillar: Trasparenza Operativa
      */
-    protected function createRegistrationAuditRecord(User $user, ?\App\Models\Collection $collection, array $validated, array $logContext): void
-    {
+    protected function createRegistrationAuditRecord(User $user, ?\App\Models\Collection $collection, array $validated, array $logContext): void {
         try {
             $this->auditService->logUserAction(
                 $user,
@@ -714,7 +703,8 @@ class RegisteredUserController extends Controller
                     'ecosystem_created' => !is_null($collection),
                     'collection_id' => $collection?->id,
                     'collection_name' => $collection?->collection_name,
-                    'algorand_wallet' => $user->wallet,
+                    // Use getAttributes to bypass the wallet accessor
+                    'algorand_wallet' => $user->getAttributes()['wallet'] ?? null,
                     'ip_address' => request()->ip(),
                     'user_agent' => request()->userAgent(),
                     'privacy_consents' => [
@@ -740,8 +730,7 @@ class RegisteredUserController extends Controller
     /**
      * Determine which step of ecosystem setup failed
      */
-    private function determineEcosystemFailureStep(\Exception $e): string
-    {
+    private function determineEcosystemFailureStep(\Exception $e): string {
         $message = $e->getMessage();
 
         if (str_contains($message, 'Collection')) return 'collection_creation';
@@ -755,8 +744,7 @@ class RegisteredUserController extends Controller
     /**
      * Determine appropriate UEM error code based on exception message
      */
-    private function determineErrorCode(string $errorMessage): string
-    {
+    private function determineErrorCode(string $errorMessage): string {
         // Check for specific error patterns to map to appropriate UEM codes
         if (str_contains($errorMessage, 'Algorand')) {
             return 'ALGORAND_WALLET_GENERATION_FAILED';
@@ -786,8 +774,7 @@ class RegisteredUserController extends Controller
      * Get active consent version ID (NON-HARDCODED!)
      * Fallback chain: DB lookup -> config -> exception
      */
-    private function getActiveConsentVersionId(): int
-    {
+    private function getActiveConsentVersionId(): int {
         try {
             // Primary: Get from database (active version)
             $activeVersion = \App\Models\ConsentVersion::where('is_active', true)

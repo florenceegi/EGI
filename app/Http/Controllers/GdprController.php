@@ -1125,21 +1125,24 @@ class GdprController extends Controller {
      * @return array|null
      */
     private function getOnChainData(\App\Models\User $user): ?array {
-        if (empty($user->wallet)) {
+        // Use getAttributes to bypass the wallet accessor
+        $walletAddress = $user->getAttributes()['wallet'] ?? null;
+        
+        if (empty($walletAddress)) {
             return null;
         }
 
         try {
             // If you have wallet integration, fetch on-chain data here
             return [
-                'wallet_address' => $user->wallet,
+                'wallet_address' => $walletAddress,
                 'wallet_balance' => $user->wallet_balance,
                 // Add more on-chain data as needed
             ];
         } catch (\Exception $e) {
             $this->logger->warning('[GDPR] Failed to fetch on-chain data', [
                 'user_id' => $user->id,
-                'wallet' => $user->wallet,
+                'wallet' => $walletAddress,
                 'error' => $e->getMessage()
             ]);
 

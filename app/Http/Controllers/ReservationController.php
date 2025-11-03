@@ -65,7 +65,8 @@ class ReservationController extends Controller
                 'name' => $formattedDisplay['name'],
                 'avatar' => $formattedDisplay['avatar'], // Ora gestito correttamente dalla helper
                 'is_commissioner' => $formattedDisplay['is_commissioner'],
-                'wallet' => $user->wallet ?? null
+                // Use getAttributes to bypass the wallet accessor
+                'wallet' => $user->getAttributes()['wallet'] ?? null
             ];
         } else {
             // Fallback for anonymous reservations
