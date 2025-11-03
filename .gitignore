@@ -66,3 +66,15 @@ storage/framework/cache/data/*
 storage/framework/sessions/*
 storage/framework/views/*
 *:Zone.Identifier
+
+# Productivity reports (generated)
+productivity_*.xlsx
+productivity_unified_*.xlsx
+
+# Python cache
+scripts/__pycache__/
+__pycache__/
+*.pyc
+
+# Testing PDFs (binary, should be external)
+storage/testing/**/*.pdf
