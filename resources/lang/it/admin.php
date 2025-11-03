@@ -138,6 +138,14 @@ return [
         'no_trend_data' => 'Nessun dato trend',
         'view_by_feature' => 'Visualizza per Feature',
         'view_by_user' => 'Visualizza per Utente',
+        'select_feature_drill' => 'Seleziona una feature per vedere i dettagli di consumo',
+        'select_user_drill' => 'Seleziona un utente per vedere i dettagli di consumo',
+        'all_features' => 'Tutte le Feature',
+        'all_users' => 'Tutti gli Utenti',
+        'avg_cost' => 'Costo Medio',
+        'features_used' => 'Feature Usate',
+        'last_consumption' => 'Ultimo Consumo',
+        'view_details' => 'Vedi Dettagli',
     ],
 
 ];    
