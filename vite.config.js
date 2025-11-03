@@ -13,7 +13,10 @@ export default defineConfig(({ mode }) => {
     const isDocker =
         process.env.DOCKER_ENV === "true" || env.DOCKER_ENV === "true";
     const viteHost = isDocker ? "0.0.0.0" : "localhost";
-    const vitePort = parseInt(env.VITE_PORT || "5173");
+    
+    // ✅ FIX PERMANENT: EGI usa porta 5174 (NATAN_LOC usa 5173)
+    // NEVER use 5173 to avoid conflict and infinite HMR loop
+    const vitePort = 5174; // HARDCODED - non usare env.VITE_PORT
 
     return {
         plugins: [
