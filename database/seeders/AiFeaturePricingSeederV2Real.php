@@ -234,19 +234,64 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 'expected_roi_multiplier' => 1.50,
             ],
             
+            // ============================================
+            // 6. AI CHAT ASSISTANT (CONSUMABLE - Token-Based)
+            // ============================================
+            [
+                'feature_code' => 'ai_chat_assistant',
+                'feature_name' => 'Assistente AI - Art Advisor',
+                'feature_description' => 'Chat illimitata con Art Advisor AI esperto in arte, NFT e strategie marketplace (costo basato su token Claude consumati)',
+                'feature_category' => 'ai_services',
+                
+                // PRICING (token-based - fractional)
+                'cost_fiat_eur' => null, // Solo Egili
+                'cost_egili' => null, // Costo dinamico basato su token usage
+                'is_free' => false,
+                
+                // FEATURE TYPE: CONSUMABLE (token-based)
+                'feature_type' => 'consumable',
+                'cost_per_use' => null, // Variable (calculated per token)
+                'lifetime_cost' => null,
+                'requires_admin_approval' => false,
+                'max_concurrent_slots' => null,
+                
+                // TOKEN-BASED PRICING (stored in metadata)
+                'feature_parameters' => [
+                    'charging_model' => 'token_based',
+                    'egili_per_million_tokens' => 1, // 1 Egili = 1M tokens
+                    'batch_threshold_egili' => 10, // Charge when pending >= 10 Egili
+                    'cost_per_token' => 0.000001, // 1 Egili / 1M tokens
+                ],
+                
+                // METADATA
+                'is_active' => true,
+                'display_order' => 60,
+                'is_featured' => true,
+                'icon_name' => 'superadmin-ai-brain',
+                'badge_color' => '#8E44AD', // Viola Innovazione
+                'benefits' => [
+                    'Chat illimitata con Art Advisor AI',
+                    'Analisi opere, strategie marketing, pricing',
+                    'Costo trasparente basato su token',
+                    'Batch charging (paghi solo quando accumuli 10 Egili)',
+                ],
+                'admin_notes' => 'Token-based pricing: accumula debt frazionale, addebita batch quando >= 10 Egili. Remainder sempre preservato.',
+            ],
+            
         ];
 
         foreach ($features as $feature) {
             AiFeaturePricing::create($feature);
         }
 
-        $this->command->info('✅ AI Feature Pricing seeded successfully (5 REAL features only)');
+        $this->command->info('✅ AI Feature Pricing seeded successfully (6 REAL features)');
         $this->command->info('📊 Features created:');
         $this->command->info('  1. egi_living_subscription (lifetime)');
-        $this->command->info('  2. ai_trait_generation (consumable)');
-        $this->command->info('  3. ai_collection_strategy (consumable)');
+        $this->command->info('  2. ai_trait_generation (consumable - per use)');
+        $this->command->info('  3. ai_collection_strategy (consumable - per use)');
         $this->command->info('  4. featured_egi_7d (temporal + approval)');
         $this->command->info('  5. hyper_mode_7d (temporal + approval)');
+        $this->command->info('  6. ai_chat_assistant (consumable - token-based)  ⭐ NEW');
     }
 }
 

@@ -104,3 +104,12 @@ Schedule::call(function () {
     ->withoutOverlapping()
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/egili-expiration.log'));
+
+### 📌 9️⃣ JOB AUTOMATICO: BATCH CHARGE CONSUMPTION DEBT ###
+// Batch charge pending feature consumption debt (daily at 02:00)
+Schedule::command('egili:batch-charge-consumption')
+    ->name('egili-batch-charge-consumption')
+    ->dailyAt('02:00')
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/consumption-batch-charge.log'));
