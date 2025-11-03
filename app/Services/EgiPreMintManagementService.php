@@ -484,33 +484,39 @@ class EgiPreMintManagementService {
                 'creation_date' => $egi->creation_date?->format('Y-m-d'),
             ];
 
-            // 5. Build AI prompt with optional creator guidelines
-            $aiPrompt = "Analizza questa opera d'arte e genera una descrizione professionale, coinvolgente e ottimizzata per il marketplace FlorenceEGI. "
-                . "Basandoti sull'analisi visiva dell'immagine, crea una descrizione che: "
-                . "(1) Descriva accuratamente ciò che vedi nell'opera, "
-                . "(2) Evidenzi lo stile artistico, la tecnica e la composizione, "
-                . "(3) Catturi l'atmosfera emotiva e il messaggio dell'opera, "
-                . "(4) Sia accattivante per potenziali acquirenti/collezionisti, "
-                . "(5) Evidenzi il valore e l'unicità dell'opera, "
-                . "(6) Sia lunga 2-3 paragrafi (150-250 parole), "
-                . "(7) Usi linguaggio italiano professionale ma accessibile. ";
-            
-            // ✅ NEW: Include creator guidelines if provided
+            // 5. Build AI prompt with curator expertise and FlorenceEGI context
+            $aiPrompt = <<<PROMPT
+Agisci come **curatore d'arte contemporanea specializzato nel mercato digitale e collezionismo NFT**.
+
+Analizza l'immagine fornita e genera una descrizione professionale, immersiva e calibrata per il marketplace **FlorenceEGI**, 
+dove ogni opera è un **EGI – Eco Goods Invent**, unisce estetica, valore collezionistico e impatto ambientale reale.
+
+Crea una descrizione che:
+
+1. Descriva accuratamente ciò che osservi (soggetto, composizione, luce, materiali, atmosfera);
+2. Identifichi stile, tecnica e tratti distintivi dell'artista in relazione alle tendenze del mercato dell'arte;
+3. Esprima l'emozione, la narrazione o il messaggio che l'opera trasmette;
+4. Comunichi il **valore estetico e simbolico** dell'opera ai potenziali collezionisti;
+5. Metta in risalto la **connessione tra arte e rigenerazione**, in linea con la filosofia FlorenceEGI;
+6. Utilizzi un linguaggio italiano professionale, fluido e accessibile;
+7. Sia lunga 2–3 paragrafi (150–250 parole);
+8. Mantenga un tono da catalogo curatoriale, adatto alla pubblicazione su un marketplace d'arte internazionale.
+
+Fornisci SOLO il testo della descrizione finale, senza titoli, prefissi o note aggiuntive.
+PROMPT;
+
+            // ✅ Include creator guidelines if provided
             if (!empty($creatorGuidelines)) {
-                $aiPrompt .= "\n\n**LINEE GUIDA DEL CREATOR (DA SEGUIRE RIGOROSAMENTE):**\n"
+                $aiPrompt .= "\n\n**LINEE GUIDA DEL CREATOR (DA INTEGRARE RIGOROSAMENTE):**\n"
                     . $creatorGuidelines . "\n\n"
-                    . "IMPORTANTE: La tua descrizione DEVE rispettare le linee guida del creator sopra, "
-                    . "integrandole con la tua analisi visiva dell'immagine. "
-                    . "Combina le indicazioni del creator con le tue osservazioni artistiche per creare una descrizione completa e coerente.";
-                
+                    . "Combina le linee guida del creator con la tua analisi curatoriale, mantenendo coerenza e autenticità del tono.";
+
                 $this->logger->info('[PRE_MINT_SERVICE] Creator guidelines included in prompt', [
                     'egi_id' => $egi->id,
                     'guidelines_preview' => substr($creatorGuidelines, 0, 100),
                     'log_category' => 'PRE_MINT_DESCRIPTION_WITH_GUIDELINES'
                 ]);
             }
-            
-            $aiPrompt .= "\n\nFornisci SOLO il testo della descrizione finale, senza titoli, prefissi o note.";
 
             // 6. Call N.A.T.A.N AI Vision to analyze image and generate description
             $generatedDescription = $this->anthropicService->analyzeImage($imageUrl, $aiPrompt, $egiContext);
