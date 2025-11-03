@@ -224,6 +224,7 @@ class SystemUsersSeeder extends Seeder {
                 $existingUser->update([
                     'name' => $userData['name'],
                     'email' => $userData['email'],
+                    'password' => Hash::make('Password'), // ✅ FIX: Reset password anche su update
                     'usertype' => $userData['usertype'],
                     'wallet' => $algorandAddress,
                     'consent_summary' => $this->buildConsentSummary($userData),
