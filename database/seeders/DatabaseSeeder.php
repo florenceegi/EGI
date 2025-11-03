@@ -34,8 +34,8 @@ class DatabaseSeeder extends Seeder {
         TraitDefaultsSeeder::class,             // 7. categorie e tipi trait NFT (858 righe)
 
         // === AI FEATURES ===
-        PlatformKnowledgeSectionSeeder::class,  // 8. knowledge base AI Art Advisor (15 sezioni)
-        AiFeaturePricingSeeder::class,          // 9. pricing feature AI (tokenomics)
+        PlatformKnowledgeSectionSeeder::class,       // 8. knowledge base AI Art Advisor (15 sezioni)
+        AiFeaturePricingSeederV2Real::class,         // 9. pricing feature AI (REAL features only - 5 total)
 
         // === PA/ENTERPRISE FEATURES ===
         PaWebScraperSeeder::class,              // 10. web scrapers PA (demo Firenze)
