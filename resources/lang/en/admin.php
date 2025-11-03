@@ -1,7 +1,7 @@
 <?php
 
 return [
-    
+
     // === PRICING MANAGER ===
     'pricing' => [
         'title' => 'Feature Pricing Management',
@@ -25,14 +25,14 @@ return [
         'deactivated_successfully' => 'Feature deactivated successfully',
         'create_feature_todo' => 'Feature creation coming in next iteration',
         'edit_feature_todo' => 'Edit feature ID:',
-        
+
         'types' => [
             'lifetime' => 'Lifetime',
             'consumable' => 'Consumable',
             'temporal' => 'Temporal',
         ],
     ],
-    
+
     // === PROMOTIONS MANAGER ===
     'promotions' => [
         'title' => 'Promotions Management',
@@ -56,7 +56,7 @@ return [
         'create_todo' => 'Create promo coming soon',
         'stats_todo' => 'Promo stats ID:',
     ],
-    
+
     // === EGILI MANAGEMENT ===
     'egili' => [
         'title' => 'Egili Management',
@@ -83,7 +83,7 @@ return [
         'grant_lifetime_todo' => 'Grant Lifetime form coming soon',
         'grant_gift_todo' => 'Grant Gift form coming soon',
     ],
-    
+
     // === FEATURED CALENDAR ===
     'featured' => [
         'title' => 'Featured EGI Calendar',
@@ -109,6 +109,5 @@ return [
         'approve_todo' => 'Approve request ID:',
         'reject_todo' => 'Reject request ID:',
     ],
-    
-];
 
+];

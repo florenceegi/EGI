@@ -124,7 +124,7 @@ return [
     'superadmin_padmin_symbols' => 'Registro Simboli',
     'superadmin_padmin_search' => 'Ricerca Semantica',
     'superadmin_padmin_statistics' => 'Statistiche',
-    
+
     // Admin Menu Items
     'admin_consumption_ledger' => 'Consumption Ledger',
 ];
