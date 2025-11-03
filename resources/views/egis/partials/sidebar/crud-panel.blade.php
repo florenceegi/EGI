@@ -40,8 +40,9 @@
                 {{-- ============================================ --}}
 
                 @php
-                    // LOGICA CORRETTA: NULL = non mintato (Pre-Mint virtuale)
-                    $isNotMinted = is_null($egi->egi_type);
+                    // LOGICA CORRETTA: token_EGI NULL = non mintato su blockchain
+                    // egi_type indica solo l'architettura (ASA/SmartContract), non lo stato di mint
+                    $isNotMinted = is_null($egi->token_EGI); // ✅ FIX: check token, not type
                     $isASA = $egi->egi_type === 'ASA';
                     $isSmartContract = $egi->egi_type === 'SmartContract';
                     $isCreatorCheck = App\Helpers\FegiAuth::check() && App\Helpers\FegiAuth::id() === $egi->user_id;
