@@ -43,9 +43,16 @@ class AnthropicService {
         'claude-3-haiku-20240307',     // Fast & economical
     ];
 
-    public function __construct(UltraLogManager $logger, ErrorManagerInterface $errorManager) {
+    private ?\App\Services\FeatureConsumptionService $consumptionService = null;
+
+    public function __construct(
+        UltraLogManager $logger, 
+        ErrorManagerInterface $errorManager,
+        ?\App\Services\FeatureConsumptionService $consumptionService = null
+    ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
+        $this->consumptionService = $consumptionService;
         $this->apiKey = config('services.anthropic.api_key');
         $this->baseUrl = config('services.anthropic.base_url', 'https://api.anthropic.com');
         $this->configuredModel = config('services.anthropic.model', 'claude-3-opus-20240229');
@@ -54,6 +61,64 @@ class AnthropicService {
 
         if (empty($this->apiKey)) {
             throw new RuntimeException('Anthropic API key not configured in services.anthropic.api_key');
+        }
+    }
+
+    /**
+     * Track token usage for authenticated users
+     * 
+     * @param string $featureCode Feature code (e.g., 'ai_chat_assistant', 'ai_trait_generation')
+     * @param array $usage Usage data from Anthropic API
+     * @param array $metadata Additional metadata for audit
+     * @return void
+     */
+    private function trackTokenUsage(string $featureCode, array $usage, array $metadata = []): void
+    {
+        // Only track if:
+        // 1. FeatureConsumptionService is injected
+        // 2. User is authenticated
+        // 3. Usage data is present
+        if (!$this->consumptionService || !auth()->check() || empty($usage)) {
+            return;
+        }
+        
+        try {
+            $user = auth()->user();
+            $totalTokens = ($usage['input_tokens'] ?? 0) + ($usage['output_tokens'] ?? 0);
+            
+            if ($totalTokens <= 0) {
+                return;
+            }
+            
+            // Record consumption
+            $this->consumptionService->recordTokenConsumption(
+                $user,
+                $featureCode,
+                $totalTokens,
+                array_merge([
+                    'input_tokens' => $usage['input_tokens'] ?? 0,
+                    'output_tokens' => $usage['output_tokens'] ?? 0,
+                    'model' => $this->activeModel,
+                ], $metadata),
+                request()->ip(),
+                request()->userAgent()
+            );
+            
+            $this->logger->info('[AnthropicService] Token usage tracked', [
+                'user_id' => $user->id,
+                'feature_code' => $featureCode,
+                'total_tokens' => $totalTokens,
+                'input_tokens' => $usage['input_tokens'] ?? 0,
+                'output_tokens' => $usage['output_tokens'] ?? 0,
+                'log_category' => 'ANTHROPIC_TOKEN_TRACKING'
+            ]);
+            
+        } catch (\Exception $e) {
+            // Non-blocking: se tracking fallisce, non bloccare la feature
+            $this->logger->warning('[AnthropicService] Token tracking failed (non-blocking)', [
+                'error' => $e->getMessage(),
+                'log_category' => 'ANTHROPIC_TOKEN_TRACKING_FAILED'
+            ]);
         }
     }
 
@@ -290,6 +355,13 @@ class AnthropicService {
                 'response_length' => strlen($assistantMessage),
                 'usage' => $usage,
                 'model_used' => $modelToUse,
+            ]);
+
+            // ✅ Track token usage for billing
+            $this->trackTokenUsage('ai_chat_assistant', $usage, [
+                'persona_id' => $personaId,
+                'message_length' => strlen($userMessage),
+                'response_length' => strlen($assistantMessage),
             ]);
 
             // Return message, usage AND model_used for tracking and display
@@ -1974,10 +2046,19 @@ PROMPT;
 
             $data = $response->json();
             $description = $data['content'][0]['text'] ?? '';
+            $usage = $data['usage'] ?? [];
 
             $this->logger->info('[AnthropicService] Image analysis completed', [
                 'description_length' => strlen($description),
-                'usage' => $data['usage'] ?? null,
+                'usage' => $usage,
+            ]);
+
+            // ✅ Track token usage (feature_code depends on caller context)
+            // For now, track as generic 'ai_image_analysis' - caller can override
+            $this->trackTokenUsage('ai_image_analysis', $usage, [
+                'prompt_length' => strlen($prompt),
+                'description_length' => strlen($description),
+                'image_url' => $imageUrl,
             ]);
 
             return $description;
@@ -2244,10 +2325,19 @@ PROMPT;
             // Extract JSON from response (may contain markdown)
             $traits = $this->parseTraitAnalysisResponse($analysisText);
 
+            $usage = $data['usage'] ?? [];
+
             $this->logger->info('[AnthropicService] Trait analysis completed', [
                 'traits_extracted' => count($traits['identified_traits'] ?? []),
                 'total_confidence' => $traits['total_confidence'] ?? 0,
-                'usage' => $data['usage'] ?? null,
+                'usage' => $usage,
+            ]);
+
+            // ✅ Track token usage for AI trait generation
+            $this->trackTokenUsage('ai_trait_generation', $usage, [
+                'requested_count' => $requestedCount,
+                'traits_extracted' => count($traits['identified_traits'] ?? []),
+                'total_confidence' => $traits['total_confidence'] ?? 0,
             ]);
 
             return $traits;
