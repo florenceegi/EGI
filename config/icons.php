@@ -969,6 +969,24 @@ return [
                         <path d="M18.75 6.75h1.875c.621 0 1.125.504 1.125 1.125V18a1.5 1.5 0 01-3 0V6.75z" />
                     </svg>',
             ],
+            // MIGRATION ORCHESTRATOR ICON
+            [
+                'name' => 'database-cog',
+                'type' => 'heroicon',
+                'class' => 'w-5 h-5',
+                'host' => '',
+                'name_on_host' => '',
+                'html' => '<svg viewBox="0 0 24 24" class="%class%">
+                        <path d="M21 5.25c0 1.242-3.727 2.25-8.25 2.25S4.5 6.492 4.5 5.25s3.727-2.25 8.25-2.25S21 4.008 21 5.25z" stroke="#D4AF37" stroke-width="1.5" fill="none" />
+                        <path d="M4.5 5.25v5.25c0 1.242 3.727 2.25 8.25 2.25s8.25-1.008 8.25-2.25V5.25" stroke="#D4AF37" stroke-width="1.5" fill="none" />
+                        <path d="M4.5 10.5v5.25c0 1.242 3.727 2.25 8.25 2.25s8.25-1.008 8.25-2.25V10.5" stroke="#D4AF37" stroke-width="1.5" fill="none" />
+                        <path d="M4.5 15.75v2.25c0 1.242 3.727 2.25 8.25 2.25s8.25-1.008 8.25-2.25v-2.25" stroke="#D4AF37" stroke-width="1.5" fill="none" />
+                        <path d="M12 5.25v13.5" stroke="#D4AF37" stroke-width="1" stroke-dasharray="2 2" fill="none" />
+                        <circle cx="17.5" cy="4" r="2.5" stroke="#D4AF37" stroke-width="1.5" fill="#1e293b" />
+                        <path d="M17.5 2.5l2 2M17.5 5.5l2-2M15 4h2M19.5 4h1.5" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" fill="none" />
+                        <circle cx="17.5" cy="4" r="1" fill="#D4AF37" />
+                    </svg>',
+            ],
         ],
 
     ],
