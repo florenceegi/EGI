@@ -296,9 +296,9 @@ class EgiUploadHandler {
             $userId = session()->get('connected_user_id');
             if ($userId) {
                 $user = User::find($userId);
-                // Additional wallet verification
+                // Additional wallet verification (use getAttributes to bypass accessor)
                 $sessionWallet = session()->get('connected_wallet');
-                if ($user && $user->wallet === $sessionWallet) {
+                if ($user && ($user->getAttributes()['wallet'] ?? null) === $sessionWallet) {
                     return $user;
                 }
             }
@@ -476,8 +476,9 @@ class EgiUploadHandler {
         $egi->collection_id = $collectionId;
         $egi->user_id = $creatorUserId;
         $egi->owner_id = $creatorUserId;
-        $egi->creator = $creatorUser->wallet ?? 'WalletNotSet';
-        $egi->owner_wallet = $creatorUser->wallet ?? 'WalletNotSet';
+        // Use getAttributes to bypass the wallet accessor that returns Wallet object
+        $egi->creator = $creatorUser->getAttributes()['wallet'] ?? 'WalletNotSet';
+        $egi->owner_wallet = $creatorUser->getAttributes()['wallet'] ?? 'WalletNotSet';
         $egi->upload_id = $egiData['upload_id'];
         $egi->title = $egiData['title'];
         $egi->description = $egiData['description'];

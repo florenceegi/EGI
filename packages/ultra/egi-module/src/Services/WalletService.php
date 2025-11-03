@@ -144,10 +144,11 @@ class WalletService implements WalletServiceInterface
 
         try {
             // 1. Create CREATOR wallet (user-specific, dynamic)
+            // Use getAttributes to bypass the wallet accessor that returns Wallet object
             $creatorWallet = $this->createWallet(
                 $collection->id,
                 $user->id,
-                $user->wallet ?? null,
+                $user->getAttributes()['wallet'] ?? null,
                 WalletRoleEnum::CREATOR->getMintRoyalty(),
                 WalletRoleEnum::CREATOR->getRebindRoyalty(),
                 WalletRoleEnum::CREATOR->value
