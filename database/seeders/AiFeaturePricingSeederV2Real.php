@@ -30,8 +30,10 @@ class AiFeaturePricingSeederV2Real extends Seeder
      */
     public function run(): void
     {
-        // Truncate existing (for clean slate)
-        AiFeaturePricing::query()->delete();
+        // Delete all existing features (including soft deleted)
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \DB::table('ai_feature_pricing')->truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $features = [
             

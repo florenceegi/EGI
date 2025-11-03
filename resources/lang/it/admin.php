@@ -1,7 +1,7 @@
 <?php
 
 return [
-    
+
     // === PRICING MANAGER ===
     'pricing' => [
         'title' => 'Gestione Prezzi Feature',
@@ -25,14 +25,14 @@ return [
         'deactivated_successfully' => 'Feature disattivata con successo',
         'create_feature_todo' => 'Creazione feature in arrivo nella prossima iterazione',
         'edit_feature_todo' => 'Modifica feature ID:',
-        
+
         'types' => [
             'lifetime' => 'Lifetime',
             'consumable' => 'Consumabile',
             'temporal' => 'Temporale',
         ],
     ],
-    
+
     // === PROMOTIONS MANAGER ===
     'promotions' => [
         'title' => 'Gestione Promozioni',
@@ -56,7 +56,7 @@ return [
         'create_todo' => 'Creazione promo in arrivo',
         'stats_todo' => 'Statistiche promo ID:',
     ],
-    
+
     // === EGILI MANAGEMENT ===
     'egili' => [
         'title' => 'Gestione Egili',
@@ -83,7 +83,7 @@ return [
         'grant_lifetime_todo' => 'Form grant Lifetime in arrivo',
         'grant_gift_todo' => 'Form grant Gift in arrivo',
     ],
-    
+
     // === FEATURED CALENDAR ===
     'featured' => [
         'title' => 'Calendario Featured EGI',
@@ -109,8 +109,5 @@ return [
         'approve_todo' => 'Approvazione richiesta ID:',
         'reject_todo' => 'Rifiuto richiesta ID:',
     ],
-    
+
 ];
-
-
-    'subtitle' => 'Gestisci i prezzi delle feature della piattaforma',

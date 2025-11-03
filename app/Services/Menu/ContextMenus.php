@@ -58,6 +58,7 @@ use App\Services\Menu\Items\SuperadminPadminViolationsMenu;
 use App\Services\Menu\Items\SuperadminPadminSymbolsMenu;
 use App\Services\Menu\Items\SuperadminPadminSearchMenu;
 use App\Services\Menu\Items\SuperadminPadminStatisticsMenu;
+use App\Services\Menu\Items\SuperadminMigrationOrchestratorMenu;
 // Admin Menu Items (Egili System - Tasks 4.2, 4.4)
 use App\Services\Menu\Items\AdminPromotionsMenu;
 use App\Services\Menu\Items\AdminFeaturedCalendarMenu;
@@ -81,8 +82,15 @@ class ContextMenus {
     public static function getMenusForContext(string $context): array {
         $menus = [];
 
+        // Check user role and force context if superadmin
+        $user = \App\Helpers\FegiAuth::user();
+        if ($user && $user->role === 'superadmin') {
+            $context = 'superadmin';
+        }
+
         Log::channel('upload')->info('🔍 CONTEXT MENUS - PA CONTEXT DETECTED', [
             'context' => $context,
+            'user_role' => $user?->role ?? 'guest',
         ]);
 
         switch ($context) {
@@ -292,6 +300,11 @@ class ContextMenus {
             case 'superadmin.egili':
             case 'superadmin.equilibrium':
             case 'superadmin.padmin':
+            // Admin contexts (all admin.* routes use superadmin sidebar)
+            case 'admin.pricing':
+            case 'admin.promotions':
+            case 'admin.egili':
+            case 'admin.featured':
                 // SuperAdmin Context - AI & Platform Management
                 Log::channel('upload')->info('🔍 CONTEXT MENUS - SUPERADMIN CONTEXT', [
                     'context' => $context,
@@ -325,6 +338,7 @@ class ContextMenus {
                     new SuperadminFeaturePricingMenu(),
                     new AdminPromotionsMenu(),
                     new AdminFeaturedCalendarMenu(),
+                    new SuperadminMigrationOrchestratorMenu(),
                 ]);
                 $menus[] = $platformMenu;
 
