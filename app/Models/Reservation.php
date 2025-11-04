@@ -649,7 +649,12 @@ class Reservation extends Model {
     public function createCertificate(array $additionalData = []): EgiReservationCertificate {
         // Generate certificate UUID first
         $certificateUuid = \Illuminate\Support\Str::uuid();
-        $walletAddress = $this->wallet_address ?? ($this->user?->wallet ?? 'unknown');
+        
+        // FIX: user->wallet returns Wallet object, not string!
+        // Get actual wallet address string (max 58 chars for Algorand)
+        $walletAddress = $this->wallet_address 
+            ?? ($this->user?->wallets()->first()?->wallet ?? 'Unknown Wallet');
+        
         $reservationType = $this->type ?? 'strong';
         $offerAmountFiat = $this->amount_eur;
 
