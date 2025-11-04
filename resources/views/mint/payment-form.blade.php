@@ -44,7 +44,7 @@
                     </div>
                 </div>
 
-                {{-- Blockchain Info --}}
+                {{-- Blockchain Info - Contrasto migliorato --}}
                 <div class="rounded-lg bg-blue-50 p-6">
                     <h3 class="mb-3 text-lg font-semibold text-blue-900">
                         {{ __('mint.blockchain_info.title') }}
@@ -52,15 +52,15 @@
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between">
                             <span class="text-blue-700">{{ __('mint.blockchain_info.network') }}</span>
-                            <span class="font-medium">{{ __('mint.blockchain_info.network_value') }}</span>
+                            <span class="font-semibold text-blue-900">{{ __('mint.blockchain_info.network_value') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-blue-700">{{ __('mint.blockchain_info.token_type') }}</span>
-                            <span class="font-medium">{{ __('mint.blockchain_info.token_type_value') }}</span>
+                            <span class="font-semibold text-blue-900">{{ __('mint.blockchain_info.token_type_value') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-blue-700">{{ __('mint.blockchain_info.supply') }}</span>
-                            <span class="font-medium">{{ __('mint.blockchain_info.supply_value') }}</span>
+                            <span class="font-semibold text-blue-900">{{ __('mint.blockchain_info.supply_value') }}</span>
                         </div>
                     </div>
                 </div>
@@ -154,7 +154,7 @@
                         </div>
                     </div>
 
-                    {{-- Nickname Co-Creator (pre-filled) --}}
+                    {{-- Nickname Co-Creator (pre-filled) - Contrasto migliorato --}}
                     <div class="mb-6">
                         <label for="co_creator_display_name" class="mb-2 block text-sm font-medium text-gray-700">
                             {{ __('mint.payment.co_creator_name_label') }}
@@ -163,7 +163,7 @@
                         <input type="text" name="co_creator_display_name" id="co_creator_display_name"
                             value="{{ Auth::user()->name }}" placeholder="{{ Auth::user()->name }}"
                             pattern="^[a-zA-Z0-9\s.\'\-]+$" maxlength="100"
-                            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-600 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <p class="mt-1 text-xs text-gray-500">
                             {{ __('mint.payment.co_creator_name_help') }}
                         </p>
@@ -174,11 +174,11 @@
                         </div>
                     </div>
 
-                    {{-- Total --}}
+                    {{-- Total - Contrasto migliorato --}}
                     <div class="mb-6 border-t pt-4">
                         <div class="flex items-center justify-between text-lg font-semibold">
-                            <span>{{ __('mint.payment.total_label') }}</span>
-                            <span class="text-green-600">
+                            <span class="text-gray-900">{{ __('mint.payment.total_label') }}</span>
+                            <span class="text-2xl font-bold text-green-700">
                                 €{{ number_format($reservation ? $reservation->amount_eur : $egi->price, 2) }}
                             </span>
                         </div>
