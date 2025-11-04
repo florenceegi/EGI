@@ -254,47 +254,61 @@ class MintController extends Controller {
                     ->with('info', __('mint.errors.already_minted'));
             }
 
-            // CRITICAL: Check treasury funds BEFORE payment processing
-            $algorandService = app(\App\Services\AlgorandService::class);
+            // OPTIONAL: Treasury funds check (fail-open se non disponibile)
             try {
-                $fundsCheck = $algorandService->checkTreasuryFunds(Auth::user());
+                $algorandService = app(\App\Services\AlgorandService::class);
+                
+                // Verifica se il metodo esiste prima di chiamarlo (defensive programming)
+                if (method_exists($algorandService, 'checkTreasuryFunds')) {
+                    $fundsCheck = $algorandService->checkTreasuryFunds(Auth::user());
 
-                if (!$fundsCheck['has_sufficient_funds']) {
-                    $this->logger->error('Mint blocked - insufficient treasury funds', [
+                    if (isset($fundsCheck['has_sufficient_funds']) && !$fundsCheck['has_sufficient_funds']) {
+                        $this->logger->error('Mint blocked - insufficient treasury funds', [
+                            'user_id' => Auth::id(),
+                            'egi_id' => $validated['egi_id'],
+                            'balance_algo' => $fundsCheck['balance_algo'] ?? 'unknown',
+                            'required_algo' => $fundsCheck['required_algo'] ?? 'unknown',
+                            'treasury_address' => $fundsCheck['treasury_address'] ?? 'unknown'
+                        ]);
+
+                        // UEM: Messaggio user-friendly per utente finale
+                        return $this->errorManager->handle('MINT_BLOCKED_INSUFFICIENT_FUNDS', [
+                            'user_id' => Auth::id(),
+                            'egi_id' => $validated['egi_id'],
+                            'balance_algo' => $fundsCheck['balance_algo'] ?? 'unknown',
+                            'required_algo' => $fundsCheck['required_algo'] ?? 'unknown',
+                        ]);
+                    }
+
+                    $this->logger->info('Treasury funds check passed', [
                         'user_id' => Auth::id(),
                         'egi_id' => $validated['egi_id'],
-                        'balance_algo' => $fundsCheck['balance_algo'],
-                        'required_algo' => $fundsCheck['required_algo'],
-                        'treasury_address' => $fundsCheck['treasury_address']
+                        'balance_algo' => $fundsCheck['balance_algo'] ?? 'checked'
                     ]);
-
-                    $this->errorManager->handle('MINT_BLOCKED_INSUFFICIENT_FUNDS', [
+                } else {
+                    // Metodo non ancora implementato - log warning ma procedi
+                    $this->logger->warning('Treasury funds check method not available - proceeding anyway', [
                         'user_id' => Auth::id(),
                         'egi_id' => $validated['egi_id'],
-                        'balance_algo' => $fundsCheck['balance_algo'],
-                        'required_algo' => $fundsCheck['required_algo'],
-                        'treasury_address' => $fundsCheck['treasury_address']
-                    ]);
-
-                    return redirect()->back()->withErrors([
-                        'error' => __('mint.errors.insufficient_treasury_funds')
+                        'note' => 'checkTreasuryFunds method not found in AlgorandService'
                     ]);
                 }
-
-                $this->logger->info('Treasury funds check passed', [
-                    'user_id' => Auth::id(),
-                    'egi_id' => $validated['egi_id'],
-                    'balance_algo' => $fundsCheck['balance_algo']
-                ]);
             } catch (\Exception $e) {
+                // Errore durante check fondi - UEM per notificare team ma mostra messaggio user-friendly
                 $this->logger->error('Treasury funds check failed', [
                     'user_id' => Auth::id(),
                     'egi_id' => $validated['egi_id'],
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
                 ]);
 
-                // Se il check fallisce, procediamo comunque (fail-open per non bloccare completamente)
-                // ma logghiamo l'errore per monitoring
+                // UEM: Messaggio user-friendly invece di errore tecnico raw
+                return $this->errorManager->handle('MINT_TECHNICAL_ERROR_TREASURY', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $validated['egi_id'],
+                    'error_type' => get_class($e),
+                    'error_message' => $e->getMessage(),
+                ]);
             }
 
             // MOCK Payment processing (V1 - FIAT only)

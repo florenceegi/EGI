@@ -6164,6 +6164,17 @@ return [
             'msg_to' => 'toast',
         ],
 
+        'MINT_TECHNICAL_ERROR_TREASURY' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_technical_error_treasury',
+            'user_message_key' => 'error-manager::errors_2.user.mint_technical_error_treasury',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
         // === Mint Status API Errors ===
         'MINT_STATUS_UNAUTHORIZED' => [
             'type' => 'warning',

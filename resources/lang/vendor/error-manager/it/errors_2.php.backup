@@ -158,7 +158,6 @@ return [
         'queue_worker_autostart_exception' => '🚨 CRITICAL: Exception durante auto-start worker. Queue: :queue, Error: :error. Sistema compromesso!',
         'treasury_funds_check_failed' => 'Errore verifica fondi treasury wallet. User: :user_id, Error: :error',
         'mint_blocked_insufficient_funds' => '🚨 MINT BLOCKED: Fondi insufficienti nel treasury wallet! Balance: :balance_algo ALGO, Required: :required_algo ALGO. EGI: :egi_id, User: :user_id. FONDI NECESSARI URGENTEMENTE!',
-        'mint_technical_error_treasury' => '⚠️ MINT ERROR: Errore tecnico durante verifica treasury funds. Method: checkTreasuryFunds() not found or failed in AlgorandService. Error type: :error_type, Message: :error_message. User: :user_id, EGI: :egi_id. FIX REQUIRED!',
 
         // Blockchain-Specific Errors (Dev Messages)
         'blockchain_insufficient_treasury_funds' => '🚨 BLOCKCHAIN ERROR: Treasury balance insufficiente durante mint! Current: :current_balance microALGO (:current_algo ALGO), Required: :required_balance microALGO (:required_algo ALGO). User: :user_id, EGI: :egi_id. REFILL TREASURY URGENTE!',
@@ -333,7 +332,6 @@ return [
         'queue_worker_autostart_exception' => 'Errore critico nel sistema di elaborazione. Contatta immediatamente l\'assistenza tecnica.',
         'treasury_funds_check_failed' => 'Impossibile verificare la disponibilità del sistema. Riprova tra qualche secondo.',
         'mint_blocked_insufficient_funds' => 'Il sistema non ha fondi sufficienti per completare il mint. Contatta immediatamente l\'assistenza tecnica. Il tuo pagamento NON è stato effettuato.',
-        'mint_technical_error_treasury' => 'Si è verificato un problema tecnico temporaneo con il sistema blockchain. Il nostro team è stato automaticamente notificato e sta risolvendo. Per favore riprova tra qualche minuto. Il tuo pagamento NON è stato addebitato.',
 
         // Blockchain-Specific Errors (User Messages - PA-Grade)
         'blockchain_insufficient_treasury_funds' => 'Il sistema non dispone di fondi sufficienti per completare il mint. Il team tecnico è stato allertato automaticamente. Il tuo pagamento NON è stato addebitato.',
