@@ -92,10 +92,10 @@ class MintEgiJob implements ShouldQueue {
             // So we don't need to update again here! Just get fresh instance.
             $result = $mintingService->mintEgi(
                 $egiBlockchain->egi,
-                $egiBlockchain->buyer,
                 [
                     'payment_reference' => $egiBlockchain->payment_reference,
                     'buyer_wallet' => $egiBlockchain->buyer_wallet,
+                    'buyer_user_id' => $egiBlockchain->buyer_user_id,
                     'co_creator_display_name' => $egiBlockchain->co_creator_display_name, // User-provided name (optional)
                 ]
             );

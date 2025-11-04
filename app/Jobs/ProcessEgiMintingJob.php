@@ -118,11 +118,12 @@ class ProcessEgiMintingJob implements ShouldQueue {
             ]);
 
             // 5. Execute minting process
-            $user = $egiBlockchain->buyerUser ?? User::find(1); // fallback to admin
-            $mintResult = $mintingService->mintEgi($egiBlockchain->egi, $user, [
+            $mintResult = $mintingService->mintEgi($egiBlockchain->egi, [
                 'job_id' => $jobId,
                 'webhook_id' => $this->webhookId,
-                'payment_reference' => $egiBlockchain->payment_reference
+                'payment_reference' => $egiBlockchain->payment_reference,
+                'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                'buyer_wallet' => $egiBlockchain->buyer_wallet,
             ]);
 
             // 6. Update blockchain record with results

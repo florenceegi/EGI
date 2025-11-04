@@ -98,8 +98,13 @@ class EgiMintingOrchestrator
             $egi->update(['egi_type' => EgiType::ASA->value]);
         }
 
+        // Prepare metadata array with user info
+        $metadata = array_merge($options, [
+            'buyer_user_id' => $user->id,
+        ]);
+
         // Delegate to existing EgiMintingService (backward compatible)
-        return $this->asaMintingService->mintEgi($egi, $user, $options);
+        return $this->asaMintingService->mintEgi($egi, $metadata);
     }
 
     /**
