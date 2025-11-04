@@ -35,45 +35,32 @@ $canEdit =
         data-egi-id="{{ $egi ? $egi->id : '' }}" data-can-edit="{{ $canEdit ? 'true' : 'false' }}"
         style="position: relative !important; order: -1 !important; margin-top: 0 !important; margin-bottom: 2rem !important;">
 
-        {{-- COLLAPSABILE BOX TRAITS --}}
+        {{-- COLLAPSABILE BOX TRAITS - Semplificato senza bordo --}}
         <details class="group" open>
-            <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gradient-to-r from-purple-900/30 to-indigo-900/30 px-4 py-3 text-white transition-colors hover:from-purple-900/40 hover:to-indigo-900/40 border border-purple-700/30">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">🎯</span>
-                    <span class="text-sm font-semibold">{{ __('Tratti e Attributi') }}</span>
-                    <span class="trait-counter ml-2">
+            <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gradient-to-r from-purple-900/20 to-indigo-900/20 px-3 py-2.5 md:px-4 md:py-3 text-white transition-colors hover:from-purple-900/30 hover:to-indigo-900/30">
+                <div class="flex items-center gap-1.5 md:gap-2">
+                    <span class="text-lg md:text-xl">🎯</span>
+                    <span class="text-xs md:text-sm font-semibold">{{ __('Tratti e Attributi') }}</span>
+                    <span class="trait-counter ml-1 md:ml-2">
                         <span class="traits-count">{{ $egi && $egi->traits ? $egi->traits->count() : 0 }}</span>/30
                     </span>
                 </div>
-                <svg class="h-4 w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </summary>
 
             <div class="mt-3">
                 @if ($canEdit)
-            {{-- Add Trait Button --}}
-            <div class="traits-editor-controls" style="margin-bottom: 1rem;">
-                <button type="button" class="add-trait-btn"
-                    style="background: transparent !important;
-                           border: 2px dashed #d4af37 !important;
-                           color: #d4af37 !important;
-                           padding: 0.75rem 1.5rem !important;
-                           border-radius: 0.5rem !important;
-                           font-weight: 600 !important;
-                           cursor: pointer !important;
-                           width: 100% !important;
-                           margin-bottom: 1rem !important;
-                           font-size: 1rem !important;
-                           transition: all 0.2s ease !important;"
-                    onmouseover="this.style.backgroundColor='rgba(212, 175, 55, 0.1)'"
-                    onmouseout="this.style.backgroundColor='transparent'">
-                    <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        style="width: 1.25rem; height: 1.25rem; margin-right: 0.5rem;">
+            {{-- Add Trait Button - Semplificato --}}
+            <div class="traits-editor-controls mb-3">
+                <button type="button" class="add-trait-btn w-full flex items-center justify-center gap-2 bg-purple-900/20 hover:bg-purple-900/30 text-purple-300 hover:text-purple-200 px-3 py-2 md:px-4 md:py-2.5 rounded-lg font-semibold text-sm md:text-base transition-all duration-200"
+                    onclick="if(window.TraitsViewer) { TraitsViewer.openModal(); }">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    {{ __('traits.add_trait') }}
+                    <span>{{ __('traits.add_trait') }}</span>
                 </button>
             </div>
         @endif
@@ -231,7 +218,7 @@ $canEdit =
 @endif
 
 @if ($canEdit)
-    {{-- Trait Modal --}}
+    {{-- Trait Modal - Ottimizzato per mobile con footer sticky --}}
     <div class="trait-modal" id="trait-modal-viewer"
         style="display: none;
      position: fixed !important;
@@ -244,45 +231,46 @@ $canEdit =
      backdrop-filter: blur(8px) !important;
      align-items: center !important;
      justify-content: center !important;
-     padding: 1rem !important;
+     padding: 0.75rem !important;
      overflow-y: auto !important;">
         <div class="modal-content"
             style="background: #ffffff !important;
          border-radius: 0.75rem !important;
          max-width: 500px !important;
-         width: 90% !important;
-         max-height: 80vh !important;
-         overflow-y: auto !important;
+         width: 100% !important;
+         max-height: 92vh !important;
          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
          position: relative !important;
-         margin: auto !important;">
-            <div class="modal-header">
-                <h4 class="modal-title">{{ __('traits.modal_title') }}</h4>
+         margin: auto !important;
+         display: flex !important;
+         flex-direction: column !important;">
+            <div class="modal-header" style="flex-shrink: 0 !important;">
+                <h4 class="modal-title text-base md:text-lg">{{ __('traits.modal_title') }}</h4>
                 <button type="button" class="modal-close" onclick="TraitsViewer.closeModal()">
                     ×
                 </button>
             </div>
 
-            <div class="modal-body">
+            <div class="modal-body" style="flex: 1 1 auto !important; overflow-y: auto !important; padding: 1rem !important;">
                 {{-- Step 1: Select Category --}}
-                <div class="form-group">
-                    <label class="form-label">{{ __('traits.select_category') }}</label>
+                <div class="form-group mb-4">
+                    <label class="form-label text-sm md:text-base">{{ __('traits.select_category') }}</label>
                     <div class="category-selector" id="category-selector-viewer">
                         {{-- Categories will be inserted here by JS --}}
                     </div>
                 </div>
 
                 {{-- Step 2: Select Trait Type --}}
-                <div class="form-group" id="type-selector-group-viewer" style="display: none;">
-                    <label class="form-label">{{ __('traits.select_type') }}</label>
-                    <select class="form-select" id="trait-type-select-viewer" onchange="TraitsViewer.onTypeSelected()">
+                <div class="form-group mb-4" id="type-selector-group-viewer" style="display: none;">
+                    <label class="form-label text-sm md:text-base">{{ __('traits.select_type') }}</label>
+                    <select class="form-select text-sm md:text-base" id="trait-type-select-viewer" onchange="TraitsViewer.onTypeSelected()">
                         <option value="">{{ __('traits.choose_type') }}</option>
                     </select>
                 </div>
 
                 {{-- Step 3: Select/Input Value --}}
-                <div class="form-group" id="value-selector-group-viewer" style="display: none;">
-                    <label class="form-label">{{ __('traits.select_value') }}</label>
+                <div class="form-group mb-4" id="value-selector-group-viewer" style="display: none;">
+                    <label class="form-label text-sm md:text-base">{{ __('traits.select_value') }}</label>
                     <div id="value-input-container-viewer">
                         {{-- Input will be inserted here based on type --}}
                     </div>
@@ -290,8 +278,8 @@ $canEdit =
 
                 {{-- Preview --}}
                 <div class="trait-preview" id="trait-preview-viewer" style="display: none;">
-                    <div class="preview-label">{{ __('traits.preview') }}</div>
-                    <div class="preview-card">
+                    <div class="preview-label text-xs md:text-sm">{{ __('traits.preview') }}</div>
+                    <div class="preview-card text-sm md:text-base">
                         <span class="preview-type"></span>:
                         <span class="preview-value"></span>
                         <span class="preview-unit"></span>
@@ -299,11 +287,11 @@ $canEdit =
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="TraitsViewer.closeModal()">
+            <div class="modal-footer" style="flex-shrink: 0 !important; position: sticky !important; bottom: 0 !important; background: #fafafa !important; border-top: 1px solid #e5e5e5 !important; padding: 0.875rem 1rem !important; display: flex !important; justify-content: flex-end !important; gap: 0.5rem !important;">
+                <button type="button" class="btn-cancel text-sm md:text-base px-3 py-2 md:px-4 md:py-2.5" onclick="TraitsViewer.closeModal()">
                     {{ __('traits.cancel') }}
                 </button>
-                <button type="button" class="btn-confirm" id="confirm-trait-btn-viewer"
+                <button type="button" class="btn-confirm text-sm md:text-base px-3 py-2 md:px-4 md:py-2.5" id="confirm-trait-btn-viewer"
                     onclick="TraitsViewer.addTrait()" disabled>
                     {{ __('traits.add') }}
                 </button>

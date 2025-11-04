@@ -1,41 +1,67 @@
 {{--
-    Component: EGI AI Traits Proposals Review
-    Panel for reviewing and approving AI-generated trait proposals
+    Component: EGI AI Traits Proposals Review - MODAL VERSION
+    Modal for reviewing and approving AI-generated trait proposals
 
     @package Components
     @author Padmin D. Curtis (AI Partner OS3.0)
-    @version 1.0.0 (FlorenceEGI - AI Traits Generation)
-    @date 2025-10-21
+    @version 2.0.0 (FlorenceEGI - AI Traits Generation Modal)
+    @date 2025-11-04
 
     Props:
     - generation: AiTraitGeneration model instance with proposals
+    - isOpen: boolean (default false) - controlla apertura modale
 --}}
 
-@props(['generation'])
+@props(['generation', 'isOpen' => false])
 
-<div class="overflow-hidden rounded-2xl border-2 border-indigo-200 bg-white shadow-lg"
-    id="ai-traits-proposals-{{ $generation->id }}">
-    {{-- Header --}}
-    <div class="bg-gradient-to-r from-indigo-700 to-purple-600 px-6 py-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <i class="fas fa-stars text-2xl text-white"></i>
-                <div>
-                    <h3 class="text-xl font-bold text-white" style="font-family: 'Playfair Display', serif;">
-                        Proposte Traits AI
-                    </h3>
-                    <p class="text-sm text-indigo-100">N.A.T.A.N ha identificato {{ $generation->proposals->count() }}
-                        traits
-                        (Confidence: {{ $generation->total_confidence }}%)</p>
+{{-- Trigger Button per aprire la modale --}}
+<button type="button"
+    onclick="openAiTraitsModal{{ $generation->id }}()"
+    class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg">
+    <i class="fas fa-stars text-lg"></i>
+    <span>{{ __('egi_dual_arch.ai.review_proposals_modal') }} ({{ $generation->proposals->count() }} traits)</span>
+</button>
+
+{{-- Modal Overlay --}}
+<div id="ai-traits-modal-{{ $generation->id }}" 
+    class="fixed inset-0 z-[10000] {{ $isOpen ? 'flex' : 'hidden' }} items-center justify-center bg-black/70 backdrop-blur-sm p-3 md:p-4"
+    style="display: {{ $isOpen ? 'flex' : 'none' }};"
+    onclick="if(event.target === this) closeAiTraitsModal{{ $generation->id }}()">
+    
+    {{-- Modal Content --}}
+    <div class="relative w-full max-w-4xl max-h-[95vh] bg-white rounded-2xl shadow-2xl flex flex-col"
+        onclick="event.stopPropagation()"
+        id="ai-traits-proposals-{{ $generation->id }}">
+        {{-- Header - Fixed --}}
+        <div class="flex-shrink-0 bg-gradient-to-r from-indigo-700 to-purple-600 px-4 py-3 md:px-6 md:py-4 rounded-t-2xl">
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 md:gap-3 min-w-0">
+                    <i class="fas fa-stars text-xl md:text-2xl text-white flex-shrink-0"></i>
+                    <div class="min-w-0">
+                        <h3 class="text-base md:text-xl font-bold text-white truncate" style="font-family: 'Playfair Display', serif;">
+                            {{ __('egi_dual_arch.ai.proposals_modal_title') }}
+                        </h3>
+                        <p class="text-xs md:text-sm text-indigo-100">
+                            N.A.T.A.N: {{ $generation->proposals->count() }} traits ({{ $generation->total_confidence }}%)
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <span class="hidden md:inline-block rounded-full bg-white/20 px-3 py-1 text-sm font-semibold text-white">
+                        #{{ $generation->id }}
+                    </span>
+                    <button type="button"
+                        onclick="closeAiTraitsModal{{ $generation->id }}()"
+                        class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors duration-200"
+                        title="{{ __('egi_dual_arch.ai.close_modal') }}">
+                        <i class="fas fa-times text-lg md:text-xl"></i>
+                    </button>
                 </div>
             </div>
-            <span class="rounded-full bg-white/20 px-4 py-1 text-sm font-semibold text-white">
-                #{{ $generation->id }}
-            </span>
         </div>
-    </div>
 
-    <div class="space-y-4 p-6">
+        {{-- Body - Scrollable --}}
+        <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
         {{-- Analysis Notes --}}
         @if ($generation->analysis_notes)
             <div class="rounded-xl border border-indigo-200 bg-indigo-50 p-4">
@@ -136,32 +162,74 @@
             @endforeach
         </div>
 
-        {{-- Action Buttons --}}
-        <div class="flex gap-3 border-t border-gray-200 pt-4">
-            <button onclick="handleApproveAll({{ $generation->id }})"
-                class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 font-bold text-white shadow-md transition-all duration-200 hover:from-green-700 hover:to-green-600 hover:shadow-lg">
-                <i class="fas fa-check-double"></i>
-                Approva Tutti
-            </button>
+        </div>{{-- Fine body scrollable --}}
 
-            <button onclick="handleRejectAll({{ $generation->id }})"
-                class="flex items-center justify-center gap-2 rounded-lg border-2 border-red-300 bg-white px-6 py-3 font-bold text-red-600 transition-all duration-200 hover:bg-red-50">
-                <i class="fas fa-times-circle"></i>
-                Rifiuta Tutti
-            </button>
+        {{-- Footer - Sticky con tutti i bottoni visibili --}}
+        <div class="flex-shrink-0 border-t border-gray-200 bg-gray-50 p-3 md:p-4 rounded-b-2xl sticky bottom-0">
+            <div class="flex flex-col sm:flex-row gap-2 md:gap-3">
+                <button onclick="handleApproveAll({{ $generation->id }})"
+                    class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-3 py-2.5 md:px-4 md:py-3 font-bold text-sm md:text-base text-white shadow-md transition-all duration-200 hover:from-green-700 hover:to-green-600 hover:shadow-lg">
+                    <i class="fas fa-check-double"></i>
+                    <span class="hidden sm:inline">{{ __('egi_dual_arch.ai.approve_all') }}</span>
+                    <span class="sm:hidden">{{ __('egi_dual_arch.ai.approve') }}</span>
+                </button>
 
-            <button onclick="handleApplySelected({{ $generation->id }})"
-                class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-3 font-bold text-white shadow-md transition-all duration-200 hover:from-purple-700 hover:to-indigo-700 hover:shadow-lg">
-                <i class="fas fa-magic"></i>
-                Applica Selezionati
-            </button>
+                <button onclick="handleRejectAll({{ $generation->id }})"
+                    class="flex items-center justify-center gap-2 rounded-lg border-2 border-red-300 bg-white px-3 py-2.5 md:px-4 md:py-3 font-bold text-sm md:text-base text-red-600 transition-all duration-200 hover:bg-red-50">
+                    <i class="fas fa-times-circle"></i>
+                    <span class="hidden sm:inline">{{ __('egi_dual_arch.ai.reject_all') }}</span>
+                    <span class="sm:hidden">{{ __('egi_dual_arch.ai.reject') }}</span>
+                </button>
+
+                <button onclick="handleApplySelected({{ $generation->id }})"
+                    class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 px-3 py-2.5 md:px-4 md:py-3 font-bold text-sm md:text-base text-white shadow-md transition-all duration-200 hover:from-purple-700 hover:to-indigo-700 hover:shadow-lg">
+                    <i class="fas fa-magic"></i>
+                    <span>{{ __('egi_dual_arch.ai.apply_selected') }}</span>
+                </button>
+            </div>
         </div>
-    </div>
-</div>
+    </div>{{-- Fine modal content --}}
+</div>{{-- Fine modal overlay --}}
 
-{{-- JavaScript for Trait Proposals --}}
+{{-- JavaScript for Trait Proposals Modal --}}
 @push('scripts')
     <script>
+        /**
+         * Open AI Traits Modal
+         */
+        function openAiTraitsModal{{ $generation->id }}() {
+            const modal = document.getElementById('ai-traits-modal-{{ $generation->id }}');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent body scroll
+            }
+        }
+
+        /**
+         * Close AI Traits Modal
+         */
+        function closeAiTraitsModal{{ $generation->id }}() {
+            const modal = document.getElementById('ai-traits-modal-{{ $generation->id }}');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore body scroll
+            }
+        }
+
+        /**
+         * Close modal on ESC key
+         */
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('ai-traits-modal-{{ $generation->id }}');
+                if (modal && modal.style.display === 'flex') {
+                    closeAiTraitsModal{{ $generation->id }}();
+                }
+            }
+        });
+
         /**
          * Approve all proposals
          */
@@ -288,6 +356,9 @@
                 const applyData = await applyResponse.json();
 
                 if (applyData.success) {
+                    // Close modal first
+                    closeAiTraitsModal{{ $generation->id }}();
+                    
                     await Swal.fire({
                         title: 'Traits Applicati!',
                         html: `<p>${applyData.message}</p><p class="text-sm text-gray-600 mt-2">${applyData.data.created_traits_count} traits creati con successo!</p>`,

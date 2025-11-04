@@ -96,5 +96,13 @@ return [
         'approved' => 'Approvato',
         'rejected' => 'Rifiutato',
         'applied' => 'Applicato',
+        
+        // Modal UI Labels (v2.0)
+        'review_proposals_modal' => 'Rivedi Proposte AI',
+        'proposals_modal_title' => 'Proposte Traits AI',
+        'close_modal' => 'Chiudi',
+        'approve_all' => 'Approva Tutti',
+        'reject_all' => 'Rifiuta Tutti',
+        'apply_selected' => 'Applica',
     ],
 ];
