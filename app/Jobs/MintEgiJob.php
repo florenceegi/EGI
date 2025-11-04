@@ -104,21 +104,27 @@ class MintEgiJob implements ShouldQueue {
             // (service already updated: metadata, names, blockchain data, status)
             $egiBlockchain = $result; // $result is already fresh() from service
 
-            // 4.5. CRITICAL: Sync egis.owner_id with buyer_user_id
-            // This ensures Policy checks and secondary market work correctly
+            // 4.5. CRITICAL: Sync egis table with minting results
+            // This ensures Card EGI displays correctly and isMinted() works
             // IMPORTANT: Use fresh() to avoid stale relationship cache
             $egi = \App\Models\Egi::find($egiBlockchain->egi_id);
 
             $egi->update([
-                'owner_id' => $egiBlockchain->buyer_user_id
+                'owner_id' => $egiBlockchain->buyer_user_id, // New owner (buyer)
+                'mint' => true,                               // Flag for isMinted() method
+                'token_EGI' => $result->asa_id,              // Algorand ASA ID
+                'status' => 'minted',                        // Status becomes 'minted'
             ]);
 
-            $logger->info('REAL blockchain minting completed successfully', [
+            $logger->info('REAL blockchain minting completed - egis table synced', [
                 'egi_blockchain_id' => $this->egiBlockchainId,
+                'egi_id' => $egi->id,
                 'asa_id' => $result->asa_id,
                 'tx_id' => $result->blockchain_tx_id,
                 'owner_id_synced' => $egiBlockchain->buyer_user_id,
-                'egi_owner_updated' => $egi->owner_id
+                'mint_flag' => true,
+                'status' => 'minted',
+                'token_EGI' => $result->asa_id
             ]);
 
             // 4.8. PAYMENT DISTRIBUTIONS: Create after successful mint (AREA 2.2.2)
