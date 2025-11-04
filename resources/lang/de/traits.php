@@ -6,6 +6,8 @@ return [
     'empty_state' => 'Keine Merkmale hinzugefügt. Merkmale machen Ihr EGI einzigartig und durchsuchbar.',
     'add_first_trait' => 'Erstes Merkmal hinzufügen',
     'add_trait' => 'Merkmal hinzufügen',
+    'add_trait_manual' => 'Merkmal manuell hinzufügen',
+    'generate_traits_ai' => 'Merkmale mit KI generieren',
     'add_new_trait' => 'Neues Merkmal hinzufügen',
     'remove_trait' => 'Merkmal entfernen',
     'have_this' => 'haben dies',

@@ -6,6 +6,8 @@ return [
     'empty_state' => 'No traits added. Traits make your EGI unique and searchable.',
     'add_first_trait' => 'Add First Trait',
     'add_trait' => 'Add Trait',
+    'add_trait_manual' => 'Add Trait manually',
+    'generate_traits_ai' => 'Generate Traits with AI',
     'add_new_trait' => 'Add New Trait',
     'remove_trait' => 'Remove trait',
     'have_this' => 'have this',

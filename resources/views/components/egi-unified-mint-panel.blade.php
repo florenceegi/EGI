@@ -36,33 +36,11 @@
     </div>
 
     <div class="space-y-6 p-6">
-        {{-- Step 1: Traits (collassabile) --}}
-        <details class="group rounded-xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">
-            <summary class="cursor-pointer p-5 transition-colors hover:bg-amber-100">
-                <div class="flex items-center gap-2">
-                    <span
-                        class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-600 text-sm font-bold text-white">1</span>
-                    <div class="flex-1">
-                        <h4 class="text-lg font-bold text-amber-900">Aggiungi le caratteristiche</h4>
-                        <p class="text-sm text-amber-700">Colori, stile, tecnica, emozioni... (clicca per aprire)</p>
-                    </div>
-                    <svg class="h-5 w-5 text-amber-600 transition-transform group-open:rotate-180" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
-            </summary>
-
-            <div class="border-t-2 border-amber-200 p-5">
-                <x-egi-ai-traits-panel :egi="$egi" :isCreator="$isCreator" />
-            </div>
-        </details>
-
-        {{-- Step 2: Mint su Blockchain --}}
-        <div class="border-t-2 border-gray-200 pt-6">
+        {{-- Step 1: Mint su Blockchain --}}
+        <div class="pt-6">
             <div class="mb-4 flex items-center gap-2">
                 <span
-                    class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">2</span>
+                    class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">1</span>
                 <h4 class="text-lg font-bold text-gray-900">Scegli come mintare</h4>
             </div>
             <p class="mb-6 text-sm text-gray-600">

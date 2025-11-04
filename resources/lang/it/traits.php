@@ -6,6 +6,8 @@ return [
     'empty_state' => 'Nessun tratto aggiunto. I tratti rendono il tuo EGI unico e ricercabile.',
     'add_first_trait' => 'Aggiungi il primo tratto',
     'add_trait' => 'Aggiungi Tratto',
+    'add_trait_manual' => 'Aggiungi Tratto manualmente',
+    'generate_traits_ai' => 'Genera Tratti con AI',
     'add_new_trait' => 'Aggiungi Nuovo Tratto',
     'remove_trait' => 'Rimuovi tratto',
     'have_this' => 'hanno questo',

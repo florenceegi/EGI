@@ -6,6 +6,8 @@ return [
     'empty_state' => 'Nenhum traço adicionado. Os traços tornam seu EGI único e pesquisável.',
     'add_first_trait' => 'Adicionar primeiro traço',
     'add_trait' => 'Adicionar Traço',
+    'add_trait_manual' => 'Adicionar Traço manualmente',
+    'generate_traits_ai' => 'Gerar Traços com IA',
     'add_new_trait' => 'Adicionar Novo Traço',
     'remove_trait' => 'Remover traço',
     'have_this' => 'têm isto',

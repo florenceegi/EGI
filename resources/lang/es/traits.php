@@ -6,6 +6,8 @@ return [
     'empty_state' => 'No se han añadido rasgos. Los rasgos hacen que tu EGI sea único y buscable.',
     'add_first_trait' => 'Añadir primer rasgo',
     'add_trait' => 'Añadir Rasgo',
+    'add_trait_manual' => 'Añadir Rasgo manualmente',
+    'generate_traits_ai' => 'Generar Rasgos con IA',
     'add_new_trait' => 'Añadir Nuevo Rasgo',
     'remove_trait' => 'Eliminar rasgo',
     'have_this' => 'tienen esto',
