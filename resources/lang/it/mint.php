@@ -116,7 +116,7 @@ return [
         'unauthorized' => 'Non autorizzato. Questa prenotazione non è tua.',
         'payment_failed' => 'Pagamento fallito. Riprova.',
         'validation_failed' => 'Dati non validi. Controlla il form.',
-        'mint_failed' => 'Errore durante il mint. Riprova o contatta l\'assistenza.',
+        'mint_failed' => 'Si è verificato un problema tecnico temporaneo durante il mint. Il nostro team è stato automaticamente notificato e sta già lavorando alla risoluzione. Il tuo pagamento NON è stato addebitato. Per favore riprova tra qualche minuto.',
         'invalid_wallet' => 'Indirizzo wallet non valido.',
         'blockchain_error' => 'Errore della blockchain. Riprova più tardi.',
         'insufficient_treasury_funds' => "⚠️ Servizio temporaneamente non disponibile.\n\n" .
