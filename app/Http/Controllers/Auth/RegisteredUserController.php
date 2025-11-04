@@ -255,8 +255,27 @@ class RegisteredUserController extends Controller {
      */
     protected function createUserWithAlgorandWallet(array $validated): User {
         try {
+            // 0. Get Florence EGI tenant_id from tenants table (managed by NATAN_LOC)
+            $florenceEgiTenant = DB::table('tenants')
+                ->where('slug', 'florence-egi')
+                ->orWhere('name', 'Florence EGI')
+                ->first();
+
+            if (!$florenceEgiTenant) {
+                throw new \Exception('Florence EGI tenant not found in tenants table. Multi-tenant setup incomplete.');
+            }
+
+            $this->logger->info('[Registration] Florence EGI tenant resolved', [
+                'tenant_id' => $florenceEgiTenant->id,
+                'tenant_name' => $florenceEgiTenant->name,
+                'tenant_slug' => $florenceEgiTenant->slug
+            ]);
+
             // 1. Create user without wallet first
             $user = User::create([
+                // ═══ MULTI-TENANT ═══
+                'tenant_id' => $florenceEgiTenant->id, // Assign to Florence EGI tenant
+
                 // ═══ CORE FIELDS ═══
                 'name' => $validated['name'],
                 'nick_name' => $validated['nick_name'] ?? null,
