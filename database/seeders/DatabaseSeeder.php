@@ -19,7 +19,8 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class DatabaseSeeder extends Seeder {
+class DatabaseSeeder extends Seeder
+{
     /**
      * Seeder execution order (CRITICAL - rispettare ordine dipendenze)
      */
@@ -54,7 +55,8 @@ class DatabaseSeeder extends Seeder {
      * @return void
      * @throws \Exception Se qualsiasi seeder fallisce
      */
-    public function run(): void {
+    public function run(): void
+    {
         $this->command->info('🔒 Starting ATOMIC seeding transaction...');
         $this->command->info('⚠️  If ANY seeder fails, ALL changes will be rolled back!');
 
@@ -62,44 +64,46 @@ class DatabaseSeeder extends Seeder {
         $startTime = microtime(true);
 
         try {
-            // SINGLE ATOMIC TRANSACTION per tutti i seeder
-            DB::transaction(function () {
-                $this->command->info('📊 Seeding sequence:');
+            // 0. CRITICAL: Create Florence EGI tenant FIRST (required for users)
+            $this->createFlorenceEgiTenant();
 
-                foreach ($this->seederSequence as $index => $seederClass) {
-                    $step = $index + 1;
-                    $total = count($this->seederSequence);
+            // Execute seeders in sequence
+            // Note: Laravel automatically wraps each seeder in a transaction when using db:seed
+            // We don't need to manually manage transactions here, as it can conflict with internal seeder transactions
+            $this->command->info('📊 Seeding sequence:');
 
-                    $this->command->info("🔄 Step {$step}/{$total}: {$seederClass}");
+            foreach ($this->seederSequence as $index => $seederClass) {
+                $step = $index + 1;
+                $total = count($this->seederSequence);
 
-                    try {
-                        // Execute seeder inside transaction
-                        $this->call($seederClass);
-                        $this->command->info("✅ Step {$step}/{$total}: Completed successfully");
-                    } catch (\Exception $e) {
-                        $this->command->error("💥 Step {$step}/{$total}: FAILED - {$e->getMessage()}");
+                $this->command->info("🔄 Step {$step}/{$total}: {$seederClass}");
 
-                        // Log detailed error
-                        Log::error('[DatabaseSeeder] Seeder failed in atomic transaction', [
-                            'seeder_class' => $seederClass,
-                            'step' => $step,
-                            'total_steps' => $total,
-                            'error_message' => $e->getMessage(),
-                            'error_trace' => $e->getTraceAsString(),
-                            'transaction_will_rollback' => true,
-                        ]);
+                try {
+                    // Execute seeder (inside existing transaction)
+                    $this->call($seederClass);
+                    $this->command->info("✅ Step {$step}/{$total}: Completed successfully");
+                } catch (\Exception $e) {
+                    $this->command->error("💥 Step {$step}/{$total}: FAILED - {$e->getMessage()}");
 
-                        // Re-throw per trigger rollback
-                        throw new \Exception(
-                            "Seeder {$seederClass} failed: {$e->getMessage()}",
-                            0,
-                            $e
-                        );
-                    }
+                    // Log detailed error
+                    Log::error('[DatabaseSeeder] Seeder failed', [
+                        'seeder_class' => $seederClass,
+                        'step' => $step,
+                        'total_steps' => $total,
+                        'error_message' => $e->getMessage(),
+                        'error_trace' => $e->getTraceAsString(),
+                    ]);
+
+                    // Re-throw
+                    throw new \Exception(
+                        "Seeder {$seederClass} failed: {$e->getMessage()}",
+                        0,
+                        $e
+                    );
                 }
+            }
 
-                $this->command->info('🎯 All seeders completed successfully within transaction');
-            }, 3); // 3 retry attempts per transaction deadlocks
+            $this->command->info('🎯 All seeders completed successfully');
 
             // Calculate execution time
             $endTime = microtime(true);
@@ -151,7 +155,8 @@ class DatabaseSeeder extends Seeder {
     /**
      * Display seeding summary info
      */
-    private function displaySeedingSummary(): void {
+    private function displaySeedingSummary(): void
+    {
         $this->command->info('');
         $this->command->info('📋 SEEDING SUMMARY:');
         $this->command->info('═══════════════════');
@@ -165,5 +170,73 @@ class DatabaseSeeder extends Seeder {
         $this->command->info('');
         $this->command->info('🔒 Transaction mode: ATOMIC (all-or-nothing)');
         $this->command->info('🛡️ Rollback: Automatic on ANY failure');
+    }
+
+    /**
+     * Create Florence EGI tenant (required for multi-tenant architecture)
+     * 
+     * @return void
+     */
+    private function createFlorenceEgiTenant(): void
+    {
+        $this->command->info('🏛️  Step 0: Creating Florence EGI tenant...');
+
+        // Check if tenant already exists
+        $existingTenant = DB::table('tenants')
+            ->where('slug', 'florence-egi')
+            ->first();
+
+        if ($existingTenant) {
+            $this->command->warn('⚠️  Florence EGI tenant already exists (ID: ' . $existingTenant->id . ')');
+            
+            // Update tenant_id for users without it
+            $usersUpdated = DB::table('users')
+                ->whereNull('tenant_id')
+                ->update(['tenant_id' => $existingTenant->id]);
+
+            if ($usersUpdated > 0) {
+                $this->command->info("✅ Updated {$usersUpdated} users with tenant_id={$existingTenant->id}");
+            }
+
+            return;
+        }
+
+        // Create Florence EGI tenant
+        $tenantId = DB::table('tenants')->insertGetId([
+            'name' => 'Florence EGI',
+            'slug' => 'florence-egi',
+            'code' => 'FEGI',
+            'entity_type' => 'company',
+            'is_active' => 1,
+            'settings' => json_encode([
+                'primary_color' => '#D4A574',
+                'secondary_color' => '#1B365D',
+                'accent_color' => '#2D5016',
+                'features' => [
+                    'marketplace' => true,
+                    'nft_minting' => true,
+                    'ai_assistant' => true,
+                    'certificates' => true,
+                ]
+            ]),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        $this->command->info("✅ Florence EGI tenant created (ID: {$tenantId})");
+        
+        // Assign all existing users to Florence EGI tenant
+        $usersUpdated = DB::table('users')
+            ->whereNull('tenant_id')
+            ->update(['tenant_id' => $tenantId]);
+
+        if ($usersUpdated > 0) {
+            $this->command->info("✅ Assigned {$usersUpdated} users to Florence EGI tenant");
+        }
+
+        Log::info('[DatabaseSeeder] Florence EGI tenant created', [
+            'tenant_id' => $tenantId,
+            'users_assigned' => $usersUpdated
+        ]);
     }
 }

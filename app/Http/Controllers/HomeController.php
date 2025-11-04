@@ -40,8 +40,7 @@ use App\Enums\Gdpr\GdprActivityCategory;
  * @seo-purpose Provides dynamic content relevant to FlorenceEGI homepage
  * @schema-type WebPage
  */
-class HomeController extends Controller
-{
+class HomeController extends Controller {
 
     protected CollectorCarouselService $collectorCarouselService;
     protected UltraLogManager $logger;
@@ -101,8 +100,7 @@ class HomeController extends Controller
      * @return View Homepage view populated with all necessary data
      * @throws \Exception On data retrieval or rendering failures
      */
-    public function index(): View
-    {
+    public function index(): View {
         try {
             // 1. ULM: Log homepage access start
             $this->logger->info('Homepage access initiated', [
@@ -170,20 +168,22 @@ class HomeController extends Controller
                 'hyperEgis' => $hyperEgis,
             ]);
         } catch (\Exception $e) {
-            // 6. UEM: Error handling
-            $this->errorManager->handle('HOMEPAGE_LOAD_ERROR', [
+            // 6. ULM: Log error details
+            $this->logger->error('Homepage load failed', [
+                'user_id' => auth()->id(),
+                'ip_address' => request()->ip(),
+                'error_message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // 7. UEM: Error handling (returns RedirectResponse)
+            return $this->errorManager->handle('HOMEPAGE_LOAD_ERROR', [
                 'user_id' => auth()->id(),
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
                 'error_message' => $e->getMessage(),
                 'timestamp' => now()->toIso8601String()
             ], $e);
-
-            // Return error view with fallback content
-            return view('error.homepage', [
-                'message' => __('errors.homepage_unavailable'),
-                'return_url' => route('dashboard')
-            ]);
         }
     }
 
@@ -197,8 +197,7 @@ class HomeController extends Controller
      * @return \Illuminate\Database\Eloquent\Collection Collection of 5 random published EGIs with collection data
      * @privacy-safe Only public published content from creators
      */
-    private function getRandomEgis()
-    {
+    private function getRandomEgis() {
         // 🎲 RANDOM: Ordinamento casuale ad ogni reload
         // 🎯 FILTER: Solo EGI di creator con usertype = 'creator' (NO PA)
         // 🚫 EXCLUDE: Esclusi EGI con type = 'pa_act'
@@ -237,8 +236,7 @@ class HomeController extends Controller
      * @return \Illuminate\Database\Eloquent\Collection Featured collections for hero carousel
      * @privacy-safe Only public published collections
      */
-    private function getFeaturedCollections()
-    {
+    private function getFeaturedCollections() {
         // Utilizziamo il service dedicato per la logica complessa di selezione
         $featuredService = app(\App\Services\FeaturedCollectionService::class);
 
@@ -260,8 +258,7 @@ class HomeController extends Controller
      * @return \Illuminate\Database\Eloquent\Collection Random collections for testing
      * @privacy-safe Only public published collections
      */
-    private function getRandomCollections()
-    {
+    private function getRandomCollections() {
         // Utilizziamo il service dedicato per la selezione random
         $featuredService = app(\App\Services\FeaturedCollectionService::class);
 
@@ -287,8 +284,7 @@ class HomeController extends Controller
      * @return \Illuminate\Database\Eloquent\Collection Random 20 published EGIs from creators
      * @privacy-safe Only public published content from creators
      */
-    private function getFeaturedEgis()
-    {
+    private function getFeaturedEgis() {
         return Egi::where('is_published', true)
             ->where('type', '!=', 'pa_act') // Escludi PA Act
             ->whereHas('user', function ($query) {
@@ -320,8 +316,7 @@ class HomeController extends Controller
      * @return \Illuminate\Database\Eloquent\Collection Latest 8 published collections with creator and EGI count
      * @privacy-safe Only public published collections
      */
-    private function getLatestCollections($excludeIds)
-    {
+    private function getLatestCollections($excludeIds) {
         return Collection::where('is_published', true)
             ->whereNotIn('id', $excludeIds)
             ->with(['creator'])
@@ -340,8 +335,7 @@ class HomeController extends Controller
      * @return \Illuminate\Database\Eloquent\Collection Top 3 active environmental projects
      * @privacy-safe Public environmental project data
      */
-    private function getHighlightedEpps()
-    {
+    private function getHighlightedEpps() {
         return Epp::where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->take(3)
@@ -359,8 +353,7 @@ class HomeController extends Controller
      * @return \Illuminate\Database\Eloquent\Collection Random 50 creators with their EGI and collection counts
      * @privacy-safe Public creator profiles only
      */
-    private function getFeaturedCreators()
-    {
+    private function getFeaturedCreators() {
         return User::where('usertype', 'creator')
             ->where('usertype', '!=', 'pa_entity') // Escludi PA Entity
             ->withCount(['createdEgis as egis_count', 'createdCollections as collections_count'])
@@ -380,8 +373,7 @@ class HomeController extends Controller
      * @schema-type QuantitativeValue
      * @todo Future: Calculate sum from transactions or retrieve from dedicated API
      */
-    private function getTotalPlasticRecovered(): float
-    {
+    private function getTotalPlasticRecovered(): float {
         // MVP: Valore hardcoded
         // TODO: In futuro, calcolare somma da transazioni o recuperare da API dedicata
         return 5241.38;
@@ -412,8 +404,7 @@ class HomeController extends Controller
      * @return \Illuminate\Database\Eloquent\Collection Hyper-flagged published EGIs from creators (random order)
      * @privacy-safe Only public published hyper content from creators
      */
-    private function getHyperEgis()
-    {
+    private function getHyperEgis() {
         return Egi::where('is_published', true)
             ->where('hyper', true)
             ->where('type', '!=', 'pa_act') // Escludi PA Act

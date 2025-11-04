@@ -214,6 +214,17 @@ class SystemUsersSeeder extends Seeder {
         try {
             $algorandAddress = $this->generateValidAlgorandAddress();
 
+            // Get Florence EGI tenant_id (created by DatabaseSeeder)
+            $florenceEgiTenant = DB::table('tenants')
+                ->where('slug', 'florence-egi')
+                ->first();
+
+            if (!$florenceEgiTenant) {
+                throw new \Exception('Florence EGI tenant not found. DatabaseSeeder must create it first.');
+            }
+
+            $tenantId = $florenceEgiTenant->id;
+
             // ✅ CHECK se utente esiste già
             $existingUser = User::find($userData['id']);
 
@@ -222,6 +233,7 @@ class SystemUsersSeeder extends Seeder {
 
                 // Update existing user instead of creating
                 $existingUser->update([
+                    'tenant_id' => $tenantId, // Multi-tenant
                     'name' => $userData['name'],
                     'email' => $userData['email'],
                     'password' => Hash::make('Password'), // ✅ FIX: Reset password anche su update
@@ -240,6 +252,7 @@ class SystemUsersSeeder extends Seeder {
             // Create new user if doesn't exist
             return User::forceCreate([
                 'id' => $userData['id'],
+                'tenant_id' => $tenantId, // Multi-tenant
                 'name' => $userData['name'],
                 'email' => $userData['email'],
                 'password' => Hash::make('Password'),
