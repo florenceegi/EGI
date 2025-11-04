@@ -76,6 +76,11 @@ class AlgorandService
         $this->logger->info('ALGORAND_EGI_MINT_START', ['egi_id' => $egiId]);
 
         try {
+            // CRITICAL: Ensure microservice is running before minting
+            if (!$this->ensureMicroserviceRunning()) {
+                throw new \Exception('AlgoKit microservice is not available and auto-start failed. Cannot proceed with minting.');
+            }
+
             // Prepara metadata per il certificato EGI
             $egiMetadata = $this->buildEgiMetadata($egiId, $metadata);
 
@@ -382,5 +387,153 @@ class AlgorandService
         }
 
         return preg_match('/^[A-Z2-7]+$/', $address) === 1;
+    }
+
+    /**
+     * Ensure microservice is running, attempt auto-start if down
+     * 
+     * @return bool true if microservice is available
+     */
+    protected function ensureMicroserviceRunning(): bool
+    {
+        // ULM: Trace health check start
+        $this->logger->debug('AlgorandService: Microservice health check starting', [
+            'url' => $this->microserviceUrl
+        ]);
+
+        try {
+            // Health check attempt
+            $response = Http::timeout(5)->get($this->microserviceUrl . '/health');
+
+            if ($response->successful()) {
+                // ULM: Trace health check success
+                $this->logger->debug('AlgorandService: Microservice health check passed', [
+                    'url' => $this->microserviceUrl,
+                    'status' => 'healthy'
+                ]);
+                return true;
+            }
+        } catch (\Exception $e) {
+            // ULM: Trace health check failure
+            $this->logger->warning('AlgorandService: Microservice health check failed', [
+                'url' => $this->microserviceUrl,
+                'error' => $e->getMessage(),
+                'exception_class' => get_class($e)
+            ]);
+
+            // UEM: Handle error (ALERT TEAM)
+            $this->errorManager->handle('MICROSERVICE_NOT_REACHABLE', [
+                'url' => $this->microserviceUrl,
+                'error' => $e->getMessage()
+            ], $e);
+
+            // ULM: Trace auto-start attempt
+            $this->logger->info('AlgorandService: Attempting microservice auto-start', [
+                'timestamp' => now()->toDateTimeString()
+            ]);
+
+            // Attempt auto-start
+            return $this->attemptMicroserviceAutoStart();
+        }
+
+        return false;
+    }
+
+    /**
+     * Attempt to auto-start Algorand microservice
+     *
+     * @return bool true if auto-start successful
+     */
+    protected function attemptMicroserviceAutoStart(): bool
+    {
+        try {
+            $microservicePath = base_path('algokit-microservice');
+            $serverJs = $microservicePath . '/server.js';
+
+            // Verify files exist
+            if (!file_exists($serverJs)) {
+                $this->errorManager->handle('MICROSERVICE_NOT_FOUND', [
+                    'path' => $serverJs
+                ], new \Exception('Microservice files missing'));
+                return false;
+            }
+
+            // Build auto-start command
+            $command = sprintf(
+                'cd %s && node server.js > /tmp/algokit-autostart.log 2>&1 & echo $!',
+                escapeshellarg($microservicePath)
+            );
+
+            // ULM: Trace auto-start command
+            $this->logger->info('AlgorandService: Microservice auto-start command prepared', [
+                'command' => $command,
+                'path' => $microservicePath,
+                'timestamp' => now()->toDateTimeString()
+            ]);
+
+            // Execute command and capture PID
+            $output = shell_exec($command);
+            $pid = trim($output);
+
+            // ULM: Trace PID capture
+            $this->logger->debug('AlgorandService: Microservice auto-start PID captured', [
+                'pid' => $pid,
+                'is_numeric' => is_numeric($pid)
+            ]);
+
+            if (!empty($pid) && is_numeric($pid)) {
+                // Wait for startup
+                sleep(3);
+
+                // Verify process is still running
+                $processCheck = trim(shell_exec("ps -p {$pid} -o pid= 2>/dev/null"));
+
+                // ULM: Trace process verification
+                $this->logger->debug('AlgorandService: Microservice process verification', [
+                    'pid' => $pid,
+                    'process_check' => $processCheck,
+                    'is_running' => !empty($processCheck)
+                ]);
+
+                if (!empty($processCheck)) {
+                    // Verify health check after startup with retry
+                    for ($i = 0; $i < 3; $i++) {
+                        try {
+                            $response = Http::timeout(5)->get($this->microserviceUrl . '/health');
+
+                            if ($response->successful()) {
+                                // UEM: SUCCESS - ALERT TEAM
+                                $this->errorManager->handle('MICROSERVICE_AUTO_STARTED_SUCCESS', [
+                                    'pid' => $pid,
+                                    'url' => $this->microserviceUrl,
+                                    'startup_time_seconds' => 3,
+                                    'health_check_attempts' => $i + 1
+                                ], new \Exception('Microservice was down and required auto-start'));
+
+                                return true;
+                            }
+                        } catch (\Exception $e) {
+                            sleep(2); // Wait before retry
+                        }
+                    }
+                }
+            }
+
+            // UEM: Auto-start failed
+            $this->errorManager->handle('MICROSERVICE_AUTO_START_FAILED', [
+                'pid' => $pid ?? 'unknown',
+                'path' => $microservicePath
+            ], new \Exception('Microservice auto-start completed but health check failed'));
+
+            return false;
+        } catch (\Exception $e) {
+            // ULM: Log auto-start error
+            $this->logger->error('AlgorandService: Microservice auto-start exception', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return false;
+        }
     }
 }
