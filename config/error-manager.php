@@ -6860,5 +6860,17 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // === AI Feature Orchestration Errors ===
+        'AI_FEATURE_ORCHESTRATION_ERROR' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.ai_feature_orchestration_error',
+            'user_message_key' => 'error-manager::errors_2.user.ai_feature_orchestration_error',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];

@@ -280,3 +280,32 @@ Route::prefix('wallet/welcome')->name('api.wallet.welcome.')->middleware(['web']
     Route::post('/skip-iban', [App\Http\Controllers\WalletWelcomeController::class, 'skipIban'])
         ->name('skip-iban');
 });
+
+/*
+|--------------------------------------------------------------------------
+| AI Features Unified API Routes (OS3.0 Architecture)
+|--------------------------------------------------------------------------
+|
+| Unified orchestrator for all AI features (traits, description, curator, etc.)
+| Authentication: Session-based (web middleware) 
+| Pattern: Strategy + Factory
+|
+| REQUEST BODY:
+| {
+|   "feature_code": "ai_trait_generation",
+|   "egi_id": 123,
+|   "params": { "requested_count": 5 }
+| }
+|
+| Supported feature_codes:
+| - ai_trait_generation
+| - ai_description_generation
+| - ai_collection_strategy (coming soon)
+|
+*/
+
+Route::prefix('ai/features')->name('api.ai.features.')->middleware(['web'])->group(function () {
+    // Unified execution endpoint
+    Route::post('/execute', [App\Http\Controllers\AI\AiFeatureController::class, 'execute'])
+        ->name('execute');
+});
