@@ -350,6 +350,7 @@ class CertificateGeneratorService {
                 'certificate_type' => 'mint',
                 'egi_blockchain_id' => $egiBlockchain->id,
                 'egi_id' => $egi->id,
+                'reservation_id' => $egiBlockchain->reservation_id, // Can be null for direct mint
                 'user_id' => $egiBlockchain->buyer_user_id,
                 'wallet_address' => $egiBlockchain->buyer_wallet ?? 'Treasury Custody',
                 'reservation_type' => 'strong', // Mint is always strong ownership
