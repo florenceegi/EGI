@@ -36,34 +36,12 @@
     </div>
 
     <div class="space-y-6 p-6">
-        {{-- Step 1: Descrizione AI --}}
-        <div class="rounded-xl border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 p-5">
-            <div class="mb-3 flex items-center gap-2">
-                <span
-                    class="flex h-8 w-8 items-center justify-center rounded-full bg-purple-600 text-sm font-bold text-white">1</span>
-                <h4 class="text-lg font-bold text-purple-900">Scrivi la descrizione</h4>
-            </div>
-            <p class="mb-4 text-sm text-purple-700">
-                Puoi scriverla tu oppure farla creare dall'intelligenza artificiale N.A.T.A.N
-            </p>
-            <div class="flex gap-2">
-                <button type="button" onclick="handleGenerateDescription({{ $egi->id }})"
-                    class="flex-1 rounded-lg bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow transition-all hover:bg-purple-700 hover:shadow-lg">
-                    <i class="fas fa-sparkles mr-2"></i>Genera con AI
-                </button>
-                <button type="button" onclick="handleImproveDescription({{ $egi->id }})"
-                    class="flex-1 rounded-lg border-2 border-purple-600 bg-white px-4 py-3 text-sm font-semibold text-purple-600 shadow transition-all hover:bg-purple-50">
-                    <i class="fas fa-wand-magic mr-2"></i>Migliora
-                </button>
-            </div>
-        </div>
-
-        {{-- Step 2: Traits (collassabile) --}}
+        {{-- Step 1: Traits (collassabile) --}}
         <details class="group rounded-xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">
             <summary class="cursor-pointer p-5 transition-colors hover:bg-amber-100">
                 <div class="flex items-center gap-2">
                     <span
-                        class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-600 text-sm font-bold text-white">2</span>
+                        class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-600 text-sm font-bold text-white">1</span>
                     <div class="flex-1">
                         <h4 class="text-lg font-bold text-amber-900">Aggiungi le caratteristiche</h4>
                         <p class="text-sm text-amber-700">Colori, stile, tecnica, emozioni... (clicca per aprire)</p>
@@ -80,11 +58,11 @@
             </div>
         </details>
 
-        {{-- Step 3: Mint su Blockchain --}}
+        {{-- Step 2: Mint su Blockchain --}}
         <div class="border-t-2 border-gray-200 pt-6">
             <div class="mb-4 flex items-center gap-2">
                 <span
-                    class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">3</span>
+                    class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">2</span>
                 <h4 class="text-lg font-bold text-gray-900">Scegli come mintare</h4>
             </div>
             <p class="mb-6 text-sm text-gray-600">

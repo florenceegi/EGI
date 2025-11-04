@@ -19,8 +19,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class DatabaseSeeder extends Seeder
-{
+class DatabaseSeeder extends Seeder {
     /**
      * Seeder execution order (CRITICAL - rispettare ordine dipendenze)
      */
@@ -55,8 +54,7 @@ class DatabaseSeeder extends Seeder
      * @return void
      * @throws \Exception Se qualsiasi seeder fallisce
      */
-    public function run(): void
-    {
+    public function run(): void {
         $this->command->info('🔒 Starting ATOMIC seeding transaction...');
         $this->command->info('⚠️  If ANY seeder fails, ALL changes will be rolled back!');
 
@@ -155,8 +153,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Display seeding summary info
      */
-    private function displaySeedingSummary(): void
-    {
+    private function displaySeedingSummary(): void {
         $this->command->info('');
         $this->command->info('📋 SEEDING SUMMARY:');
         $this->command->info('═══════════════════');
@@ -174,11 +171,10 @@ class DatabaseSeeder extends Seeder
 
     /**
      * Create Florence EGI tenant (required for multi-tenant architecture)
-     * 
+     *
      * @return void
      */
-    private function createFlorenceEgiTenant(): void
-    {
+    private function createFlorenceEgiTenant(): void {
         $this->command->info('🏛️  Step 0: Creating Florence EGI tenant...');
 
         // Check if tenant already exists
@@ -188,7 +184,7 @@ class DatabaseSeeder extends Seeder
 
         if ($existingTenant) {
             $this->command->warn('⚠️  Florence EGI tenant already exists (ID: ' . $existingTenant->id . ')');
-            
+
             // Update tenant_id for users without it
             $usersUpdated = DB::table('users')
                 ->whereNull('tenant_id')
@@ -224,7 +220,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->command->info("✅ Florence EGI tenant created (ID: {$tenantId})");
-        
+
         // Assign all existing users to Florence EGI tenant
         $usersUpdated = DB::table('users')
             ->whereNull('tenant_id')
