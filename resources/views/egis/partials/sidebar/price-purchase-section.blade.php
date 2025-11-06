@@ -71,7 +71,18 @@
         </div>
     @else
         <div class="mb-6 text-center">
-            @if ($egi->price && $egi->price > 0)
+            @if ($egi->isMinted() && $egi->token_EGI)
+                {{-- EGI mintato - Mostra stato blockchain --}}
+                <div class="rounded-lg border border-green-500/30 bg-green-500/10 p-4">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p class="text-lg font-semibold text-green-300">{{ __('egi.status.minted') ?? 'EGI Mintato' }}</p>
+                    </div>
+                    <p class="text-sm text-green-200/80">{{ __('egi.minted_on_blockchain') ?? 'Certificato su blockchain' }}</p>
+                </div>
+            @elseif ($egi->price && $egi->price > 0)
                 <p class="text-lg font-semibold text-gray-300">{{ __('egi.not_currently_listed') }}</p>
                 <p class="mt-1 text-sm text-gray-500">{{ __('egi.contact_owner_availability') }}</p>
             @else
