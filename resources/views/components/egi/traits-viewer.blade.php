@@ -383,12 +383,14 @@ $canEdit =
     @push('scripts')
         <script>
             /**
-             * Handle AI Traits Generation Request
+             * Handle AI Traits Generation Request (with cost confirmation)
+             * Uses unified AI Feature Orchestrator
+             * 
              * FLUSSO COMPLETO:
              * 1. Chiede quanti traits generare (3-10)
-             * 2. Genera proposte (non traits definitivi)
-             * 3. Apre modale per review e approvazione
-             * 4. Crea solo i traits approvati
+             * 2. Show cost confirmation dialog
+             * 3. If confirmed → execute via unified API
+             * 4. Reload → Proposals modal opens automatically
              */
             async function handleTraitsGenerate(event, egiId) {
                 event.preventDefault();
@@ -416,7 +418,7 @@ $canEdit =
                     `,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: '<i class="fas fa-wand-magic-sparkles mr-2"></i>Genera Proposte',
+                    confirmButtonText: '<i class="fas fa-wand-magic-sparkles mr-2"></i>Procedi',
                     cancelButtonText: 'Annulla',
                     confirmButtonColor: '#9333ea',
                     cancelButtonColor: '#6b7280',
@@ -438,78 +440,29 @@ $canEdit =
                 const requestedCount = countResult.value;
                 console.log('[AI Traits] Requested count:', requestedCount);
 
-                // Step 2: Show loading
-                Swal.fire({
-                    title: 'Analizzando...',
-                    html: `<p>N.A.T.A.N sta analizzando l'immagine con Claude Vision...</p>
-                           <p class="text-sm text-gray-600 mt-2">Generazione di ${requestedCount} proposte in corso...</p>
-                           <p class="text-xs text-gray-500 mt-3">Questo può richiedere 30-60 secondi.</p>`,
-                    icon: 'info',
-                    showConfirmButton: false,
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
+                // Step 2: Use unified AI feature flow with cost confirmation
+                await executeAiFeatureWithConfirmation(
+                    'ai_trait_generation', // feature_code
+                    egiId,
+                    { 
+                        requested_count: requestedCount 
+                    },
+                    {
+                        onSuccess: (data) => {
+                            // Show success and reload to show proposals modal
+                            Swal.fire({
+                                title: '✨ Analisi Completata!',
+                                html: `<p>${data.message || 'Traits generati con successo!'}</p>
+                                       <p class="text-sm text-gray-600 mt-2">Tra un istante vedrai le proposte da approvare.</p>`,
+                                icon: 'success',
+                                confirmButtonText: 'Vedi Proposte',
+                                confirmButtonColor: '#9333ea',
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
                     }
-                });
-
-                try {
-                    const url = `/egi/${egiId}/dual-arch/traits/generate`;
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
-                    
-                    console.log('[AI Traits] Preparing request', { url, requestedCount, hasCsrfToken: !!csrfToken });
-                    
-                    if (!csrfToken) {
-                        throw new Error('CSRF token not found in page');
-                    }
-                    
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken.content,
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: JSON.stringify({
-                            requested_count: requestedCount
-                        }),
-                    });
-
-                    console.log('[AI Traits] Response received', { status: response.status, ok: response.ok });
-
-                    const data = await response.json();
-                    console.log('[AI Traits] Data parsed', data);
-
-                    if (data.success) {
-                        // Step 3: Proposte generate → Ricarica per mostrare modale
-                        await Swal.fire({
-                            title: '✨ Analisi Completata!',
-                            html: `<p>${data.message}</p>
-                                   <p class="text-sm text-gray-600 mt-2">Tra un istante vedrai le proposte da approvare.</p>`,
-                            icon: 'success',
-                            confirmButtonText: 'Vedi Proposte',
-                            confirmButtonColor: '#9333ea',
-                            timer: 2000,
-                            timerProgressBar: true,
-                        });
-
-                        // Reload per mostrare il modale proposals
-                        window.location.reload();
-                    } else {
-                        throw new Error(data.message || 'Errore sconosciuto');
-                    }
-                } catch (error) {
-                    console.error('AI Traits Generation Error:', error);
-
-                    Swal.fire({
-                        title: 'Errore',
-                        text: error.message || 'Si è verificato un errore durante la generazione delle proposte.',
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#dc2626',
-                    });
-                }
-
-                return false;
+                );
             }
         </script>
     @endpush

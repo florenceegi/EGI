@@ -1411,6 +1411,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 {{-- Art Advisor JavaScript - Load before component --}}
 <script src="{{ asset('js/art-advisor.js') }}"></script>
 
+{{-- AI Features Helper - Unified flow with cost confirmation --}}
+<script src="{{ asset('js/ai-features-helper.js') }}"></script>
+
 @push('scripts')
     {{-- Also try in push for redundancy --}}
     @vite('resources/js/coa/vocabulary-modal.js')

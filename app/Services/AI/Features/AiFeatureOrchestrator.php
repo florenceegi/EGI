@@ -8,6 +8,7 @@ use App\Models\AiFeaturePricing;
 use App\Services\AI\Features\DTOs\AiFeatureResult;
 use App\Services\AI\Features\AiFeatureFactory;
 use App\Services\Gdpr\AuditLogService;
+use App\Services\EgiliService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -37,6 +38,7 @@ class AiFeatureOrchestrator
     public function __construct(
         private AiFeatureFactory $factory,
         private AuditLogService $auditService,
+        private EgiliService $egiliService,
         private UltraLogManager $logger,
         private ErrorManagerInterface $errorManager
     ) {}
@@ -121,6 +123,36 @@ class AiFeatureOrchestrator
             // STEP 7: Execute Handler
             $result = $handler->execute($egi, $user, $params);
 
+            // STEP 7.5: Debit Egili if execution successful and not free
+            if ($result->success && !$pricing->is_free && $pricing->cost_egili > 0) {
+                $debitResult = $this->egiliService->debitForFeature(
+                    user: $user,
+                    featureCode: $featureCode,
+                    amount: $pricing->cost_egili,
+                    metadata: [
+                        'egi_id' => $egiId,
+                        'feature_code' => $featureCode,
+                        'execution_result' => 'success',
+                    ]
+                );
+
+                if (!$debitResult['success']) {
+                    $this->logger->warning('[AiFeatureOrchestrator] Egili debit failed after execution', [
+                        'user_id' => $user->id,
+                        'feature_code' => $featureCode,
+                        'amount' => $pricing->cost_egili,
+                        'error' => $debitResult['message'] ?? 'Unknown error',
+                    ]);
+                    // Continue anyway - execution was successful, debit failure should be investigated separately
+                } else {
+                    $this->logger->info('[AiFeatureOrchestrator] Egili debited successfully', [
+                        'user_id' => $user->id,
+                        'amount' => $pricing->cost_egili,
+                        'transaction_id' => $debitResult['transaction_id'] ?? null,
+                    ]);
+                }
+            }
+
             // STEP 8: Audit Trail (GDPR)
             $this->auditService->logUserAction(
                 user: $user,
@@ -180,19 +212,40 @@ class AiFeatureOrchestrator
      */
     private function checkUserCredits(User $user, AiFeaturePricing $pricing): array
     {
-        // TODO: Integrate with EgiliService per check wallet balance
-        // For now, assume sufficient credits (payment will be handled later)
+        $requiredEgili = $pricing->cost_egili ?? 0;
         
-        $this->logger->info('[AiFeatureOrchestrator] Credits check', [
+        $this->logger->info('[AiFeatureOrchestrator] Checking user credits', [
             'user_id' => $user->id,
-            'required_egili' => $pricing->cost_egili,
-            'required_fiat' => $pricing->cost_fiat_eur,
+            'required_egili' => $requiredEgili,
+            'feature_code' => $pricing->feature_code,
         ]);
 
-        // Placeholder logic - replace with actual credit/payment check
+        // Get user balance via EgiliService
+        $balance = $this->egiliService->getBalance($user);
+        
+        $this->logger->info('[AiFeatureOrchestrator] User balance retrieved', [
+            'user_id' => $user->id,
+            'available_egili' => $balance['egili'] ?? 0,
+            'required_egili' => $requiredEgili,
+        ]);
+
+        // Check if user has enough Egili
+        $availableEgili = $balance['egili'] ?? 0;
+        
+        if ($availableEgili < $requiredEgili) {
+            return [
+                'sufficient' => false,
+                'message' => sprintf(
+                    'Crediti insufficienti. Disponibili: %d Egili, Richiesti: %d Egili',
+                    $availableEgili,
+                    $requiredEgili
+                )
+            ];
+        }
+
         return [
-            'sufficient' => true, // TODO: implement real check
-            'message' => 'Credits OK'
+            'sufficient' => true,
+            'message' => sprintf('Crediti sufficienti (%d Egili disponibili)', $availableEgili)
         ];
     }
 }

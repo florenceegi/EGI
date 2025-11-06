@@ -4,6 +4,8 @@ namespace App\Http\Controllers\AI;
 
 use App\Http\Controllers\Controller;
 use App\Services\AI\Features\AiFeatureOrchestrator;
+use App\Services\EgiliService;
+use App\Models\AiFeaturePricing;
 use App\Helpers\FegiAuth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,9 +44,58 @@ class AiFeatureController extends Controller
 {
     public function __construct(
         private AiFeatureOrchestrator $orchestrator,
+        private EgiliService $egiliService,
         private UltraLogManager $logger
     ) {
         $this->middleware('auth');
+    }
+    
+    /**
+     * Get pricing info for AI Feature (for confirmation dialog)
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getPricing(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'feature_code' => 'required|string|max:100',
+        ]);
+
+        $featureCode = $validated['feature_code'];
+        $user = FegiAuth::user();
+
+        // Get pricing from DB
+        $pricing = AiFeaturePricing::where('feature_code', $featureCode)->first();
+
+        if (!$pricing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Feature not found',
+            ], 404);
+        }
+
+        if (!$pricing->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Feature currently inactive',
+            ], 400);
+        }
+
+        // Get user balance
+        $balance = $this->egiliService->getBalance($user);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'feature_code' => $pricing->feature_code,
+                'feature_name' => $pricing->feature_name,
+                'cost_egili' => $pricing->cost_egili ?? 0,
+                'is_free' => $pricing->is_free,
+                'user_balance' => $balance['egili'] ?? 0,
+                'has_sufficient_credits' => ($balance['egili'] ?? 0) >= ($pricing->cost_egili ?? 0),
+            ]
+        ]);
     }
 
     /**

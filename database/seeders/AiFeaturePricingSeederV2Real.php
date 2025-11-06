@@ -114,7 +114,47 @@ class AiFeaturePricingSeederV2Real extends Seeder
             ],
             
             // ============================================
-            // 3. AI COLLECTION STRATEGY (CONSUMABLE)
+            // 3. AI DESCRIPTION GENERATION (CONSUMABLE)
+            // ============================================
+            [
+                'feature_code' => 'ai_description_generation',
+                'feature_name' => 'Generazione Descrizione AI',
+                'feature_description' => 'Analisi immagine con AI per generare descrizione professionale dell\'opera con supporto linee guida utente',
+                'feature_category' => 'ai_services',
+                
+                // PRICING
+                'cost_fiat_eur' => null, // Solo Egili per AI services
+                'cost_egili' => 30,
+                'is_free' => false,
+                
+                // FEATURE TYPE: CONSUMABLE
+                'feature_type' => 'consumable',
+                'cost_per_use' => 30, // 30 Egili per ogni generazione
+                'lifetime_cost' => null, // Non applicabile per consumable
+                'requires_admin_approval' => false,
+                'max_concurrent_slots' => null,
+                
+                // METADATA
+                'is_active' => true,
+                'display_order' => 25,
+                'is_featured' => true,
+                'icon_name' => 'superadmin-ai-brain',
+                'badge_color' => '#8E44AD', // Viola Innovazione
+                'benefits' => [
+                    'AI analysis (N.A.T.A.N)',
+                    'Descrizione professionale',
+                    'Supporto linee guida custom',
+                    'Generazione istantanea'
+                ],
+                'feature_parameters' => [
+                    'supports_guidelines' => true,
+                    'max_description_length' => 2000,
+                    'uses_anthropic_claude' => true,
+                ],
+            ],
+            
+            // ============================================
+            // 4. AI COLLECTION STRATEGY (CONSUMABLE)
             // ============================================
             [
                 'feature_code' => 'ai_collection_strategy',
@@ -136,7 +176,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
                 
                 // METADATA
                 'is_active' => true,
-                'display_order' => 30,
+                'display_order' => 35,
                 'is_featured' => true,
                 'icon_name' => 'superadmin-ai-statistics',
                 'badge_color' => '#2D5016', // Verde Rinascita
@@ -155,7 +195,7 @@ class AiFeaturePricingSeederV2Real extends Seeder
             ],
             
             // ============================================
-            // 4. FEATURED EGI 7 GIORNI (TEMPORAL + APPROVAL)
+            // 5. FEATURED EGI 7 GIORNI (TEMPORAL + APPROVAL)
             // ============================================
             [
                 'feature_code' => 'featured_egi_7d',
@@ -284,14 +324,15 @@ class AiFeaturePricingSeederV2Real extends Seeder
             AiFeaturePricing::create($feature);
         }
 
-        $this->command->info('✅ AI Feature Pricing seeded successfully (6 REAL features)');
+        $this->command->info('✅ AI Feature Pricing seeded successfully (7 REAL features)');
         $this->command->info('📊 Features created:');
         $this->command->info('  1. egi_living_subscription (lifetime)');
         $this->command->info('  2. ai_trait_generation (consumable - per use)');
-        $this->command->info('  3. ai_collection_strategy (consumable - per use)');
-        $this->command->info('  4. featured_egi_7d (temporal + approval)');
-        $this->command->info('  5. hyper_mode_7d (temporal + approval)');
-        $this->command->info('  6. ai_chat_assistant (consumable - token-based)  ⭐ NEW');
+        $this->command->info('  3. ai_description_generation (consumable - per use) ⭐ NEW');
+        $this->command->info('  4. ai_collection_strategy (consumable - per use)');
+        $this->command->info('  5. featured_egi_7d (temporal + approval)');
+        $this->command->info('  6. hyper_mode_7d (temporal + approval)');
+        $this->command->info('  7. ai_chat_assistant (consumable - token-based)');
     }
 }
 

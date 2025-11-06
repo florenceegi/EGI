@@ -218,12 +218,11 @@
         }
 
         /**
-         * Handle Generate AI Description
+         * Handle Generate AI Description (with cost confirmation)
+         * Uses unified AI Feature Orchestrator
          */
-        function handleGenerateDescription(egiId) {
-            console.log('[AI Description] Generate button clicked', {
-                egiId
-            });
+        async function handleGenerateDescription(egiId) {
+            console.log('[AI Description] Generate button clicked', { egiId });
 
             // Read current description as guidelines (from CRUD panel textarea)
             const descriptionField = document.getElementById('description');
@@ -231,75 +230,33 @@
             
             console.log('[AI Description] Current guidelines:', currentGuidelines);
 
-            Swal.fire({
-                title: 'Generare descrizione con AI?',
-                html: currentGuidelines 
-                    ? '<p class="text-sm text-gray-600">N.A.T.A.N analizzerà la tua opera e creerà una descrizione seguendo le tue linee guida</p><div class="mt-3 rounded bg-purple-50 p-3 text-left text-xs"><strong>Le tue linee guida:</strong><br><em class="text-gray-600">' + currentGuidelines.substring(0, 150) + (currentGuidelines.length > 150 ? '...' : '') + '</em></div>'
-                    : '<p class="text-sm text-gray-600">N.A.T.A.N analizzerà la tua opera e creerà una descrizione professionale</p>',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#9333ea',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Sì, genera!',
-                cancelButtonText: 'Annulla'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'N.A.T.A.N al lavoro...',
-                        html: currentGuidelines 
-                            ? 'Sto analizzando la tua opera seguendo le tue linee guida...'
-                            : 'Sto analizzando la tua opera...',
-                        allowOutsideClick: false,
-                        showConfirmButton: false,
-                        willOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    const apiUrl = `/egi/${egiId}/dual-arch/ai/generate-description`;
-
-                    fetch(apiUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                            },
-                            body: JSON.stringify({
-                                guidelines: currentGuidelines || null
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Descrizione Creata!',
-                                    html: `<div class="text-left"><p class="mb-3 text-sm text-gray-700">Ecco un'anteprima:</p><div class="rounded-lg bg-gray-100 p-3 text-xs text-gray-800">${data.data.description.substring(0, 200)}...</div></div>`,
-                                    confirmButtonColor: '#9333ea',
-                                    confirmButtonText: 'Perfetto!'
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Errore',
-                                    text: data.message || 'Errore durante la generazione',
-                                    confirmButtonColor: '#ef4444'
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('AI Description error:', error);
+            // Use unified AI feature flow with cost confirmation
+            await executeAiFeatureWithConfirmation(
+                'ai_description_generation', // feature_code
+                egiId,
+                { 
+                    guidelines: currentGuidelines || null 
+                },
+                {
+                    onSuccess: (data) => {
+                        // Show preview of generated description
+                        if (data.data && data.data.description) {
                             Swal.fire({
-                                icon: 'error',
-                                title: 'Errore',
-                                text: 'Impossibile generare la descrizione. Riprova.',
-                                confirmButtonColor: '#ef4444'
+                                icon: 'success',
+                                title: 'Descrizione Creata!',
+                                html: `<div class="text-left"><p class="mb-3 text-sm text-gray-700">Ecco un'anteprima:</p><div class="rounded-lg bg-gray-100 p-3 text-xs text-gray-800">${data.data.description.substring(0, 200)}...</div></div>`,
+                                confirmButtonColor: '#9333ea',
+                                confirmButtonText: 'Perfetto!'
+                            }).then(() => {
+                                window.location.reload();
                             });
-                        });
+                        } else {
+                            // Default: just reload
+                            window.location.reload();
+                        }
+                    }
                 }
-            });
+            );
         }
 
         /**
