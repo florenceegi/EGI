@@ -92,4 +92,23 @@ return [
         'mica_title' => '⚖️ MiCA Compliance',
         'mica_description' => 'This process is completely MiCA-SAFE. We pay in FIAT through authorized PSPs, mint the NFT on your behalf, and only handle temporary custody if necessary.',
     ],
+
+    // Post-Mint Certificate
+    'post_mint' => [
+        'certificate_title' => 'Blockchain Ownership Certificate',
+        'certificate_description' => 'Your official digital certificate with verified blockchain data.',
+        'certificate_preview' => 'Certificate Preview',
+        'loading_preview' => 'Loading preview...',
+        'generating_pdf' => 'Generating PDF...',
+        'download_certificate' => 'Download Certificate PDF',
+        'regenerate_certificate' => 'Regenerate Certificate',
+        'regenerate_success' => 'Certificate regenerated successfully',
+        'generate_certificate' => 'Generate Certificate',
+        'certificate_not_created_title' => 'Certificate Not Yet Created',
+        'certificate_not_created_message' => 'The certificate was not automatically generated during mint. You can generate it manually by clicking the button below.',
+        'certificate_owner_only' => 'Only the owner can generate the certificate.',
+        'view_certificate' => 'View Certificate',
+        'my_certificates' => 'My Certificates',
+        'click_to_view' => 'Click to view full certificate',
+    ],
 ];

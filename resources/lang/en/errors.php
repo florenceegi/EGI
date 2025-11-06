@@ -185,4 +185,8 @@ return [
         'pa_act_not_found' => 'Verification code not found. Please check you copied the code correctly.',
         'pa_act_verification_error' => 'Error verifying document. Please try again later.',
     ],
+    
+    // Certificate Errors
+    'certificate_regeneration_failed' => 'Error during certificate regeneration. Please try again or contact support.',
+    'unauthorized' => 'You are not authorized to perform this operation.',
 ];

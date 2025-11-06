@@ -182,4 +182,8 @@ return [
         'pa_act_not_found' => 'Codice di verifica non trovato. Controlla di aver copiato correttamente il codice.',
         'pa_act_verification_error' => 'Errore durante la verifica del documento. Riprova più tardi.',
     ],
+    
+    // Certificate Errors
+    'certificate_regeneration_failed' => 'Errore durante la rigenerazione del certificato. Riprova o contatta l\'assistenza.',
+    'unauthorized' => 'Non sei autorizzato ad eseguire questa operazione.',
 ];
