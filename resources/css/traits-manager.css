@@ -267,8 +267,8 @@
 }
 
 .trait-card {
-    background: rgba(255, 255, 255, 0.05); /* Semi-transparent per dark mode */
-    border: none; /* Bordo rimosso per semplificare */
+    background: rgba(255, 255, 255, 0.12); /* Aumentato da 0.05 per migliore visibilità */
+    border: 1px solid rgba(212, 165, 116, 0.3); /* Bordo Oro Fiorentino per contrasto */
     border-radius: 0.5rem;
     overflow: hidden;
     transition: all 0.2s ease;
@@ -276,12 +276,13 @@
     pointer-events: auto !important;
     position: relative !important;
     z-index: 1 !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Ombra leggera invece del bordo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Ombra più pronunciata */
 }
 
 .trait-card:hover {
-    background: rgba(212, 165, 116, 0.15);
-    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.25);
+    background: rgba(212, 165, 116, 0.2); /* Aumentato per hover più visibile */
+    border-color: rgba(212, 165, 116, 0.5); /* Bordo più visibile su hover */
+    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.35);
     transform: translateY(-2px);
 }
 
@@ -791,11 +792,13 @@
 /* Dark mode adjustments for main interface */
 @media (prefers-color-scheme: dark) {
     .trait-card {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.12); /* Aumentato per coerenza */
+        border-color: rgba(212, 165, 116, 0.3);
     }
 
     .category-tab {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 }
 

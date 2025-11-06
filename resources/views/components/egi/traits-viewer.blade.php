@@ -89,9 +89,21 @@ $canEdit =
 
                         <div class="trait-card readonly clickable-trait" data-category="{{ $trait->category_id }}"
                             data-trait-id="{{ $trait->id }}"
-                            style="position: relative; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;"
-                            onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';"
-                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='';"
+                            style="position: relative; 
+                                   cursor: pointer; 
+                                   transition: all 0.2s ease; 
+                                   background: rgba(255, 255, 255, 0.25) !important;
+                                   border: 2px solid rgba(212, 165, 116, 0.6) !important;
+                                   box-shadow: 0 3px 8px rgba(212, 165, 116, 0.3), 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+                                   border-radius: 0.5rem !important;"
+                            onmouseover="this.style.transform='scale(1.03)'; 
+                                        this.style.boxShadow='0 6px 16px rgba(212, 165, 116, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4)'; 
+                                        this.style.background='rgba(212, 165, 116, 0.35)';
+                                        this.style.borderColor='rgba(212, 165, 116, 0.8)';"
+                            onmouseout="this.style.transform='scale(1)'; 
+                                       this.style.boxShadow='0 3px 8px rgba(212, 165, 116, 0.3), 0 1px 3px rgba(0, 0, 0, 0.3)'; 
+                                       this.style.background='rgba(255, 255, 255, 0.25)';
+                                       this.style.borderColor='rgba(212, 165, 116, 0.6)';"
                             title="{{ __('traits.click_to_view_details') }}">
                             @if ($canEdit)
                                 <button type="button" class="trait-remove trait-action-button"

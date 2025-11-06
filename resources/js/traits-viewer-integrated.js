@@ -1037,17 +1037,23 @@ class TraitImageManager {
     }
 
     openImageModal(traitId) {
-        const modal = document.querySelector(`#trait-modal-${traitId}`);
-        if (modal) {
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
-            modal.style.display = "flex";
+        // Usa la nuova funzione globale window.openTraitModal{id}() se disponibile
+        const openFunction = window[`openTraitModal${traitId}`];
+        if (typeof openFunction === 'function') {
+            openFunction();
         } else {
-            console.error(
-                "TraitImageManager: Modal not found for trait:",
-                traitId
-            );
-            ToastManager.error("Modal not found for this trait");
+            // Fallback al metodo precedente se funzione globale non trovata
+            const modal = document.querySelector(`#trait-modal-${traitId}`);
+            if (modal) {
+                modal.style.display = "block";
+                modal.classList.remove("hidden");
+            } else {
+                console.error(
+                    "TraitImageManager: Modal not found for trait:",
+                    traitId
+                );
+                ToastManager.error("Modal not found for this trait");
+            }
         }
     }
 
@@ -1380,11 +1386,21 @@ class TraitImageManager {
             if (e.target.matches(".trait-modal-close")) {
                 e.preventDefault();
                 e.stopPropagation(); // FERMA LA PROPAGAZIONE!
+                
+                // Prova a usare la funzione globale closeTraitModal{id}() se disponibile
                 const modal = e.target.closest(".trait-modal");
                 if (modal) {
-                    modal.style.display = "none";
-                    modal.classList.add("hidden");
-                    modal.classList.remove("flex");
+                    const traitId = modal.dataset.traitId;
+                    const closeFunction = window[`closeTraitModal${traitId}`];
+                    
+                    if (typeof closeFunction === 'function') {
+                        closeFunction();
+                    } else {
+                        // Fallback al metodo precedente
+                        modal.style.display = "none";
+                        modal.classList.add("hidden");
+                        modal.classList.remove("flex");
+                    }
                 }
             }
         });

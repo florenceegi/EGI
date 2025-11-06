@@ -10,20 +10,44 @@
 
 @props(['trait'])
 
-<div id="trait-modal-{{ $trait->id }}" class="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-50 trait-modal" data-trait-id="{{ $trait->id }}" style="display: none;">
-    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        {{-- Header --}}
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-2xl font-bold text-gray-800">
-                {{ __('label.trait_modal.trait_details') }}
-            </h2>
-            <button type="button" class="text-2xl text-gray-400 trait-modal-close hover:text-gray-600">
-                &times;
-            </button>
+<div id="trait-modal-{{ $trait->id }}" 
+    class="fixed inset-0 z-[10000] hidden bg-black/70 backdrop-blur-sm overflow-y-auto trait-modal" 
+    data-trait-id="{{ $trait->id }}" 
+    style="display: none; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);"
+    onclick="if(event.target === this) closeTraitModal{{ $trait->id }}()">
+    
+    {{-- Centering Wrapper --}}
+    <div class="min-h-screen flex items-center justify-center p-3 md:p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full my-4 flex flex-col" 
+            style="max-height: calc(100vh - 2rem);"
+            onclick="event.stopPropagation()">
+        {{-- Header - Fixed con gradiente --}}
+        <div class="flex-shrink-0 bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-3 md:px-6 md:py-4 rounded-t-2xl">
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 md:gap-3 min-w-0">
+                    <span class="text-2xl flex-shrink-0">🎯</span>
+                    <div class="min-w-0">
+                        <h2 class="text-base md:text-xl font-bold text-white truncate">
+                            {{ __('label.trait_modal.trait_details') }}
+                        </h2>
+                        <p class="text-xs md:text-sm text-purple-100">
+                            @if ($trait->traitType)
+                                {{ __('trait_elements.types.' . $trait->traitType->name, [], null) ?: $trait->traitType->name }}
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                <button type="button" 
+                    onclick="closeTraitModal{{ $trait->id }}()"
+                    class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors duration-200 trait-modal-close"
+                    title="{{ __('egi_dual_arch.ai.close_modal') }}">
+                    <i class="fas fa-times text-lg md:text-xl"></i>
+                </button>
+            </div>
         </div>
 
-        {{-- Content --}}
-        <div class="p-6">
+        {{-- Content - Scrollable Body --}}
+        <div class="flex-1 overflow-y-auto p-4 md:p-6">
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {{-- Image Section --}}
                 <div class="space-y-4">
@@ -251,17 +275,70 @@
             </div>
         </div>
 
-        {{-- Footer --}}
-        <div class="flex justify-end p-6 border-t border-gray-200">
-            <button type="button" class="px-6 py-2 text-white transition-colors bg-gray-500 rounded-md trait-modal-close hover:bg-gray-600">
-                {{ __('label.trait_modal.close') }}
-            </button>
+        </div>{{-- Fine Body scrollable --}}
+
+        {{-- Footer - Sticky --}}
+        <div class="flex-shrink-0 border-t border-gray-200 bg-gray-50 p-3 md:p-4 rounded-b-2xl sticky bottom-0">
+            <div class="flex justify-end">
+                <button type="button" 
+                    onclick="closeTraitModal{{ $trait->id }}()"
+                    class="px-4 py-2 md:px-6 md:py-2.5 text-white transition-colors bg-gray-500 rounded-lg trait-modal-close hover:bg-gray-600 font-semibold text-sm md:text-base">
+                    {{ __('label.trait_modal.close') }}
+                </button>
+            </div>
         </div>
-    </div>
-</div>
+
+        </div>{{-- Fine Modal Content --}}
+    </div>{{-- Fine Centering Wrapper --}}
+</div>{{-- Fine Modal Overlay --}}
 
 {{-- Toast Notifications per questo modale --}}
 <div id="trait-toast-container-{{ $trait->id }}" class="fixed top-4 right-4 z-[60] space-y-2"></div>
+
+{{-- JavaScript per apertura/chiusura modale - Inline per garantire caricamento immediato --}}
+<script>
+    /**
+     * Open Trait Detail Modal
+     * Funzione globale per accessibilità
+     * MOBILE-FRIENDLY: overlay scrollabile, centrato
+     */
+    window.openTraitModal{{ $trait->id }} = function() {
+        const modal = document.getElementById('trait-modal-{{ $trait->id }}');
+        if (modal) {
+            modal.style.display = 'block';
+            modal.classList.remove('hidden');
+            
+            // Scroll to top of modal on open
+            setTimeout(() => {
+                modal.scrollTop = 0;
+            }, 10);
+        }
+    };
+
+    /**
+     * Close Trait Detail Modal
+     * Funzione globale per accessibilità
+     */
+    window.closeTraitModal{{ $trait->id }} = function() {
+        const modal = document.getElementById('trait-modal-{{ $trait->id }}');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+        }
+    };
+
+    /**
+     * Close modal on ESC key
+     */
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('trait-modal-{{ $trait->id }}');
+            if (modal && modal.style.display === 'block') {
+                closeTraitModal{{ $trait->id }}();
+            }
+        }
+    });
+</script>
 
 {{-- Include CSS e JavaScript con Vite --}}
 @once
