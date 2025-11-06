@@ -141,7 +141,21 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                     compact('egi', 'collection', 'isCreator'))
                             </div>
 
-                            {{-- Description sotto l'immagine --}}
+                            {{-- Bottone Collection Link (spostato qui da Col 3) --}}
+                            <div class="mt-4 px-2">
+                                <a href="{{ route('home.collections.show', $collection->id) }}"
+                                    class="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-lg border-2 border-purple-500/50 bg-gradient-to-r from-purple-600/30 to-blue-600/30 backdrop-blur-sm hover:from-purple-600/40 hover:to-blue-600/40 hover:border-purple-400/70 transition-all duration-200 group">
+                                    <svg class="w-5 h-5 text-purple-300 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                    </svg>
+                                    <span class="font-semibold text-white text-sm">{{ __('egi.view_full_collection') }}</span>
+                                    <svg class="w-4 h-4 text-purple-300 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            </div>
+
+                            {{-- Description sotto collection link --}}
                             <div class="mt-3 md:mt-4">
                                 @include('egis.partials.sidebar.description-section', compact('egi'))
                             </div>
@@ -178,8 +192,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                 {{-- CoA (Certificate of Authenticity) Section --}}
                                 @include('egis.partials.sidebar.coa-section', compact('egi', 'isCreator'))
 
-                                {{-- Collection Link --}}
-                                @include('egis.partials.sidebar.collection-link-section', compact('collection'))
+                                {{-- Collection Link SPOSTATO sopra, sotto immagine --}}
 
                                 {{-- Collection Collaborators --}}
                                 @include('egis.partials.sidebar.collection-collaborators-section', compact('collection'))
