@@ -957,6 +957,69 @@ class RolesAndPermissionsSeeder extends Seeder {
             'sign_coa',
         ],
 
+        // ✅ NUOVO RUOLO PA ADMIN (Admin del tenant PA - per NATAN_LOC)
+        'pa_entity_admin' => [
+            // ═══ PERMESSI ESISTENTI DELL'ADMIN (NON TOCCARE) ═══
+            'create_team',
+            'remove_team_member',
+            'modify_team_roles',
+            'read_collection',
+            'update_collection',
+            'update_collection_image_header',
+            'open_collection',
+            'create_EGI',
+            'update_EGI',
+            'delete_EGI',
+            'manage_EGI',
+            'view_user',
+            'view_profile',
+            'view_team',
+            'view_dashboard',
+            'view_bio',
+            'view_settings',
+            'view_notifications',
+            'view_logs',
+            'view_collection',
+            'view_EGI',
+            'view_collection_header',
+            'view_wallet',
+            'view_statistics',
+            'manage_profile',
+            'manage_account',
+            'delete_account',
+            'view_documentation',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_breach_reports',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
+            'access_dashboard',
+            'manage_own_biographies',
+            'manage_bio_profile',
+            'can_request_export',
+            'can_request_deletion',
+            'allow-blockchain-operations',
+            
+            // Permessi specifici per gestione tenant PA (NATAN_LOC)
+            'edit_own_profile_data',
+            'edit_own_personal_data',
+            'edit_own_organization_data',
+            'manage_own_documents',
+            'manage_own_invoice_preferences',
+            'upload_identity_documents',
+            'verify_document_status',
+            'download_own_documents',
+            'configure_invoice_preferences',
+            'view_own_invoices',
+            'download_own_invoices',
+            'access_full_dashboard',
+            'view_own_wallet_address',
+        ],
+
         // ✅ NUOVO RUOLO PA (Pubbliche Amministrazioni)
         'pa_entity' => [
             // Dashboard e accesso base
@@ -1078,8 +1141,9 @@ class RolesAndPermissionsSeeder extends Seeder {
         $this->createLegalUser();
 
         $this->command->info('Ruoli e permessi creati/aggiornati con successo.');
-        $this->command->info('Nuovi ruoli aggiunti: patron, collector, enterprise, trader_pro, epp_entity, commissioner, pa_entity');
+        $this->command->info('Nuovi ruoli aggiunti: patron, collector, enterprise, trader_pro, epp_entity, commissioner, pa_entity, pa_entity_admin');
         $this->command->info('create_collection permission assegnato a: creator, patron, enterprise, pa_entity');
+        $this->command->info('pa_entity_admin: Admin del tenant PA per NATAN_LOC (gestione utenti e configurazioni tenant)');
     }
 
     private function createLegalUser(): void {

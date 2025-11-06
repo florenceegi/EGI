@@ -26,3 +26,4 @@ class AdminConsumptionLedgerMenu extends MenuItem {
 
 
 
+

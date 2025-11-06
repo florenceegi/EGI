@@ -1427,9 +1427,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 {{-- AI Traits Proposals Modal (se ci sono proposte pending) --}}
 @if ($isCreator)
     @php
-        // Cerca proposte pending per questo EGI
+        // Cerca proposte pending per questo EGI (status 'analyzed' = in attesa di review)
         $pendingGeneration = $egi->aiTraitGenerations()
-            ->where('status', 'pending_review')
+            ->where('status', 'analyzed')
             ->with('proposals')
             ->latest()
             ->first();
