@@ -4,7 +4,7 @@
  * Trait Elements Translations (Italian)
  *
  * This file is auto-updated by TraitTranslationService
- * Last updated: 2025-11-06 08:23:22
+ * Last updated: 2025-11-06 11:47:19
  */
 
 return [
@@ -152,6 +152,7 @@ return [
         'Detachable' => 'Rimovibile',
         'Diamond' => 'Diamante',
         'Digital' => 'Digitale',
+        'Digital Art' => 'Contemporary Digital Art',
         'Digital Fabrication' => 'Fabbricazione Digitale',
         'Digital Print' => 'Stampa Digitale',
         'Distorted Portrait' => 'Digitally Distorted Portrait',
@@ -250,10 +251,10 @@ return [
         'Labradorite' => 'Labradorite',
         'Lampworking' => 'Lavorazione a Lume',
         'Lapis Lazuli' => 'Lapislazzuli',
-        'Laptop 13\\\\\\\\\"' => 'Laptop 13\\\\\\\\\"',
-        'Laptop 14\\\\\\\\\"' => 'Laptop 14\\\\\\\\\"',
-        'Laptop 15\\\\\\\\\"' => 'Laptop 15\\\\\\\\\"',
-        'Laptop 16\\\\\\\\\"' => 'Laptop 16\\\\\\\\\"',
+        'Laptop 13\\\\\\\\\\\"' => 'Laptop 13\\\\\\\\\\\"',
+        'Laptop 14\\\\\\\\\\\"' => 'Laptop 14\\\\\\\\\\\"',
+        'Laptop 15\\\\\\\\\\\"' => 'Laptop 15\\\\\\\\\\\"',
+        'Laptop 16\\\\\\\\\\\"' => 'Laptop 16\\\\\\\\\\\"',
         'Laptop Sleeve' => 'Custodia Laptop',
         'Large' => 'Grande',
         'Laser Cut' => 'Taglio Laser',

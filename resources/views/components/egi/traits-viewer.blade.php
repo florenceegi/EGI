@@ -377,13 +377,7 @@ $canEdit =
         };
     </script>
 
-    {{-- Include trait detail modals per tutti i trait visibili --}}
-    @if ($egi && $egi->traits && $egi->traits->count() > 0)
-        @foreach ($egi->traits as $trait)
-            {{-- Modal di edit per proprietari --}}
-            <x-trait.trait-detail-modal :trait="$trait" />
-        @endforeach
-    @endif
+    {{-- MODALS SPOSTATI IN show.blade.php per evitare interferenze con grid --}}
 
     {{-- AI Traits Generation Script --}}
     @push('scripts')

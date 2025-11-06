@@ -112,18 +112,17 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 ? 'bg-gradient-to-br from-amber-900/30 via-emerald-900/20 to-gray-900'
                 : 'bg-gradient-to-br from-gray-900 via-black to-gray-900' }}">
 
-            {{-- Background wrapper - Container più largo per display grandi --}}
-            <div class="container mx-auto px-0 py-0 md:max-w-full lg:max-w-[1400px] xl:max-w-[1600px] 2xl:max-w-[1800px]">
+            {{-- Background wrapper - Container FULL WIDTH per desktop enormi --}}
+            <div class="container mx-auto px-0 py-0 md:max-w-full lg:max-w-full xl:max-w-full 2xl:max-w-full">
 
                 {{-- Cinematic Artwork Display --}}
                 <div class="relative w-full">
 
-                    {{-- Main Gallery Grid - 4 COLONNE da laptop in su per distribuzione omogenea --}}
-                    <div class="grid grid-cols-1 gap-0 md:grid-cols-12 lg:grid-cols-16">
+                    {{-- Main Gallery Grid - RESPONSIVE: mobile 1col, desktop 3-4col (4 se creator, 3 se non-creator) --}}
+                    <div id="egi-main-grid" class="grid grid-cols-1 @if($canUpdateEgi) lg:grid-cols-4 @else lg:grid-cols-3 @endif" style="width: 100%; box-sizing: border-box;">
 
                         {{-- Col 1: Artwork Area --}}
-                        <div
-                            class="@if ($canUpdateEgi) md:col-span-7 lg:col-span-5 xl:col-span-5 @else md:col-span-7 lg:col-span-8 xl:col-span-9 @endif relative p-2 md:p-3 lg:p-4 xl:p-6">
+                        <div class="relative p-2 lg:p-4">
 
                             {{-- Artwork Container con Floating Card - Sempre visibile completamente --}}
                             <div class="relative mx-auto w-full max-w-full">
@@ -142,27 +141,30 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                     compact('egi', 'collection', 'isCreator'))
                             </div>
 
+                            {{-- Description sotto l'immagine --}}
+                            <div class="mt-3 md:mt-4">
+                                @include('egis.partials.sidebar.description-section', compact('egi'))
+                            </div>
+
                         </div>
 
-                        {{-- Col 2: CRUD Box --}}
-                        @include(
-                            'egis.partials.sidebar.crud-panel',
-                            compact(
-                                'egi',
-                                'canUpdateEgi',
-                                'canDeleteEgi',
-                                'isPriceLocked',
-                                'displayPrice',
-                                'displayUser',
-                                'highestPriorityReservation'))
+                        {{-- Col 2: CRUD Box - SOLO SE CREATOR --}}
+                        @if ($canUpdateEgi)
+                            @include(
+                                'egis.partials.sidebar.crud-panel',
+                                compact(
+                                    'egi',
+                                    'canUpdateEgi',
+                                    'canDeleteEgi',
+                                    'isPriceLocked',
+                                    'displayPrice',
+                                    'displayUser',
+                                    'highestPriorityReservation'))
+                        @endif
 
-                        {{-- Col 3: Info Panel (Description + Traits + Utility + History + CoA + Collection) --}}
-                        <div
-                            class="overflow-y-auto border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-xl md:hidden lg:block lg:border-l lg:border-t-0 @if($canUpdateEgi) lg:col-span-4 xl:col-span-4 @else lg:col-span-5 xl:col-span-5 @endif">
-                            <div class="space-y-4 p-4 md:space-y-3 md:p-3 lg:space-y-4 lg:p-4 xl:space-y-5 xl:p-5">
-                                {{-- Description --}}
-                                @include('egis.partials.sidebar.description-section', compact('egi'))
-
+                        {{-- Col 3: Info Panel (Col 2 se non-creator) --}}
+                        <div class="overflow-y-auto bg-gray-900/95 backdrop-blur-xl lg:block">
+                            <div class="space-y-3 p-3 lg:p-4">
                                 {{-- Traits Section --}}
                                 @php $canManage = $canUpdateEgi; @endphp
                                 @include('egis.partials.sidebar.traits-section', compact('egi', 'canManage'))
@@ -184,12 +186,11 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             </div>
                         </div>
 
-                        {{-- Col 4: Sidebar principale --}}
-                        <div
-                            class="overflow-y-auto border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-xl md:hidden lg:col-span-3 lg:block lg:border-l lg:border-t-0 xl:col-span-3">
+                        {{-- Col 4: Actions Panel --}}
+                        <div class="overflow-y-auto bg-gray-900/95 backdrop-blur-xl lg:block">
 
                             {{-- Sidebar Content - Padding compatto --}}
-                            <div class="space-y-4 p-4 md:space-y-3 md:p-3 lg:space-y-4 lg:p-4 xl:space-y-5 xl:p-5">
+                            <div class="space-y-3 p-3 lg:p-4">
 
                                 {{-- Badge EGI Type e Mint in cima alla sidebar --}}
                                 <div class="flex flex-wrap items-center gap-2 border-b border-gray-700/30 pb-3">
@@ -249,6 +250,20 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 </div>
             </div>
 
+            {{-- MODALS - FUORI dal grid per evitare interferenze --}}
+            
+            {{-- Utility Manager Modal --}}
+            @if(auth()->id() === $egi->user_id && $egi->is_published == 0)
+                <x-utility.utility-manager :egi="$egi" />
+            @endif
+            
+            {{-- Trait Detail Modals --}}
+            @if ($egi && $egi->traits && $egi->traits->count() > 0)
+                @foreach ($egi->traits as $trait)
+                    <x-trait.trait-detail-modal :trait="$trait" />
+                @endforeach
+            @endif
+
             {{-- Se utility presente e collection pubblicata, mostra solo in lettura --}}
             @if ($egi->utility && $egi->collection->status === 'published')
                 <div class="mx-auto max-w-6xl">
@@ -266,6 +281,14 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             {{-- JavaScript per CRUD Interactions --}}
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
+                    // Grid debug info
+                    const mainGrid = document.getElementById('egi-main-grid');
+                    if (mainGrid) {
+                        console.log('Grid DEBUG:');
+                        console.log('- gridTemplateColumns:', getComputedStyle(mainGrid).gridTemplateColumns);
+                        console.log('- Children count:', mainGrid.children.length);
+                    }
+                    
                     const editStartBtn = document.getElementById('egi-edit-start');
                     const editToggleBtn = document.getElementById('egi-edit-toggle');
                     const editForm = document.getElementById('egi-edit-form');

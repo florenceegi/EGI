@@ -19,8 +19,5 @@
             </svg>
             <span>⚡ {{ __('utility.manage_utility') ?? 'Gestisci Utility' }}</span>
         </button>
-        
-        {{-- Utility Manager Modal Component (nascosto fino all'apertura) --}}
-        <x-utility.utility-manager :egi="$egi" />
     </div>
 @endif

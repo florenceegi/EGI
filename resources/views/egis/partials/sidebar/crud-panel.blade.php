@@ -5,10 +5,8 @@
     VARIABILI: $egi, $canUpdateEgi, $canDeleteEgi, $isPriceLocked, $canModifyPrice, $displayPrice, $displayUser, $highestPriorityReservation
 --}}
 
-{{-- Col 2: CRUD Box (quando visibile) --}}
-@if ($canUpdateEgi)
-    <div
-        class="overflow-y-auto border-t border-emerald-700/30 bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl md:col-span-5 md:border-l md:border-r md:border-t-0 lg:col-span-4 xl:col-span-4">
+{{-- Col 2: CRUD Box Content --}}
+<div class="overflow-y-auto bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl h-full">
         {{-- CRUD Box Content - Padding ottimizzato --}}
         <div class="p-3 md:p-2 lg:p-3 xl:p-4">
             <div
@@ -537,9 +535,10 @@
 
             </div>
         </div>
-    </div>
-@endif
+</div>
 
+{{-- Script CRUD spostato in @push per evitare interferenze con grid --}}
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('egi-edit-form');
@@ -615,3 +614,4 @@
         });
     });
 </script>
+@endpush
