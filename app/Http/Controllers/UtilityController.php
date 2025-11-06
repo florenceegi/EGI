@@ -68,7 +68,7 @@ class UtilityController extends Controller {
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 // Physical fields
-                'weight' => 'required_if:type,physical,hybrid|numeric|min:0',
+                'weight' => 'nullable|numeric|min:0',
                 'dimensions' => 'nullable|array',
                 'dimensions.length' => 'nullable|numeric|min:0',
                 'dimensions.width' => 'nullable|numeric|min:0',
@@ -89,7 +89,6 @@ class UtilityController extends Controller {
                 // Messaggi di validazione localizzati
                 'title.required' => __('utility.validation.title_required'),
                 'type.required' => __('utility.validation.type_required'),
-                'weight.required_if' => __('utility.validation.weight_required'),
                 'valid_until.after' => __('utility.validation.valid_until_after'),
             ]);
 
@@ -288,7 +287,7 @@ class UtilityController extends Controller {
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 // Physical fields
-                'weight' => 'required_if:type,physical,hybrid|numeric|min:0',
+                'weight' => 'nullable|numeric|min:0',
                 'dimensions' => 'nullable|array',
                 'dimensions.length' => 'nullable|numeric|min:0',
                 'dimensions.width' => 'nullable|numeric|min:0',
@@ -310,7 +309,6 @@ class UtilityController extends Controller {
             ], [
                 'title.required' => __('utility.validation.title_required'),
                 'type.required' => __('utility.validation.type_required'),
-                'weight.required_if' => __('utility.validation.weight_required'),
                 'valid_until.after' => __('utility.validation.valid_until_after'),
             ]);
 
