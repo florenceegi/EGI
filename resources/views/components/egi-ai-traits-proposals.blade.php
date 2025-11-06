@@ -167,21 +167,21 @@
         {{-- Footer - Sticky con tutti i bottoni visibili --}}
         <div class="flex-shrink-0 border-t border-gray-200 bg-gray-50 p-3 md:p-4 rounded-b-2xl sticky bottom-0">
             <div class="flex flex-col sm:flex-row gap-2 md:gap-3">
-                <button onclick="handleApproveAll({{ $generation->id }})"
+                <button onclick="handleApproveAll{{ $generation->id }}()"
                     class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-3 py-2.5 md:px-4 md:py-3 font-bold text-sm md:text-base text-white shadow-md transition-all duration-200 hover:from-green-700 hover:to-green-600 hover:shadow-lg">
                     <i class="fas fa-check-double"></i>
                     <span class="hidden sm:inline">{{ __('egi_dual_arch.ai.approve_all') }}</span>
                     <span class="sm:hidden">{{ __('egi_dual_arch.ai.approve') }}</span>
                 </button>
 
-                <button onclick="handleRejectAll({{ $generation->id }})"
+                <button onclick="handleRejectAll{{ $generation->id }}()"
                     class="flex items-center justify-center gap-2 rounded-lg border-2 border-red-300 bg-white px-3 py-2.5 md:px-4 md:py-3 font-bold text-sm md:text-base text-red-600 transition-all duration-200 hover:bg-red-50">
                     <i class="fas fa-times-circle"></i>
                     <span class="hidden sm:inline">{{ __('egi_dual_arch.ai.reject_all') }}</span>
                     <span class="sm:hidden">{{ __('egi_dual_arch.ai.reject') }}</span>
                 </button>
 
-                <button onclick="handleApplySelected({{ $generation->id }})"
+                <button onclick="handleApplySelected{{ $generation->id }}()"
                     class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 px-3 py-2.5 md:px-4 md:py-3 font-bold text-sm md:text-base text-white shadow-md transition-all duration-200 hover:from-purple-700 hover:to-indigo-700 hover:shadow-lg">
                     <i class="fas fa-magic"></i>
                     <span>{{ __('egi_dual_arch.ai.apply_selected') }}</span>
@@ -232,8 +232,10 @@
 
         /**
          * Approve all proposals
+         * Definita come funzione globale per accessibilità dagli onclick
          */
-        function handleApproveAll(generationId) {
+        window.handleApproveAll{{ $generation->id }} = function() {
+            const generationId = {{ $generation->id }};
             document.querySelectorAll(`#ai-traits-proposals-${generationId} .proposal-checkbox`).forEach(checkbox => {
                 checkbox.checked = true;
             });
@@ -246,12 +248,14 @@
                 confirmButtonColor: '#9333ea',
                 timer: 2000,
             });
-        }
+        };
 
         /**
          * Reject all proposals
+         * Definita come funzione globale per accessibilità dagli onclick
          */
-        function handleRejectAll(generationId) {
+        window.handleRejectAll{{ $generation->id }} = function() {
+            const generationId = {{ $generation->id }};
             document.querySelectorAll(`#ai-traits-proposals-${generationId} .proposal-checkbox`).forEach(checkbox => {
                 checkbox.checked = false;
             });
@@ -264,12 +268,14 @@
                 confirmButtonColor: '#6b7280',
                 timer: 2000,
             });
-        }
+        };
 
         /**
          * Apply selected proposals
+         * Definita come funzione globale asincrona per accessibilità dagli onclick
          */
-        async function handleApplySelected(generationId) {
+        window.handleApplySelected{{ $generation->id }} = async function() {
+            const generationId = {{ $generation->id }};
             const checkboxes = document.querySelectorAll(`#ai-traits-proposals-${generationId} .proposal-checkbox`);
             const decisions = [];
 
@@ -383,7 +389,7 @@
                     confirmButtonColor: '#dc2626',
                 });
             }
-        }
+        };
     </script>
 @endpush
 
