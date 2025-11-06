@@ -563,7 +563,7 @@
                             btnText.textContent = '✅ Rigenerato!';
 
                             // Reload PDF thumbnail - use the actual container ID
-                            const thumbnailContainer = document.querySelector('#coaPdfPreview-{{ $certificate->id }}');
+                            const thumbnailContainer = document.querySelector('#coaPdfPreview-{{ $certificate->id ?? 'none' }}');
                             if (thumbnailContainer) {
                                 const egiId = data.egi_id;
                                 console.log('🔄 Reloading thumbnail for EGI:', egiId);

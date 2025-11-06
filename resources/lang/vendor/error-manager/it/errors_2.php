@@ -252,7 +252,7 @@ return [
         // Blockchain Minting Errors (User)
         'mint_checkout_error' => 'Impossibile caricare la pagina di acquisto. Riprova tra poco.',
         'certificate_regeneration_failed' => 'Impossibile rigenerare il certificato. Riprova o contatta l\'assistenza.',
-        'mint_process_error' => 'Si è verificato un problema tecnico durante il processo di mint. Il nostro team è stato automaticamente notificato. Il tuo pagamento NON è stato addebitato. Per favore riprova tra qualche minuto o contatta l'assistenza se il problema persiste.',
+        'mint_process_error' => 'Si è verificato un problema tecnico durante il processo di mint. Il nostro team è stato automaticamente notificato. Il tuo pagamento NON è stato addebitato. Per favore riprova tra qualche minuto o contatta l\'assistenza se il problema persiste.',
         'real_blockchain_mint_failed' => 'Il mint sulla blockchain è fallito. Il tuo pagamento è al sicuro, contatteremo l\'assistenza per risolvere.',
 
         // AREA 2.2.1 - Payment Distribution Service (Mint-based) Errors (User)
@@ -394,7 +394,7 @@ return [
         // Blockchain Minting Errors (User Messages)
         'mint_checkout_error' => 'Errore durante il caricamento della pagina di acquisto. Riprova più tardi.',
         'certificate_regeneration_failed' => 'Errore durante la rigenerazione del certificato. Riprova più tardi.',
-        'mint_process_error' => 'Si è verificato un problema tecnico durante il processo di mint. Il nostro team è stato automaticamente notificato. Il tuo pagamento NON è stato addebitato. Per favore riprova tra qualche minuto o contatta l'assistenza se il problema persiste.',
+        'mint_process_error' => 'Si è verificato un problema tecnico durante il processo di mint. Il nostro team è stato automaticamente notificato. Il tuo pagamento NON è stato addebitato. Per favore riprova tra qualche minuto o contatta l\'assistenza se il problema persiste.',
         'real_blockchain_mint_failed' => 'Errore durante il minting sulla blockchain. La transazione NON è stata completata. Contatta l\'assistenza.',
 
         // AREA 2.2.1 - Payment Distribution Service (Mint-based) Errors (User Messages)
