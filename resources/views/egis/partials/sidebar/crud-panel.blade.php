@@ -46,29 +46,6 @@
                     $isCreatorCheck = App\Helpers\FegiAuth::check() && App\Helpers\FegiAuth::id() === $egi->user_id;
                 @endphp
 
-                {{-- 🐛 DEBUG PANEL (RIMUOVERE IN PRODUCTION) --}}
-                @if (config('app.debug'))
-                    <div class="mb-4 rounded-lg border-2 border-yellow-500 bg-yellow-500/10 p-3">
-                        <div class="font-mono text-xs text-yellow-300">
-                            <div><strong>DEBUG:</strong> EGI #{{ $egi->id }}</div>
-                            <div>egi_type: <strong>{{ $egi->egi_type ?? 'NULL' }}</strong></div>
-                            <div>pre_mint_mode:
-                                <strong>{{ $egi->pre_mint_mode ? 'TRUE (riservato creator)' : 'FALSE (marketplace)' }}</strong>
-                            </div>
-                            <div>token_EGI: <strong>{{ $egi->token_EGI ?? 'NULL' }}</strong></div>
-                            <div>isNotMinted: <strong>{{ $isNotMinted ? 'YES' : 'NO' }}</strong></div>
-                            <div>isASA: <strong>{{ $isASA ? 'YES' : 'NO' }}</strong></div>
-                            <div>isSmartContract: <strong>{{ $isSmartContract ? 'YES' : 'NO' }}</strong></div>
-                            <div>isCreator: <strong>{{ $isCreatorCheck ? 'YES' : 'NO' }}</strong></div>
-                            <div class="mt-2 border-t border-yellow-600 pt-2">
-                                <strong>Pannelli visibili:</strong><br>
-                                Auto-Mint Panel: {{ $isNotMinted && $isCreatorCheck ? '✓ SHOW' : '✗ HIDE' }}<br>
-                                Pre-Mint Panel: {{ $isNotMinted && !$egi->pre_mint_mode ? '✓ SHOW' : '✗ HIDE' }}<br>
-                                Living Panel: {{ $isSmartContract ? '✓ SHOW' : '✗ HIDE' }}
-                            </div>
-                        </div>
-                    </div>
-                @endif
 
                 {{-- Pannello Unificato: Prepara e Minta (Solo Creator di EGI non mintati) --}}
                 @if ($isNotMinted && $isCreatorCheck)
