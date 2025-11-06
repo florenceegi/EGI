@@ -970,13 +970,26 @@ class MintController extends Controller {
                 })
                 ->toArray();
 
+            // Check if current user is the owner (buyer who minted the EGI)
+            // FALLBACK: Se buyer_user_id è null (mint vecchio o owner self-mint), usa egi.user_id (creator)
+            $buyerId = $blockchain->buyer_user_id ?? $egi->user_id;
+            // CAST ESPLICITO: Evita type mismatch int vs string
+            $isOwner = Auth::check() && (int)Auth::id() === (int)$buyerId;
+
             $this->logger->info('Mint result page viewed', [
                 'user_id' => Auth::id(),
                 'egi_id' => $egi->id,
                 'blockchain_id' => $blockchain->id,
+                'buyer_user_id_raw' => $blockchain->buyer_user_id,
+                'buyer_user_id_fallback' => $buyerId,
+                'egi_creator' => $egi->user_id,
+                'is_owner' => $isOwner,
+                'auth_check' => Auth::check(),
+                'user_id_match' => Auth::id() === $buyerId,
+                'certificate_exists' => !is_null($certificate)
             ]);
 
-            return view('mint.mint', compact('egi', 'blockchain', 'certificate', 'paymentBreakdown', 'salePrice'));
+            return view('mint.mint', compact('egi', 'blockchain', 'certificate', 'paymentBreakdown', 'salePrice', 'isOwner', 'buyerId'));
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),
@@ -1012,15 +1025,26 @@ class MintController extends Controller {
             $blockchain = EgiBlockchain::with('egi')->findOrFail($egiBlockchainId);
 
             // 3. Authorization: user must be the buyer
-            if ($blockchain->buyer_user_id !== Auth::id()) {
+            // FALLBACK: Se buyer_user_id è null (owner self-mint), usa egi.user_id (creator)
+            $buyerId = $blockchain->buyer_user_id ?? $blockchain->egi->user_id;
+            
+            if ((int)$buyerId !== (int)Auth::id()) {
                 $this->logger->warning('Unauthorized certificate regeneration attempt', [
                     'user_id' => Auth::id(),
                     'blockchain_id' => $egiBlockchainId,
-                    'actual_buyer_id' => $blockchain->buyer_user_id
+                    'buyer_user_id_raw' => $blockchain->buyer_user_id,
+                    'buyer_user_id_fallback' => $buyerId,
+                    'egi_creator' => $blockchain->egi->user_id
                 ]);
 
                 return redirect()->back()->withErrors(['error' => __('errors.unauthorized')]);
             }
+            
+            $this->logger->info('Authorization check passed for certificate regeneration', [
+                'user_id' => Auth::id(),
+                'buyer_user_id_used' => $buyerId,
+                'buyer_user_id_raw' => $blockchain->buyer_user_id
+            ]);
 
             // 4. DELETE old certificates for this blockchain to force regeneration
             \App\Models\EgiReservationCertificate::where('egi_blockchain_id', $blockchain->id)

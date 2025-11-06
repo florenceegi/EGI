@@ -224,6 +224,37 @@
                 {{-- COLONNA 3: Certificate (3 cols) --}}
                 <div class="lg:col-span-3">
                     <div class="rounded-2xl bg-white p-6 shadow-xl">
+                        {{-- FIX TEMPORANEO: Calcola isOwner nella view perché il controller passa FALSE --}}
+                        @php
+                            $debugBuyerId = $blockchain->buyer_user_id ?? $egi->user_id;
+                            $debugIsOwner = Auth::check() && (int)Auth::id() === (int)$debugBuyerId;
+                            // Usa il valore calcolato correttamente
+                            $isOwner = $debugIsOwner;
+                        @endphp
+                        
+                        {{-- DEBUG INFO (remove after testing) --}}
+                        @if (config('app.debug'))
+                            <div class="mb-4 rounded bg-yellow-100 p-3 text-xs">
+                                <strong class="text-yellow-900">DEBUG CERTIFICATO:</strong><br>
+                                <span class="text-gray-700">
+                                    <strong>Controller Pass:</strong><br>
+                                    $isOwner (da controller) = <strong class="{{ $isOwner ? 'text-green-600' : 'text-red-600' }}">{{ $isOwner ? 'TRUE' : 'FALSE' }}</strong><br>
+                                    $buyerId (da controller) = {{ $buyerId ?? 'NOT PASSED' }}<br>
+                                    <br>
+                                    <strong>View Calculate:</strong><br>
+                                    $debugIsOwner (calcolato ora) = <strong class="{{ $debugIsOwner ? 'text-green-600' : 'text-red-600' }}">{{ $debugIsOwner ? 'TRUE' : 'FALSE' }}</strong><br>
+                                    $debugBuyerId = {{ $debugBuyerId }}<br>
+                                    <br>
+                                    <strong>Raw Data:</strong><br>
+                                    certificate = <strong>{{ $certificate ? 'EXISTS' : 'NULL' }}</strong><br>
+                                    blockchain.buyer_user_id = {{ $blockchain->buyer_user_id ?? 'NULL' }}<br>
+                                    egi.user_id (creator) = {{ $egi->user_id }}<br>
+                                    Auth::id() = {{ Auth::id() }}<br>
+                                    Auth::check() = {{ Auth::check() ? 'true' : 'false' }}
+                                </span>
+                            </div>
+                        @endif
+
                         <div class="mb-4 flex items-center">
                             <div
                                 class="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-400 to-indigo-600">
@@ -347,6 +378,39 @@
                                         class="flex w-full items-center justify-center rounded-xl bg-gray-100 px-4 py-3 text-sm font-semibold text-gray-700 transition-all hover:bg-gray-200">
                                         {{ __('mint.post_mint.my_certificates') }}
                                     </a>
+                                @endif
+                            </div>
+                        @else
+                            {{-- Certificato NON ancora creato - Mostra messaggio e bottone per generarlo --}}
+                            <div class="rounded-xl border-2 border-amber-300 bg-amber-50 p-6">
+                                <div class="mb-4 flex items-start space-x-3">
+                                    <svg class="h-6 w-6 flex-shrink-0 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <div>
+                                        <h4 class="font-semibold text-amber-900">{{ __('mint.post_mint.certificate_not_created_title') }}</h4>
+                                        <p class="mt-1 text-sm text-amber-700">
+                                            {{ __('mint.post_mint.certificate_not_created_message') }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                @if ($isOwner)
+                                    {{-- Bottone per generare il certificato - STESSO SISTEMA del regenerate --}}
+                                    <form id="generate-cert-form" action="{{ route('mint.regenerate-certificate', $blockchain->id) }}" method="POST" class="w-full">
+                                        @csrf
+                                        <button type="button" id="generate-cert-btn"
+                                            class="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-amber-700 hover:to-orange-700 hover:shadow-xl">
+                                            <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                            </svg>
+                                            <span id="generate-btn-text">{{ __('mint.post_mint.generate_certificate') }}</span>
+                                        </button>
+                                    </form>
+                                @else
+                                    <p class="text-xs text-amber-600 mt-2">
+                                        {{ __('mint.post_mint.certificate_owner_only') }}
+                                    </p>
                                 @endif
                             </div>
                         @endif
@@ -534,13 +598,16 @@
                     }
                 });
 
-                // --- Certificate Regeneration Handler ---
-                document.getElementById('regenerate-cert-btn')?.addEventListener('click', async function(e) {
-                    e.preventDefault();
+                // --- Certificate Generation/Regeneration Handler (UNIFIED) ---
+                function setupCertificateHandler(btnId, formId, textId) {
+                    const btn = document.getElementById(btnId);
+                    if (!btn) return;
+                    
+                    btn.addEventListener('click', async function(e) {
+                        e.preventDefault();
 
-                    const btn = this;
-                    const btnText = document.getElementById('regenerate-btn-text');
-                    const form = document.getElementById('regenerate-cert-form');
+                        const btnText = document.getElementById(textId);
+                        const form = document.getElementById(formId);
 
                     // Disable button during regeneration
                     btn.disabled = true;
@@ -560,9 +627,20 @@
                         const data = await response.json();
 
                         if (data.success) {
-                            btnText.textContent = '✅ Rigenerato!';
+                            btnText.textContent = '✅ Completato!';
 
-                            // Reload PDF thumbnail - use the actual container ID
+                            // Se è prima generazione (generate-cert-btn), ricarica la pagina
+                            const isFirstGeneration = btnId === 'generate-cert-btn';
+                            
+                            if (isFirstGeneration) {
+                                console.log('🔄 Prima generazione certificato, reload pagina...');
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
+                                return;
+                            }
+
+                            // Se è rigenerazione, aggiorna thumbnail
                             const thumbnailContainer = document.querySelector('#coaPdfPreview-{{ $certificate->id ?? 'none' }}');
                             if (thumbnailContainer) {
                                 const egiId = data.egi_id;
@@ -619,18 +697,23 @@
                                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
                             }, 2000);
                         } else {
-                            throw new Error(data.message || 'Regeneration failed');
+                            throw new Error(data.message || 'Generation/Regeneration failed');
                         }
                     } catch (error) {
-                        console.error('Certificate regeneration error:', error);
+                        console.error('Certificate generation/regeneration error:', error);
                         btnText.textContent = '❌ Errore';
                         setTimeout(() => {
-                            btnText.textContent = '{{ __('mint.post_mint.regenerate_certificate') }}';
+                            btnText.textContent = 'Riprova';
                             btn.disabled = false;
                             btn.classList.remove('opacity-50', 'cursor-not-allowed');
                         }, 2000);
                     }
-                });
+                    });
+                }
+                
+                // Setup handlers per entrambi i bottoni (generate e regenerate)
+                setupCertificateHandler('regenerate-cert-btn', 'regenerate-cert-form', 'regenerate-btn-text');
+                setupCertificateHandler('generate-cert-btn', 'generate-cert-form', 'generate-btn-text');
             </script>
         @endpush
     @endonce

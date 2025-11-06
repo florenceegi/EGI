@@ -323,16 +323,21 @@ class CertificateGeneratorService {
                 throw new \Exception('Cannot generate certificate: Transaction ID missing (mint not completed)');
             }
 
-            // CREATOR SELF-MINT: paid_amount può essere 0 (gratuito per creator)
+            // CREATOR SELF-MINT: paid_amount può essere NULL (mint gratuito per owner)
             // BUYER MINT: paid_amount deve essere > 0
-            // Permettiamo paid_amount = 0 solo se buyer è anche il creator
-            if (is_null($egiBlockchain->paid_amount)) {
-                throw new \Exception('Cannot generate certificate: Payment amount is NULL');
-            }
+            // FALLBACK: Se paid_amount è NULL, usa 0 (certificato owner self-mint gratuito)
+            $paidAmount = $egiBlockchain->paid_amount ?? 0;
             
-            if ($egiBlockchain->paid_amount < 0) {
+            if ($paidAmount < 0) {
                 throw new \Exception('Cannot generate certificate: Payment amount is negative');
             }
+            
+            $this->logger->info('Payment amount validation passed', [
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'paid_amount_raw' => $egiBlockchain->paid_amount,
+                'paid_amount_used' => $paidAmount,
+                'is_free_owner_mint' => is_null($egiBlockchain->paid_amount)
+            ]);
 
             // Generate certificate UUID
             $certificateUuid = (string) Str::uuid();
@@ -348,20 +353,31 @@ class CertificateGeneratorService {
                 $egiBlockchain->id,
                 $egiBlockchain->asa_id ?? '',
                 $egiBlockchain->blockchain_tx_id ?? '',
-                $egiBlockchain->paid_amount ?? '',
+                $paidAmount, // Usa $paidAmount con fallback (0 se NULL)
                 $createdAt
             ]);
 
+            // FALLBACK: Se buyer_user_id è null (owner self-mint), usa egi.user_id (creator)
+            $buyerUserId = $egiBlockchain->buyer_user_id ?? $egi->user_id;
+            
+            $this->logger->info('Creating blockchain certificate record', [
+                'egi_blockchain_id' => $egiBlockchain->id,
+                'egi_id' => $egi->id,
+                'buyer_user_id_raw' => $egiBlockchain->buyer_user_id,
+                'buyer_user_id_fallback' => $buyerUserId,
+                'certificate_uuid' => $certificateUuid
+            ]);
+            
             // Create certificate record in egi_reservation_certificates table
             $certificate = EgiReservationCertificate::create([
                 'certificate_type' => 'mint',
                 'egi_blockchain_id' => $egiBlockchain->id,
                 'egi_id' => $egi->id,
                 'reservation_id' => $egiBlockchain->reservation_id, // Can be null for direct mint
-                'user_id' => $egiBlockchain->buyer_user_id,
+                'user_id' => $buyerUserId,
                 'wallet_address' => $egiBlockchain->buyer_wallet ?? 'Treasury Custody',
                 'reservation_type' => 'strong', // Mint is always strong ownership
-                'offer_amount_fiat' => $egiBlockchain->paid_amount,
+                'offer_amount_fiat' => $paidAmount, // Usa $paidAmount con fallback (0 se owner self-mint)
                 'offer_amount_algo' => 0, // Not used for mint certificates
                 'certificate_uuid' => $certificateUuid,
                 'signature_hash' => hash('sha256', $signatureData),
@@ -375,23 +391,23 @@ class CertificateGeneratorService {
             $certificatePath = "certificates/blockchain/{$certificateFileName}";
 
             // Get buyer information
-            $buyer = $egiBlockchain->buyer;
+            // FALLBACK: Se buyer relation è null, usa creator name
+            $buyer = $egiBlockchain->buyer ?? $egi->user;
             $buyerName = $buyer ? $buyer->name : 'Anonymous Buyer';
 
             // Prepare certificate data (ensure all values are strings for PDF generation)
-            // IMPORTANT: blockchain_tx_id and paid_amount may be NULL if mint is still processing
             $certificateData = [
                 'certificate_uuid' => (string) $certificate->certificate_uuid,
                 'egi_id' => (string) $egi->id,
                 'egi_title' => (string) ($egi->title ?? 'Unknown EGI'),
                 'buyer_name' => (string) $buyerName,
                 'buyer_wallet' => (string) ($egiBlockchain->buyer_wallet ?? 'Treasury Custody'),
-                'asa_id' => $egiBlockchain->asa_id ?? '', // May be NULL during processing
-                'blockchain_tx_id' => $egiBlockchain->blockchain_tx_id ?? '', // May be NULL during processing
-                'purchase_amount' => (float) ($egiBlockchain->paid_amount ?? $egi->price ?? 0), // Fallback to EGI price
+                'asa_id' => $egiBlockchain->asa_id ?? '',
+                'blockchain_tx_id' => $egiBlockchain->blockchain_tx_id ?? '',
+                'purchase_amount' => (float) $paidAmount, // Usa $paidAmount con fallback (0 se owner self-mint)
                 'purchase_currency' => (string) ($egiBlockchain->paid_currency ?? 'EUR'),
                 'minted_at' => (string) ($egiBlockchain->minted_at ? $egiBlockchain->minted_at->format('d/m/Y H:i:s') : now()->format('d/m/Y H:i:s')),
-                'ownership_type' => (string) ($egiBlockchain->ownership_type ?? 'Unknown'),
+                'ownership_type' => (string) ($egiBlockchain->ownership_type ?? 'Full Ownership'),
                 'verification_url' => (string) route('egi-certificates.show', $certificate->certificate_uuid)
             ];
 
@@ -401,7 +417,8 @@ class CertificateGeneratorService {
                 'blockchain_id' => $egiBlockchain->id,
                 'asa_id' => $egiBlockchain->asa_id,
                 'tx_id' => $egiBlockchain->blockchain_tx_id,
-                'paid_amount' => $egiBlockchain->paid_amount,
+                'paid_amount_raw' => $egiBlockchain->paid_amount,
+                'paid_amount_used' => $paidAmount,
                 'egi_price' => $egi->price,
                 'final_purchase_amount' => $certificateData['purchase_amount'],
                 'certificate_data' => $certificateData,
@@ -437,13 +454,12 @@ class CertificateGeneratorService {
             $this->logger->error('Failed to generate blockchain certificate', [
                 'error' => $e->getMessage(),
                 'egi_blockchain_id' => $egiBlockchain->id,
+                'egi_id' => $egi->id,
                 'trace' => $e->getTraceAsString()
             ]);
 
-            throw UltraError::handle('BLOCKCHAIN_CERTIFICATE_GENERATION_FAILED', [
-                'egi_blockchain_id' => $egiBlockchain->id,
-                'error' => $e->getMessage()
-            ], $e);
+            // Re-throw per permettere al controller di gestire con ErrorManager
+            throw new \Exception('Blockchain certificate generation failed: ' . $e->getMessage(), 0, $e);
         }
     }
 
