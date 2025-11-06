@@ -137,12 +137,9 @@
                                 </div>
 
                                 {{-- Bottone Visualizza Dettagli Mint (spostato da Col 4) --}}
-                                @php
-                                    $blockchainId = optional($egi->blockchain)->id;
-                                @endphp
-                                @if ($blockchainId)
+                                @if ($egi->blockchain && $egi->blockchain->id)
                                     <div class="mt-3">
-                                        <a href="{{ route('mint.show', $blockchainId) }}"
+                                        <a href="{{ route('mint.show', $egi->blockchain->id) }}"
                                             class="inline-flex items-center justify-center w-full px-4 py-2.5 font-medium text-green-400 transition-all border rounded-lg border-green-600/30 bg-green-700/20 backdrop-blur-sm hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300">
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
