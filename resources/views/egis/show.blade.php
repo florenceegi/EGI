@@ -186,9 +186,6 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                 {{-- Utility Display Section --}}
                                 @include('egis.partials.sidebar.utility-section', compact('egi'))
 
-                                {{-- Reservation History --}}
-                                @include('egis.partials.sidebar.reservation-history-section', compact('egi'))
-
                                 {{-- CoA (Certificate of Authenticity) Section --}}
                                 @include('egis.partials.sidebar.coa-section', compact('egi', 'isCreator'))
 
@@ -230,6 +227,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
                                 {{-- Component Utility Manager (solo per creator) --}}
                                 @include('egis.partials.sidebar.utility-manager-section', compact('egi'))
+
+                                {{-- Reservation History (spostata qui da Col 3) --}}
+                                @include('egis.partials.sidebar.reservation-history-section', compact('egi'))
                             </div>
 
                         </div>

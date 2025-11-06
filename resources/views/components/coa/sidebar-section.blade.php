@@ -252,7 +252,7 @@ $userDerivedLocation = implode(', ', array_filter($parts));
             <h3 class="text-sm font-semibold text-white">{{ __('egi.coa.certificate') }}</h3>
             @if ($canIssueCoa)
                 {{-- Creator può emettere - Badge espandibile visibile --}}
-                <details class="group">
+                <details class="group" open>
                     <summary class="flex items-center justify-between cursor-pointer select-none rounded-lg bg-amber-900/20 px-3 py-2.5 border border-amber-500/30 hover:bg-amber-900/30 transition-colors">
                         <div class="flex items-center space-x-2">
                             <svg class="h-4 w-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
