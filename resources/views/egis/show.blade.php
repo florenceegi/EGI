@@ -156,12 +156,31 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                 'displayUser',
                                 'highestPriorityReservation'))
 
-                        {{-- Col 3: Info Panel (Description + sezioni che prima andavano sotto) --}}
+                        {{-- Col 3: Info Panel (Description + Traits + Utility + History + CoA + Collection) --}}
                         <div
                             class="overflow-y-auto border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-xl md:hidden lg:block lg:border-l lg:border-t-0 @if($canUpdateEgi) lg:col-span-4 xl:col-span-4 @else lg:col-span-5 xl:col-span-5 @endif">
                             <div class="space-y-4 p-4 md:space-y-3 md:p-3 lg:space-y-4 lg:p-4 xl:space-y-5 xl:p-5">
                                 {{-- Description --}}
                                 @include('egis.partials.sidebar.description-section', compact('egi'))
+
+                                {{-- Traits Section --}}
+                                @php $canManage = $canUpdateEgi; @endphp
+                                @include('egis.partials.sidebar.traits-section', compact('egi', 'canManage'))
+
+                                {{-- Utility Display Section --}}
+                                @include('egis.partials.sidebar.utility-section', compact('egi'))
+
+                                {{-- Reservation History --}}
+                                @include('egis.partials.sidebar.reservation-history-section', compact('egi'))
+
+                                {{-- CoA (Certificate of Authenticity) Section --}}
+                                @include('egis.partials.sidebar.coa-section', compact('egi', 'isCreator'))
+
+                                {{-- Collection Link --}}
+                                @include('egis.partials.sidebar.collection-link-section', compact('collection'))
+
+                                {{-- Collection Collaborators --}}
+                                @include('egis.partials.sidebar.collection-collaborators-section', compact('collection'))
                             </div>
                         </div>
 
@@ -213,41 +232,13 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                         'isCreator',
                                         'canBeReserved'))
 
-                                {{-- Traits Section - SPOSTATO IN ALTO --}}
-                                {{-- canManage = canUpdateEgi per consistency con traits-viewer component --}}
-                                @php $canManage = $canUpdateEgi; @endphp
-                                @include(
-                                    'egis.partials.sidebar.traits-section',
-                                    compact('egi', 'canManage'))
-
-                                {{-- Utility Display Section --}}
-                                @include('egis.partials.sidebar.utility-section', compact('egi'))
-
                                 {{-- Mint/Rebind Blockchain History --}}
                                 @include('egis.partials.sidebar.mint-history-section', compact('egi'))
 
-                                {{-- Reservation History - PRIMA del CoA --}}
-                                @include(
-                                    'egis.partials.sidebar.reservation-history-section',
-                                    compact('egi'))
-
-                                {{-- EGI Living Features - HYBRID APPROACH with @can() --}}
+                                {{-- EGI Living Features --}}
                                 @include(
                                     'egis.partials.sidebar.living-features-hybrid',
                                     compact('egi', 'isCreator'))
-
-                                {{-- CoA (Certificate of Authenticity) Section - Badge compatto se assente --}}
-                                @include('egis.partials.sidebar.coa-section', compact('egi', 'isCreator'))
-
-                                {{-- Collection Link --}}
-                                @include(
-                                    'egis.partials.sidebar.collection-link-section',
-                                    compact('collection'))
-
-                                {{-- Collection Collaborators --}}
-                                @include(
-                                    'egis.partials.sidebar.collection-collaborators-section',
-                                    compact('collection'))
 
                                 {{-- Component Utility Manager (solo per creator) --}}
                                 @include('egis.partials.sidebar.utility-manager-section', compact('egi'))
