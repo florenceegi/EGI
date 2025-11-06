@@ -1013,7 +1013,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
         }
 
         reset() {
-            this.scale = 0.25; // 🔧 FIX: Zoom iniziale al 25% (era 1 = 100%)
+            this.scale = 0.5; // Zoom iniziale al 50%
             this.panX = 0;
             this.panY = 0;
             this.isPanning = false;
@@ -1027,7 +1027,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 e.preventDefault();
 
                 const delta = -e.deltaY * 0.002;
-                const newScale = Math.min(Math.max(0.1, this.scale + delta), 2.5); // 🔧 FIX: min 10%, max 250%
+                const newScale = Math.min(Math.max(0.5, this.scale + delta), 5.0); // min 50%, max 500%
 
                 const rect = this.overlayImage.getBoundingClientRect();
                 const centerX = (e.clientX - rect.left) / rect.width;
@@ -1104,7 +1104,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
                     if (this.startDistance > 0) {
                         const factor = newDistance / this.startDistance;
-                        this.scale = Math.min(Math.max(0.1, this.scale * factor), 2.5); // 🔧 FIX: min 10%, max 250%
+                        this.scale = Math.min(Math.max(0.5, this.scale * factor), 5.0); // min 50%, max 500%
                         this.startDistance = newDistance;
                         this.updateTransform();
                     }
