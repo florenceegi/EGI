@@ -1,6 +1,52 @@
-{{-- Component Utility Manager per EGI con localizzazione multilingua --}}
+{{-- Component Utility Manager Modal per EGI con localizzazione multilingua --}}
 @if ($canEdit)
-    <div class="utility-manager-component mt-6 rounded-lg bg-white p-6 shadow-lg" style="position: relative;">
+    {{-- Modal Overlay --}}
+    <div id="utility-manager-modal-{{ $egi->id }}" 
+        class="fixed inset-0 z-[10000] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-3 md:p-4"
+        style="display: none;"
+        onclick="if(event.target === this) closeUtilityManager{{ $egi->id }}()">
+        
+        {{-- Modal Content --}}
+        <div class="relative w-full max-w-5xl max-h-[95vh] bg-white rounded-2xl shadow-2xl flex flex-col"
+            onclick="event.stopPropagation()">
+            
+            {{-- Header - Fixed --}}
+            <div class="flex-shrink-0 bg-gradient-to-r from-orange-600 to-orange-500 px-4 py-3 md:px-6 md:py-4 rounded-t-2xl">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 md:gap-3 min-w-0">
+                        <span class="text-2xl md:text-3xl flex-shrink-0">⚡</span>
+                        <div class="min-w-0">
+                            <h3 class="text-base md:text-xl font-bold text-white truncate">
+                                {{ __('utility.title') }}
+                            </h3>
+                            <p class="text-xs md:text-sm text-orange-100">
+                                {{ __('utility.subtitle') ?? 'Configura l\'utility per questo EGI' }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        @if ($utility)
+                            <span class="hidden md:inline-block rounded-full bg-green-500/90 px-3 py-1 text-xs font-semibold text-white">
+                                {{ __('utility.status_configured') }}
+                            </span>
+                        @else
+                            <span class="hidden md:inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">
+                                {{ __('utility.status_none') }}
+                            </span>
+                        @endif
+                        <button type="button"
+                            onclick="closeUtilityManager{{ $egi->id }}()"
+                            class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors duration-200"
+                            title="{{ __('egi_dual_arch.ai.close_modal') }}">
+                            <i class="fas fa-times text-lg md:text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Body - Scrollable --}}
+            <div class="flex-1 overflow-y-auto p-4 md:p-6">
+                <div class="utility-manager-component" style="position: relative;">
 
         {{-- 🔒 LOCK OVERLAY se EGI è mintato --}}
         @if ($egi->token_EGI)
@@ -1056,5 +1102,57 @@
             }
         }
     </style>
+
+                </div>{{-- Fine utility-manager-component --}}
+            </div>{{-- Fine Body scrollable --}}
+
+        </div>{{-- Fine Modal Content --}}
+    </div>{{-- Fine Modal Overlay --}}
+
+    {{-- JavaScript per apertura/chiusura modale - Inline per garantire caricamento immediato --}}
+    <script>
+        /**
+         * Open Utility Manager Modal
+         * Funzione globale per accessibilità dagli onclick
+         */
+        window.openUtilityManager{{ $egi->id }} = function() {
+            const modal = document.getElementById('utility-manager-modal-{{ $egi->id }}');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent body scroll
+                
+                // Trigger animation after display change
+                setTimeout(() => {
+                    modal.classList.add('items-center');
+                }, 10);
+            }
+        };
+
+        /**
+         * Close Utility Manager Modal
+         * Funzione globale per accessibilità dagli onclick
+         */
+        window.closeUtilityManager{{ $egi->id }} = function() {
+            const modal = document.getElementById('utility-manager-modal-{{ $egi->id }}');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore body scroll
+            }
+        };
+
+        /**
+         * Close modal on ESC key
+         */
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('utility-manager-modal-{{ $egi->id }}');
+                if (modal && modal.style.display === 'flex') {
+                    closeUtilityManager{{ $egi->id }}();
+                }
+            }
+        });
+    </script>
 
 @endif {{-- Fine if $canEdit --}}
