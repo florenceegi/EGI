@@ -940,19 +940,19 @@ class TraitImageManager {
                     //     traitCard
                     // );
 
-                    // Controlla se l'utente può editare verificando se esiste il data-can-edit
-                    const traitsViewer = traitCard.closest("[data-can-edit]");
-                    const canEdit =
-                        traitsViewer && traitsViewer.dataset.canEdit === "true";
+                    // Controlla se l'utente è il creator (per aprire modale caricamento immagini)
+                    const traitsViewer = traitCard.closest("[data-is-creator]");
+                    const isCreator =
+                        traitsViewer && traitsViewer.dataset.isCreator === "true";
 
-                    if (canEdit) {
-                        // Utente proprietario di EGI non pubblicato: apri modal di edit
+                    if (isCreator) {
+                        // Utente proprietario/creator: apri modal per caricare immagini
                         e.preventDefault();
                         e.stopPropagation();
                         this.openImageModal(traitCard.dataset.traitId);
                         return;
                     } else {
-                        // Utente non proprietario o EGI pubblicato: apri modal di visualizzazione
+                        // Utente non proprietario: apri modal di sola visualizzazione
                         e.preventDefault();
                         e.stopPropagation();
                         this.openViewModal(traitCard.dataset.traitId);
@@ -1228,11 +1228,10 @@ class TraitImageManager {
                     "Immagine caricata con successo!",
                     "Successo"
                 );
-                this.updateImageDisplay(
-                    traitId,
-                    data.image_url,
-                    data.thumbnail_url
-                );
+                // Reload page to show updated image
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
             } else {
                 ToastManager.error(
                     data.message || "Errore durante il caricamento",
