@@ -113,19 +113,22 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 : 'bg-gradient-to-br from-gray-900 via-black to-gray-900' }}">
 
             {{-- Background wrapper - Container FULL WIDTH per desktop enormi --}}
-            <div class="container mx-auto px-0 py-0 md:max-w-full lg:max-w-full xl:max-w-full 2xl:max-w-full">
+            <div class="container px-0 py-0 mx-auto md:max-w-full lg:max-w-full xl:max-w-full 2xl:max-w-full">
 
                 {{-- Cinematic Artwork Display --}}
                 <div class="relative w-full">
 
-                    {{-- Main Gallery Grid - RESPONSIVE: mobile 1col, desktop 3-4col (4 se creator, 3 se non-creator) --}}
-                    <div id="egi-main-grid" class="grid grid-cols-1 @if($canUpdateEgi) lg:grid-cols-4 @else lg:grid-cols-3 @endif" style="width: 100%; box-sizing: border-box;">
+                    {{-- Main Gallery Grid - RESPONSIVE: mobile 1col, desktop 3-4col (4 se creator, 3 se non-creator)
+                    --}}
+                    <div id="egi-main-grid"
+                        class="@if ($canUpdateEgi) lg:grid-cols-4 @else lg:grid-cols-3 @endif grid grid-cols-1"
+                        style="width: 100%; box-sizing: border-box;">
 
                         {{-- Col 1: Artwork Area --}}
                         <div class="relative p-2 lg:p-4">
 
                             {{-- Artwork Container con Floating Card - Sempre visibile completamente --}}
-                            <div class="relative mx-auto w-full max-w-full">
+                            <div class="relative w-full max-w-full mx-auto">
 
                                 {{-- Collection Navigation Carousel - OpenSea Style --}}
                                 <x-egi-collection-navigator :collectionEgis="$collectionEgis" :currentEgi="$egi" />
@@ -142,15 +145,20 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             </div>
 
                             {{-- Bottone Collection Link (spostato qui da Col 3) --}}
-                            <div class="mt-4 px-2">
+                            <div class="px-2 mt-4">
                                 <a href="{{ route('home.collections.show', $collection->id) }}"
-                                    class="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-lg border-2 border-purple-500/50 bg-gradient-to-r from-purple-600/30 to-blue-600/30 backdrop-blur-sm hover:from-purple-600/40 hover:to-blue-600/40 hover:border-purple-400/70 transition-all duration-200 group">
-                                    <svg class="w-5 h-5 text-purple-300 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                    class="flex items-center justify-center w-full gap-3 px-4 py-3 transition-all duration-200 border-2 rounded-lg group border-purple-500/50 bg-gradient-to-r from-purple-600/30 to-blue-600/30 backdrop-blur-sm hover:border-purple-400/70 hover:from-purple-600/40 hover:to-blue-600/40">
+                                    <svg class="w-5 h-5 text-purple-300 transition-transform duration-200 group-hover:scale-110"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
-                                    <span class="font-semibold text-white text-sm">{{ __('egi.view_full_collection') }}</span>
-                                    <svg class="w-4 h-4 text-purple-300 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    <span
+                                        class="text-sm font-semibold text-white">{{ __('egi.view_full_collection') }}</span>
+                                    <svg class="w-4 h-4 text-purple-300 transition-transform duration-200 group-hover:translate-x-1"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
                                     </svg>
                                 </a>
                             </div>
@@ -178,10 +186,12 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
                         {{-- Col 3: Info Panel (Col 2 se non-creator) --}}
                         <div class="overflow-y-auto bg-gray-900/95 backdrop-blur-xl lg:block">
-                            <div class="space-y-3 p-3 lg:p-4">
+                            <div class="p-3 space-y-3 lg:p-4">
                                 {{-- Traits Section --}}
                                 @php $canManage = $canUpdateEgi; @endphp
-                                @include('egis.partials.sidebar.traits-section', compact('egi', 'canManage'))
+                                @include(
+                                    'egis.partials.sidebar.traits-section',
+                                    compact('egi', 'canManage'))
 
                                 {{-- Utility Display Section --}}
                                 @include('egis.partials.sidebar.utility-section', compact('egi'))
@@ -192,7 +202,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                 {{-- Collection Link SPOSTATO sopra, sotto immagine --}}
 
                                 {{-- Collection Collaborators --}}
-                                @include('egis.partials.sidebar.collection-collaborators-section', compact('collection'))
+                                @include(
+                                    'egis.partials.sidebar.collection-collaborators-section',
+                                    compact('collection'))
                             </div>
                         </div>
 
@@ -200,9 +212,10 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                         <div class="overflow-y-auto bg-gray-900/95 backdrop-blur-xl lg:block">
 
                             {{-- Sidebar Content - Padding compatto --}}
-                            <div class="space-y-3 p-3 lg:p-4">
+                            <div class="p-3 space-y-3 lg:p-4">
 
-                                {{-- Badge mint SPOSTATO nel box "EGI Certificato su Blockchain" in crud-panel (Col 2) --}}
+                                {{-- Badge mint SPOSTATO nel box "EGI Certificato su Blockchain" in crud-panel (Col 2)
+                                --}}
 
                                 {{-- Price & Purchase Section --}}
                                 @include(
@@ -229,7 +242,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                 @include('egis.partials.sidebar.utility-manager-section', compact('egi'))
 
                                 {{-- Reservation History (spostata qui da Col 3) --}}
-                                @include('egis.partials.sidebar.reservation-history-section', compact('egi'))
+                                @include(
+                                    'egis.partials.sidebar.reservation-history-section',
+                                    compact('egi'))
                             </div>
 
                         </div>
@@ -238,24 +253,18 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             </div>
 
             {{-- MODALS - FUORI dal grid per evitare interferenze --}}
-            
+
             {{-- Utility Manager Modal --}}
-            @if(auth()->id() === $egi->user_id && $egi->is_published == 0)
+            @if (auth()->id() === $egi->user_id && $egi->is_published == 0)
                 <x-utility.utility-manager :egi="$egi" />
-            @endif
-            
-            {{-- Trait Detail Modals --}}
-            @if ($egi && $egi->traits && $egi->traits->count() > 0)
-                @foreach ($egi->traits as $trait)
-                    <x-trait.trait-detail-modal :trait="$trait" />
-                @endforeach
             @endif
 
             {{-- Se utility presente e collection pubblicata, mostra solo in lettura --}}
             @if ($egi->utility && $egi->collection->status === 'published')
-                <div class="mx-auto max-w-6xl">
+                <div class="max-w-6xl mx-auto">
                     {{-- TODO: Creare component utility-display per visualizzazione read-only --}}
-                    {{-- <x-utility.utility-display :utility="$egi->utility" /> --}}
+                    {{--
+                <x-utility.utility-display :utility="$egi->utility" /> --}}
                 </div>
             @endif
 
@@ -275,7 +284,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                         console.log('- gridTemplateColumns:', getComputedStyle(mainGrid).gridTemplateColumns);
                         console.log('- Children count:', mainGrid.children.length);
                     }
-                    
+
                     const editStartBtn = document.getElementById('egi-edit-start');
                     const editToggleBtn = document.getElementById('egi-edit-toggle');
                     const editForm = document.getElementById('egi-edit-form');
@@ -347,13 +356,13 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             </script>
             {{-- Lightbox Zoom Overlay - Responsive ottimizzato per schermi piccoli --}}
             <div id="zoom-overlay"
-                class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 p-4 backdrop-blur-sm sm:p-6 md:p-8">
+                class="fixed inset-0 z-50 items-center justify-center hidden p-4 bg-black/90 backdrop-blur-sm sm:p-6 md:p-8">
                 <div id="zoom-content"
                     class="relative h-full max-h-[85vh] w-full max-w-[90vw] sm:max-h-[88vh] sm:max-w-[88vw] md:max-h-[85vh] md:max-w-[85vw]">
                     <img id="zoom-overlay-image" src="" alt=""
-                        class="user-select-none h-full w-full touch-none object-contain" />
+                        class="object-contain w-full h-full user-select-none touch-none" />
                     <button id="zoom-close" aria-label="Chiudi ingrandimento"
-                        class="absolute right-1 top-1 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-2xl font-bold text-white shadow-xl transition-all hover:scale-110 hover:bg-black/90 sm:right-2 sm:top-2 sm:h-10 sm:w-10 sm:text-3xl md:right-3 md:top-3 md:h-11 md:w-11">
+                        class="absolute z-10 flex items-center justify-center text-2xl font-bold text-white transition-all rounded-full shadow-xl right-1 top-1 h-9 w-9 bg-black/70 hover:scale-110 hover:bg-black/90 sm:right-2 sm:top-2 sm:h-10 sm:w-10 sm:text-3xl md:right-3 md:top-3 md:h-11 md:w-11">
                         ×
                     </button>
                 </div>
@@ -362,25 +371,25 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             {{-- Utility Details Modal - Responsive --}}
             @if ($egi->utility)
                 <div id="utility-modal"
-                    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm">
+                    class="fixed inset-0 z-50 items-center justify-center hidden bg-black/80 backdrop-blur-sm">
                     <div
                         class="relative mx-2 my-4 max-h-[95vh] w-full max-w-[95%] overflow-hidden sm:mx-4 sm:my-6 sm:max-h-[90vh] sm:max-w-3xl md:my-8 md:max-w-4xl">
                         {{-- Modal Content --}}
                         <div
-                            class="rounded-xl border border-orange-500/30 bg-gradient-to-br from-gray-900 to-gray-800 shadow-2xl sm:rounded-2xl">
+                            class="border shadow-2xl rounded-xl border-orange-500/30 bg-gradient-to-br from-gray-900 to-gray-800 sm:rounded-2xl">
                             {{-- Modal Header - Responsive --}}
                             <div
-                                class="flex items-center justify-between border-b border-orange-500/20 p-3 sm:p-4 md:p-6">
-                                <div class="flex min-w-0 items-center space-x-2 sm:space-x-3">
+                                class="flex items-center justify-between p-3 border-b border-orange-500/20 sm:p-4 md:p-6">
+                                <div class="flex items-center min-w-0 space-x-2 sm:space-x-3">
                                     <div class="flex-shrink-0 rounded-md bg-orange-500/20 p-1.5 sm:rounded-lg sm:p-2">
-                                        <svg class="h-4 w-4 text-orange-400 sm:h-5 sm:w-5 md:h-6 md:w-6" fill="none"
+                                        <svg class="w-4 h-4 text-orange-400 sm:h-5 sm:w-5 md:h-6 md:w-6" fill="none"
                                             stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                         </svg>
                                     </div>
                                     <div class="min-w-0">
-                                        <h2 class="truncate text-base font-bold text-white sm:text-lg md:text-xl">
+                                        <h2 class="text-base font-bold text-white truncate sm:text-lg md:text-xl">
                                             {{ $egi->utility->title }}</h2>
                                         <span
                                             class="mt-1 inline-block rounded-full border border-orange-400/30 bg-orange-500/20 px-2 py-0.5 text-[10px] font-medium text-white sm:px-3 sm:py-1 sm:text-xs">
@@ -390,7 +399,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                 </div>
                                 <button id="utility-modal-close"
                                     class="flex-shrink-0 p-1.5 text-gray-400 transition-colors hover:text-white sm:p-2">
-                                    <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor"
+                                    <svg class="w-5 h-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12" />
@@ -415,10 +424,10 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                                     <div id="utility-carousel-track"
                                                         class="flex transition-transform duration-300 ease-in-out">
                                                         @foreach ($egi->utility->getMedia('utility_gallery') as $index => $media)
-                                                            <div class="w-full flex-shrink-0">
+                                                            <div class="flex-shrink-0 w-full">
                                                                 <img src="{{ $media->getUrl() }}"
                                                                     alt="Utility image {{ $index + 1 }}"
-                                                                    class="h-48 w-full object-cover sm:h-56 md:h-64 lg:h-80">
+                                                                    class="object-cover w-full h-48 sm:h-56 md:h-64 lg:h-80">
                                                             </div>
                                                         @endforeach
                                                     </div>
@@ -426,16 +435,16 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                                     {{-- Carousel Controls --}}
                                                     @if ($egi->utility->getMedia('utility_gallery')->count() > 1)
                                                         <button id="utility-carousel-prev"
-                                                            class="absolute left-4 top-1/2 -translate-y-1/2 transform rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70">
-                                                            <svg class="h-5 w-5" fill="none" stroke="currentColor"
+                                                            class="absolute p-2 text-white transition-colors transform -translate-y-1/2 rounded-full left-4 top-1/2 bg-black/50 hover:bg-black/70">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                                 viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                                     stroke-width="2" d="M15 19l-7-7 7-7" />
                                                             </svg>
                                                         </button>
                                                         <button id="utility-carousel-next"
-                                                            class="absolute right-4 top-1/2 -translate-y-1/2 transform rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70">
-                                                            <svg class="h-5 w-5" fill="none" stroke="currentColor"
+                                                            class="absolute p-2 text-white transition-colors transform -translate-y-1/2 rounded-full right-4 top-1/2 bg-black/50 hover:bg-black/70">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                                 viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                                     stroke-width="2" d="M9 5l7 7-7 7" />
@@ -446,7 +455,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
                                                 {{-- Carousel Indicators --}}
                                                 @if ($egi->utility->getMedia('utility_gallery')->count() > 1)
-                                                    <div class="mt-4 flex justify-center space-x-2">
+                                                    <div class="flex justify-center mt-4 space-x-2">
                                                         @foreach ($egi->utility->getMedia('utility_gallery') as $index => $media)
                                                             <button
                                                                 class="utility-carousel-indicator {{ $index === 0 ? 'bg-orange-500' : 'bg-gray-500 hover:bg-orange-400' }} h-2 w-2 rounded-full transition-colors"
@@ -457,10 +466,10 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
                                                 {{-- Auto-play Toggle --}}
                                                 @if ($egi->utility->getMedia('utility_gallery')->count() > 1)
-                                                    <div class="mt-3 flex justify-center">
+                                                    <div class="flex justify-center mt-3">
                                                         <button id="utility-carousel-autoplay"
-                                                            class="flex items-center space-x-2 rounded-lg bg-orange-500/20 px-3 py-1 text-orange-300 transition-colors hover:bg-orange-500/30">
-                                                            <svg class="h-4 w-4" fill="none" stroke="currentColor"
+                                                            class="flex items-center px-3 py-1 space-x-2 text-orange-300 transition-colors rounded-lg bg-orange-500/20 hover:bg-orange-500/30">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                                 viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                                     stroke-width="2"
@@ -488,7 +497,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                         {{-- Type-specific Details --}}
                                         @if ($egi->utility->type === 'physical')
                                             {{-- Physical Item Details --}}
-                                            <div class="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
+                                            <div class="p-4 border rounded-lg border-blue-500/20 bg-blue-500/10">
                                                 <h4 class="mb-3 font-semibold text-blue-400">
                                                     {{ __('utility.shipping.title') }}</h4>
                                                 <div class="grid grid-cols-2 gap-4 text-sm">
@@ -521,8 +530,8 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                                     @if ($egi->utility->is_fragile)
                                                         <div class="col-span-2">
                                                             <span
-                                                                class="inline-flex items-center rounded-lg bg-yellow-500/20 px-2 py-1 text-xs text-yellow-300">
-                                                                <svg class="mr-1 h-3 w-3" fill="currentColor"
+                                                                class="inline-flex items-center px-2 py-1 text-xs text-yellow-300 rounded-lg bg-yellow-500/20">
+                                                                <svg class="w-3 h-3 mr-1" fill="currentColor"
                                                                     viewBox="0 0 20 20">
                                                                     <path fill-rule="evenodd"
                                                                         d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -544,7 +553,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                             </div>
                                         @elseif($egi->utility->type === 'service')
                                             {{-- Service Details --}}
-                                            <div class="rounded-lg border border-green-500/20 bg-green-500/10 p-4">
+                                            <div class="p-4 border rounded-lg border-green-500/20 bg-green-500/10">
                                                 <h4 class="mb-3 font-semibold text-green-400">
                                                     {{ __('utility.service.title') }}</h4>
                                                 <div class="space-y-3 text-sm">
@@ -585,7 +594,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                             {{-- Hybrid: Both Physical and Service --}}
                                             <div class="space-y-4">
                                                 {{-- Physical Part --}}
-                                                <div class="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
+                                                <div class="p-4 border rounded-lg border-blue-500/20 bg-blue-500/10">
                                                     <h4 class="mb-3 font-semibold text-blue-400">Componente Fisico</h4>
                                                     <div class="grid grid-cols-2 gap-4 text-sm">
                                                         @if ($egi->utility->weight)
@@ -608,7 +617,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                                     </div>
                                                 </div>
                                                 {{-- Service Part --}}
-                                                <div class="rounded-lg border border-green-500/20 bg-green-500/10 p-4">
+                                                <div class="p-4 border rounded-lg border-green-500/20 bg-green-500/10">
                                                     <h4 class="mb-3 font-semibold text-green-400">Componente Servizio
                                                     </h4>
                                                     <div class="text-sm">
@@ -621,7 +630,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                             </div>
                                         @elseif($egi->utility->type === 'digital')
                                             {{-- Digital Content --}}
-                                            <div class="rounded-lg border border-purple-500/20 bg-purple-500/10 p-4">
+                                            <div class="p-4 border rounded-lg border-purple-500/20 bg-purple-500/10">
                                                 <h4 class="mb-3 font-semibold text-purple-400">Contenuto Digitale</h4>
                                                 <div class="space-y-3 text-sm">
                                                     @if ($egi->utility->valid_from || $egi->utility->valid_until)
@@ -651,7 +660,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                         @endif
 
                                         {{-- Escrow Information --}}
-                                        <div class="rounded-lg border border-gray-600/30 bg-gray-700/30 p-4">
+                                        <div class="p-4 border rounded-lg border-gray-600/30 bg-gray-700/30">
                                             <h4 class="mb-3 font-semibold text-gray-300">
                                                 {{ __('utility.escrow.' . $egi->utility->escrow_tier . '.label') }}
                                             </h4>
@@ -661,7 +670,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                             @if ($egi->utility->escrow_tier !== 'immediate')
                                                 <div class="mt-2 space-y-1">
                                                     <div class="flex items-center text-xs text-gray-400">
-                                                        <svg class="mr-1 h-3 w-3 text-green-400" fill="currentColor"
+                                                        <svg class="w-3 h-3 mr-1 text-green-400" fill="currentColor"
                                                             viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd"
                                                                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -671,7 +680,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                                     </div>
                                                     @if ($egi->utility->escrow_tier === 'premium')
                                                         <div class="flex items-center text-xs text-gray-400">
-                                                            <svg class="mr-1 h-3 w-3 text-green-400"
+                                                            <svg class="w-3 h-3 mr-1 text-green-400"
                                                                 fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fill-rule="evenodd"
                                                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -680,7 +689,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                                             {{ __('utility.escrow.' . $egi->utility->escrow_tier . '.requirement_signature') }}
                                                         </div>
                                                         <div class="flex items-center text-xs text-gray-400">
-                                                            <svg class="mr-1 h-3 w-3 text-green-400"
+                                                            <svg class="w-3 h-3 mr-1 text-green-400"
                                                                 fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fill-rule="evenodd"
                                                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -700,8 +709,6 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 </div>
             @endif
     </x-slot>
-
-
 
     <style>
         /* Prevenire selezione del testo durante il pan */
@@ -1437,17 +1444,18 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 @if ($isCreator)
     @php
         // Cerca proposte pending per questo EGI (status 'analyzed' = in attesa di review)
-        $pendingGeneration = $egi->aiTraitGenerations()
+        $pendingGeneration = $egi
+            ->aiTraitGenerations()
             ->where('status', 'analyzed')
             ->with('proposals')
             ->latest()
             ->first();
     @endphp
-    
+
     @if ($pendingGeneration && $pendingGeneration->proposals->count() > 0)
         {{-- Modale aperta automaticamente se ci sono proposte da revieware --}}
         <x-egi-ai-traits-proposals :generation="$pendingGeneration" :isOpen="true" />
-        
+
         {{-- Auto-open script --}}
         @push('scripts')
             <script>
@@ -1455,7 +1463,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                     // Apri automaticamente il modale proposals dopo il caricamento
                     const modalId = 'ai-traits-modal-{{ $pendingGeneration->id }}';
                     const openFunction = window['openAiTraitsModal{{ $pendingGeneration->id }}'];
-                    
+
                     if (typeof openFunction === 'function') {
                         setTimeout(() => {
                             openFunction();
