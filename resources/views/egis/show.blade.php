@@ -1412,7 +1412,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 <script src="{{ asset('js/art-advisor.js') }}"></script>
 
 {{-- AI Features Helper - Unified flow with cost confirmation --}}
-<script src="{{ asset('js/ai-features-helper.js') }}"></script>
+<script src="{{ asset('js/ai-features-helper.js') }}?v={{ time() }}"></script>
 
 @push('scripts')
     {{-- Also try in push for redundancy --}}

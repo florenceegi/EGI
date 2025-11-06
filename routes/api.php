@@ -304,7 +304,7 @@ Route::prefix('wallet/welcome')->name('api.wallet.welcome.')->middleware(['web']
 |
 */
 
-Route::prefix('ai/features')->name('api.ai.features.')->middleware(['web'])->group(function () {
+Route::prefix('ai/features')->name('api.ai.features.')->middleware(['web', 'auth'])->group(function () {
     // Get pricing info (for confirmation dialog)
     Route::get('/pricing', [App\Http\Controllers\AI\AiFeatureController::class, 'getPricing'])
         ->name('pricing');

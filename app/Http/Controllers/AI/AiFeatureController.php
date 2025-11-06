@@ -47,7 +47,8 @@ class AiFeatureController extends Controller
         private EgiliService $egiliService,
         private UltraLogManager $logger
     ) {
-        $this->middleware('auth');
+        // Auth middleware gestito dalla route group in routes/api.php
+        // Non serve qui perché FegiAuth::user() controlla già
     }
     
     /**
