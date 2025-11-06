@@ -105,74 +105,78 @@
                     </div>
 
                     <div class="space-y-3">
-                        {{-- Mint as ASA --}}
-                        <form method="POST" action="{{ route('egi.dual-arch.pre-mint.promote', $egi) }}"
-                            onsubmit="return handleMintSubmit(event, {{ $egi->id }}, 'ASA');">
-                            @csrf
-                            <input type="hidden" name="target_type" value="ASA">
-                            <button type="submit"
-                                class="w-full rounded-xl border-2 border-blue-700 bg-gradient-to-r from-blue-900 to-blue-800 px-6 py-5 text-left font-bold text-white shadow-lg transition-all duration-200 hover:from-blue-950 hover:to-blue-900 hover:shadow-xl">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-4">
-                                        <i class="fas fa-shield-check text-3xl"></i>
-                                        <div>
-                                            <div class="text-lg">EGI Classico (ASA)</div>
-                                            <div class="mt-1 text-sm font-normal text-blue-200">
-                                                Asset statico su blockchain Algorand
-                                            </div>
-                                            <div class="mt-2 flex items-center gap-2 text-xs font-normal text-blue-300">
-                                                <i class="fas fa-check-circle"></i>
-                                                Gratuito • Permanente • Sicuro
+                        {{-- Mint as ASA - Solo se EGI type è ASA --}}
+                        @if ($egi->egi_type === 'ASA')
+                            <form method="POST" action="{{ route('egi.dual-arch.pre-mint.promote', $egi) }}"
+                                onsubmit="return handleMintSubmit(event, {{ $egi->id }}, 'ASA');">
+                                @csrf
+                                <input type="hidden" name="target_type" value="ASA">
+                                <button type="submit"
+                                    class="w-full rounded-xl border-2 border-blue-700 bg-gradient-to-r from-blue-900 to-blue-800 px-6 py-5 text-left font-bold text-white shadow-lg transition-all duration-200 hover:from-blue-950 hover:to-blue-900 hover:shadow-xl">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-4">
+                                            <i class="fas fa-shield-check text-3xl"></i>
+                                            <div>
+                                                <div class="text-lg">Minta EGI Classico (ASA)</div>
+                                                <div class="mt-1 text-sm font-normal text-blue-200">
+                                                    Asset statico su blockchain Algorand
+                                                </div>
+                                                <div class="mt-2 flex items-center gap-2 text-xs font-normal text-blue-300">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Gratuito • Permanente • Sicuro
+                                                </div>
                                             </div>
                                         </div>
+                                        <i class="fas fa-arrow-right text-2xl"></i>
                                     </div>
-                                    <i class="fas fa-arrow-right text-2xl"></i>
-                                </div>
-                            </button>
-                        </form>
+                                </button>
+                            </form>
+                        @endif
 
-                        {{-- Mint as SmartContract --}}
-                        <form method="POST" action="{{ route('egi.dual-arch.pre-mint.promote', $egi) }}"
-                            onsubmit="return handleMintSubmit(event, {{ $egi->id }}, 'SmartContract');">
-                            @csrf
-                            <input type="hidden" name="target_type" value="SmartContract">
-                            <button type="submit"
-                                class="w-full rounded-xl border-2 border-purple-400 bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-5 text-left font-bold text-white shadow-lg transition-all duration-200 hover:from-purple-800 hover:to-purple-700 hover:shadow-xl">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-4">
-                                        <i class="fas fa-brain text-3xl"></i>
-                                        <div>
-                                            <div class="flex items-center gap-2 text-lg">
-                                                EGI Vivente (SmartContract)
-                                                <span class="rounded-full bg-amber-500 px-2 py-1 text-xs">PREMIUM</span>
-                                            </div>
-                                            <div class="mt-1 text-sm font-normal text-purple-200">
-                                                Asset intelligente con AI Curator integrata
-                                            </div>
-                                            <div class="mt-2 space-y-1 text-xs font-normal text-purple-300">
-                                                <div class="flex items-center gap-2">
-                                                    <i class="fas fa-check-circle"></i>
-                                                    Analisi AI automatiche
+                        {{-- Mint as SmartContract - Solo se EGI type è SmartContract --}}
+                        @if ($egi->egi_type === 'SmartContract')
+                            <form method="POST" action="{{ route('egi.dual-arch.pre-mint.promote', $egi) }}"
+                                onsubmit="return handleMintSubmit(event, {{ $egi->id }}, 'SmartContract');">
+                                @csrf
+                                <input type="hidden" name="target_type" value="SmartContract">
+                                <button type="submit"
+                                    class="w-full rounded-xl border-2 border-purple-400 bg-gradient-to-r from-purple-700 to-purple-600 px-6 py-5 text-left font-bold text-white shadow-lg transition-all duration-200 hover:from-purple-800 hover:to-purple-700 hover:shadow-xl">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-4">
+                                            <i class="fas fa-brain text-3xl"></i>
+                                            <div>
+                                                <div class="flex items-center gap-2 text-lg">
+                                                    Minta EGI Vivente (SmartContract)
+                                                    <span class="rounded-full bg-amber-500 px-2 py-1 text-xs">PREMIUM</span>
                                                 </div>
-                                                <div class="flex items-center gap-2">
-                                                    <i class="fas fa-check-circle"></i>
-                                                    Promozione intelligente
+                                                <div class="mt-1 text-sm font-normal text-purple-200">
+                                                    Asset intelligente con AI Curator integrata
                                                 </div>
-                                                <div class="flex items-center gap-2">
-                                                    <i class="fas fa-check-circle"></i>
-                                                    Memoria evolutiva
+                                                <div class="mt-2 space-y-1 text-xs font-normal text-purple-300">
+                                                    <div class="flex items-center gap-2">
+                                                        <i class="fas fa-check-circle"></i>
+                                                        Analisi AI automatiche
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <i class="fas fa-check-circle"></i>
+                                                        Promozione intelligente
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <i class="fas fa-check-circle"></i>
+                                                        Memoria evolutiva
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="mt-3 text-sm font-semibold text-amber-300">
-                                                Da
-                                                €{{ config('egi_living.subscription_plans.one_time.price_eur', '9.99') }}
+                                                <div class="mt-3 text-sm font-semibold text-amber-300">
+                                                    Da
+                                                    €{{ config('egi_living.subscription_plans.one_time.price_eur', '9.99') }}
+                                                </div>
                                             </div>
                                         </div>
+                                        <i class="fas fa-arrow-right text-2xl"></i>
                                     </div>
-                                    <i class="fas fa-arrow-right text-2xl"></i>
-                                </div>
-                            </button>
-                        </form>
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 </div>
 
