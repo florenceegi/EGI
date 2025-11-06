@@ -2,13 +2,16 @@
 @if ($canEdit)
     {{-- Modal Overlay --}}
     <div id="utility-manager-modal-{{ $egi->id }}" 
-        class="fixed inset-0 z-[10000] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-3 md:p-4"
-        style="display: none;"
+        class="fixed inset-0 z-[10000] hidden bg-black/70 backdrop-blur-sm overflow-y-auto"
+        style="display: none; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);"
         onclick="if(event.target === this) closeUtilityManager{{ $egi->id }}()">
         
-        {{-- Modal Content --}}
-        <div class="relative w-full max-w-5xl max-h-[95vh] bg-white rounded-2xl shadow-2xl flex flex-col"
-            onclick="event.stopPropagation()">
+        {{-- Centering Wrapper --}}
+        <div class="min-h-screen flex items-center justify-center p-3 md:p-4">
+            {{-- Modal Content --}}
+            <div class="relative w-full max-w-5xl my-4 bg-white rounded-2xl shadow-2xl flex flex-col"
+                style="max-height: calc(100vh - 2rem);"
+                onclick="event.stopPropagation()">
             
             {{-- Header - Fixed --}}
             <div class="flex-shrink-0 bg-gradient-to-r from-orange-600 to-orange-500 px-4 py-3 md:px-6 md:py-4 rounded-t-2xl">
@@ -1106,7 +1109,8 @@
                 </div>{{-- Fine utility-manager-component --}}
             </div>{{-- Fine Body scrollable --}}
 
-        </div>{{-- Fine Modal Content --}}
+            </div>{{-- Fine Modal Content --}}
+        </div>{{-- Fine Centering Wrapper --}}
     </div>{{-- Fine Modal Overlay --}}
 
     {{-- JavaScript per apertura/chiusura modale - Inline per garantire caricamento immediato --}}
@@ -1114,17 +1118,17 @@
         /**
          * Open Utility Manager Modal
          * Funzione globale per accessibilità dagli onclick
+         * MOBILE-FRIENDLY: overlay scrollabile, body normale
          */
         window.openUtilityManager{{ $egi->id }} = function() {
             const modal = document.getElementById('utility-manager-modal-{{ $egi->id }}');
             if (modal) {
-                modal.style.display = 'flex';
+                modal.style.display = 'block';
                 modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Prevent body scroll
                 
-                // Trigger animation after display change
+                // Scroll to top of modal on open
                 setTimeout(() => {
-                    modal.classList.add('items-center');
+                    modal.scrollTop = 0;
                 }, 10);
             }
         };
@@ -1138,7 +1142,6 @@
             if (modal) {
                 modal.style.display = 'none';
                 modal.classList.add('hidden');
-                document.body.style.overflow = ''; // Restore body scroll
             }
         };
 
