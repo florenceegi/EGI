@@ -91,8 +91,13 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
                 confirmButtonColor: '#f97316',
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    // Redirect to Egili purchase pricing page
-                    window.location.href = '/egili/purchase/pricing';
+                    // Apri modale acquisto Egili
+                    if (typeof openEgiliPurchaseModal === 'function') {
+                        openEgiliPurchaseModal();
+                    } else {
+                        console.error('openEgiliPurchaseModal() not found, fallback to page');
+                        window.location.href = '/egili/purchase/pricing';
+                    }
                 }
             });
 
