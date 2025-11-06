@@ -386,10 +386,10 @@ $canEdit =
              * Handle AI Traits Generation Request (with cost confirmation)
              * Uses unified AI Feature Orchestrator
              * 
-             * FLUSSO COMPLETO:
-             * 1. Chiede quanti traits generare (3-10)
-             * 2. Show cost confirmation dialog
-             * 3. If confirmed → execute via unified API
+             * FLUSSO CORRETTO:
+             * 1. Show cost confirmation dialog (CHECK EGILI PRIMA!)
+             * 2. Chiede quanti traits generare (3-10)
+             * 3. Execute via unified API
              * 4. Reload → Proposals modal opens automatically
              */
             async function handleTraitsGenerate(event, egiId) {
@@ -397,72 +397,182 @@ $canEdit =
                 
                 console.log('[AI Traits] Generate clicked', { egiId });
 
-                // Step 1: Chiede quanti traits generare
-                const countResult = await Swal.fire({
-                    title: '🤖 Genera Traits con AI',
-                    html: `
-                        <div class="text-left">
-                            <p class="mb-3">N.A.T.A.N analizzerà l'immagine e proporrà traits basati su:</p>
-                            <ul class="mb-4 ml-4 space-y-1 text-sm text-gray-600">
-                                <li>✓ Elementi visivi identificati</li>
-                                <li>✓ Stile artistico</li>
-                                <li>✓ Caratteristiche tecniche</li>
-                                <li>✓ Mood e atmosfera</li>
-                            </ul>
-                            <label class="mb-2 block text-sm font-semibold text-gray-700">Quanti traits vuoi generare?</label>
-                            <input type="number" id="traits-count-input" class="swal2-input" 
-                                   value="5" min="3" max="10" step="1"
-                                   style="width: 100px; text-align: center; font-size: 18px; font-weight: bold;">
-                            <p class="mt-2 text-xs text-gray-500">Min: 3 | Max: 10 | Consigliato: 5-7</p>
-                        </div>
-                    `,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: '<i class="fas fa-wand-magic-sparkles mr-2"></i>Procedi',
-                    cancelButtonText: 'Annulla',
-                    confirmButtonColor: '#9333ea',
-                    cancelButtonColor: '#6b7280',
-                    preConfirm: () => {
-                        const input = document.getElementById('traits-count-input');
-                        const count = parseInt(input.value);
-                        
-                        if (isNaN(count) || count < 3 || count > 10) {
-                            Swal.showValidationMessage('Inserisci un numero tra 3 e 10');
-                            return false;
+                // Step 1: PRIMA controlla Egili e mostra costo
+                // Questo mostrerà il costo PRIMA di chiedere quanti traits
+                try {
+                    const pricingUrl = `/api/ai/features/pricing?feature_code=ai_trait_generation`;
+                    const pricingResponse = await fetch(pricingUrl, {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
                         }
-                        
-                        return count;
+                    });
+
+                    if (!pricingResponse.ok) {
+                        throw new Error('Failed to fetch pricing');
                     }
-                });
 
-                if (!countResult.isConfirmed) return false;
+                    const pricingData = await pricingResponse.json();
 
-                const requestedCount = countResult.value;
-                console.log('[AI Traits] Requested count:', requestedCount);
+                    if (!pricingData.success) {
+                        throw new Error(pricingData.message || 'Pricing not available');
+                    }
 
-                // Step 2: Use unified AI feature flow with cost confirmation
-                await executeAiFeatureWithConfirmation(
-                    'ai_trait_generation', // feature_code
-                    egiId,
-                    { 
-                        requested_count: requestedCount 
-                    },
-                    {
-                        onSuccess: (data) => {
-                            // Show success and reload to show proposals modal
-                            Swal.fire({
-                                title: '✨ Analisi Completata!',
-                                html: `<p>${data.message || 'Traits generati con successo!'}</p>
-                                       <p class="text-sm text-gray-600 mt-2">Tra un istante vedrai le proposte da approvare.</p>`,
-                                icon: 'success',
-                                confirmButtonText: 'Vedi Proposte',
-                                confirmButtonColor: '#9333ea',
-                            }).then(() => {
-                                window.location.reload();
-                            });
+                    const pricing = pricingData.data;
+
+                    // Check crediti PRIMA di tutto
+                    if (!pricing.is_free && !pricing.has_sufficient_credits) {
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'Crediti Insufficienti',
+                            html: `
+                                <p class="mb-3">Non hai abbastanza Egili per questa operazione.</p>
+                                <div class="bg-red-50 border border-red-200 rounded p-3 text-left">
+                                    <p class="text-sm"><strong>Richiesti:</strong> ${pricing.cost_egili} Egili</p>
+                                    <p class="text-sm"><strong>Disponibili:</strong> ${pricing.user_balance} Egili</p>
+                                    <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${pricing.cost_egili - pricing.user_balance} Egili</p>
+                                </div>
+                                <p class="mt-3 text-xs text-gray-600">Acquista Egili per continuare.</p>
+                            `,
+                            confirmButtonText: 'Acquista Egili',
+                            showCancelButton: true,
+                            cancelButtonText: 'Chiudi',
+                            confirmButtonColor: '#f97316',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '/egili/purchase';
+                            }
+                        });
+                        return false;
+                    }
+
+                    // Step 2: Se ha crediti, mostra conferma costo
+                    const confirmCost = await Swal.fire({
+                        title: pricing.feature_name,
+                        html: `
+                            <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-l-4 border-orange-400 p-4 mb-4">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-orange-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <p class="text-sm font-bold text-gray-800">Costo Operazione</p>
+                                </div>
+                                <p class="text-2xl font-bold text-orange-600 mb-2">${pricing.cost_egili} Egili</p>
+                                <div class="flex items-center justify-between text-xs text-gray-600">
+                                    <span>Il tuo saldo: <strong>${pricing.user_balance} Egili</strong></span>
+                                    <span>Dopo: <strong>${pricing.user_balance - pricing.cost_egili} Egili</strong></span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500">Gli Egili verranno scalati solo se l'operazione ha successo.</p>
+                        `,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#f97316',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: `Conferma e Scala ${pricing.cost_egili} Egili`,
+                        cancelButtonText: 'Annulla'
+                    });
+
+                    if (!confirmCost.isConfirmed) {
+                        return false;
+                    }
+
+                    // Step 3: DOPO conferma costo, chiede quanti traits
+                    const countResult = await Swal.fire({
+                        title: '🤖 Genera Traits con AI',
+                        html: `
+                            <div class="text-left">
+                                <p class="mb-3">N.A.T.A.N analizzerà l'immagine e proporrà traits basati su:</p>
+                                <ul class="mb-4 ml-4 space-y-1 text-sm text-gray-600">
+                                    <li>✓ Elementi visivi identificati</li>
+                                    <li>✓ Stile artistico</li>
+                                    <li>✓ Caratteristiche tecniche</li>
+                                    <li>✓ Mood e atmosfera</li>
+                                </ul>
+                                <label class="mb-2 block text-sm font-semibold text-gray-700">Quanti traits vuoi generare?</label>
+                                <input type="number" id="traits-count-input" class="swal2-input" 
+                                       value="5" min="3" max="10" step="1"
+                                       style="width: 100px; text-align: center; font-size: 18px; font-weight: bold;">
+                                <p class="mt-2 text-xs text-gray-500">Min: 3 | Max: 10 | Consigliato: 5-7</p>
+                            </div>
+                        `,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fas fa-wand-magic-sparkles mr-2"></i>Genera Ora',
+                        cancelButtonText: 'Annulla',
+                        confirmButtonColor: '#9333ea',
+                        cancelButtonColor: '#6b7280',
+                        preConfirm: () => {
+                            const input = document.getElementById('traits-count-input');
+                            const count = parseInt(input.value);
+                            
+                            if (isNaN(count) || count < 3 || count > 10) {
+                                Swal.showValidationMessage('Inserisci un numero tra 3 e 10');
+                                return false;
+                            }
+                            
+                            return count;
                         }
+                    });
+
+                    if (!countResult.isConfirmed) return false;
+
+                    const requestedCount = countResult.value;
+
+                    // Step 4: Execute
+                    Swal.fire({
+                        title: 'Elaborazione in corso...',
+                        html: '<p class="text-sm text-gray-600">N.A.T.A.N sta lavorando alla tua richiesta...</p>',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const executeUrl = '/api/ai/features/execute';
+                    const executeResponse = await fetch(executeUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            feature_code: 'ai_trait_generation',
+                            egi_id: egiId,
+                            params: { requested_count: requestedCount }
+                        })
+                    });
+
+                    const executeData = await executeResponse.json();
+
+                    if (executeData.success) {
+                        await Swal.fire({
+                            title: '✨ Analisi Completata!',
+                            html: `<p>${executeData.message || 'Traits generati con successo!'}</p>
+                                   <p class="text-sm text-gray-600 mt-2">Tra un istante vedrai le proposte da approvare.</p>`,
+                            icon: 'success',
+                            confirmButtonText: 'Vedi Proposte',
+                            confirmButtonColor: '#9333ea',
+                        });
+                        window.location.reload();
+                    } else {
+                        throw new Error(executeData.message || 'Execution failed');
                     }
-                );
+
+                } catch (error) {
+                    console.error('[AI Traits] Error:', error);
+                    
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Errore',
+                        text: error.message || 'Si è verificato un errore. Riprova.',
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
             }
         </script>
     @endpush
