@@ -38,6 +38,7 @@ return [
     'save_error' => 'Errore nel salvataggio',
     'network_error' => 'Errore di rete nel salvataggio',
     'unknown_error' => 'Errore sconosciuto',
+    'add_image' => 'Aggiungi immagine',
 
     // JavaScript Messages
     'remove_success' => 'Trait rimosso con successo',

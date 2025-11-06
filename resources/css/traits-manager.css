@@ -210,12 +210,12 @@
     transform: translateY(-1px);
 }
 
-/* Traits Grid - 1 COLONNA PER MIGLIORE LEGGIBILITÀ */
+/* Traits Grid - 1 COLONNA ULTRA COMPATTA */
 .traits-grid {
     display: grid;
-    grid-template-columns: 1fr; /* 1 colonna per massima leggibilità anche su display grandi */
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Mobile: 1 colonna compatta */
@@ -299,18 +299,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem;
-    border-bottom: none; /* Rimosso per semplificare */
+    padding: 0.375rem 0.5rem;
+    border-bottom: none;
 }
 
 .trait-category-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 0.375rem;
-    font-size: 1rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
 }
 
 .trait-remove {
@@ -335,22 +335,22 @@
 }
 
 .trait-content {
-    padding: 0.75rem;
+    padding: 0.25rem 0.5rem 0.375rem;
 }
 
 .trait-type {
-    font-size: 0.75rem;
+    font-size: 0.625rem;
     color: var(--grigio-pietra);
     text-transform: uppercase;
     letter-spacing: 0.025em;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
 }
 
 .trait-value {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 700;
-    color: white; /* Bianco per dark mode */
-    margin-bottom: 0.5rem;
+    color: white;
+    margin-bottom: 0.25rem;
 }
 
 .trait-unit {
@@ -362,7 +362,7 @@
 }
 
 .trait-rarity {
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
 }
 
 .rarity-bar {
@@ -370,7 +370,7 @@
     background: rgba(107, 107, 107, 0.3);
     border-radius: 0.125rem;
     overflow: hidden;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.1875rem;
 }
 
 .rarity-fill {
@@ -379,6 +379,7 @@
 }
 
 /* Colori dinamici per rarità */
+.common,
 .rarity-fill.common {
     background: linear-gradient(
         90deg,
@@ -387,6 +388,7 @@
     ); /* Verde - molto comune (70-100%) */
 }
 
+.uncommon,
 .rarity-fill.uncommon {
     background: linear-gradient(
         90deg,
@@ -395,6 +397,7 @@
     ); /* Arancione - poco comune (40-69%) */
 }
 
+.rare,
 .rarity-fill.rare {
     background: linear-gradient(
         90deg,
@@ -403,6 +406,7 @@
     ); /* Rosso - raro (20-39%) */
 }
 
+.epic,
 .rarity-fill.epic {
     background: linear-gradient(
         90deg,
@@ -411,6 +415,7 @@
     ); /* Viola - epico (10-19%) */
 }
 
+.legendary,
 .rarity-fill.legendary {
     background: linear-gradient(
         90deg,
@@ -419,6 +424,7 @@
     ); /* Oro - leggendario (5-9%) */
 }
 
+.mythic,
 .rarity-fill.mythic {
     background: linear-gradient(
         90deg,

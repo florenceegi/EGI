@@ -38,6 +38,7 @@ return [
     'save_error' => 'Error saving',
     'network_error' => 'Network error while saving',
     'unknown_error' => 'Unknown error',
+    'add_image' => 'Add image',
 
     // JavaScript Messages
     'remove_success' => 'Trait removed successfully',
