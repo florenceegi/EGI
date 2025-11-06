@@ -48,69 +48,73 @@
             </p>
 
             <div class="space-y-4">
-                {{-- Opzione 1: EGI Classico (Semplice) --}}
-                <form method="POST" action="{{ route('egi.dual-arch.pre-mint.promote', $egi) }}"
-                    onsubmit="return handleMintSubmit(event, {{ $egi->id }}, 'ASA');">
-                    @csrf
-                    <input type="hidden" name="target_type" value="ASA">
-                    <button type="submit"
-                        class="w-full rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 p-6 text-left text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-600 hover:shadow-xl">
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-start gap-4">
-                                <i class="fas fa-certificate mt-1 text-3xl"></i>
-                                <div>
-                                    <div class="text-xl font-bold">EGI Semplice</div>
-                                    <div class="mt-1 text-sm text-blue-100">
-                                        Come un certificato digitale unico e sicuro
-                                    </div>
-                                    <div class="mt-3 flex flex-wrap gap-2">
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓
-                                            Gratis</span>
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓
-                                            Veloce</span>
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Per
-                                            sempre</span>
+                {{-- Opzione 1: EGI Classico (Semplice) - Solo se egi_type è ASA --}}
+                @if ($egi->egi_type === 'ASA')
+                    <form method="POST" action="{{ route('egi.dual-arch.pre-mint.promote', $egi) }}"
+                        onsubmit="return handleMintSubmit(event, {{ $egi->id }}, 'ASA');">
+                        @csrf
+                        <input type="hidden" name="target_type" value="ASA">
+                        <button type="submit"
+                            class="w-full rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 p-6 text-left text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-600 hover:shadow-xl">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-4">
+                                    <i class="fas fa-certificate mt-1 text-3xl"></i>
+                                    <div>
+                                        <div class="text-xl font-bold">Minta EGI Semplice</div>
+                                        <div class="mt-1 text-sm text-blue-100">
+                                            Come un certificato digitale unico e sicuro
+                                        </div>
+                                        <div class="mt-3 flex flex-wrap gap-2">
+                                            <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓
+                                                Gratis</span>
+                                            <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓
+                                                Veloce</span>
+                                            <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Per
+                                                sempre</span>
+                                        </div>
                                     </div>
                                 </div>
+                                <i class="fas fa-arrow-right text-2xl"></i>
                             </div>
-                            <i class="fas fa-arrow-right text-2xl"></i>
-                        </div>
-                    </button>
-                </form>
+                        </button>
+                    </form>
+                @endif
 
-                {{-- Opzione 2: EGI Vivente (Intelligente) --}}
-                <form method="POST" action="{{ route('egi.dual-arch.pre-mint.promote', $egi) }}"
-                    onsubmit="return handleMintSubmit(event, {{ $egi->id }}, 'SmartContract');">
-                    @csrf
-                    <input type="hidden" name="target_type" value="SmartContract">
-                    <button type="submit"
-                        class="w-full rounded-xl border-2 border-purple-400 bg-gradient-to-r from-purple-600 to-purple-500 p-6 text-left text-white shadow-lg transition-all hover:from-purple-700 hover:to-purple-600 hover:shadow-xl">
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-start gap-4">
-                                <i class="fas fa-brain mt-1 text-3xl"></i>
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xl font-bold">EGI Intelligente</span>
-                                        <span
-                                            class="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-amber-900">PREMIUM</span>
-                                    </div>
-                                    <div class="mt-1 text-sm text-purple-100">
-                                        Con intelligenza artificiale che promuove e valorizza la tua opera
-                                    </div>
-                                    <div class="mt-3 flex flex-wrap gap-2">
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ AI
-                                            inclusa</span>
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓
-                                            Auto-promozione</span>
-                                        <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Storico
-                                            completo</span>
+                {{-- Opzione 2: EGI Vivente (Intelligente) - Solo se egi_type è SmartContract --}}
+                @if ($egi->egi_type === 'SmartContract')
+                    <form method="POST" action="{{ route('egi.dual-arch.pre-mint.promote', $egi) }}"
+                        onsubmit="return handleMintSubmit(event, {{ $egi->id }}, 'SmartContract');">
+                        @csrf
+                        <input type="hidden" name="target_type" value="SmartContract">
+                        <button type="submit"
+                            class="w-full rounded-xl border-2 border-purple-400 bg-gradient-to-r from-purple-600 to-purple-500 p-6 text-left text-white shadow-lg transition-all hover:from-purple-700 hover:to-purple-600 hover:shadow-xl">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-4">
+                                    <i class="fas fa-brain mt-1 text-3xl"></i>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xl font-bold">Minta EGI Intelligente</span>
+                                            <span
+                                                class="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-amber-900">PREMIUM</span>
+                                        </div>
+                                        <div class="mt-1 text-sm text-purple-100">
+                                            Con intelligenza artificiale che promuove e valorizza la tua opera
+                                        </div>
+                                        <div class="mt-3 flex flex-wrap gap-2">
+                                            <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ AI
+                                                inclusa</span>
+                                            <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓
+                                                Auto-promozione</span>
+                                            <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">✓ Storico
+                                                completo</span>
+                                        </div>
                                     </div>
                                 </div>
+                                <i class="fas fa-arrow-right text-2xl"></i>
                             </div>
-                            <i class="fas fa-arrow-right text-2xl"></i>
-                        </div>
-                    </button>
-                </form>
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
 
