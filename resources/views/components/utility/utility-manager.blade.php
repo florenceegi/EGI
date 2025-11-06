@@ -174,7 +174,7 @@
                     {{-- Peso --}}
                     <div class="form-group">
                         <label class="mb-1 block text-sm font-medium text-gray-700">
-                            {{ __('utility.shipping.weight') }} *
+                            {{ __('utility.shipping.weight') }}
                         </label>
                         <input type="number" name="weight" step="0.1" value="{{ $utility?->weight }}"
                             class="@error('weight') border-red-500 bg-red-50 @else border-gray-300 @enderror w-full rounded-lg border px-3 py-2">
@@ -506,25 +506,7 @@
             document.getElementById('utility-physical-section').style.display = showPhysical ? 'block' : 'none';
             document.getElementById('utility-service-section').style.display = showService ? 'block' : 'none';
 
-            // Gestisci attributo required per il campo peso
-            const weightInput = document.querySelector('input[name="weight"]');
-            if (weightInput) {
-                if (showPhysical) {
-                    weightInput.setAttribute('required', 'required');
-                    // Aggiungi un listener per evidenziare il campo se diventa richiesto
-                    setTimeout(() => {
-                        if (!weightInput.value) {
-                            weightInput.classList.add('border-yellow-400', 'bg-yellow-50');
-                            weightInput.setAttribute('placeholder', 'Il peso è obbligatorio per beni fisici');
-                        }
-                    }, 100);
-                } else {
-                    weightInput.removeAttribute('required');
-                    weightInput.value = ''; // Pulisci il valore se non necessario
-                    weightInput.classList.remove('border-yellow-400', 'bg-yellow-50');
-                    weightInput.setAttribute('placeholder', '');
-                }
-            }
+            // Peso non è più required - rimosso per permettere utility senza peso
         }
 
         function checkUploadStatus() {
@@ -803,20 +785,8 @@
                         titleInput.classList.remove('border-red-500', 'bg-red-50');
                     }
 
-                    // Controlla peso se il tipo è physical o hybrid
-                    if (selectedType && ['physical', 'hybrid'].includes(selectedType)) {
-                        const weightValidationInput = document.querySelector('input[name="weight"]');
-                        if (!weightValidationInput.value.trim()) {
-                            errors.push(utilityTranslations.weightRequiredPhysical);
-                            weightValidationInput.classList.add('border-red-500', 'bg-red-50');
-                            // if (!hasErrors) { // Focus rimosso temporaneamente per debug
-                            //     weightValidationInput.focus();
-                            // }
-                            hasErrors = true;
-                        } else {
-                            weightValidationInput.classList.remove('border-red-500', 'bg-red-50');
-                        }
-                    }
+                    // Peso non più required - rimosso per permettere utility senza peso
+                    // La validazione server-side gestirà eventuali requisiti specifici
 
                     // Ripristina il bottone
                     submitBtn.textContent = originalText;
