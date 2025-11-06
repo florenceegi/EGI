@@ -89,10 +89,10 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
                 showCancelButton: true,
                 cancelButtonText: 'Chiudi',
                 confirmButtonColor: '#f97316',
-            }).then((result) => {
+                }).then((result) => {
                 if (result.isConfirmed) {
-                    // TODO: Redirect to Egili purchase page
-                    window.location.href = '/egili/purchase';
+                    // Redirect to Egili purchase pricing page
+                    window.location.href = '/egili/purchase/pricing';
                 }
             });
 

@@ -441,7 +441,7 @@ $canEdit =
                             confirmButtonColor: '#f97316',
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location.href = '/egili/purchase';
+                                window.location.href = '/egili/purchase/pricing';
                             }
                         });
                         return false;
