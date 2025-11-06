@@ -105,7 +105,7 @@
 
                 {{-- ============================================ --}}
 
-                {{-- 🔒 BLOCKCHAIN IMMUTABILITY WARNING --}}
+                {{-- 🔒 EGI CERTIFICATO SU BLOCKCHAIN - Info complete mint --}}
                 @if ($egi->token_EGI)
                     <div class="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
                         <div class="flex items-start space-x-3">
@@ -114,15 +114,49 @@
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
                                     clip-rule="evenodd" />
                             </svg>
-                            <div>
+                            <div class="w-full">
                                 <h4 class="font-semibold text-amber-300">🔒
                                     {{ __('egi.crud.blockchain_warning_title') }}</h4>
                                 <p class="mt-1 text-sm text-amber-200/80">
                                     {!! __('egi.crud.blockchain_warning_message', ['asa_id' => $egi->token_EGI]) !!}
                                 </p>
+
+                                {{-- Badge ASA ID (spostato da Col 4) --}}
+                                <div class="mt-3">
+                                    <a href="https://algoexplorer.io/asset/{{ $egi->token_EGI }}" target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="inline-flex items-center space-x-1.5 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 to-emerald-500/20 px-3 py-1.5 shadow-md backdrop-blur-md transition-all hover:border-amber-400/70 hover:from-amber-500/30 hover:to-emerald-500/30">
+                                        <svg class="h-4 w-4 flex-shrink-0 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-xs font-bold text-emerald-400">ASA #{{ $egi->token_EGI }}</span>
+                                        <svg class="h-3.5 w-3.5 flex-shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                        </svg>
+                                    </a>
+                                </div>
+
+                                {{-- Bottone Visualizza Dettagli Mint (spostato da Col 4) --}}
+                                @php
+                                    $blockchainId = optional($egi->blockchain)->id;
+                                @endphp
+                                @if ($blockchainId)
+                                    <div class="mt-3">
+                                        <a href="{{ route('mint.show', $blockchainId) }}"
+                                            class="inline-flex items-center justify-center w-full px-4 py-2.5 font-medium text-green-400 transition-all border rounded-lg border-green-600/30 bg-green-700/20 backdrop-blur-sm hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ __('egi.status.view_mint_details') ?? 'Visualizza Dettagli Mint' }}
+                                        </a>
+                                    </div>
+                                @endif
+
+                                {{-- Link Verifica su Blockchain --}}
                                 <a href="https://testnet.explorer.perawallet.app/asset/{{ $egi->token_EGI }}"
                                     target="_blank"
-                                    class="mt-2 inline-flex items-center text-xs font-medium text-amber-300 transition-colors hover:text-amber-200">
+                                    class="mt-3 inline-flex items-center text-xs font-medium text-amber-300 transition-colors hover:text-amber-200">
                                     {{ __('egi.crud.blockchain_verify_link') }}
                                     <svg class="ml-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

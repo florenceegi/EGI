@@ -76,10 +76,41 @@ class EgiMintingService
                 'mint_error' => null
             ]);
 
-            $this->logger->info('EGI_MINTING_SUCCESS', [
+            // CRITICAL: Sync egis table per consistenza (isMinted(), token_EGI, status)
+            // Stesso pattern di MintEgiJob.php
+            $egi->update([
+                'owner_id' => $egiBlockchain->buyer_user_id, // Owner = buyer (creator self-mint)
+                'mint' => true,                               // Flag per isMinted() method
+                'token_EGI' => $algorandResult['asaId'],     // Algorand ASA ID
+                'status' => 'minted',                        // Status diventa 'minted'
+            ]);
+
+            // CRITICAL: Generate certificate (anche per creator self-mint gratuito)
+            try {
+                $certificateService = app(\App\Services\CertificateGeneratorService::class);
+                $certificate = $certificateService->generateBlockchainCertificate($egi->fresh(), $egiBlockchain->fresh());
+                
+                $this->logger->info('EGI_MINTING_SUCCESS - Certificate generated', [
+                    'egi_id' => $egi->id,
+                    'certificate_uuid' => $certificate->certificate_uuid,
+                    'certificate_path' => $certificate->pdf_path,
+                ]);
+            } catch (\Exception $certError) {
+                // Certificate generation failed - log but don't block mint
+                $this->logger->error('Certificate generation failed after mint', [
+                    'egi_id' => $egi->id,
+                    'blockchain_id' => $egiBlockchain->id,
+                    'error' => $certError->getMessage(),
+                ]);
+                // Don't throw - mint was successful, certificate can be generated later
+            }
+
+            $this->logger->info('EGI_MINTING_SUCCESS - Tables synced', [
                 'egi_id' => $egi->id,
                 'asa_id' => $algorandResult['asaId'],
-                'tx_id' => $algorandResult['txId']
+                'tx_id' => $algorandResult['txId'],
+                'egis_table_synced' => true,
+                'owner_id' => $egiBlockchain->buyer_user_id,
             ]);
 
             return $egiBlockchain->fresh();

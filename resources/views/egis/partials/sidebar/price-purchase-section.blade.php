@@ -5,25 +5,7 @@
     VARIABILI: $egi, $isForSale, $displayPrice, $priceLabel, $displayUser, $highestPriorityReservation, $isCreator, $canBeReserved
 --}}
 
-{{-- 🚀 MINT DETAILS BUTTON - ALWAYS VISIBLE (guest, auth, creator) - COMPLETELY STANDALONE --}}
-@php
-    // Get blockchain ID from new blockchain integration system
-    // Only show button for EGIs minted via new system (with egi_blockchain record)
-    $blockchainId = optional($egi->blockchain)->id;
-@endphp
-
-@if ($blockchainId)
-    <div class="mb-4">
-        <a href="{{ route('mint.show', $blockchainId) }}"
-            class="inline-flex items-center justify-center w-full px-6 py-4 font-medium text-green-400 transition-all border rounded-lg border-green-600/30 bg-green-700/20 backdrop-blur-sm hover:border-green-500/50 hover:bg-green-600/30 hover:text-green-300">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {{ __('egi.status.view_mint_details') ?? 'Visualizza Dettagli Mint' }}
-        </a>
-    </div>
-@endif
+{{-- Badge e bottone mint SPOSTATI nel box "EGI Certificato su Blockchain" in crud-panel --}}
 
 {{-- Price & Purchase Section --}}
 <div class="p-6 border rounded-xl border-gray-700/30 bg-gradient-to-br from-gray-800/50 to-gray-900/50">

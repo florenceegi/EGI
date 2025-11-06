@@ -323,8 +323,15 @@ class CertificateGeneratorService {
                 throw new \Exception('Cannot generate certificate: Transaction ID missing (mint not completed)');
             }
 
-            if (empty($egiBlockchain->paid_amount) || $egiBlockchain->paid_amount <= 0) {
-                throw new \Exception('Cannot generate certificate: Payment amount missing or invalid');
+            // CREATOR SELF-MINT: paid_amount può essere 0 (gratuito per creator)
+            // BUYER MINT: paid_amount deve essere > 0
+            // Permettiamo paid_amount = 0 solo se buyer è anche il creator
+            if (is_null($egiBlockchain->paid_amount)) {
+                throw new \Exception('Cannot generate certificate: Payment amount is NULL');
+            }
+            
+            if ($egiBlockchain->paid_amount < 0) {
+                throw new \Exception('Cannot generate certificate: Payment amount is negative');
             }
 
             // Generate certificate UUID

@@ -36,8 +36,93 @@
     </div>
 
     <div class="space-y-6 p-6">
-        {{-- Mint su Blockchain - Diretto senza step number --}}
-        <div class="pt-2">
+        {{-- Check se già mintato --}}
+        @if ($egi->isMinted() && $egi->token_EGI)
+            {{-- INFO MINT COMPLETATO --}}
+            <div class="rounded-xl border-2 border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 p-6">
+                <div class="mb-4 flex items-center gap-3">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-600">
+                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-green-900">✅ EGI Mintato!</h4>
+                        <p class="text-sm text-green-700">La tua opera è su blockchain</p>
+                    </div>
+                </div>
+
+                {{-- Blockchain Details --}}
+                <div class="space-y-3 rounded-lg border border-green-200 bg-white p-4">
+                    {{-- ASA ID --}}
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-700">🔢 ASA ID:</span>
+                        <a href="https://algoexplorer.io/asset/{{ $egi->token_EGI }}" target="_blank" 
+                           class="font-mono text-sm font-bold text-blue-600 hover:text-blue-800 hover:underline">
+                            {{ $egi->token_EGI }}
+                        </a>
+                    </div>
+
+                    {{-- TX ID (se disponibile) --}}
+                    @php
+                        $blockchain = $egi->egiBlockchains()->where('asa_id', $egi->token_EGI)->first();
+                    @endphp
+                    @if ($blockchain && $blockchain->blockchain_tx_id)
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">⛓️ TX ID:</span>
+                            <a href="https://algoexplorer.io/tx/{{ $blockchain->blockchain_tx_id }}" target="_blank"
+                               class="font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                                {{ Str::limit($blockchain->blockchain_tx_id, 20, '...') }}
+                            </a>
+                        </div>
+                    @endif
+
+                    {{-- Data Mint --}}
+                    @if ($blockchain && $blockchain->minted_at)
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">📅 Mintato il:</span>
+                            <span class="text-sm text-gray-900">
+                                {{ $blockchain->minted_at->format('d/m/Y H:i') }}
+                            </span>
+                        </div>
+                    @endif
+
+                    {{-- Status --}}
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-700">📊 Status:</span>
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                            <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 8 8">
+                                <circle cx="4" cy="4" r="3"/>
+                            </svg>
+                            {{ $egi->status }}
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Action buttons --}}
+                <div class="mt-4 flex gap-3">
+                    <a href="https://algoexplorer.io/asset/{{ $egi->token_EGI }}" target="_blank"
+                       class="flex-1 flex items-center justify-center gap-2 rounded-lg border border-blue-600 bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                        Vedi su Explorer
+                    </a>
+                    
+                    @if ($blockchain)
+                        <a href="{{ route('egi.mint-direct', $egi->id) }}"
+                           class="flex-1 flex items-center justify-center gap-2 rounded-lg border border-green-600 bg-white px-4 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Dettagli Completi
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @else
+            {{-- BOTTONE MINT (se non ancora mintato) --}}
+            <div class="pt-2">
 
             <div class="space-y-4">
                 {{-- Opzione 1: EGI Classico (Semplice) - Solo se egi_type è ASA --}}
@@ -109,6 +194,7 @@
                 @endif
             </div>
         </div>
+        @endif
 
         {{-- Info Box --}}
         <div class="rounded-lg border border-blue-200 bg-blue-50 p-4">

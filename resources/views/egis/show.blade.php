@@ -192,30 +192,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             {{-- Sidebar Content - Padding compatto --}}
                             <div class="space-y-3 p-3 lg:p-4">
 
-                                {{-- Badge Mint Status in cima alla sidebar --}}
-                                <div class="flex flex-wrap items-center gap-2 border-b border-gray-700/30 pb-3">
-                                    {{-- Badge MINTATO con link blockchain (solo se token_EGI presente) --}}
-                                    @if ($egi->token_EGI)
-                                        <a href="https://algoexplorer.io/asset/{{ $egi->token_EGI }}" target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="inline-flex items-center space-x-1 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 to-emerald-500/20 px-2 py-1 shadow-md backdrop-blur-md transition-all hover:border-amber-400/70 hover:from-amber-500/30 hover:to-emerald-500/30 sm:space-x-1.5 sm:px-2.5 sm:py-1">
-                                            <svg class="h-3 w-3 flex-shrink-0 animate-pulse text-amber-400 sm:h-3.5 sm:w-3.5"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                            </svg>
-                                            <span
-                                                class="whitespace-nowrap rounded bg-emerald-600/80 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-white sm:text-[10px]">
-                                                ASA #{{ $egi->token_EGI }}
-                                            </span>
-                                            <svg class="h-2.5 w-2.5 text-amber-300 sm:h-3 sm:w-3" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
-                                        </a>
-                                    @endif
-                                </div>
+                                {{-- Badge mint SPOSTATO nel box "EGI Certificato su Blockchain" in crud-panel (Col 2) --}}
 
                                 {{-- Price & Purchase Section --}}
                                 @include(
