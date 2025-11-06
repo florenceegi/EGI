@@ -191,9 +191,8 @@
     </div>{{-- Fine modal content --}}
 </div>{{-- Fine modal overlay --}}
 
-{{-- JavaScript for Trait Proposals Modal --}}
-@push('scripts')
-    <script>
+{{-- JavaScript for Trait Proposals Modal - Inline per garantire caricamento immediato --}}
+<script>
         /**
          * Open AI Traits Modal
          */
@@ -390,8 +389,7 @@
                 });
             }
         };
-    </script>
-@endpush
+</script>
 
 
 
