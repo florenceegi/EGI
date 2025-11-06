@@ -1423,3 +1423,37 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
         'is_minted' => !is_null($egi->token_EGI),
     ]" :mode="'general'" :auto-open="false" />
 @endif
+
+{{-- AI Traits Proposals Modal (se ci sono proposte pending) --}}
+@if ($isCreator)
+    @php
+        // Cerca proposte pending per questo EGI
+        $pendingGeneration = $egi->aiTraitGenerations()
+            ->where('status', 'pending_review')
+            ->with('proposals')
+            ->latest()
+            ->first();
+    @endphp
+    
+    @if ($pendingGeneration && $pendingGeneration->proposals->count() > 0)
+        {{-- Modale aperta automaticamente se ci sono proposte da revieware --}}
+        <x-egi-ai-traits-proposals :generation="$pendingGeneration" :isOpen="true" />
+        
+        {{-- Auto-open script --}}
+        @push('scripts')
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Apri automaticamente il modale proposals dopo il caricamento
+                    const modalId = 'ai-traits-modal-{{ $pendingGeneration->id }}';
+                    const openFunction = window['openAiTraitsModal{{ $pendingGeneration->id }}'];
+                    
+                    if (typeof openFunction === 'function') {
+                        setTimeout(() => {
+                            openFunction();
+                        }, 500); // Delay di 500ms per permettere il rendering completo
+                    }
+                });
+            </script>
+        @endpush
+    @endif
+@endif

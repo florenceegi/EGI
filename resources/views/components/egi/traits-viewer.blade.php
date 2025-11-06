@@ -373,31 +373,66 @@ $canEdit =
         <script>
             /**
              * Handle AI Traits Generation Request
+             * FLUSSO COMPLETO:
+             * 1. Chiede quanti traits generare (3-10)
+             * 2. Genera proposte (non traits definitivi)
+             * 3. Apre modale per review e approvazione
+             * 4. Crea solo i traits approvati
              */
             async function handleTraitsGenerate(event, egiId) {
                 event.preventDefault();
                 
                 console.log('[AI Traits] Generate clicked', { egiId });
 
-                // Confirm
-                const result = await Swal.fire({
-                    title: 'Genera Traits con AI?',
-                    html: `<p>N.A.T.A.N analizzerà l'immagine e proporrà <strong>5 traits</strong>.</p>
-                           <p class="text-sm text-gray-600 mt-2">Potrai revisionare ogni proposta prima dell'applicazione.</p>`,
+                // Step 1: Chiede quanti traits generare
+                const countResult = await Swal.fire({
+                    title: '🤖 Genera Traits con AI',
+                    html: `
+                        <div class="text-left">
+                            <p class="mb-3">N.A.T.A.N analizzerà l'immagine e proporrà traits basati su:</p>
+                            <ul class="mb-4 ml-4 space-y-1 text-sm text-gray-600">
+                                <li>✓ Elementi visivi identificati</li>
+                                <li>✓ Stile artistico</li>
+                                <li>✓ Caratteristiche tecniche</li>
+                                <li>✓ Mood e atmosfera</li>
+                            </ul>
+                            <label class="mb-2 block text-sm font-semibold text-gray-700">Quanti traits vuoi generare?</label>
+                            <input type="number" id="traits-count-input" class="swal2-input" 
+                                   value="5" min="3" max="10" step="1"
+                                   style="width: 100px; text-align: center; font-size: 18px; font-weight: bold;">
+                            <p class="mt-2 text-xs text-gray-500">Min: 3 | Max: 10 | Consigliato: 5-7</p>
+                        </div>
+                    `,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: '<i class="fas fa-wand-magic-sparkles mr-2"></i>Genera',
+                    confirmButtonText: '<i class="fas fa-wand-magic-sparkles mr-2"></i>Genera Proposte',
                     cancelButtonText: 'Annulla',
                     confirmButtonColor: '#9333ea',
                     cancelButtonColor: '#6b7280',
+                    preConfirm: () => {
+                        const input = document.getElementById('traits-count-input');
+                        const count = parseInt(input.value);
+                        
+                        if (isNaN(count) || count < 3 || count > 10) {
+                            Swal.showValidationMessage('Inserisci un numero tra 3 e 10');
+                            return false;
+                        }
+                        
+                        return count;
+                    }
                 });
 
-                if (!result.isConfirmed) return false;
+                if (!countResult.isConfirmed) return false;
 
-                // Show loading
+                const requestedCount = countResult.value;
+                console.log('[AI Traits] Requested count:', requestedCount);
+
+                // Step 2: Show loading
                 Swal.fire({
                     title: 'Analizzando...',
-                    html: '<p>N.A.T.A.N sta analizzando l\'immagine con Claude Vision...</p><p class="text-sm text-gray-600 mt-2">Questo può richiedere 30-60 secondi.</p>',
+                    html: `<p>N.A.T.A.N sta analizzando l'immagine con Claude Vision...</p>
+                           <p class="text-sm text-gray-600 mt-2">Generazione di ${requestedCount} proposte in corso...</p>
+                           <p class="text-xs text-gray-500 mt-3">Questo può richiedere 30-60 secondi.</p>`,
                     icon: 'info',
                     showConfirmButton: false,
                     allowOutsideClick: false,
@@ -410,7 +445,7 @@ $canEdit =
                     const url = `/egi/${egiId}/dual-arch/traits/generate`;
                     const csrfToken = document.querySelector('meta[name="csrf-token"]');
                     
-                    console.log('[AI Traits] Preparing request', { url, hasCsrfToken: !!csrfToken });
+                    console.log('[AI Traits] Preparing request', { url, requestedCount, hasCsrfToken: !!csrfToken });
                     
                     if (!csrfToken) {
                         throw new Error('CSRF token not found in page');
@@ -424,7 +459,7 @@ $canEdit =
                             'X-Requested-With': 'XMLHttpRequest',
                         },
                         body: JSON.stringify({
-                            requested_count: 5
+                            requested_count: requestedCount
                         }),
                     });
 
@@ -434,16 +469,19 @@ $canEdit =
                     console.log('[AI Traits] Data parsed', data);
 
                     if (data.success) {
-                        // Success - show proposals
+                        // Step 3: Proposte generate → Ricarica per mostrare modale
                         await Swal.fire({
-                            title: 'Analisi Completata!',
-                            html: `<p>${data.message}</p><p class="text-sm text-gray-600 mt-2">Ricarica la pagina per vedere le proposte.</p>`,
+                            title: '✨ Analisi Completata!',
+                            html: `<p>${data.message}</p>
+                                   <p class="text-sm text-gray-600 mt-2">Tra un istante vedrai le proposte da approvare.</p>`,
                             icon: 'success',
-                            confirmButtonText: 'Ricarica Pagina',
+                            confirmButtonText: 'Vedi Proposte',
                             confirmButtonColor: '#9333ea',
+                            timer: 2000,
+                            timerProgressBar: true,
                         });
 
-                        // Reload page to show proposals
+                        // Reload per mostrare il modale proposals
                         window.location.reload();
                     } else {
                         throw new Error(data.message || 'Errore sconosciuto');
@@ -453,7 +491,7 @@ $canEdit =
 
                     Swal.fire({
                         title: 'Errore',
-                        text: error.message || 'Si è verificato un errore durante la generazione dei traits.',
+                        text: error.message || 'Si è verificato un errore durante la generazione delle proposte.',
                         icon: 'error',
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#dc2626',
