@@ -106,8 +106,8 @@
         @endif
 
         {{-- Dual Path Mint/Reserve Buttons (same logic as egi-card) --}}
-
-        @if (!$blockchainId)
+        {{-- Mostra bottoni SOLO se EGI non è mintato --}}
+        @if (!$egi->token_EGI)
             @if (!$isCreator && auth()->check())
                 @php
                     // EgiAvailabilityService integration
