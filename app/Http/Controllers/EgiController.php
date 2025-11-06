@@ -395,9 +395,13 @@ class EgiController extends Controller
                 ]);
             }
 
+            // 🔒 VALIDAZIONE CONDIZIONALE: Se EGI è mintato, title/description non sono required
+            // perché nel form sono disabled e non vengono inviati dal browser
+            $isMinted = !is_null($egi->token_EGI);
+            
             // Validate input (including auction configuration)
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:60',
+                'title' => $isMinted ? 'nullable|string|max:60' : 'required|string|max:60',
                 'description' => 'nullable|string|max:5000',
                 'price' => [
                     'nullable',
@@ -410,7 +414,7 @@ class EgiController extends Controller
                         }
                     }
                 ],
-                'creation_date' => 'nullable|date',
+                'creation_date' => $isMinted ? 'nullable|date' : 'nullable|date',
                 'is_published' => 'boolean',
                 // Sale/Auction fields
                 'sale_mode' => 'nullable|in:not_for_sale,fixed_price,auction',
@@ -455,23 +459,37 @@ class EgiController extends Controller
 
             // 🔒 BLOCKCHAIN IMMUTABILITY: Check if EGI is minted (BLOCKING)
             if ($egi->token_EGI) {
-                // Se EGI è mintato, SOLO price può essere modificato
-                $allowedFields = ['price'];
+                // Se EGI è mintato, SOLO price, sale_mode, is_published e auction fields possono essere modificati
+                // Metadata (title, description, traits) sono immutabili su blockchain
+                $allowedFields = ['price', 'sale_mode', 'is_published', 'auction_minimum_price', 'auction_start', 'auction_end', 'auto_mint_highest'];
                 $attemptedFields = array_keys($validated);
                 $blockedFields = array_diff($attemptedFields, $allowedFields);
 
                 if (!empty($blockedFields)) {
-                    return $this->errorManager->handle('EGI_METADATA_IMMUTABLE', [
+                    $this->logger->error('EGI_METADATA_IMMUTABLE: Attempted to modify immutable fields', [
+                        'class' => self::class,
+                        'method' => __METHOD__,
                         'user_id' => $user->id,
                         'egi_id' => $egi->id,
                         'token_egi' => $egi->token_EGI,
                         'attempted_fields' => $attemptedFields,
-                        'blocked_fields' => $blockedFields,
+                        'blocked_fields' => array_values($blockedFields),
                         'allowed_fields' => $allowedFields
+                    ]);
+                    
+                    return $this->errorManager->handle('EGI_METADATA_IMMUTABLE', [
+                        'user_id' => $user->id,
+                        'egi_id' => $egi->id,
+                        'token_egi' => $egi->token_EGI,
+                        'attempted_fields' => implode(', ', $attemptedFields),
+                        'blocked_fields' => implode(', ', $blockedFields),
+                        'allowed_fields' => implode(', ', $allowedFields),
+                        'class' => self::class,
+                        'method' => 'update'
                     ]);
                 }
 
-                // Se arriva qui, sta modificando SOLO price → permesso
+                // Se arriva qui, sta modificando SOLO campi permessi
                 // Rimuovi comunque altri campi per sicurezza
                 $validated = array_intersect_key($validated, array_flip($allowedFields));
             }
