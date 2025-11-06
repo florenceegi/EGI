@@ -75,7 +75,7 @@ $canEdit =
             </div>
         @endif
 
-        {{-- Traits Grid (readonly) renderizzato con PHP - 2 COLONNE --}}
+        {{-- Traits Grid (readonly) renderizzato con PHP - 1 COLONNA per migliore leggibilità --}}
         <div class="traits-list readonly">
             <div class="traits-grid" id="traits-grid-viewer">
                 @if ($egi && $egi->traits && $egi->traits->count() > 0)
@@ -173,7 +173,12 @@ $canEdit =
                             <div class="trait-content">
                                 <div class="trait-type">
                                     @if ($trait->traitType)
-                                        {{ __('trait_elements.types.' . $trait->traitType->name, [], null) ?: $trait->traitType->name }}
+                                        @php
+                                            // Normalizza la chiave per il lookup traduzioni
+                                            // Converte "COLOR PALETTE" → "Color Palette" per match con translation keys
+                                            $translationKey = \Illuminate\Support\Str::title(strtolower($trait->traitType->name));
+                                        @endphp
+                                        {{ __('trait_elements.types.' . $translationKey, [], null) ?: $trait->traitType->name }}
                                     @else
                                         Unknown
                                     @endif

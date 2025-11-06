@@ -5,10 +5,10 @@
     VARIABILI: $egi, $canUpdateEgi, $canDeleteEgi, $isPriceLocked, $canModifyPrice, $displayPrice, $displayUser, $highestPriorityReservation
 --}}
 
-{{-- Center: CRUD Box - Più largo quando visibile --}}
+{{-- Col 2: CRUD Box (quando visibile) --}}
 @if ($canUpdateEgi)
     <div
-        class="overflow-y-auto border-t border-emerald-700/30 bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl md:col-span-5 md:border-l md:border-r md:border-t-0 lg:col-span-5 xl:col-span-4">
+        class="overflow-y-auto border-t border-emerald-700/30 bg-gradient-to-b from-emerald-900/20 to-emerald-900/10 backdrop-blur-xl md:col-span-5 md:border-l md:border-r md:border-t-0 lg:col-span-4 xl:col-span-4">
         {{-- CRUD Box Content - Padding ottimizzato --}}
         <div class="p-3 md:p-2 lg:p-3 xl:p-4">
             <div

@@ -112,18 +112,18 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 ? 'bg-gradient-to-br from-amber-900/30 via-emerald-900/20 to-gray-900'
                 : 'bg-gradient-to-br from-gray-900 via-black to-gray-900' }}">
 
-            {{-- Background wrapper senza badge (li sposto nella sidebar) --}}
-            <div class="container mx-auto px-0 py-0">
+            {{-- Background wrapper - Container più largo per display grandi --}}
+            <div class="container mx-auto px-0 py-0 md:max-w-full lg:max-w-[1400px] xl:max-w-[1600px] 2xl:max-w-[1800px]">
 
                 {{-- Cinematic Artwork Display --}}
                 <div class="relative w-full">
 
-                    {{-- Main Gallery Grid - SEMPRE multi-colonna da tablet in su --}}
-                    <div class="grid grid-cols-1 gap-0 md:grid-cols-12">
+                    {{-- Main Gallery Grid - 4 COLONNE da laptop in su per distribuzione omogenea --}}
+                    <div class="grid grid-cols-1 gap-0 md:grid-cols-12 lg:grid-cols-16">
 
-                        {{-- Left: Artwork Area - Ridotta quando CRUD visibile --}}
+                        {{-- Col 1: Artwork Area --}}
                         <div
-                            class="@if ($canUpdateEgi) md:col-span-7 lg:col-span-4 xl:col-span-5 @else md:col-span-7 lg:col-span-6 xl:col-span-7 @endif relative p-2 md:p-3 lg:p-4 xl:p-6">
+                            class="@if ($canUpdateEgi) md:col-span-7 lg:col-span-5 xl:col-span-5 @else md:col-span-7 lg:col-span-8 xl:col-span-9 @endif relative p-2 md:p-3 lg:p-4 xl:p-6">
 
                             {{-- Artwork Container con Floating Card - Sempre visibile completamente --}}
                             <div class="relative mx-auto w-full max-w-full">
@@ -142,13 +142,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                     compact('egi', 'collection', 'isCreator'))
                             </div>
 
-                            {{-- Description sotto l'immagine (FUORI dal container relative) --}}
-                            <div class="mt-3 md:mt-4">
-                                @include('egis.partials.sidebar.description-section', compact('egi'))
-                            </div>
                         </div>
 
-                        {{-- Center: CRUD Box --}}
+                        {{-- Col 2: CRUD Box --}}
                         @include(
                             'egis.partials.sidebar.crud-panel',
                             compact(
@@ -160,7 +156,16 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                 'displayUser',
                                 'highestPriorityReservation'))
 
-                        {{-- Right: Sidebar - Nascosta su tablet, visibile su laptop+ --}}
+                        {{-- Col 3: Info Panel (Description + sezioni che prima andavano sotto) --}}
+                        <div
+                            class="overflow-y-auto border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-xl md:hidden lg:block lg:border-l lg:border-t-0 @if($canUpdateEgi) lg:col-span-4 xl:col-span-4 @else lg:col-span-5 xl:col-span-5 @endif">
+                            <div class="space-y-4 p-4 md:space-y-3 md:p-3 lg:space-y-4 lg:p-4 xl:space-y-5 xl:p-5">
+                                {{-- Description --}}
+                                @include('egis.partials.sidebar.description-section', compact('egi'))
+                            </div>
+                        </div>
+
+                        {{-- Col 4: Sidebar principale --}}
                         <div
                             class="overflow-y-auto border-t border-gray-700/50 bg-gray-900/95 backdrop-blur-xl md:hidden lg:col-span-3 lg:block lg:border-l lg:border-t-0 xl:col-span-3">
 

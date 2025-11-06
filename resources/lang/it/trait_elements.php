@@ -23,11 +23,13 @@ return [
     // Types
     'types' => [
         'Categories' => 'Categorie',
+        'Color Palette' => 'Palette Colori',
         'Primary Material' => 'Materiale Primario',
         'Finish' => 'Finitura',
         'Technique' => 'Tecnica',
         'Primary Color' => 'Colore Primario',
         'Style' => 'Stile',
+        'Subject Matter' => 'Soggetto',
         'Mood' => 'Atmosfera',
         'Size' => 'Dimensione',
         'Weight' => 'Peso',
