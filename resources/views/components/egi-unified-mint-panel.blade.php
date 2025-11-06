@@ -28,24 +28,16 @@
             <i class="fas fa-magic text-2xl text-white"></i>
             <div>
                 <h3 class="text-xl font-bold text-white" style="font-family: 'Playfair Display', serif;">
-                    Prepara e Minta il tuo EGI
+                    Minta il tuo EGI
                 </h3>
-                <p class="text-sm text-blue-100">Segui i passi per mettere la tua opera su blockchain</p>
+                <p class="text-sm text-blue-100">Metti la tua opera su blockchain</p>
             </div>
         </div>
     </div>
 
     <div class="space-y-6 p-6">
-        {{-- Step 1: Mint su Blockchain --}}
-        <div class="pt-6">
-            <div class="mb-4 flex items-center gap-2">
-                <span
-                    class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">1</span>
-                <h4 class="text-lg font-bold text-gray-900">Scegli come mintare</h4>
-            </div>
-            <p class="mb-6 text-sm text-gray-600">
-                Mettere "su blockchain" significa renderla unica e certificata per sempre
-            </p>
+        {{-- Mint su Blockchain - Diretto senza step number --}}
+        <div class="pt-2">
 
             <div class="space-y-4">
                 {{-- Opzione 1: EGI Classico (Semplice) - Solo se egi_type è ASA --}}

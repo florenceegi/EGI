@@ -192,11 +192,8 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                             {{-- Sidebar Content - Padding compatto --}}
                             <div class="space-y-3 p-3 lg:p-4">
 
-                                {{-- Badge EGI Type e Mint in cima alla sidebar --}}
+                                {{-- Badge Mint Status in cima alla sidebar --}}
                                 <div class="flex flex-wrap items-center gap-2 border-b border-gray-700/30 pb-3">
-                                    {{-- EGI Type Badge --}}
-                                    <x-egi-type-badge :type="$egi->egi_type ?? 'ASA'" size="md" />
-
                                     {{-- Badge MINTATO con link blockchain (solo se token_EGI presente) --}}
                                     @if ($egi->token_EGI)
                                         <a href="https://algoexplorer.io/asset/{{ $egi->token_EGI }}" target="_blank"
