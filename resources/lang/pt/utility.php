@@ -8,6 +8,7 @@ return [
     'status_none' => 'Sem Utilidade',
     'available_images' => ':count imagens disponíveis para ":title"',
     'view_details' => 'Ver Detalhes',
+    'manage_utility' => 'Gerenciar Utilidade',
 
     // Alertas e mensagens
     'info_edit_before_publish' => 'A utilidade só pode ser adicionada ou modificada antes da publicação da coleção. Uma vez publicada, não pode mais ser modificada.',

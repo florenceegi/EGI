@@ -8,6 +8,7 @@ return [
     'status_none' => 'Kein Nutzen',
     'available_images' => 'Es sind :count Bilder für ":title" verfügbar',
     'view_details' => 'Details Anzeigen',
+    'manage_utility' => 'Nutzen Verwalten',
 
     // Warnungen und Nachrichten
     'info_edit_before_publish' => 'Der Nutzen kann nur vor der Veröffentlichung der Sammlung hinzugefügt oder geändert werden. Nach der Veröffentlichung kann er nicht mehr geändert werden.',
