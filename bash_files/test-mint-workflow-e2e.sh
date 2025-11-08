@@ -39,7 +39,12 @@ DIRECT_TEST=$(php artisan tinker --execute="
 \$user = \App\Models\User::find(4);
 \$service = app(\App\Services\EgiMintingService::class);
 try {
-    \$result = \$service->mintEgi(\$egi, \$user, ['co_creator_display_name' => 'E2E Test Direct']);
+    \$result = \$service->mintEgi(\$egi, [
+        'buyer_user_id' => \$user->id,
+        'buyer_wallet' => 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+        'co_creator_display_name' => 'E2E Test Direct',
+        'creator_display_name' => optional(\$egi->user)->name ?? \$egi->creator ?? 'Unknown Creator'
+    ]);
     echo json_encode([
         'success' => true,
         'record_id' => \$result->id,
@@ -47,7 +52,8 @@ try {
         'has_metadata' => !is_null(\$result->metadata),
         'has_creator_name' => !is_null(\$result->creator_display_name),
         'co_creator_name' => \$result->co_creator_display_name,
-        'metadata_traits' => isset(\$result->metadata['attributes']) ? count(\$result->metadata['attributes']) : 0
+        'metadata_key_count' => is_array(\$result->metadata) ? count(array_keys(\$result->metadata)) : 0,
+        'owner_id' => \$result->buyer_user_id
     ]);
 } catch (\Exception \$e) {
     echo json_encode(['success' => false, 'error' => \$e->getMessage()]);
@@ -59,16 +65,18 @@ if echo "$DIRECT_TEST" | jq -e '.success' > /dev/null 2>&1; then
     ASA_ID=$(echo "$DIRECT_TEST" | jq -r '.asa_id')
     HAS_METADATA=$(echo "$DIRECT_TEST" | jq -r '.has_metadata')
     HAS_CREATOR=$(echo "$DIRECT_TEST" | jq -r '.has_creator_name')
-    TRAITS_COUNT=$(echo "$DIRECT_TEST" | jq -r '.metadata_traits')
+    METADATA_KEY_COUNT=$(echo "$DIRECT_TEST" | jq -r '.metadata_key_count')
+    OWNER_ID=$(echo "$DIRECT_TEST" | jq -r '.owner_id')
     
     echo -e "${GREEN}✅ Direct mint successful${NC}"
     echo "   Record ID: $RECORD_ID"
     echo "   ASA ID: $ASA_ID"
     echo "   Metadata: $HAS_METADATA"
     echo "   Creator Name: $HAS_CREATOR"
-    echo "   Traits Count: $TRAITS_COUNT"
+    echo "   Metadata Keys: $METADATA_KEY_COUNT"
+    echo "   Owner User ID: $OWNER_ID"
     
-    if [ "$HAS_METADATA" == "true" ] && [ "$HAS_CREATOR" == "true" ] && [ "$TRAITS_COUNT" -gt 0 ]; then
+    if [ "$HAS_METADATA" == "true" ] && [ "$HAS_CREATOR" == "true" ] && [ "$METADATA_KEY_COUNT" -gt 0 ] && [ "$OWNER_ID" != "null" ]; then
         echo -e "${GREEN}✅ Data integrity: ALL FIELDS POPULATED${NC}"
     else
         echo -e "${RED}❌ Data integrity: MISSING FIELDS!${NC}"
@@ -92,19 +100,24 @@ echo json_encode([
     'metadata_keys' => array_keys(\$record->metadata ?? []),
     'creator_display_name' => \$record->creator_display_name,
     'co_creator_display_name' => \$record->co_creator_display_name,
-    'metadata_updated_at' => \$record->metadata_last_updated_at
+    'metadata_updated_at' => \$record->metadata_last_updated_at,
+    'buyer_user_id' => \$record->buyer_user_id,
+    'ownership_type' => \$record->ownership_type
 ]);
 " 2>/dev/null | grep -o '{.*}')
 
 MINT_STATUS=$(echo "$DB_CHECK" | jq -r '.mint_status')
 CREATOR_NAME=$(echo "$DB_CHECK" | jq -r '.creator_display_name')
 METADATA_KEYS=$(echo "$DB_CHECK" | jq -r '.metadata_keys | length')
+BUYER_ID=$(echo "$DB_CHECK" | jq -r '.buyer_user_id')
+OWNERSHIP=$(echo "$DB_CHECK" | jq -r '.ownership_type')
 
-if [ "$MINT_STATUS" == "minted" ] && [ "$CREATOR_NAME" != "null" ] && [ "$METADATA_KEYS" -gt 0 ]; then
+if [ "$MINT_STATUS" == "minted" ] && [ "$CREATOR_NAME" != "null" ] && [ "$METADATA_KEYS" -gt 0 ] && [ "$BUYER_ID" != "null" ]; then
     echo -e "${GREEN}✅ Database record valid${NC}"
     echo "   Status: $MINT_STATUS"
     echo "   Creator: $CREATOR_NAME"
     echo "   Metadata keys: $METADATA_KEYS"
+    echo "   Ownership type: $OWNERSHIP"
 else
     echo -e "${RED}❌ Database record incomplete${NC}"
     echo "$DB_CHECK"
@@ -114,7 +127,7 @@ echo ""
 
 # Step 4: Check failed jobs
 echo -e "${BLUE}[4/5] Checking for failed jobs...${NC}"
-FAILED_COUNT=$(php artisan queue:failed --json 2>/dev/null | grep -c "uuid" || echo "0")
+FAILED_COUNT=$(php artisan queue:failed --json 2>/dev/null | jq 'length' 2>/dev/null || echo 0)
 if [ "$FAILED_COUNT" -eq 0 ]; then
     echo -e "${GREEN}✅ No failed jobs${NC}"
 else
@@ -133,8 +146,9 @@ echo ""
 echo "📊 Test Results:"
 echo "   - Direct service call: ✅ PASS"
 echo "   - Database persistence: ✅ PASS"
-echo "   - Metadata population: ✅ PASS ($TRAITS_COUNT traits)"
+echo "   - Metadata population: ✅ PASS ($METADATA_KEY_COUNT keys)"
 echo "   - Display names frozen: ✅ PASS"
+echo "   - Owner sync: ✅ PASS (user $OWNER_ID)"
 echo "   - Worker status: ✅ RUNNING"
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"

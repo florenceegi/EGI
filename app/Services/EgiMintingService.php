@@ -62,28 +62,68 @@ class EgiMintingService
             // Prepara metadata per blockchain
             $blockchainMetadata = $this->prepareMetadata($egi, $metadata);
 
+            // Determina buyer/wallet/co-creator name
+            $buyerUserId = $metadata['buyer_user_id']
+                ?? $egiBlockchain->buyer_user_id
+                ?? ($egi->owner_id ?: $egi->user_id);
+
+            $buyerWallet = $metadata['buyer_wallet'] ?? $egiBlockchain->buyer_wallet;
+
+            $creatorName = $metadata['creator_display_name']
+                ?? $egiBlockchain->creator_display_name
+                ?? ($egi->creator ?? optional($egi->user)->name);
+
+            $coCreatorName = $metadata['co_creator_display_name']
+                ?? $egiBlockchain->co_creator_display_name;
+
             // Mint su Algorand
             $algorandResult = $this->algorandService->mintEgi($egi->id, $blockchainMetadata);
 
             // Aggiorna record con dati blockchain
-            $egiBlockchain->update([
+            $updateData = [
                 'asa_id' => $algorandResult['asaId'],
                 'blockchain_tx_id' => $algorandResult['txId'],
                 'anchor_hash' => $algorandResult['certificate_number'] ?? null,
                 'platform_wallet' => $algorandResult['treasury_address'] ?? null,
                 'mint_status' => 'minted',
                 'minted_at' => now(),
-                'mint_error' => null
-            ]);
+                'mint_error' => null,
+                'metadata' => $blockchainMetadata,
+                'metadata_last_updated_at' => now(),
+            ];
+
+            if ($buyerUserId) {
+                $updateData['buyer_user_id'] = $buyerUserId;
+            }
+
+            if ($buyerWallet) {
+                $updateData['buyer_wallet'] = $buyerWallet;
+                $updateData['ownership_type'] = 'wallet';
+            }
+
+            if ($creatorName) {
+                $updateData['creator_display_name'] = $creatorName;
+            }
+
+            if ($coCreatorName) {
+                $updateData['co_creator_display_name'] = $coCreatorName;
+            }
+
+            $egiBlockchain->update($updateData);
 
             // CRITICAL: Sync egis table per consistenza (isMinted(), token_EGI, status)
             // Stesso pattern di MintEgiJob.php
-            $egi->update([
-                'owner_id' => $egiBlockchain->buyer_user_id, // Owner = buyer (creator self-mint)
-                'mint' => true,                               // Flag per isMinted() method
-                'token_EGI' => $algorandResult['asaId'],     // Algorand ASA ID
-                'status' => 'minted',                        // Status diventa 'minted'
-            ]);
+            $ownerUpdate = [
+                'mint' => true,
+                'token_EGI' => $algorandResult['asaId'],
+                'status' => 'minted',
+            ];
+
+            if ($buyerUserId) {
+                $ownerUpdate['owner_id'] = $buyerUserId;
+            }
+
+            $egi->update($ownerUpdate);
 
             // CRITICAL: Generate certificate (anche per creator self-mint gratuito)
             try {

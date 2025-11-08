@@ -96,6 +96,9 @@ class MintEgiJob implements ShouldQueue {
                     'payment_reference' => $egiBlockchain->payment_reference,
                     'buyer_wallet' => $egiBlockchain->buyer_wallet,
                     'buyer_user_id' => $egiBlockchain->buyer_user_id,
+                    'creator_display_name' => $egiBlockchain->creator_display_name
+                        ?? optional($egiBlockchain->egi->user)->name
+                        ?? $egiBlockchain->egi->creator,
                     'co_creator_display_name' => $egiBlockchain->co_creator_display_name, // User-provided name (optional)
                 ]
             );

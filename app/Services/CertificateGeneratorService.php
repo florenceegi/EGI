@@ -367,7 +367,7 @@ class CertificateGeneratorService {
                 'buyer_user_id_fallback' => $buyerUserId,
                 'certificate_uuid' => $certificateUuid
             ]);
-            
+
             // Create certificate record in egi_reservation_certificates table
             $certificate = EgiReservationCertificate::create([
                 'certificate_type' => 'mint',
