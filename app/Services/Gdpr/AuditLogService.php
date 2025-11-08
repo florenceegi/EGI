@@ -90,7 +90,7 @@ class AuditLogService {
      * @param User $user
      * @param string $action
      * @param array $context
-     * @param GdprActivityCategory $category
+     * @param GdprActivityCategory|null $category
      * @return UserActivity
      * @privacy-safe Logs action for specified user only
      */
@@ -98,9 +98,11 @@ class AuditLogService {
         User $user,
         string $action,
         array $context = [],
-        GdprActivityCategory $category
+        ?GdprActivityCategory $category = null
     ): UserActivity {
         try {
+            $category ??= GdprActivityCategory::SYSTEM_INTERACTION;
+            
             $this->logger->debug('Audit Log Service: Logging user action', [
                 'user_id' => $user->id,
                 'action' => $action,

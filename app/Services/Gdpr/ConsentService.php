@@ -32,6 +32,8 @@ use App\Enums\Gdpr\PrivacyLevel;
  */
 class ConsentService {
 
+    private const CONSENT_TYPES_CACHE_KEY = 'consent_types.all_active_dtos.final';
+
     /**
      * Legal content service for fetching legal documents
      * @var LegalContentService
@@ -75,9 +77,7 @@ class ConsentService {
      * zero impact on the rest of the application.
      */
     public function getConsentTypes(): Collection {
-        $cacheKey = 'consent_types.all_active_dtos.final'; // Nuova chiave per la massima sicurezza
-
-        return Cache::rememberForever($cacheKey, function () {
+        return Cache::rememberForever(self::CONSENT_TYPES_CACHE_KEY, function () {
 
             $consentTypesFromDb = ConsentType::where('is_active', true)
                 ->orderBy('priority_order')
@@ -102,13 +102,42 @@ class ConsentService {
 
 
     /**
+     * @Oracode Method: Refresh consent types cache to guarantee fresh configuration
+     * 🎯 Purpose: Invalidate and reload cached consent types when stale data is detected
+     * 📤 Output: Fresh collection of ConsentTypeDto objects
+     */
+    public function refreshConsentTypesCache(): Collection {
+        Cache::forget(self::CONSENT_TYPES_CACHE_KEY);
+
+        $consentTypes = $this->getConsentTypes();
+
+        $this->logger->info('Consent Service: Consent types cache refreshed', [
+            'count' => $consentTypes->count(),
+            'log_category' => 'CONSENT_SERVICE_CACHE_REFRESH'
+        ]);
+
+        return $consentTypes;
+    }
+
+    /**
      * @Oracode Method: Get Single Consent Type
      * 🎯 Purpose: Retrieve specific consent type configuration
      * 📥 Input: Consent type key
      * 📤 Output: ConsentTypeDto or null
      */
     public function getConsentType(string $key): ?ConsentTypeDto {
-        return $this->getConsentTypes()->firstWhere('key', $key);
+        $consentType = $this->getConsentTypes()->firstWhere('key', $key);
+
+        if ($consentType === null) {
+            $this->logger->warning('Consent Service: Missing consent type in cache, triggering refresh', [
+                'requested_key' => $key,
+                'log_category' => 'CONSENT_SERVICE_CACHE_MISS'
+            ]);
+
+            $consentType = $this->refreshConsentTypesCache()->firstWhere('key', $key);
+        }
+
+        return $consentType;
     }
 
     /**

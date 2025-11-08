@@ -13,16 +13,14 @@ namespace App\Notifications\Gdpr;
  * @oracode-intent: To encapsulate the data and delivery channels for an 'account deletion requested' notification.
  * @os1-compliance: Full.
  */
-class AccountDeletionRequestedNotification extends AbstractGdprNotification
-{
+class AccountDeletionRequestedNotification extends AbstractGdprNotification {
     /**
      * Get the custom database representation of the notification.
      *
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toCustomDatabase($notifiable): array
-    {
+    public function toCustomDatabaseGdpr($notifiable): array {
         return [
             'model_type' => $this->notificationData->getModelType(),
             'model_id'   => $this->notificationData->getModelId(),
@@ -35,5 +33,8 @@ class AccountDeletionRequestedNotification extends AbstractGdprNotification
             'outcome'    => $this->notificationData->getStatus(),
         ];
     }
-}
 
+    public function toCustomDatabase($notifiable): array {
+        return $this->toCustomDatabaseGdpr($notifiable);
+    }
+}

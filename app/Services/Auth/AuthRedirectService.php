@@ -64,10 +64,10 @@ class AuthRedirectService
     protected array $redirectRegistry = [
         'pa_entity' => 'pa.acts.index',     // PA N.A.T.A.N. Intelligence Center
         'pa_identity' => 'pa.acts.index',   // PA Identity (same as pa_entity)
-        'inspector' => 'inspector.dashboard', // Inspector dashboard [FUTURE]
-        'company' => 'company.dashboard',    // Company dashboard [FUTURE]
-        'collector' => 'collector.dashboard', // Collector dashboard [FUTURE]
-        'patron' => 'patron.dashboard',      // Patron dashboard [FUTURE]
+        'inspector' => 'home', // Inspector dashboard [FUTURE]
+        'company' => 'home',    // Company dashboard [FUTURE]
+        'collector' => 'home', // Collector dashboard [FUTURE]
+        'patron' => 'home',      // Patron dashboard [FUTURE]
         'creator' => 'home',                 // Creator → Public homepage (default)
     ];
 
