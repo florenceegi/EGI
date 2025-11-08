@@ -84,6 +84,9 @@ class ConsentTypeSeeder extends Seeder {
                         'internal_staff',
                         'legal_team'
                     ],
+                    'is_active' => true,
+                    'is_granular' => false,
+                    'can_withdraw' => false,
                     'is_required' => true,
                     'priority_order' => 10,
                 ],
