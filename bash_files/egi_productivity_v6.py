@@ -374,7 +374,7 @@ class GitRepo:
         commits = []
 
         # Get commit list
-        cmd = f'git log --oneline --since="{since} 00:00:00" --until="{until} 23:59:59"'
+        cmd = f'git log --all --oneline --since="{since} 00:00:00" --until="{until} 23:59:59"'
         output = self.run_command(cmd)
 
         if not output:
@@ -451,7 +451,7 @@ class GitRepo:
     def get_commits_from_repo(self, repo_path: Path, since: str, until: str) -> List[CommitEntry]:
         """Get commits from specific repository."""
         commits = []
-        cmd = f'git log --oneline --since="{since} 00:00:00" --until="{until} 23:59:59"'
+        cmd = f'git log --all --oneline --since="{since} 00:00:00" --until="{until} 23:59:59"'
 
         try:
             result = subprocess.run(
@@ -932,11 +932,12 @@ def create_excel_report(
 # TERMINAL OUTPUT
 # ═══════════════════════════════════════════════════════════════
 
-def print_terminal_summary(weekly_stats: List[WeekStats], daily_stats: List[DayStats], is_single_day: bool = False) -> None:
+def print_terminal_summary(weekly_stats: List[WeekStats], daily_stats: List[DayStats], is_single_day: bool = False, requested_date: dt.date = None) -> None:
     """Print summary to terminal with EGI/NATAN_LOC separation."""
     # Se single day, prendi quel giorno. Altrimenti cerca oggi, o ultimo giorno con commit.
-    if is_single_day and daily_stats:
-        target_day = daily_stats[0]
+    if is_single_day and daily_stats and requested_date:
+        # Cerca il giorno richiesto, non il primo della lista
+        target_day = next((d for d in daily_stats if d.date == requested_date), daily_stats[0])
     else:
         today_list = [d for d in daily_stats if d.date == dt.date.today()]
         if today_list:
@@ -1110,7 +1111,7 @@ def main() -> int:
             print(f"✅ Analizzate {len(weekly_stats)} settimane, {len([d for d in daily_stats if d.commits > 0])} giorni con commit")
 
         # Terminal output (giornaliero sempre, settimanale solo se NOT single day)
-        print_terminal_summary(weekly_stats, daily_stats, is_single_day)
+        print_terminal_summary(weekly_stats, daily_stats, is_single_day, start_date if is_single_day else None)
 
         # Excel export (SOLO se NOT single day)
         if not is_single_day:
