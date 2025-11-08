@@ -640,6 +640,8 @@
             console.log('[RegisterWalletSetup] Opening modal immediately');
             modal.classList.remove('hidden');
 
+            const postRegistrationRedirectUrl = "{{ $postRegistrationRedirectUrl ?? route('home') }}";
+
             // Collapsible sections
             document.querySelectorAll('.wallet-section-header').forEach(button => {
                 button.addEventListener('click', function() {
@@ -690,7 +692,7 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        window.location.href = '/dashboard';
+                        window.location.href = postRegistrationRedirectUrl;
                     } else {
                         hideLoading();
                         showError(data.error || 'Errore durante l\'aggiunta dell\'IBAN');
@@ -739,7 +741,7 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        window.location.href = '/dashboard';
+                        window.location.href = postRegistrationRedirectUrl;
                     } else {
                         hideLoading();
                         alert(data.error || 'Errore durante il salvataggio');

@@ -179,6 +179,7 @@ class RegisteredUserController extends Controller {
                 'wallet' => $result['user']->fresh()->wallets()->whereNotNull('secret_ciphertext')->first(),
                 'ecosystem_created' => $result['ecosystem_created'],
                 'user_type' => $validated['user_type'],
+                'postRegistrationRedirectUrl' => route($this->authRedirectService->getRedirectRoute($result['user'])),
             ]);
         } catch (\Exception $e) {
             $errorContext = [
