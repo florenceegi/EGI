@@ -64,6 +64,8 @@ return [
         'natan_job_session_not_found' => 'Job N.A.T.A.N. in background non ha trovato la sessione :session_id in cache.',
         'natan_job_analysis_failed' => 'Analisi chunked N.A.T.A.N. in background fallita per sessione :session_id. Errore: :error',
         'natan_job_user_not_found' => 'Job N.A.T.A.N. in background non ha trovato l\'utente per sessione :session_id (user_id: :user_id).',
+        // GDPR Consent Processing
+        'gdpr_consent_processing_failed' => 'Elaborazione dei consensi GDPR fallita per l\'utente :user_id. Operazione: :operation. Errore: :error',
 
         // PA Acts Upload Errors (Dev)
         'pa_act_auth_required' => 'Tentativo di upload atto PA senza autenticazione. User: :user_id, IP: :ip',
@@ -237,6 +239,8 @@ return [
         'natan_job_session_not_found' => 'Sessione di analisi scaduta o non trovata. Avvia una nuova analisi.',
         'natan_job_analysis_failed' => 'Analisi in background fallita. I tuoi crediti sono stati rimborsati. Riprova o contatta l\'assistenza.',
         'natan_job_user_not_found' => 'Sessione utente non valida. Effettua nuovamente il login e riprova.',
+        // GDPR Consent Processing
+        'gdpr_consent_processing_failed' => 'Non è stato possibile registrare i tuoi consensi privacy. Riprova più tardi o contatta l\'assistenza.',
 
         'pa_heritage_detail_error' => 'Impossibile caricare il dettaglio del bene patrimoniale. Riprova tra poco.',
 
@@ -420,7 +424,7 @@ return [
         'kms_configuration_invalid' => 'Configurazione di sicurezza non valida. Contatta immediatamente l\'assistenza tecnica.',
         'kms_audit_log_failed' => 'Errore nel sistema di tracciamento sicurezza. L\'operazione è stata comunque completata.',
         'kms_unavailable' => 'Il sistema di crittografia wallet non è al momento disponibile. Il nostro team è stato notificato. Riprova tra qualche minuto.',
-        
+
         // Egili Purchase System Errors (User Messages)
         'egili_purchase_process_failed' => 'Si è verificato un errore durante l\'elaborazione del tuo acquisto di Egili. Riprova più tardi o contatta l\'assistenza.',
         'egili_purchase_confirmation_error' => 'Impossibile visualizzare i dettagli dell\'ordine. Controlla la tua email o contatta l\'assistenza.',

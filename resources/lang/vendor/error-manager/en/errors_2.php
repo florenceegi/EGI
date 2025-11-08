@@ -56,6 +56,8 @@ return [
         'natan_job_session_not_found' => 'N.A.T.A.N. background job could not find session :session_id in cache.',
         'natan_job_analysis_failed' => 'N.A.T.A.N. background chunked analysis failed for session :session_id. Error: :error',
         'natan_job_user_not_found' => 'N.A.T.A.N. background job could not find user for session :session_id (user_id: :user_id).',
+        // GDPR Consent Processing
+        'gdpr_consent_processing_failed' => 'GDPR consent processing failed for user :user_id. Operation: :operation. Error: :error',
     ],
 
         // Egili Purchase System Errors (Dev Messages)
@@ -112,6 +114,8 @@ return [
         'natan_job_session_not_found' => 'Analysis session expired or not found. Please start a new analysis.',
         'natan_job_analysis_failed' => 'Background analysis failed. Your credits have been refunded. Please try again or contact support.',
         'natan_job_user_not_found' => 'User session invalid. Please log in again and retry.',
+        // GDPR Consent Processing
+        'gdpr_consent_processing_failed' => 'We could not process your privacy consents. Please try again later or contact support.',
 
         // Egili Purchase System Errors (User Messages)
         'egili_purchase_process_failed' => 'An error occurred while processing your Egili purchase. Please try again later or contact support.',

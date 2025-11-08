@@ -2531,6 +2531,16 @@ return [
             'notify_slack' => false,
             'msg_to' => 'sweet-alert',
         ],
+        'GDPR_CONSENT_PROCESSING_FAILED' => [
+            'type' => 'critical',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.gdpr_consent_processing_failed',
+            'user_message_key' => 'error-manager::errors_2.user.gdpr_consent_processing_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
 
         // Cookie Consent specific errors
         'COOKIE_CONSENT_STATUS_ERROR' => [
