@@ -339,6 +339,23 @@ class CertificateGeneratorService {
                 'is_free_owner_mint' => is_null($egiBlockchain->paid_amount)
             ]);
 
+            $existingCertificate = EgiReservationCertificate::query()
+                ->where('certificate_type', 'mint')
+                ->where('egi_blockchain_id', $egiBlockchain->id)
+                ->orderByDesc('created_at')
+                ->first();
+
+            if ($existingCertificate) {
+                $this->logger->warning('Blockchain certificate already exists for mint operation', [
+                    'egi_id' => $egi->id,
+                    'egi_blockchain_id' => $egiBlockchain->id,
+                    'existing_certificate_id' => $existingCertificate->id,
+                    'existing_certificate_uuid' => $existingCertificate->certificate_uuid,
+                ]);
+
+                return $existingCertificate;
+            }
+
             // Generate certificate UUID
             $certificateUuid = (string) Str::uuid();
 

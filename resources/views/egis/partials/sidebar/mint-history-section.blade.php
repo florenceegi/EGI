@@ -6,9 +6,12 @@
 --}}
 
 {{-- Mint/Rebind History --}}
-@if ($egi->mintCertificates && $egi->mintCertificates->isNotEmpty())
-    <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-white">{{ __('certificate.mint_history.section_title') }}</h3>
-        <x-egi-mint-history :egi="$egi" :certificates="$egi->mintCertificates" />
-    </div>
+@php
+    $mintCertificates = $egi->mintCertificates instanceof \Illuminate\Support\Collection
+        ? $egi->mintCertificates->unique('egi_blockchain_id')->values()
+        : collect();
+@endphp
+
+@if ($mintCertificates->isNotEmpty())
+    <x-egi-mint-history :egi="$egi" :certificates="$mintCertificates" />
 @endif
