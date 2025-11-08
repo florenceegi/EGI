@@ -19,11 +19,11 @@ $canEdit =
     FegiAuth::id() === $egi->user_id &&
     !$egi->is_published &&
     !$egi->token_EGI;
-    
-// Determina se l'utente è il creator (indipendentemente da pubblicazione)
-$isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
 
-// Determina se mostrare la sezione: solo se ci sono traits o se l'utente può editare
+// Determina se l'utente è il creator (indipendentemente da pubblicazione)
+    $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
+
+    // Determina se mostrare la sezione: solo se ci sono traits o se l'utente può editare
     $hasTraits = $egi && $egi->traits && $egi->traits->count() > 0;
     $shouldShow = $hasTraits || $canEdit;
 @endphp
@@ -46,7 +46,7 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                     'Accept': 'application/json',
                 }
             });
-            
+
             const data = await response.json();
             if (data.success) {
                 window.location.reload();
@@ -62,49 +62,53 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
     // Handle drag and drop - GLOBALE
     window.handleTraitImageDrop = function(event, traitId) {
         console.log('🎯 File droppato per trait', traitId);
-        
+
         const files = event.dataTransfer.files;
         if (!files || files.length === 0) {
             console.error('❌ Nessun file droppato');
             return;
         }
-        
+
         const file = files[0];
         console.log('📁 File:', file.name, file.type, file.size);
-        
+
         // Valida che sia un'immagine
         if (!file.type.startsWith('image/')) {
             alert('Per favore seleziona un file immagine valido');
             return;
         }
-        
+
         // Valida dimensione (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
             alert('Il file è troppo grande. Massimo 5MB');
             return;
         }
-        
+
         // Triggera il file input per attivare il sistema esistente
         const fileInput = document.getElementById(`trait-image-input-${traitId}`);
         if (fileInput) {
             console.log('✅ File input trovato, assegno files...');
-            
+
             // Crea un DataTransfer per simulare la selezione file
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             fileInput.files = dataTransfer.files;
-            
+
             console.log('📦 Files assegnati:', fileInput.files.length, 'file(s)');
-            
+
             // Triggera più eventi per compatibilità
-            const changeEvent = new Event('change', { bubbles: true });
+            const changeEvent = new Event('change', {
+                bubbles: true
+            });
             fileInput.dispatchEvent(changeEvent);
             console.log('🔔 Evento change triggerato');
-            
-            const inputEvent = new Event('input', { bubbles: true });
+
+            const inputEvent = new Event('input', {
+                bubbles: true
+            });
             fileInput.dispatchEvent(inputEvent);
             console.log('🔔 Evento input triggerato');
-            
+
             // Se dopo 500ms non è partito nulla, usa il listener manuale
             setTimeout(() => {
                 console.log('⏱️ Verifico se l\'upload è partito...');
@@ -118,7 +122,9 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                             // Trigga direttamente il TraitImageManager se esiste
                             if (window.TraitImageManagerInstance) {
                                 console.log('🚀 Usando TraitImageManagerInstance diretto');
-                                window.TraitImageManagerInstance.handleImageUpload({ target: fileInput });
+                                window.TraitImageManagerInstance.handleImageUpload({
+                                    target: fileInput
+                                });
                             } else {
                                 console.log('⚠️ TraitImageManagerInstance non trovato, uso fallback');
                             }
@@ -128,7 +134,7 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                     console.log('✅ Upload già partito!');
                 }
             }, 500);
-            
+
         } else {
             console.error('❌ Input file non trovato');
         }
@@ -137,75 +143,79 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
 
 @if ($shouldShow)
     <div class="egi-traits-viewer" id="traits-viewer-{{ $egi ? $egi->id : 'new' }}"
-        data-egi-id="{{ $egi ? $egi->id : '' }}" 
-        data-can-edit="{{ $canEdit ? 'true' : 'false' }}"
+        data-egi-id="{{ $egi ? $egi->id : '' }}" data-can-edit="{{ $canEdit ? 'true' : 'false' }}"
         data-is-creator="{{ $isCreator ? 'true' : 'false' }}">
 
         {{-- COLLAPSABILE BOX TRAITS - Semplificato senza bordo --}}
         <details class="group" open>
-            <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gradient-to-r from-purple-900/20 to-indigo-900/20 px-3 py-2.5 md:px-4 md:py-3 text-white transition-colors hover:from-purple-900/30 hover:to-indigo-900/30">
+            <summary
+                class="flex cursor-pointer items-center justify-between rounded-lg bg-gradient-to-r from-purple-900/20 to-indigo-900/20 px-3 py-2.5 text-white transition-colors hover:from-purple-900/30 hover:to-indigo-900/30 md:px-4 md:py-3">
                 <div class="flex items-center gap-1.5 md:gap-2">
                     <span class="text-lg md:text-xl">🎯</span>
-                    <span class="text-xs md:text-sm font-semibold">{{ __('Tratti e Attributi') }}</span>
+                    <span class="text-xs font-semibold md:text-sm">{{ __('Tratti e Attributi') }}</span>
                     <span class="trait-counter ml-1 md:ml-2">
                         <span class="traits-count">{{ $egi && $egi->traits ? $egi->traits->count() : 0 }}</span>/30
                     </span>
                 </div>
-                <svg class="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-3.5 w-3.5 transition-transform group-open:rotate-180 md:h-4 md:w-4" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </summary>
 
             <div class="mt-3">
                 @if ($canEdit)
-            {{-- Add Trait Buttons --}}
-            <div class="traits-editor-controls mb-3 space-y-2">
-                {{-- Manual Add Trait Button --}}
-                <button type="button" class="add-trait-btn w-full flex items-center justify-center gap-2 bg-purple-900/20 hover:bg-purple-900/30 text-purple-300 hover:text-purple-200 px-3 py-2 md:px-4 md:py-2.5 rounded-lg font-semibold text-sm md:text-base transition-all duration-200"
-                    onclick="if(window.TraitsViewer) { TraitsViewer.openModal(); }">
-                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    <span>{{ __('traits.add_trait_manual') }}</span>
-                </button>
-                
-                {{-- AI Generate Traits Button --}}
-                <button type="button" class="ai-traits-btn w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 text-blue-400 hover:text-blue-300 border border-blue-600/50 hover:border-blue-500 px-3 py-2 md:px-4 md:py-2.5 rounded-lg font-semibold text-sm md:text-base transition-all duration-200"
-                    onclick="handleTraitsGenerate(event, {{ $egi->id }})">
-                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                    </svg>
-                    <span>🤖 {{ __('traits.generate_traits_ai') }}</span>
-                </button>
-            </div>
-        @endif
+                    {{-- Add Trait Buttons --}}
+                    <div class="traits-editor-controls mb-3 space-y-2">
+                        {{-- Manual Add Trait Button --}}
+                        <button type="button"
+                            class="add-trait-btn flex w-full items-center justify-center gap-2 rounded-lg bg-purple-900/20 px-3 py-2 text-sm font-semibold text-purple-300 transition-all duration-200 hover:bg-purple-900/30 hover:text-purple-200 md:px-4 md:py-2.5 md:text-base"
+                            onclick="if(window.TraitsViewer) { TraitsViewer.openModal(); }">
+                            <svg class="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            <span>{{ __('traits.add_trait_manual') }}</span>
+                        </button>
 
-        {{-- Traits Grid (readonly) renderizzato con PHP - 1 COLONNA per migliore leggibilità --}}
-        <div class="traits-list readonly">
-            <div class="traits-grid" id="traits-grid-viewer">
-                @if ($egi && $egi->traits && $egi->traits->count() > 0)
-                    @foreach ($egi->traits as $trait)
-                        @php
-                            // Carica colore e icona dal database
-                            $category = $trait->category;
-                            $categoryColor = $category ? $category->color : '#6B6B6B';
-                            $categoryIcon = $category ? $category->icon : '🏷️';
-                        @endphp
+                        {{-- AI Generate Traits Button --}}
+                        <button type="button"
+                            class="ai-traits-btn flex w-full items-center justify-center gap-2 rounded-lg border border-blue-600/50 bg-gradient-to-r from-blue-600/20 to-purple-600/20 px-3 py-2 text-sm font-semibold text-blue-400 transition-all duration-200 hover:border-blue-500 hover:from-blue-600/30 hover:to-purple-600/30 hover:text-blue-300 md:px-4 md:py-2.5 md:text-base"
+                            onclick="handleTraitsGenerate(event, {{ $egi->id }})">
+                            <svg class="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                            <span>🤖 {{ __('traits.generate_traits_ai') }}</span>
+                        </button>
+                    </div>
+                @endif
 
-                        <div class="trait-card readonly" data-category="{{ $trait->category_id }}"
-                            data-trait-id="{{ $trait->id }}"
-                            style="position: relative; 
-                                   transition: all 0.2s ease; 
+                {{-- Traits Grid (readonly) renderizzato con PHP - 1 COLONNA per migliore leggibilità --}}
+                <div class="traits-list readonly">
+                    <div class="traits-grid" id="traits-grid-viewer">
+                        @if ($egi && $egi->traits && $egi->traits->count() > 0)
+                            @foreach ($egi->traits as $trait)
+                                @php
+                                    // Carica colore e icona dal database
+                                    $category = $trait->category;
+                                    $categoryColor = $category ? $category->color : '#6B6B6B';
+                                    $categoryIcon = $category ? $category->icon : '🏷️';
+                                @endphp
+
+                                <div class="trait-card readonly" data-category="{{ $trait->category_id }}"
+                                    data-trait-id="{{ $trait->id }}"
+                                    style="position: relative;
+                                   transition: all 0.2s ease;
                                    background: rgba(255, 255, 255, 0.25) !important;
                                    border: 2px solid rgba(212, 165, 116, 0.6) !important;
                                    box-shadow: 0 3px 8px rgba(212, 165, 116, 0.3), 0 1px 3px rgba(0, 0, 0, 0.3) !important;
                                    border-radius: 0.5rem !important;">
-                            @if ($isCreator)
-                                <button type="button" class="trait-remove trait-action-button"
-                                    onclick="console.log('Remove button clicked for trait:', {{ $trait->id }}); event.stopPropagation(); event.preventDefault(); if(window.TraitsViewer) { TraitsViewer.removeTrait({{ $trait->id }}); } else { console.error('TraitsViewer not found!'); } return false;"
-                                    title="Rimuovi trait"
-                                    style="position: absolute;
+                                    @if ($isCreator)
+                                        <button type="button" class="trait-remove trait-action-button"
+                                            onclick="console.log('Remove button clicked for trait:', {{ $trait->id }}); event.stopPropagation(); event.preventDefault(); if(window.TraitsViewer) { TraitsViewer.removeTrait({{ $trait->id }}); } else { console.error('TraitsViewer not found!'); } return false;"
+                                            title="Rimuovi trait"
+                                            style="position: absolute;
                                            right: 0.25rem;
                                            top: 0.25rem;
                                            background: rgba(220, 53, 69, 0.9) !important;
@@ -223,130 +233,171 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                                            z-index: 9999 !important;
                                            pointer-events: auto !important;
                                            transition: all 0.2s ease !important;"
-                                    onmouseover="this.style.backgroundColor='rgba(220, 53, 69, 1)'; this.style.transform='scale(1.1)';"
-                                    onmouseout="this.style.backgroundColor='rgba(220, 53, 69, 0.9)'; this.style.transform='scale(1)';">
-                                    ×
-                                </button>
-                            @endif
-                            {{-- Prima riga: Icona + Tipo + Valore --}}
-                            <div class="trait-content">
-                                <div class="flex items-center gap-2">
-                                    {{-- Icona --}}
-                                    <span class="trait-category-badge flex-shrink-0" style="background-color: {{ $categoryColor }}">
-                                        {{ $categoryIcon }}
-                                    </span>
-                                    
-                                    {{-- Tipo e Valore sulla stessa riga --}}
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-baseline gap-1.5">
-                                            <span class="trait-type">
-                                                @if ($trait->traitType)
-                                                    @php
-                                                        $translationKey = \Illuminate\Support\Str::title(strtolower($trait->traitType->name));
-                                                    @endphp
-                                                    {{ __('trait_elements.types.' . $translationKey, [], null) ?: $trait->traitType->name }}:
-                                                @else
-                                                    Unknown:
-                                                @endif
+                                            onmouseover="this.style.backgroundColor='rgba(220, 53, 69, 1)'; this.style.transform='scale(1.1)';"
+                                            onmouseout="this.style.backgroundColor='rgba(220, 53, 69, 0.9)'; this.style.transform='scale(1)';">
+                                            ×
+                                        </button>
+                                    @endif
+                                    {{-- Prima riga: Icona + Tipo + Valore --}}
+                                    <div class="trait-content">
+                                        <div class="flex items-center gap-2">
+                                            {{-- Icona --}}
+                                            <span class="trait-category-badge flex-shrink-0"
+                                                style="background-color: {{ $categoryColor }}">
+                                                {{ $categoryIcon }}
                                             </span>
-                                            <span class="trait-value">
-                                                {{ $trait->display_value ?? $trait->value }}
-                                                @if ($trait->traitType && $trait->traitType->unit)
-                                                    <span class="trait-unit">{{ $trait->traitType->unit }}</span>
-                                                @endif
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                {{-- Barra di rarità - VISIBILE CON STILI INLINE --}}
-                                @if (isset($trait->rarity_percentage) && $trait->rarity_percentage)
-                                    @php
-                                        // Calcola colore basato su rarità
-                                        if ($trait->rarity_percentage >= 70) {
-                                            $rarityColor = 'linear-gradient(90deg, #27ae60, #2ecc71)'; // Verde - comune
-                                        } elseif ($trait->rarity_percentage >= 40) {
-                                            $rarityColor = 'linear-gradient(90deg, #f39c12, #e67e22)'; // Arancione - poco comune
-                                        } elseif ($trait->rarity_percentage >= 20) {
-                                            $rarityColor = 'linear-gradient(90deg, #e74c3c, #c0392b)'; // Rosso - raro
-                                        } elseif ($trait->rarity_percentage >= 10) {
-                                            $rarityColor = 'linear-gradient(90deg, #9b59b6, #8e44ad)'; // Viola - epico
-                                        } elseif ($trait->rarity_percentage >= 5) {
-                                            $rarityColor = 'linear-gradient(90deg, #d4a574, #b8860b)'; // Oro - leggendario
-                                        } else {
-                                            $rarityColor = 'linear-gradient(90deg, #ff6b6b, #ffd700, #ff6b6b)'; // Mitico
-                                        }
-                                        
-                                        // Calcola larghezza: più raro = barra più lunga
-                                        if ($trait->rarity_percentage <= 5) {
-                                            $barWidth = 90;
-                                        } elseif ($trait->rarity_percentage <= 10) {
-                                            $barWidth = 75;
-                                        } elseif ($trait->rarity_percentage <= 20) {
-                                            $barWidth = 60;
-                                        } elseif ($trait->rarity_percentage <= 40) {
-                                            $barWidth = 40;
-                                        } elseif ($trait->rarity_percentage <= 70) {
-                                            $barWidth = 25;
-                                        } else {
-                                            $barWidth = 10;
-                                        }
-                                    @endphp
-                                    <div style="margin-top: 0.375rem; padding-left: 0.5rem; padding-right: 0.5rem;">
-                                        <div style="height: 5px; background: rgba(55, 65, 81, 0.5); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(75, 85, 99, 0.3);">
-                                            <div style="height: 100%; width: {{ number_format($barWidth, 1) }}%; background: {{ $rarityColor }}; transition: width 0.5s ease;"></div>
-                                        </div>
-                                        <div style="font-size: 10px; color: #9ca3af; text-align: right; margin-top: 0.125rem;">{{ number_format($trait->rarity_percentage, 1) }}%</div>
-                                    </div>
-                                @endif
-                            </div>
-                            
-                            {{-- Area upload VISIBILE --}}
-                            @if ($isCreator)
-                                <div class="px-2 pb-1.5 pt-0.5" onclick="event.stopPropagation();">
-                                    <form id="trait-image-form-{{ $trait->id }}" class="trait-image-upload-form" onsubmit="event.preventDefault(); return false;">
-                                        @csrf
-                                        <input type="hidden" name="trait_id" value="{{ $trait->id }}">
-                                        
-                                        @if($trait->getFirstMedia('trait_images'))
-                                            {{-- Immagine esistente con aspect ratio preservato --}}
-                                            @php
-                                                $media = $trait->getFirstMedia('trait_images');
-                                                $thumbnailUrl = $media->getUrl('thumb');
-                                            @endphp
-                                            <div class="relative group flex items-center justify-center bg-gray-900/30 rounded border-2 border-green-500/60 p-1" style="min-height: 40px;" onclick="event.stopPropagation();">
-                                                <img src="{{ $thumbnailUrl }}" alt="{{ $trait->display_value }}"
-                                                     class="max-w-full max-h-16 object-contain rounded">
-                                                <button type="button" 
-                                                        class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                                                        onclick="event.stopPropagation(); if(confirm('{{ __('traits.confirm_delete') }}')) { deleteTraitImage({{ $trait->id }}); }">×</button>
+                                            {{-- Tipo e Valore sulla stessa riga --}}
+                                            <div class="min-w-0 flex-1">
+                                                <div class="flex items-baseline gap-1.5">
+                                                    <span class="trait-type">
+                                                        @if ($trait->traitType)
+                                                            @php
+                                                                $translationKey = \Illuminate\Support\Str::title(
+                                                                    strtolower($trait->traitType->name),
+                                                                );
+                                                            @endphp
+                                                            {{ __('trait_elements.types.' . $translationKey, [], null) ?: $trait->traitType->name }}:
+                                                        @else
+                                                            Unknown:
+                                                        @endif
+                                                    </span>
+                                                    <span class="trait-value">
+                                                        {{ $trait->display_value ?? $trait->value }}
+                                                        @if ($trait->traitType && $trait->traitType->unit)
+                                                            <span
+                                                                class="trait-unit">{{ $trait->traitType->unit }}</span>
+                                                        @endif
+                                                    </span>
+                                                </div>
                                             </div>
-                                        @else
-                                            {{-- Area upload con icona camera e drag&drop --}}
-                                            <label for="trait-image-input-{{ $trait->id }}" 
-                                                   id="trait-upload-area-{{ $trait->id }}"
-                                                   onclick="event.stopPropagation();"
-                                                   ondragover="event.preventDefault(); event.stopPropagation(); this.classList.add('!border-blue-300', '!bg-blue-500/30');"
-                                                   ondragleave="event.preventDefault(); event.stopPropagation(); this.classList.remove('!border-blue-300', '!bg-blue-500/30');"
-                                                   ondrop="event.preventDefault(); event.stopPropagation(); this.classList.remove('!border-blue-300', '!bg-blue-500/30'); handleTraitImageDrop(event, {{ $trait->id }});"
-                                                   class="flex items-center justify-center gap-1.5 w-full h-8 border-2 border-dashed border-blue-400/60 rounded bg-blue-500/10 hover:bg-blue-500/20 hover:border-blue-300 transition-all cursor-pointer">
-                                                <span class="text-xl">📷</span>
-                                                <span class="text-[10px] text-blue-300 font-medium">{{ __('traits.add_image') }}</span>
-                                                <input type="file" 
-                                                       id="trait-image-input-{{ $trait->id }}"
-                                                       name="trait_image"
-                                                       class="hidden trait-image-input"
-                                                       accept="image/jpeg,image/png,image/webp,image/gif">
-                                            </label>
+                                        </div>
+
+                                        {{-- Barra di rarità - VISIBILE CON STILI INLINE --}}
+                                        @if (isset($trait->rarity_percentage) && $trait->rarity_percentage)
+                                            @php
+                                                // Calcola colore basato su rarità
+                                                if ($trait->rarity_percentage >= 70) {
+                                                    $rarityColor = 'linear-gradient(90deg, #27ae60, #2ecc71)'; // Verde - comune
+                                                } elseif ($trait->rarity_percentage >= 40) {
+                                                    $rarityColor = 'linear-gradient(90deg, #f39c12, #e67e22)'; // Arancione - poco comune
+                                                } elseif ($trait->rarity_percentage >= 20) {
+                                                    $rarityColor = 'linear-gradient(90deg, #e74c3c, #c0392b)'; // Rosso - raro
+                                                } elseif ($trait->rarity_percentage >= 10) {
+                                                    $rarityColor = 'linear-gradient(90deg, #9b59b6, #8e44ad)'; // Viola - epico
+                                                } elseif ($trait->rarity_percentage >= 5) {
+                                                    $rarityColor = 'linear-gradient(90deg, #d4a574, #b8860b)'; // Oro - leggendario
+                                                } else {
+                                                    $rarityColor = 'linear-gradient(90deg, #ff6b6b, #ffd700, #ff6b6b)'; // Mitico
+                                                }
+
+                                                // Calcola larghezza: più raro = barra più lunga
+                                                if ($trait->rarity_percentage <= 5) {
+                                                    $barWidth = 90;
+                                                } elseif ($trait->rarity_percentage <= 10) {
+                                                    $barWidth = 75;
+                                                } elseif ($trait->rarity_percentage <= 20) {
+                                                    $barWidth = 60;
+                                                } elseif ($trait->rarity_percentage <= 40) {
+                                                    $barWidth = 40;
+                                                } elseif ($trait->rarity_percentage <= 70) {
+                                                    $barWidth = 25;
+                                                } else {
+                                                    $barWidth = 10;
+                                                }
+                                            @endphp
+                                            <div
+                                                style="margin-top: 0.375rem; padding-left: 0.5rem; padding-right: 0.5rem;">
+                                                <div
+                                                    style="height: 5px; background: rgba(55, 65, 81, 0.5); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(75, 85, 99, 0.3);">
+                                                    <div
+                                                        style="height: 100%; width: {{ number_format($barWidth, 1) }}%; background: {{ $rarityColor }}; transition: width 0.5s ease;">
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    style="font-size: 10px; color: #9ca3af; text-align: right; margin-top: 0.125rem;">
+                                                    {{ number_format($trait->rarity_percentage, 1) }}%</div>
+                                            </div>
                                         @endif
-                                    </form>
+                                    </div>
+
+                                    {{-- Area immagine/upload VISIBILE --}}
+                                    <div class="px-2 pb-1.5 pt-0.5"
+                                        @if ($isCreator) onclick="event.stopPropagation();" @endif>
+                                        @php
+                                            $media = $trait->getFirstMedia('trait_images');
+                                        @endphp
+
+                                        @if ($media)
+                                            @php
+                                                $thumbnailUrl = $media->hasGeneratedConversion('thumb')
+                                                    ? $media->getUrl('thumb')
+                                                    : $media->getFullUrl();
+
+                                                if (empty($thumbnailUrl)) {
+                                                    $thumbnailUrl = $media->getFullUrl();
+                                                }
+
+                                                if ($thumbnailUrl) {
+                                                    $parsed = parse_url($thumbnailUrl);
+                                                    $currentHost = request()->getHost();
+
+                                                    if (
+                                                        $parsed !== false &&
+                                                        isset($parsed['host']) &&
+                                                        $parsed['host'] !== $currentHost
+                                                    ) {
+                                                        $path = $parsed['path'] ?? '';
+                                                        $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+                                                        $thumbnailUrl =
+                                                            request()->getSchemeAndHttpHost() . $path . $query;
+                                                    } elseif (\Illuminate\Support\Str::startsWith($thumbnailUrl, '/')) {
+                                                        $thumbnailUrl =
+                                                            request()->getSchemeAndHttpHost() . $thumbnailUrl;
+                                                    }
+                                                }
+                                            @endphp
+                                            <div class="group relative flex items-center justify-center rounded border-2 border-green-500/60 bg-gray-900/30 p-1"
+                                                style="min-height: 40px;"
+                                                @if ($isCreator) onclick="event.stopPropagation();" @endif>
+                                                <img src="{{ $thumbnailUrl }}" alt="{{ $trait->display_value }}"
+                                                    class="max-h-16 max-w-full rounded object-contain">
+                                                @if ($isCreator)
+                                                    <button type="button"
+                                                        class="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
+                                                        onclick="event.stopPropagation(); if(confirm('{{ __('traits.confirm_delete') }}')) { deleteTraitImage({{ $trait->id }}); }">×</button>
+                                                @endif
+                                            </div>
+                                        @elseif($isCreator)
+                                            <form id="trait-image-form-{{ $trait->id }}"
+                                                class="trait-image-upload-form"
+                                                onsubmit="event.preventDefault(); return false;">
+                                                @csrf
+                                                <input type="hidden" name="trait_id" value="{{ $trait->id }}">
+
+                                                {{-- Area upload con icona camera e drag&drop --}}
+                                                <label for="trait-image-input-{{ $trait->id }}"
+                                                    id="trait-upload-area-{{ $trait->id }}"
+                                                    onclick="event.stopPropagation();"
+                                                    ondragover="event.preventDefault(); event.stopPropagation(); this.classList.add('!border-blue-300', '!bg-blue-500/30');"
+                                                    ondragleave="event.preventDefault(); event.stopPropagation(); this.classList.remove('!border-blue-300', '!bg-blue-500/30');"
+                                                    ondrop="event.preventDefault(); event.stopPropagation(); this.classList.remove('!border-blue-300', '!bg-blue-500/30'); handleTraitImageDrop(event, {{ $trait->id }});"
+                                                    class="flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 rounded border-2 border-dashed border-blue-400/60 bg-blue-500/10 transition-all hover:border-blue-300 hover:bg-blue-500/20">
+                                                    <span class="text-xl">📷</span>
+                                                    <span
+                                                        class="text-[10px] font-medium text-blue-300">{{ __('traits.add_image') }}</span>
+                                                    <input type="file" id="trait-image-input-{{ $trait->id }}"
+                                                        name="trait_image" class="trait-image-input hidden"
+                                                        accept="image/jpeg,image/png,image/webp,image/gif">
+                                                </label>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </div>
-                            @endif
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-        </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
             </div>{{-- Fine mt-3 content --}}
         </details>{{-- Fine details collapsabile --}}
     </div>
@@ -386,7 +437,8 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                 </button>
             </div>
 
-            <div class="modal-body" style="flex: 1 1 auto !important; overflow-y: auto !important; padding: 1rem !important;">
+            <div class="modal-body"
+                style="flex: 1 1 auto !important; overflow-y: auto !important; padding: 1rem !important;">
                 {{-- Step 1: Select Category --}}
                 <div class="form-group mb-4">
                     <label class="form-label text-sm md:text-base">{{ __('traits.select_category') }}</label>
@@ -398,7 +450,8 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                 {{-- Step 2: Select Trait Type --}}
                 <div class="form-group mb-4" id="type-selector-group-viewer" style="display: none;">
                     <label class="form-label text-sm md:text-base">{{ __('traits.select_type') }}</label>
-                    <select class="form-select text-sm md:text-base" id="trait-type-select-viewer" onchange="TraitsViewer.onTypeSelected()">
+                    <select class="form-select text-sm md:text-base" id="trait-type-select-viewer"
+                        onchange="TraitsViewer.onTypeSelected()">
                         <option value="">{{ __('traits.choose_type') }}</option>
                     </select>
                 </div>
@@ -422,12 +475,14 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                 </div>
             </div>
 
-            <div class="modal-footer" style="flex-shrink: 0 !important; position: sticky !important; bottom: 0 !important; background: #fafafa !important; border-top: 1px solid #e5e5e5 !important; padding: 0.875rem 1rem !important; display: flex !important; justify-content: flex-end !important; gap: 0.5rem !important;">
-                <button type="button" class="btn-cancel text-sm md:text-base px-3 py-2 md:px-4 md:py-2.5" onclick="TraitsViewer.closeModal()">
+            <div class="modal-footer"
+                style="flex-shrink: 0 !important; position: sticky !important; bottom: 0 !important; background: #fafafa !important; border-top: 1px solid #e5e5e5 !important; padding: 0.875rem 1rem !important; display: flex !important; justify-content: flex-end !important; gap: 0.5rem !important;">
+                <button type="button" class="btn-cancel px-3 py-2 text-sm md:px-4 md:py-2.5 md:text-base"
+                    onclick="TraitsViewer.closeModal()">
                     {{ __('traits.cancel') }}
                 </button>
-                <button type="button" class="btn-confirm text-sm md:text-base px-3 py-2 md:px-4 md:py-2.5" id="confirm-trait-btn-viewer"
-                    onclick="TraitsViewer.addTrait()" disabled>
+                <button type="button" class="btn-confirm px-3 py-2 text-sm md:px-4 md:py-2.5 md:text-base"
+                    id="confirm-trait-btn-viewer" onclick="TraitsViewer.addTrait()" disabled>
                     {{ __('traits.add') }}
                 </button>
             </div>
@@ -493,7 +548,7 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
             /**
              * Handle AI Traits Generation Request (with cost confirmation)
              * Uses unified AI Feature Orchestrator
-             * 
+             *
              * FLUSSO CORRETTO:
              * 1. Show cost confirmation dialog (CHECK EGILI PRIMA!)
              * 2. Chiede quanti traits generare (3-10)
@@ -502,8 +557,10 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
              */
             async function handleTraitsGenerate(event, egiId) {
                 event.preventDefault();
-                
-                console.log('[AI Traits] Generate clicked', { egiId });
+
+                console.log('[AI Traits] Generate clicked', {
+                    egiId
+                });
 
                 // Step 1: PRIMA controlla Egili e mostra costo
                 // Questo mostrerà il costo PRIMA di chiedere quanti traits
@@ -606,7 +663,7 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                                     <li>✓ Mood e atmosfera</li>
                                 </ul>
                                 <label class="mb-2 block text-sm font-semibold text-gray-700">Quanti traits vuoi generare?</label>
-                                <input type="number" id="traits-count-input" class="swal2-input" 
+                                <input type="number" id="traits-count-input" class="swal2-input"
                                        value="5" min="3" max="10" step="1"
                                        style="width: 100px; text-align: center; font-size: 18px; font-weight: bold;">
                                 <p class="mt-2 text-xs text-gray-500">Min: 3 | Max: 10 | Consigliato: 5-7</p>
@@ -621,12 +678,12 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                         preConfirm: () => {
                             const input = document.getElementById('traits-count-input');
                             const count = parseInt(input.value);
-                            
+
                             if (isNaN(count) || count < 3 || count > 10) {
                                 Swal.showValidationMessage('Inserisci un numero tra 3 e 10');
                                 return false;
                             }
-                            
+
                             return count;
                         }
                     });
@@ -657,7 +714,9 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
                         body: JSON.stringify({
                             feature_code: 'ai_trait_generation',
                             egi_id: egiId,
-                            params: { requested_count: requestedCount }
+                            params: {
+                                requested_count: requestedCount
+                            }
                         })
                     });
 
@@ -679,7 +738,7 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
 
                 } catch (error) {
                     console.error('[AI Traits] Error:', error);
-                    
+
                     await Swal.fire({
                         icon: 'error',
                         title: 'Errore',
@@ -690,5 +749,4 @@ $isCreator = $egi && FegiAuth::check() && FegiAuth::id() === $egi->user_id;
             }
         </script>
     @endpush
-
 @endif
