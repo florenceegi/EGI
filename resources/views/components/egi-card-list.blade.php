@@ -62,6 +62,12 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
     $currentOwnerUser = $egi->owner;
     $currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerUser) : null;
     $showSecondaryOwner = $isMinted && $currentOwnerUser && $coCreatorUser && $currentOwnerUser->id !== $coCreatorUser->id;
+
+    $listMintedClasses = $isMinted
+        ? 'minted-list-card text-emerald-50'
+        : 'border-gray-700/50 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800/70';
+
+    $listMintedBorder = $isMinted ? 'border-2' : 'border';
 @endphp
 
 {{-- Include CSS hyper se necessario --}}
@@ -96,11 +102,60 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
     @endonce
 @endif
 
+@once
+    <style>
+        .minted-list-card {
+            background: linear-gradient(120deg, #1A102E 0%, #3B1F66 45%, #5D2E8A 100%);
+            border-color: #D4A574 !important;
+            box-shadow: 0 0 30px rgba(212, 165, 116, 0.55), inset 0 0 12px rgba(255, 255, 255, 0.08);
+            position: relative;
+        }
+
+        .minted-list-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            pointer-events: none;
+        }
+
+        .minted-list-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent 0%, #D4A574 40%, #E6C9A8 60%, transparent 100%);
+            opacity: 0.85;
+            pointer-events: none;
+        }
+    </style>
+@endonce
+
 {{-- EGI Card List Component --}}
 <article
-    class="egi-card-list {{ $isHyper ? 'egi-card--hiper' : '' }} group relative rounded-xl border border-gray-700/50 bg-gray-800/50 p-3 transition-all duration-300 hover:border-gray-600 hover:bg-gray-800/70"
+    class="egi-card-list {{ $isHyper ? 'egi-card--hiper' : '' }} group relative rounded-xl {{ $listMintedBorder }} {{ $listMintedClasses }} p-3 transition-all duration-300"
     data-egi-id="{{ $egi->id }}" data-hyper="{{ $isHyper ? '1' : '0' }}"
     style="{{ $isHyper ? '--energy:0.95; --foilHue:265; --edge:#9b5cf6; --accent:#a78bfa;' : '' }}">
+
+    @if ($isMinted)
+        <div class="absolute inset-y-3 -left-2 hidden h-auto w-1 rounded-full bg-gradient-to-b from-[#D4A574] via-[#E6C9A8] to-[#8E44AD] shadow-[0_0_20px_rgba(212,165,116,0.6)] md:block"
+            aria-hidden="true"></div>
+        <div class="pointer-events-none absolute inset-0 rounded-xl border border-[#D4A574]/20 opacity-80"
+            aria-hidden="true"></div>
+        <div class="pointer-events-none absolute left-0 right-0 top-0 h-0.5 rounded-t-xl bg-gradient-to-r from-transparent via-[#D4A574] to-transparent opacity-80"
+            aria-hidden="true"></div>
+        <div
+            class="absolute -right-1 -top-2 flex items-center gap-2 rounded-bl-xl rounded-tr-xl bg-[#D4A574] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#1B1B1B] shadow-lg">
+            <svg class="h-3.5 w-3.5 text-[#1B1B1B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 13l4 4L19 7" />
+            </svg>
+            {{ __('egi.badge.minted') }}
+        </div>
+    @endif
 
     @if ($isHyper)
         {{-- Sparkles Effect per HYPER --}}
