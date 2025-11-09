@@ -58,6 +58,23 @@ return [
         'auction_active' => 'ZU MINTEN',  // Badge für EGI in Auktion
     ],
 
+    'ownership' => [
+        'badge_title' => 'Eigentum',
+        'current_owner' => 'Aktueller Eigentümer',
+        'creator_owner' => 'Vom Creator erstellt und gehalten',
+        'roles' => [
+            'creator' => 'Creator',
+            'collector' => 'Sammler',
+        ],
+        'creator_default' => 'Der Creator behält das Eigentum, bis der On-Chain-Mint abgeschlossen ist.',
+        'collector_since' => 'Im Besitz seit :date',
+        'collector_default' => 'Das Eigentum ist on-chain registriert.',
+        'minted_on' => 'Gemintet am :date',
+        'minted_unknown' => 'On-chain gemintet',
+        'unminted_hint' => 'Mint ausstehend: Eigentum bleibt beim Creator.',
+        'owner_avatar_alt' => 'Porträt von :name',
+    ],
+
     // Titel
     'title' => [
         'untitled' => '✨ EGI ohne Titel',

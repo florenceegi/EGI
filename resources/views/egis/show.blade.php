@@ -64,7 +64,7 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
     // 🔧 FIX: Proteggo da valori null o non numerici
     $fallbackPrice = $egi->price && is_numeric($egi->price) ? $egi->price * 0.3 : 0;
-    $displayPrice = $highestPriorityReservation->offer_amount_fiat ?? $fallbackPrice;
+            $displayPrice = $highestPriorityReservation->offer_amount_fiat ?? $fallbackPrice;
     $displayUser = $highestPriorityReservation->user;
 
     // 🎯 EUR-ONLY SYSTEM: Sistema semplificato
@@ -103,7 +103,113 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             // 🔒 PRICE LOCK: Determina se il prezzo può essere modificato dal creator
             $canModifyPrice = $isCreator && !$highestPriorityReservation;
             $isPriceLocked = $isCreator && $highestPriorityReservation;
+
+            $creatorOwner = $collection->creator ?? $egi->user;
+            $currentOwner = null;
+            $ownershipLabel = null;
+            $ownershipRoleLabel = null;
+            $ownershipSubtitle = null;
+            $ownershipStatusBadge = null;
+            $mintedAtDisplay = null;
+
+            if (!is_null($egi->token_EGI) && $egi->owner) {
+                $currentOwner = $egi->owner;
+                $ownershipLabel = __('egi.ownership.current_owner');
+                $ownershipRoleLabel = __('egi.ownership.roles.collector');
+
+                $mintedAt = optional($egi->blockchain)->minted_at;
+
+                if ($mintedAt instanceof \Illuminate\Support\Carbon) {
+                    $mintedAtDisplay = $mintedAt->copy()->locale(app()->getLocale())->isoFormat('LL');
+                } elseif ($mintedAt) {
+                    $mintedAtDisplay = \Illuminate\Support\Carbon::parse($mintedAt)
+                        ->locale(app()->getLocale())
+                        ->isoFormat('LL');
+                }
+
+                $ownershipSubtitle = $mintedAtDisplay
+                    ? __('egi.ownership.collector_since', ['date' => $mintedAtDisplay])
+                    : __('egi.ownership.collector_default');
+
+                $ownershipStatusBadge = $mintedAtDisplay
+                    ? __('egi.ownership.minted_on', ['date' => $mintedAtDisplay])
+                    : __('egi.ownership.minted_unknown');
+            } else {
+                $currentOwner = $creatorOwner;
+                $ownershipLabel = __('egi.ownership.creator_owner');
+                $ownershipRoleLabel = __('egi.ownership.roles.creator');
+                $ownershipSubtitle = __('egi.ownership.creator_default');
+                $ownershipStatusBadge = __('egi.ownership.unminted_hint');
+            }
+
+            $ownerName = $currentOwner?->name ?? __('egi.unknown_creator');
+            $ownerAvatar = $currentOwner?->profile_photo_url;
+
+            if (empty($ownerAvatar)) {
+                $ownerAvatar = 'https://ui-avatars.com/api/?name=' . urlencode($ownerName) . '&color=FFFFFF&background=1B365D';
+            }
         @endphp
+
+        @if ($currentOwner)
+            <section class="px-4 pt-6 sm:px-6 lg:px-8">
+                <div class="mx-auto max-w-7xl">
+                    <div
+                        class="relative overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-r from-emerald-900/60 via-emerald-700/40 to-emerald-900/60 shadow-2xl">
+                        <div class="absolute inset-0 opacity-40"
+                            style="background: radial-gradient(circle at top, rgba(74, 222, 128, 0.35), transparent);">
+                        </div>
+                        <div
+                            class="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+                            <div class="flex items-center gap-4">
+                                <img src="{{ $ownerAvatar }}"
+                                    alt="{{ __('egi.ownership.owner_avatar_alt', ['name' => $ownerName]) }}"
+                                    class="h-16 w-16 rounded-full border-2 border-emerald-300/60 object-cover shadow-lg sm:h-20 sm:w-20">
+                                <div class="space-y-1">
+                                    <p class="text-xs font-semibold uppercase tracking-widest text-emerald-200">
+                                        {{ __('egi.ownership.badge_title') }}</p>
+                                    <p class="text-sm font-medium text-emerald-100 sm:text-base">{{ $ownershipLabel }}
+                                    </p>
+                                    <p class="text-lg font-semibold leading-tight text-white sm:text-xl">
+                                        {{ $ownerName }}
+                                    </p>
+                                    <p class="text-xs text-emerald-100/85 sm:text-sm">
+                                        {{ $ownershipSubtitle }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-start gap-2 sm:items-end">
+                                <span
+                                    class="inline-flex items-center gap-2 rounded-full border border-emerald-300/40 bg-emerald-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-50 sm:text-sm">
+                                    <svg class="h-4 w-4 text-emerald-200" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2a3 3 0 00-5.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2a3 3 0 015.356-1.857M12 4a3 3 0 110 6 3 3 0 010-6z" />
+                                    </svg>
+                                    {{ $ownershipRoleLabel }}
+                                </span>
+                                <span
+                                    class="flex items-center gap-2 text-xs font-medium text-emerald-100/90 sm:text-sm">
+                                    @if (!is_null($egi->token_EGI))
+                                        <svg class="h-4 w-4 text-emerald-200" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    @else
+                                        <svg class="h-4 w-4 text-emerald-200" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    @endif
+                                    {{ $ownershipStatusBadge }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
 
         {{-- Gallery Layout - Cinema Style con 3 Colonne --}}
         {{-- Background dinamico: gold/green per EGI mintati, standard per non mintati --}}

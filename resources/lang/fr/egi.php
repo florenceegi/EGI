@@ -56,6 +56,23 @@ return [
         'auction_active' => 'À MINTER',  // Badge pour EGI en enchère
     ],
 
+    'ownership' => [
+        'badge_title' => 'Propriété',
+        'current_owner' => 'Propriétaire actuel',
+        'creator_owner' => 'Créé et encore détenu par le creator',
+        'roles' => [
+            'creator' => 'Creator',
+            'collector' => 'Collectionneur',
+        ],
+        'creator_default' => 'Le creator conserve la propriété tant que le mint on-chain n’est pas terminé.',
+        'collector_since' => 'En possession depuis le :date',
+        'collector_default' => 'La propriété est enregistrée on-chain.',
+        'minted_on' => 'Minté le :date',
+        'minted_unknown' => 'Minté sur la blockchain',
+        'unminted_hint' => 'Mint en attente : la propriété reste au creator.',
+        'owner_avatar_alt' => 'Portrait de :name',
+    ],
+
     // Titres
     'title' => [
         'untitled' => '✨ EGI Sans Titre',

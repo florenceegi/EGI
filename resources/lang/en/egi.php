@@ -58,6 +58,23 @@ return [
         'auction_active' => 'TO BE MINTED',  // Badge for auction EGI
     ],
 
+    'ownership' => [
+        'badge_title' => 'Ownership',
+        'current_owner' => 'Current owner',
+        'creator_owner' => 'Created and still owned by the creator',
+        'roles' => [
+            'creator' => 'Creator',
+            'collector' => 'Collector',
+        ],
+        'creator_default' => 'The creator keeps ownership until the on-chain mint is completed.',
+        'collector_since' => 'Owned since :date',
+        'collector_default' => 'Ownership is registered on-chain.',
+        'minted_on' => 'Minted on :date',
+        'minted_unknown' => 'Minted on-chain',
+        'unminted_hint' => 'Mint pending: ownership remains with the creator.',
+        'owner_avatar_alt' => 'Portrait of :name',
+    ],
+
     // Titles
     'title' => [
         'untitled' => '✨ Untitled EGI',
