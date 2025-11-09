@@ -37,29 +37,22 @@ class PortfolioService {
     }
 
     /**
-     * Get collector's active portfolio (includes winning and outbid EGIs)
-     * Criteria: any EGI with at least one reservation by the collector (current or past),
-     *           then mark status client-side (winning vs outbid).
+     * Get collector's active portfolio (winning reservations + owned EGIs)
+     * Criteria:
+     * - EGIs con almeno una reservation del collector (attive o storiche)
+     * - EGIs dove il collector è owner attuale (mint/rebind) e l'opera è pubblicata
      *
      * @param User $collector The collector
-     * @return EloquentCollection Collection of EGIs reserved by the user
+     * @return EloquentCollection Collection of EGIs associated with the collector
      */
     public function getCollectorActivePortfolio(User $collector): EloquentCollection {
-        return Egi::whereHas('reservations', function ($query) use ($collector) {
-            $query->where('user_id', $collector->id);
-        })
-            ->with([
-                'collection',
-                'user', // Creator
-                'blockchain.buyer', // 🤝 Co-Creator data
-                // Carica tutte le prenotazioni dell'utente per l'EGI (per determinare stato)
-                'reservations' => function ($query) use ($collector) {
-                    $query->where('user_id', $collector->id)
-                        ->orderByDesc('created_at')
-                        ->with('user');
-                },
-            ])
-            ->get();
+        $reservedEgis = $this->getReservedEgisForCollector($collector);
+        $ownedEgis = $this->getOwnedEgisForCollector($collector);
+
+        return $reservedEgis
+            ->concat($ownedEgis)
+            ->unique('id')
+            ->values();
     }
 
     /**
@@ -97,7 +90,11 @@ class PortfolioService {
             'total_owned_egis' => $activeEgis->count(),
             'collections_represented' => $collectionsRepresented,
             'total_spent_eur' => $activeEgis->sum(function ($egi) {
-                return $egi->reservations->first()?->offer_amount_fiat ?? 0;
+                if ($egi->reservations->isNotEmpty()) {
+                    return $egi->reservations->first()->offer_amount_fiat ?? 0;
+                }
+
+                return $egi->price ?? 0;
             }),
             'total_bids_made' => $totalBids,
             'active_winning_bids' => $activeBids,
@@ -142,12 +139,14 @@ class PortfolioService {
      * @return EloquentCollection Available collections
      */
     public function getAvailableCollections(User $collector): EloquentCollection {
-        return Collection::whereHas('egis.reservations', function ($query) use ($collector) {
-            $query->where('user_id', $collector->id)
-                ->where('is_current', true)
-                ->where('status', 'active')
-                ->whereNull('superseded_by_id');
-        })->get();
+        $portfolio = $this->getCollectorActivePortfolio($collector);
+        $collectionIds = $portfolio->pluck('collection_id')->filter()->unique()->values();
+
+        if ($collectionIds->isEmpty()) {
+            return new EloquentCollection();
+        }
+
+        return Collection::whereIn('id', $collectionIds)->get();
     }
 
     /**
@@ -157,12 +156,20 @@ class PortfolioService {
      * @return EloquentCollection Available creators
      */
     public function getAvailableCreators(User $collector): EloquentCollection {
-        return User::whereHas('collections.egis.reservations', function ($query) use ($collector) {
-            $query->where('user_id', $collector->id)
-                ->where('is_current', true)
-                ->where('status', 'active')
-                ->whereNull('superseded_by_id');
-        })->get();
+        $portfolio = $this->getCollectorActivePortfolio($collector);
+        $creatorIds = $portfolio
+            ->map(function ($egi) {
+                return optional($egi->collection)->creator_id;
+            })
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($creatorIds->isEmpty()) {
+            return new EloquentCollection();
+        }
+
+        return User::whereIn('id', $creatorIds)->get();
     }
 
     /**
@@ -212,6 +219,53 @@ class PortfolioService {
             'created_at' => $reservation->created_at,
             'is_winning' => $isWinning,
             'reservation_id' => $reservation->id
+        ];
+    }
+
+    /**
+     * Recupera gli EGIs riservati dal collector (storico + attuali)
+     *
+     * @param User $collector
+     * @return EloquentCollection
+     */
+    private function getReservedEgisForCollector(User $collector): EloquentCollection {
+        return Egi::whereHas('reservations', function ($query) use ($collector) {
+            $query->where('user_id', $collector->id);
+        })
+            ->with($this->defaultPortfolioRelations($collector))
+            ->get();
+    }
+
+    /**
+     * Recupera gli EGIs posseduti attualmente dal collector (mint/rebind)
+     *
+     * @param User $collector
+     * @return EloquentCollection
+     */
+    private function getOwnedEgisForCollector(User $collector): EloquentCollection {
+        return Egi::where('owner_id', $collector->id)
+            ->where('is_published', true)
+            ->with($this->defaultPortfolioRelations($collector))
+            ->get();
+    }
+
+    /**
+     * Relazioni predefinite da caricare per il portfolio collector.
+     *
+     * @param User $collector
+     * @return array<int, mixed>
+     */
+    private function defaultPortfolioRelations(User $collector): array {
+        return [
+            'collection.creator',
+            'user',
+            'owner',
+            'blockchain.buyer',
+            'reservations' => function ($query) use ($collector) {
+                $query->where('user_id', $collector->id)
+                    ->orderByDesc('created_at')
+                    ->with('user');
+            },
         ];
     }
 }

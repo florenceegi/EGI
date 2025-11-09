@@ -1552,47 +1552,54 @@ class User extends Authenticatable implements HasMedia {
      * 📤 Returns: Array with collector stats
      */
     public function getCollectorStats(): array {
-        $purchasedEgis = $this->purchasedEgis()->count();
+        $ownedEgiIds = $this->publicOwnedEgis()
+            ->where('is_published', true)
+            ->whereColumn('egis.user_id', '<>', 'egis.owner_id')
+            ->pluck('egis.id');
+
+        $winningEgiIds = $this->purchasedEgis()
+            ->pluck('egis.id');
+
+        $portfolioEgiIds = $ownedEgiIds
+            ->merge($winningEgiIds)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $totalOwnedEgis = $portfolioEgiIds->count();
+
         $activeReservations = $this->activeReservations()->count();
         $completedPurchases = $this->completedReservations()->count();
-        $totalSpent = $this->validReservations()->sum('offer_amount_fiat');
+        $totalSpent = $this->completedReservations()->sum('offer_amount_fiat');
 
-        // Get unique creators supported through purchases
-        $creatorsSupported = $this->purchasedEgis()
-            ->join('collections', 'egis.collection_id', '=', 'collections.id')
-            ->distinct('collections.creator_id')
-            ->count('collections.creator_id');
+        $collectionsRepresented = 0;
+        $creatorsSupported = 0;
 
-        // Calculate EPP impact based on purchases
-        $eppImpact = $purchasedEgis * 0.15; // Mock calculation
+        if ($totalOwnedEgis > 0) {
+            $collectionsRepresented = Egi::whereIn('egis.id', $portfolioEgiIds)
+                ->pluck('collection_id')
+                ->filter()
+                ->unique()
+                ->count();
 
-        // Count unique collections purchased from
-        $totalCollections = $this->purchasedEgis()
-            ->distinct('collection_id')
-            ->count('collection_id');
+            $creatorsSupported = Egi::whereIn('egis.id', $portfolioEgiIds)
+                ->join('collections', 'egis.collection_id', '=', 'collections.id')
+                ->distinct('collections.creator_id')
+                ->count('collections.creator_id');
+        }
 
-        // Also count collections from valid WINNING reservations (for collectors page)
-        // Use the same criteria as purchasedEgis() to ensure consistency
-        $collectionsFromReservations = $this->hasMany(Reservation::class, 'user_id')
-            ->whereIn('reservations.status', ['active', 'completed'])
-            ->where('reservations.is_current', true)
-            ->whereNull('reservations.superseded_by_id')
-            ->join('egis', 'reservations.egi_id', '=', 'egis.id')
-            ->distinct('egis.collection_id')
-            ->count('egis.collection_id');
-
-        // Use the maximum between purchased and reserved collections
-        $totalCollections = max($totalCollections, $collectionsFromReservations);
+        // Calculate EPP impact based on portfolio size (placeholder logic)
+        $eppImpact = $totalOwnedEgis * 0.15;
 
         return [
-            'total_egis' => $purchasedEgis,
-            'total_collections' => $totalCollections,
+            'total_egis' => $totalOwnedEgis,
+            'total_collections' => $collectionsRepresented,
             'active_reservations' => $activeReservations,
             'completed_purchases' => $completedPurchases,
             'total_spent_eur' => $totalSpent,
             'creators_supported' => $creatorsSupported,
             'epp_impact' => round($eppImpact, 2),
-            'animate' => max($purchasedEgis, $completedPurchases) > 5
+            'animate' => max($totalOwnedEgis, $completedPurchases) > 5
         ];
     }
 
