@@ -160,6 +160,14 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
 // 🔄 Controlla se c'è una prenotazione corrente per il pulsante Rilancia
     $hasCurrentReservation = $egi->reservations && $egi->reservations->where('is_current', true)->first();
     $isCreator = auth()->check() && auth()->id() === $creatorId;
+
+    $coCreatorUser = $egi->blockchain?->buyer;
+    $coCreatorDisplay = $coCreatorUser ? formatActivatorDisplay($coCreatorUser) : null;
+
+    $currentOwnerUser = $egi->owner;
+    $currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerUser) : null;
+
+    $showSecondaryOwner = $isMinted && $currentOwnerUser && $coCreatorUser && $currentOwnerUser->id !== $coCreatorUser->id;
 @endphp
 
 {{-- Include CSS hyper se necessario --}}
@@ -630,31 +638,55 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                     </div>
 
                     {{-- Show Co-Creator (if minted) or Reservation (if not minted) --}}
-                    @if ($isMinted && $egi->blockchain && $egi->blockchain->buyer)
-                        {{-- MINTED: Show Co-Creator from blockchain --}}
-                        @php
-                            $coCreatorDisplay = formatActivatorDisplay($egi->blockchain->buyer);
-                        @endphp
-                        <div class="flex items-center gap-2 border-t border-purple-500/20 pt-2">
-                            <div
-                                class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-purple-600">
-                                @if ($coCreatorDisplay && $coCreatorDisplay['avatar'])
-                                    <img src="{{ $coCreatorDisplay['avatar'] }}"
-                                        alt="{{ $coCreatorDisplay['name'] }}"
-                                        class="h-4 w-4 rounded-full border border-white/20 object-cover">
-                                @else
-                                    <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                @endif
+                    @if ($isMinted && ($coCreatorDisplay || $currentOwnerDisplay))
+                        @if ($coCreatorDisplay)
+                            <div class="flex items-center gap-2 border-t border-purple-500/20 pt-2">
+                                <div
+                                    class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-purple-600">
+                                    @if ($coCreatorDisplay['avatar'])
+                                        <img src="{{ $coCreatorDisplay['avatar'] }}"
+                                            alt="{{ $coCreatorDisplay['name'] }}"
+                                            class="h-4 w-4 rounded-full border border-white/20 object-cover">
+                                    @else
+                                        <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    @endif
+                                </div>
+                                <span class="truncate text-xs text-purple-200">
+                                    {{ __('egi.creator.co_creator') }}
+                                    <span class="font-semibold"
+                                        data-activator-name>{{ $coCreatorDisplay['name'] }}</span>
+                                </span>
                             </div>
-                            <span class="truncate text-xs text-purple-200">
-                                {{ __('egi.creator.co_creator') }}
-                                <span class="font-semibold" data-activator-name>{{ $coCreatorDisplay['name'] }}</span>
-                            </span>
-                        </div>
+                        @endif
+
+                        @if ($showSecondaryOwner && $currentOwnerDisplay)
+                            <div
+                                class="flex items-center gap-2 border-t border-emerald-500/20 pt-2 {{ $coCreatorDisplay ? 'mt-2' : '' }}">
+                                <div
+                                    class="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600">
+                                    @if ($currentOwnerDisplay['avatar'])
+                                        <img src="{{ $currentOwnerDisplay['avatar'] }}"
+                                            alt="{{ $currentOwnerDisplay['name'] }}"
+                                            class="h-4 w-4 rounded-full border border-white/20 object-cover">
+                                    @else
+                                        <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 8a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zm6-6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    @endif
+                                </div>
+                                <span class="truncate text-xs text-emerald-200">
+                                    {{ __('egi.ownership.current_owner') }}
+                                    <span class="font-semibold"
+                                        data-owner-name>{{ $currentOwnerDisplay['name'] }}</span>
+                                </span>
+                            </div>
+                        @endif
                     @elseif ($highestReservation && $highestReservation->user && !$isMinted)
                         {{-- NOT MINTED: Show Reservation --}}
                         @php
