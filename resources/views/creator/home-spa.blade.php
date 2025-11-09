@@ -151,6 +151,8 @@
             const contentContainer = document.getElementById('content-container');
             const loader = document.getElementById('content-loader');
 
+            initializePortfolioViewToggle();
+
             tabs.forEach(tab => {
                 tab.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -159,8 +161,23 @@
                 });
             });
 
+            function showLoader() {
+                if (!contentContainer || !loader) {
+                    return;
+                }
+                contentContainer.classList.add('hidden');
+                loader.classList.remove('hidden');
+            }
+
+            function hideLoader() {
+                if (!contentContainer || !loader) {
+                    return;
+                }
+                loader.classList.add('hidden');
+                contentContainer.classList.remove('hidden');
+            }
+
             function loadContent(url, activeButton) {
-                // Update active tab
                 tabs.forEach(t => {
                     t.classList.remove('active', 'text-oro-fiorentino', 'border-oro-fiorentino');
                     t.classList.add('text-gray-300', 'border-transparent');
@@ -168,11 +185,8 @@
                 activeButton.classList.add('active', 'text-oro-fiorentino', 'border-oro-fiorentino');
                 activeButton.classList.remove('text-gray-300', 'border-transparent');
 
-                // Show loader
-                contentContainer.classList.add('hidden');
-                loader.classList.remove('hidden');
+                showLoader();
 
-                // Fetch content
                 fetch(url + '?partial=1', {
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest',
@@ -182,25 +196,116 @@
                     .then(response => response.text())
                     .then(html => {
                         contentContainer.innerHTML = html;
-                        contentContainer.classList.remove('hidden');
-                        loader.classList.add('hidden');
+                        hideLoader();
                         history.pushState({
                             url: url
                         }, '', url);
+                        initializePortfolioViewToggle();
                     })
                     .catch(error => {
                         console.error('Error loading content:', error);
                         contentContainer.innerHTML =
                             '<p class="text-red-500 text-center py-12">Error loading content</p>';
-                        contentContainer.classList.remove('hidden');
-                        loader.classList.add('hidden');
+                        hideLoader();
                     });
             }
 
-            // Handle browser back/forward
+            function initializePortfolioViewToggle() {
+                if (!contentContainer || contentContainer.dataset.viewToggleBound === 'true') {
+                    return;
+                }
+
+                contentContainer.addEventListener('click', function(event) {
+                    const modeToggle = event.target.closest('.portfolio-mode-toggle');
+                    if (modeToggle) {
+                        event.preventDefault();
+
+                        const desiredMode = modeToggle.getAttribute('data-mode');
+                        if (!desiredMode) {
+                            return;
+                        }
+
+                        const modeUrl = new URL(window.location.href);
+                        modeUrl.searchParams.set('mode', desiredMode);
+                        modeUrl.searchParams.delete('page');
+
+                        const modeFetchUrl = new URL(modeUrl.toString());
+                        modeFetchUrl.searchParams.set('partial', '1');
+
+                        showLoader();
+
+                        fetch(modeFetchUrl.toString(), {
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'text/html'
+                                }
+                            })
+                            .then(response => response.text())
+                            .then(html => {
+                                contentContainer.innerHTML = html;
+                                hideLoader();
+                                history.pushState({
+                                    url: modeUrl.toString()
+                                }, '', modeUrl.toString());
+                            })
+                            .catch(error => {
+                                console.error('Error loading portfolio mode:', error);
+                                contentContainer.innerHTML =
+                                    '<p class="text-red-500 text-center py-12">Error loading content</p>';
+                                hideLoader();
+                            });
+                        return;
+                    }
+
+                    const viewToggle = event.target.closest('.view-toggle');
+                    if (!viewToggle) {
+                        return;
+                    }
+
+                    event.preventDefault();
+
+                    const desiredView = viewToggle.getAttribute('data-view');
+                    if (!desiredView) {
+                        return;
+                    }
+
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('view', desiredView);
+                    url.searchParams.delete('page');
+
+                    const fetchUrl = new URL(url.toString());
+                    fetchUrl.searchParams.set('partial', '1');
+
+                    showLoader();
+
+                    fetch(fetchUrl.toString(), {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'text/html'
+                            }
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            contentContainer.innerHTML = html;
+                            hideLoader();
+                            history.pushState({
+                                url: url.toString()
+                            }, '', url.toString());
+                        })
+                        .catch(error => {
+                            console.error('Error loading view:', error);
+                            contentContainer.innerHTML =
+                                '<p class="text-red-500 text-center py-12">Error loading content</p>';
+                            hideLoader();
+                        });
+                });
+
+                contentContainer.dataset.viewToggleBound = 'true';
+            }
+
             window.addEventListener('popstate', function(e) {
                 if (e.state && e.state.url) {
-                    location.reload(); // Simple fallback
+                    location.reload();
                 }
             });
         })();

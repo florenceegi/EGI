@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Collection;
 use App\Models\Egi;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection as SupportCollection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -64,72 +66,98 @@ class CreatorHomeController extends Controller
         $collection_filter = $request->input('collection');
         $sort = $request->input('sort', 'latest');
         $view = $request->input('view', 'grid');
+        $requestedMode = $request->input('mode', 'created');
+        $canSwitchPortfolioMode = Auth::check() && (int) Auth::id() === (int) $creator->id;
+        $portfolioMode = $canSwitchPortfolioMode ? $requestedMode : 'created';
+        if (!in_array($portfolioMode, ['created', 'owned'], true)) {
+            $portfolioMode = 'created';
+        }
 
-        // Recupera tutti gli EGI pubblicati delle collezioni CREATE dal creator
-        $egis = Egi::with([
+        $baseWith = [
             'collection',
             'user',
+            'owner',
             'blockchain.buyer',
             'traits.category',
             'reservations' => function ($q) {
                 $q->where('is_current', true);
-            }
-        ])
+            },
+        ];
+
+        // EGIs creati dal creator
+        $createdQuery = Egi::with($baseWith)
             ->whereHas('collection', function ($q) use ($creator) {
                 $q->where('creator_id', $creator->id);
             })
             ->where('is_published', true)
             ->when($query, function ($q) use ($query) {
-                $q->where('title', 'like', "%$query%");
+                $q->where('title', 'like', "%{$query}%");
             })
             ->when($collection_filter, function ($q) use ($collection_filter) {
                 $q->where('collection_id', $collection_filter);
             });
 
-        // Ordinamento
-        switch ($sort) {
-            case 'title':
-                $egis = $egis->orderBy('title');
-                break;
-            case 'price_high':
-                $egis = $egis->orderByDesc('price');
-                break;
-            case 'price_low':
-                $egis = $egis->orderBy('price');
-                break;
-            case 'latest':
-            default:
-                $egis = $egis->orderByDesc('created_at');
-                break;
+        $createdQuery = $this->applyPortfolioSorting($createdQuery, $sort);
+        $createdEgis = $createdQuery->get();
+
+        // EGIs posseduti attualmente dal creator (mint o secondary market)
+        $ownedEgis = collect();
+        if ($canSwitchPortfolioMode) {
+            $ownedQuery = Egi::with($baseWith)
+                ->where('owner_id', $creator->id)
+                ->when($query, function ($q) use ($query) {
+                    $q->where('title', 'like', "%{$query}%");
+                })
+                ->when($collection_filter, function ($q) use ($collection_filter) {
+                    $q->where('collection_id', $collection_filter);
+                });
+
+            $ownedQuery = $this->applyPortfolioSorting($ownedQuery, $sort);
+            $ownedEgis = $ownedQuery->get();
         }
 
-        $egis = $egis->get();
+        $creatorCollectionsCount = $creator->collections()->where('creator_id', $creator->id)->count();
 
-        // Statistiche del Creator Portfolio
-        $stats = [
-            'total_egis' => $egis->count(),
-            'total_collections' => $creator->collections()->where('creator_id', $creator->id)->count(),
-            'total_value_eur' => $egis->sum('price'),
-            'total_reservations' => $egis->sum(function ($egi) {
-                return $egi->reservations->count();
-            }),
-            'highest_offer' => $egis->flatMap->reservations->max('offer_amount_fiat') ?? 0,
-            'available_egis' => $egis->filter(function ($egi) {
-                return $egi->reservations->isEmpty();
-            })->count(),
-            'reserved_egis' => $egis->filter(function ($egi) {
-                return $egi->reservations->isNotEmpty();
-            })->count(),
-        ];
+        $createdStats = $this->buildPortfolioStats($createdEgis, 'created', $creatorCollectionsCount);
+        $ownedStats = $this->buildPortfolioStats($ownedEgis, 'owned', $creatorCollectionsCount);
+
+        $displayEgis = $portfolioMode === 'owned' ? $ownedEgis : $createdEgis;
+        $portfolioStats = $portfolioMode === 'owned' ? $ownedStats : $createdStats;
 
         // Check if AJAX request
         if ($request->ajax() || $request->get('partial')) {
-            return view('creator.partials.portfolio-content', compact('creator', 'egis', 'stats', 'query', 'collection_filter', 'sort', 'view'));
+            return view('creator.partials.portfolio-content', [
+                'creator' => $creator,
+                'egis' => $displayEgis,
+                'createdEgis' => $createdEgis,
+                'ownedEgis' => $ownedEgis,
+                'portfolioStats' => $portfolioStats,
+                'portfolioMode' => $portfolioMode,
+                'query' => $query,
+                'collection_filter' => $collection_filter,
+                'sort' => $sort,
+                'view' => $view,
+                'canSwitchPortfolioMode' => $canSwitchPortfolioMode,
+            ]);
         }
 
         // Full page view with new layout
-        return view('creator.home-spa', compact('creator', 'egis', 'stats', 'query', 'collection_filter', 'sort', 'view'))
-            ->with('activeTab', 'portfolio');
+        return view('creator.home-spa', [
+            'creator' => $creator,
+            'egis' => $displayEgis,
+            'createdEgis' => $createdEgis,
+            'ownedEgis' => $ownedEgis,
+            'stats' => $createdStats,
+            'createdStats' => $createdStats,
+            'ownedStats' => $ownedStats,
+            'portfolioStats' => $portfolioStats,
+            'portfolioMode' => $portfolioMode,
+            'query' => $query,
+            'collection_filter' => $collection_filter,
+            'sort' => $sort,
+            'view' => $view,
+            'canSwitchPortfolioMode' => $canSwitchPortfolioMode,
+        ])->with('activeTab', 'portfolio');
     }
     /**
      * @Oracode Method: Display Creator Home Page - Redirect to Portfolio
@@ -372,5 +400,59 @@ class CreatorHomeController extends Controller
             'creator' => $creator,
             'section' => ucfirst($sectionName)
         ]);
+    }
+
+    /**
+     * Applica l'ordinamento selezionato alla query del portfolio.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $sort
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function applyPortfolioSorting($query, string $sort)
+    {
+        switch ($sort) {
+            case 'title':
+                return $query->orderBy('title');
+            case 'price_high':
+                return $query->orderByDesc('price');
+            case 'price_low':
+                return $query->orderBy('price');
+            case 'latest':
+            default:
+                return $query->orderByDesc('created_at');
+        }
+    }
+
+    /**
+     * Costruisce le statistiche da mostrare nella vista portfolio, distinguendo
+     * tra opere create e opere possedute.
+     *
+     * @param SupportCollection $egis
+     * @param string $mode
+     * @param int $creatorCollectionsCount
+     * @return array<string, int|float>
+     */
+    private function buildPortfolioStats(SupportCollection $egis, string $mode, int $creatorCollectionsCount): array
+    {
+        $stats = [
+            'total_egis' => $egis->count(),
+            'total_collections' => $mode === 'owned'
+                ? $egis->pluck('collection_id')->filter()->unique()->count()
+                : $creatorCollectionsCount,
+            'total_value_eur' => $egis->sum('price'),
+            'total_reservations' => $egis->sum(static function ($egi) {
+                return $egi->reservations->count();
+            }),
+            'highest_offer' => $egis->flatMap->reservations->max('offer_amount_fiat') ?? 0,
+            'available_egis' => $egis->filter(static function ($egi) {
+                return $egi->reservations->isEmpty();
+            })->count(),
+            'reserved_egis' => $egis->filter(static function ($egi) {
+                return $egi->reservations->isNotEmpty();
+            })->count(),
+        ];
+
+        return $stats;
     }
 }
