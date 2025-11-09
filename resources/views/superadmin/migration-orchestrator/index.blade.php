@@ -315,6 +315,7 @@
 
     @push('scripts')
     <script>
+        const downloadBackupBaseUrl = '{{ route('superadmin.migration-orchestrator.backups.download') }}';
         const destructiveCommands = ['refresh', 'reset', 'fresh'];
         
         function refreshStatus(project) {
@@ -514,8 +515,9 @@
         }
 
         function downloadBackup(path) {
-            // Download tramite API o link diretto
-            window.open(`/api/backup/download?path=${encodeURIComponent(path)}`, '_blank');
+            // Download diretto tramite route dedicata
+            const url = `${downloadBackupBaseUrl}?path=${encodeURIComponent(path)}`;
+            window.open(url, '_blank');
         }
 
         function updateBackupConfig() {

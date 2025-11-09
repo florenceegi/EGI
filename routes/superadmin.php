@@ -137,6 +137,7 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
         Route::post('/backups/create', [MigrationOrchestratorController::class, 'createBackup'])->name('backups.create');
         Route::post('/backups/restore', [MigrationOrchestratorController::class, 'restoreBackup'])->name('backups.restore');
         Route::delete('/backups/delete', [MigrationOrchestratorController::class, 'deleteBackup'])->name('backups.delete');
+        Route::get('/backups/download', [MigrationOrchestratorController::class, 'downloadBackup'])->name('backups.download');
         Route::get('/backup-config', [MigrationOrchestratorController::class, 'getBackupConfig'])->name('backup-config.get');
         Route::post('/backup-config', [MigrationOrchestratorController::class, 'updateBackupConfig'])->name('backup-config.update');
     });

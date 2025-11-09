@@ -288,6 +288,34 @@ class MigrationOrchestratorController extends Controller
     }
 
     /**
+     * Download backup file
+     */
+    public function downloadBackup(Request $request)
+    {
+        $request->validate([
+            'path' => 'required|string',
+        ]);
+
+        $requestedPath = $request->query('path');
+
+        if (!$requestedPath) {
+            abort(400, 'Percorso backup mancante');
+        }
+
+        $realPath = realpath($requestedPath);
+
+        if ($realPath === false || !str_starts_with($realPath, self::BACKUPS_PATH . DIRECTORY_SEPARATOR)) {
+            abort(403, 'Percorso non autorizzato');
+        }
+
+        if (!file_exists($realPath)) {
+            abort(404, 'File backup non trovato');
+        }
+
+        return response()->download($realPath, basename($realPath));
+    }
+
+    /**
      * Create database backup
      */
     private function createDatabaseBackup(?string $label = null): ?string
