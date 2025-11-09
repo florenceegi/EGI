@@ -43,50 +43,8 @@ class CollectorHomeController extends Controller {
      * 🎯 Purpose: Show collector's main showcase page with stats and recent acquisitions
      * 📤 Output: Collector home view with stats and featured owned content
      */
-    public function home(int $id): View {
-        $collector = User::with([
-            'purchasedEgis' => function ($query) {
-                $query->where('egis.is_published', true)
-                    ->with(['collection.creator'])
-                    ->latest('reservations.created_at')
-                    ->take(6);
-            },
-            'activeReservations' => function ($query) {
-                $query->with(['egi.collection']);
-            }
-        ])->findOrFail($id);
-
-        // Verifica se l'utente è un collector (ha acquisti o ruolo collector)
-        if (!$collector->isCollector()) {
-            abort(404, 'User is not a collector');
-        }
-
-        // 🚀 FIX: Usa PortfolioService per statistiche accurate
-        $stats = $this->portfolioService->getCollectorPortfolioStats($collector);
-
-        // EGI in evidenza: mostra anche EGIs su cui il collector ha prenotato (vincenti o superati)
-        $featuredEgis = $this->portfolioService->getCollectorActivePortfolio($collector)
-            ->load(['collection.creator'])
-            ->take(8);
-
-        // Collezioni del collector (raggruppate)
-        $collectorCollections = $collector->getCollectorCollectionsAttribute();
-
-        // Dati per Schema.org
-        $schemaData = [
-            'name' => $collector->name,
-            'url' => route('collector.home', $collector->id),
-            'description' => "Collector profile for {$collector->name} - EGI portfolio and collection showcase",
-            'image' => $collector->profile_photo_url,
-        ];
-
-        return view('collector.home', compact(
-            'collector',
-            'stats',
-            'featuredEgis',
-            'collectorCollections',
-            'schemaData'
-        ));
+    public function home(int $id, Request $request): View {
+        return $this->portfolio($id, $request);
     }
 
     /**
@@ -102,35 +60,53 @@ class CollectorHomeController extends Controller {
         $totalReservedWorks = Reservation::getTotalReservedWorks();
         $totalArtistsWithReservations = Reservation::getTotalArtistsWithReservations();
 
-        $collectors = User::whereHas('validReservations', function ($query) {
-            // Solo prenotazioni che sono attualmente "highest" (vincenti)
-            $query->where('is_current', true)
-                ->whereNull('superseded_by_id');
-        })
+        $collectors = User::query()
+            ->where(function ($collectorQuery) {
+                $collectorQuery
+                    ->whereHas('roles', function ($roleQuery) {
+                        $roleQuery->where('name', 'collector');
+                    })
+                    ->orWhereHas('completedReservations', function ($reservationQuery) {
+                        $reservationQuery->where('status', 'completed');
+                    })
+                    ->orWhereHas('publicOwnedEgis', function ($egiQuery) {
+                        $egiQuery->where('is_published', true)
+                            ->whereColumn('egis.user_id', '<>', 'egis.owner_id');
+                    });
+            })
             ->when($query, function ($q) use ($query) {
                 $q->where('name', 'like', '%' . $query . '%');
             })
-            ->with(['validReservations' => function ($query) {
-                $query->where('is_current', true)
-                    ->whereNull('superseded_by_id')
-                    ->with('egi')->take(3);
+            ->withCount(['publicOwnedEgis as owned_egis_count' => function ($ownedQuery) {
+                $ownedQuery->where('is_published', true)
+                    ->whereColumn('egis.user_id', '<>', 'egis.owner_id');
             }])
+            ->withSum(['completedReservations as total_spent' => function ($sumQuery) {
+                $sumQuery->where('status', 'completed');
+            }], 'offer_amount_fiat')
+            ->with([
+                'publicOwnedEgis' => function ($egiQuery) {
+                    $egiQuery->where('is_published', true)
+                        ->whereColumn('egis.user_id', '<>', 'egis.owner_id')
+                        ->take(3);
+                },
+                'completedReservations' => function ($reservationQuery) {
+                    $reservationQuery->where('status', 'completed')
+                        ->with('egi')->take(3);
+                },
+            ])
             ->when($sort === 'most_egis', function ($q) {
-                $q->withCount(['validReservations' => function ($query) {
-                    $query->where('is_current', true)
-                        ->whereNull('superseded_by_id');
-                }])->orderBy('valid_reservations_count', 'desc');
+                $q->orderByDesc('owned_egis_count')
+                    ->orderByDesc('total_spent');
             })
             ->when($sort === 'most_spent', function ($q) {
-                $q->withSum(['validReservations as total_spent' => function ($query) {
-                    $query->where('is_current', true)
-                        ->whereNull('superseded_by_id');
-                }], 'offer_amount_fiat')
-                    ->orderBy('total_spent', 'desc');
+                $q->orderByDesc('total_spent')
+                    ->orderByDesc('owned_egis_count');
             })
             ->when($sort === 'latest', function ($q) {
                 $q->latest();
             })
+            ->distinct()
             ->paginate(20);
 
         return view('collector.index', compact(

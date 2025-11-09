@@ -1,261 +1,133 @@
-@vite(['resources/css/creator-home.css', 'resources/js/creator-home.js'])
+@vite(['resources/css/creator-home.css'])
 
-<x-creator-layout>
-    <x-slot name="title">{{ $collector->name }} - {{ __('collector.portfolio.title') }}</x-slot>
-    <x-slot name="description">{{ __('collector.portfolio.meta_description', ['name' => $collector->name]) }}</x-slot>
+<x-guest-layout :title="$collector->name . ' - ' . __('collector.portfolio.title')"
+    :metaDescription="__('collector.portfolio.meta_description', ['name' => $collector->name])">
 
-    {{-- Schema.org Markup --}}
-    <x-slot name="schema">
+    @push('head')
         <script type="application/ld+json">
             {
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "mainEntity": {
-                "@type": "Person",
-                "@id": "{{ url('/collector/' . $collector->id) }}",
-                "name": "{{ $collector->name }}",
-                "owns": {
-                    "@type": "Collection",
-                    "name": "{{ $collector->name }}'s EGI Portfolio",
-                    "numberOfItems": {{ $purchasedEgis->count() }}
+                "@context": "https://schema.org",
+                "@type": "CollectionPage",
+                "mainEntity": {
+                    "@type": "Person",
+                    "@id": "{{ url('/collector/' . $collector->id) }}",
+                    "name": "{{ $collector->name }}",
+                    "owns": {
+                        "@type": "Collection",
+                        "name": "{{ $collector->name }}'s EGI Portfolio",
+                        "numberOfItems": {{ $purchasedEgis->count() }}
+                    }
                 }
             }
-        }
         </script>
-    </x-slot>
+    @endpush
 
-    {{-- Header --}}
-    <section class="bg-gradient-to-br from-gray-900 via-blu-algoritmo to-gray-900 py-12">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('collector.home', $collector->id) }}"
-                    class="text-oro-fiorentino hover:text-oro-fiorentino/80">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </a>
-                <div>
-                    <h1 class="font-playfair text-3xl font-bold text-white">{{ $collector->name }}</h1>
-                    <p class="text-oro-fiorentino">{{ __('collector.portfolio.subtitle') }}</p>
-                </div>
+    <x-slot name="platformInfoButtons">
+        <div class="absolute inset-0 opacity-60" aria-hidden="true">
+            <div class="absolute inset-0">
+                @php
+                    $bannerUrl = method_exists($collector, 'getCreatorBannerUrl')
+                        ? $collector->getCreatorBannerUrl('banner')
+                        : null;
+                @endphp
+                @if ($bannerUrl)
+                    <img src="{{ $bannerUrl }}" alt="Banner for {{ $collector->name }}"
+                        class="h-full w-full object-cover">
+                @else
+                    <div class="absolute inset-0"
+                        style="background-image: url('/images/default/random_background/7.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+                @endif
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
             </div>
+        </div>
 
-            {{-- Public Portfolio Info - Only basic public information --}}
-            <div class="mt-6 text-center">
-                <div class="grid grid-cols-1 gap-4">
-                    <div>
-                        <span class="text-oro-fiorentino block text-xl font-bold">{{ $stats['total_owned_egis'] ?? 0 }}</span>
-                        <span class="text-sm text-gray-300">{{ __('collector.portfolio.public_collection_items') }}</span>
-                    </div>
-                </div>
-                @if(Auth::check() && Auth::id() === $collector->id)
-                    <div class="mt-4 p-3 bg-blue-900/50 rounded-lg border border-blue-600/30">
-                        <p class="text-sm text-blue-200">
-                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
+            <div class="grid grid-cols-1 items-end gap-12 md:grid-cols-12 md:gap-8">
+                <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:gap-8 md:col-span-8">
+                    <div class="group relative flex-shrink-0">
+                        <div
+                            class="h-32 w-32 overflow-hidden rounded-full shadow-2xl ring-4 ring-oro-fiorentino/40 md:h-40 md:w-40">
+                            <img src="{{ $collector->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($collector->name) . '&size=160&background=D4A574&color=2D5016' }}"
+                                alt="{{ __('collector.home.avatar_alt', ['name' => $collector->name]) }}"
+                                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                loading="lazy">
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 rounded-full bg-blu-algoritmo p-2 shadow-lg"
+                            title="{{ __('collector.home.collector_badge_title') }}">
+                            <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            {{ __('collector.portfolio.private_stats_info') }}
-                            <a href="{{ route('statistics.index') }}" class="text-blue-300 hover:text-blue-100 underline ml-1">
-                                {{ __('collector.portfolio.view_detailed_stats') }}
-                            </a>
+                            <span class="sr-only">{{ __('collector.home.collector_sr') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-center sm:text-left">
+                        <h1 class="font-playfair mb-1 text-3xl font-bold text-white md:text-5xl">
+                            {{ $collector->name }}
+                        </h1>
+                        @if ($collector->tagline)
+                            <p class="font-source-sans text-lg italic text-oro-fiorentino md:text-xl">
+                                "{{ $collector->tagline }}"
+                            </p>
+                        @endif
+                        <p class="mt-3 text-gray-300">
+                            {{ __('collector.home.collector_title') }} &middot;
+                            {{ __('collector.home.member_since', ['year' => $collector->created_at->format('Y')]) }}
                         </p>
                     </div>
-                @endif
-            </div>
-        </div>
-    </section>
+                </div>
 
-    {{-- Navigation Tabs --}}
-    <section class="sticky top-0 z-20 bg-white shadow-md">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <nav class="flex space-x-8" aria-label="{{ __('collector.home.navigation_aria') }}">
-                <a href="{{ route('collector.home', $collector->id) }}"
-                    class="flex items-center border-b-2 border-transparent px-1 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-                    </svg>
-                    {{ __('collector.home.overview_tab') }}
-                </a>
-                <a href="{{ route('collector.portfolio', $collector->id) }}"
-                    class="flex items-center border-b-2 border-blu-algoritmo px-1 py-4 text-sm font-medium text-blu-algoritmo"
-                    aria-current="page">
-                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    {{ __('collector.home.portfolio_tab') }}
-                </a>
-                <a href="{{ route('collector.collections', $collector->id) }}"
-                    class="flex items-center border-b-2 border-transparent px-1 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    {{ __('collector.home.collections_tab') }}
-                </a>
-            </nav>
-        </div>
-    </section>
-
-    {{-- Portfolio Content --}}
-    <div class="min-h-screen bg-gray-800">
-        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-
-            {{-- Filters & Search --}}
-            <div class="mb-8">
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-4 lg:grid-cols-6">
-                    {{-- Search --}}
-                    <div class="md:col-span-2">
-                        <form method="GET" action="{{ route('collector.portfolio', $collector->id) }}">
-                            <div class="relative">
-                                <input type="text" name="query" value="{{ $query }}"
-                                    placeholder="{{ __('collector.portfolio.search_placeholder') }}"
-                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400">
-                                <button type="submit" class="absolute inset-y-0 right-0 flex items-center px-4">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </button>
-                            </div>
-                            {{-- Hidden fields to preserve other filters --}}
-                            <input type="hidden" name="collection" value="{{ $collection_filter }}">
-                            <input type="hidden" name="creator" value="{{ $creator_filter }}">
-                            <input type="hidden" name="sort" value="{{ $sort }}">
-                            <input type="hidden" name="view" value="{{ $view }}">
-                        </form>
-                    </div>
-
-                    {{-- Collection Filter --}}
-                    <div>
-                        <form method="GET" action="{{ route('collector.portfolio', $collector->id) }}"
-                            onchange="this.submit()">
-                            <select name="collection"
-                                class="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-purple-400 focus:ring-purple-400">
-                                <option value="">{{ __('collector.portfolio.all_collections') }}</option>
-                                @foreach ($availableCollections as $collection)
-                                <option value="{{ $collection->id }}" {{ $collection_filter==$collection->id ?
-                                    'selected' : '' }}>
-                                    {{ $collection->collection_name }}
-                                </option>
-                                @endforeach
-                            </select>
-                            <input type="hidden" name="query" value="{{ $query }}">
-                            <input type="hidden" name="creator" value="{{ $creator_filter }}">
-                            <input type="hidden" name="sort" value="{{ $sort }}">
-                            <input type="hidden" name="view" value="{{ $view }}">
-                        </form>
-                    </div>
-
-                    {{-- Creator Filter --}}
-                    <div>
-                        <form method="GET" action="{{ route('collector.portfolio', $collector->id) }}"
-                            onchange="this.submit()">
-                            <select name="creator"
-                                class="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-purple-400 focus:ring-purple-400">
-                                <option value="">{{ __('collector.portfolio.all_creators') }}</option>
-                                @foreach ($availableCreators as $creator)
-                                <option value="{{ $creator->id }}" {{ $creator_filter==$creator->id ? 'selected' : ''
-                                    }}>
-                                    {{ $creator->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                            <input type="hidden" name="query" value="{{ $query }}">
-                            <input type="hidden" name="collection" value="{{ $collection_filter }}">
-                            <input type="hidden" name="sort" value="{{ $sort }}">
-                            <input type="hidden" name="view" value="{{ $view }}">
-                        </form>
-                    </div>
-
-                    {{-- Sort --}}
-                    <div>
-                        <form method="GET" action="{{ route('collector.portfolio', $collector->id) }}"
-                            onchange="this.submit()">
-                            <select name="sort"
-                                class="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-purple-400 focus:ring-purple-400">
-                                <option value="latest" {{ $sort=='latest' ? 'selected' : '' }}>
-                                    {{ __('collector.portfolio.sort_latest') }}</option>
-                                <option value="title" {{ $sort=='title' ? 'selected' : '' }}>
-                                    {{ __('collector.portfolio.sort_title') }}</option>
-                                <option value="price_high" {{ $sort=='price_high' ? 'selected' : '' }}>
-                                    {{ __('collector.portfolio.sort_price_high') }}</option>
-                                <option value="price_low" {{ $sort=='price_low' ? 'selected' : '' }}>
-                                    {{ __('collector.portfolio.sort_price_low') }}</option>
-                            </select>
-                            <input type="hidden" name="query" value="{{ $query }}">
-                            <input type="hidden" name="collection" value="{{ $collection_filter }}">
-                            <input type="hidden" name="creator" value="{{ $creator_filter }}">
-                            <input type="hidden" name="view" value="{{ $view }}">
-                        </form>
-                    </div>
-
-                    {{-- View Toggle --}}
-                    <div class="flex space-x-1">
-                        <a href="{{ route('collector.portfolio', $collector->id) }}?{{ http_build_query(array_merge(request()->query(), ['view' => 'grid'])) }}"
-                            class="{{ $view == 'grid' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300' }} rounded-l-lg border border-gray-600 p-2 transition-colors hover:bg-purple-500">
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                            </svg>
-                        </a>
-                        <a href="{{ route('collector.portfolio', $collector->id) }}?{{ http_build_query(array_merge(request()->query(), ['view' => 'list'])) }}"
-                            class="{{ $view == 'list' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300' }} rounded-r-lg border border-gray-600 p-2 transition-colors hover:bg-purple-500">
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </a>
+                <div class="flex flex-col items-center gap-6 md:col-span-4 md:items-end">
+                    <div class="grid grid-cols-3 gap-6 text-center">
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-bold text-oro-fiorentino md:text-3xl">
+                                {{ $stats['total_owned_egis'] ?? 0 }}
+                            </span>
+                            <span class="text-xs text-gray-300 md:text-sm">{{ __('collector.home.owned_egis') }}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-bold text-oro-fiorentino md:text-3xl">
+                                {{ $stats['collections_represented'] ?? 0 }}
+                            </span>
+                            <span class="text-xs text-gray-300 md:text-sm">{{ __('collector.collections_represented') }}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-bold text-oro-fiorentino md:text-3xl">
+                                €{{ number_format($stats['total_spent_eur'] ?? 0, 2) }}
+                            </span>
+                            <span class="text-xs text-gray-300 md:text-sm">{{ __('collector.home.total_spent') }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            {{-- EGI Grid/List --}}
-            @if ($purchasedEgis->count() > 0)
-            @if ($view == 'grid')
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                @foreach ($purchasedEgis as $egi)
-                <x-egi-card :egi="$egi" :collection="$egi->collection" :portfolioContext="true"
-                    :portfolioOwner="$collector" :hideReserveButton="false" />
-                @endforeach
-            </div>
-            @else
-            {{-- List View --}}
-            <div class="space-y-3">
-                @foreach ($purchasedEgis as $egi)
-                <x-egi-card-list :egi="$egi" context="collector" :portfolioOwner="$collector" :showPurchasePrice="true"
-                    :showOwnershipBadge="true" />
-                @endforeach
-            </div>
-            @endif
-
-            {{-- TODO: Implement pagination for Collection-based results --}}
-            {{-- <div class="mt-8">
-                {{ $purchasedEgis->withQueryString()->links() }}
-            </div> --}}
-            @else
-            {{-- Empty State --}}
-            <div class="py-12 text-center">
-                <svg class="mx-auto mb-6 h-24 w-24 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-                <h3 class="mb-4 text-2xl font-bold text-white">
-                    {{ __('collector.portfolio.empty_title') }}
-                </h3>
-                <p class="mb-6 text-gray-400">
-                    {{ __('collector.portfolio.empty_description') }}
-                </p>
-                <a href="{{ route('home.collections.index') }}"
-                    class="rounded-lg bg-purple-600 px-6 py-3 font-medium text-white transition-colors duration-200 hover:bg-purple-700">
-                    {{ __('collector.portfolio.discover_button') }}
-                </a>
-            </div>
-            @endif
         </div>
-    </div>
+    </x-slot>
 
-</x-creator-layout>
+    <x-slot name="platformStats">
+        <nav class="flex overflow-x-auto border-b border-gray-800 bg-gray-900/95"
+            aria-label="{{ __('collector.home.navigation_aria') }}">
+            <div class="mx-auto flex w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="scrollbar-hide flex w-full space-x-6">
+                    <a href="{{ route('collector.portfolio', $collector->id) }}"
+                        class="border-b-2 border-oro-fiorentino px-6 py-4 text-sm font-medium text-oro-fiorentino">
+                        {{ __('collector.home.portfolio_tab') }}
+                    </a>
+                    <a href="{{ route('collector.collections', $collector->id) }}"
+                        class="border-b-2 border-transparent px-6 py-4 text-sm font-medium text-gray-300 hover:text-white">
+                        {{ __('collector.home.collections_tab') }}
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </x-slot>
+
+    <x-slot name="heroFullWidth">
+        @include('collector.partials.portfolio-content', [
+            'collector' => $collector,
+            'purchasedEgis' => $purchasedEgis,
+            'stats' => $stats,
+            'view' => $view,
+        ])
+    </x-slot>
+</x-guest-layout>
