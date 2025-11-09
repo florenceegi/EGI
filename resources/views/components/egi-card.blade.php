@@ -135,8 +135,16 @@ if ($portfolioContext && $portfolioOwner) {
             default => __('egi.badge.to_activate'),
         };
     } elseif ($portfolioContext) {
-        // Nel Portfolio (non creator)
-        $badgeLabel = $hasActiveReservations || $isMinted ? __('egi.badge.winning_bid') : __('egi.badge.not_owned');
+        // Nel Portfolio (collector o altri)
+        $portfolioOwnerId = $portfolioOwner?->id;
+        $egiOwnerId = $egi->owner?->id ?? $egi->owner_id ?? null;
+        $ownsEgi = $portfolioOwnerId !== null && $egiOwnerId === $portfolioOwnerId;
+
+        if ($ownsEgi) {
+            $badgeLabel = $isMinted ? __('egi.badge.minted') : __('collector.portfolio.owned');
+        } else {
+            $badgeLabel = $hasActiveReservations ? __('egi.badge.winning_bid') : __('egi.badge.not_owned');
+        }
     } else {
         // Card normale (non portfolio)
         // 🔨 AUCTION MODE: Mostra "Da Mintare" se EGI è all'asta
@@ -195,7 +203,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
 @endphp
 
 <article
-    class="egi-card {{ $isHyper ? 'egi-card--hiper' : '' }} {{ $portfolioOutbid ? 'opacity-35 hover:opacity-70' : '' }} {{ $mintedClasses }} {{ $mintedBorder }} group relative w-full overflow-hidden rounded-2xl transition-all duration-500"
+    class="egi-card {{ $isHyper ? 'egi-card--hiper' : '' }} {{ $mintedClasses }} {{ $mintedBorder }} group relative w-full overflow-hidden rounded-2xl transition-all duration-500"
     data-egi-id="{{ $egi->id }}" data-hyper="{{ $isHyper ? '1' : '0' }}" data-minted="{{ $isMinted ? '1' : '0' }}"
     style="{{ $isHyper ? '--energy:0.95; --foilHue:265; --edge:#9b5cf6; --accent:#a78bfa;' : '' }}">
 
@@ -336,9 +344,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
             {{-- 🚀 NEW: Context-aware badges per portfolio --}}
         @elseif ($portfolioContext)
             @php
-                // CREATOR PORTFOLIO: Logica speciale per il portfolio del creator
                 if ($creatorPortfolioContext) {
-                    // Nel Creator Portfolio, usa il badgeStatus già calcolato sopra
                     $isWinning = in_array($badgeStatus, ['minted', 'reserved']);
                     $badgeLabel = match ($badgeStatus) {
                         'minted' => __('egi.badge.minted'),
@@ -346,26 +352,40 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                         default => __('egi.badge.to_activate'),
                     };
                 } else {
-                    // COLLECTOR PORTFOLIO: Logica normale per altri portfolio
-                    $ownerReservation = $egi
-                        ->reservations()
-                        ->where('user_id', $portfolioOwner->id)
-                        ->orderByDesc('created_at')
-                        ->first();
-                    $isWinning =
-                        $ownerReservation &&
-                        $ownerReservation->is_current &&
-                        $ownerReservation->status === 'active' &&
-                        !$ownerReservation->superseded_by_id;
-                    $badgeLabel = $isWinning ? __('egi.badge.winning_bid') : __('egi.badge.not_owned');
+                    $portfolioOwnerId = $portfolioOwner?->id;
+                    $egiOwnerId = $egi->owner?->id ?? $egi->owner_id ?? null;
+                    $ownsEgi = $portfolioOwnerId !== null && $egiOwnerId === $portfolioOwnerId;
+
+                    if ($ownsEgi) {
+                        $isWinning = true;
+                        $badgeLabel = $isMinted ? __('egi.badge.minted') : __('collector.portfolio.owned');
+                    } else {
+                        $ownerReservation = $egi
+                            ->reservations()
+                            ->where('user_id', $portfolioOwnerId)
+                            ->orderByDesc('created_at')
+                            ->first();
+
+                        $isWinning =
+                            $ownerReservation &&
+                            $ownerReservation->is_current &&
+                            $ownerReservation->status === 'active' &&
+                            !$ownerReservation->superseded_by_id;
+
+                        $badgeLabel = $isWinning ? __('egi.badge.winning_bid') : __('egi.badge.not_owned');
+                    }
                 }
+
+                $notOwnedLabel = in_array($badgeLabel, [__('egi.badge.minted'), __('collector.portfolio.owned')], true)
+                    ? $badgeLabel
+                    : __('egi.badge.not_owned');
             @endphp
 
             @if ($isWinning)
                 @if ($isHyper)
                     {{-- Badge composto HYPER + Status dynamico --}}
                     <div class="badge-composite" data-portfolio-badge="1" title="{{ $badgeLabel }}"
-                        data-lbl-winning="{{ $badgeLabel }}" data-lbl-not-owned="{{ __('egi.badge.not_owned') }}">
+                        data-lbl-winning="{{ $badgeLabel }}" data-lbl-not-owned="{{ $notOwnedLabel }}">
                         <div class="hyper-overlay">⭐ HYPER ⭐</div>
                         <div class="owned-base">
                             <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
@@ -389,7 +409,7 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
                     </div>
                 @else
                     <span data-portfolio-badge="1" data-lbl-winning="{{ $badgeLabel }}"
-                        data-lbl-not-owned="{{ __('egi.badge.not_owned') }}"
+                        data-lbl-not-owned="{{ $notOwnedLabel }}"
                         class="{{ $badgeColor }} absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm"
                         title="{{ $badgeLabel }}">
                         <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
