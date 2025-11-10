@@ -45,7 +45,9 @@ class DescriptionGenerationHandler implements AiFeatureInterface
         }
 
         // Check if EGI has image (required for AI Vision analysis)
-        if (empty($egi->image_url)) {
+        $imageUrl = $egi->main_image_url ?? $egi->original_image_url ?? $egi->image_url;
+
+        if (empty($imageUrl)) {
             $this->validationError = 'EGI must have an image for AI description generation';
             return false;
         }
