@@ -2459,7 +2459,7 @@ class CoaController extends Controller
                 ],
                 'file_metadata' => [
                     'file_path' => $result['file_path'] ?? null,
-                    'file_size' => $result['file']->size ?? null,
+                    'file_size' => $result['file']->bytes ?? null,
                     'file_hash' => $result['file']->sha256 ?? null,
                 ],
                 'request_metadata' => [

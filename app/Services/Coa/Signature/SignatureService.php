@@ -8,6 +8,7 @@ use App\Services\Gdpr\AuditLogService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 
@@ -60,7 +61,7 @@ class SignatureService
     public function signAuthor(CoaFile $coaFile, array $meta = []): array
     {
         $hashAlgo = Config::get('coa.signature.hash_algo', 'sha256');
-        $absPath = Storage::path($coaFile->path);
+        [$absPath, $isTempSource] = $this->resolveLocalPath($coaFile->path);
 
         try {
             $result = $this->provider->signPdf($absPath, [
@@ -71,6 +72,7 @@ class SignatureService
             ]);
 
             if (!($result['success'] ?? false)) {
+                $this->cleanupTemporaryPaths($absPath, $isTempSource, $result['signed_pdf_path'] ?? null);
                 $this->errorManager->handle('COA_QES_AUTHOR_SIGN_FAILED', [
                     'file_id' => $coaFile->id,
                     'error' => $result['error'] ?? 'unknown',
@@ -87,6 +89,8 @@ class SignatureService
                 'new_path' => $newRecord->path,
             ]);
 
+            $this->cleanupTemporaryPaths($absPath, $isTempSource, $signedAbs);
+
             return [
                 'success' => true,
                 'file_path' => $newRecord->path,
@@ -95,6 +99,7 @@ class SignatureService
                 'signature_info' => $signInfo,
             ];
         } catch (\Throwable $e) {
+            $this->cleanupTemporaryPaths($absPath, $isTempSource);
             $this->errorManager->handle('COA_QES_AUTHOR_SIGN_EXCEPTION', [
                 'context' => 'SignatureService::signAuthor',
                 'file_id' => $coaFile->id,
@@ -110,7 +115,7 @@ class SignatureService
     public function countersignInspector(CoaFile $coaFile, array $meta = []): array
     {
         $hashAlgo = Config::get('coa.signature.hash_algo', 'sha256');
-        $absPath = Storage::path($coaFile->path);
+        [$absPath, $isTempSource] = $this->resolveLocalPath($coaFile->path);
         try {
             $result = $this->provider->addCountersignature($absPath, [
                 'role' => 'inspector',
@@ -119,6 +124,7 @@ class SignatureService
                 'metadata' => $meta,
             ]);
             if (!($result['success'] ?? false)) {
+                $this->cleanupTemporaryPaths($absPath, $isTempSource, $result['signed_pdf_path'] ?? null);
                 $this->errorManager->handle('COA_QES_INSPECTOR_SIGN_FAILED', [
                     'file_id' => $coaFile->id,
                     'error' => $result['error'] ?? 'unknown',
@@ -129,6 +135,8 @@ class SignatureService
             $signedAbs = $result['signed_pdf_path'];
             $newRecord = $this->storeAsNewVersion($coaFile, $signedAbs, 'pdf_signed_inspector');
 
+            $this->cleanupTemporaryPaths($absPath, $isTempSource, $signedAbs);
+
             return [
                 'success' => true,
                 'file_path' => $newRecord->path,
@@ -137,6 +145,7 @@ class SignatureService
                 'signature_info' => $result['signature_info'] ?? [],
             ];
         } catch (\Throwable $e) {
+            $this->cleanupTemporaryPaths($absPath, $isTempSource);
             $this->errorManager->handle('COA_QES_INSPECTOR_SIGN_EXCEPTION', [
                 'context' => 'SignatureService::countersignInspector',
                 'file_id' => $coaFile->id,
@@ -151,13 +160,14 @@ class SignatureService
 
     public function timestamp(CoaFile $coaFile, array $meta = []): array
     {
-        $absPath = Storage::path($coaFile->path);
+        [$absPath, $isTempSource] = $this->resolveLocalPath($coaFile->path);
         try {
             $result = $this->provider->addTimestamp($absPath, [
                 'policy_oid' => $meta['policy_oid'] ?? null,
                 'tsa' => Config::get('coa.signature.tsa', []),
             ]);
             if (!($result['success'] ?? false)) {
+                $this->cleanupTemporaryPaths($absPath, $isTempSource, $result['signed_pdf_path'] ?? null);
                 $this->errorManager->handle('COA_QES_TIMESTAMP_FAILED', [
                     'file_id' => $coaFile->id,
                     'error' => $result['error'] ?? 'unknown',
@@ -168,6 +178,8 @@ class SignatureService
             $tsAbs = $result['signed_pdf_path'];
             $newRecord = $this->storeAsNewVersion($coaFile, $tsAbs, 'pdf_signed_ts');
 
+            $this->cleanupTemporaryPaths($absPath, $isTempSource, $tsAbs);
+
             return [
                 'success' => true,
                 'file_path' => $newRecord->path,
@@ -176,6 +188,7 @@ class SignatureService
                 'timestamp_info' => $result['timestamp_info'] ?? [],
             ];
         } catch (\Throwable $e) {
+            $this->cleanupTemporaryPaths($absPath, $isTempSource);
             $this->errorManager->handle('COA_QES_TIMESTAMP_EXCEPTION', [
                 'context' => 'SignatureService::timestamp',
                 'file_id' => $coaFile->id,
@@ -223,7 +236,7 @@ class SignatureService
 
         $new = CoaFile::create([
             'coa_id' => $origin->coa_id,
-            'kind' => $kind,
+            'kind' => $this->normalizeKind($origin->kind, $kind),
             'path' => $newRel,
             'sha256' => $hash,
             'bytes' => strlen($content),
@@ -231,5 +244,74 @@ class SignatureService
         ]);
 
         return $new;
+    }
+
+    private function normalizeKind(?string $originKind, string $desiredKind): string
+    {
+        $allowed = [
+            'pdf',
+            'scan_signed',
+            'image_front',
+            'image_back',
+            'signature_detail',
+            'core_pdf',
+            'bundle_pdf',
+            'annex_pack',
+        ];
+
+        if (in_array($desiredKind, $allowed, true)) {
+            return $desiredKind;
+        }
+
+        if ($originKind && in_array($originKind, $allowed, true)) {
+            return $originKind;
+        }
+
+        return 'pdf';
+    }
+
+    /**
+     * Resolve local filesystem path for stored file (downloading when needed).
+     *
+     * @return array{0:string,1:bool} [absolutePath, isTemporaryCopy]
+     */
+    private function resolveLocalPath(string $storagePath): array
+    {
+        $disk = config('filesystems.default', 'local');
+        $storage = Storage::disk($disk);
+
+        try {
+            $absolutePath = $storage->path($storagePath);
+            return [$absolutePath, false];
+        } catch (\Throwable $e) {
+            $contents = $storage->get($storagePath);
+            $temporaryPath = $this->createTemporaryCopy($storagePath, $contents);
+            return [$temporaryPath, true];
+        }
+    }
+
+    private function createTemporaryCopy(string $storagePath, string $contents): string
+    {
+        $extension = pathinfo($storagePath, PATHINFO_EXTENSION) ?: 'tmp';
+        $temporaryPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('coa-sign-', true) . '.' . $extension;
+        file_put_contents($temporaryPath, $contents);
+        return $temporaryPath;
+    }
+
+    private function cleanupTemporaryPaths(string $sourcePath, bool $isTempSource, ?string $signedPath = null): void
+    {
+        if ($isTempSource && is_file($sourcePath)) {
+            @unlink($sourcePath);
+        }
+
+        if ($signedPath && $this->isTemporaryPath($signedPath) && is_file($signedPath)) {
+            @unlink($signedPath);
+        }
+    }
+
+    private function isTemporaryPath(string $path): bool
+    {
+        $tempDir = sys_get_temp_dir();
+        return Str::startsWith($path, $tempDir);
     }
 }
