@@ -31,10 +31,19 @@ $stats = $collector->getCollectorStats();
 @endphp
 
 @if ($collector)
+@php
+    $isCreatorProfile = strtolower($collector->usertype ?? '') === 'creator' || $collector->hasRole('creator');
+    $profileRoute = $isCreatorProfile
+        ? route('creator.home', ['id' => $collector->id])
+        : route('collector.home', ['id' => $collector->id]);
+    $ariaLabel = $isCreatorProfile
+        ? __('collector.card.view_creator_profile_aria', ['name' => $collector->name])
+        : __('collector.card.view_collector_profile_aria', ['name' => $collector->name]);
+@endphp
 {{-- NFT-STYLE CARD (Blur-inspired for Collectors) --}}
-<a href="{{ route('collector.home', ['id' => $collector->id]) }}"
+<a href="{{ $profileRoute }}"
     class="group block w-full overflow-hidden rounded-xl bg-gray-900 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
-    aria-label="{{ sprintf(__('View collector profile %s'), $collector->name) }}">
+    aria-label="{{ $ariaLabel }}">
 
     {{-- Collector Image Section --}}
     <div class="relative w-full aspect-square bg-gradient-to-br from-gray-800 to-gray-900">

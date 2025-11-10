@@ -184,6 +184,9 @@ return [
     // Card Component
     'card' => [
         'collections' => 'collections',
+        'reservations' => 'reservations',
+        'view_collector_profile_aria' => 'View collector profile :name',
+        'view_creator_profile_aria' => 'View creator profile :name',
     ],
 
     // Collector Carousel

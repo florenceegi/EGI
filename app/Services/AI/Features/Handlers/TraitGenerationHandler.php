@@ -45,7 +45,7 @@ class TraitGenerationHandler implements AiFeatureInterface
         }
 
         // Check if EGI has image
-        if (empty($egi->image_url)) {
+        if (empty($egi->main_image_url) && empty($egi->original_image_url) && empty($egi->thumbnail_image_url)) {
             $this->validationError = 'EGI must have an image for AI trait generation';
             return false;
         }

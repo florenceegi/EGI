@@ -37,6 +37,9 @@ return [
     // Card Component
     'card' => [
         'collections' => 'collections',
+        'reservations' => 'réservations',
+        'view_collector_profile_aria' => 'Voir le profil du collectionneur :name',
+        'view_creator_profile_aria' => 'Voir le profil du créateur :name',
     ],
 
     // Collector Carousel

@@ -1483,6 +1483,15 @@ class User extends Authenticatable implements HasMedia {
     }
 
     /**
+     * @Oracode Collector: Owned EGIs created by other users
+     * 🎯 Purpose: Identify purchases/rebinds distinct from creator's own works
+     */
+    public function publicOwnedEgisFromOthers(): HasMany {
+        return $this->publicOwnedEgis()
+            ->whereColumn('egis.owner_id', '<>', 'egis.user_id');
+    }
+
+    /**
      * @Oracode Collector: Get purchased EGIs via completed reservations
      * 🎯 Purpose: EGIs acquired through purchase transactions (valid reservations)
      * 📤 Returns: BelongsToMany relationship via reservations table
@@ -1610,6 +1619,7 @@ class User extends Authenticatable implements HasMedia {
      */
     public function isCollector(): bool {
         return $this->hasRole('collector') ||
-            $this->validReservations()->exists();
+            $this->validReservations()->exists() ||
+            $this->publicOwnedEgisFromOthers()->exists();
     }
 }

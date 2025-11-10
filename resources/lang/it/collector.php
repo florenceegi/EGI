@@ -148,6 +148,8 @@ return [
     'card' => [
         'collections' => 'collezioni',
         'reservations' => 'prenotazioni',
+        'view_collector_profile_aria' => 'Apri il profilo collector :name',
+        'view_creator_profile_aria' => 'Apri il profilo creator :name',
     ],
 
     // Collector Carousel
