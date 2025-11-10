@@ -70,17 +70,27 @@ class AiFeatureController extends Controller
         $pricing = AiFeaturePricing::where('feature_code', $featureCode)->first();
 
         if (!$pricing) {
+            $this->logger->warning('[AiFeatureController] Pricing missing', [
+                'feature_code' => $featureCode,
+                'user_id' => $user?->id,
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Feature not found',
-            ], 404);
+                'message' => __('ai.features.errors.pricing_missing'),
+            ], 422);
         }
 
         if (!$pricing->is_active) {
+            $this->logger->warning('[AiFeatureController] Feature inactive', [
+                'feature_code' => $featureCode,
+                'user_id' => $user?->id,
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Feature currently inactive',
-            ], 400);
+                'message' => __('ai.features.errors.feature_inactive'),
+            ], 422);
         }
 
         // Get user balance

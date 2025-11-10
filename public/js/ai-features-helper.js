@@ -39,7 +39,16 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
         });
 
         if (!pricingResponse.ok) {
-            throw new Error('Failed to fetch pricing');
+            let errorMessage = 'Failed to fetch pricing';
+            try {
+                const errorPayload = await pricingResponse.json();
+                if (errorPayload && errorPayload.message) {
+                    errorMessage = errorPayload.message;
+                }
+            } catch (parseError) {
+                console.warn('[AI Features] Unable to parse pricing error payload', parseError);
+            }
+            throw new Error(errorMessage);
         }
 
         const pricingData = await pricingResponse.json();
@@ -151,7 +160,17 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
             })
         });
 
-        const executeData = await executeResponse.json();
+        let executeData;
+        try {
+            executeData = await executeResponse.json();
+        } catch (parseError) {
+            console.warn('[AI Features] Unable to parse execute response', parseError);
+            throw new Error('Execution failed');
+        }
+
+        if (!executeResponse.ok) {
+            throw new Error(executeData?.message || 'Execution failed');
+        }
         console.log('[AI Features] Execution result', executeData);
 
         if (executeData.success) {
