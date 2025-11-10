@@ -31,6 +31,7 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
         const pricingUrl = `/api/ai/features/pricing?feature_code=${encodeURIComponent(featureCode)}`;
         const pricingResponse = await fetch(pricingUrl, {
             method: 'GET',
+            credentials: 'same-origin',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Accept': 'application/json',
@@ -137,6 +138,7 @@ async function executeAiFeatureWithConfirmation(featureCode, egiId, params = {},
         const executeUrl = '/api/ai/features/execute';
         const executeResponse = await fetch(executeUrl, {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
