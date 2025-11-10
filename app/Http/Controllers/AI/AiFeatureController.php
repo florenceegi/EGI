@@ -95,6 +95,8 @@ class AiFeatureController extends Controller
 
         // Get user balance
         $balance = $this->egiliService->getBalance($user);
+        $userBalance = is_array($balance) ? ($balance['egili'] ?? 0) : (int) $balance;
+        $requiredEgili = $pricing->cost_egili ?? 0;
 
         return response()->json([
             'success' => true,
@@ -103,8 +105,8 @@ class AiFeatureController extends Controller
                 'feature_name' => $pricing->feature_name,
                 'cost_egili' => $pricing->cost_egili ?? 0,
                 'is_free' => $pricing->is_free,
-                'user_balance' => $balance['egili'] ?? 0,
-                'has_sufficient_credits' => ($balance['egili'] ?? 0) >= ($pricing->cost_egili ?? 0),
+                'user_balance' => $userBalance,
+                'has_sufficient_credits' => $pricing->is_free ? true : $userBalance >= $requiredEgili,
             ]
         ]);
     }
