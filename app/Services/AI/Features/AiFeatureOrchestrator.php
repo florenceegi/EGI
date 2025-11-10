@@ -222,16 +222,14 @@ class AiFeatureOrchestrator
 
         // Get user balance via EgiliService
         $balance = $this->egiliService->getBalance($user);
+        $availableEgili = is_array($balance) ? ($balance['egili'] ?? 0) : (int) $balance;
         
         $this->logger->info('[AiFeatureOrchestrator] User balance retrieved', [
             'user_id' => $user->id,
-            'available_egili' => $balance['egili'] ?? 0,
+            'available_egili' => $availableEgili,
             'required_egili' => $requiredEgili,
         ]);
 
-        // Check if user has enough Egili
-        $availableEgili = $balance['egili'] ?? 0;
-        
         if ($availableEgili < $requiredEgili) {
             return [
                 'sufficient' => false,
