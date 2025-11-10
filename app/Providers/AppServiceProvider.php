@@ -17,6 +17,8 @@ use App\Notifications\Channels\CustomDatabaseChannel;
 use App\Services\CollectionService;
 use App\Services\Gdpr\AuditLogService;
 use App\Services\Gdpr\ConsentService;
+use App\Services\EgiliService;
+use App\Services\EgiliTransactionService;
 use App\Services\Notifications\WalletService;
 use App\View\Components\EppHighlight;
 use Illuminate\Support\Facades\Blade;
@@ -103,6 +105,15 @@ class AppServiceProvider extends ServiceProvider {
             return new ImageOptimizationManager(
                 $app->make(UltraLogManager::class),
                 $app->make(ErrorManagerInterface::class)
+            );
+        });
+
+        $this->app->singleton(EgiliTransactionService::class, function ($app) {
+            return new EgiliTransactionService(
+                $app->make(UltraLogManager::class),
+                $app->make(ErrorManagerInterface::class),
+                $app->make(AuditLogService::class),
+                $app->make(EgiliService::class)
             );
         });
     }

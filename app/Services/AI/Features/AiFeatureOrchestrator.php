@@ -9,6 +9,7 @@ use App\Services\AI\Features\DTOs\AiFeatureResult;
 use App\Services\AI\Features\AiFeatureFactory;
 use App\Services\Gdpr\AuditLogService;
 use App\Services\EgiliService;
+use App\Services\EgiliTransactionService;
 use App\Enums\Gdpr\GdprActivityCategory;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
@@ -39,6 +40,7 @@ class AiFeatureOrchestrator
         private AiFeatureFactory $factory,
         private AuditLogService $auditService,
         private EgiliService $egiliService,
+        private EgiliTransactionService $egiliTransactionService,
         private UltraLogManager $logger,
         private ErrorManagerInterface $errorManager
     ) {}
@@ -125,7 +127,7 @@ class AiFeatureOrchestrator
 
             // STEP 7.5: Debit Egili if execution successful and not free
             if ($result->success && !$pricing->is_free && $pricing->cost_egili > 0) {
-                $debitResult = $this->egiliService->debitForFeature(
+                $debitResult = $this->egiliTransactionService->debitForFeature(
                     user: $user,
                     featureCode: $featureCode,
                     amount: $pricing->cost_egili,
@@ -163,7 +165,7 @@ class AiFeatureOrchestrator
                     'success' => $result->success,
                     'cost_egili' => $pricing->cost_egili,
                 ],
-                category: GdprActivityCategory::AI_INTERACTION
+                category: GdprActivityCategory::AI_PROCESSING
             );
 
             $this->logger->info('[AiFeatureOrchestrator] Feature executed successfully', [
