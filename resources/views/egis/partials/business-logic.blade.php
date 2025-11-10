@@ -9,15 +9,28 @@
 
 @php
 // CORREZIONE: Sostituito auth() con App\Helpers\FegiAuth::
-$canUpdateEgi = App\Helpers\FegiAuth::check() &&
-App\Helpers\FegiAuth::user()->can('update_EGI') &&
-$collection->users()->where('user_id', App\Helpers\FegiAuth::id())->whereIn('role', ['admin',
-'editor', 'creator'])->exists();
+$currentUserId = App\Helpers\FegiAuth::id();
+$isAuthenticated = App\Helpers\FegiAuth::check();
+$currentUser = $isAuthenticated ? App\Helpers\FegiAuth::user() : null;
+$isCreator = $isAuthenticated && (int) $egi->user_id === (int) $currentUserId;
+$isOwner = $isAuthenticated && $egi->owner_id && (int) $egi->owner_id === (int) $currentUserId;
+$isMinted = !is_null($egi->token_EGI);
+
+$collectionMembershipExists = $isAuthenticated &&
+    $collection->users()
+        ->where('user_id', $currentUserId)
+        ->whereIn('role', ['admin', 'editor', 'creator'])
+        ->exists();
+
+$canUpdateEgi = ($isAuthenticated && $currentUser && $currentUser->can('update_EGI') && $collectionMembershipExists)
+    || ($isOwner && $isMinted);
 
 $canDeleteEgi = App\Helpers\FegiAuth::check() &&
-App\Helpers\FegiAuth::user()->can('delete_EGI') &&
-$collection->users()->where('user_id', App\Helpers\FegiAuth::id())->whereIn('role', ['admin',
-'creator'])->exists();
+    App\Helpers\FegiAuth::user()->can('delete_EGI') &&
+    $collection->users()
+        ->where('user_id', App\Helpers\FegiAuth::id())
+        ->whereIn('role', ['admin', 'creator'])
+        ->exists();
 
 // Inizializzazione delle variabili di prenotazione e prezzo
 // Ottengo la prenotazione con priorità più alta per questo EGI
@@ -80,6 +93,6 @@ $collection->creator_id)) &&
 $displayPrice && $displayPrice > 0 && !$isCreator;
 
 // 🔒 PRICE LOCK: Determina se il prezzo può essere modificato dal creator
-$canModifyPrice = $isCreator && !$highestPriorityReservation;
-$isPriceLocked = $isCreator && $highestPriorityReservation;
+$canModifyPrice = ($isCreator || ($isOwner && $isMinted)) && !$highestPriorityReservation;
+$isPriceLocked = ($isCreator || ($isOwner && $isMinted)) && $highestPriorityReservation;
 @endphp

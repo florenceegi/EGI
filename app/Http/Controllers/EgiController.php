@@ -373,9 +373,12 @@ class EgiController extends Controller
             }
 
             $user = FegiAuth::user();
+            $ownsMintedEgi = $egi->token_EGI && (int) $egi->owner_id === (int) $user->id;
 
             // Check basic permission (Spatie)
-            if (!FegiAuth::can('update_EGI')) {
+            $canUpdatePermission = FegiAuth::can('update_EGI');
+
+            if (!$canUpdatePermission && !$ownsMintedEgi) {
                 return $this->errorManager->handle('EGI_UNAUTHORIZED_ACCESS', [
                     'user_id' => $user->id,
                     'egi_id' => $egi->id,
@@ -656,6 +659,12 @@ class EgiController extends Controller
     protected function canManageEgi($user, Egi $egi): bool
     {
         try {
+            // Se l'EGI è già stato mintato e l'utente corrente è l'owner attuale,
+            // consenti comunque la gestione anche se non è membro della collection.
+            if ($egi->token_EGI && (int) $egi->owner_id === (int) $user->id) {
+                return true;
+            }
+
             $collection = $egi->collection;
 
             // Check collection membership via collection_users pivot table
