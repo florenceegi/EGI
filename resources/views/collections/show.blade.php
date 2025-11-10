@@ -546,7 +546,7 @@ document.querySelectorAll('.egi-item, .stat-card').forEach(el => {
         formData.append('banner', file);
 
         const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const url = "{{ route('collections.banner.upload', ['collection' => $collection->id ?? 0]) }}";
+        const url = "{{ route('collections.banner.upload', ['collection' => $collection->id ?? 0], false) }}";
 
         try {
             btn.disabled = true;
@@ -555,12 +555,17 @@ document.querySelectorAll('.egi-item, .stat-card').forEach(el => {
 
             const res = await fetch(url, {
                 method: 'POST',
-                headers: { 'X-CSRF-TOKEN': csrf },
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
                 body: formData,
+                credentials: 'same-origin',
             });
 
-            const data = await res.json();
-            if (!res.ok || !data.success) {
+            const data = await res.clone().json().catch(() => null);
+            if (!res.ok || !data || !data.success) {
                 throw new Error((data && data.message) || 'Upload failed');
             }
 
