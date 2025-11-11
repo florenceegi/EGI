@@ -19,23 +19,34 @@
         {{-- Business Logic: Calcolo variabili per EGI --}}
         @php
             // CORREZIONE: Sostituito auth() con App\Helpers\FegiAuth::
-            $canUpdateEgi =
-                App\Helpers\FegiAuth::check() &&
-                App\Helpers\FegiAuth::user()->can('update_EGI') &&
-                $collection
-                    ->users()
-                    ->where('user_id', App\Helpers\FegiAuth::id())
-                    ->whereIn('role', ['admin', 'editor', 'creator'])
-                    ->exists();
+            $isAuthenticated = App\Helpers\FegiAuth::check();
+            $currentUserId = $isAuthenticated ? App\Helpers\FegiAuth::id() : null;
+            $collectionMembership = null;
+            $collectionRole = null;
 
-            $canDeleteEgi =
-                App\Helpers\FegiAuth::check() &&
-                App\Helpers\FegiAuth::user()->can('delete_EGI') &&
-                $collection
+            if ($isAuthenticated) {
+                $collectionMembership = $collection
                     ->users()
-                    ->where('user_id', App\Helpers\FegiAuth::id())
-                    ->whereIn('role', ['admin', 'creator'])
-                    ->exists();
+                    ->where('user_id', $currentUserId)
+                    ->first();
+
+                $collectionRole = $collectionMembership?->pivot?->role;
+            }
+
+            $hasCollectionUpdateRole = in_array($collectionRole, ['admin', 'editor', 'creator'], true);
+            $hasCollectionDeleteRole = in_array($collectionRole, ['admin', 'creator'], true);
+
+            $isMinted = !is_null($egi->token_EGI);
+            $ownsMintedEgi = $isAuthenticated && $isMinted && (int) $egi->owner_id === (int) $currentUserId;
+
+            $canUpdateEgi = ($canManage ?? false) ||
+                ($isAuthenticated &&
+                    App\Helpers\FegiAuth::user()->can('update_EGI') &&
+                    $hasCollectionUpdateRole);
+
+            $canDeleteEgi = $isAuthenticated &&
+                App\Helpers\FegiAuth::user()->can('delete_EGI') &&
+                $hasCollectionDeleteRole;
 
             // Inizializzazione delle variabili di prenotazione e prezzo
             // Ottengo la prenotazione con priorità più alta per questo EGI
@@ -101,8 +112,8 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                 !$isCreator;
 
             // 🔒 PRICE LOCK: Determina se il prezzo può essere modificato dal creator
-            $canModifyPrice = $isCreator && !$highestPriorityReservation;
-            $isPriceLocked = $isCreator && $highestPriorityReservation;
+            $canModifyPrice = ($isCreator || $ownsMintedEgi) && !$highestPriorityReservation;
+            $isPriceLocked = ($isCreator || $ownsMintedEgi) && $highestPriorityReservation;
 
             $creatorOwner = $collection->creator ?? $egi->user;
             $currentOwner = null;

@@ -156,6 +156,7 @@ run_migration_fresh() {
 
     if php artisan migrate:fresh --force; then
         echo -e "${GREEN}✅ Migration fresh completed${NC}"
+        run_natan_sync_migrations
     else
         echo -e "${RED}❌ Migration fresh failed!${NC}" >&2
         exit 1
@@ -172,6 +173,30 @@ run_migration_refresh() {
         echo -e "${RED}❌ Migration refresh failed!${NC}" >&2
         exit 1
     fi
+}
+
+run_natan_sync_migrations() {
+    local natan_path="/home/fabio/NATAN_LOC/laravel_backend"
+
+    if [ ! -d "$natan_path" ]; then
+        echo -e "${YELLOW}⚠️ NATAN_LOC backend non trovato (${natan_path}). Salto sincronizzazione multi-tenant.${NC}"
+        return 0
+    fi
+
+    echo -e "\n${CYAN}🤝 SYNC: NATAN_LOC migrations${NC}"
+    (
+        cd "$natan_path" || {
+            echo -e "${RED}❌ Impossibile accedere a ${natan_path}.${NC}" >&2
+            exit 1
+        }
+
+        if ! php artisan migrate --force; then
+            echo -e "${RED}❌ NATAN_LOC migrate --force failed.${NC}" >&2
+            exit 1
+        fi
+    )
+
+    echo -e "${GREEN}✅ NATAN_LOC migrations completed${NC}"
 }
 
 run_migration_reset() {
