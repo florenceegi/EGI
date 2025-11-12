@@ -492,26 +492,27 @@
                     <div class="p-6 renaissance-card elegant-hover">
                         <div class="flex items-center justify-center mb-4">
                             <div
-                                class="flex items-center justify-center w-16 h-16 rounded-full bg-viola-innovazione/20">
-                                <i class="text-2xl fas fa-certificate text-viola-innovazione"></i>
+                                class="flex items-center justify-center w-16 h-16 rounded-full bg-arancio-energia/20">
+                                <i class="text-2xl fas fa-brain text-arancio-energia"></i>
                             </div>
                         </div>
-                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Valuation</h3>
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">NATAN Market Engine</h3>
                         <p class="text-sm text-center font-body text-grigio-pietra">
-                            Sistema intelligente di valutazione che analizza qualità artistica, storico transazioni e
-                            domanda di mercato
+                            L’intelligenza del tenant che rende FlorenceEGI un market maker: combina Valuation (prezzo,
+                            floor e curva di crescita) e Activation (campagne, alert e suggerimenti on/off-chain).
                         </p>
                     </div>
 
                     <div class="p-6 renaissance-card elegant-hover">
                         <div class="flex items-center justify-center mb-4">
                             <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blu-algoritmo/20">
-                                <i class="text-2xl fas fa-water text-blu-algoritmo"></i>
+                                <i class="text-2xl fas fa-cubes text-blu-algoritmo"></i>
                             </div>
                         </div>
-                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Liquidity</h3>
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Asset Engine</h3>
                         <p class="text-sm text-center font-body text-grigio-pietra">
-                            Garantisce liquidità attraverso meccanismi di prezzo dinamici e marketplace integrato
+                            Gestisce listing, aste, vendite secondarie e liquidità degli EGI con regole trasparenti e
+                            marketplace integrato.
                         </p>
                     </div>
 
@@ -521,22 +522,24 @@
                                 <i class="text-2xl fas fa-network-wired text-verde-rinascita"></i>
                             </div>
                         </div>
-                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Distribution</h3>
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Distribution Engine</h3>
                         <p class="text-sm text-center font-body text-grigio-pietra">
-                            Gestisce distribuzione automatica di royalty, fee e contributi EPP in modo trasparente
+                            Automatizza royalty, fee piattaforma e contributi <span class="whitespace-nowrap">EPP</span>,
+                            garantendo tracciabilità fiscale end-to-end.
                         </p>
                     </div>
 
                     <div class="p-6 renaissance-card elegant-hover">
                         <div class="flex items-center justify-center mb-4">
-                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-arancio-energia/20">
-                                <i class="text-2xl fas fa-robot text-arancio-energia"></i>
+                            <div
+                                class="flex items-center justify-center w-16 h-16 rounded-full bg-viola-innovazione/20">
+                                <i class="text-2xl fas fa-hands-helping text-viola-innovazione"></i>
                             </div>
                         </div>
-                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Activation (NATAN)</h3>
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Co-Creation Engine</h3>
                         <p class="text-sm text-center font-body text-grigio-pietra">
-                            Guida AI che attiva campagne mirate, suggerisce prezzi e genera notifiche intelligenti
-                            basate su eventi on-chain
+                            Orchestra il flusso Creator / Co-Creator / Collector: minting, notarizzazione, firme e
+                            catena di custodia dell’EGI.
                         </p>
                     </div>
 
@@ -546,9 +549,10 @@
                                 <i class="text-2xl fas fa-shield-alt text-oro-fiorentino"></i>
                             </div>
                         </div>
-                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Compliance</h3>
+                        <h3 class="mb-3 text-lg font-bold text-center renaissance-title">Compliance Engine</h3>
                         <p class="text-sm text-center font-body text-grigio-pietra">
-                            GDPR by design, audit trail completo e conformità MiCA integrata in ogni operazione
+                            GDPR by design, audit trail completo e tutela <span class="whitespace-nowrap">MiCA-safe</span>
+                            integrata in ogni operazione.
                         </p>
                     </div>
                 </div>
@@ -615,14 +619,14 @@
                                 <h3 class="text-2xl font-bold renaissance-title text-grigio-pietra">NATAN</h3>
                             </div>
                             <p class="mb-4 font-body text-grigio-pietra">
-                                La guida AI di FlorenceEGI analizza comportamenti, preferenze e trend per suggerirti
-                                azioni mirate:
-                                prezzi ottimali, timing di vendita, campagne promozionali personalizzate.
+                                <strong>NATAN è il tenant funzionale di FlorenceEGI</strong>: un layer cognitivo che
+                                serve enti pubblici e privati con automazioni AI, suggerimenti operativi e servizi RAG
+                                a supporto di notarizzazione e gestione documentale.
                             </p>
                             <p class="font-body text-grigio-pietra">
                                 Gli <strong>smart contract intelligenti</strong> emettono trigger che attivano NATAN in
-                                tempo reale,
-                                creando un ecosistema vivo e reattivo.
+                                tempo reale, coordinandosi con FlorenceEGI Core per garantire coerenza di policy e
+                                compliance mentre ciascun tenant opera con autonomia verticale.
                             </p>
                         </div>
                         <div>
@@ -645,6 +649,30 @@
                             </p>
                         </div>
                     </div>
+                </div>
+                <div class="p-6 mt-10 border-l-4 rounded-2xl bg-white/80 border-oro-fiorentino shadow-lg">
+                    <h4 class="mb-4 text-xl font-bold text-grigio-pietra renaissance-title">Architettura AMMk FlorenceEGI</h4>
+                    <p class="font-body text-grigio-pietra">
+                        Il <strong><a href="{{ url('/info/white-paper-finanziario#glossary-florenceegi-core') }}"
+                                class="text-oro-fiorentino underline decoration-2 decoration-oro-fiorentino/60 hover:text-blu-algoritmo">FlorenceEGI
+                                Core</a></strong> coordina i cinque engine che definiscono un <a
+                            href="{{ url('/info/white-paper-finanziario#glossary-ammk') }}"
+                            class="text-oro-fiorentino underline decoration-2 decoration-oro-fiorentino/60 hover:text-blu-algoritmo">AMMk</a>:
+                    </p>
+                    <ul class="mt-4 space-y-3 text-grigio-pietra font-body list-disc list-inside">
+                        <li>
+                            <strong><a href="{{ url('/info/white-paper-finanziario#glossary-natan') }}"
+                                    class="text-oro-fiorentino underline decoration-2 decoration-oro-fiorentino/60 hover:text-blu-algoritmo">NATAN
+                                    Market Engine</a></strong> – l’intelligenza del tenant che rende la piattaforma un
+                            vero market maker:
+                            <ul class="mt-2 ml-5 space-y-1 list-disc list-inside text-grigio-pietra">
+                                <li><strong>Valuation</strong> – definisce valore, floor price e traiettoria economica
+                                    analizzando qualità, storico e domanda.</li>
+                                <li><strong>Activation</strong> – suggerimenti e campagne attivati da trigger
+                                    on/off-chain.</li>
+                            </ul>
+                        </li>
+        ... (truncated)
                 </div>
             </div>
         </section>
