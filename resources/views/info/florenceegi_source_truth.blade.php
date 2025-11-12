@@ -472,9 +472,10 @@
                                 permette una carriera come curatore digitale.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-natan" class="text-xl font-bold text-emerald-700">N.A.T.A.N.</dt>
-                            <dd class="mt-1 text-gray-700">Neural Assistant for Technical Art Navigation - IA etica che
-                                agisce come consulente personale per Creator e Collector.</dd>
+                            <dt id="glossary-natan" class="text-xl font-bold text-emerald-700">NATAN (Neural Assistant)</dt>
+                            <dd class="mt-1 text-gray-700">
+                                Tenant funzionale di FlorenceEGI dedicato ad assistenza documentale, notarizzazione, servizi RAG e automazioni AI per enti pubblici e privati. Alimenta il <strong>NATAN Market Engine</strong> (Valuation + Activation) che rende la piattaforma un vero AMMk.
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-oracode" class="text-xl font-bold text-emerald-700">Oracode System</dt>
@@ -533,18 +534,32 @@
                         <div>
                             <dt id="glossary-ammk" class="text-xl font-bold text-emerald-700">AMMk (Asset Market
                                 Maker)</dt>
-                            <dd class="mt-1 text-gray-700">Il cuore di FlorenceEGI: motore che origina, certifica,
-                                valuta e rende liquidi gli <a href="#glossary-egi" class="glossary-link">EGI</a>.
-                                Composto da 5 engine: Valuation, Liquidity, Distribution, Activation (<a
-                                    href="#glossary-natan" class="glossary-link">NATAN</a>), Compliance.
-                                <strong>Nota</strong>: diverso da AMM (Automated Market Maker) della DeFi.</dd>
+                            <dd class="mt-1 text-gray-700">
+                                Termine coniato da FlorenceEGI per descrivere piattaforme che trasformano opere o
+                                contenuti in <a href="#glossary-egi" class="glossary-link">EGI</a> (asset digitali) e
+                                ne governano l’intero ciclo di valore. FlorenceEGI è il primo AMMk al mondo: il <a
+                                    href="#glossary-florenceegi-core" class="glossary-link">FlorenceEGI Core</a> coordina
+                                i cinque engine (NATAN Market, Asset, Distribution, Co-Creation, Compliance).
+                            </dd>
                         </div>
                         <div>
-                            <dt id="glossary-collection-tenant" class="text-xl font-bold text-emerald-700">Collection
-                                (Tenant)</dt>
-                            <dd class="mt-1 text-gray-700">Workspace collaborativo multi-tenant. Ogni collection ha
-                                ruoli locali (Owner, Admin, Editor, Viewer) distinti dai ruoli globali account.
-                                Enforcement tramite <code>collection_id</code> Global Scope Laravel.</dd>
+                            <dt id="glossary-florenceegi-core" class="text-xl font-bold text-emerald-700">FlorenceEGI
+                                Core (SaaS)</dt>
+                            <dd class="mt-1 text-gray-700">Nodo centrale dell’ecosistema: onboarding, autenticazione,
+                                billing, ULM/UEM, audit, registro tenant e policy condivise.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-tenant-specializzato" class="text-xl font-bold text-emerald-700">Tenant
+                                specializzato</dt>
+                            <dd class="mt-1 text-gray-700">
+                                Istanza verticale collegata al core con servizi dedicati: es. <strong>Natan</strong> (AI,
+                                notarizzazione, RAG) e <strong>FlorenceArtEGI</strong> (arte e marketplace). Ogni tenant
+                                eredita sicurezza e compliance dal core, ma governa processi e UI dedicati. FlorenceArtEGI
+                                espone <em>collection workspace</em> multi-utente con wallet personali e wallet di
+                                collection; per rispettare il limite Algorand di 16 account per gruppo atomico
+                                (<a href="https://developer.algorand.org/docs/get-details/parameter_tables/#others" class="glossary-link" target="_blank" rel="noopener noreferrer">MaxTxGroupSize</a>)
+                                la piattaforma riserva 4 slot al core lasciandone 12 alla collection (wallet utenti + wallet tecnici).
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-event-bus" class="text-xl font-bold text-emerald-700">Event Bus</dt>
@@ -694,7 +709,7 @@
                 intro: 'La tecnologia che garantisce immutabilità, sicurezza e sostenibilità.',
                 content: `<div class="p-6 mb-6 rounded-lg bg-emerald-50">
                     <h3 class="mb-3 text-2xl font-bold text-emerald-700">Stack Tecnologico FlorenceEGI</h3>
-                    <p class="text-gray-700">SaaS collaborativo multi-tenant a collection con marketplace pubblico e protocol layer su <a href="#glossary-algorand" class="glossary-link">Algorand</a>.</p>
+                    <p class="text-gray-700">SaaS multi-tenant con <a href="#glossary-florenceegi-core" class="glossary-link">FlorenceEGI Core</a> (governance centrale) e tenant specializzati come <a href="#glossary-natan" class="glossary-link">Natan</a> e FlorenceArtEGI. Marketplace pubblico e protocol layer su <a href="#glossary-algorand" class="glossary-link">Algorand</a>.</p>
                 </div>
 
                 <div class="mb-8">
@@ -706,7 +721,7 @@
                         </div>
                         <div class="p-4 rounded-lg bg-purple-50 border-l-4 border-purple-500">
                             <h4 class="font-bold text-purple-800 mb-2">AMMk Core</h4>
-                            <p class="text-sm text-gray-700">Asset Market Maker: Valuation, Liquidity, Distribution, Activation, Compliance</p>
+                            <p class="text-sm text-gray-700">Coordina i cinque engine: NATAN Market (Valuation + Activation), Asset, Distribution, Co-Creation, Compliance.</p>
                         </div>
                         <div class="p-4 rounded-lg bg-green-50 border-l-4 border-green-500">
                             <h4 class="font-bold text-green-800 mb-2">Marketplace Pubblico</h4>
@@ -732,24 +747,28 @@
                     <p class="mb-4 text-gray-700">Il cuore di FlorenceEGI: un motore che origina, certifica, valuta e rende liquidi gli <a href="#glossary-egi" class="glossary-link">EGI</a>.</p>
                     <div class="grid gap-4 md:grid-cols-2">
                         <div>
-                            <h4 class="font-bold text-purple-700 mb-2">📊 Valuation Engine</h4>
-                            <p class="text-sm text-gray-700">Analizza qualità artistica, storico transazioni, domanda mercato → suggerisce prezzo ottimale</p>
+                            <h4 class="font-bold text-purple-700 mb-2">🧠 NATAN Market Engine</h4>
+                            <p class="text-sm text-gray-700">
+                                Intelligenza del <a href="#glossary-natan" class="glossary-link">tenant NATAN</a> che rende la piattaforma un market maker:
+                                <span class="block mt-1">• <strong>Valuation</strong> – definisce valore, floor price e traiettoria analizzando qualità, storico e domanda.</span>
+                                <span class="block">• <strong>Activation</strong> – orchestration di campagne, alert e suggerimenti attivati da trigger on/off-chain.</span>
+                            </p>
                         </div>
                         <div>
-                            <h4 class="font-bold text-purple-700 mb-2">💧 Liquidity Engine</h4>
-                            <p class="text-sm text-gray-700">Meccanismi di prezzo dinamici, marketplace integrato, floor price tracking</p>
+                            <h4 class="font-bold text-purple-700 mb-2">🧱 Asset Engine</h4>
+                            <p class="text-sm text-gray-700">Gestisce listing, aste, vendite secondarie e liquidità degli EGI con regole trasparenti e marketplace integrato.</p>
                         </div>
                         <div>
                             <h4 class="font-bold text-purple-700 mb-2">🔄 Distribution Engine</h4>
-                            <p class="text-sm text-gray-700">Royalty automatiche (4.5%), split EPP (20%), fee piattaforma, settlement immediato</p>
+                            <p class="text-sm text-gray-700">Automatizza royalty, fee piattaforma e quota <a href="#glossary-epp" class="glossary-link">EPP</a>, garantendo tracciabilità fiscale end-to-end.</p>
                         </div>
                         <div>
-                            <h4 class="font-bold text-purple-700 mb-2">🤖 Activation Engine (<a href="#glossary-natan" class="glossary-link">NATAN</a>)</h4>
-                            <p class="text-sm text-gray-700">Campagne mirate, notifiche intelligenti, suggerimenti timing vendita</p>
+                            <h4 class="font-bold text-purple-700 mb-2">🤝 Co-Creation Engine</h4>
+                            <p class="text-sm text-gray-700">Orchestra il flusso <a href="#glossary-co-creatore" class="glossary-link">Creator</a> / <a href="#glossary-co-creatore" class="glossary-link">Co-Creator</a> / <a href="#glossary-collector" class="glossary-link">Collector</a>: minting, notarizzazione, firme e catena di custodia dell’EGI.</p>
                         </div>
                         <div>
                             <h4 class="font-bold text-purple-700 mb-2">🛡️ Compliance Engine</h4>
-                            <p class="text-sm text-gray-700">GDPR by design, audit trail, consent management, MiCA-safe</p>
+                            <p class="text-sm text-gray-700">GDPR by design, audit trail completo, MiCA-safe e policy condivise per ogni tenant.</p>
                         </div>
                     </div>
                 </div>
@@ -757,28 +776,30 @@
                 <div class="mb-8">
                     <h3 class="mb-4 text-xl font-bold text-emerald-700">👥 Tenancy & RBAC (Role-Based Access Control)</h3>
                     <div class="p-6 rounded-lg bg-blue-50">
-                        <p class="mb-4 text-gray-700"><strong>Tenant = Collection</strong>. Ogni collection è un workspace collaborativo multi-tenant.</p>
+                        <p class="mb-4 text-gray-700">
+                            <strong>FlorenceEGI è multi-tenant</strong>: il core SaaS governa identità e permessi,
+                            mentre i tenant verticali applicano policy specifiche mantenendo sicurezza condivisa.
+                        </p>
                         <div class="grid gap-4 md:grid-cols-2">
                             <div>
-                                <h4 class="font-bold text-blue-800 mb-2">Ruoli Globali (Account)</h4>
+                                <h4 class="font-bold text-blue-800 mb-2">Ruoli Globali (Core)</h4>
                                 <ul class="text-sm text-gray-700 list-disc list-inside space-y-1">
-                                    <li>User (standard)</li>
-                                    <li>Creator (artista verificato)</li>
-                                    <li>Collector (acquirente attivo)</li>
-                                    <li>Admin (gestione piattaforma)</li>
+                                    <li>User / Creator / Collector (identità principali)</li>
+                                    <li>Tenant Admin (gestione verticale)</li>
+                                    <li>Platform Admin (governance core)</li>
                                 </ul>
                             </div>
                             <div>
-                                <h4 class="font-bold text-blue-800 mb-2">Ruoli Locali (Collection)</h4>
+                                <h4 class="font-bold text-blue-800 mb-2">Ruoli Locali (Tenant)</h4>
                                 <ul class="text-sm text-gray-700 list-disc list-inside space-y-1">
-                                    <li>Owner (creatore collection)</li>
-                                    <li>Admin (gestione inviti/policy)</li>
-                                    <li>Editor (pubblicazione EGI)</li>
-                                    <li>Viewer (sola visualizzazione)</li>
+                                    <li>Natan: operatori RAG, notarizzazione, auditor</li>
+                                    <li>FlorenceArtEGI: curator, inspector, marketplace manager</li>
+                                    <li>Collection workspace: owner, editor, viewer (quando rilevante)</li>
                                 </ul>
                             </div>
                         </div>
-                        <p class="mt-4 text-sm text-blue-700"><strong>Enforcement</strong>: Global Scope Laravel, Policy, Resolver (subdomain/header/JWT)</p>
+                        <p class="mt-4 text-sm text-blue-700"><strong>Collection workspace (FlorenceArtEGI)</strong>: ogni collection può invitare collaboratori (fino a 8 wallet personali) e associare wallet “di collection” (fino a 4) per escrow, tesoreria e automazioni. In totale <strong>12 wallet</strong> disponibili, così da lasciare spazio ai 4 wallet core (fee payer, notarizzazione, compliance, treasury) e rispettare il limite Algorand di <a href="https://developer.algorand.org/docs/get-details/parameter_tables/#others" class="text-oro-fiorentino underline decoration-2 decoration-oro-fiorentino/60 hover:text-blu-algoritmo" target="_blank" rel="noopener noreferrer">16 account per gruppo atomico (MaxTxGroupSize)</a>.</p>
+                        <p class="mt-2 text-sm text-blue-700"><strong>Enforcement</strong>: TenantResolver + Policy Laravel, scope su <code>tenant_id</code>, e gestione wallet tramite registro sicuro (AES-256). ULM/UEM e consensi GDPR assicurano audit e protezione dati.</p>
                     </div>
                 </div>
 
@@ -802,36 +823,48 @@
 └────────────────────────┬────────────────────────────────────────┘
                          │
                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              Collections (tenant - workspace)                   │
-└────────────────────────┬────────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     AMMk Core                                   │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │ Valuation | Liquidity | Distribution | Activation(NATAN)│  │
-│  │ Compliance                                               │  │
-│  └──────────────────────────────────────────────────────────┘  │
-└──┬────────────┬──────────────────┬───────────────────────────┬─┘
-   │            │                  │                           │
-   ▼            ▼                  ▼                           ▼
-┌──────┐  ┌─────────────┐   ┌───────────┐         ┌──────────────────┐
-│Market│  │  Event Bus  │   │ Algorand  │         │ Observability &  │
-│place │  │             │   │ ASA/SC    │         │ Compliance       │
-│      │  │ Triggers    │   │ Mint      │         │ ULM | UEM        │
-│Public│  │ On/Off-chain│   │ Escrow    │         │ AuditTrail|GDPR  │
-└──────┘  └──────┬──────┘   │ Proof     │         └──────────────────┘
-                 │          │ Fee Route │
-                 │          └─────┬─────┘
-                 │                │
-                 │          On-chain Events
-                 │                │
-                 └────────────────┘
-                         │
-                         ▼
-                  NATAN Actions
-         (Campagne, Notifiche, Suggerimenti)
+┌──────────────────────────────────────────────────────────────┐
+│              Users / Organizations / PA                      │
+└───────────────┬──────────────────────────────────────────────┘
+                │
+┌──────────────────────────────────────────────────────────────┐
+│     FlorenceEGI Core (SaaS Hub Centrale)                     │
+│ Governance · Auth · Billing · ULM/UEM · Audit · Tenant Ops   │
+└───────┬───────────────────────┬──────────────────────────────┘
+        │                       │
+        │                       ▼
+        │        ┌────────────────────────────────────────┐
+        │        │ Tenant: Natan (AI, notarizzazione, RAG) │
+        │        │ → NATAN Market Engine                   │
+        │        └────────────────────────────────────────┘
+        │
+        ▼
+┌──────────────────────────────────────────────────────────────┐
+│ Tenant: FlorenceArtEGI (Arte & Marketplace)                  │
+└───────┬──────────────────────────────────────────────────────┘
+        │
+        ▼
+┌──────────────────────────────────────────────────────────────┐
+│ Collection Workspace                                         │
+│ - Collaboratori (max 8 wallet utente)                        │
+│ - Wallet di collection (max 4 escrow/tesoreria)              │
+│ - Limite complessivo 12 slot (4 riservati al core → 16 tot.) │
+└───────┬──────────────────────────────────────────────────────┘
+        │
+        ▼
+┌──────────────────────────────────────────────────────────────┐
+│ AMMk Engines coordinati dal Core                             │
+│ NATAN Market | Asset | Distribution | Co-Creation | Compliance│
+└───────┬──────────────┬──────────────┬────────────────────────┘
+        │              │              │
+        ▼              ▼              ▼
+┌────────────┐   ┌────────────┐   ┌──────────────────────────┐
+│Marketplace │   │ Event Bus   │   │ Algorand Layer          │
+│ Pubblico   │   │ Trigger IA  │   │ ASA · Atomic Transfers  │
+└────────────┘   └─────┬──────┘   └────────┬─────────────────┘
+                        │                   │
+                        ▼                   ▼
+               NATAN Actions        Observability & Compliance
 </code></pre>
                     <p class="mt-4 text-sm text-gray-600 italic">Per visualizzazione interattiva: integra Mermaid.js o esporta come SVG</p>
                 </div>
