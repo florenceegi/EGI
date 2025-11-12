@@ -270,16 +270,16 @@
 <body class="antialiased">
     <div class="min-h-screen">
         <header class="sticky top-0 z-50 bg-white shadow-sm" role="banner">
-            <div class="mx-auto max-w-7xl px-4 py-6 text-center sm:px-6 lg:px-8">
+            <div class="px-4 py-6 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold text-emerald-800">White Paper Finanziario Interattivo</h1>
-                <p class="text-md mt-2 text-gray-600">Esplora la gestione finanziaria e fiscale di FlorenceEGI in modo
+                <p class="mt-2 text-gray-600 text-md">Esplora la gestione finanziaria e fiscale di FlorenceEGI in modo
                     semplice e intuitivo.</p>
             </div>
         </header>
 
-        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" role="main">
-            <div class="mb-8 rounded-2xl bg-white p-6 shadow-lg">
-                <h2 class="mb-4 text-center text-xl font-bold text-gray-800">Inizia da qui: seleziona un argomento o il
+        <main class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8" role="main">
+            <div class="p-6 mb-8 bg-white shadow-lg rounded-2xl">
+                <h2 class="mb-4 text-xl font-bold text-center text-gray-800">Inizia da qui: seleziona un argomento o il
                     tuo ruolo.</h2>
                 <nav id="role-nav" class="flex flex-wrap justify-center gap-3 sm:gap-4" role="navigation"
                     aria-label="Navigazione per ruolo">
@@ -290,10 +290,10 @@
             </div>
 
             <!-- GLOSSARIO INSERITO QUI -->
-            <section id="glossario" class="fade-in mt-16">
-                <h2 class="mb-10 border-t border-gray-200 pt-12 text-center text-4xl font-bold text-emerald-800">
+            <section id="glossario" class="mt-16 fade-in">
+                <h2 class="pt-12 mb-10 text-4xl font-bold text-center border-t border-gray-200 text-emerald-800">
                     Glossario</h2>
-                <div class="rounded-2xl bg-white p-8 shadow-lg">
+                <div class="p-8 bg-white shadow-lg rounded-2xl">
                     <dl class="space-y-8">
                         <div>
                             <dt id="glossary-anchor-hash" class="text-xl font-bold text-emerald-700">Anchor hash</dt>
@@ -786,8 +786,10 @@
                         <div>
                             <dt id="glossary-natan" class="text-xl font-bold text-emerald-700">NATAN (Neural
                                 Assistant)</dt>
-                            <dd class="mt-1 text-gray-700">Guida AI che analizza comportamenti e suggerisce azioni:
-                                prezzi ottimali, timing vendita, campagne. Attivata da trigger smart contract
+                            <dd class="mt-1 text-gray-700">Tenant funzionale di FlorenceEGI dedicato ad assistenza
+                                documentale, notarizzazione e automazioni AI. Opera come layer cognitivo per enti
+                                pubblici e privati, con servizi RAG, verifica prove e suggerimenti operativi attivati da
+                                trigger
                                 intelligenti.</dd>
                         </div>
                         <div>
@@ -797,19 +799,28 @@
                                 culminano in una Serata Memorabile, concentrando attenzione e liquidità.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-collection-tenant" class="text-xl font-bold text-emerald-700">Collection
-                                (Tenant)</dt>
-                            <dd class="mt-1 text-gray-700">Workspace collaborativo multi-tenant in FlorenceEGI. Ogni
-                                collection ha ruoli locali (Owner, Admin, Editor, Viewer) distinti dai ruoli globali
-                                account.</dd>
+                            <dt id="glossary-florenceegi-core" class="text-xl font-bold text-emerald-700">FlorenceEGI
+                                Core (SaaS)</dt>
+                            <dd class="mt-1 text-gray-700">Nodo centrale dell'ecosistema: gestisce onboarding,
+                                autenticazione, billing, governance, logging ULM/UEM e registro tenant. Garantisce che i
+                                tenant condividano policy, sicurezza e compliance comuni.</dd>
+                        </div>
+                        <div>
+                            <dt id="glossary-tenant-specializzato" class="text-xl font-bold text-emerald-700">Tenant
+                                specializzato</dt>
+                            <dd class="mt-1 text-gray-700">Istanza verticale collegata a FlorenceEGI Core con funzioni
+                                dedicate: es. <strong>Natan</strong> (assistente documentale/AI) o
+                                <strong>FlorenceArtEGI</strong> (arte e marketplace). Ogni tenant eredita sicurezza e
+                                fiscalità dal core, mantenendo processi e interfacce proprie.
+                            </dd>
                         </div>
                     </dl>
                 </div>
             </section>
         </main>
 
-        <footer class="mt-16 bg-gray-900 text-white">
-            <div class="container mx-auto max-w-7xl px-6 py-12">
+        <footer class="mt-16 text-white bg-gray-900">
+            <div class="container px-6 py-12 mx-auto max-w-7xl">
                 <p class="text-center text-gray-500">&copy; 2025 Florence EGI | Tutti i diritti riservati.</p>
             </div>
         </footer>
