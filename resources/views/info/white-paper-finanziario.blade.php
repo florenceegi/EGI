@@ -778,10 +778,43 @@
                         <div>
                             <dt id="glossary-ammk" class="text-xl font-bold text-emerald-700">AMMk (Asset Market
                                 Maker)</dt>
-                            <dd class="mt-1 text-gray-700">Motore centrale di FlorenceEGI che origina, certifica,
-                                valuta e rende liquidi gli <a href="#glossary-egi" class="glossary-link">EGI</a>.
-                                Diverso da AMM DeFi. Composto da 5 engine: Valuation, Liquidity, Distribution,
-                                Activation (NATAN), Compliance.</dd>
+                            <dd class="mt-1 text-gray-700">
+                                <p>
+                                    Termine coniato da FlorenceEGI per descrivere piattaforme che trasformano opere o
+                                    contenuti in <a href="#glossary-egi" class="glossary-link">EGI</a> (asset
+                                    digitali)
+                                    e ne governano l’intero ciclo di valore.
+                                </p>
+                                <p class="mt-2">
+                                    FlorenceEGI è il primo AMMk al mondo: il <a href="#glossary-florenceegi-core"
+                                        class="glossary-link">FlorenceEGI Core</a> coordina cinque blocchi
+                                    specializzati, ognuno con responsabilità precise:
+                                </p>
+                                <ul class="mt-3 space-y-3 text-gray-700 list-disc list-inside">
+                                    <li>
+                                        <strong>NATAN Market Engine</strong> – l’intelligenza del <a
+                                            href="#glossary-natan" class="glossary-link">tenant NATAN</a> che rende la
+                                        piattaforma un vero market maker. Comprende due componenti inscindibili:
+                                        <ul class="mt-2 ml-5 space-y-1 text-gray-700 list-disc list-inside">
+                                            <li><strong>Valuation</strong> – definisce valore, floor price e traiettoria
+                                                economica analizzando qualità, storico e domanda.</li>
+                                            <li><strong>Activation</strong> – orchestra campagne, alert e suggerimenti
+                                                operativi basati su trigger on/off-chain.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Asset Engine</strong> – gestisce listing, aste, vendite secondarie e
+                                        liquidità dell’asset digitale.</li>
+                                    <li><strong>Distribution Engine</strong> – automatizza royalty, fee piattaforma e
+                                        quota <a href="#glossary-epp" class="glossary-link">EPP</a>.</li>
+                                    <li><strong>Co-Creation Engine</strong> – governa il flusso <a
+                                            href="#glossary-co-creatore" class="glossary-link">Creator</a> / <a
+                                            href="#glossary-co-creatore" class="glossary-link">Co-Creator</a> / <a
+                                            href="#glossary-collector" class="glossary-link">Collector</a> e la
+                                        generazione dell’EGI (minting, notarizzazione, firme digitali).</li>
+                                    <li><strong>Compliance Engine</strong> – integra GDPR, audit trail e tutela <a
+                                            href="#glossary-mica-safe" class="glossary-link">MiCA-safe</a>.</li>
+                                </ul>
+                            </dd>
                         </div>
                         <div>
                             <dt id="glossary-natan" class="text-xl font-bold text-emerald-700">NATAN (Neural
