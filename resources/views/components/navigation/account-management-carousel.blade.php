@@ -98,7 +98,7 @@
     <div class="navigation-account-carousel__header">
         <div class="navigation-account-carousel__title">
             <div class="navigation-account-carousel__icon">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -111,12 +111,12 @@
         @if ($accountSlidesCount > 1)
             <div class="navigation-account-carousel__nav">
                 <button type="button" data-account-carousel-prev aria-label="{{ __('pagination.previous') }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
                 <button type="button" data-account-carousel-next aria-label="{{ __('pagination.next') }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
@@ -149,7 +149,7 @@
                                         class="navigation-account-carousel__action {{ ($action['variant'] ?? null) === 'primary' ? 'navigation-account-carousel__action--primary' : '' }}">
                                         <span>{{ $action['label'] }}</span>
                                         <span class="navigation-account-carousel__action-icon">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 5l7 7-7 7" />
@@ -162,7 +162,7 @@
                                         class="navigation-account-carousel__action">
                                         <span>{{ $action['label'] }}</span>
                                         <span class="navigation-account-carousel__action-icon">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 5l7 7-7 7" />
