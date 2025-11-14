@@ -88,7 +88,7 @@
     <div class="navigation-account-carousel__header">
         <div class="navigation-account-carousel__title">
             <div class="navigation-account-carousel__icon">
-                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -101,12 +101,12 @@
         @if ($accountSlidesCount > 1)
             <div class="navigation-account-carousel__nav">
                 <button type="button" data-account-carousel-prev aria-label="{{ __('pagination.previous') }}">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
                 <button type="button" data-account-carousel-next aria-label="{{ __('pagination.next') }}">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
@@ -139,7 +139,7 @@
                                         class="navigation-account-carousel__action {{ ($action['variant'] ?? null) === 'primary' ? 'navigation-account-carousel__action--primary' : '' }}">
                                         <span>{{ $action['label'] }}</span>
                                         <span class="navigation-account-carousel__action-icon">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor"
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 5l7 7-7 7" />
@@ -152,7 +152,7 @@
                                         class="navigation-account-carousel__action">
                                         <span>{{ $action['label'] }}</span>
                                         <span class="navigation-account-carousel__action-icon">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor"
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M9 5l7 7-7 7" />
@@ -451,78 +451,80 @@
             width: 2rem;
             height: 2rem;
         }
+    </style>
 
-        .navigation-account-carousel--compact .navigation-account-carousel__ @push('scripts') <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const carousels = document.querySelectorAll('[data-account-carousel]');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousels = document.querySelectorAll('[data-account-carousel]');
 
-                carousels.forEach(carousel => {
-                    if (carousel.dataset.accountCarouselInitialized === 'true') {
-                        return;
+            carousels.forEach(carousel => {
+                if (carousel.dataset.accountCarouselInitialized === 'true') {
+                    return;
+                }
+
+                const viewport = carousel.querySelector('.navigation-account-carousel__viewport');
+                const track = carousel.querySelector('[data-account-carousel-track]');
+                const slides = carousel.querySelectorAll('[data-account-carousel-slide]');
+                const prevBtn = carousel.querySelector('[data-account-carousel-prev]');
+                const nextBtn = carousel.querySelector('[data-account-carousel-next]');
+                const dots = carousel.querySelectorAll('[data-account-carousel-dot]');
+
+                if (!track || !slides.length || !viewport) {
+                    return;
+                }
+
+                let currentSlide = 0;
+                const totalSlides = slides.length;
+
+                const applyTransform = () => {
+                    const slideWidth = viewport.getBoundingClientRect().width;
+                    track.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+                };
+
+                const updateControls = () => {
+                    if (prevBtn) {
+                        prevBtn.disabled = currentSlide === 0;
                     }
-
-                    const viewport = carousel.querySelector('.navigation-account-carousel__viewport');
-                    const track = carousel.querySelector('[data-account-carousel-track]');
-                    const slides = carousel.querySelectorAll('[data-account-carousel-slide]');
-                    const prevBtn = carousel.querySelector('[data-account-carousel-prev]');
-                    const nextBtn = carousel.querySelector('[data-account-carousel-next]');
-                    const dots = carousel.querySelectorAll('[data-account-carousel-dot]');
-
-                    if (!track || !slides.length || !viewport) {
-                        return;
+                    if (nextBtn) {
+                        nextBtn.disabled = currentSlide === totalSlides - 1;
                     }
-
-                    let currentSlide = 0;
-                    const totalSlides = slides.length;
-
-                    const applyTransform = () => {
-                        const slideWidth = viewport.getBoundingClientRect().width;
-                        track.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-                    };
-
-                    const updateControls = () => {
-                        if (prevBtn) {
-                            prevBtn.disabled = currentSlide === 0;
-                        }
-                        if (nextBtn) {
-                            nextBtn.disabled = currentSlide === totalSlides - 1;
-                        }
-                        dots.forEach((dot, index) => {
-                            dot.classList.toggle('navigation-account-carousel__dot--active',
-                                index === currentSlide);
-                        });
-                    };
-
-                    const goToSlide = index => {
-                        if (index < 0 || index >= totalSlides) {
-                            return;
-                        }
-                        currentSlide = index;
-                        applyTransform();
-                        updateControls();
-                    };
-
-                    prevBtn?.addEventListener('click', event => {
-                        event.preventDefault();
-                        goToSlide(currentSlide - 1);
-                    });
-
-                    nextBtn?.addEventListener('click', event => {
-                        event.preventDefault();
-                        goToSlide(currentSlide + 1);
-                    });
-
                     dots.forEach((dot, index) => {
-                        dot.addEventListener('click', event => {
-                            event.preventDefault();
-                            goToSlide(index);
-                        });
+                        dot.classList.toggle('navigation-account-carousel__dot--active',
+                            index === currentSlide);
                     });
+                };
 
-                    window.addEventListener('resize', applyTransform);
+                const goToSlide = index => {
+                    if (index < 0 || index >= totalSlides) {
+                        return;
+                    }
+                    currentSlide = index;
+                    applyTransform();
+                    updateControls();
+                };
 
-                    carousel.dataset.accountCarouselInitialized = 'true';
-                    goToSlide(0);
+                prevBtn?.addEventListener('click', event => {
+                    event.preventDefault();
+                    goToSlide(currentSlide - 1);
                 });
+
+                nextBtn?.addEventListener('click', event => {
+                    event.preventDefault();
+                    goToSlide(currentSlide + 1);
+                });
+
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', event => {
+                        event.preventDefault();
+                        goToSlide(index);
+                    });
+                });
+
+                window.addEventListener('resize', applyTransform);
+
+                carousel.dataset.accountCarouselInitialized = 'true';
+                goToSlide(0);
             });
-        </script>@endpush @endonce
+        });
+    </script>
+@endonce

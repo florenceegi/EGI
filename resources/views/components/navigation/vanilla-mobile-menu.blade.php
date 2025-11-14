@@ -289,40 +289,10 @@
 
                 @endauth
 
-                <!-- Account Management Card -->
-                <div
-                    class="mobile-card rounded-2xl border border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20">
-                    <div class="mb-3 flex items-center space-x-2">
-                        <div class="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500">
-                            <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </div>
-                        <h4 class="text-sm font-semibold text-gray-100">{{ __('menu.manage_account') }}</h4>
-                    </div>
-                    <div class="space-y-2">
-                        @can('manage_profile')
-                            <a href="{{ route('user.domains.personal-data') }}"
-                                class="block rounded-lg px-2 py-1 text-sm text-gray-300 transition-colors duration-200 hover:bg-black/20 hover:text-emerald-400">
-                                {{ __('menu.edit_personal_data') }}
-                            </a>
-                            <a href="{{ route('gdpr.profile-images') }}"
-                                class="block rounded-lg px-2 py-1 text-sm text-gray-300 transition-colors duration-200 hover:bg-black/20 hover:text-blue-400">
-                                {{ __('menu.profile_images') }}
-                            </a>
-                            <a href="{{ route('biography.manage') }}"
-                                class="block rounded-lg px-2 py-1 text-sm text-gray-300 transition-colors duration-200 hover:bg-black/20 hover:text-blue-400">
-                                {{ __('menu.biography_items.manage') }}
-                            </a>
-                            <a href="{{ route('statistics.index') }}"
-                                class="block rounded-lg px-2 py-1 text-sm text-gray-300 transition-colors duration-200 hover:bg-black/20 hover:text-emerald-400">
-                                {{ __('statistics.statistics_dashboard') }}
-                            </a>
-                        @endcan
-                    </div>
-                </div>
+                <x-navigation.account-management-carousel
+                    :user="Auth::user()"
+                    variant="compact"
+                    container-class="mobile-card rounded-2xl border border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20" />
 
                 {{-- Egili Wallet Card --}}
                 <x-navigation.egili-wallet-card />

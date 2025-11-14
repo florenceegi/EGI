@@ -103,7 +103,7 @@
                 <x-menu-guest-collections-carousel :collections="Auth::check() ? Auth::user()->collaborations()->orderBy('position')->get() : collect()" />
 
                 <x-navigation.account-management-carousel :user="Auth::user()"
-                    container-class="p-4 border rounded-2xl border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20" />
+                    container-class="p-4 border mega-card rounded-2xl border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20" />
 
                 {{-- Egili Wallet Card --}}
                 <x-navigation.egili-wallet-card />
