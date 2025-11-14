@@ -102,40 +102,8 @@
                 <!-- Shared Collections Carousel Card - Collections where user is collaborator -->
                 <x-menu-guest-collections-carousel :collections="Auth::check() ? Auth::user()->collaborations()->orderBy('position')->get() : collect()" />
 
-                <!-- Account Management Card -->
-                <div
-                    class="p-4 border mega-card rounded-2xl border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20">
-                    <div class="flex items-center mb-3 space-x-3">
-                        <div
-                            class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </div>
-                        <h4 class="font-semibold text-gray-100">{{ __('menu.manage_account') }}</h4>
-                    </div>
-                    <div class="space-y-2">
-                        <a href="{{ route('user.domains.personal-data') }}"
-                            class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:bg-black/20 hover:text-emerald-400">
-                            {{ __('menu.edit_personal_data') }}
-                        </a>
-                        @can('manage_profile')
-                            <a href="{{ route('gdpr.profile-images') }}"
-                                class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:bg-black/20 hover:text-blue-400">
-                                {{ __('menu.profile_images') }}
-                            </a>
-                            <a href="{{ route('biography.manage') }}"
-                                class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:bg-black/20 hover:text-blue-400">
-                                {{ __('menu.biography_items.manage') }}
-                            </a>
-                            <a href="{{ route('statistics.index') }}"
-                                class="block px-2 py-1 text-sm text-gray-300 transition-colors duration-200 rounded-lg hover:bg-black/20 hover:text-emerald-400">
-                                {{ __('statistics.statistics_dashboard') }}
-                            </a>
-                        @endcan
-                    </div>
-                </div>
+                <x-navigation.account-management-carousel :user="Auth::user()"
+                    container-class="p-4 border rounded-2xl border-emerald-200/30 bg-gradient-to-br from-emerald-50 to-teal-50 dark:border-emerald-800/30 dark:from-emerald-900/20 dark:to-teal-900/20" />
 
                 {{-- Egili Wallet Card --}}
                 <x-navigation.egili-wallet-card />
