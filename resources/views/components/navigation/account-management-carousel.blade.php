@@ -32,6 +32,34 @@
         ];
     }
 
+    $creatorOnboardingSummaryUrl = \Illuminate\Support\Facades\Route::has('creator.onboarding.summary')
+        ? route('creator.onboarding.summary')
+        : null;
+
+    $pspActions = [
+        [
+            'type' => 'button',
+            'label' => __('menu.psp_open_setup'),
+            'variant' => 'primary',
+            'action' => 'wallet',
+        ],
+    ];
+
+    if ($creatorOnboardingSummaryUrl !== null) {
+        $pspActions[] = [
+            'type' => 'link',
+            'label' => __('menu.psp_onboarding_summary'),
+            'href' => $creatorOnboardingSummaryUrl,
+        ];
+    }
+
+    $pspActions[] = [
+        'type' => 'link',
+        'label' => __('menu.psp_request_support'),
+        'href' => 'mailto:support@florenceegi.it',
+        'is_external' => true,
+    ];
+
     $accountSlides = [
         [
             'key' => 'account',
@@ -51,25 +79,7 @@
             'key' => 'psp',
             'title' => __('menu.psp_section_title'),
             'description' => __('menu.psp_section_hint'),
-            'actions' => [
-                [
-                    'type' => 'button',
-                    'label' => __('menu.psp_open_setup'),
-                    'variant' => 'primary',
-                    'action' => 'wallet',
-                ],
-                [
-                    'type' => 'link',
-                    'label' => __('menu.psp_onboarding_summary'),
-                    'href' => route('creator.onboarding.summary'),
-                ],
-                [
-                    'type' => 'link',
-                    'label' => __('menu.psp_request_support'),
-                    'href' => 'mailto:support@florenceegi.it',
-                    'is_external' => true,
-                ],
-            ],
+            'actions' => $pspActions,
         ],
     ];
 
