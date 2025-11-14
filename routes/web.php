@@ -4,6 +4,7 @@ use App\Actions\Jetstream\UpdateTeamName;
 use App\Enums\NotificationStatus;
 use App\Http\Controllers\CollectionsController;
 use App\Http\Controllers\EgiController;
+use App\Http\Controllers\CreatorOnboardingSummaryController;
 use App\Http\Controllers\EPPController;
 use App\Http\Controllers\Formazione;
 use App\Http\Controllers\Api\LikeController;
@@ -98,6 +99,9 @@ Route::get('/mint/{egiBlockchainId}', [App\Http\Controllers\MintController::clas
     ->name('mint.show');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/creator/onboarding-summary', [CreatorOnboardingSummaryController::class, 'show'])
+        ->name('creator.onboarding.summary');
+
     // PAGINA 1: Payment Form
     Route::get('/mint/payment/{egiId}', [App\Http\Controllers\MintController::class, 'showPaymentForm'])
         ->name('mint.payment-form');

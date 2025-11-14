@@ -159,6 +159,35 @@ return [
         // Real PSP settings (V2)
         'stripe_enabled' => env('STRIPE_ENABLED', false),
         'paypal_enabled' => env('PAYPAL_ENABLED', false),
+
+        // Stripe configuration (sandbox + live)
+        'stripe' => [
+            'mode' => env('STRIPE_MODE', 'sandbox'), // sandbox|live
+            'publishable_key' => env('STRIPE_PUBLISHABLE_KEY'),
+            'secret_key' => env('STRIPE_SECRET_KEY'),
+            'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+            'supported_currencies' => ['EUR', 'USD', 'GBP'],
+            'auto_confirm' => env('STRIPE_AUTO_CONFIRM', true),
+            'sandbox_payment_method' => env('STRIPE_SANDBOX_PAYMENT_METHOD', 'pm_card_visa'),
+            'statement_descriptor' => env('STRIPE_STATEMENT_DESCRIPTOR', 'FlorenceEGI'),
+        ],
+
+        // PayPal configuration (sandbox + live)
+        'paypal' => [
+            'mode' => env('PAYPAL_MODE', 'sandbox'), // sandbox|live
+            'client_id' => env('PAYPAL_CLIENT_ID'),
+            'client_secret' => env('PAYPAL_CLIENT_SECRET'),
+            'webhook_id' => env('PAYPAL_WEBHOOK_ID'),
+            'supported_currencies' => ['EUR', 'USD', 'GBP'],
+            'sandbox_card' => [
+                'number' => env('PAYPAL_SANDBOX_CARD_NUMBER', '4111111111111111'),
+                'expiry' => env('PAYPAL_SANDBOX_CARD_EXPIRY', '2026-12'),
+                'cvv' => env('PAYPAL_SANDBOX_CARD_CVV', '123'),
+                'name' => env('PAYPAL_SANDBOX_CARD_NAME', 'Test User'),
+                'billing_country' => env('PAYPAL_SANDBOX_CARD_COUNTRY', 'IT'),
+                'billing_postal_code' => env('PAYPAL_SANDBOX_CARD_POSTAL', '50100'),
+            ],
+        ],
     ],
 
     // ========================================

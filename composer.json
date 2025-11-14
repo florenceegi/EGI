@@ -28,7 +28,9 @@
         "ultra/ultra-error-manager": "dev-main",
         "ultra/ultra-log-manager": "dev-main",
         "ultra/ultra-translation-manager": "dev-main",
-        "ultra/ultra-upload-manager": "dev-main"
+        "ultra/ultra-upload-manager": "dev-main",
+        "paypal/paypal-checkout-sdk": "^1.0",
+        "stripe/stripe-php": "^12.6"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",
