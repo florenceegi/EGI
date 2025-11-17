@@ -116,8 +116,17 @@ class PspWebhookController extends Controller {
             $paymentService = $this->paymentFactory->create($provider);
 
             // 3. SECURITY: Verify webhook authenticity
-            $payload = $request->all();
-            if (!$paymentService->verifyWebhook($payload)) {
+            $payloadWrapper = [
+                'body' => $request->getContent(),
+                'json' => $request->all(),
+                'headers' => $request->headers->all(),
+            ];
+
+            if ($provider === 'stripe') {
+                $payloadWrapper['signature'] = $request->header('Stripe-Signature');
+            }
+
+            if (!$paymentService->verifyWebhook($payloadWrapper)) {
                 $this->errorManager->handle('PSP_WEBHOOK_VERIFICATION_FAILED', [
                     'provider' => $provider,
                     'webhook_id' => $webhookId,
@@ -131,7 +140,7 @@ class PspWebhookController extends Controller {
             }
 
             // 4. Extract payment information
-            $paymentData = $this->extractPaymentData($payload, $provider);
+            $paymentData = $this->extractPaymentData($payloadWrapper, $provider);
 
             if (!$paymentData) {
                 return response()->json([
@@ -187,28 +196,29 @@ class PspWebhookController extends Controller {
      * @privacy-safe Extract only necessary payment data
      */
     private function extractPaymentData(array $payload, string $provider): ?array {
-        // Mock implementation - extract payment completion events
+        $event = $payload['json'] ?? $payload;
+
         switch ($provider) {
             case 'stripe':
-                if (($payload['type'] ?? '') === 'payment_intent.succeeded') {
+                if (($event['type'] ?? '') === 'payment_intent.succeeded') {
                     return [
-                        'payment_id' => $payload['data']['object']['id'] ?? null,
+                        'payment_id' => $event['data']['object']['id'] ?? null,
                         'status' => 'succeeded',
-                        'amount' => $payload['data']['object']['amount'] ?? 0,
-                        'currency' => $payload['data']['object']['currency'] ?? 'EUR',
-                        'metadata' => $payload['data']['object']['metadata'] ?? []
+                        'amount' => $event['data']['object']['amount'] ?? 0,
+                        'currency' => $event['data']['object']['currency'] ?? 'EUR',
+                        'metadata' => $event['data']['object']['metadata'] ?? []
                     ];
                 }
                 break;
 
             case 'paypal':
-                if (($payload['event_type'] ?? '') === 'PAYMENT.CAPTURE.COMPLETED') {
+                if (($event['event_type'] ?? '') === 'PAYMENT.CAPTURE.COMPLETED') {
                     return [
-                        'payment_id' => $payload['resource']['id'] ?? null,
+                        'payment_id' => $event['resource']['id'] ?? null,
                         'status' => 'completed',
-                        'amount' => $payload['resource']['amount']['value'] ?? 0,
-                        'currency' => $payload['resource']['amount']['currency_code'] ?? 'EUR',
-                        'metadata' => $payload['resource']['custom_id'] ? ['custom_id' => $payload['resource']['custom_id']] : []
+                        'amount' => $event['resource']['amount']['value'] ?? 0,
+                        'currency' => $event['resource']['amount']['currency_code'] ?? 'EUR',
+                        'metadata' => $event['resource']['custom_id'] ? ['custom_id' => $event['resource']['custom_id']] : []
                     ];
                 }
                 break;
