@@ -14,11 +14,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        DB::statement("
-            ALTER TABLE egi_blockchain
-            MODIFY COLUMN payment_method ENUM('stripe','paypal','bank_transfer','mock','egili')
-            DEFAULT 'mock'
-        ");
+        // MySQL: Use MODIFY COLUMN for enum
+        // SQLite: Column already created as string, no need to modify
+        if (DB::connection()->getDriverName() === 'mysql') {
+            DB::statement("
+                ALTER TABLE egi_blockchain
+                MODIFY COLUMN payment_method ENUM('stripe','paypal','bank_transfer','mock','egili')
+                DEFAULT 'mock'
+            ");
+        }
+        // For SQLite, the column is already a string and accepts any value
     }
 
     /**
@@ -26,11 +31,13 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        DB::statement("
-            ALTER TABLE egi_blockchain
-            MODIFY COLUMN payment_method ENUM('stripe','paypal','bank_transfer','mock')
-            DEFAULT 'mock'
-        ");
+        if (DB::connection()->getDriverName() === 'mysql') {
+            DB::statement("
+                ALTER TABLE egi_blockchain
+                MODIFY COLUMN payment_method ENUM('stripe','paypal','bank_transfer','mock')
+                DEFAULT 'mock'
+            ");
+        }
     }
 };
 
