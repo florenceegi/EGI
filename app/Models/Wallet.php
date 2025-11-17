@@ -31,6 +31,8 @@ class Wallet extends Model
         'is_anonymous',
         'metadata',
         'platform_role',
+        'stripe_account_id',
+        'paypal_merchant_id',
 
         // ═══ ENCRYPTION FIELDS ═══
         'secret_ciphertext', // Mnemonic cifrata
@@ -76,6 +78,8 @@ class Wallet extends Model
         'dek_encrypted',
         'iban_encrypted',
         'iban_hash',
+        'stripe_account_id',
+        'paypal_merchant_id',
     ];
 
     public function collection()

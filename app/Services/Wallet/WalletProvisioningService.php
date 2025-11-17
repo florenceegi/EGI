@@ -2,6 +2,7 @@
 
 namespace App\Services\Wallet;
 
+use App\Exceptions\Wallet\DuplicateIbanException;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Blockchain\AlgorandClient;
@@ -212,6 +213,7 @@ class WalletProvisioningService {
      * @param int|null $collectionId Optional collection association
      * @return Wallet
      * @throws \Exception
+     * @throws DuplicateIbanException
      */
     protected function createAlgorandWalletFlexible(?int $userId, ?int $collectionId): Wallet {
         try {
@@ -389,7 +391,10 @@ class WalletProvisioningService {
                 ->exists();
 
             if ($exists) {
-                throw new \Exception("IBAN already registered to another wallet");
+                throw new DuplicateIbanException(
+                    walletId: $wallet->id,
+                    ibanLast4: substr($ibanNorm, -4)
+                );
             }
 
             // 4. Update wallet with IBAN data
@@ -413,6 +418,14 @@ class WalletProvisioningService {
             ]);
 
             return $wallet;
+        } catch (DuplicateIbanException $e) {
+            $this->logger->warning('Duplicate IBAN attempt detected', [
+                'wallet_id' => $wallet->id,
+                'iban_last4' => $e->ibanLast4,
+                'log_category' => 'IBAN_DUPLICATE'
+            ]);
+
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->error('IBAN addition failed', [
                 'wallet_id' => $wallet->id,
@@ -477,6 +490,8 @@ class WalletProvisioningService {
 
             // 2. Call protected method with wallet object
             return $this->addIbanToWalletInternal($wallet, $iban);
+        } catch (DuplicateIbanException $e) {
+            throw $e;
         } catch (\Exception $e) {
             $this->logger->error('Failed to add IBAN to wallet', [
                 'wallet_id' => $walletId,
