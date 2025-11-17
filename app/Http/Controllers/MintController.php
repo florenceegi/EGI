@@ -160,59 +160,49 @@ class MintController extends Controller {
                 $canPayWithEgili = $egiliBalance >= $requiredEgili;
             }
 
-            // Check Stripe merchant availability BEFORE showing payment form
-            $stripeMerchantAvailable = false; // Default: NOT available
-            $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+            // Validate ALL collection wallets (CENTRALIZED METHOD)
+            $stripeValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'stripe');
+            $paypalValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'paypal');
 
-            try {
-                $merchantContext = $this->merchantAccountResolver->resolveForEgiAndProvider(
-                    $egi,
-                    'stripe'
-                );
+            $stripeMerchantAvailable = $stripeValidation['can_accept_payments'];
+            $paypalAvailable = $paypalValidation['can_accept_payments'];
 
-                // Test merchant account with a minimal Stripe API call
-                $stripeClient = new \Stripe\StripeClient(config('algorand.payments.stripe.secret_key'));
-                $accountId = $merchantContext['stripe_account_id'] ?? null;
-
-                if ($accountId) {
-                    $account = $stripeClient->accounts->retrieve($accountId);
-
-                    // Check if account can accept charges
-                    if ($account->charges_enabled ?? false) {
-                        // ✅ Merchant account is valid and can accept charges
-                        $stripeMerchantAvailable = true;
-                        $stripeMerchantError = null;
-                    } else {
-                        // ❌ Merchant account exists but cannot accept charges
-                        $stripeMerchantAvailable = false;
-                        $stripeMerchantError = __('payment.errors.merchant_account_disabled');
-                    }
-                } else {
-                    // ❌ No Stripe account configured
-                    $stripeMerchantAvailable = false;
+            // Determine user-friendly error messages
+            $stripeMerchantError = null;
+            if (!$stripeMerchantAvailable) {
+                if (!empty($stripeValidation['invalid_wallets'])) {
+                    $stripeMerchantError = __('payment.errors.some_wallets_invalid');
+                } elseif ($stripeValidation['total_wallets'] === 0) {
                     $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+                } elseif (!$stripeValidation['provider_enabled']) {
+                    $stripeMerchantError = __('payment.errors.stripe_disabled');
+                } else {
+                    $stripeMerchantError = __('payment.errors.merchant_account_disabled');
                 }
-            } catch (\Exception $e) {
-                // ❌ Error checking merchant account
-                $this->logger->warning('Failed to check Stripe merchant availability', [
-                    'egi_id' => $egi->id,
-                    'error' => $e->getMessage()
-                ]);
-                $stripeMerchantAvailable = false;
-                $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
             }
 
-            // Check PayPal availability (currently not implemented)
-            $paypalEnabled = config('payment.paypal.enabled', false); // Default: disabled
-            $paypalAvailable = false;
-            $paypalError = __('payment.errors.paypal_not_implemented');
-
-            if ($paypalEnabled) {
-                // TODO: Implement PayPal merchant verification similar to Stripe
-                // For now, keep disabled even if config says enabled
-                $paypalAvailable = false;
-                $paypalError = __('payment.errors.paypal_not_configured');
+            $paypalError = null;
+            if (!$paypalAvailable) {
+                if (!empty($paypalValidation['invalid_wallets'])) {
+                    $paypalError = __('payment.errors.some_wallets_invalid');
+                } elseif ($paypalValidation['total_wallets'] === 0) {
+                    $paypalError = __('payment.errors.paypal_not_configured');
+                } elseif (!$paypalValidation['provider_enabled']) {
+                    $paypalError = __('payment.errors.paypal_disabled');
+                } else {
+                    $paypalError = __('payment.errors.paypal_not_implemented');
+                }
             }
+
+            $this->logger->info('Mint payment form: PSP validation completed', [
+                'egi_id' => $egi->id,
+                'stripe_can_accept' => $stripeMerchantAvailable,
+                'stripe_wallets' => $stripeValidation['total_wallets'],
+                'stripe_valid' => $stripeValidation['valid_wallets'],
+                'paypal_can_accept' => $paypalAvailable,
+                'paypal_wallets' => $paypalValidation['total_wallets'],
+                'paypal_valid' => $paypalValidation['valid_wallets'],
+            ]);
 
             return view('mint.payment-form', compact(
                 'egi',
@@ -951,50 +941,49 @@ class MintController extends Controller {
                 $canPayWithEgili = $egiliBalance >= $requiredEgili;
             }
 
-            // Check Stripe merchant availability BEFORE showing payment form
-            $stripeMerchantAvailable = false; // Default: NOT available
-            $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+            // Validate ALL collection wallets (CENTRALIZED METHOD)
+            $stripeValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'stripe');
+            $paypalValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'paypal');
 
-            try {
-                $merchantContext = $this->merchantAccountResolver->resolveForEgiAndProvider(
-                    $egi,
-                    'stripe'
-                );
+            $stripeMerchantAvailable = $stripeValidation['can_accept_payments'];
+            $paypalAvailable = $paypalValidation['can_accept_payments'];
 
-                // Test merchant account with a minimal Stripe API call
-                $stripeClient = new \Stripe\StripeClient(config('algorand.payments.stripe.secret_key'));
-                $accountId = $merchantContext['stripe_account_id'] ?? null;
-
-                if ($accountId) {
-                    $account = $stripeClient->accounts->retrieve($accountId);
-
-                    // Check if account can accept charges
-                    if ($account->charges_enabled ?? false) {
-                        $stripeMerchantAvailable = true;
-                        $stripeMerchantError = null;
-
-                        $this->logger->info('Stripe merchant valid for direct mint', [
-                            'egi_id' => $egi->id,
-                            'stripe_account_id' => $accountId,
-                        ]);
-                    } else {
-                        $stripeMerchantError = __('payment.errors.merchant_account_disabled');
-                    }
-                } else {
+            // Determine user-friendly error messages
+            $stripeMerchantError = null;
+            if (!$stripeMerchantAvailable) {
+                if (!empty($stripeValidation['invalid_wallets'])) {
+                    $stripeMerchantError = __('payment.errors.some_wallets_invalid');
+                } elseif ($stripeValidation['total_wallets'] === 0) {
                     $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+                } elseif (!$stripeValidation['provider_enabled']) {
+                    $stripeMerchantError = __('payment.errors.stripe_disabled');
+                } else {
+                    $stripeMerchantError = __('payment.errors.merchant_account_disabled');
                 }
-            } catch (\Exception $e) {
-                $this->logger->warning('Failed to check Stripe merchant in direct mint', [
-                    'egi_id' => $egi->id,
-                    'error' => $e->getMessage()
-                ]);
-                $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
             }
 
-            // Check PayPal availability (currently not implemented)
-            $paypalEnabled = config('payment.paypal.enabled', false);
-            $paypalAvailable = false;
-            $paypalError = __('payment.errors.paypal_not_implemented');
+            $paypalError = null;
+            if (!$paypalAvailable) {
+                if (!empty($paypalValidation['invalid_wallets'])) {
+                    $paypalError = __('payment.errors.some_wallets_invalid');
+                } elseif ($paypalValidation['total_wallets'] === 0) {
+                    $paypalError = __('payment.errors.paypal_not_configured');
+                } elseif (!$paypalValidation['provider_enabled']) {
+                    $paypalError = __('payment.errors.paypal_disabled');
+                } else {
+                    $paypalError = __('payment.errors.paypal_not_implemented');
+                }
+            }
+
+            $this->logger->info('Direct mint: PSP validation completed', [
+                'egi_id' => $egi->id,
+                'stripe_can_accept' => $stripeMerchantAvailable,
+                'stripe_wallets' => $stripeValidation['total_wallets'],
+                'stripe_valid' => $stripeValidation['valid_wallets'],
+                'paypal_can_accept' => $paypalAvailable,
+                'paypal_wallets' => $paypalValidation['total_wallets'],
+                'paypal_valid' => $paypalValidation['valid_wallets'],
+            ]);
 
             return view('mint.payment-form', compact(
                 'egi',

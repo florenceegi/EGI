@@ -665,110 +665,59 @@ class EgiController extends Controller
      * @param Egi $egi
      * @return array{has_stripe:bool,has_paypal:bool,has_any_psp:bool}
      */
+    /**
+     * Resolve merchant PSP status for EGI (CENTRALIZED METHOD)
+     * Uses MerchantAccountResolver->validateAllCollectionWallets() for consistency
+     * 
+     * @param Egi $egi
+     * @return array
+     */
     private function resolveMerchantPspStatus(Egi $egi): array
     {
-        $collection = $egi->collection;
-
-        if (!$collection) {
-            $collection = $egi->collection()
-                ->with(['wallets', 'creator.wallets', 'owner.wallets'])
-                ->first();
-
-            if ($collection) {
-                $egi->setRelation('collection', $collection);
-            }
-        } else {
-            $collection->loadMissing('wallets', 'creator.wallets', 'owner.wallets');
-        }
-
-        if (!$collection) {
-            return [
-                'has_stripe' => false,
-                'has_paypal' => false,
-                'has_any_psp' => false,
-            ];
-        }
-
-        $wallets = collect();
-
-        $collectionWallets = $collection->relationLoaded('wallets')
-            ? $collection->wallets
-            : $collection->wallets()->get();
-
-        $wallets = $wallets->merge($collectionWallets);
-
-        if ($collection->creator) {
-            $creatorWallets = $collection->creator->relationLoaded('wallets')
-                ? $collection->creator->wallets
-                : $collection->creator->wallets()->get();
-            $wallets = $wallets->merge($creatorWallets);
-        }
-
-        if ($collection->owner) {
-            $ownerWallets = $collection->owner->relationLoaded('wallets')
-                ? $collection->owner->wallets
-                : $collection->owner->wallets()->get();
-            $wallets = $wallets->merge($ownerWallets);
-        }
-
-        $wallets = $wallets->filter();
-
-        $hasStripe = $wallets->contains(function ($wallet) {
-            return filled($wallet->stripe_account_id);
-        });
-
-        $hasPaypal = $wallets->contains(function ($wallet) {
-            return filled($wallet->paypal_merchant_id);
-        });
-
-        // Verify Stripe account validity (not just existence)
-        $stripeValid = false;
-        $stripeError = null;
+        // Validate ALL collection wallets for Stripe
+        $stripeValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'stripe');
         
-        if ($hasStripe) {
-            try {
-                // Get first Stripe account ID
-                $stripeWallet = $wallets->first(function ($wallet) {
-                    return filled($wallet->stripe_account_id);
-                });
-                
-                if ($stripeWallet) {
-                    $stripeSecret = config('algorand.payments.stripe.secret_key');
-                    
-                    if (empty($stripeSecret)) {
-                        throw new \Exception('Stripe secret key not configured');
-                    }
-                    
-                    $stripeClient = new \Stripe\StripeClient($stripeSecret);
-                    $account = $stripeClient->accounts->retrieve($stripeWallet->stripe_account_id);
-                    
-                    $this->logger->info('Stripe account validation for EGI', [
-                        'egi_id' => $egi->id,
-                        'stripe_account_id' => $stripeWallet->stripe_account_id,
-                        'charges_enabled' => $account->charges_enabled ?? false,
-                        'details_submitted' => $account->details_submitted ?? false,
-                        'payouts_enabled' => $account->payouts_enabled ?? false,
-                    ]);
-                    
-                    // Check if account can accept charges
-                    if ($account->charges_enabled ?? false) {
-                        $stripeValid = true;
-                    } else {
-                        $stripeError = 'charges_disabled';
-                    }
-                }
-            } catch (\Exception $e) {
-                // If verification fails, mark as invalid
+        // Validate ALL collection wallets for PayPal
+        $paypalValidation = $this->merchantAccountResolver->validateAllCollectionWallets($egi, 'paypal');
+
+        $hasStripe = $stripeValidation['total_wallets'] > 0;
+        $hasPaypal = $paypalValidation['total_wallets'] > 0;
+        
+        $stripeValid = $stripeValidation['can_accept_payments'];
+        $paypalValid = $paypalValidation['can_accept_payments'];
+
+        // Determine error messages
+        $stripeError = null;
+        if ($hasStripe && !$stripeValid) {
+            if (!empty($stripeValidation['invalid_wallets'])) {
+                $stripeError = 'some_wallets_invalid';
+            } elseif (!$stripeValidation['provider_enabled']) {
+                $stripeError = 'provider_disabled';
+            } else {
                 $stripeError = 'verification_failed';
-                $this->logger->warning('Stripe merchant validation failed in EGI show', [
-                    'egi_id' => $egi->id,
-                    'error' => $e->getMessage()
-                ]);
             }
         }
 
-        // PayPal validation (currently not implemented, always false)
-        $paypalValid = false;
+        $paypalError = null;
+        if ($hasPaypal && !$paypalValid) {
+            if (!empty($paypalValidation['invalid_wallets'])) {
+                $paypalError = 'some_wallets_invalid';
+            } elseif (!$paypalValidation['provider_enabled']) {
+                $paypalError = 'provider_disabled';
+            } else {
+                $paypalError = 'paypal_not_implemented';
+            }
+        }
+
+        $this->logger->info('Merchant PSP status resolved for EGI', [
+            'egi_id' => $egi->id,
+            'stripe_wallets' => $stripeValidation['total_wallets'],
+            'stripe_valid_wallets' => $stripeValidation['valid_wallets'],
+            'stripe_can_accept' => $stripeValid,
+            'paypal_wallets' => $paypalValidation['total_wallets'],
+            'paypal_valid_wallets' => $paypalValidation['valid_wallets'],
+            'paypal_can_accept' => $paypalValid,
+        ]);
 
         return [
             'has_stripe' => $hasStripe,
@@ -776,8 +725,11 @@ class EgiController extends Controller
             'has_any_psp' => $hasStripe || $hasPaypal,
             'stripe_valid' => $stripeValid,
             'stripe_error' => $stripeError,
+            'stripe_validation' => $stripeValidation, // Full validation details
             'paypal_valid' => $paypalValid,
-            'can_accept_payments' => $stripeValid || $paypalValid, // TRUE only if at least one PSP is valid
+            'paypal_error' => $paypalError,
+            'paypal_validation' => $paypalValidation, // Full validation details
+            'can_accept_payments' => $stripeValid || $paypalValid, // TRUE only if ALL wallets valid
         ];
     }
 
