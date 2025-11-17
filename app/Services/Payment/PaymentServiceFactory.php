@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Payment;
 
 use App\Contracts\PaymentServiceInterface;
-use App\Services\Payment\{StripePaymentService, PayPalPaymentService};
+use App\Services\Payment\{
+    StripePaymentService,
+    PayPalPaymentService,
+    StripeRealPaymentService,
+    PayPalRealPaymentService
+};
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\{AuditLogService, ConsentService};
@@ -66,19 +71,12 @@ class PaymentServiceFactory {
         }
 
         // Create service instance based on provider
-        $service = match (strtolower($provider)) {
-            'stripe' => new StripePaymentService(
-                $this->logger,
-                $this->errorManager,
-                $this->auditService,
-                $this->consentService
-            ),
-            'paypal' => new PayPalPaymentService(
-                $this->logger,
-                $this->errorManager,
-                $this->auditService,
-                $this->consentService
-            ),
+        $provider = strtolower($provider);
+        $mockMode = (bool) config('algorand.payments.mock_mode', true);
+
+        $service = match ($provider) {
+            'stripe' => $this->resolveStripeService($mockMode),
+            'paypal' => $this->resolvePayPalService($mockMode),
             default => throw new Exception("Unsupported payment provider: {$provider}")
         };
 
@@ -125,5 +123,53 @@ class PaymentServiceFactory {
         $this->logger->info('Payment service cache cleared', [
             'services_cleared' => count($this->serviceCache)
         ]);
+    }
+
+    /**
+     * Resolve Stripe payment service based on configuration.
+     */
+    private function resolveStripeService(bool $mockMode): PaymentServiceInterface
+    {
+        $stripeEnabled = (bool) config('algorand.payments.stripe_enabled', false);
+
+        if ($mockMode || !$stripeEnabled) {
+            return new StripePaymentService(
+                $this->logger,
+                $this->errorManager,
+                $this->auditService,
+                $this->consentService
+            );
+        }
+
+        return new StripeRealPaymentService(
+            $this->logger,
+            $this->errorManager,
+            $this->auditService,
+            $this->consentService
+        );
+    }
+
+    /**
+     * Resolve PayPal payment service based on configuration.
+     */
+    private function resolvePayPalService(bool $mockMode): PaymentServiceInterface
+    {
+        $paypalEnabled = (bool) config('algorand.payments.paypal_enabled', false);
+
+        if ($mockMode || !$paypalEnabled) {
+            return new PayPalPaymentService(
+                $this->logger,
+                $this->errorManager,
+                $this->auditService,
+                $this->consentService
+            );
+        }
+
+        return new PayPalRealPaymentService(
+            $this->logger,
+            $this->errorManager,
+            $this->auditService,
+            $this->consentService
+        );
     }
 }
