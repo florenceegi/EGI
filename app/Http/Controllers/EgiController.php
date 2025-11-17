@@ -295,9 +295,10 @@ class EgiController extends Controller
 
                 // Get collection for view (needed by blade template)
                 $collection = $egi->collection;
+                $merchantPspStatus = $this->resolveMerchantPspStatus($egi);
 
                 // Use default view for public users
-                return view('egis.show', compact('egi', 'collection', 'canManage', 'collectionEgis'));
+                return view('egis.show', compact('egi', 'collection', 'canManage', 'collectionEgis', 'merchantPspStatus'));
             }
 
             // Authenticated user: delegate to service
@@ -327,6 +328,7 @@ class EgiController extends Controller
 
             // Get collection for view (needed by blade template)
             $collection = $egi->collection;
+            $merchantPspStatus = $this->resolveMerchantPspStatus($egi);
 
             // ViewService determines correct view based on user role
             $view = $this->viewService->getViewForRole($user, 'show');
@@ -342,7 +344,7 @@ class EgiController extends Controller
                 'auth_type' => FegiAuth::getAuthType(),
             ]);
 
-            return view($view, compact('egi', 'collection', 'canManage', 'collectionEgis'));
+            return view($view, compact('egi', 'collection', 'canManage', 'collectionEgis', 'merchantPspStatus'));
         } catch (\Exception $e) {
             return $this->errorManager->handle('EGI_PAGE_RENDERING_ERROR', [
                 'egi_id' => $egi->id,
@@ -419,6 +421,7 @@ class EgiController extends Controller
                 ],
                 'creation_date' => $isMinted ? 'nullable|date' : 'nullable|date',
                 'is_published' => 'boolean',
+                'payment_by_egili' => 'sometimes|boolean',
                 // Sale/Auction fields
                 'sale_mode' => 'nullable|in:not_for_sale,fixed_price,auction',
                 'auction_minimum_price' => 'nullable|required_if:sale_mode,auction|numeric|min:0.01',
@@ -460,11 +463,20 @@ class EgiController extends Controller
 
             $validated = $validator->validated();
 
+            $merchantPspStatus = $this->resolveMerchantPspStatus($egi);
+            $pspReady = $merchantPspStatus['has_any_psp'] ?? false;
+
+            if (!$pspReady && (($validated['sale_mode'] ?? 'not_for_sale') !== 'not_for_sale')) {
+                return redirect()->back()
+                    ->withErrors(['sale_mode' => __('egi.validation.psp_required_for_sale')])
+                    ->withInput();
+            }
+
             // 🔒 BLOCKCHAIN IMMUTABILITY: Check if EGI is minted (BLOCKING)
             if ($egi->token_EGI) {
                 // Se EGI è mintato, SOLO price, sale_mode, is_published e auction fields possono essere modificati
                 // Metadata (title, description, traits) sono immutabili su blockchain
-                $allowedFields = ['price', 'sale_mode', 'is_published', 'auction_minimum_price', 'auction_start', 'auction_end', 'auto_mint_highest'];
+                $allowedFields = ['price', 'sale_mode', 'is_published', 'payment_by_egili', 'auction_minimum_price', 'auction_start', 'auction_end', 'auto_mint_highest'];
                 $attemptedFields = array_keys($validated);
                 $blockedFields = array_diff($attemptedFields, $allowedFields);
 
@@ -503,7 +515,8 @@ class EgiController extends Controller
                 'description' => $egi->description,
                 'price' => $egi->price,
                 'creation_date' => $egi->creation_date?->toDateString(),
-                'is_published' => $egi->is_published
+                'is_published' => $egi->is_published,
+                'payment_by_egili' => $egi->payment_by_egili,
             ];
 
             // Service handles update (transaction, updated_by, cache invalidation)
@@ -644,6 +657,128 @@ class EgiController extends Controller
                 'egi_id' => $egi->id,
             ], $e);
         }
+    }
+
+    /**
+     * Resolve merchant PSP readiness data for the given EGI.
+     *
+     * @param Egi $egi
+     * @return array{has_stripe:bool,has_paypal:bool,has_any_psp:bool}
+     */
+    private function resolveMerchantPspStatus(Egi $egi): array
+    {
+        $collection = $egi->collection;
+
+        if (!$collection) {
+            $collection = $egi->collection()
+                ->with(['wallets', 'creator.wallets', 'owner.wallets'])
+                ->first();
+
+            if ($collection) {
+                $egi->setRelation('collection', $collection);
+            }
+        } else {
+            $collection->loadMissing('wallets', 'creator.wallets', 'owner.wallets');
+        }
+
+        if (!$collection) {
+            return [
+                'has_stripe' => false,
+                'has_paypal' => false,
+                'has_any_psp' => false,
+            ];
+        }
+
+        $wallets = collect();
+
+        $collectionWallets = $collection->relationLoaded('wallets')
+            ? $collection->wallets
+            : $collection->wallets()->get();
+
+        $wallets = $wallets->merge($collectionWallets);
+
+        if ($collection->creator) {
+            $creatorWallets = $collection->creator->relationLoaded('wallets')
+                ? $collection->creator->wallets
+                : $collection->creator->wallets()->get();
+            $wallets = $wallets->merge($creatorWallets);
+        }
+
+        if ($collection->owner) {
+            $ownerWallets = $collection->owner->relationLoaded('wallets')
+                ? $collection->owner->wallets
+                : $collection->owner->wallets()->get();
+            $wallets = $wallets->merge($ownerWallets);
+        }
+
+        $wallets = $wallets->filter();
+
+        $hasStripe = $wallets->contains(function ($wallet) {
+            return filled($wallet->stripe_account_id);
+        });
+
+        $hasPaypal = $wallets->contains(function ($wallet) {
+            return filled($wallet->paypal_merchant_id);
+        });
+
+        // Verify Stripe account validity (not just existence)
+        $stripeValid = false;
+        $stripeError = null;
+        
+        if ($hasStripe) {
+            try {
+                // Get first Stripe account ID
+                $stripeWallet = $wallets->first(function ($wallet) {
+                    return filled($wallet->stripe_account_id);
+                });
+                
+                if ($stripeWallet) {
+                    $stripeSecret = config('algorand.payments.stripe.secret_key');
+                    
+                    if (empty($stripeSecret)) {
+                        throw new \Exception('Stripe secret key not configured');
+                    }
+                    
+                    $stripeClient = new \Stripe\StripeClient($stripeSecret);
+                    $account = $stripeClient->accounts->retrieve($stripeWallet->stripe_account_id);
+                    
+                    $this->logger->info('Stripe account validation for EGI', [
+                        'egi_id' => $egi->id,
+                        'stripe_account_id' => $stripeWallet->stripe_account_id,
+                        'charges_enabled' => $account->charges_enabled ?? false,
+                        'details_submitted' => $account->details_submitted ?? false,
+                        'payouts_enabled' => $account->payouts_enabled ?? false,
+                    ]);
+                    
+                    // Check if account can accept charges
+                    if ($account->charges_enabled ?? false) {
+                        $stripeValid = true;
+                    } else {
+                        $stripeError = 'charges_disabled';
+                    }
+                }
+            } catch (\Exception $e) {
+                // If verification fails, mark as invalid
+                $stripeError = 'verification_failed';
+                $this->logger->warning('Stripe merchant validation failed in EGI show', [
+                    'egi_id' => $egi->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
+        // PayPal validation (currently not implemented, always false)
+        $paypalValid = false;
+
+        return [
+            'has_stripe' => $hasStripe,
+            'has_paypal' => $hasPaypal,
+            'has_any_psp' => $hasStripe || $hasPaypal,
+            'stripe_valid' => $stripeValid,
+            'stripe_error' => $stripeError,
+            'paypal_valid' => $paypalValid,
+            'can_accept_payments' => $stripeValid || $paypalValid, // TRUE only if at least one PSP is valid
+        ];
     }
 
     /**

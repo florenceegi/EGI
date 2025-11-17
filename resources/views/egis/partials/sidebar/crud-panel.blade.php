@@ -264,12 +264,20 @@
 
                     {{-- Sale Mode Selector --}}
                     <div>
+                        @php
+                            $merchantPspStatus = $merchantPspStatus ?? ['has_any_psp' => false, 'has_stripe' => false, 'has_paypal' => false, 'can_accept_payments' => false];
+                            $saleModeLocked = !($merchantPspStatus['can_accept_payments'] ?? false);
+                            $saleModeVal = $saleModeLocked ? 'not_for_sale' : (old('sale_mode', $egi->sale_mode ?? 'not_for_sale'));
+                        @endphp
                         <label for="sale_mode" class="mb-2 block text-sm font-medium text-emerald-300">
                             {{ __('egi.crud.sale_mode') }}
                         </label>
+                        @if ($saleModeLocked)
+                            <input type="hidden" name="sale_mode" value="not_for_sale">
+                        @endif
                         <select id="sale_mode" name="sale_mode"
-                            class="w-full rounded-lg border border-emerald-700/50 bg-black/30 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            @php $saleModeVal = old('sale_mode', $egi->sale_mode ?? 'not_for_sale'); @endphp
+                            class="w-full rounded-lg border border-emerald-700/50 bg-black/30 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 {{ $saleModeLocked ? 'opacity-60 cursor-not-allowed' : '' }}"
+                            {{ $saleModeLocked ? 'disabled' : '' }}>
                             <option value="not_for_sale" {{ $saleModeVal === 'not_for_sale' ? 'selected' : '' }}>
                                 {{ __('egi.crud.sale_mode_not_for_sale') }}</option>
                             <option value="fixed_price" {{ $saleModeVal === 'fixed_price' ? 'selected' : '' }}>
@@ -279,6 +287,52 @@
                         </select>
                         <div class="mt-1 text-xs text-gray-400">
                             {{ __('egi.crud.sale_mode_hint') }}
+                        </div>
+
+                        @if ($saleModeLocked)
+                            <div class="mt-3 rounded-lg border border-emerald-700/40 bg-emerald-900/20 p-3 text-emerald-100">
+                                <p class="text-sm font-semibold text-emerald-200">
+                                    {{ __('egi.crud.psp_required_title') }}
+                                </p>
+                                <p class="mt-1 text-xs leading-relaxed text-emerald-100/80">
+                                    {{ __('egi.crud.psp_required_description') }}
+                                </p>
+                                <p class="mt-2 text-xs text-emerald-100/70">
+                                    {{ __('egi.crud.psp_only_egili_hint') }}
+                                </p>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <button type="button"
+                                        onclick="window.openWalletWelcomeModalSafe && window.openWalletWelcomeModalSafe();"
+                                        class="inline-flex items-center justify-center rounded-lg border border-emerald-500/40 bg-emerald-600/30 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-emerald-50 hover:bg-emerald-600/40 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-emerald-900">
+                                        {{ __('egi.crud.psp_open_modal') }}
+                                    </button>
+                                    <a href="{{ route('creator.onboarding.summary') }}"
+                                        class="inline-flex items-center justify-center rounded-lg border border-emerald-500/30 bg-transparent px-3 py-2 text-xs font-semibold uppercase tracking-wide text-emerald-200 hover:bg-emerald-600/20 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-emerald-900">
+                                        {{ __('egi.crud.psp_onboarding_link') }}
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Egili Payment Toggle --}}
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-emerald-300" for="payment_by_egili">
+                            {{ __('egi.crud.payment_by_egili') }}
+                        </label>
+                        <div class="flex items-start gap-3 rounded-lg border border-emerald-700/30 bg-black/15 p-3">
+                            <input type="hidden" name="payment_by_egili" value="0">
+                            <input type="checkbox" id="payment_by_egili" name="payment_by_egili" value="1"
+                                {{ old('payment_by_egili', $egi->payment_by_egili) ? 'checked' : '' }}
+                                class="mt-1 h-4 w-4 rounded border-emerald-700/50 bg-black/30 text-emerald-500 focus:ring-2 focus:ring-emerald-500">
+                            <div class="text-xs text-emerald-100/80">
+                                <p class="font-semibold text-emerald-200">
+                                    {{ __('egi.crud.payment_by_egili') }}
+                                </p>
+                                <p class="mt-1 leading-relaxed text-emerald-100/70">
+                                    {{ __('egi.crud.payment_by_egili_hint') }}
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -523,6 +577,16 @@
                                 class="{{ $egi->is_published ? 'bg-green-400' : 'bg-gray-400' }} mr-2 h-2 w-2 rounded-full"></span>
                             <span class="font-medium text-white">
                                 {{ $egi->is_published ? __('egi.crud.status_published') : __('egi.crud.status_draft') }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg bg-black/20 p-4">
+                        <div class="mb-1 text-sm text-emerald-300">{{ __('egi.crud.payment_by_egili_status') }}</div>
+                        <div class="flex items-center gap-2">
+                            <span class="{{ $egi->payment_by_egili ? 'bg-emerald-400' : 'bg-gray-500' }} h-2 w-2 rounded-full"></span>
+                            <span class="font-medium text-white">
+                                {{ $egi->payment_by_egili ? __('egi.crud.payment_by_egili_enabled') : __('egi.crud.payment_by_egili_disabled') }}
                             </span>
                         </div>
                     </div>
