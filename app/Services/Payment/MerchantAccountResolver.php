@@ -14,8 +14,7 @@ use Ultra\UltraLogManager\UltraLogManager;
  * 🎯 Purpose: Retrieve PSP account identifiers for creators without platform custody
  * 🛡️ MiCA-SAFE: Ensures settlements occur on creator-owned PSP accounts
  */
-class MerchantAccountResolver
-{
+class MerchantAccountResolver {
     public function __construct(
         private readonly UltraLogManager $logger,
         private readonly ErrorManagerInterface $errorManager
@@ -37,8 +36,7 @@ class MerchantAccountResolver
      *
      * @throws MerchantAccountNotConfiguredException
      */
-    public function resolveForEgiAndProvider(Egi $egi, string $provider): array
-    {
+    public function resolveForEgiAndProvider(Egi $egi, string $provider): array {
         $provider = strtolower($provider);
         $collection = $egi->relationLoaded('collection')
             ? $egi->collection
@@ -87,7 +85,205 @@ class MerchantAccountResolver
             'wallet_id' => $wallet->id,
             'stripe_account_id' => $wallet->stripe_account_id,
             'paypal_merchant_id' => $wallet->paypal_merchant_id,
-        ], static fn ($value) => $value !== null && $value !== '');
+        ], static fn($value) => $value !== null && $value !== '');
+    }
+
+    /**
+     * Validate ALL collection wallets for payment acceptance (MULTI-WALLET SPLIT PAYMENT)
+     *
+     * This method validates EVERY wallet in the collection to ensure split payments will succeed.
+     * Returns true ONLY if ALL wallets with PSP accounts are valid and enabled.
+     *
+     * @param Egi $egi
+     * @param string $provider Provider identifier (stripe|paypal)
+     * @return array{
+     *     provider: string,
+     *     all_valid: bool,
+     *     can_accept_payments: bool,
+     *     total_wallets: int,
+     *     valid_wallets: int,
+     *     invalid_wallets: array,
+     *     provider_enabled: bool,
+     *     errors: array
+     * }
+     */
+    public function validateAllCollectionWallets(Egi $egi, string $provider): array {
+        $provider = strtolower($provider);
+        $collection = $egi->relationLoaded('collection')
+            ? $egi->collection
+            : $egi->collection()->with('wallets')->first();
+
+        if (!$collection instanceof Collection) {
+            return [
+                'provider' => $provider,
+                'all_valid' => false,
+                'can_accept_payments' => false,
+                'total_wallets' => 0,
+                'valid_wallets' => 0,
+                'invalid_wallets' => [],
+                'provider_enabled' => false,
+                'errors' => ['collection_not_found'],
+            ];
+        }
+
+        // Check if provider is enabled in .env
+        $providerEnabled = match ($provider) {
+            'stripe' => (bool) config('algorand.payments.stripe_enabled', false),
+            'paypal' => (bool) config('algorand.payments.paypal_enabled', false),
+            default => false,
+        };
+
+        if (!$providerEnabled) {
+            $this->logger->info('Provider not enabled in configuration', [
+                'provider' => $provider,
+                'collection_id' => $collection->id,
+            ]);
+
+            return [
+                'provider' => $provider,
+                'all_valid' => false,
+                'can_accept_payments' => false,
+                'total_wallets' => 0,
+                'valid_wallets' => 0,
+                'invalid_wallets' => [],
+                'provider_enabled' => false,
+                'errors' => ['provider_disabled'],
+            ];
+        }
+
+        $wallets = $this->collectCandidateWallets($collection);
+
+        // Filter wallets with this provider's account
+        $providerWallets = $wallets->filter(function (Wallet $wallet) use ($provider) {
+            return match ($provider) {
+                'stripe' => filled($wallet->stripe_account_id),
+                'paypal' => filled($wallet->paypal_merchant_id),
+                default => false,
+            };
+        });
+
+        if ($providerWallets->isEmpty()) {
+            $this->logger->warning('No wallets configured for provider', [
+                'provider' => $provider,
+                'collection_id' => $collection->id,
+                'egi_id' => $egi->id,
+            ]);
+
+            return [
+                'provider' => $provider,
+                'all_valid' => false,
+                'can_accept_payments' => false,
+                'total_wallets' => $wallets->count(),
+                'valid_wallets' => 0,
+                'invalid_wallets' => [],
+                'provider_enabled' => $providerEnabled,
+                'errors' => ['no_wallets_configured'],
+            ];
+        }
+
+        // Validate EACH wallet with provider API
+        $validWallets = [];
+        $invalidWallets = [];
+        $errors = [];
+
+        foreach ($providerWallets as $wallet) {
+            $validation = $this->validateSingleWallet($wallet, $provider);
+
+            if ($validation['valid']) {
+                $validWallets[] = [
+                    'wallet_id' => $wallet->id,
+                    'platform_role' => $wallet->platform_role,
+                    'account_id' => $validation['account_id'],
+                ];
+            } else {
+                $invalidWallets[] = [
+                    'wallet_id' => $wallet->id,
+                    'platform_role' => $wallet->platform_role,
+                    'account_id' => $validation['account_id'],
+                    'error' => $validation['error'],
+                ];
+                $errors[] = $validation['error'];
+            }
+        }
+
+        $allValid = empty($invalidWallets);
+
+        $this->logger->info('Collection wallets validation completed', [
+            'provider' => $provider,
+            'collection_id' => $collection->id,
+            'egi_id' => $egi->id,
+            'total_wallets' => $providerWallets->count(),
+            'valid_wallets' => count($validWallets),
+            'invalid_wallets' => count($invalidWallets),
+            'all_valid' => $allValid,
+        ]);
+
+        return [
+            'provider' => $provider,
+            'all_valid' => $allValid,
+            'can_accept_payments' => $allValid && $providerEnabled,
+            'total_wallets' => $providerWallets->count(),
+            'valid_wallets' => count($validWallets),
+            'invalid_wallets' => $invalidWallets,
+            'provider_enabled' => $providerEnabled,
+            'errors' => array_unique($errors),
+        ];
+    }
+
+    /**
+     * Validate a single wallet's PSP account
+     *
+     * @param Wallet $wallet
+     * @param string $provider
+     * @return array{valid: bool, account_id: string|null, error: string|null}
+     */
+    private function validateSingleWallet(Wallet $wallet, string $provider): array {
+        try {
+            if ($provider === 'stripe') {
+                $accountId = $wallet->stripe_account_id;
+
+                if (empty($accountId)) {
+                    return ['valid' => false, 'account_id' => null, 'error' => 'missing_account_id'];
+                }
+
+                $stripeSecret = config('algorand.payments.stripe.secret_key');
+
+                if (empty($stripeSecret)) {
+                    return ['valid' => false, 'account_id' => $accountId, 'error' => 'stripe_secret_not_configured'];
+                }
+
+                $stripeClient = new \Stripe\StripeClient($stripeSecret);
+                $account = $stripeClient->accounts->retrieve($accountId);
+
+                $this->logger->debug('Stripe account validated', [
+                    'wallet_id' => $wallet->id,
+                    'account_id' => $accountId,
+                    'charges_enabled' => $account->charges_enabled ?? false,
+                    'details_submitted' => $account->details_submitted ?? false,
+                ]);
+
+                if ($account->charges_enabled ?? false) {
+                    return ['valid' => true, 'account_id' => $accountId, 'error' => null];
+                }
+
+                return ['valid' => false, 'account_id' => $accountId, 'error' => 'charges_disabled'];
+            }
+
+            if ($provider === 'paypal') {
+                // PayPal validation not yet implemented
+                return ['valid' => false, 'account_id' => $wallet->paypal_merchant_id, 'error' => 'paypal_not_implemented'];
+            }
+
+            return ['valid' => false, 'account_id' => null, 'error' => 'unsupported_provider'];
+        } catch (\Exception $e) {
+            $this->logger->warning('Wallet validation failed', [
+                'wallet_id' => $wallet->id,
+                'provider' => $provider,
+                'error' => $e->getMessage(),
+            ]);
+
+            return ['valid' => false, 'account_id' => null, 'error' => 'verification_failed'];
+        }
     }
 
     /**
@@ -96,8 +292,7 @@ class MerchantAccountResolver
      * @param Collection $collection
      * @return \Illuminate\Support\Collection<int, Wallet>
      */
-    private function collectCandidateWallets(Collection $collection)
-    {
+    private function collectCandidateWallets(Collection $collection) {
         $wallets = $collection->relationLoaded('wallets')
             ? $collection->wallets
             : $collection->wallets()->get();
@@ -109,8 +304,7 @@ class MerchantAccountResolver
         return $wallets
             ->merge($ownerWallets)
             ->unique('id')
-            ->sortByDesc(fn (Wallet $wallet) => $wallet->updated_at?->timestamp ?? 0)
+            ->sortByDesc(fn(Wallet $wallet) => $wallet->updated_at?->timestamp ?? 0)
             ->values();
     }
 }
-
