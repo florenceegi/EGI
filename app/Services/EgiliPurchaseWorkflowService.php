@@ -23,7 +23,7 @@ use App\Notifications\EgiliPurchaseConfirmation;
  * 🧱 Core Logic: Atomic workflow → Payment → Mint Egili → Merchant Record → GDPR
  * 🛡️ GDPR Compliance: Full audit trail + merchant reconciliation records
  * 🛡️ MiCA-SAFE: Only merchant-to-customer sales, no custody
- * 
+ *
  * Workflow Steps:
  * 1. GDPR consent validation
  * 2. Price calculation + validation
@@ -33,15 +33,14 @@ use App\Notifications\EgiliPurchaseConfirmation;
  * 6. Update merchant record (completed)
  * 7. GDPR audit trail
  * 8. Send confirmation email
- * 
+ *
  * @package App\Services
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0 (FlorenceEGI - Egili Purchase System)
  * @date 2025-11-02
  * @purpose Unified Egili purchase orchestrator with OS3 + GDPR compliance
  */
-class EgiliPurchaseWorkflowService
-{
+class EgiliPurchaseWorkflowService {
     private UltraLogManager $logger;
     private ErrorManagerInterface $errorManager;
     private AuditLogService $auditService;
@@ -125,7 +124,7 @@ class EgiliPurchaseWorkflowService
 
             // 6. Process FIAT payment
             $paymentService = $this->paymentServiceFactory->create($provider);
-            
+
             $paymentRequest = new PaymentRequest(
                 amount: $pricing['total_eur'],
                 currency: 'EUR',
@@ -136,10 +135,13 @@ class EgiliPurchaseWorkflowService
                     'order_reference' => $merchantPurchase->order_reference,
                     'egili_amount' => $egiliAmount,
                     'description' => "Egili Purchase - {$egiliAmount} Egili"
-                ]
+                ],
+                successUrl: $paymentData['return_url'] ?? route('egili.purchase.confirmation', ['orderReference' => $merchantPurchase->order_reference]),
+                cancelUrl: $paymentData['return_url'] ?? url()->previous()
             );
 
-            $paymentResult = $paymentService->processPayment($paymentRequest);
+            // Egili payments go directly to platform account (no merchant context needed)
+            $paymentResult = $paymentService->processPayment(request: $paymentRequest);
 
             if (!$paymentResult->success) {
                 // Payment failed - update merchant record
@@ -160,7 +162,6 @@ class EgiliPurchaseWorkflowService
 
             // 8. Complete purchase (mint Egili + finalize)
             return $this->completePurchase($user, $merchantPurchase, $paymentResult);
-
         } catch (\Exception $e) {
             // ULM: Log failure
             $this->logger->error('Egili FIAT purchase workflow failed', [
@@ -221,13 +222,16 @@ class EgiliPurchaseWorkflowService
 
             // 6. Create crypto payment request
             $cryptoRequest = new CryptoPaymentRequest(
-                amountEur: $pricing['total_eur'],
+                amount_eur: $pricing['total_eur'],
                 description: "Egili Purchase - {$egiliAmount} Egili",
+                user_id: $user->id,
+                service_type: 'egili_purchase',
+                source_id: null,
+                success_url: $cryptoData['return_url'] ?? null,
+                cancel_url: $cryptoData['return_url'] ?? null,
                 metadata: [
-                    'user_id' => $user->id,
                     'order_reference' => $merchantPurchase->order_reference,
                     'egili_amount' => $egiliAmount,
-                    'type' => 'egili_purchase'
                 ]
             );
 
@@ -256,7 +260,6 @@ class EgiliPurchaseWorkflowService
                 'payment_id' => $cryptoResult['payment_id'],
                 'message' => 'Crypto payment initiated - redirect to gateway'
             ];
-
         } catch (\Exception $e) {
             // ULM: Log failure
             $this->logger->error('Egili Crypto purchase workflow failed', [
@@ -327,7 +330,7 @@ class EgiliPurchaseWorkflowService
             if (Config::get('egili.notifications.send_purchase_confirmation', true)) {
                 try {
                     $user->notify(new EgiliPurchaseConfirmation($merchantPurchase));
-                    
+
                     $this->logger->info('Egili purchase confirmation email queued', [
                         'user_id' => $user->id,
                         'order_reference' => $merchantPurchase->order_reference,
@@ -372,8 +375,7 @@ class EgiliPurchaseWorkflowService
      * @return void
      * @throws \Exception If consent missing
      */
-    private function validateUserConsents(User $user): void
-    {
+    private function validateUserConsents(User $user): void {
         if (!$this->consentService->hasConsent($user, 'allow-personal-data-processing')) {
             throw new \Exception('Personal data processing consent required to purchase Egili');
         }
@@ -393,22 +395,21 @@ class EgiliPurchaseWorkflowService
      * @return void
      * @throws \Exception If amount invalid
      */
-    private function validatePurchaseAmount(int $egiliAmount): void
-    {
+    private function validatePurchaseAmount(int $egiliAmount): void {
         $minPurchase = Config::get('egili.purchase.min_amount', 5000);
         $maxPurchase = Config::get('egili.purchase.max_amount', 1000000);
 
         if ($egiliAmount < $minPurchase) {
             throw new \Exception(
-                "Minimum purchase is {$minPurchase} Egili (€" . 
-                number_format($minPurchase * 0.01, 2) . ")"
+                "Minimum purchase is {$minPurchase} Egili (€" .
+                    number_format($minPurchase * 0.01, 2) . ")"
             );
         }
 
         if ($egiliAmount > $maxPurchase) {
             throw new \Exception(
-                "Maximum purchase is {$maxPurchase} Egili (€" . 
-                number_format($maxPurchase * 0.01, 2) . ")"
+                "Maximum purchase is {$maxPurchase} Egili (€" .
+                    number_format($maxPurchase * 0.01, 2) . ")"
             );
         }
     }
@@ -419,8 +420,7 @@ class EgiliPurchaseWorkflowService
      * @param int $egiliAmount
      * @return array Pricing breakdown
      */
-    private function calculatePricing(int $egiliAmount): array
-    {
+    private function calculatePricing(int $egiliAmount): array {
         $unitPrice = Config::get('egili.purchase.unit_price_eur', 0.01);
         $totalEur = $egiliAmount * $unitPrice;
 
@@ -471,8 +471,7 @@ class EgiliPurchaseWorkflowService
      * @param string $orderReference
      * @return EgiliMerchantPurchase|null
      */
-    public function getPurchaseByOrderReference(string $orderReference): ?EgiliMerchantPurchase
-    {
+    public function getPurchaseByOrderReference(string $orderReference): ?EgiliMerchantPurchase {
         return EgiliMerchantPurchase::where('order_reference', $orderReference)->first();
     }
 
@@ -483,8 +482,7 @@ class EgiliPurchaseWorkflowService
      * @param int|null $limit
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getUserPurchaseHistory(User $user, ?int $limit = null)
-    {
+    public function getUserPurchaseHistory(User $user, ?int $limit = null) {
         $query = EgiliMerchantPurchase::forUser($user->id)
             ->orderBy('purchased_at', 'desc');
 
@@ -495,4 +493,3 @@ class EgiliPurchaseWorkflowService
         return $query->get();
     }
 }
-

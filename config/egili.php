@@ -12,31 +12,31 @@ return [
     */
 
     'purchase' => [
-        
+
         /**
          * Unit price per Egili in EUR
-         * 
+         *
          * Default: €0.01/Egili
          */
         'unit_price_eur' => env('EGILI_UNIT_PRICE_EUR', 0.01),
 
         /**
          * Minimum purchase amount (Egili)
-         * 
+         *
          * Default: 5000 Egili = €50.00
          */
         'min_amount' => env('EGILI_MIN_PURCHASE', 5000),
 
         /**
          * Maximum purchase amount (Egili)
-         * 
+         *
          * Default: 1,000,000 Egili = €10,000.00
          */
         'max_amount' => env('EGILI_MAX_PURCHASE', 1000000),
 
         /**
          * Bulk discount tiers (FASE 2 - Not yet implemented)
-         * 
+         *
          * Example:
          * [
          *     50000 => 0.05,   // 5% discount for 50k+ Egili
@@ -50,7 +50,7 @@ return [
      * Payment providers configuration
      */
     'payment_providers' => [
-        
+
         /**
          * FIAT providers
          */
@@ -88,7 +88,7 @@ return [
      * Invoice configuration (FASE 2)
      */
     'invoices' => [
-        
+
         /**
          * Enable automatic invoice generation
          */
@@ -96,7 +96,7 @@ return [
 
         /**
          * Invoice generation frequency
-         * 
+         *
          * Options: 'instant', 'monthly'
          * Default: 'monthly' (aggregate by month)
          */
@@ -124,7 +124,7 @@ return [
      * Email notifications
      */
     'notifications' => [
-        
+
         /**
          * Send email after successful purchase
          */
@@ -137,8 +137,3 @@ return [
     ],
 
 ];
-
-
-
-
-
