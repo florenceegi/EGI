@@ -37,6 +37,102 @@ class EgiMintingService
     }
 
     /**
+     * Mint EGI with payment processing and split distribution (COMPLETE WORKFLOW)
+     * 
+     * This method orchestrates the complete mint workflow:
+     * 1. Validates payment result
+     * 2. Mints EGI on Algorand blockchain
+     * 3. Updates database records
+     * 4. Generates certificate
+     * 
+     * The split payment is already handled by StripeRealPaymentService before calling this method.
+     * 
+     * @param Egi $egi EGI model instance
+     * @param array $paymentResult Payment result from payment service (includes split_result)
+     * @param array $metadata Additional metadata (buyer_user_id, buyer_wallet, payment_method, etc.)
+     * @return EgiBlockchain Created blockchain record
+     * @throws \Exception
+     */
+    public function mintEgiWithPayment(Egi $egi, array $paymentResult, array $metadata = []): EgiBlockchain
+    {
+        $this->logger->info('EGI_MINT_WITH_PAYMENT_START', [
+            'egi_id' => $egi->id,
+            'egi_title' => $egi->title,
+            'buyer_user_id' => $metadata['buyer_user_id'] ?? null,
+            'payment_intent_id' => $paymentResult['payment_intent_id'] ?? null,
+            'has_split_result' => isset($paymentResult['split_result']),
+        ]);
+
+        try {
+            // Verifica che il pagamento sia stato completato con successo
+            if (($paymentResult['status'] ?? null) !== 'succeeded') {
+                throw new \Exception('Payment not succeeded - cannot mint EGI');
+            }
+
+            // Prepara metadata completo includendo dati pagamento
+            $mintMetadata = array_merge($metadata, [
+                'payment_intent_id' => $paymentResult['payment_intent_id'] ?? null,
+                'payment_method' => $paymentResult['payment_method'] ?? 'stripe',
+                'payment_amount_eur' => $paymentResult['amount'] ?? null,
+                'payment_currency' => $paymentResult['currency'] ?? 'eur',
+                'merchant_psp_config' => $paymentResult['metadata']['merchant_psp_config'] ?? null,
+            ]);
+
+            // Se è presente split_result, aggiungi informazioni sulla distribuzione
+            if (isset($paymentResult['split_result'])) {
+                $splitResult = $paymentResult['split_result'];
+                
+                $this->logger->info('EGI_MINT_WITH_SPLIT_PAYMENT', [
+                    'egi_id' => $egi->id,
+                    'total_wallets' => $splitResult['total_wallets'],
+                    'successful_transfers' => $splitResult['successful_transfers'],
+                    'failed_transfers' => $splitResult['failed_transfers'],
+                ]);
+
+                $mintMetadata['split_payment'] = [
+                    'total_wallets' => $splitResult['total_wallets'],
+                    'successful_transfers' => $splitResult['successful_transfers'],
+                    'failed_transfers' => $splitResult['failed_transfers'],
+                    'transfers' => array_map(function ($transfer) {
+                        return [
+                            'wallet_id' => $transfer['wallet_id'],
+                            'platform_role' => $transfer['platform_role'],
+                            'amount_eur' => $transfer['amount_eur'],
+                            'percentage' => $transfer['percentage'],
+                            'transfer_id' => $transfer['transfer_id'],
+                            'status' => $transfer['status'],
+                        ];
+                    }, $splitResult['transfers'] ?? []),
+                ];
+            }
+
+            // Esegui mint standard con metadata arricchito
+            $egiBlockchain = $this->mintEgi($egi, $mintMetadata);
+
+            $this->logger->info('EGI_MINT_WITH_PAYMENT_SUCCESS', [
+                'egi_id' => $egi->id,
+                'blockchain_id' => $egiBlockchain->id,
+                'asa_id' => $egiBlockchain->asa_id,
+                'payment_intent_id' => $paymentResult['payment_intent_id'] ?? null,
+            ]);
+
+            return $egiBlockchain;
+
+        } catch (\Exception $e) {
+            $this->logger->error('EGI_MINT_WITH_PAYMENT_FAILED', [
+                'egi_id' => $egi->id,
+                'error' => $e->getMessage(),
+                'payment_intent_id' => $paymentResult['payment_intent_id'] ?? null,
+            ]);
+
+            // Mark blockchain record as failed
+            $this->handleMintingError($egi, $e);
+
+            throw $e;
+        }
+    }
+
+    /**
      * Mint EGI su blockchain Algorand
      * @param Egi $egi EGI model instance
      * @param array $metadata Additional metadata
