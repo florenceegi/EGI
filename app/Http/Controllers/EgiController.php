@@ -76,6 +76,13 @@ class EgiController extends Controller
     protected ViewService $viewService;
 
     /**
+     * Merchant Account Resolver for PSP validation
+     *
+     * @var \App\Services\Payment\MerchantAccountResolver
+     */
+    protected \App\Services\Payment\MerchantAccountResolver $merchantAccountResolver;
+
+    /**
      * @Oracode Constructor: Dependency Injection Setup (Service Layer)
      * 🎯 Purpose: Initialize Ultra ecosystem + Service Layer for EGI operations
      * 🧱 Core Logic: DI-based service injection following Enterprise patterns
@@ -85,19 +92,22 @@ class EgiController extends Controller
      * @param AuditLogService $auditLogService GDPR audit service
      * @param EgiService $egiService Business logic service
      * @param ViewService $viewService View routing service
+     * @param \App\Services\Payment\MerchantAccountResolver $merchantAccountResolver PSP validation service
      */
     public function __construct(
         ErrorManagerInterface $errorManager,
         UltraLogManager $logger,
         AuditLogService $auditLogService,
         EgiService $egiService,
-        ViewService $viewService
+        ViewService $viewService,
+        \App\Services\Payment\MerchantAccountResolver $merchantAccountResolver
     ) {
         $this->errorManager = $errorManager;
         $this->logger = $logger;
         $this->auditLogService = $auditLogService;
         $this->egiService = $egiService;
         $this->viewService = $viewService;
+        $this->merchantAccountResolver = $merchantAccountResolver;
     }
 
     /**
