@@ -52,15 +52,18 @@
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between">
                             <span class="text-blue-700">{{ __('mint.blockchain_info.network') }}</span>
-                            <span class="font-semibold text-blue-900">{{ __('mint.blockchain_info.network_value') }}</span>
+                            <span
+                                class="font-semibold text-blue-900">{{ __('mint.blockchain_info.network_value') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-blue-700">{{ __('mint.blockchain_info.token_type') }}</span>
-                            <span class="font-semibold text-blue-900">{{ __('mint.blockchain_info.token_type_value') }}</span>
+                            <span
+                                class="font-semibold text-blue-900">{{ __('mint.blockchain_info.token_type_value') }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-blue-700">{{ __('mint.blockchain_info.supply') }}</span>
-                            <span class="font-semibold text-blue-900">{{ __('mint.blockchain_info.supply_value') }}</span>
+                            <span
+                                class="font-semibold text-blue-900">{{ __('mint.blockchain_info.supply_value') }}</span>
                         </div>
                     </div>
                 </div>
@@ -71,7 +74,7 @@
                         {{ __('mint.payment.price_label') }}
                     </h3>
                     <div class="text-3xl font-bold text-green-600">
-                        €{{ number_format($egi->price, 2) }}
+                        €{{ number_format($paymentAmountEur, 2) }}
                     </div>
                     @if ($reservation && $reservation->amount_eur < $egi->price)
                         <p class="mt-2 text-sm text-green-700">
@@ -101,6 +104,18 @@
                     class="rounded-lg bg-white p-6 shadow-lg">
                     @csrf
 
+                    @php
+                        $showEgiliOption = $showEgiliOption ?? false;
+                        $canPayWithEgili = $canPayWithEgili ?? false;
+                        $egiliBalance = $egiliBalance ?? 0;
+                        $requiredEgili = $requiredEgili ?? 0;
+                        $paymentAmountEur = $paymentAmountEur ?? ($reservation?->amount_eur ?? ($egi->price ?? 0));
+                        $selectedPaymentMethod = old(
+                            'payment_method',
+                            $showEgiliOption && $canPayWithEgili ? 'egili' : 'stripe',
+                        );
+                    @endphp
+
                     <input type="hidden" name="egi_id" value="{{ $egi->id }}">
                     @if ($reservation)
                         <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
@@ -112,22 +127,78 @@
                             {{ __('mint.payment.payment_method_label') }}
                         </label>
                         <div class="space-y-3">
+                            @php
+                                $stripeMerchantAvailable = $stripeMerchantAvailable ?? false;
+                                $stripeMerchantError =
+                                    $stripeMerchantError ?? __('payment.errors.merchant_account_incomplete');
+                            @endphp
                             <label
-                                class="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 transition-colors hover:bg-gray-50">
-                                <input type="radio" name="payment_method" value="stripe" checked
-                                    class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <span class="ml-3 text-sm font-medium text-gray-900">
-                                    💳 {{ __('mint.payment.credit_card') }}
-                                </span>
+                                class="{{ $stripeMerchantAvailable ? 'cursor-pointer border-gray-300 hover:bg-gray-50' : 'cursor-not-allowed border-red-300 bg-red-50 opacity-60' }} flex items-center rounded-lg border p-3 transition-colors">
+                                <input type="radio" name="payment_method" value="stripe"
+                                    {{ $selectedPaymentMethod === 'stripe' && $stripeMerchantAvailable ? 'checked' : '' }}
+                                    {{ !$stripeMerchantAvailable ? 'disabled' : '' }}
+                                    class="{{ !$stripeMerchantAvailable ? 'cursor-not-allowed opacity-50' : '' }} h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <div class="ml-3 flex-1">
+                                    <span
+                                        class="{{ $stripeMerchantAvailable ? 'text-gray-900' : 'text-red-700' }} text-sm font-medium">
+                                        💳 {{ __('mint.payment.credit_card') }}
+                                    </span>
+                                    @if (!$stripeMerchantAvailable)
+                                        <p class="mt-1 text-xs text-red-600">
+                                            ⚠️ {{ $stripeMerchantError }}
+                                        </p>
+                                    @endif
+                                </div>
                             </label>
+                            @php
+                                $paypalAvailable = $paypalAvailable ?? false;
+                                $paypalError = $paypalError ?? __('payment.errors.paypal_not_implemented');
+                            @endphp
                             <label
-                                class="flex cursor-pointer items-center rounded-lg border border-gray-300 p-3 transition-colors hover:bg-gray-50">
+                                class="{{ $paypalAvailable ? 'cursor-pointer border-gray-300 hover:bg-gray-50' : 'cursor-not-allowed border-red-300 bg-red-50 opacity-60' }} flex items-center rounded-lg border p-3 transition-colors">
                                 <input type="radio" name="payment_method" value="paypal"
-                                    class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <span class="ml-3 text-sm font-medium text-gray-900">
-                                    💙 {{ __('mint.payment.paypal') }}
-                                </span>
+                                    {{ $selectedPaymentMethod === 'paypal' && $paypalAvailable ? 'checked' : '' }}
+                                    {{ !$paypalAvailable ? 'disabled' : '' }}
+                                    class="{{ !$paypalAvailable ? 'cursor-not-allowed opacity-50' : '' }} h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <div class="ml-3 flex-1">
+                                    <span
+                                        class="{{ $paypalAvailable ? 'text-gray-900' : 'text-red-700' }} text-sm font-medium">
+                                        💙 {{ __('mint.payment.paypal') }}
+                                    </span>
+                                    @if (!$paypalAvailable)
+                                        <p class="mt-1 text-xs text-red-600">
+                                            ⚠️ {{ $paypalError }}
+                                        </p>
+                                    @endif
+                                </div>
                             </label>
+                            @if ($showEgiliOption)
+                                <label
+                                    class="{{ $canPayWithEgili ? 'cursor-pointer hover:bg-emerald-50' : 'cursor-not-allowed bg-emerald-50/60' }} flex items-start rounded-lg border border-emerald-400/60 p-3 transition-colors">
+                                    <div class="pt-1">
+                                        <input type="radio" name="payment_method" value="egili"
+                                            {{ $selectedPaymentMethod === 'egili' && $canPayWithEgili ? 'checked' : '' }}
+                                            {{ $canPayWithEgili ? '' : 'disabled' }}
+                                            class="h-4 w-4 border-emerald-400 text-emerald-600 focus:ring-emerald-600">
+                                    </div>
+                                    <div class="ml-3 space-y-1 text-sm">
+                                        <p class="font-semibold text-emerald-900">
+                                            🪙 {{ __('mint.payment.payment_method_egili') }}
+                                        </p>
+                                        <p class="text-xs text-emerald-700">
+                                            {{ __('mint.payment.egili_balance_label', ['balance' => number_format($egiliBalance)]) }}
+                                        </p>
+                                        <p class="text-xs text-emerald-700">
+                                            {{ __('mint.payment.egili_required_label', ['required' => number_format($requiredEgili)]) }}
+                                        </p>
+                                        @unless ($canPayWithEgili)
+                                            <p class="text-xs font-semibold text-red-600">
+                                                {{ __('mint.payment.egili_insufficient') }}
+                                            </p>
+                                        @endunless
+                                    </div>
+                                </label>
+                            @endif
                         </div>
                     </div>
 
@@ -162,7 +233,7 @@
                         </label>
                         <input type="text" name="co_creator_display_name" id="co_creator_display_name"
                             value="{{ Auth::user()->name }}" placeholder="{{ Auth::user()->name }}"
-                            pattern="^[a-zA-Z0-9\s.\'\-]+$" maxlength="100"
+                            pattern="^[a-zA-Z0-9\s.''\-]+$" maxlength="100"
                             class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-600 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <p class="mt-1 text-xs text-gray-500">
                             {{ __('mint.payment.co_creator_name_help') }}
@@ -179,9 +250,27 @@
                         <div class="flex items-center justify-between text-lg font-semibold">
                             <span class="text-gray-900">{{ __('mint.payment.total_label') }}</span>
                             <span class="text-2xl font-bold text-green-700">
-                                €{{ number_format($reservation ? $reservation->amount_eur : $egi->price, 2) }}
+                                €{{ number_format($paymentAmountEur, 2) }}
                             </span>
                         </div>
+                        @if ($showEgiliOption)
+                            <div class="mt-3 rounded-lg bg-emerald-50 p-3 text-xs text-emerald-800">
+                                <p class="font-semibold">
+                                    {{ __('mint.payment.egili_summary_title') }}
+                                </p>
+                                <p>
+                                    {{ __('mint.payment.egili_summary', ['required' => number_format($requiredEgili)]) }}
+                                </p>
+                                <p>
+                                    {{ __('mint.payment.egili_balance_label', ['balance' => number_format($egiliBalance)]) }}
+                                </p>
+                                @unless ($canPayWithEgili)
+                                    <p class="font-semibold text-red-600">
+                                        {{ __('mint.payment.egili_insufficient') }}
+                                    </p>
+                                @endunless
+                            </div>
+                        @endif
                     </div>
 
                     {{-- Submit Button --}}
@@ -225,6 +314,18 @@
                 } else {
                     this.classList.remove('border-red-500');
                     this.setCustomValidity('');
+                }
+            });
+
+            // Check if page was reloaded after error (flash messages present)
+            document.addEventListener('DOMContentLoaded', function() {
+                // Se ci sono errori flash, chiudi modale SweetAlert
+                const hasErrors = document.querySelector('.alert-danger') ||
+                    document.querySelector('[role="alert"]') ||
+                    @json($errors->any());
+
+                if (hasErrors && window.Swal) {
+                    Swal.close();
                 }
             });
 

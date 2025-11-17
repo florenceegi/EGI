@@ -18,11 +18,19 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\DataTransferObjects\Payment\PaymentRequest;
+use App\Exceptions\Payment\MerchantAccountNotConfiguredException;
+use App\Services\Payment\PaymentServiceFactory;
+use App\Services\Payment\MerchantAccountResolver;
+use App\Services\Payment\StripeRealPaymentService;
+use App\Services\Payment\PayPalRealPaymentService;
+use Illuminate\Support\Str;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
 use App\Services\CertificateGeneratorService;
 use App\Enums\Gdpr\GdprActivityCategory;
+use App\Services\EgiliService;
 
 class MintController extends Controller {
 
@@ -30,18 +38,24 @@ class MintController extends Controller {
     protected ErrorManagerInterface $errorManager;
     protected AuditLogService $auditService;
     protected CertificateGeneratorService $certificateGenerator;
+    protected PaymentServiceFactory $paymentFactory;
+    protected MerchantAccountResolver $merchantAccountResolver;
 
     public function __construct(
         UltraLogManager $logger,
         ErrorManagerInterface $errorManager,
         AuditLogService $auditService,
-        CertificateGeneratorService $certificateGenerator
+        CertificateGeneratorService $certificateGenerator,
+        PaymentServiceFactory $paymentFactory,
+        MerchantAccountResolver $merchantAccountResolver
     ) {
         $this->middleware('auth')->except(['showMintResult']);
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
         $this->certificateGenerator = $certificateGenerator;
+        $this->paymentFactory = $paymentFactory;
+        $this->merchantAccountResolver = $merchantAccountResolver;
     }
 
     /**
@@ -54,6 +68,7 @@ class MintController extends Controller {
     public function showPaymentForm(int $egiId) {
         try {
             $reservationId = request()->query('reservation_id');
+            $paymentSuccess = request()->query('payment_success');
             $egi = Egi::with(['utility.media', 'user'])->findOrFail($egiId);
             $reservation = null;
 
@@ -89,7 +104,129 @@ class MintController extends Controller {
                 return redirect()->route('mint.show', $egi->blockchain->id);
             }
 
-            return view('mint.payment-form', compact('egi', 'reservation'));
+            // ✅ Se il pagamento è stato completato con successo (redirect da Stripe)
+            if ($paymentSuccess == '1') {
+                // Cerca il blockchain record più recente per questo EGI e utente
+                $blockchainRecord = EgiBlockchain::where('egi_id', $egiId)
+                    ->where('buyer_user_id', Auth::id())
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+
+                if ($blockchainRecord) {
+                    $this->logger->info('Payment success redirect - showing mint result', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egiId,
+                        'blockchain_record_id' => $blockchainRecord->id,
+                    ]);
+
+                    return redirect()->route('mint.show', $blockchainRecord->id)
+                        ->with('success', __('mint.notification.processing_message'));
+                }
+
+                // Se non troviamo il record, mostriamo un messaggio di attesa
+                $this->logger->warning('Payment success but blockchain record not found yet', [
+                    'user_id' => Auth::id(),
+                    'egi_id' => $egiId,
+                ]);
+
+                return view('mint.payment-form', [
+                    'egi' => $egi,
+                    'reservation' => $reservation,
+                    'paymentAmountEur' => 0,
+                    'showEgiliOption' => false,
+                    'canPayWithEgili' => false,
+                    'egiliBalance' => 0,
+                    'requiredEgili' => 0,
+                    'paymentProcessing' => true,
+                    'stripeMerchantAvailable' => false,
+                    'stripeMerchantError' => null,
+                    'paypalAvailable' => false,
+                    'paypalError' => null,
+                ]);
+            }
+
+            $paymentAmountEur = $this->resolvePaymentAmount($reservation, $egi);
+            $showEgiliOption = false;
+            $canPayWithEgili = false;
+            $egiliBalance = 0;
+            $requiredEgili = 0;
+
+            if ($egi->payment_by_egili && $paymentAmountEur !== null && $paymentAmountEur > 0) {
+                /** @var EgiliService $egiliService */
+                $egiliService = app(EgiliService::class);
+                $egiliBalance = $egiliService->getBalance(Auth::user());
+                $requiredEgili = max($egiliService->fromEur($paymentAmountEur), 1);
+                $showEgiliOption = true;
+                $canPayWithEgili = $egiliBalance >= $requiredEgili;
+            }
+
+            // Check Stripe merchant availability BEFORE showing payment form
+            $stripeMerchantAvailable = false; // Default: NOT available
+            $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+
+            try {
+                $merchantContext = $this->merchantAccountResolver->resolveForEgiAndProvider(
+                    $egi,
+                    'stripe'
+                );
+
+                // Test merchant account with a minimal Stripe API call
+                $stripeClient = new \Stripe\StripeClient(config('algorand.payments.stripe.secret_key'));
+                $accountId = $merchantContext['stripe_account_id'] ?? null;
+
+                if ($accountId) {
+                    $account = $stripeClient->accounts->retrieve($accountId);
+
+                    // Check if account can accept charges
+                    if ($account->charges_enabled ?? false) {
+                        // ✅ Merchant account is valid and can accept charges
+                        $stripeMerchantAvailable = true;
+                        $stripeMerchantError = null;
+                    } else {
+                        // ❌ Merchant account exists but cannot accept charges
+                        $stripeMerchantAvailable = false;
+                        $stripeMerchantError = __('payment.errors.merchant_account_disabled');
+                    }
+                } else {
+                    // ❌ No Stripe account configured
+                    $stripeMerchantAvailable = false;
+                    $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+                }
+            } catch (\Exception $e) {
+                // ❌ Error checking merchant account
+                $this->logger->warning('Failed to check Stripe merchant availability', [
+                    'egi_id' => $egi->id,
+                    'error' => $e->getMessage()
+                ]);
+                $stripeMerchantAvailable = false;
+                $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+            }
+
+            // Check PayPal availability (currently not implemented)
+            $paypalEnabled = config('payment.paypal.enabled', false); // Default: disabled
+            $paypalAvailable = false;
+            $paypalError = __('payment.errors.paypal_not_implemented');
+
+            if ($paypalEnabled) {
+                // TODO: Implement PayPal merchant verification similar to Stripe
+                // For now, keep disabled even if config says enabled
+                $paypalAvailable = false;
+                $paypalError = __('payment.errors.paypal_not_configured');
+            }
+
+            return view('mint.payment-form', compact(
+                'egi',
+                'reservation',
+                'paymentAmountEur',
+                'showEgiliOption',
+                'canPayWithEgili',
+                'egiliBalance',
+                'requiredEgili',
+                'stripeMerchantAvailable',
+                'stripeMerchantError',
+                'paypalAvailable',
+                'paypalError'
+            ));
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_CHECKOUT_ERROR', [
                 'user_id' => Auth::id(),
@@ -209,7 +346,7 @@ class MintController extends Controller {
             $validated = $request->validate([
                 'egi_id' => 'required|integer|exists:egis,id',
                 'reservation_id' => 'nullable|integer|exists:reservations,id', // ✅ NULLABLE per mint diretto
-                'payment_method' => 'required|string|in:stripe,paypal',
+                'payment_method' => 'required|string|in:stripe,paypal,egili',
                 'buyer_wallet' => 'nullable|string|max:255', // Optional - user wallet for direct transfer
                 'co_creator_display_name' => 'nullable|string|min:2|max:100|regex:/^[a-zA-Z0-9\s.\'\-]+$/', // AREA 5.5.1
             ]);
@@ -257,7 +394,7 @@ class MintController extends Controller {
             // OPTIONAL: Treasury funds check (fail-open se non disponibile)
             try {
                 $algorandService = app(\App\Services\AlgorandService::class);
-                
+
                 // Verifica se il metodo esiste prima di chiamarlo (defensive programming)
                 if (method_exists($algorandService, 'checkTreasuryFunds')) {
                     $fundsCheck = $algorandService->checkTreasuryFunds(Auth::user());
@@ -311,39 +448,164 @@ class MintController extends Controller {
                 ]);
             }
 
-            // MOCK Payment processing (V1 - FIAT only)
-            // ✅ DUAL PATH: usa reservation amount se presente, altrimenti EGI price
-            $paymentAmount = $reservation
-                ? ($reservation->offer_amount_fiat ?? $reservation->amount_eur)
-                : $egi->price;
+            $paymentAmountEur = $this->resolvePaymentAmount($reservation, $egi);
 
-            $paymentResult = $this->mockPaymentProcessing($validated['payment_method'], $paymentAmount);
-
-            if (!$paymentResult['success']) {
-                $this->errorManager->handle('MINT_PAYMENT_FAILED', [
+            if ($paymentAmountEur === null || $paymentAmountEur <= 0) {
+                $this->logger->error('Invalid payment amount detected', [
                     'user_id' => Auth::id(),
-                    'egi_id' => $validated['egi_id'],
-                    'payment_method' => $validated['payment_method'],
-                    'amount' => $paymentAmount,
-                    'error' => $paymentResult['error'] ?? 'Unknown',
+                    'egi_id' => $egi->id,
+                    'reservation_id' => $reservation?->id,
+                    'calculated_amount' => $paymentAmountEur,
                 ]);
-                return redirect()->back()->withErrors(['error' => __('mint.errors.payment_failed')]);
+
+                return redirect()->back()->withErrors(['error' => __('mint.errors.invalid_amount')]);
+            }
+
+            $paymentMethod = $validated['payment_method'];
+            $paymentProvider = null;
+            $paymentReference = null;
+            $paidCurrency = 'EUR';
+            $paidAmountRecorded = $paymentAmountEur;
+            $egiliMetadata = [];
+            $paymentMetadata = [];
+
+            if ($paymentMethod === 'egili') {
+                try {
+                    $egiliPayment = $this->handleEgiliPayment($egi, $reservation, $paymentAmountEur);
+
+                    $paymentProvider = 'egili_internal';
+                    $paymentReference = $egiliPayment['reference'];
+                    $paidCurrency = 'EGL';
+                    $paidAmountRecorded = $egiliPayment['amount_egili'];
+                    $egiliMetadata = [
+                        'egili_transaction_id' => $egiliPayment['transaction_id'] ?? null,
+                    ];
+                } catch (RuntimeException $egiliException) {
+                    $reason = $egiliException->getMessage();
+
+                    $this->logger->warning('Egili payment failed', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                        'reservation_id' => $reservation?->id,
+                        'reason' => $reason,
+                    ]);
+
+                    $errorMessageKey = match ($reason) {
+                        'insufficient_egili' => 'mint.errors.insufficient_egili',
+                        'egili_disabled' => 'mint.errors.egili_disabled',
+                        'unauthenticated' => 'mint.errors.unauthorized',
+                        default => 'mint.errors.payment_failed',
+                    };
+
+                    $this->errorManager->handle('MINT_PAYMENT_FAILED', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $validated['egi_id'],
+                        'payment_method' => $paymentMethod,
+                        'amount' => $paymentAmountEur,
+                        'reason' => $reason,
+                    ], $egiliException);
+
+                    return redirect()->back()->withErrors(['error' => __($errorMessageKey)]);
+                }
+            } else {
+                try {
+                    $paymentService = $this->paymentFactory->create($paymentMethod);
+                } catch (\Throwable $factoryException) {
+                    $this->errorManager->handle('MINT_PAYMENT_PROVIDER_UNAVAILABLE', [
+                        'provider' => $paymentMethod,
+                        'error' => $factoryException->getMessage(),
+                    ], $factoryException);
+
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.payment_failed')]);
+                }
+
+                $merchantContext = [];
+
+                try {
+                    if ($paymentService instanceof StripeRealPaymentService || $paymentService instanceof PayPalRealPaymentService) {
+                        $merchantContext = $this->merchantAccountResolver
+                            ->resolveForEgiAndProvider($egi, $paymentMethod);
+                    }
+                } catch (MerchantAccountNotConfiguredException $merchantException) {
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.merchant_not_configured')]);
+                } catch (\Throwable $resolverException) {
+                    $this->errorManager->handle('MINT_PAYMENT_PROVIDER_UNAVAILABLE', [
+                        'provider' => $paymentMethod,
+                        'error' => $resolverException->getMessage(),
+                        'context' => 'merchant_account_resolver',
+                    ], $resolverException);
+
+                    return redirect()->back()->withErrors(['error' => __('mint.errors.payment_failed')]);
+                }
+
+                $paymentRequest = (new PaymentRequest(
+                    amount: $paymentAmountEur,
+                    currency: 'EUR',
+                    customerEmail: Auth::user()->email,
+                    egiId: $egi->id,
+                    reservationId: $reservation?->id,
+                    userId: Auth::id(),
+                    metadata: [
+                        'flow' => $reservation ? 'reservation_mint' : 'direct_mint',
+                        'initiated_at' => now()->toIso8601String(),
+                    ],
+                    successUrl: route('mint.payment-form', ['egiId' => $egi->id]) . '?payment_success=1',
+                    cancelUrl: route('mint.payment-form', ['egiId' => $egi->id])
+                ))->withMerchantContext($merchantContext);
+
+                $paymentResultObject = $paymentService->processPayment($paymentRequest);
+
+                if ($paymentResultObject->requiresAction() && $paymentResultObject->redirectUrl) {
+                    $this->logger->info('Payment requires additional user action', [
+                        'provider' => $paymentService->getProviderName(),
+                        'payment_id' => $paymentResultObject->paymentId,
+                        'redirect_url' => $paymentResultObject->redirectUrl,
+                    ]);
+
+                    return redirect()->away($paymentResultObject->redirectUrl);
+                }
+
+                if (!$paymentResultObject->success) {
+                    $this->errorManager->handle('MINT_PAYMENT_FAILED', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $validated['egi_id'],
+                        'payment_method' => $paymentMethod,
+                        'amount' => $paymentAmountEur,
+                        'error' => $paymentResultObject->errorMessage,
+                        'error_code' => $paymentResultObject->errorCode,
+                    ]);
+
+                    return redirect()->back()->withErrors([
+                        'error' => $paymentResultObject->errorMessage ?? __('mint.errors.payment_failed')
+                    ]);
+                }
+
+                $paymentProvider = $paymentService->getProviderName();
+                $paymentReference = $paymentResultObject->paymentId;
+                $paidCurrency = $paymentResultObject->currency ?: $paidCurrency;
+                $paidAmountRecorded = $paymentResultObject->amount ?: $paidAmountRecorded;
+                $paymentMetadata = $paymentResultObject->metadata;
+
+                if (!isset($paymentMetadata['merchant_psp']) && !empty($merchantContext)) {
+                    $paymentMetadata['merchant_psp'] = $merchantContext;
+                }
             }
 
             // Create blockchain record
             $blockchainRecord = EgiBlockchain::create([
                 'egi_id' => $egi->id,
                 'reservation_id' => $reservation?->id, // ✅ NULLABLE per mint diretto
-                'payment_method' => $validated['payment_method'], // stripe, paypal, bank_transfer
-                'psp_provider' => $paymentResult['provider'],
-                'payment_reference' => $paymentResult['reference'],
-                'paid_amount' => $paymentAmount,
-                'paid_currency' => 'EUR',
+                'payment_method' => $paymentMethod,
+                'psp_provider' => $paymentProvider,
+                'payment_reference' => $paymentReference,
+                'paid_amount' => $paidAmountRecorded,
+                'paid_currency' => $paidCurrency,
                 'buyer_user_id' => Auth::id(),
                 'buyer_wallet' => $validated['buyer_wallet'] ?? null,
                 'ownership_type' => $validated['buyer_wallet'] ? 'wallet' : 'treasury',
                 'platform_wallet' => config('algorand.algorand.treasury_address', 'TREASURY_PENDING'),
                 'mint_status' => 'minting_queued',
+                'merchant_psp_config' => $paymentMetadata['merchant_psp'] ?? null,
                 // AREA 5.5.1: Store proposed co-creator name (will be frozen during mint)
                 'co_creator_display_name' => $validated['co_creator_display_name'] ?? null,
             ]);
@@ -425,8 +687,14 @@ class MintController extends Controller {
                 [
                     'egi_id' => $egi->id,
                     'reservation_id' => $reservation?->id, // ✅ NULLABLE per mint diretto
-                    'amount' => $paymentAmount,
-                    'payment_method' => $validated['payment_method']
+                    'amount_eur' => $paymentAmountEur,
+                    'paid_amount_recorded' => $paidAmountRecorded,
+                    'paid_currency' => $paidCurrency,
+                    'payment_method' => $paymentMethod,
+                    'payment_provider' => $paymentProvider,
+                    'payment_reference' => $paymentReference,
+                    'payment_metadata' => array_filter($paymentMetadata),
+                    'egili_transaction_id' => $egiliMetadata['egili_transaction_id'] ?? null,
                 ],
                 GdprActivityCategory::BLOCKCHAIN_ACTIVITY
             );
@@ -435,7 +703,10 @@ class MintController extends Controller {
                 'user_id' => Auth::id(),
                 'egi_id' => $egi->id,
                 'blockchain_record_id' => $blockchainRecord->id,
-                'amount' => $paymentAmount
+                'amount_eur' => $paymentAmountEur,
+                'paid_currency' => $paidCurrency,
+                'paid_amount_recorded' => $paidAmountRecorded,
+                'payment_method' => $paymentMethod
             ]);
 
             // ✅ REDIRECT to mint result page (form submit normale, non AJAX)
@@ -447,6 +718,34 @@ class MintController extends Controller {
                 'errors' => json_encode($e->errors()), // Convert array to string
             ], $e);
             return redirect()->back()->withErrors(['error' => __('mint.errors.validation_failed')]);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            // Determine specific Stripe error and use UEM
+            $originalMessage = $e->getMessage();
+            $errorCode = 'STRIPE_PAYMENT_API_ERROR';
+
+            if (str_contains($originalMessage, 'cannot currently make charges')) {
+                $errorCode = 'STRIPE_MERCHANT_ACCOUNT_DISABLED';
+            } elseif (str_contains($originalMessage, 'requirements.disabled_reason')) {
+                $errorCode = 'STRIPE_MERCHANT_ACCOUNT_INCOMPLETE';
+            }
+
+            // UEM will handle user message and redirect
+            $response = $this->errorManager->handle($errorCode, [
+                'user_id' => Auth::id(),
+                'egi_id' => $request->input('egi_id'),
+                'payment_method' => $request->input('payment_method'),
+                'error_message' => $originalMessage,
+                'error_code' => $e->getStripeCode(),
+                'error_type' => $e->getError()?->type,
+            ], $e);
+
+            // If UEM returns a response, use it; otherwise fallback
+            if ($response instanceof \Illuminate\Http\RedirectResponse || $response instanceof \Illuminate\Http\JsonResponse) {
+                return $response;
+            }
+
+            // Fallback if UEM doesn't return a response
+            return redirect()->back()->withErrors(['error' => __('mint.errors.payment_failed')]);
         } catch (\Exception $e) {
             $this->errorManager->handle('MINT_PROCESS_ERROR', [
                 'user_id' => Auth::id(),
@@ -461,22 +760,90 @@ class MintController extends Controller {
     }
 
     /**
-     * Mock payment processing for V1 (FIAT only)
-     * In V2 this will be replaced with real PSP integration
+     * Calculate the EUR amount to charge based on reservation or EGI price.
      *
-     * @param string $method
-     * @param float $amount
-     * @return array
+     * @param Reservation|null $reservation
+     * @param Egi $egi
+     * @return float|null
      */
-    private function mockPaymentProcessing(string $method, float $amount): array {
-        // MOCK: Always successful for development
+    private function resolvePaymentAmount(?Reservation $reservation, Egi $egi): ?float {
+        if ($reservation) {
+            if (!is_null($reservation->amount_eur)) {
+                return (float) $reservation->amount_eur;
+            }
+
+            if (
+                !is_null($reservation->offer_amount_fiat) &&
+                (($reservation->fiat_currency ?? 'EUR') === 'EUR')
+            ) {
+                return (float) $reservation->offer_amount_fiat;
+            }
+
+            return null;
+        }
+
+        return !is_null($egi->price) ? (float) $egi->price : null;
+    }
+
+    /**
+     * Handle Egili payment flow (balance check, deduction, audit)
+     *
+     * @param Egi $egi
+     * @param Reservation|null $reservation
+     * @param float $amountEur
+     * @return array{success:bool,reference:string,provider:string,amount_eur:float,amount_egili:int,transaction_id:int|null}
+     */
+    private function handleEgiliPayment(Egi $egi, ?Reservation $reservation, float $amountEur): array {
+        if (!$egi->payment_by_egili) {
+            throw new \RuntimeException('egili_disabled');
+        }
+
+        $user = Auth::user();
+
+        if (!$user) {
+            throw new \RuntimeException('unauthenticated');
+        }
+
+        /** @var EgiliService $egiliService */
+        $egiliService = app(EgiliService::class);
+        $requiredEgili = max($egiliService->fromEur($amountEur), 1);
+
+        if (!$egiliService->canSpend($user, $requiredEgili)) {
+            throw new \RuntimeException('insufficient_egili');
+        }
+
+        $reference = 'EGL-' . strtoupper(Str::random(12));
+
+        $transaction = $egiliService->spend(
+            $user,
+            $requiredEgili,
+            'egi_direct_mint',
+            'mint',
+            [
+                'egi_id' => $egi->id,
+                'reservation_id' => $reservation?->id,
+                'payment_reference' => $reference,
+                'amount_eur' => $amountEur,
+            ],
+            $egi
+        );
+
+        $this->logger->info('EGILI_PAYMENT_PROCESSED', [
+            'user_id' => $user->id,
+            'egi_id' => $egi->id,
+            'reservation_id' => $reservation?->id,
+            'required_egili' => $requiredEgili,
+            'reference' => $reference,
+            'transaction_id' => $transaction->id ?? null,
+        ]);
+
         return [
             'success' => true,
-            'provider' => $method === 'stripe' ? 'Stripe' : 'PayPal',
-            'reference' => strtoupper($method) . '-MOCK-' . time() . '-1234',
-            'amount' => $amount,
-            'currency' => 'EUR',
-            'status' => 'completed'
+            'reference' => $reference,
+            'provider' => 'egili_internal',
+            'amount_eur' => $amountEur,
+            'amount_egili' => $requiredEgili,
+            'transaction_id' => $transaction->id ?? null,
         ];
     }
 
@@ -569,7 +936,82 @@ class MintController extends Controller {
                 }
             }
 
-            return view('mint.payment-form', compact('egi', 'availability', 'reservation', 'mintStatus', 'blockchainData'));
+            $paymentAmountEur = $this->resolvePaymentAmount(null, $egi);
+            $showEgiliOption = false;
+            $canPayWithEgili = false;
+            $egiliBalance = 0;
+            $requiredEgili = 0;
+
+            if ($egi->payment_by_egili && $paymentAmountEur !== null && $paymentAmountEur > 0) {
+                /** @var EgiliService $egiliService */
+                $egiliService = app(EgiliService::class);
+                $egiliBalance = $egiliService->getBalance(Auth::user());
+                $requiredEgili = max($egiliService->fromEur($paymentAmountEur), 1);
+                $showEgiliOption = true;
+                $canPayWithEgili = $egiliBalance >= $requiredEgili;
+            }
+
+            // Check Stripe merchant availability BEFORE showing payment form
+            $stripeMerchantAvailable = false; // Default: NOT available
+            $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+
+            try {
+                $merchantContext = $this->merchantAccountResolver->resolveForEgiAndProvider(
+                    $egi,
+                    'stripe'
+                );
+
+                // Test merchant account with a minimal Stripe API call
+                $stripeClient = new \Stripe\StripeClient(config('algorand.payments.stripe.secret_key'));
+                $accountId = $merchantContext['stripe_account_id'] ?? null;
+
+                if ($accountId) {
+                    $account = $stripeClient->accounts->retrieve($accountId);
+
+                    // Check if account can accept charges
+                    if ($account->charges_enabled ?? false) {
+                        $stripeMerchantAvailable = true;
+                        $stripeMerchantError = null;
+
+                        $this->logger->info('Stripe merchant valid for direct mint', [
+                            'egi_id' => $egi->id,
+                            'stripe_account_id' => $accountId,
+                        ]);
+                    } else {
+                        $stripeMerchantError = __('payment.errors.merchant_account_disabled');
+                    }
+                } else {
+                    $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+                }
+            } catch (\Exception $e) {
+                $this->logger->warning('Failed to check Stripe merchant in direct mint', [
+                    'egi_id' => $egi->id,
+                    'error' => $e->getMessage()
+                ]);
+                $stripeMerchantError = __('payment.errors.merchant_account_incomplete');
+            }
+
+            // Check PayPal availability (currently not implemented)
+            $paypalEnabled = config('payment.paypal.enabled', false);
+            $paypalAvailable = false;
+            $paypalError = __('payment.errors.paypal_not_implemented');
+
+            return view('mint.payment-form', compact(
+                'egi',
+                'availability',
+                'reservation',
+                'mintStatus',
+                'blockchainData',
+                'paymentAmountEur',
+                'showEgiliOption',
+                'canPayWithEgili',
+                'egiliBalance',
+                'requiredEgili',
+                'stripeMerchantAvailable',
+                'stripeMerchantError',
+                'paypalAvailable',
+                'paypalError'
+            ));
         } catch (\Exception $e) {
             $this->errorManager->handle('DIRECT_MINT_VALIDATION_ERROR', [
                 'user_id' => Auth::id(),
@@ -688,30 +1130,159 @@ class MintController extends Controller {
                 // ma logghiamo l'errore per monitoring
             }
 
-            // MOCK Payment processing (V1 - FIAT only)
-            $paymentAmount = $egi->price ?? 0;
-            $paymentResult = $this->mockPaymentProcessing($validated['payment_method'], $paymentAmount);
+            $paymentAmountEur = $this->resolvePaymentAmount(null, $egi);
 
-            if (!$paymentResult['success']) {
-                $this->errorManager->handle('DIRECT_MINT_PAYMENT_FAILED', [
+            if ($paymentAmountEur === null || $paymentAmountEur <= 0) {
+                $this->logger->error('Invalid payment amount (direct mint)', [
                     'user_id' => Auth::id(),
-                    'egi_id' => $id,
-                    'payment_method' => $validated['payment_method'],
-                    'amount' => $paymentAmount,
-                    'error' => $paymentResult['error'] ?? 'Unknown',
+                    'egi_id' => $egi->id,
+                    'calculated_amount' => $paymentAmountEur,
                 ]);
-                return response()->json([], 500);
+
+                return response()->json([
+                    'success' => false,
+                    'error' => 'invalid_amount',
+                    'message' => __('mint.errors.invalid_amount'),
+                ], 422);
+            }
+
+            $paymentMethod = $validated['payment_method'];
+            $paymentProvider = null;
+            $paymentReference = null;
+            $paidCurrency = 'EUR';
+            $paidAmountRecorded = $paymentAmountEur;
+            $egiliMetadata = [];
+            $paymentMetadata = [];
+
+            if ($paymentMethod === 'egili') {
+                try {
+                    $egiliPayment = $this->handleEgiliPayment($egi, null, $paymentAmountEur);
+
+                    $paymentProvider = 'egili_internal';
+                    $paymentReference = $egiliPayment['reference'];
+                    $paidCurrency = 'EGL';
+                    $paidAmountRecorded = $egiliPayment['amount_egili'];
+                    $egiliMetadata = [
+                        'egili_transaction_id' => $egiliPayment['transaction_id'] ?? null,
+                    ];
+                } catch (\RuntimeException $egiliException) {
+                    $reason = $egiliException->getMessage();
+
+                    $this->logger->warning('Egili payment failed (direct mint)', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                        'reason' => $reason,
+                    ]);
+
+                    $this->errorManager->handle('DIRECT_MINT_PAYMENT_FAILED', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                        'payment_method' => $paymentMethod,
+                        'amount' => $paymentAmountEur,
+                        'reason' => $reason,
+                    ], $egiliException);
+
+                    $messageKey = match ($reason) {
+                        'insufficient_egili' => 'mint.errors.insufficient_egili',
+                        'egili_disabled' => 'mint.errors.egili_disabled',
+                        'unauthenticated' => 'mint.errors.unauthorized',
+                        default => 'mint.errors.payment_failed',
+                    };
+
+                    return response()->json([
+                        'success' => false,
+                        'error' => $reason,
+                        'message' => __($messageKey),
+                    ], $reason === 'insufficient_egili' ? 422 : 500);
+                }
+            } else {
+                try {
+                    $paymentService = $this->paymentFactory->create($paymentMethod);
+                } catch (\Throwable $factoryException) {
+                    $this->errorManager->handle('DIRECT_MINT_PAYMENT_FAILED', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                        'payment_method' => $paymentMethod,
+                        'amount' => $paymentAmountEur,
+                        'error' => $factoryException->getMessage(),
+                    ], $factoryException);
+
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'provider_unavailable',
+                    ], 500);
+                }
+
+                // Resolve merchant context for EGI minting (Stripe Connect)
+                $merchantContext = $this->merchantAccountResolver->resolveForEgiAndProvider(
+                    $egi,
+                    $paymentMethod
+                );
+
+                $paymentRequest = new PaymentRequest(
+                    amount: $paymentAmountEur,
+                    currency: 'EUR',
+                    customerEmail: Auth::user()->email,
+                    egiId: $egi->id,
+                    reservationId: null,
+                    userId: Auth::id(),
+                    metadata: [
+                        'flow' => 'direct_mint',
+                        'initiated_at' => now()->toIso8601String(),
+                    ],
+                    successUrl: route('mint.success', ['egi' => $egi->id]),
+                    cancelUrl: route('mint.payment-form', ['egi' => $egi->id]),
+                    merchantContext: $merchantContext
+                );
+
+                $paymentResultObject = $paymentService->processPayment($paymentRequest);
+
+                if ($paymentResultObject->requiresAction() && $paymentResultObject->redirectUrl) {
+                    $this->logger->info('Direct mint payment requires action', [
+                        'provider' => $paymentService->getProviderName(),
+                        'payment_id' => $paymentResultObject->paymentId,
+                    ]);
+
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'requires_action',
+                        'redirect_url' => $paymentResultObject->redirectUrl,
+                    ], 202);
+                }
+
+                if (!$paymentResultObject->success) {
+                    $this->errorManager->handle('DIRECT_MINT_PAYMENT_FAILED', [
+                        'user_id' => Auth::id(),
+                        'egi_id' => $egi->id,
+                        'payment_method' => $paymentMethod,
+                        'amount' => $paymentAmountEur,
+                        'error' => $paymentResultObject->errorMessage,
+                        'error_code' => $paymentResultObject->errorCode,
+                    ]);
+
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'payment_failed',
+                        'message' => $paymentResultObject->errorMessage ?? __('mint.errors.payment_failed'),
+                    ], 500);
+                }
+
+                $paymentProvider = $paymentService->getProviderName();
+                $paymentReference = $paymentResultObject->paymentId;
+                $paidCurrency = $paymentResultObject->currency ?: $paidCurrency;
+                $paidAmountRecorded = $paymentResultObject->amount ?: $paidAmountRecorded;
+                $paymentMetadata = $paymentResultObject->metadata;
             }
 
             // Create blockchain record (NO reservation_id for direct mint)
             $blockchainRecord = EgiBlockchain::create([
                 'egi_id' => $egi->id,
                 'reservation_id' => null, // NULL = direct mint without reservation
-                'payment_method' => $validated['payment_method'],
-                'psp_provider' => $paymentResult['provider'],
-                'payment_reference' => $paymentResult['reference'],
-                'paid_amount' => $paymentAmount,
-                'paid_currency' => 'EUR',
+                'payment_method' => $paymentMethod,
+                'psp_provider' => $paymentProvider,
+                'payment_reference' => $paymentReference,
+                'paid_amount' => $paidAmountRecorded,
+                'paid_currency' => $paidCurrency,
                 'buyer_user_id' => Auth::id(),
                 'buyer_wallet' => $validated['wallet_address'] ?? null,
                 'ownership_type' => isset($validated['wallet_address']) ? 'wallet' : 'treasury',
@@ -815,9 +1386,15 @@ class MintController extends Controller {
                 'Direct mint initiated',
                 [
                     'egi_id' => $egi->id,
-                    'amount' => $paymentAmount,
-                    'payment_method' => $validated['payment_method'],
-                    'has_wallet' => isset($validated['wallet_address'])
+                    'amount_eur' => $paymentAmountEur,
+                    'paid_amount_recorded' => $paidAmountRecorded,
+                    'paid_currency' => $paidCurrency,
+                    'payment_method' => $paymentMethod,
+                    'payment_provider' => $paymentProvider,
+                    'payment_reference' => $paymentReference,
+                    'payment_metadata' => array_filter($paymentMetadata),
+                    'has_wallet' => isset($validated['wallet_address']),
+                    'egili_transaction_id' => $egiliMetadata['egili_transaction_id'] ?? null,
                 ],
                 GdprActivityCategory::BLOCKCHAIN_ACTIVITY
             );
@@ -826,7 +1403,10 @@ class MintController extends Controller {
                 'user_id' => Auth::id(),
                 'egi_id' => $egi->id,
                 'blockchain_record_id' => $blockchainRecord->id,
-                'amount' => $paymentAmount,
+                'amount_eur' => $paymentAmountEur,
+                'paid_currency' => $paidCurrency,
+                'paid_amount_recorded' => $paidAmountRecorded,
+                'payment_method' => $paymentMethod,
                 'flow' => 'direct_mint'
             ]);
 
@@ -1027,7 +1607,7 @@ class MintController extends Controller {
             // 3. Authorization: user must be the buyer
             // FALLBACK: Se buyer_user_id è null (owner self-mint), usa egi.user_id (creator)
             $buyerId = $blockchain->buyer_user_id ?? $blockchain->egi->user_id;
-            
+
             if ((int)$buyerId !== (int)Auth::id()) {
                 $this->logger->warning('Unauthorized certificate regeneration attempt', [
                     'user_id' => Auth::id(),
@@ -1039,7 +1619,7 @@ class MintController extends Controller {
 
                 return redirect()->back()->withErrors(['error' => __('errors.unauthorized')]);
             }
-            
+
             $this->logger->info('Authorization check passed for certificate regeneration', [
                 'user_id' => Auth::id(),
                 'buyer_user_id_used' => $buyerId,
