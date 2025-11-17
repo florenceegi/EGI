@@ -226,6 +226,16 @@ return [
         // Published Field
         'is_published' => 'Published',
         'is_published_hint' => 'Make the artwork publicly visible',
+        'payment_by_egili' => 'Enable Egili payments',
+        'payment_by_egili_hint' => 'Allow collectors to complete the mint using their Egili balance (platform utility token). Enabled only if you explicitly activate it.',
+        'payment_by_egili_status' => 'Egili payments',
+        'payment_by_egili_enabled' => 'Collectors can complete the mint using Egili tokens.',
+        'payment_by_egili_disabled' => 'Egili payments are currently disabled for this EGI.',
+        'psp_required_title' => 'Connect a PSP account to sell',
+        'psp_required_description' => 'To list this EGI at a fixed price or auction you must connect a Stripe or PayPal merchant account. Complete the PSP onboarding to receive EUR settlements directly on your account.',
+        'psp_open_modal' => 'Open IBAN & PSP setup',
+        'psp_onboarding_link' => 'Open onboarding summary',
+        'psp_only_egili_hint' => 'Until a PSP is connected you can only enable mint via Egili tokens.',
 
         // View Mode - Current Status
         'current_title' => 'Current Title',
@@ -263,6 +273,10 @@ return [
         // General Messages
         'no_changes_detected' => 'No changes detected.',
         'unsaved_changes_warning' => 'You have unsaved changes. Are you sure you want to leave?',
+    ],
+
+    'validation' => [
+        'psp_required_for_sale' => 'Connect a PSP account (Stripe or PayPal) before enabling fixed-price or auction sales. You can reopen the onboarding from the “Manage account → PSP account” section.',
     ],
 
     /*

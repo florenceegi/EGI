@@ -224,6 +224,16 @@ return [
         // Veröffentlicht-Feld
         'is_published' => 'Veröffentlicht',
         'is_published_hint' => 'Das Werk öffentlich sichtbar machen',
+        'payment_by_egili' => 'Egili-Zahlung aktivieren',
+        'payment_by_egili_hint' => 'Ermöglicht Sammler:innen, den Mint mit ihrem Egili-Guthaben (Plattform-Utility-Token) abzuschließen. Bleibt deaktiviert, bis Sie es explizit aktivieren.',
+        'payment_by_egili_status' => 'Egili-Zahlungen',
+        'payment_by_egili_enabled' => 'Sammler:innen können den Mint mit Egili abschließen.',
+        'payment_by_egili_disabled' => 'Egili-Zahlungen sind für dieses EGI derzeit deaktiviert.',
+        'psp_required_title' => 'Richte ein PSP-Konto ein, um zu verkaufen',
+        'psp_required_description' => 'Um ein EGI anzubieten, musst du ein Stripe- oder PayPal-Konto verbinden und die Auszahlungen direkt erhalten. Schließe das PSP-Onboarding ab, um EUR-Zahlungen zu empfangen.',
+        'psp_open_modal' => 'IBAN- & PSP-Prozess öffnen',
+        'psp_onboarding_link' => 'Onboarding-Zusammenfassung öffnen',
+        'psp_only_egili_hint' => 'Bis dahin kannst du nur den Egili-Mint aktivieren.',
 
         // Anzeigemodus - Aktueller Status
         'current_title' => 'Aktueller Titel',
@@ -261,6 +271,10 @@ return [
         // Allgemeine Meldungen
         'no_changes_detected' => 'Keine Änderungen erkannt.',
         'unsaved_changes_warning' => 'Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie verlassen möchten?',
+    ],
+
+    'validation' => [
+        'psp_required_for_sale' => 'Verbinde zuerst ein PSP-Konto (Stripe oder PayPal), bevor du den Verkauf oder die Auktion aktivierst. Du kannst das Onboarding jederzeit unter „Account verwalten → PSP-Konto“ erneut öffnen.',
     ],
 
     /*

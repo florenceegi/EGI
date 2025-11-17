@@ -228,6 +228,16 @@ return [
         // Campo Pubblicato
         'is_published' => 'Pubblicato',
         'is_published_hint' => 'Rendi l\'opera visibile pubblicamente',
+        'payment_by_egili' => 'Abilita pagamento in Egili',
+        'payment_by_egili_hint' => 'Permetti ai collector di completare il mint utilizzando il proprio saldo Egili (token utilità della piattaforma). Rimane disattivato finché non lo abiliti.',
+        'payment_by_egili_status' => 'Pagamento in Egili',
+        'payment_by_egili_enabled' => 'I collector possono completare il mint utilizzando il saldo Egili.',
+        'payment_by_egili_disabled' => 'Il pagamento in Egili è attualmente disattivato per questo EGI.',
+        'psp_required_title' => 'Configura un conto PSP per vendere',
+        'psp_required_description' => 'Per mettere in vendita un EGI devi collegare un conto Stripe o PayPal così gli incassi arrivano direttamente sul tuo conto. Completa l’onboarding PSP per ricevere i pagamenti in EUR.',
+        'psp_open_modal' => 'Apri procedura IBAN e PSP',
+        'psp_onboarding_link' => 'Vai al riepilogo onboarding',
+        'psp_only_egili_hint' => 'Finché non colleghi un PSP puoi solo vendere tramite Egili.',
 
         // Modalità Visualizzazione - Stato Attuale
         'current_title' => 'Titolo Attuale',
@@ -310,6 +320,7 @@ return [
         'auction_end_required' => 'La data di fine asta è obbligatoria',
         'auction_end_date' => 'La data di fine asta non è valida',
         'auction_end_after_start' => 'La fine dell’asta deve essere successiva all’inizio',
+        'psp_required_for_sale' => 'Collega prima un conto PSP (Stripe o PayPal) per attivare la vendita a prezzo fisso o l’asta. Puoi riaprire l’onboarding da “Gestisci account → Conto PSP”.',
     ],
 
     /*

@@ -40,8 +40,19 @@ return [
         'price_label' => 'Precio Final',
         'currency' => 'Moneda',
         'payment_method' => 'Método de Pago',
+        'payment_method_label' => 'Método de Pago',
         'payment_method_card' => 'Tarjeta de Crédito/Débito',
+        'payment_method_egili' => 'Pagar con Egili',
         'total_label' => 'Total a Pagar',
+        'credit_card' => 'Tarjeta de Crédito/Débito',
+        'paypal' => 'Pagar con PayPal',
+        'winning_reservation' => 'Oferta ganadora',
+        'egili_balance_label' => 'Saldo disponible: :balance EGL',
+        'egili_required_label' => 'Necesarios para esta acuñación: :required EGL',
+        'egili_summary_title' => 'Resumen Egili',
+        'egili_summary' => 'Necesitas :required EGL para finalizar la acuñación.',
+        'egili_insufficient' => 'Saldo Egili insuficiente. Recarga tu saldo o elige otro método.',
+        'submit_button' => 'Completar Pago',
     ],
 
     // Buyer Info Section
@@ -78,6 +89,11 @@ return [
         'mint_failed' => 'Acuñación fallida. Contacta soporte.',
         'invalid_wallet' => 'Dirección de wallet inválida.',
         'blockchain_error' => 'Error de blockchain. Inténtalo más tarde.',
+        'invalid_amount' => 'No se pudo calcular el importe de la acuñación. Contacta soporte.',
+        'insufficient_egili' => 'No tienes suficientes Egili para completar esta acuñación.',
+        'egili_disabled' => 'El pago con Egili no está habilitado para este EGI.',
+        'merchant_not_configured' => 'El creador no ha completado la configuración de pagos para este proveedor. Contacta con el creador o elige otro método de pago.',
+        'unauthorized' => 'No estás autorizado para completar esta acuñación.',
     ],
 
     // Validation

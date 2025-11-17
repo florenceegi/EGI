@@ -40,8 +40,19 @@ return [
         'price_label' => 'Endpreis',
         'currency' => 'Währung',
         'payment_method' => 'Zahlungsmethode',
+        'payment_method_label' => 'Zahlungsmethode',
         'payment_method_card' => 'Kredit-/Debitkarte',
+        'payment_method_egili' => 'Mit Egili zahlen',
         'total_label' => 'Zu zahlender Betrag',
+        'credit_card' => 'Kredit-/Debitkarte',
+        'paypal' => 'Mit PayPal zahlen',
+        'winning_reservation' => 'Gewinnende Reservierung',
+        'egili_balance_label' => 'Verfügbares Guthaben: :balance EGL',
+        'egili_required_label' => 'Für diese Prägung erforderlich: :required EGL',
+        'egili_summary_title' => 'Egili-Übersicht',
+        'egili_summary' => 'Für die Prägung werden :required EGL benötigt.',
+        'egili_insufficient' => 'Egili-Guthaben unzureichend. Lade dein Guthaben auf oder wähle eine andere Methode.',
+        'submit_button' => 'Zahlung abschließen',
     ],
 
     // Buyer Info Section
@@ -78,6 +89,11 @@ return [
         'mint_failed' => 'Prägung fehlgeschlagen. Bitte kontaktiere den Support.',
         'invalid_wallet' => 'Ungültige Wallet-Adresse.',
         'blockchain_error' => 'Blockchain-Fehler. Bitte versuche es später erneut.',
+        'invalid_amount' => 'Der Prägebetrag konnte nicht berechnet werden. Bitte kontaktiere den Support.',
+        'insufficient_egili' => 'Nicht genügend Egili, um diese Prägung abzuschließen.',
+        'egili_disabled' => 'Die Egili-Zahlung ist für dieses EGI nicht aktiviert.',
+        'merchant_not_configured' => 'Der Creator hat die Zahlungskonfiguration für diesen Anbieter noch nicht abgeschlossen. Bitte kontaktiere den Creator oder wähle eine andere Zahlungsmethode.',
+        'unauthorized' => 'Du bist nicht berechtigt, diese Prägung abzuschließen.',
     ],
 
     // Validation

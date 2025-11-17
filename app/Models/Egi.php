@@ -136,6 +136,7 @@ class Egi extends Model {
         'bind',
         'paired',
         'price',
+        'payment_by_egili',
         'floorDropPrice',
         'position',
         'creation_date',
@@ -188,6 +189,7 @@ class Egi extends Model {
         'bind'           => 'integer',      // Cast 'bind' to integer (as per migration)
         'paired'         => 'integer',      // Cast 'paired' to integer (as per migration)
         'price'          => 'decimal:2',    // Cast 'price' to float/decimal with 2 places
+        'payment_by_egili' => 'boolean',
         'floorDropPrice' => 'decimal:2',    // Cast 'floorDropPrice' to float/decimal with 2 places
         'position'       => 'integer',      // Cast 'position' to integer
         'creation_date'  => 'date',         // Cast 'creation_date' to Carbon date object (YYYY-MM-DD)

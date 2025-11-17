@@ -40,8 +40,19 @@ return [
         'price_label' => 'Prix Final',
         'currency' => 'Devise',
         'payment_method' => 'Méthode de Paiement',
+        'payment_method_label' => 'Méthode de Paiement',
         'payment_method_card' => 'Carte de Crédit/Débit',
+        'payment_method_egili' => 'Payer avec les Egili',
         'total_label' => 'Total à Payer',
+        'credit_card' => 'Carte de Crédit/Débit',
+        'paypal' => 'Payer avec PayPal',
+        'winning_reservation' => 'Offre gagnante',
+        'egili_balance_label' => 'Solde disponible : :balance EGL',
+        'egili_required_label' => 'Nécessaires pour ce mint : :required EGL',
+        'egili_summary_title' => 'Résumé Egili',
+        'egili_summary' => 'Vous avez besoin de :required EGL pour finaliser le mint.',
+        'egili_insufficient' => 'Solde Egili insuffisant. Rechargez votre solde ou choisissez une autre méthode.',
+        'submit_button' => 'Finaliser le paiement',
     ],
 
     // Buyer Info Section
@@ -78,6 +89,11 @@ return [
         'mint_failed' => 'Mint échoué. Contactez le support.',
         'invalid_wallet' => 'Adresse wallet invalide.',
         'blockchain_error' => 'Erreur blockchain. Réessayez plus tard.',
+        'invalid_amount' => 'Impossible de calculer le montant du mint. Contactez le support.',
+        'insufficient_egili' => 'Vous n’avez pas assez d’Egili pour finaliser ce mint.',
+        'egili_disabled' => 'Le paiement en Egili n’est pas activé pour cet EGI.',
+        'merchant_not_configured' => 'Le créateur n’a pas terminé la configuration des paiements pour ce fournisseur. Contactez-le ou choisissez une autre méthode de paiement.',
+        'unauthorized' => 'Vous n’êtes pas autorisé à finaliser ce mint.',
     ],
 
     // Validation

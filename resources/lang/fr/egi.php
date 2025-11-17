@@ -217,6 +217,16 @@ return [
         // Champ Publié
         'is_published' => 'Publié',
         'is_published_hint' => 'Rendre l’œuvre visible publiquement',
+        'payment_by_egili' => 'Activer le paiement en Egili',
+        'payment_by_egili_hint' => 'Permettez aux collectionneurs de finaliser le mint en utilisant leur solde d’Egili (jeton utilitaire de la plateforme). Désactivé tant que vous ne l’activez pas manuellement.',
+        'payment_by_egili_status' => 'Paiement en Egili',
+        'payment_by_egili_enabled' => 'Les collectionneurs peuvent finaliser le mint avec leur solde d’Egili.',
+        'payment_by_egili_disabled' => 'Le paiement en Egili est actuellement désactivé pour cet EGI.',
+        'psp_required_title' => 'Configurez un compte PSP pour vendre',
+        'psp_required_description' => 'Pour mettre un EGI en vente, reliez un compte Stripe ou PayPal afin de recevoir directement les paiements en EUR. Terminez l’onboarding PSP pour activer les encaissements.',
+        'psp_open_modal' => 'Ouvrir la procédure IBAN + PSP',
+        'psp_onboarding_link' => 'Voir le récapitulatif d’onboarding',
+        'psp_only_egili_hint' => 'Tant que le PSP n’est pas connecté, seule la vente via Egili est disponible.',
 
         // Mode Visualisation - État Actuel
         'current_title' => 'Titre Actuel',
@@ -254,6 +264,10 @@ return [
         // Messages Généraux
         'no_changes_detected' => 'Aucune modification détectée.',
         'unsaved_changes_warning' => 'Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?',
+    ],
+
+    'validation' => [
+        'psp_required_for_sale' => 'Connectez d’abord un compte PSP (Stripe ou PayPal) pour activer le mode en vente ou enchère. Vous pouvez rouvrir l’onboarding depuis « Gestion du compte → Compte PSP ».',
     ],
 
     /*

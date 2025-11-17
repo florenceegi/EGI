@@ -224,6 +224,16 @@ return [
         // Campo Publicado
         'is_published' => 'Publicado',
         'is_published_hint' => 'Tornar a obra visível publicamente',
+        'payment_by_egili' => 'Ativar pagamento com Egili',
+        'payment_by_egili_hint' => 'Permita que os colecionadores concluam o mint usando o saldo de Egili (token utilitário da plataforma). Permanece desativado até que você ative manualmente.',
+        'payment_by_egili_status' => 'Pagamento com Egili',
+        'payment_by_egili_enabled' => 'Os colecionadores podem concluir o mint utilizando Egili.',
+        'payment_by_egili_disabled' => 'O pagamento com Egili está desativado para este EGI.',
+        'psp_required_title' => 'Configure uma conta PSP para vender',
+        'psp_required_description' => 'Para colocar um EGI à venda você precisa conectar uma conta Stripe ou PayPal e receber os pagamentos diretamente. Conclua o onboarding PSP para receber em EUR.',
+        'psp_open_modal' => 'Abrir processo IBAN + PSP',
+        'psp_onboarding_link' => 'Ver resumo do onboarding',
+        'psp_only_egili_hint' => 'Enquanto isso só é possível vender habilitando o mint em Egili.',
 
         // Modo de Visualização - Estado Atual
         'current_title' => 'Título Atual',
@@ -261,6 +271,10 @@ return [
         // Mensagens Gerais
         'no_changes_detected' => 'Nenhuma alteração detectada.',
         'unsaved_changes_warning' => 'Você tem alterações não salvas. Tem certeza de que deseja sair?',
+    ],
+
+    'validation' => [
+        'psp_required_for_sale' => 'Conecte primeiro uma conta PSP (Stripe ou PayPal) para ativar o modo de venda ou leilão. Você pode reabrir o onboarding em “Gerenciar conta → Conta PSP”.',
     ],
 
     /*

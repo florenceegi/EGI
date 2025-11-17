@@ -68,6 +68,12 @@ return [
         'base_price' => 'Prezzo base',
         'credit_card' => 'Carta di Credito/Debito',
         'paypal' => 'PayPal',
+        'payment_method_egili' => 'Paga con Egili',
+        'egili_balance_label' => 'Saldo disponibile: :balance EGL',
+        'egili_required_label' => 'Necessari per questo mint: :required EGL',
+        'egili_summary_title' => 'Panoramica Egili',
+        'egili_summary' => 'Per completare il mint servono :required EGL.',
+        'egili_insufficient' => 'Saldo Egili insufficiente. Ricarica il tuo saldo o scegli un altro metodo.',
         'wallet_label' => 'Wallet Algorand (Opzionale)',
         'wallet_placeholder' => 'Inserisci il tuo indirizzo wallet Algorand',
         'wallet_help' => 'Se inserisci un wallet, l\'EGI verrà trasferito direttamente lì. Altrimenti sarà custodito nel Treasury della piattaforma.',
@@ -119,6 +125,10 @@ return [
         'mint_failed' => 'Si è verificato un problema tecnico temporaneo durante il mint. Il nostro team è stato automaticamente notificato e sta già lavorando alla risoluzione. Il tuo pagamento NON è stato addebitato. Per favore riprova tra qualche minuto.',
         'invalid_wallet' => 'Indirizzo wallet non valido.',
         'blockchain_error' => 'Errore della blockchain. Riprova più tardi.',
+        'invalid_amount' => 'Impossibile calcolare l’importo del mint. Contatta l’assistenza.',
+        'insufficient_egili' => 'Saldo Egili insufficiente per completare questo mint.',
+        'egili_disabled' => 'Il pagamento in Egili non è abilitato per questo EGI.',
+        'merchant_not_configured' => 'Il creator non ha completato la configurazione dei pagamenti per questo provider. Contatta il creator o scegli un altro metodo di pagamento.',
         'insufficient_treasury_funds' => "⚠️ Servizio temporaneamente non disponibile.\n\n" .
             "Il sistema non dispone al momento dei fondi necessari per completare il mint.\n\n" .
             "✅ Il tuo pagamento NON è stato addebitato.\n" .
