@@ -834,6 +834,49 @@
             const ibanFormSection = document.getElementById('ibanFormSection');
             const modalFooter = document.getElementById('modalFooter');
 
+            const openWalletModal = () => {
+                if (!modal) {
+                    console.error('[WalletWelcome] Modal element not found');
+                    return;
+                }
+                modal.classList.remove('hidden');
+                document.body?.classList?.add('overflow-hidden');
+            };
+
+            const closeWalletModal = () => {
+                if (!modal) {
+                    return;
+                }
+                modal.classList.add('hidden');
+                document.body?.classList?.remove('overflow-hidden');
+            };
+
+            window.walletWelcomeModal = {
+                open: openWalletModal,
+                close: closeWalletModal
+            };
+
+            window.openWalletWelcomeModalSafe = () => {
+                console.log('[WalletWelcome] open requested');
+                if (window.walletWelcomeModal?.open) {
+                    window.walletWelcomeModal.open();
+                    return;
+                }
+
+                const fallbackModal = document.getElementById('walletWelcomeModal');
+                if (fallbackModal) {
+                    fallbackModal.classList.remove('hidden');
+                    document.body?.classList?.add('overflow-hidden');
+                    console.warn('[WalletWelcome] Fallback open executed via document lookup');
+                } else {
+                    console.error('[WalletWelcome] Unable to open modal: element missing');
+                }
+            };
+
+            window.addEventListener('wallet-welcome:open', () => {
+                window.openWalletWelcomeModalSafe();
+            });
+
             // Check if modal should be shown
             // Priority 1: Check if user was created in the last 5 minutes (just registered)
             @php
@@ -858,7 +901,7 @@
 
             @if ($shouldShow)
                 console.log('[WalletWelcome] Opening modal - user registered recently');
-                modal.classList.remove('hidden');
+                openWalletModal();
             @else
                 console.log('[WalletWelcome] Modal will not open');
             @endif
@@ -991,7 +1034,7 @@
                         const data = await response.json();
 
                         if (data.success && data.data.should_show) {
-                            modal.classList.remove('hidden');
+                            openWalletModal();
                         }
                     }
                 } catch (error) {

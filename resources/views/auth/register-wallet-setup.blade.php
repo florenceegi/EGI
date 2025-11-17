@@ -692,7 +692,8 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        window.location.href = postRegistrationRedirectUrl;
+                        const redirectTarget = data.redirect_url || postRegistrationRedirectUrl;
+                        window.location.href = redirectTarget;
                     } else {
                         hideLoading();
                         showError(data.error || 'Errore durante l\'aggiunta dell\'IBAN');

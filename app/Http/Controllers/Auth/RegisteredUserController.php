@@ -174,12 +174,18 @@ class RegisteredUserController extends Controller {
 
             // Instead of redirecting immediately, return to register view with modal open
             // This allows user to configure IBAN before being redirected to home
+            $postRegistrationRoute = $this->authRedirectService->getRedirectRoute($result['user']);
+
+            if (($validated['user_type'] ?? null) === 'creator') {
+                $postRegistrationRoute = 'creator.onboarding.summary';
+            }
+
             return view('auth.register-wallet-setup', [
                 'user' => $result['user'],
                 'wallet' => $result['user']->fresh()->wallets()->whereNotNull('secret_ciphertext')->first(),
                 'ecosystem_created' => $result['ecosystem_created'],
                 'user_type' => $validated['user_type'],
-                'postRegistrationRedirectUrl' => route($this->authRedirectService->getRedirectRoute($result['user'])),
+                'postRegistrationRedirectUrl' => route($postRegistrationRoute),
             ]);
         } catch (\Exception $e) {
             $errorContext = [

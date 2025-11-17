@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Wallet\DuplicateIbanException;
 use App\Models\Wallet;
 use App\Rules\ValidIban;
+use App\Services\Auth\AuthRedirectService;
+use App\Services\Payment\StripeConnectService;
 use App\Services\Wallet\WalletProvisioningService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,27 +14,39 @@ use Illuminate\Support\Facades\Auth;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Ultra\UltraLogManager\UltraLogManager;
 
-class WalletWelcomeController extends Controller
-{
+class WalletWelcomeController extends Controller {
     protected WalletProvisioningService $walletService;
     protected ErrorManagerInterface $errorManager;
     protected UltraLogManager $logger;
+    protected ?StripeConnectService $stripeConnectService;
+    protected AuthRedirectService $authRedirectService;
 
     public function __construct(
         WalletProvisioningService $walletService,
         ErrorManagerInterface $errorManager,
-        UltraLogManager $logger
+        UltraLogManager $logger,
+        AuthRedirectService $authRedirectService
     ) {
         $this->walletService = $walletService;
         $this->errorManager = $errorManager;
         $this->logger = $logger;
+        $this->authRedirectService = $authRedirectService;
+
+        // StripeConnectService is optional - only inject if Stripe is configured
+        try {
+            $this->stripeConnectService = app(StripeConnectService::class);
+        } catch (\Exception $e) {
+            $this->logger->warning('StripeConnectService not available - Stripe may not be configured', [
+                'error' => $e->getMessage(),
+            ]);
+            $this->stripeConnectService = null;
+        }
     }
 
     /**
      * Get wallet welcome data for authenticated user
      */
-    public function getData(): JsonResponse
-    {
+    public function getData(): JsonResponse {
         try {
             if (!Auth::check()) {
                 return response()->json([
@@ -55,9 +70,9 @@ class WalletWelcomeController extends Controller
             }
 
             // Check both session and flash data for show_wallet_welcome flag
-            $shouldShow = session()->has('show_wallet_welcome') || 
-                         session()->get('show_wallet_welcome') === true ||
-                         old('show_wallet_welcome') === true;
+            $shouldShow = session()->has('show_wallet_welcome') ||
+                session()->get('show_wallet_welcome') === true ||
+                old('show_wallet_welcome') === true;
 
             return response()->json([
                 'success' => true,
@@ -97,8 +112,7 @@ class WalletWelcomeController extends Controller
     /**
      * Add IBAN to user's wallet
      */
-    public function addIban(Request $request): JsonResponse
-    {
+    public function addIban(Request $request): JsonResponse {
         try {
             $request->validate([
                 'iban' => ['required', 'string', 'max:34', new ValidIban()],
@@ -128,6 +142,50 @@ class WalletWelcomeController extends Controller
 
             // Add IBAN to wallet
             $this->walletService->addIbanToWallet($wallet->id, $request->input('iban'));
+            $wallet->refresh();
+
+            $accountArray = [];
+            $onboardingUrl = null;
+            $dashboardUrl = null;
+            $redirectUrl = route($this->resolvePostIbanRedirectRoute($user));
+
+            if (($user->usertype ?? null) === 'creator' && $this->stripeConnectService !== null) {
+                try {
+                    $stripeAccountData = $this->stripeConnectService->ensureExpressAccount($wallet, $user);
+                    $accountArray = $stripeAccountData['account'] ?? [];
+                    $accountId = $accountArray['id'] ?? null;
+
+                    if ($accountId) {
+                        $needsOnboarding = !($accountArray['details_submitted'] ?? false)
+                            || !($accountArray['charges_enabled'] ?? false);
+
+                        if ($needsOnboarding) {
+                            $onboardingUrl = $this->stripeConnectService->createAccountLink(
+                                $accountId,
+                                route('creator.onboarding.summary'),
+                                route('creator.onboarding.summary')
+                            );
+                        }
+
+                        $dashboardUrl = $this->stripeConnectService->createExpressDashboardLoginLink($accountId);
+                    }
+
+                    $redirectUrl = route('creator.onboarding.summary');
+                } catch (\Exception $e) {
+                    $this->logger->error('Stripe Connect account creation failed during IBAN setup', [
+                        'user_id' => $user->id,
+                        'wallet_id' => $wallet->id,
+                        'error' => $e->getMessage(),
+                    ]);
+
+                    // Continue without Stripe - user can set it up later
+                    $this->errorManager->handle('STRIPE_CONNECT_ACCOUNT_FAILED', [
+                        'user_id' => $user->id,
+                        'wallet_id' => $wallet->id,
+                        'error' => $e->getMessage(),
+                    ], $e);
+                }
+            }
 
             // Save preference if requested
             if ($request->input('dont_show_again', false)) {
@@ -145,8 +203,17 @@ class WalletWelcomeController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => __('register.wallet_iban_added_success'),
+                'redirect_url' => $redirectUrl,
                 'data' => [
-                    'masked_iban' => $wallet->fresh()->getMaskedIbanAttribute(),
+                    'masked_iban' => $wallet->getMaskedIbanAttribute(),
+                    'stripe_account' => [
+                        'id' => $accountArray['id'] ?? null,
+                        'charges_enabled' => $accountArray['charges_enabled'] ?? false,
+                        'payouts_enabled' => $accountArray['payouts_enabled'] ?? false,
+                        'details_submitted' => $accountArray['details_submitted'] ?? false,
+                    ],
+                    'onboarding_url' => $onboardingUrl,
+                    'dashboard_url' => $dashboardUrl,
                 ]
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -155,6 +222,20 @@ class WalletWelcomeController extends Controller
                 'error' => __('register.invalid_iban'),
                 'errors' => $e->errors()
             ], 422);
+        } catch (DuplicateIbanException $e) {
+            $this->logger->warning('Duplicate IBAN detected via welcome modal', [
+                'user_id' => Auth::id(),
+                'wallet_id' => $wallet->id,
+                'iban_last4' => $e->ibanLast4,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => __('register.wallet_iban_duplicate'),
+                'errors' => [
+                    'iban' => [__('register.wallet_iban_duplicate')],
+                ],
+            ], 409);
         } catch (\Exception $e) {
             $this->logger->error('Failed to add IBAN to wallet', [
                 'user_id' => Auth::id(),
@@ -171,8 +252,7 @@ class WalletWelcomeController extends Controller
     /**
      * Skip IBAN and close modal
      */
-    public function skipIban(Request $request): JsonResponse
-    {
+    public function skipIban(Request $request): JsonResponse {
         try {
             $request->validate([
                 'dont_show_again' => ['sometimes', 'boolean'],
@@ -214,5 +294,12 @@ class WalletWelcomeController extends Controller
                 'error' => 'Failed to complete setup'
             ], 500);
         }
+    }
+
+    /**
+     * Determine redirect route after IBAN flow for non-creator users.
+     */
+    protected function resolvePostIbanRedirectRoute($user): string {
+        return $this->authRedirectService->getRedirectRoute($user);
     }
 }

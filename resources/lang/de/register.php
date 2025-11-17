@@ -28,6 +28,7 @@ return [
     // Wallet Welcome Modal Messages
     'wallet_iban_added_success' => 'IBAN erfolgreich zu Ihrer Wallet hinzugefügt.',
     'wallet_iban_add_failed' => 'Fehler beim Hinzufügen der IBAN. Bitte versuchen Sie es erneut.',
+    'wallet_iban_duplicate' => 'Diese IBAN ist bereits mit einem anderen FlorenceEGI-Konto verknüpft.',
     'wallet_welcome_completed' => 'Wallet-Einrichtung abgeschlossen.',
     'wallet_not_found' => 'Wallet für diesen Benutzer nicht gefunden.',
     'invalid_iban' => 'Ungültige IBAN. Überprüfen Sie das Format.',
