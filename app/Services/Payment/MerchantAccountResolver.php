@@ -128,8 +128,8 @@ class MerchantAccountResolver {
 
         // Check if provider is enabled in .env
         $providerEnabled = match ($provider) {
-            'stripe' => (bool) config('services.stripe.enabled', false),
-            'paypal' => (bool) config('payment.paypal.enabled', false),
+            'stripe' => (bool) config('algorand.payments.stripe_enabled', false),
+            'paypal' => (bool) config('algorand.payments.paypal_enabled', false),
             default => false,
         };
 
@@ -173,7 +173,7 @@ class MerchantAccountResolver {
                 'provider' => $provider,
                 'all_valid' => false,
                 'can_accept_payments' => false,
-                'total_wallets' => $wallets->count(),
+                'total_wallets' => $providerWallets->count(), // Fixed: use $providerWallets, not $wallets
                 'valid_wallets' => 0,
                 'invalid_wallets' => [],
                 'provider_enabled' => $providerEnabled,
