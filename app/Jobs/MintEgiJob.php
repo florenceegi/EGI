@@ -112,6 +112,10 @@ class MintEgiJob implements ShouldQueue {
             // IMPORTANT: Use fresh() to avoid stale relationship cache
             $egi = \App\Models\Egi::find($egiBlockchain->egi_id);
 
+            if ($egi) {
+                $egi->loadMissing('collection.creator', 'collection.owner', 'user');
+            }
+
             $egi->update([
                 'owner_id' => $egiBlockchain->buyer_user_id, // New owner (buyer)
                 'mint' => true,                               // Flag for isMinted() method
@@ -130,8 +134,10 @@ class MintEgiJob implements ShouldQueue {
                 'token_EGI' => $result->asa_id
             ]);
 
-            // 4.8. PAYMENT DISTRIBUTIONS: Create after successful mint (AREA 2.2.2)
-            if ($egiBlockchain->paid_amount && $egiBlockchain->paid_amount > 0) {
+            // 4.8. PAYMENT DISTRIBUTIONS OR EGILI REWARDS
+            if ($egiBlockchain->payment_method === 'egili') {
+                $this->rewardCreatorForEgiliPayment($egi, $egiBlockchain, $logger);
+            } elseif ($egiBlockchain->paid_amount && $egiBlockchain->paid_amount > 0) {
                 try {
                     $distributionService = app(\App\Services\PaymentDistributionService::class);
                     $distributions = $distributionService->recordMintDistribution(

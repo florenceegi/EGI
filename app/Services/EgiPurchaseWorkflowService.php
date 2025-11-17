@@ -2,22 +2,24 @@
 
 namespace App\Services;
 
-use App\Models\Egi;
-use App\Models\User;
-use App\Models\Reservation;
-use App\Models\EgiBlockchain;
 use App\Contracts\PaymentServiceInterface;
 use App\DataTransferObjects\Payment\PaymentRequest;
 use App\DataTransferObjects\Payment\PaymentResult;
+use App\Enums\Gdpr\GdprActivityCategory;
+use App\Models\Egi;
+use App\Models\EgiBlockchain;
+use App\Models\Reservation;
+use App\Models\User;
 use App\Services\EgiMintingService;
-
-use Ultra\UltraLogManager\UltraLogManager;
-use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use App\Services\Gdpr\AuditLogService;
 use App\Services\Gdpr\ConsentService;
-use App\Enums\Gdpr\GdprActivityCategory;
-use Illuminate\Support\Facades\DB;
+use App\Services\Payment\MerchantAccountResolver;
+use App\Services\Payment\PayPalRealPaymentService;
+use App\Services\Payment\StripeRealPaymentService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use Ultra\UltraLogManager\UltraLogManager;
 
 /**
  * @Oracode Service: EGI Purchase Workflow Orchestrator
@@ -37,6 +39,7 @@ class EgiPurchaseWorkflowService {
     private AuditLogService $auditService;
     private ConsentService $consentService;
     private EgiMintingService $mintingService;
+    private MerchantAccountResolver $merchantAccountResolver;
 
 
     /**
@@ -54,13 +57,15 @@ class EgiPurchaseWorkflowService {
         ErrorManagerInterface $errorManager,
         AuditLogService $auditService,
         ConsentService $consentService,
-        EgiMintingService $mintingService
+        EgiMintingService $mintingService,
+        MerchantAccountResolver $merchantAccountResolver
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
         $this->auditService = $auditService;
         $this->consentService = $consentService;
         $this->mintingService = $mintingService;
+        $this->merchantAccountResolver = $merchantAccountResolver;
     }
 
     /**
@@ -100,6 +105,7 @@ class EgiPurchaseWorkflowService {
                 $this->validateEgiAvailability($egi);
 
                 // 4. Process payment
+                $paymentRequest = $this->ensureMerchantContext($egi, $paymentService, $paymentRequest);
                 $paymentResult = $this->processPayment($paymentService, $paymentRequest, $user);
 
                 // 5. Create blockchain record placeholder
@@ -207,6 +213,7 @@ class EgiPurchaseWorkflowService {
                 $this->validateReservationForPayment($reservation);
 
                 // 4. Process payment
+                $paymentRequest = $this->ensureMerchantContext($egi, $paymentService, $paymentRequest);
                 $paymentResult = $this->processPayment($paymentService, $paymentRequest, $user);
 
                 // 5. Create blockchain record with reservation link
@@ -408,7 +415,8 @@ class EgiPurchaseWorkflowService {
             'paid_amount' => $paymentResult->amount,
             'paid_currency' => $paymentResult->currency,
             'mint_status' => 'minting_queued',
-            'certificate_uuid' => \Illuminate\Support\Str::uuid()
+            'certificate_uuid' => \Illuminate\Support\Str::uuid(),
+            'merchant_psp_config' => $paymentResult->metadata['merchant_psp'] ?? null,
         ]);
     }
 
@@ -438,8 +446,33 @@ class EgiPurchaseWorkflowService {
             'paid_amount' => $paymentResult->amount,
             'paid_currency' => $paymentResult->currency,
             'mint_status' => 'minting_queued',
-            'certificate_uuid' => \Illuminate\Support\Str::uuid()
+            'certificate_uuid' => \Illuminate\Support\Str::uuid(),
+            'merchant_psp_config' => $paymentResult->metadata['merchant_psp'] ?? null,
         ]);
+    }
+
+    /**
+     * Ensure merchant context is present on the payment request when needed.
+     */
+    private function ensureMerchantContext(
+        Egi $egi,
+        PaymentServiceInterface $paymentService,
+        PaymentRequest $paymentRequest
+    ): PaymentRequest {
+        if (!empty($paymentRequest->merchantContext)) {
+            return $paymentRequest;
+        }
+
+        if (!($paymentService instanceof StripeRealPaymentService || $paymentService instanceof PayPalRealPaymentService)) {
+            return $paymentRequest;
+        }
+
+        $context = $this->merchantAccountResolver->resolveForEgiAndProvider(
+            $egi,
+            $paymentService->getProviderName()
+        );
+
+        return $paymentRequest->withMerchantContext($context);
     }
 
     /**

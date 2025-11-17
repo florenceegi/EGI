@@ -20,10 +20,10 @@ use Illuminate\Support\Facades\Log;
  * @date 2025-10-09
  * @purpose Validation for direct mint operations (dual path mint vs reservation)
  *
- * MiCA-SAFE Compliance:
- * - FIAT payment only (validated via payment_method)
- * - No crypto custody for users
- * - Treasury wallet mint service
+     * MiCA-SAFE Compliance:
+     * - FIAT PSP payments + Egili (utility token, no custody)
+     * - No crypto custody for users
+     * - Treasury wallet mint service
  */
 class MintDirectRequest extends FormRequest {
 
@@ -94,7 +94,7 @@ class MintDirectRequest extends FormRequest {
             'payment_method' => [
                 'required',
                 'string',
-                'in:stripe,paypal,bank_transfer' // NO crypto payment methods
+                'in:stripe,paypal,bank_transfer,egili' // FIAT PSP + Egili utility token
             ],
 
             // Optional: wallet address if user has one
@@ -145,7 +145,7 @@ class MintDirectRequest extends FormRequest {
 
             // Payment method
             'payment_method.required' => 'Metodo di pagamento obbligatorio',
-            'payment_method.in' => 'Metodo di pagamento non valido. Usa Stripe, PayPal o bonifico bancario.',
+            'payment_method.in' => 'Metodo di pagamento non valido. Usa Stripe, PayPal, bonifico bancario o Egili (se disponibile).',
 
             // Wallet address
             'wallet_address.regex' => 'Indirizzo wallet Algorand non valido (formato: 58 caratteri A-Z2-7)',
