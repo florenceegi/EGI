@@ -27,7 +27,8 @@ readonly class PaymentRequest {
         public array $metadata = [],
         public ?string $successUrl = null,
         public ?string $cancelUrl = null,
-        public ?string $webhookUrl = null
+        public ?string $webhookUrl = null,
+        public array $merchantContext = []
     ) {
         $this->validateAmount($amount);
         $this->validateCurrency($currency);
@@ -56,7 +57,8 @@ readonly class PaymentRequest {
             metadata: $data['metadata'] ?? [],
             successUrl: $data['success_url'] ?? null,
             cancelUrl: $data['cancel_url'] ?? null,
-            webhookUrl: $data['webhook_url'] ?? null
+            webhookUrl: $data['webhook_url'] ?? null,
+            merchantContext: $data['merchant_context'] ?? []
         );
     }
 
@@ -77,6 +79,7 @@ readonly class PaymentRequest {
             'success_url' => $this->successUrl,
             'cancel_url' => $this->cancelUrl,
             'webhook_url' => $this->webhookUrl,
+            'merchant_context' => $this->merchantContext,
         ];
     }
 
@@ -113,6 +116,34 @@ readonly class PaymentRequest {
         }
 
         return array_merge($base, $this->metadata);
+    }
+
+    /**
+     * Get merchant PSP context (Stripe Connect / PayPal merchant IDs).
+     */
+    public function getMerchantContext(): array
+    {
+        return $this->merchantContext;
+    }
+
+    /**
+     * Clone the payment request with a new merchant context.
+     */
+    public function withMerchantContext(array $merchantContext): static
+    {
+        return new static(
+            amount: $this->amount,
+            currency: $this->currency,
+            customerEmail: $this->customerEmail,
+            egiId: $this->egiId,
+            reservationId: $this->reservationId,
+            userId: $this->userId,
+            metadata: $this->metadata,
+            successUrl: $this->successUrl,
+            cancelUrl: $this->cancelUrl,
+            webhookUrl: $this->webhookUrl,
+            merchantContext: $merchantContext
+        );
     }
 
     /**
