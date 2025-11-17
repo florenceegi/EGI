@@ -25,6 +25,7 @@ class EgiFactory extends Factory {
             'title' => $this->faker->words(3, true),
             'description' => $this->faker->sentence(),
             'price' => $this->faker->randomFloat(2, 10, 1000),
+            'payment_by_egili' => false,
             'is_published' => false,
             'mint' => false,
             'extension' => 'jpg',

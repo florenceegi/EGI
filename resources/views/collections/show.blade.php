@@ -553,20 +553,55 @@ document.querySelectorAll('.egi-item, .stat-card').forEach(el => {
             const originalContent = btn.innerHTML;
             btn.innerHTML = btn.getAttribute('data-uploading-label') || 'Uploading…';
 
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrf,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                },
-                body: formData,
-                credentials: 'same-origin',
+            const uploadWithFetch = async () => {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrf,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                    credentials: 'same-origin',
+                });
+
+                const data = await res.clone().json().catch(() => null);
+                if (!res.ok || !data || !data.success) {
+                    throw new Error((data && data.message) || 'Upload failed');
+                }
+
+                return data;
+            };
+
+            const uploadWithXHR = () => new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', url, true);
+                xhr.responseType = 'json';
+                xhr.setRequestHeader('X-CSRF-TOKEN', csrf);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.onload = () => {
+                    const data = xhr.response ?? null;
+                    if (xhr.status >= 200 && xhr.status < 300 && data && data.success) {
+                        resolve(data);
+                    } else {
+                        reject(new Error((data && data.message) || 'Upload failed'));
+                    }
+                };
+
+                xhr.onerror = () => reject(new Error('Upload failed (network error)'));
+                xhr.send(formData);
             });
 
-            const data = await res.clone().json().catch(() => null);
-            if (!res.ok || !data || !data.success) {
-                throw new Error((data && data.message) || 'Upload failed');
+            let data;
+            try {
+                data = await uploadWithFetch();
+            } catch (err) {
+                if (err instanceof TypeError) {
+                    data = await uploadWithXHR();
+                } else {
+                    throw err;
+                }
             }
 
             // Aggiorna l'immagine del banner a caldo

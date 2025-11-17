@@ -42,3 +42,4 @@ Il comando:
 - Prima dell’import su ambienti critici (es. staging) verifica che non ci siano processi attivi che scrivono sul database.
 - Puoi aggiungere versioni nel nome file (es. `staging-before-demo.sql.gz`) per tracciare i momenti importanti.
 
+

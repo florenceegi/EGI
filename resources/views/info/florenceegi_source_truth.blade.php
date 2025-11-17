@@ -472,9 +472,13 @@
                                 permette una carriera come curatore digitale.</dd>
                         </div>
                         <div>
-                            <dt id="glossary-natan" class="text-xl font-bold text-emerald-700">NATAN (Neural Assistant)</dt>
+                            <dt id="glossary-natan" class="text-xl font-bold text-emerald-700">NATAN (Neural
+                                Assistant)</dt>
                             <dd class="mt-1 text-gray-700">
-                                Tenant funzionale di FlorenceEGI dedicato ad assistenza documentale, notarizzazione, servizi RAG e automazioni AI per enti pubblici e privati. Alimenta il <strong>NATAN Market Engine</strong> (Valuation + Activation) che rende la piattaforma un vero AMMk.
+                                Tenant funzionale di FlorenceEGI dedicato ad assistenza documentale, notarizzazione,
+                                servizi RAG e automazioni AI per enti pubblici e privati. Alimenta il <strong>NATAN
+                                    Market Engine</strong> (Valuation + Activation) che rende la piattaforma un vero
+                                AMMk.
                             </dd>
                         </div>
                         <div>
@@ -538,7 +542,8 @@
                                 Termine coniato da FlorenceEGI per descrivere piattaforme che trasformano opere o
                                 contenuti in <a href="#glossary-egi" class="glossary-link">EGI</a> (asset digitali) e
                                 ne governano l’intero ciclo di valore. FlorenceEGI è il primo AMMk al mondo: il <a
-                                    href="#glossary-florenceegi-core" class="glossary-link">FlorenceEGI Core</a> coordina
+                                    href="#glossary-florenceegi-core" class="glossary-link">FlorenceEGI Core</a>
+                                coordina
                                 i cinque engine (NATAN Market, Asset, Distribution, Co-Creation, Compliance).
                             </dd>
                         </div>
@@ -552,13 +557,18 @@
                             <dt id="glossary-tenant-specializzato" class="text-xl font-bold text-emerald-700">Tenant
                                 specializzato</dt>
                             <dd class="mt-1 text-gray-700">
-                                Istanza verticale collegata al core con servizi dedicati: es. <strong>Natan</strong> (AI,
+                                Istanza verticale collegata al core con servizi dedicati: es. <strong>Natan</strong>
+                                (AI,
                                 notarizzazione, RAG) e <strong>FlorenceArtEGI</strong> (arte e marketplace). Ogni tenant
-                                eredita sicurezza e compliance dal core, ma governa processi e UI dedicati. FlorenceArtEGI
+                                eredita sicurezza e compliance dal core, ma governa processi e UI dedicati.
+                                FlorenceArtEGI
                                 espone <em>collection workspace</em> multi-utente con wallet personali e wallet di
                                 collection; per rispettare il limite Algorand di 16 account per gruppo atomico
-                                (<a href="https://developer.algorand.org/docs/get-details/parameter_tables/#others" class="glossary-link" target="_blank" rel="noopener noreferrer">MaxTxGroupSize</a>)
-                                la piattaforma riserva 4 slot al core lasciandone 12 alla collection (wallet utenti + wallet tecnici).
+                                (<a href="https://developer.algorand.org/docs/get-details/parameter_tables/#others"
+                                    class="glossary-link" target="_blank"
+                                    rel="noopener noreferrer">MaxTxGroupSize</a>)
+                                la piattaforma riserva 4 slot al core lasciandone 12 alla collection (wallet utenti +
+                                wallet tecnici).
                             </dd>
                         </div>
                         <div>
@@ -595,7 +605,8 @@
                                 Control)</dt>
                             <dd class="mt-1 text-gray-700">Sistema di controllo accessi basato su ruoli. FlorenceEGI ha
                                 ruoli <strong>globali</strong> (account: User, Creator, Collector, Admin) e ruoli
-                                <strong>locali</strong> (collection: Owner, Admin, Editor, Viewer).</dd>
+                                <strong>locali</strong> (collection: Owner, Admin, Editor, Viewer).
+                            </dd>
                         </div>
                     </dl>
                 </div>
