@@ -45,6 +45,9 @@ return [
     'errors' => [
         'merchant_account_disabled' => 'Al momento non è possibile accettare pagamenti per questo contenuto. Il creator deve completare la configurazione del proprio account di pagamento.',
         'merchant_account_incomplete' => 'Il profilo del creator non è completo. Contatta il creator per completare la configurazione dell\'account.',
+        'some_wallets_invalid' => 'Alcuni wallet associati alla collection non sono configurati correttamente. Contatta il creator per risolvere il problema.',
+        'stripe_disabled' => 'I pagamenti con Stripe sono temporaneamente disabilitati. Usa un altro metodo di pagamento.',
+        'paypal_disabled' => 'I pagamenti con PayPal sono temporaneamente disabilitati. Usa un altro metodo di pagamento.',
         'invalid_request' => 'Richiesta di pagamento non valida. Verifica i dati inseriti e riprova.',
         'api_error' => 'Si è verificato un errore temporaneo con il sistema di pagamento. Riprova tra qualche minuto.',
         'card_error' => 'La carta di credito è stata rifiutata. Verifica i dati della carta o usa un altro metodo di pagamento.',

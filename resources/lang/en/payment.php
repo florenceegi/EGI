@@ -45,12 +45,17 @@ return [
     'errors' => [
         'merchant_account_disabled' => 'Payments cannot be accepted for this content at the moment. The creator needs to complete their payment account setup.',
         'merchant_account_incomplete' => 'The creator\'s profile is incomplete. Please contact the creator to complete their account setup.',
+        'some_wallets_invalid' => 'Some wallets associated with the collection are not properly configured. Please contact the creator to resolve this issue.',
+        'stripe_disabled' => 'Stripe payments are temporarily disabled. Please use another payment method.',
+        'paypal_disabled' => 'PayPal payments are temporarily disabled. Please use another payment method.',
         'invalid_request' => 'Invalid payment request. Please check your information and try again.',
         'api_error' => 'A temporary error occurred with the payment system. Please try again in a few minutes.',
         'card_error' => 'Your credit card was declined. Please verify your card details or use another payment method.',
         'authentication_error' => 'Authentication error with the payment system. Please contact support.',
         'rate_limit' => 'Too many payment attempts. Please try again in a few minutes.',
         'generic_error' => 'An error occurred while processing your payment. Please try again later.',
+        'paypal_not_implemented' => 'PayPal is not yet available. Please use another payment method.',
+        'paypal_not_configured' => 'PayPal is not configured for this creator.',
     ],
 ];
 
