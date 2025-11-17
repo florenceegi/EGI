@@ -7,83 +7,82 @@
 
 <!-- Platform Header Banner (primissimo slot, full width) -->
 @isset($platformHeaderBanner)
-<div class="relative w-full">
-    {{ $platformHeaderBanner }}
-</div>
+    <div class="relative w-full">
+        {{ $platformHeaderBanner }}
+    </div>
 @endisset
 
 <!-- Platform Info Buttons (ora in cima) -->
 @isset($platformHeader)
-<div class="relative w-full px-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
-    {{ $platformHeader }}
-</div>
+    <div class="relative w-full px-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
+        {{ $platformHeader }}
+    </div>
 @endisset
 
 <!-- Platform Statistics (ora sotto i bottoni) -->
 @isset($platformSubHeader)
-<div class="relative z-10 w-full px-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
-    {{ $platformHeader }}
-</div>
+    <div class="relative z-10 w-full px-4 mx-auto mt-auto mb-auto max-w-7xl sm:px-6 lg:px-8">
+        {{ $platformHeader }}
+    </div>
 @endisset
 
 <!-- Hero Section -->
 @unless (isset($noHero) && $noHero)
-<section id="hero-section" class="relative flex flex-col overflow-hidden"
-    aria-labelledby="hero-main-title">
+    <section id="hero-section" class="relative flex flex-col overflow-hidden" aria-labelledby="hero-main-title">
 
-    <h1 id="hero-main-title" class="sr-only">{{ $title ?? __('guest_layout.default_title') }}</h1>
+        <h1 id="hero-main-title" class="sr-only">{{ $title ?? __('guest_layout.default_title') }}</h1>
 
-    @isset($heroFullWidth)
-    {{-- Layout a colonna intera --}}
-    <div class="relative z-10 w-full p-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        {{ $heroFullWidth }}
-    </div>
-    @endisset
+        @isset($heroFullWidth)
+            {{-- Layout a colonna intera --}}
+            <div class="relative z-10 w-full p-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                {{ $heroFullWidth }}
+            </div>
+        @endisset
 
-    {{-- Contenuto sotto l'hero --}}
-    @isset($belowHeroContent_0)
-    <div class="relative z-10 w-full p-4 mx-auto max-w-7xl sm:px-6 lg:px-8 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
-        {{ $belowHeroContent_0 ?? '' }}
-    </div>
-    @endisset
+        {{-- Contenuto sotto l'hero --}}
+        @isset($belowHeroContent_0)
+            <div class="relative z-10 w-full p-4 mx-auto below-hero-content max-w-7xl sm:px-6 lg:px-8" role="region"
+                aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
+                {{ $belowHeroContent_0 ?? '' }}
+            </div>
+        @endisset
 
-    {{-- Top Collectors Carousel --}}
-    @isset($belowHeroContent_1)
-    <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
-        aria-label="Top Collectors Carousel">
-        {{ $belowHeroContent_1 ?? '' }}
-    </div>
-    @endisset
+        {{-- Top Collectors Carousel --}}
+        @isset($belowHeroContent_1)
+            <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+                aria-label="Top Collectors Carousel">
+                {{ $belowHeroContent_1 ?? '' }}
+            </div>
+        @endisset
 
-    @isset($belowHeroContent_2)
-    <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
-        {{ $belowHeroContent_2 ?? '' }}
-    </div>
-    @endisset
+        @isset($belowHeroContent_2)
+            <div class="relative z-10 w-11/12 mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+                aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
+                {{ $belowHeroContent_2 ?? '' }}
+            </div>
+        @endisset
 
-    @isset($belowHeroContent_3)
-    <div class="relative z-10 w-full mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
-        aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
-        {{ $belowHeroContent_3 ?? '' }}
-    </div>
-    @endisset
+        @isset($belowHeroContent_3)
+            <div class="relative z-10 w-full mt-12 mb-12 ml-10 mr-10 below-hero-content" role="region"
+                aria-label="{{ __('guest_layout.hero_featured_content_aria_label') }}">
+                {{ $belowHeroContent_3 ?? '' }}
+            </div>
+        @endisset
 
-    {{-- EGI Carousel Slot - Mobile First --}}
+        {{-- EGI Carousel Slot - Mobile First --}}
 
-    <div class="absolute z-20 transform -translate-x-1/2 animate-bounce-slow bottom-6 left-1/2 md:hidden">
-        <button type="button" aria-label="{{ __('guest_layout.scroll_down_aria_label') }}"
-            class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-full bg-opacity-30 hover:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            onclick="document.getElementById('main-content').scrollIntoView({behavior: 'smooth'});">
-            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-        </button>
-    </div>
+        <div class="absolute z-20 transform -translate-x-1/2 animate-bounce-slow bottom-6 left-1/2 md:hidden">
+            <button type="button" aria-label="{{ __('guest_layout.scroll_down_aria_label') }}"
+                class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-full bg-opacity-30 hover:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                onclick="document.getElementById('main-content').scrollIntoView({behavior: 'smooth'});">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </button>
+        </div>
 
-</section>
+    </section>
 @endunless
 
 <!-- Main Content -->
@@ -133,7 +132,8 @@
         if (typeof Swal === 'undefined') {
             console.warn('⚠️ SweetAlert2 not available, using alert fallback');
             alert(
-                '� HEIC Format Detected\n\nThe selected file is in HEIC/HEIF format.\nWeb browsers don\'t support this format.\n\nSuggestion: Convert the file to JPG or PNG.');
+                '� HEIC Format Detected\n\nThe selected file is in HEIC/HEIF format.\nWeb browsers don\'t support this format.\n\nSuggestion: Convert the file to JPG or PNG.'
+                );
             return;
         }
 
@@ -217,9 +217,91 @@
     <x-egili-purchase-modal />
 @endauth
 
+{{-- Wallet welcome modal for PSP onboarding --}}
+@include('components.wallet-welcome-modal')
+
+{{-- Flash Messages Handler (UEM Integration) --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // UEM Toast Messages (msg_to => 'toast')
+        @if(session('error_toast'))
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: {!! json_encode(session('error_toast')) !!},
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 6000,
+                    timerProgressBar: true,
+                });
+            } else {
+                alert({!! json_encode(session('error_toast')) !!});
+            }
+        @endif
+
+        @if(session('success_toast'))
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: {!! json_encode(session('success_toast')) !!},
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                });
+            }
+        @endif
+
+        @if(session('warning_toast'))
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: {!! json_encode(session('warning_toast')) !!},
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                });
+            }
+        @endif
+
+        // Standard Laravel Flash Messages (fallback)
+        @if(session('success'))
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: {!! json_encode(session('success')) !!},
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            }
+        @endif
+
+        @if(session('error'))
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: {!! json_encode(session('error')) !!},
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                });
+            }
+        @endif
+    });
+</script>
+
 @stack('scripts')
-    {{-- Livewire Scripts --}}
-    @livewireScripts
+{{-- Livewire Scripts --}}
+@livewireScripts
 </body>
 
 </html>
