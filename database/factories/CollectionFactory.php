@@ -13,7 +13,7 @@ class CollectionFactory extends Factory {
         return [
             'creator_id' => User::factory(), // Associa automaticamente un nuovo utente
             'owner_id' => null, // Sarà impostato manualmente
-            'epp_id' => 2,
+            'epp_project_id' => null, // Updated from epp_id to epp_project_id
             'collection_name' => $this->faker->word . "'s Collection",
             'description' => $this->faker->sentence,
             'type' => 'image', // Default: standard collection
