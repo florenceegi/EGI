@@ -28,12 +28,8 @@
             <div class="flex items-center space-x-3">
                 <x-auth-type-badge :type="$authType" />
 
-                @if($canEdit)
-                    <x-button
-                        type="button"
-                        data-action="save-personal-data"
-                        class="hidden"
-                        id="save-button">
+                @if ($canEdit)
+                    <x-button type="button" data-action="save-personal-data" class="hidden" id="save-button">
                         {{ __('user_personal_data.save_changes') }}
                     </x-button>
                 @endif
@@ -55,38 +51,71 @@
                     <x-personal-data.gdpr-notice :gdpr-summary="$gdprSummary" />
 
                     {{-- Personal Data Form --}}
-                    <x-personal-data.form
-                        :user="$user"
-                        :personal-data="$personalData"
-                        :gdprConsents="$gdprConsents"
-                        :user-country="$userCountry"
-                        :available-countries="$availableCountries"
-                        :validation-config="$validationConfig"
-                        :can-edit="$canEdit"
-                        :auth-type="$authType"
-                        :platform-services-consent="$platformServicesConsent" />
+                    <x-personal-data.form :user="$user" :personal-data="$personalData" :gdprConsents="$gdprConsents" :user-country="$userCountry"
+                        :available-countries="$availableCountries" :validation-config="$validationConfig" :can-edit="$canEdit" :auth-type="$authType" :platform-services-consent="$platformServicesConsent" />
 
                 </div>
 
                 {{-- Sidebar --}}
                 <div class="space-y-6 lg:col-span-1">
 
+                    {{-- DEBUG: Mostra usertype --}}
+                    <div class="rounded border border-yellow-400 bg-yellow-100 p-4">
+                        <p class="text-xs">DEBUG: usertype = {{ $user->usertype ?? 'NULL' }}</p>
+                        <p class="text-xs">User ID = {{ $user->id ?? 'NULL' }}</p>
+                    </div>
+
+                    @if (in_array($user->usertype ?? '', ['epp', 'company', 'enterprise', 'epp_entity']))
+                        {{-- Quick Navigation to Organization Data --}}
+                        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                            <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                                <h4 class="text-sm font-medium text-gray-900">
+                                    {{ __('user_personal_data.quick_navigation') }}
+                                </h4>
+                            </div>
+                            <div class="px-6 py-4">
+                                <a href="{{ route('user.organization.edit') }}"
+                                    class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    {{ __('user_personal_data.go_to_organization_data') }}
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- IBAN Management --}}
+                    <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                        <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                            <h4 class="text-sm font-medium text-gray-900">
+                                {{ __('user_personal_data.iban_management') }}
+                            </h4>
+                        </div>
+                        <div class="px-6 py-4">
+                            <p class="mb-3 text-sm text-gray-600">
+                                {{ __('user_personal_data.iban_description') }}
+                            </p>
+                            <button type="button" onclick="openIbanModal('personal')"
+                                class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                                {{ __('user_personal_data.manage_iban') }}
+                            </button>
+                        </div>
+                    </div>
+
                     {{-- GDPR Quick Actions --}}
-                    <x-personal-data.gdpr-actions
-                        :gdpr-summary="$gdprSummary"
-                        :can-edit="$canEdit"
-                        :auth-type="$authType" />
+                    <x-personal-data.gdpr-actions :gdpr-summary="$gdprSummary" :can-edit="$canEdit" :auth-type="$authType" />
 
                     {{-- Data Summary --}}
-                    <x-personal-data.data-summary
-                        :personal-data="$personalData"
-                        :last-update="$lastUpdate"
-                        :user-country="$userCountry" />
+                    <x-personal-data.data-summary :personal-data="$personalData" :last-update="$lastUpdate" :user-country="$userCountry" />
 
                     {{-- Validation Info --}}
-                    <x-personal-data.validation-info
-                        :user-country="$userCountry"
-                        :validation-config="$validationConfig" />
+                    <x-personal-data.validation-info :user-country="$userCountry" :validation-config="$validationConfig" />
 
                 </div>
             </div>
@@ -94,11 +123,11 @@
     </div>
 
     {{-- Error Display Container --}}
-    <div id="error-container" class="fixed z-50 top-4 right-4"></div>
+    <div id="error-container" class="fixed right-4 top-4 z-50"></div>
 
     {{-- Loading Overlay --}}
-    <div id="loading-overlay" class="fixed inset-0 z-40 flex items-center justify-center hidden bg-black bg-opacity-50">
-        <div class="flex items-center p-6 space-x-3 bg-white rounded-lg">
+    <div id="loading-overlay" class="fixed inset-0 z-40 flex hidden items-center justify-center bg-black bg-opacity-50">
+        <div class="flex items-center space-x-3 rounded-lg bg-white p-6">
             <x-loading-spinner />
             <span class="text-gray-700">{{ __('user_personal_data.processing_update') }}</span>
         </div>
@@ -122,11 +151,13 @@
                 'validationError' => __('user_personal_data.validation_error'),
                 'exportStarted' => __('user_personal_data.export_started'),
                 'processing' => __('user_personal_data.processing_update'),
-            ]
+            ],
         ];
     @endphp
 
     <script>
         window.personalDataConfig = @json($personalDataConfig);
     </script>
+
+    @include('components.iban-management-modal')
 </x-app-layout>

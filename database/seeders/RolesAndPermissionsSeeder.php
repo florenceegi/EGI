@@ -710,6 +710,63 @@ class RolesAndPermissionsSeeder extends Seeder {
             'allow-blockchain-operations'
         ],
 
+        'epp' => [
+            // ❌ NON HA create_collection (solo progetti EPP)
+            // ALIAS di epp_entity per compatibilità
+
+            // Base permissions
+            'access_dashboard',
+            'view_dashboard',
+            'view_EGI',
+            'view_statistics',
+            'view_documentation',
+
+            // EPP specific (focus principale)
+            'create_epp_projects',
+            'manage_epp_projects',
+            'allocate_epp_points',
+            'certify_sustainability',
+            'environmental_reporting',
+
+            // Può vedere collections per certificare sostenibilità
+            'view_collection',
+            'view_collection_header',
+
+            // Profile & GDPR
+            'manage_profile',
+            'manage_account',
+            'view_profile',
+            'manage_consents',
+            'manage_privacy',
+            'export_personal_data',
+            'delete_account',
+            'view_activity_log',
+            'view_privacy_policy',
+            'edit_personal_data',
+            'limit_data_processing',
+            'edit_own_profile_data',
+            'edit_own_personal_data',
+            'edit_own_organization_data',  // ✅ EPP può gestire org data
+            'manage_own_documents',
+            'manage_own_invoice_preferences',
+            'upload_identity_documents',
+            'verify_document_status',
+            'download_own_documents',
+            'configure_invoice_preferences',
+            'view_own_invoices',
+            'download_own_invoices',
+            'access_full_dashboard',
+            'view_own_wallet_address',
+            'create_multiple_collections',
+            'priority_reservations',
+            'full_auction_access',
+            'manage_advanced_settings',
+            'can_request_export',
+            'can_request_deletion',
+            'manage_own_biographies',
+            'manage_bio_profile',
+        ],
+
         'epp_entity' => [
             // ❌ NON HA create_collection (solo progetti EPP)
 
@@ -1003,7 +1060,7 @@ class RolesAndPermissionsSeeder extends Seeder {
             'can_request_export',
             'can_request_deletion',
             'allow-blockchain-operations',
-            
+
             // Permessi specifici per gestione tenant PA (NATAN_LOC)
             'edit_own_profile_data',
             'edit_own_personal_data',

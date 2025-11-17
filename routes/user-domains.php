@@ -56,6 +56,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('personal-data');
         Route::put('personal-data', [PersonalDataController::class, 'update'])
             ->name('personal-data.update');
+        Route::post('personal-data/iban', [PersonalDataController::class, 'saveIban'])
+            ->name('personal-data.iban');
         Route::get('personal-data/export', [PersonalDataController::class, 'export'])
             ->name('personal-data.export');
         Route::delete('personal-data', [PersonalDataController::class, 'destroy'])
@@ -73,28 +75,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     | - EPP Entity accounts
     |
     */
-    // Route::prefix('user/domains/organization-data')->name('user.domains.organization-data.')->group(function () {
-
-    //     // Main organization data management page
-    //     Route::get('/', [OrganizationDataController::class, 'index'])
-    //         ->name('index')
-    //         ->middleware('can:edit_own_organization_data');
-
-    //     // Update organization data
-    //     Route::put('/', [OrganizationDataController::class, 'update'])
-    //         ->name('update')
-    //         ->middleware('can:edit_own_organization_data');
-
-    //     // Verify business information (for seller verification)
-    //     Route::post('/verify-business', [OrganizationDataController::class, 'verifyBusiness'])
-    //         ->name('verify-business')
-    //         ->middleware(['can:edit_own_organization_data', 'strong_auth_required']);
-
-    //     // Upload business documents
-    //     Route::post('/upload-documents', [OrganizationDataController::class, 'uploadDocuments'])
-    //         ->name('upload-documents')
-    //         ->middleware(['can:edit_own_organization_data', 'strong_auth_required']);
-    // });
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::get('organization/edit', [\App\Http\Controllers\User\UserOrganizationController::class, 'edit'])
+            ->name('organization.edit');
+        Route::put('organization/update', [\App\Http\Controllers\User\UserOrganizationController::class, 'update'])
+            ->name('organization.update');
+        Route::post('organization/iban', [\App\Http\Controllers\User\UserOrganizationController::class, 'saveIban'])
+            ->name('organization.iban');
+        Route::get('organization/verification-status', [\App\Http\Controllers\User\UserOrganizationController::class, 'verificationStatus'])
+            ->name('organization.verification-status');
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -195,7 +185,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('index');
 
 
-        Route::get('/user/identity-verification', function() {
+        Route::get('/user/identity-verification', function () {
             return view('users.domains.personal-data.identity-verification', [
                 'return_url' => request()->get('return_url', '/'),
                 'verification_reason' => request()->get('verification_reason', 'Identity verification required')

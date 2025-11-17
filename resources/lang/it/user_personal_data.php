@@ -220,4 +220,17 @@ return [
         'request_submitted' => 'Richiesta di cancellazione inviata con successo',
         'processing_time' => 'La richiesta sarà elaborata entro 30 giorni lavorativi',
     ],
+
+    // ===================================================================
+    // NAVIGATION
+    // ===================================================================
+    'quick_navigation' => 'Navigazione Rapida',
+    'go_to_organization_data' => 'Vai ai Dati Aziendali',
+
+    // ===================================================================
+    // IBAN MANAGEMENT
+    // ===================================================================
+    'iban_management' => 'Gestione IBAN',
+    'iban_description' => 'Configura il tuo IBAN per ricevere pagamenti in Euro',
+    'manage_iban' => 'Gestisci IBAN',
 ];

@@ -455,4 +455,84 @@ class CollectionsController extends Controller {
             ], 500);
         }
     }
+
+    /**
+     * Update the EPP Project for a collection.
+     *
+     * Allows the collection creator/authorized user to select an EPP Project
+     * that will receive a percentage of the collection's sales.
+     *
+     * @param Request $request The HTTP request
+     * @param int $id The collection ID
+     * @return JsonResponse
+     */
+    public function updateEppProject(Request $request, $id): \Illuminate\Http\JsonResponse {
+        try {
+            // Find the collection
+            $collection = Collection::findOrFail($id);
+
+            // Check permissions
+            $currentUserId = \App\Supports\FegiAuth::id();
+            if (!$collection->userHasPermission($currentUserId, 'create_collection')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized. You do not have permission to modify this collection.'
+                ], 403);
+            }
+
+            // Validate request
+            $validated = $request->validate([
+                'epp_project_id' => 'required|exists:epp_projects,id'
+            ]);
+
+            // Update the collection
+            $collection->epp_project_id = $validated['epp_project_id'];
+            $collection->save();
+
+            // Load the EppProject relationship with EPP User
+            $collection->load(['eppProject.eppUser.organizationData']);
+            $project = $collection->eppProject;
+            $eppUser = $project->eppUser;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'EPP Project updated successfully',
+                'data' => [
+                    'epp_project' => [
+                        'id' => $project->id,
+                        'name' => $project->name,
+                        'project_type' => $project->project_type,
+                        'project_type_name' => $project->project_type_name,
+                        'description' => $project->description,
+                        'completion_percentage' => $project->completion_percentage,
+                        'epp_user' => [
+                            'name' => $eppUser->name ?? 'Unknown',
+                            'organization_name' => $eppUser->organizationData->organization_name ?? null,
+                        ]
+                    ]
+                ]
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Collection or EPP Project not found'
+            ], 404);
+        } catch (\Throwable $e) {
+            app(\App\Services\Logger\UltraLogManager::class)->error('[CollectionsController] updateEppProject failed', [
+                'collection_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating EPP Project'
+            ], 500);
+        }
+    }
 }

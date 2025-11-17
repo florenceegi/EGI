@@ -63,7 +63,11 @@ return [
     'user_type_trader_pro' => 'Trader Professionista',
     'user_type_trader_pro_desc' => 'Professionisti del trading di asset culturali, NFT e token EGI',
 
-    // EPP Entity (unchanged)
+    // EPP (Environmental & Social Impact)
+    'user_type_epp' => 'EPP',
+    'user_type_epp_desc' => 'Organizzazioni focalizzate su impatto ambientale, sociale e di governance',
+
+    // EPP Entity (unchanged - legacy)
     'user_type_epp_entity' => 'Ente EPP',
     'user_type_epp_entity_desc' => 'Organizzazioni focalizzate su impatto ambientale, sociale e di governance',
 

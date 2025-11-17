@@ -48,7 +48,7 @@ class Collection extends Model implements HasMedia {
         'floor_price',
         'path_image_to_ipfs',
         'url_image_ipfs',
-        'epp_id',
+        'epp_project_id',
         'EGI_asset_id',
     ];
 
@@ -172,6 +172,18 @@ class Collection extends Model implements HasMedia {
         return !$hasPendingWalletProposals;
     }
 
+    /**
+     * Relazione con EppProject (progetto ambientale selezionato).
+     * Una Collection supporta UN singolo EppProject.
+     */
+    public function eppProject() {
+        return $this->belongsTo(EppProject::class, 'epp_project_id');
+    }
+
+    /**
+     * DEPRECATED: Old EPP relationship - use eppProject() instead
+     * @deprecated Use eppProject() relationship
+     */
     public function epp() {
         return $this->belongsTo(Epp::class, 'epp_id');
     }

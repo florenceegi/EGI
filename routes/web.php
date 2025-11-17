@@ -149,10 +149,10 @@ Route::middleware('auth')->group(function () {
     Route::prefix('egili')->name('egili.')->group(function () {
         Route::post('/purchase/process', [App\Http\Controllers\EgiliPurchaseController::class, 'processPurchase'])
             ->name('purchase.process');
-        
+
         Route::get('/purchase/{orderReference}/confirmation', [App\Http\Controllers\EgiliPurchaseController::class, 'showConfirmation'])
             ->name('purchase.confirmation');
-        
+
         Route::get('/purchase/pricing', [App\Http\Controllers\EgiliPurchaseController::class, 'getPricing'])
             ->name('purchase.pricing');
     });
@@ -530,6 +530,11 @@ Route::get('/epps', [EppController::class, 'index'])->name('epps.index');
 Route::get('/epps/{epp}', [EppController::class, 'show'])->name('epps.show');
 Route::get('/epps/dashboard', [EppController::class, 'dashboard'])->name('epps.dashboard');
 
+// EPP API routes
+Route::get('/api/epp-projects/active', [EppController::class, 'getActiveEppProjects'])->name('api.epp-projects.active');
+Route::post('/api/collections/{id}/epp-project', [CollectionsController::class, 'updateEppProject'])->name('api.collections.update-epp-project');
+
+
 /*
 |--------------------------------------------------------------------------
 | Wallet & Authentication Routes
@@ -651,7 +656,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             Route::post('/assign-permissions', [RoleController::class, 'assignPermissions'])
                 ->name('assign.permissions')
                 ->middleware(['role_or_permission:manage_roles']);
-            
+
             // Feature Pricing Manager (Task 4.1)
             Route::prefix('pricing')->name('pricing.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Admin\FeaturePricingController::class, 'index'])
@@ -663,7 +668,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
                 Route::post('/{id}/toggle', [\App\Http\Controllers\Admin\FeaturePricingController::class, 'toggleActive'])
                     ->name('toggle');
             });
-            
+
             // Feature Promotions Manager (Task 4.2)
             Route::prefix('promotions')->name('promotions.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Admin\FeaturePromotionController::class, 'index'])
@@ -675,7 +680,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
                 Route::post('/{id}/deactivate', [\App\Http\Controllers\Admin\FeaturePromotionController::class, 'deactivate'])
                     ->name('deactivate');
             });
-            
+
             // Egili Management (Task 4.3 - SuperAdmin only)
             Route::prefix('egili')->name('egili.')->middleware('role:superadmin')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Admin\EgiliManagementController::class, 'index'])
@@ -685,7 +690,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
                 Route::post('/grant-gift', [\App\Http\Controllers\Admin\EgiliManagementController::class, 'grantGift'])
                     ->name('grant.gift');
             });
-            
+
             // Featured EGI Calendar (Task 4.4)
             Route::prefix('featured')->name('featured.')->group(function () {
                 Route::get('/calendar', [\App\Http\Controllers\Admin\FeaturedCalendarController::class, 'calendar'])
@@ -697,7 +702,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
                 Route::post('/{id}/reject', [\App\Http\Controllers\Admin\FeaturedCalendarController::class, 'reject'])
                     ->name('reject');
             });
-            
+
             // Consumption Ledger Dashboard (Granular Tracking)
             Route::prefix('consumption')->name('consumption.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\Admin\ConsumptionLedgerController::class, 'summary'])

@@ -28,8 +28,7 @@ use Illuminate\Support\Facades\DB;
  * @version 1.0.0
  * @since 1.0.0
  */
-class EPPController extends Controller
-{
+class EPPController extends Controller {
     /**
      * Display a listing of the EPPs.
      *
@@ -39,8 +38,7 @@ class EPPController extends Controller
      * @param Request $request The HTTP request
      * @return \Illuminate\View\View The view with EPP data
      */
-    public function index(Request $request)
-    {
+    public function index(Request $request) {
         // Get all EPPs with basic stats
         $epps = Epp::withCount(['collections', 'transactions'])
             ->withSum('transactions', 'amount')
@@ -58,8 +56,7 @@ class EPPController extends Controller
      * @param Epp $epp The EPP to display
      * @return \Illuminate\View\View The view with EPP details
      */
-    public function show(Epp $epp)
-    {
+    public function show(Epp $epp) {
         // Load all necessary relationships
         $epp->load(['transactions', 'milestones']);
 
@@ -87,8 +84,7 @@ class EPPController extends Controller
      * @param Request $request The HTTP request
      * @return \Illuminate\View\View The view with dashboard data
      */
-    public function dashboard(Request $request)
-    {
+    public function dashboard(Request $request) {
         // Get summary statistics for all EPPs
         $totalFunds = DB::table('epp_transactions')->sum('amount');
         $totalEpps = Epp::count();
@@ -127,7 +123,7 @@ class EPPController extends Controller
         $arfProjects = Epp::where('type', 'ARF')->where('status', 'active')
             ->withCount(['collections', 'transactions'])
             ->get()
-            ->map(function($project) {
+            ->map(function ($project) {
                 // Use the completion_percentage attribute from the model
                 $project->metrics = $this->calculateTypeMetrics($project);
                 return $project;
@@ -136,7 +132,7 @@ class EPPController extends Controller
         $aprProjects = Epp::where('type', 'APR')->where('status', 'active')
             ->withCount(['collections', 'transactions'])
             ->get()
-            ->map(function($project) {
+            ->map(function ($project) {
                 $project->metrics = $this->calculateTypeMetrics($project);
                 return $project;
             });
@@ -144,7 +140,7 @@ class EPPController extends Controller
         $bpeProjects = Epp::where('type', 'BPE')->where('status', 'active')
             ->withCount(['collections', 'transactions'])
             ->get()
-            ->map(function($project) {
+            ->map(function ($project) {
                 $project->metrics = $this->calculateTypeMetrics($project);
                 return $project;
             });
@@ -155,10 +151,10 @@ class EPPController extends Controller
             ->orderBy('completion_date', 'desc')
             ->take(5)
             ->get()
-            ->map(function($milestone) {
+            ->map(function ($milestone) {
                 // Add calculated metrics based on the milestone's EPP type
                 $impactMetrics = [];
-                switch($milestone->epp->type) {
+                switch ($milestone->epp->type) {
                     case 'ARF':
                         $impactMetrics['treesPlanted'] = floor($milestone->current_value / 10);
                         break;
@@ -202,8 +198,7 @@ class EPPController extends Controller
      * @param string $type The EPP type (ARF, APR, or BPE)
      * @return array The calculated metrics specific to the program type
      */
-    private function calculateTypeMetrics($type)
-    {
+    private function calculateTypeMetrics($type) {
         // Get total contribution for this type
         $totalTypeContribution = DB::table('epp_transactions')
             ->join('epps', 'epp_transactions.epp_id', '=', 'epps.id')
@@ -262,18 +257,21 @@ class EPPController extends Controller
      * @param \Illuminate\Support\Collection $monthlyFunding Monthly funding data
      * @return array Structured data for charts
      */
-    private function prepareChartData($eppTypeStats, $monthlyFunding)
-    {
+    private function prepareChartData($eppTypeStats, $monthlyFunding) {
         // Calculate total funds for percentage calculations
         $totalAllFunds = DB::table('epp_transactions')->sum('amount');
 
         // Prepare distribution chart data
-        $distributionLabels = $eppTypeStats->pluck('type')->map(function($type) {
-            switch($type) {
-                case 'ARF': return 'ARF (Reforestation)';
-                case 'APR': return 'APR (Ocean Cleanup)';
-                case 'BPE': return 'BPE (Bee Protection)';
-                default: return $type;
+        $distributionLabels = $eppTypeStats->pluck('type')->map(function ($type) {
+            switch ($type) {
+                case 'ARF':
+                    return 'ARF (Reforestation)';
+                case 'APR':
+                    return 'APR (Ocean Cleanup)';
+                case 'BPE':
+                    return 'BPE (Bee Protection)';
+                default:
+                    return $type;
             }
         })->toArray();
 
@@ -292,7 +290,7 @@ class EPPController extends Controller
         $monthlyTypeData = [];
 
         // For each month in our data
-        foreach($monthlyFunding as $record) {
+        foreach ($monthlyFunding as $record) {
             $yearMonth = "{$record->year}-{$record->month}";
             $monthName = date('M', mktime(0, 0, 0, $record->month, 1));
             $months[] = $monthName . ' ' . $record->year;
@@ -366,5 +364,65 @@ class EPPController extends Controller
                 ]
             ]
         ];
+    }
+
+    /**
+     * Get all active EPP projects as JSON for API consumption.
+     *
+     * Returns a list of active environmental projects with EPP User details
+     * for use in project selection interfaces. Uses correct EppProject model
+     * and UserOrganizationData for organization information.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getActiveEppProjects() {
+        try {
+            $projects = \App\Models\EppProject::where('status', 'in_progress')
+                ->orWhere('status', 'planned')
+                ->with([
+                    'eppUser:id,name,email,usertype',
+                    'eppUser.organizationData' // UserOrganizationData relationship
+                ])
+                ->withCount('collections')
+                ->get()
+                ->map(function ($project) {
+                    $eppUser = $project->eppUser;
+                    $orgData = $eppUser ? $eppUser->organizationData : null;
+
+                    return [
+                        'id' => $project->id,
+                        'name' => $project->name,
+                        'description' => $project->description,
+                        'project_type' => $project->project_type,
+                        'project_type_name' => $project->project_type_name,
+                        'status' => $project->status,
+                        'completion_percentage' => $project->completion_percentage,
+                        'funds_completion_percentage' => $project->funds_completion_percentage,
+                        'target_value' => $project->target_value,
+                        'current_value' => $project->current_value,
+                        'target_funds' => $project->target_funds,
+                        'current_funds' => $project->current_funds,
+                        'collections_count' => $project->collections_count ?? 0,
+                        'epp_user' => [
+                            'id' => $eppUser->id ?? null,
+                            'name' => $eppUser->name ?? 'Unknown',
+                            'organization_name' => $orgData->organization_name ?? null,
+                            'fiscal_code' => $orgData->fiscal_code ?? null,
+                            'email' => $eppUser->email ?? null,
+                        ]
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'data' => $projects
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve EPP projects',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
     }
 }

@@ -269,4 +269,8 @@ return [
         'request_submitted' => 'Deletion request submitted successfully',
         'processing_time' => 'Request will be processed within 30 business days',
     ],
+
+    // NAVIGATION
+    'quick_navigation' => 'Quick Navigation',
+    'go_to_organization_data' => 'Go to Organization Data',
 ];

@@ -1,262 +1,267 @@
 {{-- Modal overlay --}}
-<div id="walletWelcomeModal" class="wallet-modal-overlay hidden" role="dialog" aria-modal="true"
-    aria-labelledby="modalTitle">
-    {{-- Modal container --}}
-    <div class="wallet-modal-container">
-        {{-- Header --}}
-        <div class="wallet-modal-header">
-            <div>
-                <h2 id="modalTitle" class="wallet-modal-title">
-                    {{ __('wallet_welcome.title') }}
-                </h2>
-                <p class="wallet-modal-subtitle">{{ __('wallet_welcome.subtitle') }}</p>
-            </div>
-        </div>
-
-        {{-- Content --}}
-        <div class="wallet-modal-content">
-            {{-- Intro --}}
-            <div class="wallet-intro-box">
-                <p>{!! __('wallet_welcome.intro') !!}</p>
+<div id="walletWelcomeModal" class="fixed inset-0 z-[9999] hidden overflow-y-auto bg-black bg-opacity-75 p-4"
+    style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="flex min-h-screen items-center justify-center">
+        {{-- Modal container --}}
+        <div class="wallet-modal-container">
+            {{-- Header --}}
+            <div class="wallet-modal-header">
+                <div>
+                    <h2 id="modalTitle" class="wallet-modal-title">
+                        {{ __('wallet_welcome.title') }}
+                    </h2>
+                    <p class="wallet-modal-subtitle">{{ __('wallet_welcome.subtitle') }}</p>
+                </div>
             </div>
 
-            {{-- IBAN Form (Priority: shown first) --}}
-            <div id="ibanFormSection" class="wallet-iban-form">
-                <h3 class="wallet-form-title">
+            {{-- Content --}}
+            <div class="wallet-modal-content">
+                {{-- Intro --}}
+                <div class="wallet-intro-box">
+                    <p>{!! __('wallet_welcome.intro') !!}</p>
+                </div>
+
+                {{-- IBAN Form (Priority: shown first) --}}
+                <div id="ibanFormSection" class="wallet-iban-form">
+                    <h3 class="wallet-form-title">
+                        <span class="material-icons">account_balance</span>
+                        {{ __('wallet_welcome.payments_iban_title') }}
+                    </h3>
+                    <p class="wallet-form-description">{!! __('wallet_welcome.payments_iban_intro') !!}</p>
+
+                    <form id="ibanForm">
+                        <div class="wallet-form-group">
+                            <label for="ibanInput" class="wallet-form-label">IBAN</label>
+                            <input type="text" id="ibanInput" name="iban" class="wallet-form-input"
+                                placeholder="IT00 A000 0000 0000 0000 0000 000" maxlength="34" autocomplete="off">
+                            <span id="ibanError" class="wallet-form-error hidden"></span>
+                        </div>
+
+                        <div class="wallet-form-checkbox">
+                            <input type="checkbox" id="dontShowAgain" name="dont_show_again" class="wallet-checkbox">
+                            <label for="dontShowAgain" class="wallet-checkbox-label">
+                                {{ __('wallet_welcome.dont_show_again') }}
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+                {{-- Collapsible Sections --}}
+                <div class="wallet-sections">
+                    {{-- Section 1: Security --}}
+                    <div class="wallet-section">
+                        <button class="wallet-section-header" data-section="security" aria-expanded="false">
+                            <span class="wallet-section-title">{{ __('wallet_welcome.security_title') }}</span>
+                            <span class="material-icons wallet-section-icon">expand_more</span>
+                        </button>
+                        <div class="wallet-section-content" id="section-security">
+                            <ul class="wallet-list">
+                                @foreach (__('wallet_welcome.security_items') as $item)
+                                    <li>{!! $item !!}</li>
+                                @endforeach
+                            </ul>
+                            <div class="wallet-note">{!! __('wallet_welcome.security_note') !!}</div>
+                        </div>
+                    </div>
+
+                    {{-- Section 2: Content --}}
+                    <div class="wallet-section">
+                        <button class="wallet-section-header" data-section="content" aria-expanded="false">
+                            <span class="wallet-section-title">{{ __('wallet_welcome.content_title') }}</span>
+                            <span class="material-icons wallet-section-icon">expand_more</span>
+                        </button>
+                        <div class="wallet-section-content" id="section-content">
+                            <h4 class="wallet-subsection-title">{{ __('wallet_welcome.content_has_title') }}</h4>
+                            <ul class="wallet-list wallet-list-success">
+                                @foreach (__('wallet_welcome.content_has') as $item)
+                                    <li>{!! $item !!}</li>
+                                @endforeach
+                            </ul>
+                            <h4 class="wallet-subsection-title mt-4">{{ __('wallet_welcome.content_not_has_title') }}
+                            </h4>
+                            <ul class="wallet-list wallet-list-error">
+                                @foreach (__('wallet_welcome.content_not_has') as $item)
+                                    <li>{!! $item !!}</li>
+                                @endforeach
+                            </ul>
+                            <div class="wallet-note">{!! __('wallet_welcome.content_note') !!}</div>
+                        </div>
+                    </div>
+
+                    {{-- Section 3: Payments --}}
+                    <div class="wallet-section">
+                        <button class="wallet-section-header" data-section="payments" aria-expanded="false">
+                            <span class="wallet-section-title">{{ __('wallet_welcome.payments_title') }}</span>
+                            <span class="material-icons wallet-section-icon">expand_more</span>
+                        </button>
+                        <div class="wallet-section-content" id="section-payments">
+                            <h4 class="wallet-subsection-title">{{ __('wallet_welcome.payments_how_title') }}</h4>
+                            <ul class="wallet-list">
+                                @foreach (__('wallet_welcome.payments_how') as $item)
+                                    <li>{!! $item !!}</li>
+                                @endforeach
+                            </ul>
+
+                            <div class="wallet-highlight-box mt-6">
+                                <h4 class="wallet-subsection-title">{{ __('wallet_welcome.payments_iban_title') }}</h4>
+                                <p class="mb-3">{!! __('wallet_welcome.payments_iban_intro') !!}</p>
+                                <h5 class="mb-2 text-sm font-semibold">
+                                    {{ __('wallet_welcome.payments_iban_security_title') }}</h5>
+                                <ul class="wallet-list wallet-list-sm">
+                                    @foreach (__('wallet_welcome.payments_iban_security') as $item)
+                                        <li>{!! $item !!}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Section 4: Compliance --}}
+                    <div class="wallet-section">
+                        <button class="wallet-section-header" data-section="compliance" aria-expanded="false">
+                            <span class="wallet-section-title">{{ __('wallet_welcome.compliance_title') }}</span>
+                            <span class="material-icons wallet-section-icon">expand_more</span>
+                        </button>
+                        <div class="wallet-section-content" id="section-compliance">
+                            <p class="mb-4">{!! __('wallet_welcome.compliance_intro') !!}</p>
+                            <ul class="wallet-list">
+                                @foreach (__('wallet_welcome.compliance_items') as $item)
+                                    <li>{!! $item !!}</li>
+                                @endforeach
+                            </ul>
+                            <h4 class="wallet-subsection-title mt-6">
+                                {{ __('wallet_welcome.compliance_platform_title') }}
+                            </h4>
+                            <ul class="wallet-list">
+                                @foreach (__('wallet_welcome.compliance_platform') as $item)
+                                    <li>{!! $item !!}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+
+                    {{-- Section 5: Options --}}
+                    <div class="wallet-section">
+                        <button class="wallet-section-header" data-section="options" aria-expanded="false">
+                            <span class="wallet-section-title">{{ __('wallet_welcome.options_title') }}</span>
+                            <span class="material-icons wallet-section-icon">expand_more</span>
+                        </button>
+                        <div class="wallet-section-content" id="section-options">
+                            <div class="wallet-option-box wallet-option-simple">
+                                <h4 class="wallet-option-title">{{ __('wallet_welcome.option1_title') }}</h4>
+                                <p class="wallet-option-subtitle">{{ __('wallet_welcome.option1_subtitle') }}</p>
+                                <ul class="wallet-list wallet-list-sm">
+                                    @foreach (__('wallet_welcome.option1_items') as $item)
+                                        <li>{!! $item !!}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                            <div class="wallet-option-box wallet-option-expert mt-4">
+                                <h4 class="wallet-option-title">{{ __('wallet_welcome.option2_title') }}</h4>
+                                <p class="wallet-option-subtitle">{{ __('wallet_welcome.option2_subtitle') }}</p>
+                                <ul class="wallet-list wallet-list-sm">
+                                    @foreach (__('wallet_welcome.option2_items') as $item)
+                                        <li>{!! $item !!}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Section 6: Glossary --}}
+                    <div class="wallet-section">
+                        <button class="wallet-section-header" data-section="glossary" aria-expanded="false">
+                            <span class="wallet-section-title">{{ __('wallet_welcome.glossary_title') }}</span>
+                            <span class="material-icons wallet-section-icon">expand_more</span>
+                        </button>
+                        <div class="wallet-section-content" id="section-glossary">
+                            <dl class="wallet-glossary">
+                                @foreach (__('wallet_welcome.glossary') as $key => $entry)
+                                    <div class="wallet-glossary-item">
+                                        <dt class="wallet-glossary-term">{{ $entry['term'] }}</dt>
+                                        <dd class="wallet-glossary-definition">{!! $entry['definition'] !!}</dd>
+                                    </div>
+                                @endforeach
+                            </dl>
+                        </div>
+                    </div>
+
+                    {{-- Section 7: Help --}}
+                    <div class="wallet-section">
+                        <button class="wallet-section-header" data-section="help" aria-expanded="false">
+                            <span class="wallet-section-title">{{ __('wallet_welcome.help_title') }}</span>
+                            <span class="material-icons wallet-section-icon">expand_more</span>
+                        </button>
+                        <div class="wallet-section-content" id="section-help">
+                            <div class="wallet-help-grid">
+                                <a href="{{ route('info.white-paper-finanziario') }}" class="wallet-help-card"
+                                    target="_blank">
+                                    <span class="material-icons wallet-help-icon">description</span>
+                                    <h5 class="wallet-help-title">{{ __('wallet_welcome.help_whitepaper') }}</h5>
+                                    <p class="wallet-help-desc">{{ __('wallet_welcome.help_whitepaper_desc') }}</p>
+                                </a>
+                                <a href="mailto:support@florenceegi.it" class="wallet-help-card">
+                                    <span class="material-icons wallet-help-icon">support_agent</span>
+                                    <h5 class="wallet-help-title">{{ __('wallet_welcome.help_support') }}</h5>
+                                    <p class="wallet-help-desc">{{ __('wallet_welcome.help_support_desc') }}</p>
+                                </a>
+                                <a href="{{ route('info.white-paper-finanziario') }}#faq" class="wallet-help-card">
+                                    <span class="material-icons wallet-help-icon">help_outline</span>
+                                    <h5 class="wallet-help-title">{{ __('wallet_welcome.help_faq') }}</h5>
+                                    <p class="wallet-help-desc">{{ __('wallet_welcome.help_faq_desc') }}</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Warning Box (hidden by default) --}}
+                <div id="noIbanWarning" class="wallet-warning-box hidden">
+                    <div class="wallet-warning-icon">
+                        <span class="material-icons">warning</span>
+                    </div>
+                    <div class="wallet-warning-content">
+                        <h4 class="wallet-warning-title">⚠️ Attenzione: Nessun IBAN configurato</h4>
+                        <p class="wallet-warning-text">
+                            Procedendo <strong>senza IBAN</strong>, non potrai ricevere pagamenti in <strong>€
+                                (euro)</strong> per le tue opere.<br><br>
+                            Inoltre, fino a quando <strong>non riscatterai il tuo wallet</strong> (scaricando la frase
+                            segreta di 25 parole),
+                            i tuoi <strong>Certificati EGI non saranno vendibili</strong> ad altri utenti.<br><br>
+                            Potrai comunque aggiungere l'IBAN in qualsiasi momento dalle <strong>Impostazioni → Profilo
+                                →
+                                Pagamenti</strong>.
+                        </p>
+                        <div class="wallet-warning-actions">
+                            <button type="button" id="cancelNoIbanBtn" class="wallet-btn wallet-btn-secondary">
+                                <span class="material-icons">arrow_back</span>
+                                Torna indietro
+                            </button>
+                            <button type="button" id="confirmNoIbanBtn" class="wallet-btn wallet-btn-warning">
+                                <span class="material-icons">check_circle</span>
+                                Ho capito, procedi senza IBAN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Footer --}}
+            <div class="wallet-modal-footer" id="modalFooter">
+                <button type="button" id="skipIbanBtn" class="wallet-btn wallet-btn-ghost">
+                    {{ __('wallet_welcome.btn_continue') }}
+                </button>
+                <button type="submit" form="ibanForm" id="submitIbanBtn" class="wallet-btn wallet-btn-primary">
                     <span class="material-icons">account_balance</span>
-                    {{ __('wallet_welcome.payments_iban_title') }}
-                </h3>
-                <p class="wallet-form-description">{!! __('wallet_welcome.payments_iban_intro') !!}</p>
-
-                <form id="ibanForm">
-                    <div class="wallet-form-group">
-                        <label for="ibanInput" class="wallet-form-label">IBAN</label>
-                        <input type="text" id="ibanInput" name="iban" class="wallet-form-input"
-                            placeholder="IT00 A000 0000 0000 0000 0000 000" maxlength="34" autocomplete="off">
-                        <span id="ibanError" class="wallet-form-error hidden"></span>
-                    </div>
-
-                    <div class="wallet-form-checkbox">
-                        <input type="checkbox" id="dontShowAgain" name="dont_show_again" class="wallet-checkbox">
-                        <label for="dontShowAgain" class="wallet-checkbox-label">
-                            {{ __('wallet_welcome.dont_show_again') }}
-                        </label>
-                    </div>
-                </form>
+                    {{ __('wallet_welcome.btn_add_iban') }}
+                </button>
             </div>
 
-            {{-- Collapsible Sections --}}
-            <div class="wallet-sections">
-                {{-- Section 1: Security --}}
-                <div class="wallet-section">
-                    <button class="wallet-section-header" data-section="security" aria-expanded="false">
-                        <span class="wallet-section-title">{{ __('wallet_welcome.security_title') }}</span>
-                        <span class="material-icons wallet-section-icon">expand_more</span>
-                    </button>
-                    <div class="wallet-section-content" id="section-security">
-                        <ul class="wallet-list">
-                            @foreach (__('wallet_welcome.security_items') as $item)
-                                <li>{!! $item !!}</li>
-                            @endforeach
-                        </ul>
-                        <div class="wallet-note">{!! __('wallet_welcome.security_note') !!}</div>
-                    </div>
-                </div>
-
-                {{-- Section 2: Content --}}
-                <div class="wallet-section">
-                    <button class="wallet-section-header" data-section="content" aria-expanded="false">
-                        <span class="wallet-section-title">{{ __('wallet_welcome.content_title') }}</span>
-                        <span class="material-icons wallet-section-icon">expand_more</span>
-                    </button>
-                    <div class="wallet-section-content" id="section-content">
-                        <h4 class="wallet-subsection-title">{{ __('wallet_welcome.content_has_title') }}</h4>
-                        <ul class="wallet-list wallet-list-success">
-                            @foreach (__('wallet_welcome.content_has') as $item)
-                                <li>{!! $item !!}</li>
-                            @endforeach
-                        </ul>
-                        <h4 class="wallet-subsection-title mt-4">{{ __('wallet_welcome.content_not_has_title') }}</h4>
-                        <ul class="wallet-list wallet-list-error">
-                            @foreach (__('wallet_welcome.content_not_has') as $item)
-                                <li>{!! $item !!}</li>
-                            @endforeach
-                        </ul>
-                        <div class="wallet-note">{!! __('wallet_welcome.content_note') !!}</div>
-                    </div>
-                </div>
-
-                {{-- Section 3: Payments --}}
-                <div class="wallet-section">
-                    <button class="wallet-section-header" data-section="payments" aria-expanded="false">
-                        <span class="wallet-section-title">{{ __('wallet_welcome.payments_title') }}</span>
-                        <span class="material-icons wallet-section-icon">expand_more</span>
-                    </button>
-                    <div class="wallet-section-content" id="section-payments">
-                        <h4 class="wallet-subsection-title">{{ __('wallet_welcome.payments_how_title') }}</h4>
-                        <ul class="wallet-list">
-                            @foreach (__('wallet_welcome.payments_how') as $item)
-                                <li>{!! $item !!}</li>
-                            @endforeach
-                        </ul>
-
-                        <div class="wallet-highlight-box mt-6">
-                            <h4 class="wallet-subsection-title">{{ __('wallet_welcome.payments_iban_title') }}</h4>
-                            <p class="mb-3">{!! __('wallet_welcome.payments_iban_intro') !!}</p>
-                            <h5 class="mb-2 text-sm font-semibold">
-                                {{ __('wallet_welcome.payments_iban_security_title') }}</h5>
-                            <ul class="wallet-list wallet-list-sm">
-                                @foreach (__('wallet_welcome.payments_iban_security') as $item)
-                                    <li>{!! $item !!}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Section 4: Compliance --}}
-                <div class="wallet-section">
-                    <button class="wallet-section-header" data-section="compliance" aria-expanded="false">
-                        <span class="wallet-section-title">{{ __('wallet_welcome.compliance_title') }}</span>
-                        <span class="material-icons wallet-section-icon">expand_more</span>
-                    </button>
-                    <div class="wallet-section-content" id="section-compliance">
-                        <p class="mb-4">{!! __('wallet_welcome.compliance_intro') !!}</p>
-                        <ul class="wallet-list">
-                            @foreach (__('wallet_welcome.compliance_items') as $item)
-                                <li>{!! $item !!}</li>
-                            @endforeach
-                        </ul>
-                        <h4 class="wallet-subsection-title mt-6">{{ __('wallet_welcome.compliance_platform_title') }}
-                        </h4>
-                        <ul class="wallet-list">
-                            @foreach (__('wallet_welcome.compliance_platform') as $item)
-                                <li>{!! $item !!}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-
-                {{-- Section 5: Options --}}
-                <div class="wallet-section">
-                    <button class="wallet-section-header" data-section="options" aria-expanded="false">
-                        <span class="wallet-section-title">{{ __('wallet_welcome.options_title') }}</span>
-                        <span class="material-icons wallet-section-icon">expand_more</span>
-                    </button>
-                    <div class="wallet-section-content" id="section-options">
-                        <div class="wallet-option-box wallet-option-simple">
-                            <h4 class="wallet-option-title">{{ __('wallet_welcome.option1_title') }}</h4>
-                            <p class="wallet-option-subtitle">{{ __('wallet_welcome.option1_subtitle') }}</p>
-                            <ul class="wallet-list wallet-list-sm">
-                                @foreach (__('wallet_welcome.option1_items') as $item)
-                                    <li>{!! $item !!}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-
-                        <div class="wallet-option-box wallet-option-expert mt-4">
-                            <h4 class="wallet-option-title">{{ __('wallet_welcome.option2_title') }}</h4>
-                            <p class="wallet-option-subtitle">{{ __('wallet_welcome.option2_subtitle') }}</p>
-                            <ul class="wallet-list wallet-list-sm">
-                                @foreach (__('wallet_welcome.option2_items') as $item)
-                                    <li>{!! $item !!}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Section 6: Glossary --}}
-                <div class="wallet-section">
-                    <button class="wallet-section-header" data-section="glossary" aria-expanded="false">
-                        <span class="wallet-section-title">{{ __('wallet_welcome.glossary_title') }}</span>
-                        <span class="material-icons wallet-section-icon">expand_more</span>
-                    </button>
-                    <div class="wallet-section-content" id="section-glossary">
-                        <dl class="wallet-glossary">
-                            @foreach (__('wallet_welcome.glossary') as $key => $entry)
-                                <div class="wallet-glossary-item">
-                                    <dt class="wallet-glossary-term">{{ $entry['term'] }}</dt>
-                                    <dd class="wallet-glossary-definition">{!! $entry['definition'] !!}</dd>
-                                </div>
-                            @endforeach
-                        </dl>
-                    </div>
-                </div>
-
-                {{-- Section 7: Help --}}
-                <div class="wallet-section">
-                    <button class="wallet-section-header" data-section="help" aria-expanded="false">
-                        <span class="wallet-section-title">{{ __('wallet_welcome.help_title') }}</span>
-                        <span class="material-icons wallet-section-icon">expand_more</span>
-                    </button>
-                    <div class="wallet-section-content" id="section-help">
-                        <div class="wallet-help-grid">
-                            <a href="{{ route('info.white-paper-finanziario') }}" class="wallet-help-card"
-                                target="_blank">
-                                <span class="material-icons wallet-help-icon">description</span>
-                                <h5 class="wallet-help-title">{{ __('wallet_welcome.help_whitepaper') }}</h5>
-                                <p class="wallet-help-desc">{{ __('wallet_welcome.help_whitepaper_desc') }}</p>
-                            </a>
-                            <a href="mailto:support@florenceegi.it" class="wallet-help-card">
-                                <span class="material-icons wallet-help-icon">support_agent</span>
-                                <h5 class="wallet-help-title">{{ __('wallet_welcome.help_support') }}</h5>
-                                <p class="wallet-help-desc">{{ __('wallet_welcome.help_support_desc') }}</p>
-                            </a>
-                            <a href="{{ route('info.white-paper-finanziario') }}#faq" class="wallet-help-card">
-                                <span class="material-icons wallet-help-icon">help_outline</span>
-                                <h5 class="wallet-help-title">{{ __('wallet_welcome.help_faq') }}</h5>
-                                <p class="wallet-help-desc">{{ __('wallet_welcome.help_faq_desc') }}</p>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            {{-- Loading overlay --}}
+            <div id="modalLoading" class="wallet-modal-loading hidden">
+                <div class="wallet-spinner"></div>
             </div>
-
-            {{-- Warning Box (hidden by default) --}}
-            <div id="noIbanWarning" class="wallet-warning-box hidden">
-                <div class="wallet-warning-icon">
-                    <span class="material-icons">warning</span>
-                </div>
-                <div class="wallet-warning-content">
-                    <h4 class="wallet-warning-title">⚠️ Attenzione: Nessun IBAN configurato</h4>
-                    <p class="wallet-warning-text">
-                        Procedendo <strong>senza IBAN</strong>, non potrai ricevere pagamenti in <strong>€
-                            (euro)</strong> per le tue opere.<br><br>
-                        Inoltre, fino a quando <strong>non riscatterai il tuo wallet</strong> (scaricando la frase
-                        segreta di 25 parole),
-                        i tuoi <strong>Certificati EGI non saranno vendibili</strong> ad altri utenti.<br><br>
-                        Potrai comunque aggiungere l'IBAN in qualsiasi momento dalle <strong>Impostazioni → Profilo →
-                            Pagamenti</strong>.
-                    </p>
-                    <div class="wallet-warning-actions">
-                        <button type="button" id="cancelNoIbanBtn" class="wallet-btn wallet-btn-secondary">
-                            <span class="material-icons">arrow_back</span>
-                            Torna indietro
-                        </button>
-                        <button type="button" id="confirmNoIbanBtn" class="wallet-btn wallet-btn-warning">
-                            <span class="material-icons">check_circle</span>
-                            Ho capito, procedi senza IBAN
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Footer --}}
-        <div class="wallet-modal-footer" id="modalFooter">
-            <button type="button" id="skipIbanBtn" class="wallet-btn wallet-btn-ghost">
-                {{ __('wallet_welcome.btn_continue') }}
-            </button>
-            <button type="submit" form="ibanForm" id="submitIbanBtn" class="wallet-btn wallet-btn-primary">
-                <span class="material-icons">account_balance</span>
-                {{ __('wallet_welcome.btn_add_iban') }}
-            </button>
-        </div>
-
-        {{-- Loading overlay --}}
-        <div id="modalLoading" class="wallet-modal-loading hidden">
-            <div class="wallet-spinner"></div>
         </div>
     </div>
 </div>

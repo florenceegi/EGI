@@ -13,13 +13,11 @@ use App\Helpers\FegiAuth;
  * 🛡️ Privacy: Organization separation logic with role-based access
  * 🧱 Core Logic: Edit/Update pattern with permission-based visibility and FegiAuth
  */
-class UserOrganizationController extends BaseUserDomainController
-{
+class UserOrganizationController extends BaseUserDomainController {
     /**
      * Show organization data edit form
      */
-    public function edit(): View|RedirectResponse
-    {
+    public function edit(): View|RedirectResponse {
         try {
             // FegiAuth check - only strong auth can access organization data
             if (FegiAuth::isWeakAuth()) {
@@ -32,8 +30,8 @@ class UserOrganizationController extends BaseUserDomainController
 
             $user = FegiAuth::user();
 
-            // Verify user can manage organization data (creator, enterprise, epp_entity)
-            $allowedRoles = ['creator', 'enterprise', 'epp_entity'];
+            // Verify user can manage organization data (creator, enterprise, epp_entity, epp)
+            $allowedRoles = ['creator', 'enterprise', 'epp_entity', 'epp'];
             if (!$user->hasAnyRole($allowedRoles)) {
                 abort(403, __('user_organization.role_not_allowed'));
             }
@@ -92,26 +90,32 @@ class UserOrganizationController extends BaseUserDomainController
                 'organization_type' => $organizationData->organization_type
             ]);
 
+            // GDPR data for sidebar
+            $gdprSummary = $this->getGdprSummary($user, $organizationData);
+            $canEdit = FegiAuth::isStrongAuth();
+            $authType = FegiAuth::getAuthType();
+
             return view('user.organization.edit', compact(
                 'user',
                 'organizationData',
                 'organizationTypes',
                 'businessSectors',
-                'companySizes'
+                'companySizes',
+                'gdprSummary',
+                'canEdit',
+                'authType'
             ));
-
         } catch (\Exception $e) {
-            return $this->handleError('USER_ORGANIZATION_EDIT_FAILED', [
+            return $this->respondError('USER_ORGANIZATION_EDIT_FAILED', $e, [
                 'action' => 'edit_form'
-            ], $e);
+            ]);
         }
     }
 
     /**
      * Update organization data
      */
-    public function update(UpdateOrganizationRequest $request): RedirectResponse
-    {
+    public function update(UpdateOrganizationRequest $request): RedirectResponse {
         try {
             // FegiAuth check - only strong auth can update organization data
             if (FegiAuth::isWeakAuth()) {
@@ -125,7 +129,7 @@ class UserOrganizationController extends BaseUserDomainController
             $user = FegiAuth::user();
 
             // Double-check role permission
-            $allowedRoles = ['creator', 'enterprise', 'epp_entity'];
+            $allowedRoles = ['creator', 'enterprise', 'epp_entity', 'epp'];
             if (!$user->hasAnyRole($allowedRoles)) {
                 abort(403, __('user_organization.role_not_allowed'));
             }
@@ -209,21 +213,19 @@ class UserOrganizationController extends BaseUserDomainController
 
             return redirect()->route('user.organization.edit')
                 ->with('success', $message);
-
         } catch (\Exception $e) {
-            return $this->handleError('USER_ORGANIZATION_UPDATE_FAILED', [
+            return $this->respondError('USER_ORGANIZATION_UPDATE_FAILED', $e, [
                 'action' => 'update',
                 'organization_type' => $request->input('organization_type'),
                 'company_name' => $request->input('company_name'),
-            ], $e);
+            ]);
         }
     }
 
     /**
      * Show organization verification status
      */
-    public function verificationStatus(): View|RedirectResponse
-    {
+    public function verificationStatus(): View|RedirectResponse {
         try {
             // FegiAuth check - only strong auth can view verification status
             if (FegiAuth::isWeakAuth()) {
@@ -261,19 +263,17 @@ class UserOrganizationController extends BaseUserDomainController
                 'organizationData',
                 'verificationSteps'
             ));
-
         } catch (\Exception $e) {
-            return $this->handleError('USER_ORGANIZATION_VERIFICATION_STATUS_FAILED', [
+            return $this->respondError('USER_ORGANIZATION_VERIFICATION_STATUS_FAILED', $e, [
                 'action' => 'verification_status'
-            ], $e);
+            ]);
         }
     }
 
     /**
      * Get default organization type based on user role
      */
-    private function getDefaultOrganizationType($user): string
-    {
+    private function getDefaultOrganizationType($user): string {
         if ($user->hasRole('creator')) {
             return 'sole_proprietorship';
         } elseif ($user->hasRole('enterprise')) {
@@ -288,12 +288,15 @@ class UserOrganizationController extends BaseUserDomainController
     /**
      * Check if basic organization data is complete
      */
-    private function checkBasicDataComplete($organizationData): array
-    {
+    private function checkBasicDataComplete($organizationData): array {
         $required = [
-            'company_name', 'organization_type', 'business_sector',
-            'headquarters_address_line_1', 'headquarters_city',
-            'headquarters_postal_code', 'headquarters_country'
+            'company_name',
+            'organization_type',
+            'business_sector',
+            'headquarters_address_line_1',
+            'headquarters_city',
+            'headquarters_postal_code',
+            'headquarters_country'
         ];
 
         $completed = 0;
@@ -314,8 +317,7 @@ class UserOrganizationController extends BaseUserDomainController
     /**
      * Check if legal documents are uploaded
      */
-    private function checkLegalDocumentsUploaded($organizationData): array
-    {
+    private function checkLegalDocumentsUploaded($organizationData): array {
         $user = $organizationData->user;
         $legalDocs = $user->documents()
             ->whereIn('document_type', ['vat_certificate', 'business_registration'])
@@ -332,8 +334,7 @@ class UserOrganizationController extends BaseUserDomainController
     /**
      * Check business verification status
      */
-    private function checkBusinessVerification($organizationData): array
-    {
+    private function checkBusinessVerification($organizationData): array {
         return [
             'status' => $organizationData->is_verified ? 'complete' : 'pending',
             'verification_level' => $organizationData->verification_level,
@@ -344,8 +345,7 @@ class UserOrganizationController extends BaseUserDomainController
     /**
      * Check EPP compliance
      */
-    private function checkEppCompliance($organizationData): array
-    {
+    private function checkEppCompliance($organizationData): array {
         $hasEppCommitment = !empty($organizationData->epp_commitment_level);
         $hasSustainabilityGoals = !empty($organizationData->sustainability_goals);
 
@@ -360,8 +360,7 @@ class UserOrganizationController extends BaseUserDomainController
     /**
      * Calculate overall completion percentage
      */
-    private function calculateCompletionPercentage($steps): int
-    {
+    private function calculateCompletionPercentage($steps): int {
         $total = count($steps);
         $completed = 0;
 
@@ -372,5 +371,75 @@ class UserOrganizationController extends BaseUserDomainController
         }
 
         return round(($completed / $total) * 100);
+    }
+
+    /**
+     * Get GDPR summary for organization data
+     */
+    private function getGdprSummary($user, $organizationData): array {
+        return [
+            'consent_status' => true, // Organization data requires explicit consent
+            'consent_date' => $organizationData->created_at,
+            'processing_purposes' => ['business_operations', 'legal_compliance', 'verification'],
+            'data_retention_status' => 'active',
+            'last_data_update' => $organizationData->updated_at,
+            'export_available' => FegiAuth::isStrongAuth(),
+            'deletion_available' => FegiAuth::isStrongAuth() && !$organizationData->is_verified
+        ];
+    }
+
+    /**
+     * Save IBAN for organization data
+     */
+    public function saveIban(\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse {
+        try {
+            // Validate IBAN
+            $validated = $request->validate([
+                'iban' => 'required|string|min:15|max:34|regex:/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/',
+            ]);
+
+            $user = FegiAuth::user();
+
+            // Verify user can manage organization data
+            $allowedRoles = ['creator', 'enterprise', 'epp_entity', 'epp'];
+            if (!$user->hasAnyRole($allowedRoles)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('user_organization.role_not_allowed')
+                ], 403);
+            }
+
+            // Get or create organization data
+            $organizationData = $user->organizationData ?? $user->organizationData()->create([
+                'organization_type' => $this->getDefaultOrganizationType($user),
+                'is_verified' => false,
+                'verification_level' => 'none',
+            ]);
+
+            // Save IBAN
+            $organizationData->update([
+                'iban' => strtoupper(str_replace(' ', '', $validated['iban']))
+            ]);
+
+            $this->logger->info('[User Organization] IBAN saved', [
+                'user_id' => $user->id,
+                'auth_type' => FegiAuth::getAuthType(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => __('iban_modal.success')
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('[User Organization] IBAN save failed', [
+                'error' => $e->getMessage(),
+                'user_id' => FegiAuth::id(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => __('iban_modal.error_save')
+            ], 400);
+        }
     }
 }

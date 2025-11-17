@@ -238,6 +238,24 @@ class User extends Authenticatable implements HasMedia {
         return $this->hasMany(\App\Models\Project::class, 'user_id');
     }
 
+    /**
+     * Organization data for business/EPP users
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function organizationData() {
+        return $this->hasOne(\App\Models\UserOrganizationData::class, 'user_id');
+    }
+
+    /**
+     * EPP Projects owned by this EPP User (usertype='epp')
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function eppProjects() {
+        return $this->hasMany(\App\Models\EppProject::class, 'epp_user_id');
+    }
+
     // In app/Models/User.php
     public function getCurrentCollectionDetails() {
         if (!$this->current_collection_id) {
@@ -567,11 +585,10 @@ class User extends Authenticatable implements HasMedia {
 
     /**
      * Get user's primary wallet (first wallet)
-     * 
+     *
      * @return Wallet|null
      */
-    public function getWalletAttribute(): ?Wallet
-    {
+    public function getWalletAttribute(): ?Wallet {
         return $this->wallets()->first();
     }
 

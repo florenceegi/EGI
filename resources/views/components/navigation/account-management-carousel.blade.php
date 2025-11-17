@@ -13,6 +13,14 @@
         ],
     ];
 
+    // Add organization data link for EPP and Company users
+    if ($currentUser && in_array($currentUser->usertype, ['epp', 'company', 'enterprise', 'epp_entity'])) {
+        $accountActions[] = [
+            'label' => __('organization_data.manage_organization_data'),
+            'href' => route('user.organization.edit'),
+        ];
+    }
+
     if ($currentUser?->can('manage_profile')) {
         $accountActions[] = [
             'label' => __('Profile'),

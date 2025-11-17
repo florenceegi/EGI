@@ -11,16 +11,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * 🛡️ Privacy: Ultra-sensitive data with strict access controls
  * 🧱 Core Logic: Handles personal identity and compliance tracking
  */
-class UserPersonalData extends Model
-{
+class UserPersonalData extends Model {
     protected $table = 'user_personal_data';
 
     protected $fillable = [
         'user_id',
-        'street', 'city', 'region', 'state', 'zip','country',  'province',
-        'home_phone', 'cell_phone', 'work_phone', 'birth_date', 'birth_place', 'gender',
-        'fiscal_code', 'tax_id_number', 'allow_personal_data_processing',
-        'processing_purposes', 'consent_updated_at'
+        'street',
+        'city',
+        'region',
+        'state',
+        'zip',
+        'country',
+        'province',
+        'home_phone',
+        'cell_phone',
+        'work_phone',
+        'birth_date',
+        'birth_place',
+        'gender',
+        'fiscal_code',
+        'tax_id_number',
+        'allow_personal_data_processing',
+        'processing_purposes',
+        'consent_updated_at',
+        'iban'
     ];
 
     protected $casts = [
@@ -33,27 +47,25 @@ class UserPersonalData extends Model
     ];
 
     protected $hidden = [
-        'fiscal_code', 'tax_id_number', 'birth_date'
+        'fiscal_code',
+        'tax_id_number',
+        'birth_date'
     ];
 
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
 
-    public function getFullAddressAttribute(): ?string
-    {
+    public function getFullAddressAttribute(): ?string {
         $parts = array_filter([$this->street, $this->city, $this->region, $this->state, $this->zip]);
         return empty($parts) ? null : implode(', ', $parts);
     }
 
-    public function hasCompleteAddress(): bool
-    {
+    public function hasCompleteAddress(): bool {
         return !empty($this->street) && !empty($this->city) && !empty($this->zip);
     }
 
-    public function isDataProcessingAllowed(?string $purpose = null): bool
-    {
+    public function isDataProcessingAllowed(?string $purpose = null): bool {
         if (!$this->allow_personal_data_processing) {
             return false;
         }
