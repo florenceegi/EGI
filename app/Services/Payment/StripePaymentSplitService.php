@@ -380,18 +380,29 @@ class StripePaymentSplitService {
         array $distribution,
         array $metadata
     ): \Stripe\Transfer {
+        // Retrieve the charge ID from the PaymentIntent
+        // Stripe Transfer requires charge ID (ch_xxx), not PaymentIntent ID (pi_xxx)
+        $paymentIntent = $this->stripeClient->paymentIntents->retrieve($paymentIntentId);
+        
+        if (empty($paymentIntent->charges->data)) {
+            throw new \Exception("No charge found for PaymentIntent {$paymentIntentId}");
+        }
+        
+        $chargeId = $paymentIntent->charges->data[0]->id;
+        
         $transferMetadata = array_merge($metadata, [
             'wallet_id' => $distribution['wallet_id'],
             'platform_role' => $distribution['platform_role'] ?? 'unknown',
             'percentage' => $distribution['percentage'],
             'payment_intent_id' => $paymentIntentId,
+            'charge_id' => $chargeId,
         ]);
 
         return $this->stripeClient->transfers->create([
             'amount' => $distribution['amount_cents'],
             'currency' => 'eur',
             'destination' => $distribution['stripe_account_id'],
-            'source_transaction' => $paymentIntentId,
+            'source_transaction' => $chargeId, // Use charge ID, not PaymentIntent ID
             'description' => sprintf(
                 'EGI Mint - %s share (%s%%)',
                 $distribution['platform_role'] ?? 'Creator',
