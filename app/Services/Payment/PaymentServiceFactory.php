@@ -141,11 +141,15 @@ class PaymentServiceFactory {
             );
         }
 
+        // Resolve StripePaymentSplitService dependency
+        $splitService = app(StripePaymentSplitService::class);
+
         return new StripeRealPaymentService(
             $this->logger,
             $this->errorManager,
             $this->auditService,
-            $this->consentService
+            $this->consentService,
+            $splitService
         );
     }
 
