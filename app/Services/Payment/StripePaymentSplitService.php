@@ -494,8 +494,10 @@ class StripePaymentSplitService {
 
         if (!empty($missingConsents)) {
             $this->errorManager->handle('SPLIT_PAYMENT_MISSING_CONSENTS', [
-                'missing_consents' => $missingConsents,
+                'missing_consents' => json_encode($missingConsents), // Serialize array for UEM
                 'missing_count' => count($missingConsents),
+                'user_ids' => array_column($missingConsents, 'user_id'),
+                'wallet_ids' => array_column($missingConsents, 'wallet_id'),
             ]);
 
             throw new \Exception(
