@@ -779,7 +779,6 @@ class StripePaymentSplitService {
             return [];
         }
     }
-}
 
     /**
      * 🚀 MiCA-SAFE: Create DIRECT PaymentIntents to Connected Accounts
@@ -939,3 +938,4 @@ class StripePaymentSplitService {
             );
         }
     }
+}
