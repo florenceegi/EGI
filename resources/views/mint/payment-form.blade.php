@@ -329,11 +329,8 @@
                 }
             });
 
-            // Form submission con MODALE DI PROGRESS
+            // Form submission - Semplice con spinner sul button, SENZA modale bloccante
             document.getElementById('mint-payment-form').addEventListener('submit', function(e) {
-                e.preventDefault(); // Previeni submit default
-
-                const form = this;
                 const btn = document.getElementById('submit-mint-btn');
 
                 // Disabilita button e mostra spinner
@@ -341,34 +338,22 @@
                 btn.innerHTML =
                     '<svg class="inline w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> {{ __('mint.payment.processing') }}';
 
-                // Mostra modale di progress
+                // Mostra toast invece di modale bloccante
                 if (window.Swal) {
                     Swal.fire({
-                        title: '⏳ Elaborazione Mint',
-                        html: `
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-center">
-                                    <svg class="w-16 h-16 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                </div>
-                                <p class="text-gray-700">Stiamo elaborando il tuo pagamento e preparando il mint sulla blockchain Algorand.</p>
-                                <p class="text-sm text-gray-500">⚠️ Non chiudere questa finestra</p>
-                            </div>
-                        `,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'info',
+                        title: '⏳ Elaborazione in corso...',
+                        text: 'Elaborazione pagamento e mint',
                         showConfirmButton: false,
-                        didOpen: () => {
-                            // Submit form DOPO aver mostrato la modale
-                            form.submit();
-                        }
+                        timer: 3000,
+                        timerProgressBar: true
                     });
-                } else {
-                    // Se SweetAlert non disponibile, submit normale
-                    form.submit();
                 }
+
+                // Lascia che il form faccia submit normale (seguirà il redirect 302)
+                return true;
             });
         </script>
     @endpush
