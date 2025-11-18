@@ -89,8 +89,8 @@ class StripeRealPaymentService implements PaymentServiceInterface {
             $params = [
                 'amount' => $amountCents,
                 'currency' => $currency,
-                'description' => $requiresSplit 
-                    ? sprintf('EGI Mint #%s (Multi-wallet Distribution)', $request->egiId) 
+                'description' => $requiresSplit
+                    ? sprintf('EGI Mint #%s (Multi-wallet Distribution)', $request->egiId)
                     : sprintf('EGI Mint #%s', $request->egiId ?? 'unknown'),
                 'metadata' => array_merge($metadata, [
                     'requires_split' => $requiresSplit ? 'true' : 'false',
@@ -113,10 +113,28 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                 }
             }
 
-            // SPLIT PAYMENT: Always use platform account, then transfer to wallets
+            // MiCA-SAFE ARCHITECTURE:
+            // SPLIT PAYMENT: Create DIRECT charges to Connected Accounts (NO platform transit)
             // SINGLE CONNECT: Use specific Connected Account
             // PLATFORM DIRECT: Use platform account (Egili, etc.)
-            $createOptions = (!$requiresSplit && $isConnectPayment) ? ['stripe_account' => $stripeAccountId] : [];
+
+            if ($requiresSplit) {
+                // MiCA-SAFE: Direct charges to wallets, NO Transfer API
+                $collection = Collection::find($collectionId);
+
+                if (!$collection) {
+                    throw new \RuntimeException("Collection {$collectionId} not found for split payment");
+                }
+
+                return $this->splitService->createDirectSplitPayments(
+                    $collection,
+                    $request,
+                    $metadata
+                );
+            }
+
+            // Single merchant or platform direct payment
+            $createOptions = $isConnectPayment ? ['stripe_account' => $stripeAccountId] : [];
             $paymentIntent = $this->client->paymentIntents->create($params, $createOptions);
 
             $this->logger->info('Stripe payment intent created', [
@@ -155,33 +173,8 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                 );
             }
 
-            // Payment succeeded - now handle split if required
-            $splitResult = null;
-            if ($requiresSplit) {
-                $collection = Collection::find($collectionId);
-                
-                if (!$collection) {
-                    throw new \RuntimeException("Collection {$collectionId} not found for split payment");
-                }
-
-                // Execute split payment to all collection wallets
-                $splitResult = $this->splitService->splitPaymentToWallets(
-                    $paymentIntent->id,
-                    $collection,
-                    $request->amount,
-                    [
-                        'egi_id' => $request->egiId,
-                        'buyer_user_id' => $request->userId,
-                    ]
-                );
-
-                $this->logger->info('Split payment completed', [
-                    'payment_intent_id' => $paymentIntent->id,
-                    'collection_id' => $collectionId,
-                    'transfers_count' => count($splitResult['transfers']),
-                    'distributions_count' => count($splitResult['distributions']),
-                ]);
-            }
+            // Split payment is now handled BEFORE this point via createDirectSplitPayments()
+            // This code path is only for single merchant or platform direct payments
 
             $charge = $paymentIntent->charges->data[0] ?? null;
             $receiptUrl = $charge->receipt_url ?? null;
@@ -190,24 +183,14 @@ class StripeRealPaymentService implements PaymentServiceInterface {
                 'payment_intent_status' => $paymentIntent->status,
                 'client_secret' => $paymentIntent->client_secret,
                 'receipt_url' => $receiptUrl,
-                'requires_split' => $requiresSplit,
-                'split_completed' => $splitResult !== null,
                 'merchant_psp' => $isConnectPayment ? array_filter([
                     'provider' => 'stripe',
                     'stripe_account_id' => $stripeAccountId,
                 ]) : [
                     'provider' => 'stripe',
-                    'account_type' => $requiresSplit ? 'platform_split' : 'platform_direct',
+                    'account_type' => 'platform_direct',
                 ],
             ]);
-
-            // Add split details to metadata if available
-            if ($splitResult !== null) {
-                $metadataResponse['split_payment'] = [
-                    'transfers_count' => count($splitResult['transfers']),
-                    'distributions' => $splitResult['distributions'],
-                ];
-            }
 
             $result = new PaymentResult(
                 success: true,

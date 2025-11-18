@@ -60,8 +60,96 @@ class StripePaymentSplitService {
     }
 
     /**
-     * Process split payment for EGI mint across all collection wallets (GDPR Compliant)
+     * 🚀 MiCA-SAFE: Create DIRECT split payments to Connected Accounts
+     * 
+     * NO TRANSFER API - Funds go DIRECTLY to wallet owners' Stripe accounts
+     * Platform NEVER holds/transits funds (MiCA compliance)
      *
+     * @param Collection $collection
+     * @param PaymentRequest $request
+     * @param array $metadata
+     * @return PaymentResult
+     * @throws \Exception
+     */
+    public function createDirectSplitPayments(
+        Collection $collection,
+        \App\DataTransferObjects\Payment\PaymentRequest $request,
+        array $metadata
+    ): \App\DataTransferObjects\Payment\PaymentResult {
+        $this->logger->info('MiCA-SAFE: Creating direct split payments', [
+            'collection_id' => $collection->id,
+            'total_amount' => $request->amount,
+            'egi_id' => $request->egiId,
+            'buyer_user_id' => $request->userId,
+        ]);
+
+        // 1. Get and validate all collection wallets
+        $wallets = $this->getValidatedCollectionWallets($collection);
+
+        // 2. GDPR: Validate payment processing consents for ALL wallet owners
+        $this->validateWalletOwnersConsents($wallets);
+
+        // 3. Calculate distribution amounts
+        $distributions = $this->calculateDistributions($wallets, $request->amount);
+
+        // 4. Validate all wallets have Stripe accounts configured
+        $this->validateStripeAccounts($distributions);
+
+        // 5. Create DIRECT PaymentIntents to each Connected Account (MiCA-SAFE)
+        $paymentIntents = $this->createDirectPaymentIntents(
+            $distributions,
+            $request,
+            $metadata
+        );
+
+        // 6. ACCOUNTING: Create PaymentDistribution records
+        $distributionRecords = $this->createDistributionRecordsFromIntents(
+            $collection,
+            $distributions,
+            $paymentIntents,
+            $metadata
+        );
+
+        // 7. GDPR: Audit trail
+        $this->logDirectPaymentsAuditTrail(
+            $request->userId,
+            $distributions,
+            $paymentIntents,
+            $metadata
+        );
+
+        $this->logger->info('MiCA-SAFE: Direct split payments created successfully', [
+            'collection_id' => $collection->id,
+            'payments_count' => count($paymentIntents),
+            'total_distributed' => array_sum(array_column($distributions, 'amount_eur')),
+        ]);
+
+        // Return first PaymentIntent as primary (for frontend redirect)
+        $primaryIntent = $paymentIntents[0];
+
+        return new \App\DataTransferObjects\Payment\PaymentResult(
+            success: true,
+            paymentId: $primaryIntent->id,
+            amount: $request->amount,
+            currency: strtoupper($request->currency),
+            status: 'pending', // Will be confirmed by frontend
+            metadata: array_merge($metadata, [
+                'split_payments' => array_map(fn($pi) => [
+                    'payment_intent_id' => $pi->id,
+                    'amount' => $pi->amount / 100,
+                    'destination' => $pi->transfer_data['destination'] ?? null,
+                ], $paymentIntents),
+                'client_secret' => $primaryIntent->client_secret,
+            ]),
+            receiptUrl: null,
+            processedAt: new \DateTimeImmutable()
+        );
+    }
+
+    /**
+     * DEPRECATED - OLD TRANSFER API METHOD (MiCA violation)
+     * 
+     * @deprecated Use createDirectSplitPayments() instead
      * @param string $paymentIntentId Stripe PaymentIntent ID (already succeeded)
      * @param Collection $collection Collection with wallets to distribute to
      * @param float $totalAmountEur Total amount paid by collector
@@ -692,3 +780,162 @@ class StripePaymentSplitService {
         }
     }
 }
+
+    /**
+     * 🚀 MiCA-SAFE: Create DIRECT PaymentIntents to Connected Accounts
+     * 
+     * Uses Stripe `transfer_data[destination]` pattern
+     * Funds go DIRECTLY to destination accounts, NO platform transit
+     *
+     * @param array $distributions
+     * @param \App\Services\Payment\PaymentRequest $request
+     * @param array $metadata
+     * @return array Array of \Stripe\PaymentIntent objects
+     * @throws \Exception
+     */
+    protected function createDirectPaymentIntents(
+        array $distributions,
+        \App\DataTransferObjects\Payment\PaymentRequest $request,
+        array $metadata
+    ): array {
+        $paymentIntents = [];
+        $currency = strtolower($request->currency);
+
+        foreach ($distributions as $distribution) {
+            $amountCents = $distribution['amount_cents'];
+            $destinationAccount = $distribution['stripe_account_id'];
+            $isNatan = $distribution['platform_role'] === 'Natan';
+
+            // Platform fee: 2% SOLO sul pagamento a Natan
+            $applicationFeeCents = $isNatan ? (int)round($amountCents * 0.02) : 0;
+
+            $intentParams = [
+                'amount' => $amountCents,
+                'currency' => $currency,
+                'description' => sprintf(
+                    'EGI Mint #%s - %s share (%s%%)',
+                    $request->egiId ?? 'unknown',
+                    $distribution['platform_role'] ?? 'Creator',
+                    $distribution['percentage']
+                ),
+                'metadata' => array_merge($metadata, [
+                    'wallet_id' => $distribution['wallet_id'],
+                    'platform_role' => $distribution['platform_role'] ?? 'unknown',
+                    'percentage' => $distribution['percentage'],
+                    'egi_id' => $request->egiId,
+                    'collection_id' => $request->getMerchantContext()['collection_id'] ?? null,
+                    'split_payment' => 'true',
+                ]),
+                'receipt_email' => $request->customerEmail,
+                'confirmation_method' => 'automatic',
+                'transfer_data' => [
+                    'destination' => $destinationAccount,
+                ],
+            ];
+
+            // Aggiungi platform fee SOLO per pagamento a Natan
+            if ($applicationFeeCents > 0) {
+                $intentParams['application_fee_amount'] = $applicationFeeCents;
+                $intentParams['metadata']['application_fee_cents'] = $applicationFeeCents;
+                $intentParams['metadata']['application_fee_percentage'] = '2';
+            }
+
+            // Auto-confirm in sandbox
+            if (config('algorand.payments.stripe.auto_confirm', true)) {
+                $intentParams['confirm'] = true;
+                
+                $sandboxPM = config('algorand.payments.stripe.sandbox_payment_method');
+                if ($sandboxPM) {
+                    $intentParams['payment_method'] = $sandboxPM;
+                }
+            }
+
+            // Return URL for redirect payment methods
+            if ($request->successUrl) {
+                $intentParams['return_url'] = $request->successUrl;
+            }
+
+            // Create PaymentIntent with destination transfer
+            $paymentIntent = $this->stripeClient->paymentIntents->create($intentParams);
+
+            $paymentIntents[] = $paymentIntent;
+
+            $this->logger->info('MiCA-SAFE: Direct payment created', [
+                'payment_intent_id' => $paymentIntent->id,
+                'destination_account' => $destinationAccount,
+                'amount_cents' => $amountCents,
+                'application_fee_cents' => $applicationFeeCents,
+                'wallet_id' => $distribution['wallet_id'],
+                'platform_role' => $distribution['platform_role'],
+            ]);
+        }
+
+        return $paymentIntents;
+    }
+
+    protected function createDistributionRecordsFromIntents(
+        Collection $collection,
+        array $distributions,
+        array $paymentIntents,
+        array $metadata
+    ): array {
+        $records = [];
+        
+        foreach ($distributions as $index => $distribution) {
+            $intent = $paymentIntents[$index] ?? null;
+            if (!$intent) continue;
+
+            $records[] = \App\Models\PaymentDistribution::create([
+                'wallet_id' => $distribution['wallet_id'],
+                'user_id' => $distribution['user_id'],
+                'collection_id' => $collection->id,
+                'egi_id' => $metadata['egi_id'] ?? null,
+                'amount_eur' => $distribution['amount_eur'],
+                'percentage' => $distribution['percentage'],
+                'platform_role' => $distribution['platform_role'],
+                'payment_intent_id' => $intent->id,
+                'stripe_transfer_id' => null,
+                'stripe_destination' => $distribution['stripe_account_id'],
+                'transfer_status' => $intent->status,
+                'buyer_user_id' => $metadata['buyer_user_id'] ?? null,
+                'payment_method' => 'stripe_direct',
+                'status' => 'pending',
+                'processed_at' => now(),
+            ]);
+        }
+
+        return $records;
+    }
+
+    protected function logDirectPaymentsAuditTrail(
+        int $buyerUserId,
+        array $distributions,
+        array $paymentIntents,
+        array $metadata
+    ): void {
+        foreach ($distributions as $index => $distribution) {
+            if (!$distribution['user_id']) continue;
+
+            $user = User::find($distribution['user_id']);
+            if (!$user) continue;
+
+            $intent = $paymentIntents[$index] ?? null;
+
+            $this->auditService->logUserAction(
+                $user,
+                'payment_received_direct',
+                [
+                    'egi_id' => $metadata['egi_id'] ?? null,
+                    'buyer_user_id' => $buyerUserId,
+                    'amount_eur' => $distribution['amount_eur'],
+                    'percentage' => $distribution['percentage'],
+                    'platform_role' => $distribution['platform_role'],
+                    'wallet_id' => $distribution['wallet_id'],
+                    'payment_intent_id' => $intent?->id,
+                    'stripe_destination' => $distribution['stripe_account_id'],
+                    'payment_method' => 'stripe_direct',
+                ],
+                GdprActivityCategory::WALLET_MANAGEMENT
+            );
+        }
+    }
