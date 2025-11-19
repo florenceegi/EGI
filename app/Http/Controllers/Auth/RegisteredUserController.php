@@ -137,10 +137,19 @@ class RegisteredUserController extends Controller {
                 // 3. CONDITIONAL ECOSYSTEM SETUP
                 $collection = null;
                 if ($canCreateEcosystem) {
-                    $collection = $this->createFullEcosystem($user, $validated, $logContext);
+                    // Check if EPP user type → use specialized EPP ecosystem
+                    if ($validated['user_type'] === 'epp') {
+                        $this->logger->info('[Registration] Creating EPP-specific ecosystem (100% royalties)', $logContext);
+                        $collection = $this->createEppEcosystem($user, $validated, $logContext);
+                    } else {
+                        $this->logger->info('[Registration] Creating standard ecosystem (multi-wallet split)', $logContext);
+                        $collection = $this->createFullEcosystem($user, $validated, $logContext);
+                    }
+                    
                     $collectionId = $collection->id;
                     $logContext['collection_id'] = $collectionId;
                     $logContext['ecosystem_created'] = true;
+                    $logContext['ecosystem_type'] = $validated['user_type'] === 'epp' ? 'epp_exclusive' : 'standard_split';
                 } else {
                     $logContext['ecosystem_created'] = false;
                     $this->logger->info('[Registration] User type does not require ecosystem setup', $logContext);
@@ -278,7 +287,10 @@ class RegisteredUserController extends Controller {
                 'tenant_slug' => $florenceEgiTenant->slug
             ]);
 
-            // 1. Create user without wallet first
+            // 1. Determine platform_role based on user_type
+            $platformRole = $this->determinePlatformRole($validated['user_type']);
+
+            // 2. Create user without wallet first
             $user = User::create([
                 // ═══ MULTI-TENANT ═══
                 'tenant_id' => $florenceEgiTenant->id, // Assign to Florence EGI tenant
@@ -289,6 +301,7 @@ class RegisteredUserController extends Controller {
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'usertype' => $validated['user_type'],
+                'platform_role' => $platformRole, // ✅ Set platform_role based on user_type
 
                 // ═══ ALGORAND INTEGRATION (temporary placeholder) ═══
                 'wallet' => 'PENDING', // Will be updated with real address
@@ -536,6 +549,109 @@ class RegisteredUserController extends Controller {
     }
 
     /**
+     * Create EPP-specific ecosystem: collection + single EPP wallet (100% royalties)
+     * 
+     * Unlike standard collections that split royalties among Creator, EPP, Natan, and Frangette,
+     * EPP collections have ONLY the EPP user wallet at 100% mint and rebind royalties.
+     * 
+     * @param User $user The EPP user
+     * @param array $validated Validated registration data
+     * @param array $logContext Logging context
+     * @return \App\Models\Collection The created EPP collection
+     * 
+     * @throws \Exception If ecosystem creation fails
+     * 
+     * @oracode-pillar: Circolarità Virtuosa - EPP maintains full control of royalties
+     * @oracode-pillar: Semplicità Potenziante - Single wallet, 100% control
+     * @oracode-pillar: Coerenza Semantica - EPP role maps to EPP collection structure
+     */
+    protected function createEppEcosystem(User $user, array $validated, array $logContext): \App\Models\Collection {
+        try {
+            // 1. Create EPP Collection with specific naming
+            $firstName = explode(' ', trim($validated['name']), 2)[0];
+            $collectionName = "EPP - {$firstName}";
+
+            $this->logger->info('[Registration] Creating EPP ecosystem collection', [
+                ...$logContext,
+                'collection_name' => $collectionName,
+                'user_type' => 'epp'
+            ]);
+
+            $collection = $this->collectionService->findOrCreateUserCollection($user, [
+                ...$logContext,
+                'custom_name' => $collectionName,
+                'created_via' => 'epp_user_registration',
+                'user_type_context' => 'epp',
+            ]);
+
+            if ($collection instanceof \Illuminate\Http\JsonResponse) {
+                throw new \Exception('CollectionService returned error response instead of Collection model');
+            }
+
+            // 2. Link EPP User to Collection with 'epp' role
+            $collection->users()->syncWithoutDetaching([
+                $user->id => [
+                    'role' => 'epp',
+                    'is_owner' => true, // EPP is owner of their collection
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            ]);
+
+            $this->logger->info('[Registration] EPP user linked to collection', [
+                ...$logContext,
+                'collection_id' => $collection->id,
+                'collection_role' => 'epp',
+                'is_owner' => true
+            ]);
+
+            // 3. Setup SINGLE EPP Wallet (100% royalties) using specialized WalletService method
+            $this->walletService->attachEppWalletToCollection($collection, $user);
+
+            $this->logger->info('[Registration] EPP wallet attached to collection (100% royalties)', [
+                ...$logContext,
+                'collection_id' => $collection->id,
+                'mint_royalty' => 100.0,
+                'rebind_royalty' => 100.0
+            ]);
+
+            // 4. Set as Current Collection
+            $user->update(['current_collection_id' => $collection->id]);
+
+            // 5. GDPR: Log EPP ecosystem creation
+            $this->auditService->logUserAction(
+                $user,
+                'epp_ecosystem_created',
+                [
+                    'collection_id' => $collection->id,
+                    'collection_name' => $collection->collection_name,
+                    'royalties' => ['mint' => 100.0, 'rebind' => 100.0]
+                ],
+                \App\Enums\Gdpr\GdprActivityCategory::CONTENT_CREATION
+            );
+
+            $this->logger->info('[Registration] EPP ecosystem created successfully', [
+                ...$logContext,
+                'collection_id' => $collection->id,
+                'collection_name' => $collection->collection_name,
+                'user_role_in_collection' => 'epp',
+                'royalty_structure' => 'epp_exclusive_100_percent'
+            ]);
+
+            return $collection;
+        } catch (\Exception $e) {
+            $this->logger->error('[Registration] Failed to create EPP ecosystem', [
+                'user_id' => $user->id,
+                'user_type' => 'epp',
+                'step_failed' => $this->determineEcosystemFailureStep($e),
+                'error' => $e->getMessage()
+            ]);
+
+            throw new \Exception('Failed to create EPP ecosystem: ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
      * Generate collection name based on user type and name
      * @oracode-pillar: Semplicità Potenziante
      */
@@ -553,6 +669,34 @@ class RegisteredUserController extends Controller {
     }
 
     /**
+     * Determine the platform_role based on user_type
+     * Maps user_type to PlatformRole enum values for wallet and payment distribution
+     * 
+     * @param string $userType The user type from registration
+     * @return string|null The platform_role value or null
+     * 
+     * @oracode-pillar: Coerenza Semantica - User type maps to platform role
+     * @oracode-pillar: Intenzionalità Esplicita - Explicit role mapping
+     */
+    private function determinePlatformRole(string $userType): ?string {
+        // Map user types to platform roles (must match App\Enums\PlatformRole)
+        $platformRoleMapping = [
+            'epp' => 'EPP',
+            'creator' => 'Creator',
+            'collector' => 'Collector',
+            'commissioner' => 'Commissioner',
+            'company' => 'Company',
+            'trader_pro' => 'Trader Pro',
+            'pa_entity' => 'PA Entity',
+            'patron' => 'Creator', // Patron acts as creator
+            'vip' => 'VIP',
+            'weak' => 'Weak',
+        ];
+
+        return $platformRoleMapping[$userType] ?? null;
+    }
+
+    /**
      * Determine the correct collection role based on user type
      * @oracode-pillar: Coerenza Semantica
      */
@@ -565,7 +709,8 @@ class RegisteredUserController extends Controller {
             'patron' => 'patron',
             'collector' => 'collector',
             'trader_pro' => 'trader',
-            'epp_entity' => 'creator',
+            'epp' => 'epp', // EPP has specific role
+            'epp_entity' => 'epp',
             'pa_entity' => 'creator', // PA entities can create institutional collections
         ];
 

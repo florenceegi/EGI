@@ -149,7 +149,10 @@ class WalletWelcomeController extends Controller {
             $dashboardUrl = null;
             $redirectUrl = route($this->resolvePostIbanRedirectRoute($user));
 
-            if (($user->usertype ?? null) === 'creator' && $this->stripeConnectService !== null) {
+            // Stripe Connect setup for users that need payment processing (creator, epp)
+            $userTypesNeedingStripe = ['creator', 'epp'];
+            
+            if (in_array($user->usertype ?? null, $userTypesNeedingStripe) && $this->stripeConnectService !== null) {
                 try {
                     $stripeAccountData = $this->stripeConnectService->ensureExpressAccount($wallet, $user);
                     $accountArray = $stripeAccountData['account'] ?? [];
@@ -159,21 +162,31 @@ class WalletWelcomeController extends Controller {
                         $needsOnboarding = !($accountArray['details_submitted'] ?? false)
                             || !($accountArray['charges_enabled'] ?? false);
 
+                        // Determine redirect route based on user type
+                        $onboardingRedirectRoute = $user->usertype === 'creator' 
+                            ? route('creator.onboarding.summary')
+                            : route('dashboard');
+
                         if ($needsOnboarding) {
                             $onboardingUrl = $this->stripeConnectService->createAccountLink(
                                 $accountId,
-                                route('creator.onboarding.summary'),
-                                route('creator.onboarding.summary')
+                                $onboardingRedirectRoute,
+                                $onboardingRedirectRoute
                             );
                         }
 
                         $dashboardUrl = $this->stripeConnectService->createExpressDashboardLoginLink($accountId);
                     }
 
-                    $redirectUrl = route('creator.onboarding.summary');
+                    // Set redirect URL based on user type
+                    $redirectUrl = $user->usertype === 'creator'
+                        ? route('creator.onboarding.summary')
+                        : route('dashboard');
+                        
                 } catch (\Exception $e) {
                     $this->logger->error('Stripe Connect account creation failed during IBAN setup', [
                         'user_id' => $user->id,
+                        'user_type' => $user->usertype,
                         'wallet_id' => $wallet->id,
                         'error' => $e->getMessage(),
                     ]);
@@ -181,6 +194,7 @@ class WalletWelcomeController extends Controller {
                     // Continue without Stripe - user can set it up later
                     $this->errorManager->handle('STRIPE_CONNECT_ACCOUNT_FAILED', [
                         'user_id' => $user->id,
+                        'user_type' => $user->usertype,
                         'wallet_id' => $wallet->id,
                         'error' => $e->getMessage(),
                     ], $e);

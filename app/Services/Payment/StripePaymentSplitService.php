@@ -989,10 +989,10 @@ class StripePaymentSplitService {
 
     /**
      * Map platform_role (wallet role) to UserTypeEnum
-     * 
+     *
      * Platform roles are wallet-specific (Natan, Frangette, Creator, EPP)
      * UserTypeEnum are user account types
-     * 
+     *
      * This mapping allows PaymentDistribution to use the correct enum value
      *
      * @param string|null $platformRole

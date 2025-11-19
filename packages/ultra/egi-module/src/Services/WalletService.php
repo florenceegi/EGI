@@ -202,6 +202,91 @@ class WalletService implements WalletServiceInterface
     }
 
     /**
+     * 🚀 Attaches EPP-specific wallet to a collection (100% royalties)
+     *
+     * Creates a SINGLE wallet for EPP user with 100% mint and rebind royalties.
+     * Unlike standard collections that split royalties among Creator, EPP, Natan, and Frangette,
+     * EPP collections have ONLY the EPP user wallet at 100%.
+     *
+     * --- Logic ---
+     * 1. Create ONLY EPP wallet with user-specific data
+     * 2. Set 100% mint and 100% rebind royalties
+     * 3. Set platform_role = 'EPP'
+     * 4. Validate wallet creation succeeded
+     * 5. Log successful operation or handle exceptions via UEM
+     * --- End Logic ---
+     *
+     * @param Collection $collection The EPP collection to attach wallet to
+     * @param User $user The EPP user (owner of the collection)
+     *
+     * @return void
+     *
+     * @throws Throwable When UEM handling results in thrown exception
+     *
+     * @sideEffect Creates one wallet record in the database
+     * @sideEffect Logs the wallet creation operation via ULM
+     *
+     * @privacy-purpose Wallet creation for EPP-exclusive royalty management
+     * @privacy-data Uses EPP user ID and wallet address
+     * 
+     * @oracode-pillar Semplicità Potenziante - Single wallet, 100% control for EPP
+     * @oracode-pillar Coerenza Semantica - EPP role maps to 100% royalties
+     */
+    public function attachEppWalletToCollection(Collection $collection, User $user): void
+    {
+        // Create context for logging and error handling
+        $context = [
+            'collection_id' => $collection->id,
+            'user_id' => $user->id,
+            'user_type' => $user->usertype,
+            'collection_name' => $collection->collection_name ?? 'N/A'
+        ];
+
+        try {
+            // 1. Create EPP wallet (user-specific, 100% royalties)
+            // Use getAttributes to bypass the wallet accessor that returns Wallet object
+            $eppWallet = $this->createWallet(
+                $collection->id,
+                $user->id,
+                $user->getAttributes()['wallet'] ?? null,
+                100.0,  // 100% mint royalty
+                100.0,  // 100% rebind royalty
+                'EPP'   // platform_role
+            );
+
+            // 2. Validate wallet creation
+            if (!$eppWallet instanceof Wallet) {
+                throw new \Exception('EPP wallet creation returned non-Wallet response');
+            }
+
+            // 3. Log success
+            $this->logger->info('EPP wallet attached to collection', array_merge($context, [
+                'epp_wallet_id' => $eppWallet->id,
+                'mint_royalty' => 100.0,
+                'rebind_royalty' => 100.0,
+                'platform_role' => 'EPP'
+            ]));
+        } catch (Throwable $e) {
+            // Log error with detailed context
+            $this->logger->error('Failed to attach EPP wallet to collection', array_merge($context, [
+                'error_message' => $e->getMessage(),
+                'error_class' => get_class($e)
+            ]));
+
+            // Let UEM handle the error, potentially throwing
+            $this->errorManager->handle(
+                'EPP_WALLET_CREATION_FAILED',
+                array_merge($context, [
+                    'error_message' => $e->getMessage(),
+                    'error_code' => $e->getCode()
+                ]),
+                $e,
+                true // Always throw to maintain backward compatibility with existing code
+            );
+        }
+    }
+
+    /**
      * 🔧 Creates a single wallet with specified parameters.
      *
      * Helper method to create individual wallets with the specified

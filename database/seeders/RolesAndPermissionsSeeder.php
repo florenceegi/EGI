@@ -711,7 +711,7 @@ class RolesAndPermissionsSeeder extends Seeder {
         ],
 
         'epp' => [
-            // ❌ NON HA create_collection (solo progetti EPP)
+            // ✅ HA create_collection (per collection EPP propria)
             // ALIAS di epp_entity per compatibilità
 
             // Base permissions
@@ -720,6 +720,23 @@ class RolesAndPermissionsSeeder extends Seeder {
             'view_EGI',
             'view_statistics',
             'view_documentation',
+
+            // EPP Collection Management (propria collection al 100%)
+            'create_collection',
+            'update_collection',
+            'delete_collection',
+            'open_collection',
+
+            // EGI Management (per EGI certificati EPP)
+            'create_EGI',
+            'update_EGI',
+            'delete_EGI',
+            'manage_EGI',
+
+            // Wallet Management
+            'create_wallet',
+            'update_wallet',
+            'view_wallet',
 
             // EPP specific (focus principale)
             'create_epp_projects',

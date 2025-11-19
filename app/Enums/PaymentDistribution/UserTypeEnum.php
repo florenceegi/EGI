@@ -25,7 +25,7 @@ enum UserTypeEnum: string {
     case NATAN = 'natan';
     case FRANGETTE = 'frangette';
 
-    // Aggiunti da UserRoleForInvite.php
+        // Aggiunti da UserRoleForInvite.php
     case PATRON = 'patron';
     case ADMIN = 'admin';
     case EDITOR = 'editor';

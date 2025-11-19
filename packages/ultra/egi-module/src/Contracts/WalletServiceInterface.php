@@ -55,6 +55,19 @@ interface WalletServiceInterface
     public function attachDefaultWalletsToCollection(Collection $collection, User $user): void;
 
     /**
+     * 🎯 Attaches EPP-specific wallet to a collection (100% royalties).
+     *
+     * Creates a SINGLE wallet for EPP user with 100% mint and rebind royalties.
+     *
+     * @param Collection $collection The EPP collection to attach wallet to
+     * @param User $user The EPP user (owner of the collection)
+     * @return void
+     *
+     * @privacy-purpose Wallet creation for EPP-exclusive royalty management
+     */
+    public function attachEppWalletToCollection(Collection $collection, User $user): void;
+
+    /**
      * 🔍 Validates if a user has sufficient royalty quota.
      *
      * @param int $userId User ID to check quota for

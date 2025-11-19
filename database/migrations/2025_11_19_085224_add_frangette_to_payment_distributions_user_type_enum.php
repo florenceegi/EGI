@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
  * @Oracode Migration: Add 'frangette' to payment_distributions user_type enum
  * 🎯 Purpose: Extend user_type enum to support Frangette platform role
  * 🛡️ Privacy: Ensures PaymentDistribution can store all wallet platform roles
- * 
+ *
  * @author Padmin D. Curtis (AI Partner OS3.0)
  * @version 1.0.0
  * @date 2025-11-19
