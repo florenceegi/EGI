@@ -970,6 +970,7 @@ class StripePaymentSplitService {
                 'payment_method' => 'stripe_direct',
                 'status' => 'pending',
                 'processed_at' => now(),
+                'exchange_rate' => 1.0, // EUR → EUR (no conversion for split payments)
             ]);
         }
 
