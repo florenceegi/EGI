@@ -363,8 +363,9 @@ Route::prefix('info')->name('info.')->group(function () {
         return view('info.under-construction', ['title' => 'Trader Professionali', 'subtitle' => 'Scopri gli strumenti avanzati per il trading di EGI']);
     })->name('trader-pro');
 
+    // EPP Info - redirect to EPP Projects page
     Route::get('/epps', function () {
-        return view('info.under-construction', ['title' => 'Environmental Protection Project (EPP)', 'subtitle' => 'Scopri come gli EPP possono aiutare nella sostenibilità']);
+        return redirect()->route('epp-projects.index');
     })->name('epps');
 });
 
@@ -525,10 +526,32 @@ Route::middleware(['auth'])->group(function () {
         ->name('worker.attempt.start');
 });
 
-// EPP routes
+// EPP routes (DEPRECATED - old epps table)
 Route::get('/epps', [EppController::class, 'index'])->name('epps.index');
 Route::get('/epps/{epp}', [EppController::class, 'show'])->name('epps.show');
 Route::get('/epps/dashboard', [EppController::class, 'dashboard'])->name('epps.dashboard');
+
+// EPP PROJECTS routes (NEW - epp_projects table) - PUBLIC
+Route::get('/epp-projects', [App\Http\Controllers\EppProjectController::class, 'index'])->name('epp-projects.index');
+Route::get('/epp-projects/{eppProject}', [App\Http\Controllers\EppProjectController::class, 'show'])->name('epp-projects.show');
+Route::get('/equilibrium', [App\Http\Controllers\EppProjectController::class, 'dashboard'])->name('equilibrium.dashboard');
+
+// EPP DASHBOARD routes (PRIVATE - EPP users only)
+Route::prefix('epp/dashboard')->name('epp.dashboard.')->middleware(['auth', 'check.user.type:EPP'])->group(function () {
+    // Dashboard home
+    Route::get('/', [App\Http\Controllers\Epp\EppDashboardController::class, 'index'])->name('index');
+    
+    // Projects management
+    Route::get('/projects', [App\Http\Controllers\Epp\EppDashboardController::class, 'projects'])->name('projects');
+    Route::get('/projects/create', [App\Http\Controllers\Epp\EppDashboardController::class, 'createProject'])->name('projects.create');
+    Route::post('/projects', [App\Http\Controllers\Epp\EppDashboardController::class, 'storeProject'])->name('projects.store');
+    Route::get('/projects/{project}/edit', [App\Http\Controllers\Epp\EppDashboardController::class, 'editProject'])->name('projects.edit');
+    Route::put('/projects/{project}', [App\Http\Controllers\Epp\EppDashboardController::class, 'updateProject'])->name('projects.update');
+    Route::delete('/projects/{project}', [App\Http\Controllers\Epp\EppDashboardController::class, 'destroyProject'])->name('projects.destroy');
+    
+    // Collections management
+    Route::get('/collections', [App\Http\Controllers\Epp\EppDashboardController::class, 'collections'])->name('collections');
+});
 
 // EPP API routes
 Route::get('/api/epp-projects/active', [EppController::class, 'getActiveEppProjects'])->name('api.epp-projects.active');

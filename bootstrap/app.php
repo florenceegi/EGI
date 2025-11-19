@@ -3,6 +3,7 @@
 use App\Http\Middleware\AuthenticateNatanAgent;
 use App\Http\Middleware\CheckCollectionPermission;
 use App\Http\Middleware\CheckPendingWallet;
+use App\Http\Middleware\CheckUserType;
 use App\Http\Middleware\CreatorNicknameRedirect;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\EnsureSuperadmin;
@@ -44,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission'           => PermissionMiddleware::class,
             'role_or_permission'   => RoleOrPermissionMiddleware::class,
             'check.pending.wallet' => CheckPendingWallet::class,
+            'check.user.type'      => CheckUserType::class,
             'creator.nickname'     => CreatorNicknameRedirect::class,
             'natan.agent'          => AuthenticateNatanAgent::class,
             'superadmin'           => EnsureSuperadmin::class,
