@@ -23,6 +23,7 @@ enum UserTypeEnum: string {
     case TRADER_PRO = 'trader-pro';
     case VIP = 'vip';
     case NATAN = 'natan';
+    case FRANGETTE = 'frangette';
 
     // Aggiunti da UserRoleForInvite.php
     case PATRON = 'patron';
@@ -45,6 +46,7 @@ enum UserTypeEnum: string {
             self::TRADER_PRO => __('payment_distribution.user_types.trader_pro'),
             self::VIP => __('payment_distribution.user_types.vip'),
             self::NATAN => __('payment_distribution.user_types.natan'),
+            self::FRANGETTE => __('payment_distribution.user_types.frangette'),
             self::PATRON => __('payment_distribution.user_types.patron'),
             self::ADMIN => __('payment_distribution.user_types.admin'),
             self::EDITOR => __('payment_distribution.user_types.editor'),
@@ -67,6 +69,7 @@ enum UserTypeEnum: string {
             self::TRADER_PRO => __('payment_distribution.user_types_desc.trader_pro'),
             self::VIP => __('payment_distribution.user_types_desc.vip'),
             self::NATAN => __('payment_distribution.user_types_desc.natan'),
+            self::FRANGETTE => __('payment_distribution.user_types_desc.frangette'),
             self::PATRON => __('payment_distribution.user_types_desc.patron'),
             self::ADMIN => __('payment_distribution.user_types_desc.admin'),
             self::EDITOR => __('payment_distribution.user_types_desc.editor'),

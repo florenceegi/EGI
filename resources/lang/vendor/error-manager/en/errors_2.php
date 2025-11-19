@@ -58,7 +58,6 @@ return [
         'natan_job_user_not_found' => 'N.A.T.A.N. background job could not find user for session :session_id (user_id: :user_id).',
         // GDPR Consent Processing
         'gdpr_consent_processing_failed' => 'GDPR consent processing failed for user :user_id. Operation: :operation. Error: :error',
-    ],
 
         // Egili Purchase System Errors (Dev Messages)
         'egili_purchase_process_failed' => '[EGILI] Purchase process failed. User :user_id, Amount: :egili_amount Egili, Payment Method: :payment_method, Error: :error_message',
@@ -67,7 +66,9 @@ return [
         'mint_insufficient_stripe_capabilities' => '[STRIPE] Stripe account(s) missing required capabilities (transfers + card_payments). Accounts: :insufficient_accounts',
         'egili_amount_invalid' => '[EGILI] Invalid purchase amount. User :user_id, Requested: :egili_amount, Min: :min_amount, Max: :max_amount',
 
-    'user' => [
+    ],
+
+        'user' => [
         // ProfileImage Controller User Messages
         'profile_image_upload_validation_error' => 'Image data is invalid. Please check format and dimensions.',
         'profile_image_upload_error' => 'Unable to upload profile image. Please try again later.',

@@ -954,9 +954,13 @@ class StripePaymentSplitService {
             $intent = $paymentIntents[$index] ?? null;
             if (!$intent) continue;
 
+            // Map platform_role → UserTypeEnum (platform_role è la SOURCE OF TRUTH per i ruoli wallet)
+            $userType = $this->mapPlatformRoleToUserType($distribution['platform_role']);
+
             $records[] = \App\Models\PaymentDistribution::create([
                 'wallet_id' => $distribution['wallet_id'],
                 'user_id' => $distribution['user_id'],
+                'user_type' => $userType, // Mapped from platform_role
                 'collection_id' => $collection->id,
                 'egi_id' => $metadata['egi_id'] ?? null,
                 'amount_eur' => $distribution['amount_eur'],
@@ -972,9 +976,38 @@ class StripePaymentSplitService {
                 'processed_at' => now(),
                 'exchange_rate' => 1.0, // EUR → EUR (no conversion for split payments)
             ]);
+
+            $this->logger->debug('PaymentDistribution created with mapped user_type', [
+                'user_id' => $distribution['user_id'],
+                'platform_role' => $distribution['platform_role'],
+                'user_type' => $userType->value,
+            ]);
         }
 
         return $records;
+    }
+
+    /**
+     * Map platform_role (wallet role) to UserTypeEnum
+     * 
+     * Platform roles are wallet-specific (Natan, Frangette, Creator, EPP)
+     * UserTypeEnum are user account types
+     * 
+     * This mapping allows PaymentDistribution to use the correct enum value
+     *
+     * @param string|null $platformRole
+     * @return \App\Enums\PaymentDistribution\UserTypeEnum
+     */
+    protected function mapPlatformRoleToUserType(?string $platformRole): \App\Enums\PaymentDistribution\UserTypeEnum {
+        return match ($platformRole) {
+            'Natan' => \App\Enums\PaymentDistribution\UserTypeEnum::NATAN,
+            'Frangette' => \App\Enums\PaymentDistribution\UserTypeEnum::FRANGETTE,
+            'Creator' => \App\Enums\PaymentDistribution\UserTypeEnum::CREATOR,
+            'EPP' => \App\Enums\PaymentDistribution\UserTypeEnum::EPP,
+            'Commissioner' => \App\Enums\PaymentDistribution\UserTypeEnum::COMMISSIONER,
+            'Collector' => \App\Enums\PaymentDistribution\UserTypeEnum::COLLECTOR,
+            default => \App\Enums\PaymentDistribution\UserTypeEnum::COLLECTOR, // Safe fallback
+        };
     }
 
     protected function logDirectPaymentsAuditTrail(
