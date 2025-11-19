@@ -16,6 +16,7 @@ return [
     'open_collection' => 'Open Collection',
     'new_collection' => 'New Collection',
     'admin_tools' => 'Admin Tools',
+    'epp_dashboard' => 'EPP Dashboard',
     'permissions_roles' => 'Permissions & Roles',
     'assign_roles' => 'Assign Roles',
     'assign_permissions' => 'Assign Permissions',

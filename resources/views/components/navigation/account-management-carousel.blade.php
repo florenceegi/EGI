@@ -13,6 +13,15 @@
         ],
     ];
 
+    // Add EPP Dashboard link for EPP users (MUST be first!)
+    if ($currentUser && $currentUser->usertype === 'epp') {
+        $accountActions[] = [
+            'label' => '🌱 ' . __('menu.epp_dashboard'),
+            'href' => route('epp.dashboard.index'),
+            'highlight' => true, // Make it stand out
+        ];
+    }
+
     // Add organization data link for EPP and Company users
     if ($currentUser && in_array($currentUser->usertype, ['epp', 'company', 'enterprise', 'epp_entity'])) {
         $accountActions[] = [

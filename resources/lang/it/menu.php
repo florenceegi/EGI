@@ -16,6 +16,7 @@ return [
     'open_collection' => 'Apri Collezione',
     'new_collection' => 'Nuova Collezione',
     'admin_tools' => 'Strumenti Admin',
+    'epp_dashboard' => 'Dashboard EPP',
     'permissions_roles' => 'Permessi & Ruoli',
     'assign_roles' => 'Assegna Ruoli',
     'assign_permissions' => 'Assegna Permessi',

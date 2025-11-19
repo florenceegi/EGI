@@ -250,16 +250,16 @@
                             <span class="font-medium">{{ __('guest_layout.collectors') }}</span>
                         </a>
 
-                        {{-- EPPs Link --}}
-                        <a href="{{ route('info.epps') }}"
-                            class="mobile-nav-item {{ request()->routeIs('epps.*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }} flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-colors hover:bg-orange-50 dark:text-gray-200 dark:hover:bg-orange-900/20">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500 text-white">
+                        {{-- EPP Projects Link --}}
+                        <a href="{{ route('epp-projects.index') }}"
+                            class="mobile-nav-item {{ request()->routeIs('epp-projects.*') ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400' : '' }} flex items-center space-x-3 rounded-xl px-4 py-3 text-gray-700 transition-colors hover:bg-green-50 dark:text-gray-200 dark:hover:bg-green-900/20">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-green-600 text-white">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <span class="font-medium">{{ __('guest_layout.epps') }}</span>
+                            <span class="font-medium">{{ __('guest_layout.epp_projects') }}</span>
                         </a>
 
                         @unless (View::getSection('title') === __('guest_home.page_title') || request()->routeIs('home') || request()->is('/'))

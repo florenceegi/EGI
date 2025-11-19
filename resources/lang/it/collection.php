@@ -167,6 +167,7 @@ return [
     'type_ebook' => 'Ebook',
     'type_audio' => 'Audio',
     'type_video' => 'Video',
+    'type_environmental' => 'Ambientale',
     'EGI_number' => 'Numero EGI',
     'EGI_number_suggest' => 'Inserisci il numero di EGI che desideri creare per questa collection',
     'position' => 'Posizione',
