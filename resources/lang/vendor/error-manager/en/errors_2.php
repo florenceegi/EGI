@@ -66,6 +66,18 @@ return [
         'mint_insufficient_stripe_capabilities' => '[STRIPE] Stripe account(s) missing required capabilities (transfers + card_payments). Accounts: :insufficient_accounts',
         'egili_amount_invalid' => '[EGILI] Invalid purchase amount. User :user_id, Requested: :egili_amount, Min: :min_amount, Max: :max_amount',
 
+
+         // EPP Dashboard Errors (Dev Messages)
+         'epp_dashboard_load_failed' => '[EPP] Dashboard load failed. User :user_id, Error: :error_message',
+         'epp_projects_load_failed' => '[EPP] Projects load failed. User :user_id, Error: :error_message',
+         'epp_collections_load_failed' => '[EPP] Collections load failed. User :user_id, Error: :error_message',
+         'epp_project_create_failed' => '[EPP] Project creation failed. User :user_id, Data: :input_data, Error: :error_message',
+         'epp_project_create_form_failed' => '[EPP] Project create form failed. User :user_id, Error: :error_message',
+         'epp_project_update_failed' => '[EPP] Project update failed. User :user_id, Project :project_id, Error: :error_message',
+         'epp_project_edit_form_failed' => '[EPP] Project edit form failed. User :user_id, Project :project_id, Error: :error_message',
+         'epp_project_delete_failed' => '[EPP] Project deletion failed. User :user_id, Project :project_id, Error: :error_message',
+ 
+
     ],
 
         'user' => [
@@ -124,6 +136,17 @@ return [
         'egili_purchase_confirmation_error' => 'Unable to display order details. Check your email or contact support.',
         'egili_consent_missing' => 'You must consent to payment processing to purchase Egili. Go to privacy settings and accept the required consents.',
         'egili_amount_invalid' => 'The requested Egili amount is not valid. Check the minimum and maximum purchase limits.',
+        
+        // EPP Dashboard Errors (User Messages)
+        'epp_dashboard_load_failed' => 'Unable to load EPP dashboard. Please try again in a moment.',
+        'epp_projects_load_failed' => 'Unable to load EPP projects. Please try again in a moment.',
+        'epp_collections_load_failed' => 'Unable to load EPP collections. Please try again in a moment.',
+        'epp_project_create_failed' => 'Unable to create EPP project. Please check your data and try again.',
+        'epp_project_create_form_failed' => 'Unable to open project creation form. Please try again.',
+        'epp_project_update_failed' => 'Unable to update EPP project. Please check your data and try again.',
+        'epp_project_edit_form_failed' => 'Unable to open project edit form. Please try again.',
+        'epp_project_delete_failed' => 'Unable to delete EPP project. Please try again or contact support.',
+
         'mint_insufficient_stripe_capabilities' => 'Payment system configuration incomplete. Our team has been notified.',
     ],
 

@@ -183,6 +183,16 @@ return [
         'egili_consent_missing' => '[EGILI] Missing payment-processing consent. User :user_id, Egili Amount: :egili_amount, Consent Status: :consent_status',
         'egili_amount_invalid' => '[EGILI] Invalid purchase amount. User :user_id, Requested: :egili_amount, Min: :min_amount, Max: :max_amount',
 
+        // EPP Dashboard Errors (Dev Messages)
+        'epp_dashboard_load_failed' => '[EPP] Dashboard load failed. User :user_id, Error: :error_message',
+        'epp_projects_load_failed' => '[EPP] Projects load failed. User :user_id, Error: :error_message',
+        'epp_collections_load_failed' => '[EPP] Collections load failed. User :user_id, Error: :error_message',
+        'epp_project_create_failed' => '[EPP] Project creation failed. User :user_id, Data: :input_data, Error: :error_message',
+        'epp_project_create_form_failed' => '[EPP] Project create form failed. User :user_id, Error: :error_message',
+        'epp_project_update_failed' => '[EPP] Project update failed. User :user_id, Project :project_id, Error: :error_message',
+        'epp_project_edit_form_failed' => '[EPP] Project edit form failed. User :user_id, Project :project_id, Error: :error_message',
+        'epp_project_delete_failed' => '[EPP] Project deletion failed. User :user_id, Project :project_id, Error: :error_message',
+
         'mint_insufficient_stripe_capabilities' => '[STRIPE] Account Stripe senza capabilities richieste (transfers + card_payments). Accounts: :insufficient_accounts',
     ],
 
@@ -370,6 +380,16 @@ return [
 
         // Generic message (used by UserInterfaceHandler if no specific message found)
         'generic_error' => 'Si è verificato un errore. Riprova più tardi o contatta l\'assistenza.',
+
+        // EPP Dashboard Errors (User Messages)
+        'epp_dashboard_load_failed' => 'Impossibile caricare la dashboard EPP. Riprova tra qualche istante.',
+        'epp_projects_load_failed' => 'Impossibile caricare i progetti EPP. Riprova tra qualche istante.',
+        'epp_collections_load_failed' => 'Impossibile caricare le collezioni EPP. Riprova tra qualche istante.',
+        'epp_project_create_failed' => 'Impossibile creare il progetto EPP. Verifica i dati e riprova.',
+        'epp_project_create_form_failed' => 'Impossibile aprire il form di creazione progetto. Riprova.',
+        'epp_project_update_failed' => 'Impossibile aggiornare il progetto EPP. Verifica i dati e riprova.',
+        'epp_project_edit_form_failed' => 'Impossibile aprire il form di modifica progetto. Riprova.',
+        'epp_project_delete_failed' => 'Impossibile eliminare il progetto EPP. Riprova o contatta l\'assistenza.',
 
         'mint_insufficient_stripe_capabilities' => 'Configurazione sistema pagamento incompleta. Il nostro team è stato notificato.',
     ],

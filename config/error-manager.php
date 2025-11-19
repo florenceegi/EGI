@@ -6992,5 +6992,97 @@ return [
             'msg_to' => 'toast',
         ],
 
+        // ====================================================
+        // EPP DASHBOARD ERRORS
+        // ====================================================
+
+        'EPP_DASHBOARD_LOAD_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.epp_dashboard_load_failed',
+            'user_message_key' => 'error-manager::errors_2.user.epp_dashboard_load_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'EPP_PROJECTS_LOAD_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.epp_projects_load_failed',
+            'user_message_key' => 'error-manager::errors_2.user.epp_projects_load_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'EPP_COLLECTIONS_LOAD_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.epp_collections_load_failed',
+            'user_message_key' => 'error-manager::errors_2.user.epp_collections_load_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'EPP_PROJECT_CREATE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.epp_project_create_failed',
+            'user_message_key' => 'error-manager::errors_2.user.epp_project_create_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'EPP_PROJECT_CREATE_FORM_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.epp_project_create_form_failed',
+            'user_message_key' => 'error-manager::errors_2.user.epp_project_create_form_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'EPP_PROJECT_UPDATE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.epp_project_update_failed',
+            'user_message_key' => 'error-manager::errors_2.user.epp_project_update_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
+        'EPP_PROJECT_EDIT_FORM_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.epp_project_edit_form_failed',
+            'user_message_key' => 'error-manager::errors_2.user.epp_project_edit_form_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'EPP_PROJECT_DELETE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.epp_project_delete_failed',
+            'user_message_key' => 'error-manager::errors_2.user.epp_project_delete_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
+
     ]
 ];
