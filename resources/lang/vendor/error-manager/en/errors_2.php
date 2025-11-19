@@ -64,6 +64,7 @@ return [
         'egili_purchase_process_failed' => '[EGILI] Purchase process failed. User :user_id, Amount: :egili_amount Egili, Payment Method: :payment_method, Error: :error_message',
         'egili_purchase_confirmation_error' => '[EGILI] Purchase confirmation page error. User :user_id, Order Reference: :order_reference, Error: :error',
         'egili_consent_missing' => '[EGILI] Missing payment-processing consent. User :user_id, Egili Amount: :egili_amount, Consent Status: :consent_status',
+        'mint_insufficient_stripe_capabilities' => '[STRIPE] Stripe account(s) missing required capabilities (transfers + card_payments). Accounts: :insufficient_accounts',
         'egili_amount_invalid' => '[EGILI] Invalid purchase amount. User :user_id, Requested: :egili_amount, Min: :min_amount, Max: :max_amount',
 
     'user' => [
@@ -122,6 +123,7 @@ return [
         'egili_purchase_confirmation_error' => 'Unable to display order details. Check your email or contact support.',
         'egili_consent_missing' => 'You must consent to payment processing to purchase Egili. Go to privacy settings and accept the required consents.',
         'egili_amount_invalid' => 'The requested Egili amount is not valid. Check the minimum and maximum purchase limits.',
+        'mint_insufficient_stripe_capabilities' => 'Payment system configuration incomplete. Our team has been notified.',
     ],
 
     // Generic message (used by UserInterfaceHandler if no specific message found)

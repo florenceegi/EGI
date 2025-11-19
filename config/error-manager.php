@@ -6153,6 +6153,16 @@ return [
             'notify_slack' => true,
             'msg_to' => 'toast',
         ],
+        'MINT_INSUFFICIENT_STRIPE_CAPABILITIES' => [
+            'type' => 'error',
+            'blocking' => 'blocking',
+            'dev_message_key' => 'error-manager::errors_2.dev.mint_insufficient_stripe_capabilities',
+            'user_message_key' => 'error-manager::errors_2.user.mint_insufficient_stripe_capabilities',
+            'http_status_code' => 503,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'toast',
+        ],
         'STRIPE_TRANSFER_REVERSAL_FAILED' => [
             'type' => 'critical',
             'blocking' => 'blocking',

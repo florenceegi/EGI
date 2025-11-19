@@ -183,6 +183,7 @@ return [
         'egili_consent_missing' => '[EGILI] Missing payment-processing consent. User :user_id, Egili Amount: :egili_amount, Consent Status: :consent_status',
         'egili_amount_invalid' => '[EGILI] Invalid purchase amount. User :user_id, Requested: :egili_amount, Min: :min_amount, Max: :max_amount',
 
+        'mint_insufficient_stripe_capabilities' => '[STRIPE] Account Stripe senza capabilities richieste (transfers + card_payments). Accounts: :insufficient_accounts',
     ],
 
     'user' => [
@@ -370,6 +371,7 @@ return [
         // Generic message (used by UserInterfaceHandler if no specific message found)
         'generic_error' => 'Si è verificato un errore. Riprova più tardi o contatta l\'assistenza.',
 
+        'mint_insufficient_stripe_capabilities' => 'Configurazione sistema pagamento incompleta. Il nostro team è stato notificato.',
     ],
 
 ];

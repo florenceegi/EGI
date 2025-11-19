@@ -61,7 +61,7 @@ class StripePaymentSplitService {
 
     /**
      * 🚀 MiCA-SAFE: Create DIRECT split payments to Connected Accounts
-     * 
+     *
      * NO TRANSFER API - Funds go DIRECTLY to wallet owners' Stripe accounts
      * Platform NEVER holds/transits funds (MiCA compliance)
      *
@@ -148,7 +148,7 @@ class StripePaymentSplitService {
 
     /**
      * DEPRECATED - OLD TRANSFER API METHOD (MiCA violation)
-     * 
+     *
      * @deprecated Use createDirectSplitPayments() instead
      * @param string $paymentIntentId Stripe PaymentIntent ID (already succeeded)
      * @param Collection $collection Collection with wallets to distribute to
@@ -325,26 +325,78 @@ class StripePaymentSplitService {
     }
 
     /**
-     * Validate all wallets have Stripe Connect accounts configured
+     * Validate all wallets have Stripe Connect accounts configured AND capabilities enabled
+     *
+     * Verifies:
+     * - Stripe account ID exists
+     * - Account has 'transfers' capability active (required for direct payments)
+     * - Account has 'card_payments' capability active
      *
      * @param array $distributions
-     * @throws \Exception If any wallet missing Stripe account
+     * @throws \Exception If any wallet missing Stripe account or capabilities
      */
     protected function validateStripeAccounts(array $distributions): void {
         $missingAccounts = [];
+        $insufficientCapabilities = [];
 
         foreach ($distributions as $distribution) {
+            // Check if Stripe account ID exists
             if (empty($distribution['stripe_account_id'])) {
                 $missingAccounts[] = [
                     'wallet_id' => $distribution['wallet_id'],
                     'platform_role' => $distribution['platform_role'],
                 ];
+                continue; // Skip capability check if no account
+            }
+
+            // Verify Stripe account capabilities (transfers + card_payments)
+            try {
+                $account = $this->stripeClient->accounts->retrieve($distribution['stripe_account_id']);
+                $capabilities = $account->capabilities;
+
+                $hasTransfers = isset($capabilities->transfers) && $capabilities->transfers === 'active';
+                $hasCardPayments = isset($capabilities->card_payments) && $capabilities->card_payments === 'active';
+
+                if (!$hasTransfers || !$hasCardPayments) {
+                    $insufficientCapabilities[] = [
+                        'wallet_id' => $distribution['wallet_id'],
+                        'platform_role' => $distribution['platform_role'],
+                        'stripe_account_id' => $distribution['stripe_account_id'],
+                        'capabilities' => [
+                            'transfers' => $capabilities->transfers ?? 'not_set',
+                            'card_payments' => $capabilities->card_payments ?? 'not_set',
+                        ],
+                    ];
+                }
+
+                $this->logger->debug('Stripe account capabilities verified', [
+                    'stripe_account_id' => $distribution['stripe_account_id'],
+                    'wallet_id' => $distribution['wallet_id'],
+                    'platform_role' => $distribution['platform_role'],
+                    'transfers' => $capabilities->transfers ?? 'not_set',
+                    'card_payments' => $capabilities->card_payments ?? 'not_set',
+                ]);
+            } catch (\Stripe\Exception\ApiErrorException $e) {
+                $this->logger->error('Failed to verify Stripe account capabilities', [
+                    'stripe_account_id' => $distribution['stripe_account_id'],
+                    'wallet_id' => $distribution['wallet_id'],
+                    'error' => $e->getMessage(),
+                ]);
+
+                // Treat API error as insufficient capability
+                $insufficientCapabilities[] = [
+                    'wallet_id' => $distribution['wallet_id'],
+                    'platform_role' => $distribution['platform_role'],
+                    'stripe_account_id' => $distribution['stripe_account_id'],
+                    'error' => $e->getMessage(),
+                ];
             }
         }
 
+        // Error handling: Missing accounts
         if (!empty($missingAccounts)) {
             $this->errorManager->handle('MINT_MISSING_STRIPE_ACCOUNTS', [
-                'missing_accounts' => $missingAccounts,
+                'missing_accounts' => json_encode($missingAccounts),
                 'missing_count' => count($missingAccounts),
             ]);
 
@@ -353,6 +405,24 @@ class StripePaymentSplitService {
                     ' wallet(s) missing Stripe Connect account configuration'
             );
         }
+
+        // Error handling: Insufficient capabilities
+        if (!empty($insufficientCapabilities)) {
+            $this->errorManager->handle('MINT_INSUFFICIENT_STRIPE_CAPABILITIES', [
+                'insufficient_accounts' => json_encode($insufficientCapabilities),
+                'insufficient_count' => count($insufficientCapabilities),
+            ]);
+
+            throw new \Exception(
+                'Cannot process split payment: ' . count($insufficientCapabilities) .
+                    ' Stripe account(s) missing required capabilities (transfers + card_payments). ' .
+                    'Enable these capabilities in Stripe Dashboard → Connect → Accounts.'
+            );
+        }
+
+        $this->logger->info('All Stripe accounts validated with required capabilities', [
+            'accounts_validated' => count($distributions),
+        ]);
     }
 
     /**
@@ -471,13 +541,13 @@ class StripePaymentSplitService {
         // Retrieve the charge ID from the PaymentIntent
         // Stripe Transfer requires charge ID (ch_xxx), not PaymentIntent ID (pi_xxx)
         $paymentIntent = $this->stripeClient->paymentIntents->retrieve($paymentIntentId);
-        
+
         if (empty($paymentIntent->charges->data)) {
             throw new \Exception("No charge found for PaymentIntent {$paymentIntentId}");
         }
-        
+
         $chargeId = $paymentIntent->charges->data[0]->id;
-        
+
         $transferMetadata = array_merge($metadata, [
             'wallet_id' => $distribution['wallet_id'],
             'platform_role' => $distribution['platform_role'] ?? 'unknown',
@@ -782,7 +852,7 @@ class StripePaymentSplitService {
 
     /**
      * 🚀 MiCA-SAFE: Create DIRECT PaymentIntents to Connected Accounts
-     * 
+     *
      * Uses Stripe `transfer_data[destination]` pattern
      * Funds go DIRECTLY to destination accounts, NO platform transit
      *
@@ -842,7 +912,7 @@ class StripePaymentSplitService {
             // Auto-confirm in sandbox
             if (config('algorand.payments.stripe.auto_confirm', true)) {
                 $intentParams['confirm'] = true;
-                
+
                 $sandboxPM = config('algorand.payments.stripe.sandbox_payment_method');
                 if ($sandboxPM) {
                     $intentParams['payment_method'] = $sandboxPM;
@@ -879,7 +949,7 @@ class StripePaymentSplitService {
         array $metadata
     ): array {
         $records = [];
-        
+
         foreach ($distributions as $index => $distribution) {
             $intent = $paymentIntents[$index] ?? null;
             if (!$intent) continue;
