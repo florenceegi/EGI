@@ -54,6 +54,8 @@ return [
         
         'collections_title' => 'Collections Supporting this Project',
         'collections_subtitle' => ':count public collections document this project',
+        'epp_collections_title' => 'Project Testimonials and Documentation',
+        'epp_collections_subtitle' => ':count environmental collections published by EPP',
         'collection_equilibrium' => 'Equilibrium generated',
         'view_collection' => 'View Collection',
         

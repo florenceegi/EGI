@@ -54,6 +54,8 @@ return [
         
         'collections_title' => 'Collections che Supportano questo Progetto',
         'collections_subtitle' => ':count collections pubbliche documentano questo progetto',
+        'epp_collections_title' => 'Testimonianze e Documentazione del Progetto',
+        'epp_collections_subtitle' => ':count collections ambientali pubblicate dall\'EPP',
         'collection_equilibrium' => 'Equilibrium generato',
         'view_collection' => 'Vedi Collection',
         

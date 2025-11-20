@@ -362,14 +362,14 @@
             </div>
         </section>
 
-        <!-- Collections Supporting this Project -->
+        <!-- EPP Environmental Collections (Testimonianze, Documenti) -->
         <section class="container px-4 mx-auto mb-12">
             <div class="mb-8 text-center">
                 <h2 class="text-3xl font-bold" style="font-family: 'Playfair Display', serif; color: #2D5016;">
-                    📚 {{ __('epp_projects.show.collections_title') }}
+                    📚 {{ __('epp_projects.show.epp_collections_title') }}
                 </h2>
                 <p class="mt-2 text-gray-600">
-                    {{ __('epp_projects.show.collections_subtitle', ['count' => $collections->total()]) }}
+                    {{ __('epp_projects.show.epp_collections_subtitle', ['count' => $collections->total()]) }}
                 </p>
             </div>
 
@@ -536,39 +536,5 @@
                 </div>
             @endif
         </section>
-
-        <!-- Documentation & Evidence -->
-        @if ($eppProject->evidence_url || $eppProject->media)
-            <section class="container px-4 mx-auto mb-12">
-                <div class="section-card">
-                    <h2 class="mb-6 text-2xl font-bold"
-                        style="font-family: 'Playfair Display', serif; color: #2D5016;">
-                        📁 {{ __('epp_projects.show.documentation_title') }}
-                    </h2>
-
-                    @if ($eppProject->evidence_url)
-                        <div class="mb-4">
-                            <a href="{{ $eppProject->evidence_url }}" target="_blank" class="btn-secondary-epp">
-                                {{ __('epp_projects.show.evidence_url') }} →
-                            </a>
-                        </div>
-                    @endif
-
-                    @if ($eppProject->media && count($eppProject->media) > 0)
-                        <div>
-                            <h3 class="mb-4 font-semibold">{{ __('epp_projects.show.media_gallery') }}</h3>
-                            <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-                                @foreach ($eppProject->media as $media)
-                                    <div class="overflow-hidden bg-gray-200 rounded-lg aspect-square">
-                                        <img src="{{ $media }}" alt="Evidence"
-                                            class="object-cover w-full h-full">
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </section>
-        @endif
     </x-slot>
 </x-guest-layout>

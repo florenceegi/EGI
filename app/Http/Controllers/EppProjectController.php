@@ -110,14 +110,17 @@ class EppProjectController extends Controller
         // Load relationships
         $eppProject->load(['eppUser', 'eppUser.organizationData']);
 
-        // Get collections supporting this project (public only)
-        $collections = Collection::where('epp_project_id', $eppProject->id)
+        // Get EPP's environmental collections (testimonianze, documenti del progetto)
+        // NON le collezioni che supportano il progetto!
+        $collections = Collection::where('creator_id', $eppProject->epp_user_id)
+            ->where('type', 'environmental')
             ->where('is_published', true)
             ->withCount('egis')
             ->with(['creator'])
+            ->orderBy('created_at', 'desc')
             ->paginate(12);
 
-        // Get EGI from these collections
+        // Get EGI from EPP's environmental collections
         $egis = Egi::whereIn('collection_id', $collections->pluck('id'))
             ->with(['collection', 'user'])
             ->orderBy('created_at', 'desc')
