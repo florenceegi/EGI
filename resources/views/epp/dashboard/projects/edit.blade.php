@@ -173,30 +173,172 @@
 
                         <!-- Project Image -->
                         <div>
-                            <label for="image" class="block text-sm font-medium text-gray-700">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
                                 {{ __('epp_dashboard.projects.form.image') }}
                             </label>
                             
-                            @if ($project->hasMedia('project_images'))
-                                <div class="mt-2 mb-4">
-                                    <img src="{{ $project->getFirstMediaUrl('project_images', 'thumb') }}" 
-                                         alt="{{ $project->name }}" 
-                                         class="h-32 w-32 rounded-lg object-cover">
+                            <div class="relative">
+                                <!-- Drop Zone -->
+                                <div id="dropZone" 
+                                     class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-[#2D5016] transition-colors cursor-pointer bg-gray-50 hover:bg-green-50/30">
+                                    <input type="file" 
+                                           name="image" 
+                                           id="image" 
+                                           accept="image/jpeg,image/png,image/jpg,image/webp"
+                                           class="hidden">
+                                    
+                                    <div id="uploadPrompt" class="{{ $project->hasMedia('project_images') ? 'hidden' : '' }}">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <div class="mt-4">
+                                            <span class="text-base font-semibold text-[#2D5016]">{{ __('epp_dashboard.projects.form.upload_click') }}</span>
+                                            <span class="text-gray-600"> {{ __('epp_dashboard.projects.form.upload_or_drag') }}</span>
+                                        </div>
+                                        <p class="mt-2 text-xs text-gray-500">
+                                            JPG, PNG, WEBP {{ __('epp_dashboard.projects.form.upload_max_size') }}
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Preview (existing or new) -->
+                                    <div id="imagePreview" class="{{ $project->hasMedia('project_images') ? '' : 'hidden' }}">
+                                        <img id="previewImg" 
+                                             src="{{ $project->hasMedia('project_images') ? $project->getFirstMediaUrl('project_images', 'thumb') : '' }}" 
+                                             alt="{{ $project->name }}" 
+                                             class="mx-auto max-h-64 rounded-lg shadow-lg">
+                                        <div class="mt-4 space-x-2">
+                                            <button type="button" 
+                                                    id="changeImage"
+                                                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-[#2D5016] bg-white border border-[#2D5016] rounded-lg hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-[#2D5016]">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                {{ __('epp_dashboard.projects.form.change_image') }}
+                                            </button>
+                                            <button type="button" 
+                                                    id="removeImage"
+                                                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                                {{ __('epp_dashboard.projects.form.remove_image') }}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                            @endif
-
-                            <input type="file" 
-                                   name="image" 
-                                   id="image" 
-                                   accept="image/*"
-                                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-green-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-green-700 hover:file:bg-green-100">
+                            </div>
+                            
                             @error('image')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                            <p class="mt-1 text-sm text-gray-500">
+                            <p class="mt-2 text-sm text-gray-500">
                                 {{ __('epp_dashboard.projects.form.image_help') }}
                             </p>
                         </div>
+
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const dropZone = document.getElementById('dropZone');
+                            const fileInput = document.getElementById('image');
+                            const uploadPrompt = document.getElementById('uploadPrompt');
+                            const imagePreview = document.getElementById('imagePreview');
+                            const previewImg = document.getElementById('previewImg');
+                            const removeBtn = document.getElementById('removeImage');
+                            const changeBtn = document.getElementById('changeImage');
+
+                            // Click to upload
+                            dropZone.addEventListener('click', function(e) {
+                                if (e.target !== removeBtn && !removeBtn.contains(e.target) && 
+                                    e.target !== changeBtn && !changeBtn.contains(e.target)) {
+                                    fileInput.click();
+                                }
+                            });
+
+                            // Change image button
+                            changeBtn.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                fileInput.click();
+                            });
+
+                            // Drag & Drop
+                            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                                dropZone.addEventListener(eventName, preventDefaults, false);
+                            });
+
+                            function preventDefaults(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+
+                            ['dragenter', 'dragover'].forEach(eventName => {
+                                dropZone.addEventListener(eventName, highlight, false);
+                            });
+
+                            ['dragleave', 'drop'].forEach(eventName => {
+                                dropZone.addEventListener(eventName, unhighlight, false);
+                            });
+
+                            function highlight() {
+                                dropZone.classList.add('border-[#2D5016]', 'bg-green-50/50');
+                            }
+
+                            function unhighlight() {
+                                dropZone.classList.remove('border-[#2D5016]', 'bg-green-50/50');
+                            }
+
+                            dropZone.addEventListener('drop', handleDrop, false);
+
+                            function handleDrop(e) {
+                                const dt = e.dataTransfer;
+                                const files = dt.files;
+                                if (files.length > 0) {
+                                    fileInput.files = files;
+                                    handleFiles(files);
+                                }
+                            }
+
+                            // File selection
+                            fileInput.addEventListener('change', function() {
+                                handleFiles(this.files);
+                            });
+
+                            function handleFiles(files) {
+                                if (files.length === 0) return;
+                                
+                                const file = files[0];
+                                
+                                // Validate file type
+                                if (!file.type.match('image.*')) {
+                                    alert('{{ __("epp_dashboard.projects.form.error_file_type") }}');
+                                    return;
+                                }
+                                
+                                // Validate file size (2MB)
+                                if (file.size > 2 * 1024 * 1024) {
+                                    alert('{{ __("epp_dashboard.projects.form.error_file_size") }}');
+                                    return;
+                                }
+                                
+                                // Show preview
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    previewImg.src = e.target.result;
+                                    uploadPrompt.classList.add('hidden');
+                                    imagePreview.classList.remove('hidden');
+                                };
+                                reader.readAsDataURL(file);
+                            }
+
+                            // Remove image
+                            removeBtn.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                fileInput.value = '';
+                                previewImg.src = '';
+                                uploadPrompt.classList.remove('hidden');
+                                imagePreview.classList.add('hidden');
+                            });
+                        });
+                        </script>
 
                         <!-- Form Actions -->
                         <div class="flex items-center justify-between border-t pt-6">
