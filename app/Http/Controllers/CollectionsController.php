@@ -472,7 +472,7 @@ class CollectionsController extends Controller {
             $collection = Collection::findOrFail($id);
 
             // Check permissions
-            $currentUserId = \App\Supports\FegiAuth::id();
+            $currentUserId = FegiAuth::id();
             if (!$collection->userHasPermission($currentUserId, 'create_collection')) {
                 return response()->json([
                     'success' => false,
