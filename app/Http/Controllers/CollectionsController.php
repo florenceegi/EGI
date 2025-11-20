@@ -524,7 +524,7 @@ class CollectionsController extends Controller {
                 'message' => 'Collection or EPP Project not found'
             ], 404);
         } catch (\Throwable $e) {
-            app(\App\Services\Logger\UltraLogManager::class)->error('[CollectionsController] updateEppProject failed', [
+            app(\Ultra\UltraLogManager\UltraLogManager::class)->error('[CollectionsController] updateEppProject failed', [
                 'collection_id' => $id,
                 'error' => $e->getMessage()
             ]);
