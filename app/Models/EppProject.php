@@ -44,8 +44,8 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property \Carbon\Carbon $updated_at
  */
 class EppProject extends Model implements HasMedia {
-    use HasFactory;
     use InteractsWithMedia;
+    use HasFactory;
 
     /**
      * The table associated with the model.
@@ -71,7 +71,7 @@ class EppProject extends Model implements HasMedia {
         'current_funds',
         'evidence_url',
         'evidence_type',
-        'media',
+        'media_data', // Rinominato da 'media' per evitare conflitto con Spatie
         'target_date',
         'completion_date',
     ];
@@ -86,10 +86,28 @@ class EppProject extends Model implements HasMedia {
         'current_value' => 'float',
         'target_funds' => 'float',
         'current_funds' => 'float',
-        'media' => 'array',
+        'media_data' => 'array', // Rinominato da 'media' per evitare conflitto
         'target_date' => 'datetime',
         'completion_date' => 'datetime',
     ];
+
+    /**
+     * Register media conversions for project images.
+     */
+    public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(150)
+            ->height(150)
+            ->sharpen(10)
+            ->nonQueued();
+
+        $this->addMediaConversion('card')
+            ->width(800)
+            ->height(600)
+            ->sharpen(5)
+            ->nonQueued();
+    }
 
     /**
      * Get the EPP User that owns this project.

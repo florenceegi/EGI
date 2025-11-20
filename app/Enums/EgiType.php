@@ -130,4 +130,3 @@ enum EgiType: string
         );
     }
 }
-

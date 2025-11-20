@@ -189,10 +189,7 @@
 
         <!-- Hero Section -->
         @php
-            $projectImageUrl = '';
-            if (method_exists($eppProject, 'getFirstMediaUrl')) {
-                $projectImageUrl = $eppProject->getFirstMediaUrl('project_images', 'card');
-            }
+            $projectImageUrl = $eppProject->getFirstMediaUrl('project_images');
         @endphp
         
         <section class="relative overflow-hidden" style="min-height: 400px;">

@@ -51,30 +51,31 @@ $contextConfig = [
 $config = $contextConfig[$context] ?? $contextConfig['collector'];
 
 // Controllo se l'utente loggato è il creator dell'EGI
-    $isCreator = auth()->check() && auth()->id() === $egi->user_id;
+$isCreator = auth()->check() && auth()->id() === $egi->user_id;
 
-    // Badge logic - può essere sovrascritto dal parametro showBadge
-    $showBadge = $showBadge ?? $showOwnershipBadge;
+// Badge logic - può essere sovrascritto dal parametro showBadge
+$showBadge = $showBadge ?? $showOwnershipBadge;
 
-    $isMinted = $egi->isMinted();
-    $coCreatorUser = $egi->blockchain?->buyer;
-    $coCreatorDisplay = $coCreatorUser ? formatActivatorDisplay($coCreatorUser) : null;
-    $currentOwnerUser = $egi->owner;
-    $currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerUser) : null;
-    $showSecondaryOwner = $isMinted && $currentOwnerUser && $coCreatorUser && $currentOwnerUser->id !== $coCreatorUser->id;
+$isMinted = $egi->isMinted();
+$coCreatorUser = $egi->blockchain?->buyer;
+$coCreatorDisplay = $coCreatorUser ? formatActivatorDisplay($coCreatorUser) : null;
+$currentOwnerUser = $egi->owner;
+$currentOwnerDisplay = $currentOwnerUser ? formatActivatorDisplay($currentOwnerUser) : null;
+$showSecondaryOwner =
+    $isMinted && $currentOwnerUser && $coCreatorUser && $currentOwnerUser->id !== $coCreatorUser->id;
 
-    $listMintedClasses = $isMinted
-        ? 'minted-list-card text-emerald-50'
-        : 'border-gray-700/50 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800/70';
+$listMintedClasses = $isMinted
+    ? 'minted-list-card text-emerald-50'
+    : 'border-gray-700/50 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800/70';
 
-    $listMintedBorder = $isMinted ? 'border-2' : 'border';
+$listMintedBorder = $isMinted ? 'border-2' : 'border';
 
-// 🌱 EPP PROJECT INFO
-$egiCollection = $egi->collection ?? null;
-$eppProject = null;
-if ($egiCollection && $egiCollection->epp_project_id) {
-    $eppProject = $egiCollection->eppProject ?? null;
-}
+    // 🌱 EPP PROJECT INFO
+    $egiCollection = $egi->collection ?? null;
+    $eppProject = null;
+    if ($egiCollection && $egiCollection->epp_project_id) {
+        $eppProject = $egiCollection->eppProject ?? null;
+    }
 @endphp
 
 {{-- Include CSS hyper se necessario --}}
@@ -143,7 +144,7 @@ if ($egiCollection && $egiCollection->epp_project_id) {
 
 {{-- EGI Card List Component --}}
 <article
-    class="egi-card-list {{ $isHyper ? 'egi-card--hiper' : '' }} group relative rounded-xl {{ $listMintedBorder }} {{ $listMintedClasses }} p-3 transition-all duration-300"
+    class="egi-card-list {{ $isHyper ? 'egi-card--hiper' : '' }} {{ $listMintedBorder }} {{ $listMintedClasses }} group relative rounded-xl p-3 transition-all duration-300"
     data-egi-id="{{ $egi->id }}" data-hyper="{{ $isHyper ? '1' : '0' }}"
     style="{{ $isHyper ? '--energy:0.95; --foilHue:265; --edge:#9b5cf6; --accent:#a78bfa;' : '' }}">
 
@@ -157,8 +158,7 @@ if ($egiCollection && $egiCollection->epp_project_id) {
         <div
             class="absolute -right-1 -top-2 flex items-center gap-2 rounded-bl-xl rounded-tr-xl bg-[#D4A574] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#1B1B1B] shadow-lg">
             <svg class="h-3.5 w-3.5 text-[#1B1B1B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M5 13l4 4L19 7" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
             {{ __('egi.badge.minted') }}
         </div>
@@ -179,7 +179,7 @@ if ($egiCollection && $egiCollection->epp_project_id) {
         <a href="{{ route('egis.show', $egi->id) }}"
             class="{{ $isHyper ? 'group-hover:ring-2 group-hover:ring-yellow-400' : 'group-hover:ring-2 group-hover:ring-purple-400' }} relative h-28 w-28 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 transition-all duration-300">
             <x-egi-media-display :egi="$egi"
-                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 {{ $isHyper ? 'filter brightness-110' : '' }}" />
+                class="{{ $isHyper ? 'filter brightness-110' : '' }} h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
 
             <!-- Hover overlay for visual feedback -->
             <div
@@ -308,36 +308,39 @@ if ($egiCollection && $egiCollection->epp_project_id) {
                 @if ($eppProject)
                     <div class="flex items-center gap-1 text-[#2D5016] dark:text-green-400"
                         title="{{ __('egi.epp.supports_project', ['project' => $eppProject->name]) }}">
-                        <div class="flex items-center justify-center w-3 h-3 rounded-full bg-[#2D5016] text-white">
+                        <div class="flex h-3 w-3 items-center justify-center rounded-full bg-[#2D5016] text-white">
                             <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z" clip-rule="evenodd"/>
-                                <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd"
+                                    d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z"
+                                    clip-rule="evenodd" />
+                                <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z" />
                             </svg>
                         </div>
-                        <span class="max-w-[120px] truncate text-xs font-medium">{{ Str::limit($eppProject->name, 15) }}</span>
+                        <span
+                            class="max-w-[120px] truncate text-xs font-medium">{{ Str::limit($eppProject->name, 15) }}</span>
                     </div>
                 @endif
             </div>
 
             @if ($isMinted && ($coCreatorDisplay || $currentOwnerDisplay))
-                <div class="mb-2 flex flex-col gap-1">
+                <div class="flex flex-col gap-1 mb-2">
                     @if ($coCreatorDisplay)
                         <div class="flex items-center gap-2">
                             <div
-                                class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-purple-600">
+                                class="flex items-center justify-center flex-shrink-0 w-5 h-5 bg-purple-600 rounded-full">
                                 @if ($coCreatorDisplay['avatar'])
                                     <img src="{{ $coCreatorDisplay['avatar'] }}"
                                         alt="{{ $coCreatorDisplay['name'] }}"
-                                        class="h-5 w-5 rounded-full border border-white/20 object-cover">
+                                        class="object-cover w-5 h-5 border rounded-full border-white/20">
                                 @else
-                                    <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
                                             clip-rule="evenodd" />
                                     </svg>
                                 @endif
                             </div>
-                            <span class="truncate text-xs text-purple-200">
+                            <span class="text-xs text-purple-200 truncate">
                                 {{ __('egi.creator.co_creator') }}
                                 <span class="font-semibold text-white">{{ $coCreatorDisplay['name'] }}</span>
                             </span>
@@ -347,20 +350,20 @@ if ($egiCollection && $egiCollection->epp_project_id) {
                     @if ($showSecondaryOwner && $currentOwnerDisplay)
                         <div class="flex items-center gap-2">
                             <div
-                                class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600">
+                                class="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-emerald-600">
                                 @if ($currentOwnerDisplay['avatar'])
                                     <img src="{{ $currentOwnerDisplay['avatar'] }}"
                                         alt="{{ $currentOwnerDisplay['name'] }}"
-                                        class="h-5 w-5 rounded-full border border-white/20 object-cover">
+                                        class="object-cover w-5 h-5 border rounded-full border-white/20">
                                 @else
-                                    <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 8a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zm6-6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
                                             clip-rule="evenodd" />
                                     </svg>
                                 @endif
                             </div>
-                            <span class="truncate text-xs text-emerald-200">
+                            <span class="text-xs truncate text-emerald-200">
                                 {{ __('egi.ownership.current_owner') }}
                                 <span class="font-semibold text-white">{{ $currentOwnerDisplay['name'] }}</span>
                             </span>

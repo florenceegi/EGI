@@ -588,6 +588,7 @@ return [
         'uploading' => 'Uploading…',
         'banner_updated' => 'Banner updated',
         'banner_upload_error' => 'Banner upload error',
+        'official_epp_collection' => 'Official EPP Collection',
     ],
 
 ];

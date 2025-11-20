@@ -13,9 +13,8 @@
 @endphp
 
 @if ($isPdf)
-    <x-media.pdf-display :egi="$egi" />
+    <x-media.pdf-display :egi="$egi" {{ $attributes }} />
 @else
     {{-- Default to image display --}}
-    <x-media.image-display :egi="$egi" />
+    <x-media.image-display :egi="$egi" {{ $attributes }} />
 @endif
-

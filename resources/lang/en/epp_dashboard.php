@@ -78,6 +78,7 @@ return [
             'evidence_url_help' => 'Link to documentation or evidence',
             'image' => 'Project Image',
             'image_help' => 'Upload a representative image (JPG, PNG, WEBP, max 2MB)',
+            'image_save_info' => 'The image will be saved when you click "Update Project" or "Create Project" at the bottom of the form.',
             'upload_click' => 'Click to upload',
             'upload_or_drag' => 'or drag and drop',
             'upload_max_size' => 'up to 2MB',

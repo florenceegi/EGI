@@ -78,6 +78,7 @@ return [
             'evidence_url_help' => 'Link a documentazione o prove',
             'image' => 'Immagine Progetto',
             'image_help' => 'Carica un\'immagine rappresentativa (JPG, PNG, WEBP, max 2MB)',
+            'image_save_info' => 'L\'immagine verrà salvata quando premi "Aggiorna Progetto" o "Crea Progetto" in fondo al form.',
             'upload_click' => 'Clicca per caricare',
             'upload_or_drag' => 'o trascina qui',
             'upload_max_size' => 'fino a 2MB',

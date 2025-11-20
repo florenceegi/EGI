@@ -1,34 +1,33 @@
-# **FLORENCEEGI - PROJECT-SPECIFIC RULES**
+# **PROJECT INDEPENDENT - DEVELOPMENT STANDARDS**
 
-**Version**: 1.0.0  
-**Date**: 2025-10-28  
-**Context**: FlorenceEGI Platform - Enterprise & PA  
-**Foundation**: OS3.0 Standards (see `cursorrules_*.md` files for universal rules)
-
----
-
-> **NOTE:** Questo file contiene SOLO le regole specifiche per il progetto FlorenceEGI.  
-> Per le regole universali OS3.0 (REGOLA ZERO, I18N, STATISTICS, UEM-FIRST, etc.) fare riferimento ai file `cursorrules_*.md`
+**Version**: 1.0.0
+**Date**: 2025-10-28
+**Context**: Universal Development Standards
+**Foundation**: OS3.0 Standards (see `docs/Standards/cursorrules_*.md` files for universal rules)
 
 ---
 
-# **🏛️ CONTESTO PROGETTO - ENTERPRISE & PA**
+> **NOTE:** Questo file contiene le regole di sviluppo universali applicabili a qualsiasi progetto.
+> Per le regole universali OS3.0 (REGOLA ZERO, I18N, STATISTICS, UEM-FIRST, etc.) fare riferimento ai file `docs/Standards/cursorrules_*.md`
+
+---
+
+# **🏗️ STANDARD DI SVILUPPO UNIVERSALI**
 
 ## **LIVELLO APPLICAZIONE:**
 
-**FlorenceEGI è una piattaforma ENTERPRISE di livello mission-critical:**
+**Standard enterprise-grade applicabili a piattaforme mission-critical:**
 
--   🏛️ **Target principale**: Pubbliche Amministrazioni (PA) italiane
 -   🏢 **Standard richiesti**: Enterprise-grade, audit-ready, compliance-first
 -   📊 **Criticità dati**: Ogni dato mostrato deve essere accurato e completo
 -   🔒 **Sicurezza**: GDPR mandatory, audit trail completo, privacy by design
--   📈 **Scalabilità**: Architettura per migliaia di utenti PA concorrenti
+-   📈 **Scalabilità**: Architettura per migliaia di utenti concorrenti
 
 ## **IMPLICAZIONI OPERATIVE:**
 
-### **🚨 CREDIBILITÀ PA:**
+### **🚨 CREDIBILITÀ ENTERPRISE:**
 
--   **Zero tolleranza errori**: Una statistica sbagliata = fiducia persa = contratto a rischio
+-   **Zero tolleranza errori**: Una statistica sbagliata = fiducia persa = progetto a rischio
 -   **Trasparenza totale**: Ogni operazione deve essere tracciabile e verificabile
 -   **Dati completi**: Mai mostrare dati parziali come se fossero completi
 -   **Professionalità**: Codice enterprise-grade, no shortcuts, no workarounds
@@ -38,7 +37,7 @@
 -   **GDPR obbligatorio**: Non optional, non "nice to have" - è BLOCKING
 -   **Audit trail**: Ogni modifica dati personali deve essere loggata
 -   **Consent management**: Check esplicito prima di ogni operazione su dati sensibili
--   **Error handling**: Mai esporre errori tecnici agli utenti PA
+-   **Error handling**: Mai esporre errori tecnici agli utenti finali
 
 ### **📊 QUALITÀ CODICE:**
 
@@ -47,18 +46,18 @@
 -   **Type safety**: Type hints sempre, strict types quando possibile
 -   **Testing mindset**: Codice deve essere testabile (anche se test non sempre scritti)
 
-### **🎯 USER EXPERIENCE PA:**
+### **🎯 USER EXPERIENCE ENTERPRISE:**
 
 -   **Interfaccia professionale**: No colori sgargianti, no animazioni eccessive
--   **Accessibilità WCAG 2.1 AA**: Obbligatoria per PA
+-   **Accessibilità WCAG 2.1 AA**: Obbligatoria per compliance enterprise
 -   **Performance**: Caricamenti rapidi, no lag percepibile
 -   **Affidabilità**: Sistema deve essere percepito come solido e stabile
 
 ## **⚠️ COSA SIGNIFICA IN PRATICA:**
 
-**Quando scrivi codice per FlorenceEGI:**
+**Quando scrivi codice enterprise:**
 
-1. ❓ **"Questo codice resisterebbe ad un audit PA?"**
+1. ❓ **"Questo codice resisterebbe ad un audit di compliance?"**
 2. ❓ **"Se questo dato fosse sbagliato, perderemmo il cliente?"**
 3. ❓ **"Questa soluzione è enterprise-grade o è un workaround?"**
 4. ❓ **"Il GDPR officer approverebbe questo flusso?"**
@@ -69,7 +68,7 @@
 
 # **🎨 BRAND GUIDELINES OBBLIGATORIE**
 
-**Documento di riferimento completo**: `docs/ai/marketing/FlorenceEGI Brand Guidelines.md`  
+**Documenti di riferimento**: Brand guidelines e design system del progetto  
 **Leggere SEMPRE prima di creare/modificare UI, layout, colori**
 
 ## **PALETTE COLORI:**
@@ -113,7 +112,7 @@
 
 ## **🚨 FLORENCE EGI DEVE RIMANERE 100% MiCA-SAFE 🚨**
 
-**PRINCIPIO FONDAMENTALE:** La piattaforma FlorenceEGI NON deve mai richiedere licenze crypto europee (CASP/EMI).
+**PRINCIPIO FONDAMENTALE:** Le piattaforme crypto NON devono mai richiedere licenze europee (CASP/EMI).
 
 ## **✅ COSA È PERMESSO (MiCA-SAFE):**
 
@@ -195,54 +194,43 @@ AZIONI OBBLIGATORIE:
 
 ---
 
-# **📋 REGOLA PA/ENTERPRISE - PROJECT TRACKING OBBLIGATORIO**
+# **📋 WORKFLOW DI SVILUPPO ENTERPRISE**
 
-## **PRIMA AZIONE IN OGNI NUOVA CHAT:**
+## **APPROCCIO STRUTTURATO ALLO SVILUPPO:**
 
-### **STEP 1: LEGGI PA_ENTERPRISE_TODO_MASTER.md**
+### **STEP 1: ANALISI CONTESTUALE**
 
-```bash
-read_file docs/ai/context/PA_ENTERPRISE_TODO_MASTER.md
-```
+Prima di ogni modifica:
 
-**Questo file contiene:**
+-   ✅ Comprendi il dominio applicativo e i requisiti di compliance
+-   ✅ Identifica gli stakeholder e i loro bisogni
+-   ✅ Valuta l'impatto sui sistemi esistenti
+-   ✅ Considera scalabilità e performance
 
--   ✅ Status attuale progetto PA/Enterprise
--   ✅ Task completati e da fare (41 task totali)
--   ✅ Dependencies tra task
--   ✅ Effort estimates e priorities
--   ✅ Milestone tracking (MVP → Expansion → Release)
+### **STEP 2: PIANIFICAZIONE TECNICA**
 
-### **STEP 2: LEGGI DOCUMENTI ACCESSORI NECESSARI**
+Per ogni feature/task:
 
-In base al task corrente, leggi:
+-   ✅ Definisci acceptance criteria chiari
+-   ✅ Identifica pattern architetturali appropriati
+-   ✅ Pianifica testing e quality assurance
+-   ✅ Considera sicurezza e compliance (GDPR, audit trail)
 
-```bash
-# Per CODE PATTERNS e implementazione:
-read_file docs/ai/context/PA_ENTERPRISE_IMPLEMENTATION_GUIDE.md
+### **STEP 3: IMPLEMENTAZIONE**
 
-# Per DESIGN UI/UX:
-read_file docs/ai/marketing/PA_ENTERPRISE_BRAND_GUIDELINES.md
+Durante lo sviluppo:
 
-# Per VOCABULARY expansion (FASE 2):
-read_file docs/ai/context/PA_ENTERPRISE_VOCABULARY_EXPANSION.md
+-   ✅ Segui standard enterprise-grade
+-   ✅ Mantieni qualità codice elevata
+-   ✅ Documenta decisioni architetturali
+-   ✅ Implementa logging e monitoring appropriati
 
-# Per ARCHITETTURA sistema:
-read_file docs/ai/context/PA_ENTERPRISE_ARCHITECTURE.md
-```
+### **STEP 4: VALIDAZIONE E DEPLOYMENT**
 
-### **STEP 3: IDENTIFICA TASK CORRENTE**
-
-Cerca nel TODO_MASTER:
-
--   Task con status 🟡 IN PROGRESS (priorità assoluta)
--   Task con status ⚪ NOT STARTED e Priority P0 (blocking)
--   Verifica dependencies soddisfatte
-
-### **STEP 4: DICHIARA STATUS E PROPONI AZIONE**
+Prima del rilascio:
 
 ```
-📋 PA/ENTERPRISE PROJECT STATUS:
+📋 ENTERPRISE DEVELOPMENT CHECKLIST:
 - Current Phase: FASE [X]
 - Current Task: [Task ID e nome]
 - Status: [completati]/[totali] task
@@ -254,54 +242,43 @@ Cerca nel TODO_MASTER:
 Procedo? [SI/NO/MODIFICHE]
 ```
 
-## **⚠️ SE TODO_MASTER NON ESISTE:**
+## **✅ VALIDATION CHECKLIST:**
 
 ```
-🛑 ERRORE CRITICO: PA_ENTERPRISE_TODO_MASTER.md non trovato
+🛑 VALIDATION CHECKLIST - Prima del commit:
 
-Possibili cause:
-1. Chat precedente a creazione documentazione
-2. File spostato/rinominato
-3. Working directory errata
-
-AZIONI:
-1. Cerco file: grep_search "PA_ENTERPRISE_TODO" -includePattern="docs/**"
-2. Se non trovo → CHIEDO: "Devo ricreare documentazione PA/Enterprise?"
+- [ ] Codice rispetta standard enterprise-grade?
+- [ ] GDPR compliance verificata?
+- [ ] Error handling implementato correttamente?
+- [ ] Performance e scalabilità considerate?
+- [ ] Testing mindset applicato?
+- [ ] Documentazione aggiornata?
 ```
 
-## **🔄 UPDATE TODO_MASTER DOPO COMPLETAMENTO TASK:**
+## **🔄 BEST PRACTICES PER PROGETTI ENTERPRISE:**
 
-Quando completi un task:
+### **Project Management:**
 
-1. Chiedi conferma: "Task [X] completato. Aggiorno TODO_MASTER status?"
-2. Se confermato, marca task come ✅ COMPLETATO
-3. Aggiorna progress percentuale fase
-4. Commit con messaggio: `[DOC] Update PA_ENTERPRISE_TODO_MASTER - Task [X] completed`
+-   ✅ Pianifica sempre prima di implementare
+-   ✅ Documenta decisioni architetturali
+-   ✅ Mantieni traceability tra requisiti e codice
+-   ✅ Collabora attivamente con il team
 
-## **📊 FREQUENCY CHECKS:**
+### **Quality Assurance:**
 
--   **Ogni nuova chat**: Leggi TODO_MASTER (OBBLIGATORIO)
--   **Ogni ora di lavoro**: Verifica progress milestone
--   **Dopo ogni task**: Update TODO_MASTER status
--   **Prima di proporre nuove feature**: Verifica non sia già in TODO
+-   ✅ Code review obbligatoria per feature critiche
+-   ✅ Testing automatizzato dove possibile
+-   ✅ Monitoraggio e logging appropriati
+-   ✅ Backup e recovery procedures
 
-## **RATIONALE:**
+### **Communication:**
 
-**Contesto PA/Enterprise:** Progetto strutturato in 41 task, 8 settimane, 130 ore effort. Senza tracking:
+-   ✅ Documenta ogni modifica significativa
+-   ✅ Mantieni changelog aggiornato
+-   ✅ Segnala rischi e dipendenze tempestivamente
+-   ✅ Collabora con stakeholder per validazione
 
--   ❌ Rischio duplicazione lavoro
--   ❌ Rischio violare dependencies
--   ❌ Impossibile continuare tra sessioni diverse
--   ❌ No visibility per Fabio su avanzamento
-
-**Con tracking TODO_MASTER:**
-
--   ✅ Continuità perfetta tra sessioni AI
--   ✅ Zero duplicazione effort
--   ✅ Dependencies rispettate sempre
--   ✅ Progress trasparente e misurabile
-
-**Questa regola è BLOCKING per progetto PA/Enterprise, non applicare a fix minori o feature isolate non PA.**
+**Queste pratiche sono essenziali per progetti enterprise mission-critical.**
 
 ---
 
@@ -313,39 +290,39 @@ Quando completi un task:
 -   **Biography System**: Cultural heritage content management
 -   **Marketplace**: Trading platform for digital assets
 -   **GDPR Compliance**: Consent management, audit trail, data export
--   **PA Integration**: Specialized features for Public Administration clients
+-   **Enterprise Integration**: Specialized features for enterprise clients
 
 ## **SERVIZI CHIAVE:**
 
 -   `ConsentService`: GDPR consent management
--   `AuditLogService`: Complete audit trail for PA compliance
+-   `AuditLogService`: Complete audit trail for compliance
 -   `EgiService`: EGI NFT/ASA operations
 -   `BiographyService`: Content management for cultural assets
 -   `MarketplaceService`: Trading operations
 
 ## **DOCUMENTAZIONE DI RIFERIMENTO:**
 
--   `docs/ai/context/PA_ENTERPRISE_*.md`: PA/Enterprise project documentation
--   `docs/ai/marketing/FlorenceEGI Brand Guidelines.md`: Complete brand guidelines
 -   `docs/core/Oracode/*.md`: Technical architecture and patterns
+-   `docs/compliance/GDPR/*.md`: Compliance and security documentation
+-   `docs/guides/Backend/*.md`: Implementation guides
 
 ---
 
 # **🎯 QUANDO APPLICARE QUESTE REGOLE**
 
-**Applica le regole FlorenceEGI-specific quando:**
+**Applica queste regole enterprise quando:**
 
--   ✅ Lavori su feature legate a PA/Enterprise
--   ✅ Crei/modifici UI (Brand Guidelines obbligatorie)
+-   ✅ Sviluppi piattaforme enterprise mission-critical
 -   ✅ Implementi funzionalità blockchain (MiCA-SAFE obbligatorio)
--   ✅ Lavori su task del PA_ENTERPRISE_TODO_MASTER
--   ✅ Crei componenti che devono resistere ad audit PA
+-   ✅ Gestisci dati sensibili o compliance GDPR
+-   ✅ Crei componenti che richiedono alta affidabilità
+-   ✅ Lavori su sistemi che necessitano audit trail completo
 
 **NON applicare quando:**
 
--   ❌ Lavori su progetti esterni a FlorenceEGI
--   ❌ Fix minori non correlati a PA/Enterprise
--   ❌ Test o esperimenti in branch isolati
+-   ❌ Sviluppi progetti personali o prototipi rapidi
+-   ❌ Fix minori su codice esistente non critico
+-   ❌ Test o esperimenti in ambienti isolati
 
 ---
 
@@ -353,9 +330,9 @@ Quando completi un task:
 
 **Regole universali OS3.0:**
 
--   `cursorrules_PADMIN_D_CURTIS_OS3_INTEGRATED.md` - Documento master completo
--   `cursorrules_OS3_QUICK_REFERENCE_CARD.md` - Quick reference rapida
--   `cursorrules_CURSOR_COPILOT_ROLES.md` - Partnership Fabio/Padmin
+-   `docs/Standards/cursorrules_PADMIN_D_CURTIS_OS3_INTEGRATED.md` - Documento master completo
+-   `docs/Standards/cursorrules_OS3_QUICK_REFERENCE_CARD.md` - Quick reference rapida
+-   `docs/Standards/cursorrules_CURSOR_COPILOT_ROLES.md` - Partnership Fabio/Padmin
 
 **Documentazione tecnica:**
 
@@ -365,15 +342,15 @@ Quando completi un task:
 
 ---
 
-**Version**: 1.0.0  
-**Date**: 2025-10-28  
-**Status**: PRODUCTION READY  
-**Scope**: FlorenceEGI Project Only
+**Version**: 1.0.0
+**Date**: 2025-10-28
+**Status**: PRODUCTION READY
+**Scope**: Enterprise Development Standards
 
 ---
 
 **Note:**
 
--   Questo file completa le regole universali OS3.0 con le specifiche FlorenceEGI
--   In caso di conflitto, le regole FlorenceEGI-specific hanno precedenza nel contesto di questo progetto
+-   Questo file completa le regole universali OS3.0 con standard enterprise
+-   In caso di conflitto, le regole enterprise hanno precedenza nei progetti mission-critical
 -   Le regole P0 universali (REGOLA ZERO, I18N, etc.) rimangono sempre valide

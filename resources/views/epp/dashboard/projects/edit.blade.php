@@ -203,7 +203,7 @@
                                     <!-- Preview (existing or new) -->
                                     <div id="imagePreview" class="{{ $project->hasMedia('project_images') ? '' : 'hidden' }}">
                                         <img id="previewImg" 
-                                             src="{{ $project->hasMedia('project_images') ? $project->getFirstMediaUrl('project_images', 'thumb') : '' }}" 
+                                             src="{{ $project->hasMedia('project_images') ? $project->getFirstMediaUrl('project_images') : '' }}" 
                                              alt="{{ $project->name }}" 
                                              class="mx-auto max-h-64 rounded-lg shadow-lg">
                                         <div class="mt-4 space-x-2">
@@ -231,9 +231,21 @@
                             @error('image')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                            <p class="mt-2 text-sm text-gray-500">
-                                {{ __('epp_dashboard.projects.form.image_help') }}
-                            </p>
+                            <div class="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                <div class="flex items-start gap-2">
+                                    <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-medium text-blue-900">
+                                            {{ __('epp_dashboard.projects.form.image_help') }}
+                                        </p>
+                                        <p class="text-xs text-blue-700 mt-1">
+                                            {{ __('epp_dashboard.projects.form.image_save_info') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <script>

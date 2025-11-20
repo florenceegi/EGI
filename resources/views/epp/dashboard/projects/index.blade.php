@@ -40,10 +40,7 @@
                         <div class="overflow-hidden rounded-2xl bg-white shadow-lg transition-all hover:shadow-2xl flex flex-col min-h-[600px]">
                             {{-- 🖼️ PROJECT IMAGE --}}
                             @php
-                                $projectImageUrl = '';
-                                if (method_exists($project, 'getFirstMediaUrl')) {
-                                    $projectImageUrl = $project->getFirstMediaUrl('project_images', 'card');
-                                }
+                                $projectImageUrl = $project->getFirstMediaUrl('project_images');
                             @endphp
                             
                             @if($projectImageUrl)

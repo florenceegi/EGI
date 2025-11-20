@@ -37,10 +37,23 @@
                     style="scrollbar-width: none; -ms-overflow-style: none;">
                     @foreach ($collectionEgis as $egi)
                         <a href="{{ route('egis.show', $egi->id) }}"
+                            title="{{ $egi->title ?? $egi->name ?? 'EGI #' . $egi->id }}"
                             class="{{ $currentEgi && $currentEgi->id === $egi->id ? 'ring-2 ring-blue-500 scale-105' : 'hover:ring-2 hover:ring-white/50' }} group carousel-item relative h-9 w-9 flex-shrink-0 overflow-hidden rounded transition-all duration-200 hover:scale-105 hover:shadow-lg sm:h-10 sm:w-10 sm:rounded-md md:h-12 md:w-12 lg:h-14 lg:w-14 lg:rounded-md xl:h-16 xl:w-16"
-                            aria-label="Visualizza EGI {{ $egi->name ?? '#' . $egi->id }}">
-                            @if ($egi->main_image_url)
-                                <img src="{{ $egi->main_image_url }}" alt="EGI {{ $egi->name ?? '#' . $egi->id }}"
+                            aria-label="Visualizza EGI {{ $egi->title ?? $egi->name ?? '#' . $egi->id }}">
+                            
+                            @php
+                                $imgSrc = $egi->main_image_url;
+                                $isPdfUrl = $imgSrc && str_ends_with(strtolower(parse_url($imgSrc, PHP_URL_PATH)), '.pdf');
+                            @endphp
+
+                            @if ($isPdfUrl)
+                                <div class="flex h-full w-full items-center justify-center bg-gray-800 border border-gray-600">
+                                    <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 011.414.586l4 4a1 1 0 01.586 1.414V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                            @elseif ($imgSrc)
+                                <img src="{{ $imgSrc }}" alt="EGI {{ $egi->name ?? '#' . $egi->id }}"
                                     class="{{ $currentEgi && $currentEgi->id === $egi->id ? 'opacity-100' : 'opacity-80 group-hover:opacity-100' }} h-full w-full object-cover transition-opacity duration-200"
                                     loading="lazy">
                             @else

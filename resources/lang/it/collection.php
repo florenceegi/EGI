@@ -641,5 +641,6 @@ return [
         'uploading' => 'Caricamento…',
         'banner_updated' => 'Banner aggiornato',
         'banner_upload_error' => 'Errore upload banner',
+        'official_epp_collection' => 'Collezione Ufficiale EPP',
     ],
 ];

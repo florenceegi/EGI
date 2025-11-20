@@ -13,8 +13,8 @@
     if (is_array($collection)) {
         $collection = collect($collection);
     }
-    // Prendiamo il primo elemento se è una collezione di collezioni
-    // $firstCollection = $collection->first();
+    // Verifica se questa collection è essa stessa un'iniziativa EPP (es. creata da un EPP user o legata al progetto come core)
+    $isEppCollection = $collection->creator && in_array($collection->creator->usertype, ['epp', 'natan', 'frangette']);
 @endphp
 
 <x-collection-layout :title="$collection->collection_name . ' | FlorenceEGI'" :metaDescription="Str::limit($collection->description, 155) ??
@@ -268,10 +268,18 @@
 
                 {{-- Collection Title + Description --}}
                 <div class="mt-16 sm:mt-40">
-                    <h1 id="collection-title"
-                        class="mb-4 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
-                        {{ $collection->collection_name }}
-                    </h1>
+                    <div class="flex items-start gap-4 mb-4">
+                        <h1 id="collection-title"
+                            class="text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+                            {{ $collection->collection_name }}
+                        </h1>
+                        
+                        @if($isEppCollection)
+                            <div class="mt-1 rounded-full bg-[#2D5016] px-3 py-1 text-sm font-bold text-white shadow-lg border border-green-600/50 backdrop-blur-sm">
+                                {{ __('collection.show.official_epp_collection') }}
+                            </div>
+                        @endif
+                    </div>
 
                     @if ($collection->description)
                         <p id="collection-description"
@@ -364,8 +372,8 @@
         </div>
     </div>
 
-    {{-- 🌳 EPP PROJECT SECTION (Se presente) --}}
-    @if ($collection->eppProject)
+    {{-- 🌳 EPP PROJECT SECTION (Mostra SOLO se NON è una collezione di tipo EPP) --}}
+    @if ($collection->eppProject && !$isEppCollection)
         <div class="border-b border-gray-800 bg-gradient-to-r from-green-900/20 to-emerald-900/20">
             <div class="container px-4 py-6 mx-auto sm:px-6 lg:px-8">
                 <div class="p-4 hero-glass rounded-xl sm:p-6">
@@ -409,7 +417,7 @@
                 </div>
             </div>
         </div>
-    @elseif ($collection->epp)
+    @elseif ($collection->epp && !$isEppCollection)
         {{-- FALLBACK: Old EPP relationship (deprecated) --}}
         <div class="border-b border-gray-800 bg-gradient-to-r from-green-900/20 to-emerald-900/20">
             <div class="container px-4 py-6 mx-auto sm:px-6 lg:px-8">
