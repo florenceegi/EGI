@@ -188,22 +188,46 @@
         </div>
 
         <!-- Hero Section -->
-        <section class="project-hero">
-            <div class="container px-4 mx-auto">
+        @php
+            $projectImageUrl = '';
+            if (method_exists($eppProject, 'getFirstMediaUrl')) {
+                $projectImageUrl = $eppProject->getFirstMediaUrl('project_images', 'card');
+            }
+        @endphp
+        
+        <section class="relative overflow-hidden" style="min-height: 400px;">
+            {{-- Background Image --}}
+            @if($projectImageUrl)
+                <div class="absolute inset-0">
+                    <img src="{{ $projectImageUrl }}" 
+                         alt="{{ $eppProject->name }}"
+                         class="object-cover w-full h-full">
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#2D5016]/95 via-[#2D5016]/85 to-[#1B365D]/90"></div>
+                </div>
+            @else
+                {{-- Fallback Gradient --}}
+                <div class="absolute inset-0" style="background: linear-gradient(135deg, #2D5016 0%, #1B365D 100%);"></div>
+            @endif
+            
+            {{-- Content --}}
+            <div class="container relative z-10 px-4 py-16 mx-auto">
                 <div class="flex items-center mb-4">
                     @if ($eppProject->project_type === 'ARF')
-                        <div class="mr-4 text-5xl">🌳</div>
+                        <div class="flex items-center justify-center w-20 h-20 mr-6 text-5xl bg-white/20 backdrop-blur-sm rounded-2xl">🌳</div>
                     @elseif($eppProject->project_type === 'APR')
-                        <div class="mr-4 text-5xl">🌊</div>
+                        <div class="flex items-center justify-center w-20 h-20 mr-6 text-5xl bg-white/20 backdrop-blur-sm rounded-2xl">🌊</div>
                     @elseif($eppProject->project_type === 'BPE')
-                        <div class="mr-4 text-5xl">🐝</div>
+                        <div class="flex items-center justify-center w-20 h-20 mr-6 text-5xl bg-white/20 backdrop-blur-sm rounded-2xl">🐝</div>
                     @endif
                     <div>
-                        <h1 class="text-4xl font-bold md:text-5xl" style="font-family: 'Playfair Display', serif;">
+                        <div class="inline-block px-4 py-2 mb-3 text-sm font-semibold text-white uppercase bg-white/20 backdrop-blur-sm rounded-full">
+                            {{ __('epp_projects.types.' . strtolower($eppProject->project_type)) }}
+                        </div>
+                        <h1 class="text-4xl font-bold text-white md:text-6xl drop-shadow-lg" style="font-family: 'Playfair Display', serif;">
                             {{ $eppProject->name }}
                         </h1>
-                        <p class="mt-2 text-xl opacity-90">
-                            {{ __('epp_projects.types.' . strtolower($eppProject->project_type)) }}
+                        <p class="mt-4 text-xl text-white/90 max-w-3xl drop-shadow">
+                            {{ $eppProject->description }}
                         </p>
                     </div>
                 </div>
@@ -354,45 +378,59 @@
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 @forelse($collections as $collection)
-                    <div class="collection-card">
-                        <!-- Collection Image -->
-                        @if ($collection->url_image_ipfs || $collection->path_image_to_ipfs)
-                            <div class="h-48 overflow-hidden bg-gray-200">
+                    <div
+                        class="relative flex flex-col h-full overflow-hidden transition-all bg-white border border-gray-100 shadow-sm group rounded-xl hover:border-green-200 hover:shadow-md">
+                        <div class="relative h-48 overflow-hidden bg-gray-100">
+                            @if ($collection->getFirstMediaUrl('head', 'card'))
+                                <img src="{{ $collection->getFirstMediaUrl('head', 'card') }}"
+                                    alt="{{ $collection->collection_name }}"
+                                    class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105">
+                            @elseif ($collection->image_banner)
+                                <img src="{{ asset('storage/' . $collection->image_banner) }}"
+                                    alt="{{ $collection->collection_name }}"
+                                    class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105">
+                            @elseif ($collection->url_image_ipfs || $collection->path_image_to_ipfs)
                                 <img src="{{ $collection->url_image_ipfs ?? asset('storage/' . $collection->path_image_to_ipfs) }}"
-                                    alt="{{ $collection->collection_name }}" class="object-cover w-full h-full">
-                            </div>
-                        @else
-                            <div
-                                class="flex items-center justify-center h-48 bg-gradient-to-br from-green-100 to-green-200">
-                                <span class="text-6xl">📚</span>
-                            </div>
-                        @endif
+                                    alt="{{ $collection->collection_name }}"
+                                    class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105">
+                            @else
+                                <div
+                                    class="flex h-full items-center justify-center bg-gradient-to-br from-[#2D5016]/10 to-[#2D5016]/5">
+                                    <span class="text-6xl">🌿</span>
+                                </div>
+                            @endif
 
-                        <div class="p-4">
-                            <h3 class="mb-2 text-lg font-bold" style="font-family: 'Playfair Display', serif;">
+                            <!-- EPP Badge -->
+                            <div
+                                class="absolute right-3 top-3 rounded-full bg-[#2D5016] px-3 py-1 text-xs font-bold text-white shadow-sm">
+                                EPP Collection
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col flex-1 p-5">
+                            <h3 class="mb-2 text-xl font-bold leading-tight text-gray-900"
+                                style="font-family: 'Playfair Display', serif;">
                                 {{ $collection->collection_name }}
                             </h3>
 
-                            <p class="mb-3 text-sm text-gray-600 line-clamp-2">
+                            <p class="flex-1 mb-4 text-sm text-gray-600 line-clamp-2">
                                 {{ Str::limit($collection->description ?? '', 100) }}
                             </p>
 
-                            <div class="flex items-center justify-between mb-4 text-sm">
+                            <div class="grid grid-cols-2 gap-4 p-3 mb-4 rounded-lg bg-gray-50">
                                 <div>
-                                    <span
-                                        class="text-gray-600">{{ __('epp_projects.show.collection_equilibrium') }}</span>
-                                    <div class="font-bold" style="color: #2D5016;">€XXX</div>
+                                    <div class="text-xs font-medium text-gray-500 uppercase">Equilibrium</div>
+                                    <div class="font-bold text-[#2D5016]">€XXX</div>
                                 </div>
-                                <div>
-                                    <span class="text-gray-600">EGI</span>
-                                    <div class="font-bold" style="color: #1B365D;">{{ $collection->egis_count }}
-                                    </div>
+                                <div class="text-right">
+                                    <div class="text-xs font-medium text-gray-500 uppercase">EGI</div>
+                                    <div class="font-bold text-gray-900">
+                                        {{ $collection->egis_count ?? $collection->egis->count() }}</div>
                                 </div>
                             </div>
 
-                            <a href="{{ route('collections.show', $collection) }}"
-                                class="block w-full py-2 font-semibold text-center transition-colors rounded-lg"
-                                style="background: rgba(45, 80, 22, 0.1); color: #2D5016;">
+                            <a href="{{ route('home.collections.show', $collection) }}"
+                                class="block w-full rounded-lg border border-[#2D5016] py-2.5 text-center text-sm font-semibold text-[#2D5016] transition-colors hover:bg-[#2D5016] hover:text-white">
                                 {{ __('epp_projects.show.view_collection') }} →
                             </a>
                         </div>
@@ -425,27 +463,67 @@
 
             <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
                 @forelse($egis as $egi)
-                    <div class="egi-card">
-                        @if ($egi->url_image_ipfs || $egi->path_image)
-                            <div class="overflow-hidden bg-gray-200 aspect-square">
-                                <img src="{{ $egi->url_image_ipfs ?? asset('storage/' . $egi->path_image) }}"
-                                    alt="{{ $egi->title }}" class="object-cover w-full h-full">
-                            </div>
-                        @else
-                            <div
-                                class="flex items-center justify-center aspect-square bg-gradient-to-br from-green-100 to-blue-100">
-                                <span class="text-4xl">📜</span>
-                            </div>
-                        @endif
+                    <div class="relative transition-all egi-card group hover:shadow-lg">
+                        <a href="{{ route('egis.show', $egi) }}" class="block h-full">
+                            @php
+                                // Use the accessor if available, otherwise construct path manually as fallback
+                                $fileUrl = $egi->original_image_url ?? null;
 
-                        <div class="p-2">
-                            <div class="text-xs font-semibold truncate" style="color: #2D5016;">
-                                {{ $egi->title }}
+                                // Fallback logic consistent with Model if accessor fails (e.g. missing key_file)
+                                if (
+                                    !$fileUrl &&
+                                    $egi->collection_id &&
+                                    $egi->user_id &&
+                                    $egi->key_file &&
+                                    $egi->extension
+                                ) {
+                                    $path = sprintf(
+                                        'storage/users_files/collections_%d/creator_%d/%d.%s',
+                                        $egi->collection_id,
+                                        $egi->user_id,
+                                        $egi->key_file,
+                                        $egi->extension,
+                                    );
+                                    $fileUrl = asset($path);
+                                }
+
+                                // Also fallback to path_image if available (legacy)
+                                if (!$fileUrl && $egi->path_image) {
+                                    $fileUrl = asset('storage/' . $egi->path_image);
+                                }
+
+                                $isPdf = strtolower($egi->extension) === 'pdf' || $egi->file_mime === 'application/pdf';
+                            @endphp
+
+                            @if ($egi->url_image_ipfs || $fileUrl)
+                                <div class="relative overflow-hidden bg-gray-200 aspect-square">
+                                    @if ($isPdf)
+                                        <embed src="{{ $fileUrl }}#toolbar=0&navpanes=0&scrollbar=0"
+                                            type="application/pdf"
+                                            class="object-cover w-full h-full pointer-events-none">
+                                    @else
+                                        <img src="{{ $egi->url_image_ipfs ?? $fileUrl }}" alt="{{ $egi->title }}"
+                                            class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105">
+                                    @endif
+                                </div>
+                            @else
+                                <div
+                                    class="flex flex-col items-center justify-center transition-colors aspect-square bg-gradient-to-br from-green-100 to-blue-100 group-hover:from-green-200 group-hover:to-blue-200">
+                                    <span class="mb-2 text-4xl">📜</span>
+                                    <span
+                                        class="text-xs font-semibold text-gray-600 group-hover:text-gray-900">{{ __('epp_projects.show.view_certificate') }}</span>
+                                </div>
+                            @endif
+
+                            <div class="p-2">
+                                <div class="text-xs font-semibold truncate" style="color: #2D5016;">
+                                    {{ $egi->title }}
+                                </div>
+                                <div class="text-xs text-gray-600 truncate">
+                                    #{{ $egi->id }}
+                                </div>
                             </div>
-                            <div class="text-xs text-gray-600 truncate">
-                                #{{ $egi->id }}
-                            </div>
-                        </div>
+                        </a>
                     </div>
                 @empty
                     <div class="py-12 text-center text-gray-600 col-span-full">
