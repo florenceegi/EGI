@@ -462,111 +462,68 @@
                     </p>
                 </div>
 
-                {{-- Filtri e ordinamento --}}
-                <div class="flex flex-col w-full gap-3 sm:w-auto sm:flex-row">
-                    <select id="egis-sort"
-                        class="px-4 py-2 text-sm text-white bg-gray-800 border border-gray-700 rounded-lg focus:border-transparent focus:ring-2 focus:ring-indigo-500">
-                        <option value="position">{{ __('collection.show.position') }}</option>
-                        <option value="newest">{{ __('collection.show.newest') }}</option>
-                        <option value="oldest">{{ __('collection.show.oldest') }}</option>
-                        <option value="price_low">{{ __('collection.show.price_low_to_high') }}</option>
-                        <option value="price_high">{{ __('collection.show.price_high_to_low') }}</option>
-                    </select>
-
-                    {{-- View Selector Component --}}
-                    @php
-                        // Calcola il numero di holder unici per questa collezione
-                        $totalHolders = DB::table('reservations')
-                            ->join('egis', 'egis.id', '=', 'reservations.egi_id')
-                            ->where('egis.collection_id', $collection->id)
-                            ->where('reservations.is_highest', true)
-                            ->where('reservations.is_current', true)
-                            ->whereNull('egis.deleted_at')
-                            ->distinct('reservations.user_id')
-                            ->count('reservations.user_id');
-                    @endphp
-                    <x-collection.view-selector :totalItems="$collection->egis_count ?? 0" :totalHolders="$totalHolders" />
-                </div>
             </div>
 
-            {{-- Container EGI Responsivo --}}
-            <div class="space-y-4" id="egis-container">
-                @php
-                    // Determina se l'utente corrente è il creator di questa collezione
-$isCreatorViewing = false;
-if (auth()->check()) {
-    $isCreatorViewing = auth()->id() === $collection->creator_id;
-} elseif (session('connected_user_id')) {
-    $isCreatorViewing = session('connected_user_id') === $collection->creator_id;
-                    }
+            {{-- Container EGI Semplice (EPP Collections) --}}
+            <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5" id="egis-container">
+                @forelse($collection->egis as $egi)
+                    <div class="relative overflow-hidden transition-all bg-white shadow-md group rounded-xl hover:shadow-xl">
+                        <a href="{{ route('egis.show', $egi) }}" class="block">
+                            @php
+                                $fileUrl = $egi->original_image_url ?? null;
+                                if (!$fileUrl && $egi->collection_id && $egi->user_id && $egi->key_file && $egi->extension) {
+                                    $path = sprintf(
+                                        'storage/users_files/collections_%d/creator_%d/%d.%s',
+                                        $egi->collection_id,
+                                        $egi->user_id,
+                                        $egi->key_file,
+                                        $egi->extension,
+                                    );
+                                    $fileUrl = asset($path);
+                                }
+                                if (!$fileUrl && $egi->path_image) {
+                                    $fileUrl = asset('storage/' . $egi->path_image);
+                                }
+                                $isPdf = strtolower($egi->extension ?? '') === 'pdf' || $egi->file_mime === 'application/pdf';
+                            @endphp
 
-                    // TEMPORARY: Forziamo per test se è la collezione del creator ID 4
-                    if ($collection->creator_id === 4) {
-                        $isCreatorViewing = true;
-                    }
-                @endphp
+                            @if ($egi->url_image_ipfs || $fileUrl)
+                                <div class="relative overflow-hidden bg-gray-100 aspect-[3/4]">
+                                    @if ($isPdf)
+                                        <embed src="{{ $fileUrl }}#toolbar=0&navpanes=0&scrollbar=0"
+                                            type="application/pdf"
+                                            class="object-cover w-full h-full pointer-events-none">
+                                    @else
+                                        <img src="{{ $egi->url_image_ipfs ?? $fileUrl }}" alt="{{ $egi->title }}"
+                                            class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105">
+                                    @endif
+                                </div>
+                            @else
+                                <div class="flex flex-col items-center justify-center aspect-[3/4] bg-gradient-to-br from-green-100 to-blue-100">
+                                    <span class="mb-2 text-4xl">📜</span>
+                                </div>
+                            @endif
 
-                @forelse($collection->egis as $index => $egi)
-                    {{-- Grid Item (shown in grid mode) --}}
-                    <div class="egi-item card-hover grid-view" style="display: none;">
-                        <x-egi-card :egi="$egi" :collection="$collection" :portfolioContext="$isCreatorViewing" :portfolioOwner="$isCreatorViewing ? $collection->creator : null"
-                            :creatorPortfolioContext="$isCreatorViewing" />
-                    </div>
-
-                    {{-- List Item (shown in list mode) --}}
-                    <div class="egi-item list-view">
-                        <x-egi-card-list :egi="$egi" :context="'collection'" :showBadge="false" :showPurchasePrice="false"
-                            :showOwnershipBadge="false" />
+                            <div class="p-3 bg-white">
+                                <div class="text-sm font-bold truncate text-gray-900">
+                                    {{ $egi->title }}
+                                </div>
+                                <div class="text-xs text-gray-500 truncate">
+                                    #{{ $egi->id }}
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 @empty
-                    {{-- Stato Vuoto Migliorato --}}
-                    <div class="col-span-full">
-                        <div class="px-6 py-16 text-center">
-                            <div
-                                class="inline-flex items-center justify-center w-16 h-16 mb-6 bg-gray-800 rounded-full">
-                                <span class="text-2xl text-gray-400 material-symbols-outlined">image</span>
-                            </div>
-                            <h3 class="mb-2 text-xl font-semibold text-white">{{ __('collection.show.no_egis_yet') }}
-                            </h3>
-                            <p class="max-w-md mx-auto mb-6 text-gray-400">
-                                {{ __('collection.show.no_egis_message') }}
-                            </p>
-                            @if (auth()->id() === $collection->creator_id)
-                                <button class="px-6 py-3 font-semibold text-white rounded-lg btn-primary-glow">
-                                    <span class="mr-2 material-symbols-outlined">add</span>
-                                    {{ __('collection.show.add_first_egi') }}
-                                </button>
-                            @endif
+                    <div class="col-span-full py-16 text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 mb-6 bg-gray-800 rounded-full">
+                            <span class="text-2xl text-gray-400 material-symbols-outlined">image</span>
                         </div>
+                        <h3 class="mb-2 text-xl font-semibold text-white">{{ __('collection.show.no_egis_yet') }}</h3>
+                        <p class="max-w-md mx-auto text-gray-400">{{ __('collection.show.no_egis_message') }}</p>
                     </div>
                 @endforelse
             </div>
-
-            {{-- Holders Container --}}
-            <div id="holders-container" style="display: none;">
-                <x-collection.holders-list :collection="$collection" />
-            </div>
-
-            {{-- Traits Container (placeholder for future) --}}
-            <div id="traits-container" style="display: none;">
-                <div class="p-12 text-center bg-gray-800 rounded-lg">
-                    <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-700 rounded-full">
-                        <span class="text-2xl text-gray-400 material-symbols-outlined">category</span>
-                    </div>
-                    <h3 class="mb-2 text-lg font-semibold text-white">{{ __('collection.traits.coming_soon') }}</h3>
-                    <p class="text-gray-400">{{ __('collection.traits.coming_soon_message') }}</p>
-                </div>
-            </div>
-
-            {{-- Load More Button (se necessario) --}}
-            @if ($collection->egis->count() >= 20)
-                <div class="mt-12 text-center">
-                    <button
-                        class="px-8 py-3 font-medium text-white transition-colors duration-200 bg-gray-800 rounded-lg hover:bg-gray-700">
-                        {{ __('collection.show.load_more_items') }}
-                    </button>
-                </div>
-            @endif
         </div>
     </main>
 

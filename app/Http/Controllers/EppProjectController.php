@@ -30,12 +30,10 @@ use Ultra\UltraLogManager\UltraLogManager;
  * @date 2025-11-19
  * @purpose Public display of EPP projects with full Equilibrium transparency
  */
-class EppProjectController extends Controller
-{
+class EppProjectController extends Controller {
     protected UltraLogManager $logger;
 
-    public function __construct(UltraLogManager $logger)
-    {
+    public function __construct(UltraLogManager $logger) {
         $this->logger = $logger;
     }
 
@@ -51,8 +49,7 @@ class EppProjectController extends Controller
      * @param Request $request
      * @return \Illuminate\View\View
      */
-    public function index(Request $request)
-    {
+    public function index(Request $request) {
         $this->logger->info('[EppProject] Public index accessed', [
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
@@ -100,8 +97,7 @@ class EppProjectController extends Controller
      * @param EppProject $eppProject
      * @return \Illuminate\View\View
      */
-    public function show(EppProject $eppProject)
-    {
+    public function show(EppProject $eppProject) {
         $this->logger->info('[EppProject] Public show accessed', [
             'project_id' => $eppProject->id,
             'project_name' => $eppProject->name,
@@ -120,12 +116,6 @@ class EppProjectController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
-        // Get EGI from EPP's environmental collections
-        $egis = Egi::whereIn('collection_id', $collections->pluck('id'))
-            ->with(['collection', 'user'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-
         // Calculate impact metrics based on project type
         $impactMetrics = $this->calculateImpactMetrics($eppProject);
 
@@ -139,7 +129,6 @@ class EppProjectController extends Controller
         return view('epp-projects.show', compact(
             'eppProject',
             'collections',
-            'egis',
             'impactMetrics',
             'equilibriumStats'
         ));
@@ -157,8 +146,7 @@ class EppProjectController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function dashboard()
-    {
+    public function dashboard() {
         $this->logger->info('[EppProject] Public Equilibrium dashboard accessed');
 
         // Global Equilibrium stats
@@ -227,8 +215,7 @@ class EppProjectController extends Controller
      * @param EppProject $project
      * @return array
      */
-    private function calculateImpactMetrics(EppProject $project): array
-    {
+    private function calculateImpactMetrics(EppProject $project): array {
         switch ($project->project_type) {
             case 'ARF':
                 return [
@@ -262,8 +249,7 @@ class EppProjectController extends Controller
      * @param int $projectId
      * @return float
      */
-    private function getMonthlyEquilibrium(int $projectId): float
-    {
+    private function getMonthlyEquilibrium(int $projectId): float {
         // TODO: Implement with payment_distributions or epp_transactions table
         // For now, return 0
         return 0;
@@ -275,8 +261,7 @@ class EppProjectController extends Controller
      * @param int $projectId
      * @return float
      */
-    private function getEquilibriumGrowth(int $projectId): float
-    {
+    private function getEquilibriumGrowth(int $projectId): float {
         // TODO: Implement with historical data
         // For now, return 0
         return 0;
@@ -287,11 +272,9 @@ class EppProjectController extends Controller
      *
      * @return array
      */
-    private function getMonthlyEquilibriumTrend(): array
-    {
+    private function getMonthlyEquilibriumTrend(): array {
         // TODO: Implement with historical transactions data
         // For now, return empty array
         return [];
     }
 }
-
