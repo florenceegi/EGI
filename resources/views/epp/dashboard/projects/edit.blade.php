@@ -16,7 +16,7 @@
         <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
             <div class="overflow-hidden rounded-lg bg-white shadow">
                 <div class="p-6">
-                    <form action="{{ route('epp.dashboard.projects.update', $project) }}" method="POST" class="space-y-6">
+                    <form action="{{ route('epp.dashboard.projects.update', $project) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
                         @method('PUT')
 
