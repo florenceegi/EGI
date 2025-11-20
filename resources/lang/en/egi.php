@@ -179,6 +179,13 @@ return [
     // Informative Sections
     'properties' => 'Properties',
     'supports_epp' => 'Supports EPP',
+
+    // EPP
+    'epp' => [
+        'supports' => 'Supports EPP',
+        'supports_project' => 'Supports project :project',
+    ],
+
     'asset_type' => 'Asset Type',
     'format' => 'Format',
     'about_this_piece' => 'About This Piece',

@@ -17,6 +17,11 @@ return [
     'image_alt_default' => 'Immagine EGI',
     'view_full' => 'Visualizzazione Completa',
     'artwork_loading' => 'Caricamento Opera...',
+    
+    // PDF Viewer
+    'pdf_viewer_fallback' => 'Impossibile visualizzare il PDF direttamente in questa pagina.',
+    'download_pdf' => 'Scarica PDF',
+    'open_full_pdf' => 'Apri a schermo intero',
 
     // Informazioni di Base
     'by_author' => 'di :name',
@@ -181,6 +186,13 @@ return [
     // Sezioni Informative
     'properties' => 'Proprietà',
     'supports_epp' => 'Supporta EPP',
+    
+    // EPP
+    'epp' => [
+        'supports' => 'Sostiene EPP',
+        'supports_project' => 'Sostiene il progetto :project',
+    ],
+
     'asset_type' => 'Tipo di Risorsa',
     'format' => 'Formato',
     'about_this_piece' => 'Informazioni su Quest\'Opera',
