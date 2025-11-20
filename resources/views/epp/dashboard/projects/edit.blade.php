@@ -171,6 +171,33 @@
                             @enderror
                         </div>
 
+                        <!-- Project Image -->
+                        <div>
+                            <label for="image" class="block text-sm font-medium text-gray-700">
+                                {{ __('epp_dashboard.projects.form.image') }}
+                            </label>
+                            
+                            @if ($project->hasMedia('project_images'))
+                                <div class="mt-2 mb-4">
+                                    <img src="{{ $project->getFirstMediaUrl('project_images', 'thumb') }}" 
+                                         alt="{{ $project->name }}" 
+                                         class="h-32 w-32 rounded-lg object-cover">
+                                </div>
+                            @endif
+
+                            <input type="file" 
+                                   name="image" 
+                                   id="image" 
+                                   accept="image/*"
+                                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-green-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-green-700 hover:file:bg-green-100">
+                            @error('image')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            <p class="mt-1 text-sm text-gray-500">
+                                {{ __('epp_dashboard.projects.form.image_help') }}
+                            </p>
+                        </div>
+
                         <!-- Form Actions -->
                         <div class="flex items-center justify-between border-t pt-6">
                             <button type="button"

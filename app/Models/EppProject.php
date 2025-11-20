@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * EPP Project model.
@@ -41,8 +43,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
-class EppProject extends Model {
+class EppProject extends Model implements HasMedia {
     use HasFactory;
+    use InteractsWithMedia;
 
     /**
      * The table associated with the model.

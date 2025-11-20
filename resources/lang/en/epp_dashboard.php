@@ -74,6 +74,8 @@ return [
             'status' => 'Project Status',
             'evidence_url' => 'Evidence URL',
             'evidence_url_help' => 'Link to documentation or evidence',
+            'image' => 'Project Image',
+            'image_help' => 'Upload a representative image (JPG, PNG, WEBP, max 2MB)',
             'cancel' => 'Cancel',
             'create_button' => 'Create Project',
             'update_button' => 'Update Project',

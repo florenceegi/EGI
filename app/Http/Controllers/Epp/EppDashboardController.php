@@ -205,6 +205,7 @@ class EppDashboardController extends Controller {
                 'target_date' => 'nullable|date|after:today',
                 'status' => 'required|in:planned,in_progress,completed,cancelled',
                 'evidence_url' => 'nullable|url',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ]);
 
             // ULM: Log project creation start
@@ -227,6 +228,12 @@ class EppDashboardController extends Controller {
                 'evidence_url' => $validated['evidence_url'] ?? null,
                 'current_funds' => 0,
             ]);
+
+            // Handle Image Upload
+            if ($request->hasFile('image')) {
+                $project->addMediaFromRequest('image')
+                    ->toMediaCollection('project_images');
+            }
 
             // ULM: Log success
             $this->logger->info('EPP Project created successfully', [
@@ -302,6 +309,7 @@ class EppDashboardController extends Controller {
                 'target_date' => 'nullable|date',
                 'status' => 'required|in:planned,in_progress,completed,cancelled',
                 'evidence_url' => 'nullable|url',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ]);
 
             // ULM: Log update start
@@ -322,6 +330,13 @@ class EppDashboardController extends Controller {
                 'status' => $validated['status'],
                 'evidence_url' => $validated['evidence_url'] ?? null,
             ]);
+
+            // Handle Image Upload
+            if ($request->hasFile('image')) {
+                $project->clearMediaCollection('project_images'); // Replace existing image
+                $project->addMediaFromRequest('image')
+                    ->toMediaCollection('project_images');
+            }
 
             // ULM: Log success
             $this->logger->info('EPP Project updated successfully', [

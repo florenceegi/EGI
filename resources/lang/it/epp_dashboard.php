@@ -74,6 +74,8 @@ return [
             'status' => 'Stato Progetto',
             'evidence_url' => 'URL Evidenza',
             'evidence_url_help' => 'Link a documentazione o prove',
+            'image' => 'Immagine Progetto',
+            'image_help' => 'Carica un\'immagine rappresentativa (JPG, PNG, WEBP, max 2MB)',
             'cancel' => 'Annulla',
             'create_button' => 'Crea Progetto',
             'update_button' => 'Aggiorna Progetto',
