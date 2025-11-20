@@ -199,7 +199,7 @@
                     <img src="{{ $projectImageUrl }}" 
                          alt="{{ $eppProject->name }}"
                          class="object-cover w-full h-full">
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#2D5016]/95 via-[#2D5016]/85 to-[#1B365D]/90"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#2D5016]/60 via-[#2D5016]/50 to-[#1B365D]/60"></div>
                 </div>
             @else
                 {{-- Fallback Gradient --}}
