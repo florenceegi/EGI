@@ -68,6 +68,13 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
         : 'border-gray-700/50 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800/70';
 
     $listMintedBorder = $isMinted ? 'border-2' : 'border';
+
+// 🌱 EPP PROJECT INFO
+$egiCollection = $egi->collection ?? null;
+$eppProject = null;
+if ($egiCollection && $egiCollection->epp_project_id) {
+    $eppProject = $egiCollection->eppProject ?? null;
+}
 @endphp
 
 {{-- Include CSS hyper se necessario --}}
@@ -171,19 +178,8 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
         <!-- Image Section -->
         <a href="{{ route('egis.show', $egi->id) }}"
             class="{{ $isHyper ? 'group-hover:ring-2 group-hover:ring-yellow-400' : 'group-hover:ring-2 group-hover:ring-purple-400' }} relative h-28 w-28 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 transition-all duration-300">
-            @if ($egi->main_image_url)
-                <img src="{{ $egi->main_image_url }}" alt="{{ $egi->title }}"
-                    class="{{ $isHyper ? 'filter brightness-110' : '' }} h-full w-full object-cover transition-transform duration-300 group-hover:scale-110">
-            @else
-                <div
-                    class="{{ $isHyper ? 'from-yellow-600/20 to-orange-600/20' : 'from-purple-600/20 to-blue-600/20' }} flex h-full w-full items-center justify-center bg-gradient-to-br">
-                    <svg class="{{ $isHyper ? 'text-yellow-400' : 'text-gray-400' }} h-8 w-8" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                </div>
-            @endif
+            <x-egi-media-display :egi="$egi"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 {{ $isHyper ? 'filter brightness-110' : '' }}" />
 
             <!-- Hover overlay for visual feedback -->
             <div
@@ -305,6 +301,20 @@ $config = $contextConfig[$context] ?? $contextConfig['collector'];
                         <div class="{{ $isHyper ? 'bg-yellow-600' : 'bg-gray-600' }} h-3 w-3 rounded-full"></div>
                         <span class="max-w-[100px] truncate">{{ $egi->user->first_name }}
                             {{ $egi->user->last_name }}</span>
+                    </div>
+                @endif
+
+                {{-- 🌱 EPP PROJECT INFO --}}
+                @if ($eppProject)
+                    <div class="flex items-center gap-1 text-[#2D5016] dark:text-green-400"
+                        title="{{ __('egi.epp.supports_project', ['project' => $eppProject->name]) }}">
+                        <div class="flex items-center justify-center w-3 h-3 rounded-full bg-[#2D5016] text-white">
+                            <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z" clip-rule="evenodd"/>
+                                <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z"/>
+                            </svg>
+                        </div>
+                        <span class="max-w-[120px] truncate text-xs font-medium">{{ Str::limit($eppProject->name, 15) }}</span>
                     </div>
                 @endif
             </div>
