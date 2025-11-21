@@ -875,7 +875,7 @@
                             color: '#F3F4F6'
                         });
 
-                        fetch(`/collections/{{ $collection->id }}/monetization/switch-to-subscription`, {
+                        fetch(`/home/collections/{{ $collection->id }}/monetization/switch-to-subscription`, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -888,12 +888,55 @@
                             })
                             .then(res => res.json())
                             .then(data => {
-                                if (data.success && data.checkout_url) {
-                                    window.location.href = data.checkout_url;
+                                Swal.close();
+                                
+                                if (data.success) {
+                                    // Subscription activated successfully
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        html: `
+                                            <p class="mb-2">Subscription activated successfully!</p>
+                                            <p class="text-sm text-gray-400">Expires: ${data.data.expires_at}</p>
+                                            <p class="text-sm text-gray-400">Days remaining: ${data.data.days_remaining}</p>
+                                        `,
+                                        icon: 'success',
+                                        confirmButtonColor: '#10B981',
+                                        background: '#1F2937',
+                                        color: '#F3F4F6'
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else if (data.message === 'Insufficient Egili balance') {
+                                    // Insufficient balance - Open Egili purchase modal
+                                    Swal.fire({
+                                        title: 'Insufficient Egili',
+                                        html: `
+                                            <p class="mb-3">You don't have enough Egili for this subscription.</p>
+                                            <div class="bg-red-50 border border-red-200 rounded p-3 text-left mb-3">
+                                                <p class="text-sm"><strong>Required:</strong> ${data.required_egili || 5000} Egili</p>
+                                                <p class="text-sm"><strong>Available:</strong> ${data.current_balance || 0} Egili</p>
+                                                <p class="text-sm text-red-600"><strong>Missing:</strong> ${data.missing_egili || 0} Egili</p>
+                                            </div>
+                                            <p class="text-xs text-gray-600">Purchase Egili to continue.</p>
+                                        `,
+                                        icon: 'error',
+                                        confirmButtonText: 'Purchase Egili',
+                                        showCancelButton: true,
+                                        cancelButtonText: 'Cancel',
+                                        confirmButtonColor: '#8B5CF6',
+                                        cancelButtonColor: '#6B7280',
+                                        background: '#1F2937',
+                                        color: '#F3F4F6'
+                                    }).then((result) => {
+                                        if (result.isConfirmed && typeof window.openEgiliPurchaseModal === 'function') {
+                                            window.openEgiliPurchaseModal();
+                                        }
+                                    });
                                 } else {
+                                    // Other error
                                     Swal.fire({
                                         title: 'Error',
-                                        text: data.message || 'Error switching to subscription',
+                                        text: data.message || 'Error activating subscription',
                                         icon: 'error',
                                         confirmButtonColor: '#4F46E5',
                                         background: '#1F2937',
@@ -902,10 +945,11 @@
                                 }
                             })
                             .catch(err => {
-                                console.error('Switch error:', err);
+                                console.error('Subscription error:', err);
+                                Swal.close();
                                 Swal.fire({
                                     title: 'Error',
-                                    text: 'Failed to switch monetization mode',
+                                    text: 'Failed to activate subscription',
                                     icon: 'error',
                                     confirmButtonColor: '#4F46E5',
                                     background: '#1F2937',
