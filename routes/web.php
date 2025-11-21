@@ -648,6 +648,20 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/account/statements/eur/pdf', [App\Http\Controllers\AccountStatementsController::class, 'downloadEurPdf'])
             ->name('account.statements.eur.pdf');
 
+        // Invoices routes
+        Route::get('/account/invoices', [App\Http\Controllers\InvoiceController::class, 'index'])
+            ->name('account.invoices');
+        Route::get('/account/invoices/{id}', [App\Http\Controllers\InvoiceController::class, 'show'])
+            ->name('account.invoices.show');
+        Route::post('/account/invoices/aggregation/{aggregationId}/generate', [App\Http\Controllers\InvoiceController::class, 'generateFromAggregation'])
+            ->name('account.invoices.aggregation.generate');
+        Route::get('/account/invoices/aggregation/{aggregationId}/export', [App\Http\Controllers\InvoiceController::class, 'exportAggregation'])
+            ->name('account.invoices.aggregation.export');
+        Route::post('/account/invoices/settings', [App\Http\Controllers\InvoiceController::class, 'updateSettings'])
+            ->name('account.invoices.settings.update');
+        Route::get('/account/invoices/{id}/pdf', [App\Http\Controllers\InvoiceController::class, 'downloadPdf'])
+            ->name('account.invoices.download.pdf');
+
         // Upload configuration and authorization (override vendor routes)
         Route::get('/config/global-config', [GlobalConfigController::class, 'getGlobalConfig'])
             ->name('global.config');

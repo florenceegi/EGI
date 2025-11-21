@@ -75,6 +75,12 @@
         'label' => __('menu.account_statements'),
         'href' => route('account.statements'),
     ];
+    
+    $pspActions[] = [
+        'type' => 'link',
+        'label' => __('menu.invoices'),
+        'href' => route('account.invoices'),
+    ];
 
     $pspActions[] = [
         'type' => 'link',

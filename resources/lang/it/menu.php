@@ -49,6 +49,7 @@ return [
     'psp_open_setup' => 'Apri il conto digitale',
     'psp_onboarding_summary' => 'Apri il riepilogo onboarding',
     'account_statements' => 'Estratti Conto',
+    'invoices' => 'Fatture',
     'psp_request_support' => 'Serve aiuto? Contatta il supporto',
     'profile_overview' => 'Panoramica Profilo',
     'edit_personal_data' => 'Modifica Dati Personali',

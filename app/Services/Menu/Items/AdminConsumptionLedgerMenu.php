@@ -45,3 +45,4 @@ class AdminConsumptionLedgerMenu extends MenuItem {
 
 
 
+

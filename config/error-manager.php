@@ -2800,6 +2800,73 @@ return [
             'msg_to' => 'sweet-alert',
         ],
 
+        // Invoice Management Errors
+        'INVOICE_INDEX_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.invoice_index_failed',
+            'user_message_key' => 'error-manager::errors.user.invoice_index_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'INVOICE_SHOW_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.invoice_show_failed',
+            'user_message_key' => 'error-manager::errors.user.invoice_show_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'INVOICE_GENERATION_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.invoice_generation_failed',
+            'user_message_key' => 'error-manager::errors.user.invoice_generation_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => true,
+            'notify_slack' => true,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'AGGREGATION_EXPORT_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.aggregation_export_failed',
+            'user_message_key' => 'error-manager::errors.user.aggregation_export_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
+        'INVOICE_SETTINGS_UPDATE_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'semi-blocking',
+            'dev_message_key' => 'error-manager::errors.dev.invoice_settings_update_failed',
+            'user_message_key' => 'error-manager::errors.user.invoice_settings_update_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'sweet-alert',
+        ],
+
+        'INVOICE_PDF_DOWNLOAD_FAILED' => [
+            'type' => 'error',
+            'blocking' => 'not',
+            'dev_message_key' => 'error-manager::errors.dev.invoice_pdf_download_failed',
+            'user_message_key' => 'error-manager::errors.user.invoice_pdf_download_failed',
+            'http_status_code' => 500,
+            'devTeam_email_need' => false,
+            'notify_slack' => false,
+            'msg_to' => 'toast',
+        ],
+
         'GDPR_SERVICE_UNAVAILABLE' => [
             'type' => 'critical',
             'blocking' => 'blocking',
