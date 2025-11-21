@@ -400,7 +400,11 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
             {{-- JavaScript per CRUD Interactions --}}
             <script>
+                console.log('🚀 [EGI-SHOW] Script loaded - BEFORE DOMContentLoaded');
+                
                 document.addEventListener('DOMContentLoaded', function() {
+                    console.log('🎯 [EGI-SHOW] DOMContentLoaded fired - DOM is ready');
+                    
                     // Grid debug info
                     const mainGrid = document.getElementById('egi-main-grid');
                     if (mainGrid) {
