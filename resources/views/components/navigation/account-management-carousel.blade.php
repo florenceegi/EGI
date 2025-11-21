@@ -72,12 +72,6 @@
 
     $pspActions[] = [
         'type' => 'link',
-        'label' => __('menu.account_statements'),
-        'href' => route('account.statements'),
-    ];
-
-    $pspActions[] = [
-        'type' => 'link',
         'label' => __('menu.psp_request_support'),
         'href' => 'mailto:support@florenceegi.it',
         'is_external' => true,
