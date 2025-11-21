@@ -888,6 +888,7 @@
                             })
                             .then(res => res.json())
                             .then(data => {
+                                console.log('Subscription response:', data);
                                 Swal.close();
                                 
                                 if (data.success) {
@@ -927,10 +928,16 @@
                                     }).then((result) => {
                                         if (result.isConfirmed) {
                                             // Apri modale acquisto Egili
+                                            console.log('Trying to open Egili modal...');
+                                            console.log('window.openEgiliPurchaseModal type:', typeof window.openEgiliPurchaseModal);
+                                            console.log('window object keys:', Object.keys(window).filter(k => k.includes('egili') || k.includes('Egili')));
+                                            
                                             if (typeof window.openEgiliPurchaseModal === 'function') {
+                                                console.log('Calling openEgiliPurchaseModal()...');
                                                 window.openEgiliPurchaseModal();
                                             } else {
-                                                console.error('openEgiliPurchaseModal() not found');
+                                                console.error('openEgiliPurchaseModal() not found!');
+                                                console.error('Available on window:', typeof window.openEgiliPurchaseModal);
                                             }
                                         }
                                     });
