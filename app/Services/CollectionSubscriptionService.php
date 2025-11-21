@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Collection;
 use App\Models\AiCreditsTransaction;
 use App\Helpers\FegiAuth;
+use App\Services\EgiliService;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,7 @@ use Illuminate\Support\Facades\Cache;
 class CollectionSubscriptionService {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
+    protected EgiliService $egiliService;
 
     /**
      * Subscription pricing configuration
@@ -39,10 +41,12 @@ class CollectionSubscriptionService {
 
     public function __construct(
         UltraLogManager $logger,
-        ErrorManagerInterface $errorManager
+        ErrorManagerInterface $errorManager,
+        EgiliService $egiliService
     ) {
         $this->logger = $logger;
         $this->errorManager = $errorManager;
+        $this->egiliService = $egiliService;
     }
 
     /**
@@ -164,38 +168,42 @@ class CollectionSubscriptionService {
                 'log_category' => 'COLLECTION_SUBSCRIPTION_PROCESS_START'
             ]);
 
-            // 1. Check user wallet balance
-            $wallet = $user->wallet;
-            if (!$wallet) {
-                throw new \Exception('User wallet not found');
-            }
-
-            if ($wallet->egili_balance < self::SUBSCRIPTION_COST_EGILI) {
+            // 1. Check user wallet balance via EgiliService
+            if (!$this->egiliService->canSpend($user, self::SUBSCRIPTION_COST_EGILI)) {
+                $currentBalance = $this->egiliService->getBalance($user);
                 return [
                     'success' => false,
                     'message' => 'Insufficient Egili balance',
                     'required_egili' => self::SUBSCRIPTION_COST_EGILI,
-                    'current_balance' => $wallet->egili_balance,
-                    'missing_egili' => self::SUBSCRIPTION_COST_EGILI - $wallet->egili_balance,
+                    'current_balance' => $currentBalance,
+                    'missing_egili' => self::SUBSCRIPTION_COST_EGILI - $currentBalance,
                 ];
             }
 
             // 2. Calculate expiration date
             $expiresAt = now()->addDays(self::SUBSCRIPTION_DURATION_DAYS);
 
-            // 3. Deduct Egili from wallet
-            $previousBalance = $wallet->egili_balance;
-            $wallet->egili_balance -= self::SUBSCRIPTION_COST_EGILI;
-            $wallet->save();
+            // 3. Deduct Egili via EgiliService (creates EgiliTransaction)
+            $egiliTransaction = $this->egiliService->spend(
+                $user,
+                self::SUBSCRIPTION_COST_EGILI,
+                'collection_subscription',
+                'Collection Subscription Payment',
+                [
+                    'collection_id' => $collection->id,
+                    'collection_name' => $collection->name,
+                    'duration_days' => self::SUBSCRIPTION_DURATION_DAYS,
+                ]
+            );
 
-            // 4. Create transaction record
+            // 4. Create ai_credits_transaction for subscription tracking
             $transaction = AiCreditsTransaction::create([
                 'user_id' => $user->id,
                 'transaction_type' => 'subscription',
                 'operation' => 'subtract',
                 'amount' => self::SUBSCRIPTION_COST_EGILI,
-                'balance_before' => $previousBalance,
-                'balance_after' => $wallet->egili_balance,
+                'balance_before' => $egiliTransaction->balance_before,
+                'balance_after' => $egiliTransaction->balance_after,
                 'source_type' => 'collection_subscription',
                 'source_id' => $collection->id,
                 'source_model' => 'App\\Models\\Collection',
@@ -204,10 +212,11 @@ class CollectionSubscriptionService {
                     'collection_id' => $collection->id,
                     'collection_name' => $collection->name,
                     'duration_days' => self::SUBSCRIPTION_DURATION_DAYS,
+                    'egili_transaction_id' => $egiliTransaction->id,
                 ]),
                 'subscription_tier' => 'collection_basic',
                 'currency' => 'EGILI',
-                'credits_per_euro' => null, // Not applicable for Egili
+                'credits_per_euro' => null,
                 'expires_at' => $expiresAt,
                 'is_expired' => false,
                 'status' => 'completed',
@@ -217,6 +226,7 @@ class CollectionSubscriptionService {
                     'collection_id' => $collection->id,
                     'collection_name' => $collection->name,
                     'subscription_type' => 'monthly',
+                    'egili_transaction_id' => $egiliTransaction->id,
                 ]),
             ]);
 
@@ -237,9 +247,10 @@ class CollectionSubscriptionService {
                 'success' => true,
                 'message' => 'Subscription activated successfully',
                 'transaction_id' => $transaction->id,
+                'egili_transaction_id' => $egiliTransaction->id,
                 'expires_at' => $expiresAt,
                 'days_remaining' => self::SUBSCRIPTION_DURATION_DAYS,
-                'new_balance' => $wallet->egili_balance,
+                'new_balance' => $this->egiliService->getBalance($user),
             ];
 
         } catch (\Exception $e) {
