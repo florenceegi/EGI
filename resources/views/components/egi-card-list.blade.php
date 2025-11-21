@@ -169,7 +169,7 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
         <div class="egi-sparkles" aria-hidden="true"></div>
 
         {{-- Badge HYPER per modalità lista --}}
-        <div class="absolute z-10 -right-2 -top-2">
+        <div class="absolute -right-2 -top-2 z-10">
             <div class="egi-hyper-badge-small">⭐ HYPER ⭐</div>
         </div>
     @endif
@@ -222,25 +222,25 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
                     <div class="{{ $config['badge_color'] }} {{ $isHyper ? 'animate-pulse' : '' }} flex h-6 w-6 items-center justify-center rounded-full ring-2 ring-gray-800"
                         title="{{ $config['badge_title'] }}">
                         @if ($config['badge_icon'] === 'check')
-                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                     clip-rule="evenodd" />
                             </svg>
                         @elseif ($config['badge_icon'] === 'palette')
-                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M4 2a2 2 0 00-2 2v11a2 2 0 002 2h4a2 2 0 002-2V4a2 2 0 00-2-2H4zm0 2h4v11H4V4zm8-2a2 2 0 00-2 2v11a2 2 0 002 2h4a2 2 0 002-2V4a2 2 0 00-2-2h-4zm0 2h4v11h-4V4z"
                                     clip-rule="evenodd" />
                             </svg>
                         @elseif ($config['badge_icon'] === 'heart')
-                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
                                     clip-rule="evenodd" />
                             </svg>
                         @elseif ($config['badge_icon'] === 'collections')
-                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
                                     clip-rule="evenodd" />
@@ -252,9 +252,9 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
         </a>
 
         <!-- Content Section -->
-        <div class="flex-1 min-w-0 mr-4">
+        <div class="mr-4 min-w-0 flex-1">
             <!-- Title and Like Button -->
-            <div class="flex items-start justify-between mb-1">
+            <div class="mb-1 flex items-start justify-between">
                 <h3
                     class="{{ $isHyper ? 'group-hover:text-yellow-300' : 'group-hover:text-purple-300' }} flex-1 truncate text-lg font-bold text-white transition-colors">
                     <a href="{{ route('egis.show', $egi->id) }}" class="hover:underline">
@@ -263,7 +263,7 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
                 </h3>
 
                 @if (!$isCreator)
-                    <div class="flex-shrink-0 ml-2">
+                    <div class="ml-2 flex-shrink-0">
                         <x-like-button :resourceType="'egi'" :resourceId="$egi->id" :isLiked="$egi->is_liked ?? false" :likesCount="$egi->likes_count ?? 0"
                             size="small" />
                     </div>
@@ -271,7 +271,7 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
             </div>
 
             <!-- Collection and Creator Info -->
-            <div class="flex flex-wrap items-center gap-4 mb-2 text-sm text-gray-400">
+            <div class="mb-2 flex flex-wrap items-center gap-4 text-sm text-gray-400">
                 @if ($egi->collection)
                     <div class="flex items-center gap-1">
                         @php
@@ -282,7 +282,7 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
                         @endphp
                         @if ($collectionImageUrl)
                             <img src="{{ $collectionImageUrl }}" alt="{{ $egi->collection->collection_name }}"
-                                class="object-cover w-3 h-3 transition-transform duration-300 rounded-full hover:scale-110"
+                                class="h-3 w-3 rounded-full object-cover transition-transform duration-300 hover:scale-110"
                                 loading="lazy" decoding="async">
                         @else
                             <div
@@ -308,13 +308,13 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
                 @if ($eppProject)
                     <div class="flex items-center gap-1 text-[#2D5016] dark:text-green-400"
                         title="{{ __('egi.epp.supports_project', ['project' => $eppProject->name]) }}">
-                        @if($eppProject->getFirstMediaUrl('project_avatar'))
-                            <img src="{{ $eppProject->getFirstMediaUrl('project_avatar') }}" 
-                                 alt="{{ $eppProject->name }}"
-                                 class="h-5 w-5 rounded-full object-cover ring-1 ring-[#2D5016]">
+                        @if ($eppProject->getFirstMediaUrl('project_avatar'))
+                            <img src="{{ $eppProject->getFirstMediaUrl('project_avatar') }}"
+                                alt="{{ $eppProject->name }}"
+                                class="h-5 w-5 rounded-full object-cover ring-1 ring-[#2D5016]">
                         @else
                             <div class="flex h-5 w-5 items-center justify-center rounded-full bg-[#2D5016] text-white">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                     <path fill-rule="evenodd"
                                         d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z"
                                         clip-rule="evenodd" />
@@ -329,24 +329,24 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
             </div>
 
             @if ($isMinted && ($coCreatorDisplay || $currentOwnerDisplay))
-                <div class="flex flex-col gap-1 mb-2">
+                <div class="mb-2 flex flex-col gap-1">
                     @if ($coCreatorDisplay)
                         <div class="flex items-center gap-2">
                             <div
-                                class="flex items-center justify-center flex-shrink-0 w-5 h-5 bg-purple-600 rounded-full">
+                                class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-purple-600">
                                 @if ($coCreatorDisplay['avatar'])
                                     <img src="{{ $coCreatorDisplay['avatar'] }}"
                                         alt="{{ $coCreatorDisplay['name'] }}"
-                                        class="object-cover w-5 h-5 border rounded-full border-white/20">
+                                        class="h-5 w-5 rounded-full border border-white/20 object-cover">
                                 @else
-                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
                                             clip-rule="evenodd" />
                                     </svg>
                                 @endif
                             </div>
-                            <span class="text-xs text-purple-200 truncate">
+                            <span class="truncate text-xs text-purple-200">
                                 {{ __('egi.creator.co_creator') }}
                                 <span class="font-semibold text-white">{{ $coCreatorDisplay['name'] }}</span>
                             </span>
@@ -356,20 +356,20 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
                     @if ($showSecondaryOwner && $currentOwnerDisplay)
                         <div class="flex items-center gap-2">
                             <div
-                                class="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-emerald-600">
+                                class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600">
                                 @if ($currentOwnerDisplay['avatar'])
                                     <img src="{{ $currentOwnerDisplay['avatar'] }}"
                                         alt="{{ $currentOwnerDisplay['name'] }}"
-                                        class="object-cover w-5 h-5 border rounded-full border-white/20">
+                                        class="h-5 w-5 rounded-full border border-white/20 object-cover">
                                 @else
-                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 8a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zm6-6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
                                             clip-rule="evenodd" />
                                     </svg>
                                 @endif
                             </div>
-                            <span class="text-xs truncate text-emerald-200">
+                            <span class="truncate text-xs text-emerald-200">
                                 {{ __('egi.ownership.current_owner') }}
                                 <span class="font-semibold text-white">{{ $currentOwnerDisplay['name'] }}</span>
                             </span>
@@ -391,15 +391,15 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
                         // 🎯 Sistema Commissioner: Formattiamo le informazioni dell'attivatore
                         $activatorDisplay = formatActivatorDisplay($currentReservation->user);
                     @endphp
-                    <div class="flex items-center gap-2 mb-1 text-sm" data-activation-status>
+                    <div class="mb-1 flex items-center gap-2 text-sm" data-activation-status>
                         {{-- Avatar sempre presente dal backend (gestisce automaticamente la privacy) --}}
                         @if ($activatorDisplay['avatar'])
                             <img src="{{ $activatorDisplay['avatar'] }}" alt="{{ $activatorDisplay['name'] }}"
-                                class="object-cover w-4 h-4 border rounded-full shadow-sm border-green-400/30">
+                                class="h-4 w-4 rounded-full border border-green-400/30 object-cover shadow-sm">
                         @else
                             {{-- Fallback solo se non c'è avatar dal backend (caso molto raro) --}}
-                            <div class="flex items-center justify-center w-4 h-4 bg-green-500 rounded-full shadow-sm">
-                                <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="flex h-4 w-4 items-center justify-center rounded-full bg-green-500 shadow-sm">
+                                <svg class="h-2 w-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
                                         clip-rule="evenodd" />
                                 </svg>
@@ -428,7 +428,7 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
                             $statusColor = 'text-gray-400';
                         }
                     @endphp
-                    <div class="flex items-center gap-2 mb-1 text-sm" data-activation-status="available">
+                    <div class="mb-1 flex items-center gap-2 text-sm" data-activation-status="available">
                         <svg class="{{ $statusColor }} h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -464,7 +464,7 @@ $hasCurrentReservation =
     $egi->reservations &&
     $egi->reservations->where('is_current', true)->first();
                 @endphp
-                <div class="flex items-center justify-between gap-2 mb-1 text-sm">
+                <div class="mb-1 flex items-center justify-between gap-2 text-sm">
                     <div class="flex items-center gap-2">
                         <svg class="{{ $isHyper ? 'text-yellow-400' : 'text-orange-400' }} h-4 w-4"
                             fill="currentColor" viewBox="0 0 20 20">
@@ -488,14 +488,14 @@ $hasCurrentReservation =
             <!-- Purchase/Context Info -->
             @if ($config['show_purchase'] && $showPurchasePrice)
                 @if ($context === 'collector' && $egi->pivot && $egi->pivot->offer_amount_fiat)
-                    <div class="flex items-center gap-2 mt-1 text-sm">
+                    <div class="mt-1 flex items-center gap-2 text-sm">
                         <span class="text-gray-400">{{ __('collector.portfolio.purchased_for') }}</span>
                         <span class="{{ $isHyper ? 'text-yellow-400' : 'text-green-400' }} font-bold">
                             <x-currency-price :price="$egi->pivot->offer_amount_fiat" :egi="$egi" />
                         </span>
                     </div>
                 @elseif ($context === 'patron' && isset($egi->support_amount))
-                    <div class="flex items-center gap-2 mt-1 text-sm">
+                    <div class="mt-1 flex items-center gap-2 text-sm">
                         <span class="text-gray-400">{{ __('patron.portfolio.supported_for') }}</span>
                         <span class="{{ $isHyper ? 'text-yellow-300' : 'text-yellow-400' }} font-bold">
                             <x-currency-price :price="$egi->support_amount" />
@@ -560,7 +560,7 @@ $hasCurrentReservation =
                 @endphp
 
                 <div
-                    class="p-2 mt-2 border rounded-lg border-amber-500/30 bg-gradient-to-r from-amber-500/5 to-orange-500/5">
+                    class="mt-2 rounded-lg border border-amber-500/30 bg-gradient-to-r from-amber-500/5 to-orange-500/5 p-2">
                     <button type="button" class="mb-1 flex w-full items-center gap-1.5 focus:outline-none"
                         onclick="this.nextElementSibling.classList.toggle('hidden')">
                         <svg class="h-3.5 w-3.5 text-amber-400" fill="none" stroke="currentColor"
@@ -569,7 +569,7 @@ $hasCurrentReservation =
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <span class="text-xs font-bold text-amber-300">{{ __('egi.auction.auction_details') }}</span>
-                        <svg class="w-3 h-3 ml-1 text-amber-400" fill="none" stroke="currentColor"
+                        <svg class="ml-1 h-3 w-3 text-amber-400" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 9l-7 7-7-7" />
@@ -598,7 +598,7 @@ $hasCurrentReservation =
 
                         {{-- Auction Dates (if available) --}}
                         @if ($auctionStart && $auctionEnd)
-                            <div class="col-span-2 pt-1 mt-1 border-t border-amber-500/20">
+                            <div class="col-span-2 mt-1 border-t border-amber-500/20 pt-1">
                                 <div class="flex items-center justify-between">
                                     <span class="text-gray-400">
                                         @if ($auctionStatus === 'not_started')
@@ -658,8 +658,8 @@ $hasCurrentReservation =
             @if ($isNotForSale)
                 {{-- 🚫 Sale mode = not_for_sale → Show "Non in Vendita" message --}}
                 <div
-                    class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-lg">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="flex w-full items-center justify-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500">
+                    <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
                     </svg>
@@ -670,7 +670,7 @@ $hasCurrentReservation =
                 @if ($isReservedByUser && $canMint && $userReservation)
                     <a href="{{ route('mint.payment-form', ['egiId' => $egi->id]) }}?reservation_id={{ $userReservation->id }}"
                         class="mint-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -718,7 +718,7 @@ $hasCurrentReservation =
                         {{-- 2c: Fixed price mode → Only "Minta Subito" --}}
                         <a href="{{ route('egi.mint-direct', $egi->id) }}"
                             class="mint-direct-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
@@ -731,7 +731,7 @@ $hasCurrentReservation =
                 @elseif($canMint && !$canReserve)
                     <a href="{{ route('egi.mint-direct', $egi->id) }}"
                         class="mint-direct-button flex w-full transform items-center justify-center rounded-lg bg-gradient-to-r from-[#8E44AD] to-[#9b59b6] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.01] hover:from-[#7d3c98] hover:to-[#8e44ad]">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
@@ -748,7 +748,7 @@ $hasCurrentReservation =
                             <span class="mr-2" aria-label="Asta" title="Asta">🔨</span>
                             {{ $isAuctionMode ? __('egi.actions.make_offer') : __('egi.actions.outbid') }}
                         @else
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 2v6M9 8l-2 2m2-2l2 2M3 22h18M6 22V12a3 3 0 013-3h6a3 3 0 013 3v10" />
                             </svg>
@@ -761,8 +761,8 @@ $hasCurrentReservation =
                 @if ($egi->isMinted())
                     {{-- EGI già mintato - Link cliccabile per visualizzare dettagli mint --}}
                     <a href="{{ route('egi.mint-direct', $egi->id) }}"
-                        class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-green-700 transition-colors rounded-lg bg-green-50 hover:bg-green-100">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="flex w-full items-center justify-center rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-100">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -771,8 +771,8 @@ $hasCurrentReservation =
                 @else
                     {{-- Stato non disponibile --}}
                     <div
-                        class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-lg">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="flex w-full items-center justify-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
                         </svg>

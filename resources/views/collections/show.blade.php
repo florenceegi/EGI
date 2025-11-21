@@ -377,38 +377,67 @@ $isEppCollection = $collection->creator && in_array($collection->creator->userty
     @if ($collection->eppProject && !$isEppCollection)
         <div class="border-b border-gray-800 bg-gradient-to-r from-green-900/20 to-emerald-900/20">
             <div class="container px-4 py-6 mx-auto sm:px-6 lg:px-8">
-                <div class="p-4 hero-glass rounded-xl sm:p-6">
-                    <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 p-3 rounded-lg bg-green-500/20">
-                            <span class="text-2xl text-green-400 material-symbols-outlined">eco</span>
+                <div class="relative overflow-hidden p-4 rounded-xl sm:p-6 border border-white/10">
+                    {{-- Background Image with Overlay DENTRO IL BOX --}}
+                    @if($collection->eppProject->getFirstMediaUrl('project_images'))
+                        <div class="absolute inset-0">
+                            <img src="{{ $collection->eppProject->getFirstMediaUrl('project_images') }}" 
+                                 alt="{{ $collection->eppProject->name }}"
+                                 class="object-cover w-full h-full">
+                            <div class="absolute inset-0 bg-gradient-to-r from-[#2D5016]/95 via-[#2D5016]/85 to-[#1B365D]/90"></div>
                         </div>
+                    @else
+                        <div class="absolute inset-0 bg-gradient-to-r from-green-900/60 to-emerald-900/60"></div>
+                    @endif
+                    <div class="relative flex items-start gap-4">
+                        {{-- Avatar del progetto --}}
+                        @if($collection->eppProject->getFirstMediaUrl('project_avatar'))
+                            <img src="{{ $collection->eppProject->getFirstMediaUrl('project_avatar') }}" 
+                                 alt="{{ $collection->eppProject->name }}"
+                                 class="flex-shrink-0 w-16 h-16 rounded-full object-cover ring-4 ring-green-400/50">
+                        @else
+                            <div class="flex-shrink-0 p-3 rounded-full bg-green-500/30 ring-4 ring-green-400/50">
+                                <span class="text-2xl text-green-400">
+                                    @if($collection->eppProject->project_type === 'ARF')
+                                        🌳
+                                    @elseif($collection->eppProject->project_type === 'APR')
+                                        🌊
+                                    @elseif($collection->eppProject->project_type === 'BPE')
+                                        🐝
+                                    @else
+                                        🌱
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
+                        
                         <div class="flex-1 min-w-0">
-                            <h3 class="mb-2 text-lg font-semibold text-white">
+                            <h3 class="mb-2 text-lg font-semibold text-white drop-shadow-lg">
                                 {{ __('collection.show.supporting_environmental_project') }}</h3>
-                            <h4 class="mb-1 font-medium text-emerald-400">{{ $collection->eppProject->name }}</h4>
-                            <p class="mb-2 text-xs font-medium text-gray-400">
+                            <h4 class="mb-1 font-bold text-xl text-emerald-300 drop-shadow-lg">{{ $collection->eppProject->name }}</h4>
+                            <p class="mb-2 text-xs font-medium text-gray-200 drop-shadow">
                                 {{ __('collection.show.by') }}
                                 {{ $collection->eppProject->eppUser->organizationData->organization_name ?? $collection->eppProject->eppUser->name }}
                             </p>
-                            <p class="mb-3 text-sm text-gray-300 line-clamp-2">
+                            <p class="mb-3 text-sm text-gray-100 line-clamp-2 drop-shadow">
                                 {{ $collection->eppProject->description }}</p>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-xs font-medium text-green-400">
+                                    <span class="text-xs font-medium text-green-300 bg-green-900/50 px-2 py-1 rounded">
                                         {{ round($collection->eppProject->completion_percentage) }}%
                                         {{ __('collection.show.completed') }}
                                     </span>
                                     @if ($collection->eppProject->project_type)
                                         <span
-                                            class="@if ($collection->eppProject->project_type === 'ARF') bg-green-500/20 text-green-400
-                                            @elseif($collection->eppProject->project_type === 'APR') bg-blue-500/20 text-blue-400
-                                            @elseif($collection->eppProject->project_type === 'BPE') bg-yellow-500/20 text-yellow-400
-                                            @else bg-gray-500/20 text-gray-400 @endif rounded-full px-2 py-0.5 text-xs font-medium">
+                                            class="@if ($collection->eppProject->project_type === 'ARF') bg-green-500/30 text-green-300
+                                            @elseif($collection->eppProject->project_type === 'APR') bg-blue-500/30 text-blue-300
+                                            @elseif($collection->eppProject->project_type === 'BPE') bg-yellow-500/30 text-yellow-300
+                                            @else bg-gray-500/30 text-gray-300 @endif rounded-full px-2 py-0.5 text-xs font-medium">
                                             {{ $collection->eppProject->project_type }}
                                         </span>
                                     @endif
                                 </div>
-                                <span class="text-xs font-medium text-green-400">
+                                <span class="text-xs font-medium text-green-300 bg-green-900/50 px-2 py-1 rounded">
                                     {{ __('collection.show.epp_percentage') }}
                                     {{ __('collection.show.of_sales_support_this_project') }}
                                 </span>
