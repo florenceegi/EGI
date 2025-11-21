@@ -412,25 +412,42 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                     const deleteModal = document.getElementById('delete-modal');
                     const deleteCancel = document.getElementById('delete-cancel');
 
+                    // DEBUG: Log elementi trovati
+                    console.log('🔍 Edit buttons check:', {
+                        editStartBtn: editStartBtn ? 'FOUND' : 'NOT FOUND',
+                        editToggleBtn: editToggleBtn ? 'FOUND' : 'NOT FOUND',
+                        editForm: editForm ? 'FOUND' : 'NOT FOUND',
+                        viewMode: viewMode ? 'FOUND' : 'NOT FOUND'
+                    });
+
                     // Toggle edit mode
                     function toggleEditMode() {
+                        console.log('🔄 toggleEditMode called');
                         const isEditing = editForm.style.display !== 'none';
 
                         if (isEditing) {
+                            console.log('➡️ Switching to view mode');
                             editForm.style.display = 'none';
                             viewMode.style.display = 'block';
                         } else {
+                            console.log('➡️ Switching to edit mode');
                             editForm.style.display = 'block';
                             viewMode.style.display = 'none';
                         }
                     }
 
                     if (editStartBtn) {
+                        console.log('✅ Adding click listener to editStartBtn');
                         editStartBtn.addEventListener('click', toggleEditMode);
+                    } else {
+                        console.error('❌ editStartBtn NOT FOUND');
                     }
 
                     if (editToggleBtn) {
+                        console.log('✅ Adding click listener to editToggleBtn');
                         editToggleBtn.addEventListener('click', toggleEditMode);
+                    } else {
+                        console.error('❌ editToggleBtn NOT FOUND');
                     }
 
                     // Delete modal

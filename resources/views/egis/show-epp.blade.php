@@ -58,7 +58,7 @@
         <div class="bg-green-900/20 border-b border-green-500/20 py-2 text-center">
             <a href="{{ route('epp-projects.show', $collection->eppProject->id) }}" class="inline-flex items-center text-sm text-green-400 hover:text-green-300 transition-colors">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                {{ __('epp_projects.back_to_project') }}: <span class="font-bold ml-1">{{ $collection->eppProject->name }}</span>
+                {{ __('epp_projects.show.back_to_project') }}: <span class="font-bold ml-1">{{ $collection->eppProject->name }}</span>
             </a>
         </div>
         @endif
