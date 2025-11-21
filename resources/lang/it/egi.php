@@ -949,4 +949,9 @@ return [
         'zoom_fit' => 'Adatta allo Schermo',
     ],
 
+    // Campi generici
+    'fields' => [
+        'description' => 'Descrizione',
+    ],
+
 ];

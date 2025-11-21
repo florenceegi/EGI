@@ -34,6 +34,7 @@ return [
     'show' => [
         'page_title' => ':name | EPP Projects',
         'back_to_projects' => 'Back to Projects',
+        'back_to_project' => 'Back to Project',
         'managed_by' => 'Managed by',
         'status' => 'Status',
         'status_in_progress' => 'In Progress',

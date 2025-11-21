@@ -39,10 +39,12 @@
             $isMinted = !is_null($egi->token_EGI);
             $ownsMintedEgi = $isAuthenticated && $isMinted && (int) $egi->owner_id === (int) $currentUserId;
 
+            // Can update if: has canManage OR (authenticated + permission + collection role) OR is EGI creator
             $canUpdateEgi = ($canManage ?? false) ||
                 ($isAuthenticated &&
                     App\Helpers\FegiAuth::user()->can('update_EGI') &&
-                    $hasCollectionUpdateRole);
+                    $hasCollectionUpdateRole) ||
+                ($isAuthenticated && (int) $egi->user_id === (int) $currentUserId);
 
             $canDeleteEgi = $isAuthenticated &&
                 App\Helpers\FegiAuth::user()->can('delete_EGI') &&

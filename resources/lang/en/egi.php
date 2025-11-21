@@ -908,4 +908,9 @@ return [
         'zoom_fit' => 'Fit to Screen',
     ],
 
+    // Generic fields
+    'fields' => [
+        'description' => 'Description',
+    ],
+
 ];
