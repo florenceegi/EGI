@@ -255,3 +255,98 @@
     </x-slot>
 </x-guest-layout>
 
+{{-- CRUD EDIT INTERACTIONS - Direct script for EPP view --}}
+<script>
+    console.log('==========================================');
+    console.log('🚀 [EPP-CRUD-DIRECT] Script DIRECTLY in show-epp.blade.php');
+    console.log('==========================================');
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🎯 [EPP-CRUD-DIRECT] DOMContentLoaded fired');
+        
+        const editStartBtn = document.getElementById('egi-edit-start');
+        const editToggleBtn = document.getElementById('egi-edit-toggle');
+        const editForm = document.getElementById('egi-edit-form');
+        const viewMode = document.getElementById('egi-view-mode');
+        const deleteBtn = document.getElementById('egi-delete-btn');
+        const deleteModal = document.getElementById('delete-modal');
+        const deleteCancel = document.getElementById('delete-cancel');
+
+        console.log('[EPP-CRUD-EDIT] DOM Elements Check:', {
+            editStartBtn: editStartBtn ? '✅ FOUND' : '❌ NOT FOUND',
+            editToggleBtn: editToggleBtn ? '✅ FOUND' : '❌ NOT FOUND',
+            editForm: editForm ? '✅ FOUND' : '❌ NOT FOUND',
+            viewMode: viewMode ? '✅ FOUND' : '❌ NOT FOUND'
+        });
+
+        function toggleEditMode() {
+            console.log('[EPP-CRUD-EDIT] toggleEditMode() called');
+            if (!editForm || !viewMode) {
+                console.error('[EPP-CRUD-EDIT] Cannot toggle - elements not found!');
+                return;
+            }
+            
+            const isEditing = editForm.style.display !== 'none';
+
+            if (isEditing) {
+                console.log('[EPP-CRUD-EDIT] Switching to VIEW mode');
+                editForm.style.display = 'none';
+                viewMode.style.display = 'block';
+            } else {
+                console.log('[EPP-CRUD-EDIT] Switching to EDIT mode');
+                editForm.style.display = 'block';
+                viewMode.style.display = 'none';
+            }
+        }
+
+        if (editStartBtn) {
+            console.log('[EPP-CRUD-EDIT] ✅ Event listener added to editStartBtn');
+            editStartBtn.addEventListener('click', function(e) {
+                console.log('[EPP-CRUD-EDIT] editStartBtn clicked!');
+                e.preventDefault();
+                toggleEditMode();
+            });
+        } else {
+            console.error('[EPP-CRUD-EDIT] ❌ CRITICAL: editStartBtn NOT FOUND!');
+            console.log('[EPP-CRUD-EDIT] Trying to find why...');
+            console.log('[EPP-CRUD-EDIT] Document body:', document.body ? 'EXISTS' : 'NOT EXISTS');
+            console.log('[EPP-CRUD-EDIT] All elements with id containing "egi":', 
+                Array.from(document.querySelectorAll('[id*="egi"]')).map(el => el.id));
+        }
+
+        if (editToggleBtn) {
+            console.log('[EPP-CRUD-EDIT] ✅ Event listener added to editToggleBtn');
+            editToggleBtn.addEventListener('click', function(e) {
+                console.log('[EPP-CRUD-EDIT] editToggleBtn clicked!');
+                e.preventDefault();
+                toggleEditMode();
+            });
+        }
+
+        if (deleteBtn && deleteModal) {
+            deleteBtn.addEventListener('click', function() {
+                deleteModal.classList.remove('hidden');
+                deleteModal.classList.add('flex');
+            });
+        }
+
+        if (deleteCancel) {
+            deleteCancel.addEventListener('click', function() {
+                deleteModal.classList.add('hidden');
+                deleteModal.classList.remove('flex');
+            });
+        }
+
+        if (deleteModal) {
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    deleteModal.classList.add('hidden');
+                    deleteModal.classList.remove('flex');
+                }
+            });
+        }
+
+        console.log('✅ [EPP-CRUD-DIRECT] Setup completed');
+    });
+</script>
+
