@@ -907,29 +907,31 @@
                                         location.reload();
                                     });
                                 } else if (data.message === 'Insufficient Egili balance') {
-                                    // Insufficient balance - Open Egili purchase modal
+                                    // Insufficient balance - Open Egili purchase modal (same style as AI features)
                                     Swal.fire({
-                                        title: 'Insufficient Egili',
-                                        html: `
-                                            <p class="mb-3">You don't have enough Egili for this subscription.</p>
-                                            <div class="bg-red-50 border border-red-200 rounded p-3 text-left mb-3">
-                                                <p class="text-sm"><strong>Required:</strong> ${data.required_egili || 5000} Egili</p>
-                                                <p class="text-sm"><strong>Available:</strong> ${data.current_balance || 0} Egili</p>
-                                                <p class="text-sm text-red-600"><strong>Missing:</strong> ${data.missing_egili || 0} Egili</p>
-                                            </div>
-                                            <p class="text-xs text-gray-600">Purchase Egili to continue.</p>
-                                        `,
                                         icon: 'error',
-                                        confirmButtonText: 'Purchase Egili',
+                                        title: 'Crediti Insufficienti',
+                                        html: `
+                                            <p class="mb-3">Non hai abbastanza Egili per questa operazione.</p>
+                                            <div class="bg-red-50 border border-red-200 rounded p-3 text-left">
+                                                <p class="text-sm"><strong>Richiesti:</strong> ${data.required_egili || 5000} Egili</p>
+                                                <p class="text-sm"><strong>Disponibili:</strong> ${data.current_balance || 0} Egili</p>
+                                                <p class="text-sm text-red-600"><strong>Mancanti:</strong> ${data.missing_egili || 0} Egili</p>
+                                            </div>
+                                            <p class="mt-3 text-xs text-gray-600">Acquista Egili per continuare.</p>
+                                        `,
+                                        confirmButtonText: 'Acquista Egili',
                                         showCancelButton: true,
-                                        cancelButtonText: 'Cancel',
-                                        confirmButtonColor: '#8B5CF6',
-                                        cancelButtonColor: '#6B7280',
-                                        background: '#1F2937',
-                                        color: '#F3F4F6'
+                                        cancelButtonText: 'Chiudi',
+                                        confirmButtonColor: '#f97316'
                                     }).then((result) => {
-                                        if (result.isConfirmed && typeof window.openEgiliPurchaseModal === 'function') {
-                                            window.openEgiliPurchaseModal();
+                                        if (result.isConfirmed) {
+                                            // Apri modale acquisto Egili
+                                            if (typeof window.openEgiliPurchaseModal === 'function') {
+                                                window.openEgiliPurchaseModal();
+                                            } else {
+                                                console.error('openEgiliPurchaseModal() not found');
+                                            }
                                         }
                                     });
                                 } else {
