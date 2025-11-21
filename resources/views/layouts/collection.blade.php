@@ -53,6 +53,9 @@
 
     <x-wallet-connect-modal />
 
+    {{-- Egili Purchase Modal (global - accessible for subscriptions) --}}
+    <x-egili-purchase-modal />
+
     <!-- Create Collection Modal (OS1 Integration) -->
     @include('components.create-collection-modal')
 
