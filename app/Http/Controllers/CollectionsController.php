@@ -540,4 +540,87 @@ class CollectionsController extends Controller {
             ], 500);
         }
     }
+
+    /**
+     * Activate subscription for collection (Egili payment)
+     *
+     * @param Request $request HTTP request
+     * @param int $id Collection ID
+     * @return JsonResponse
+     */
+    public function switchToSubscription(Request $request, int $id): JsonResponse {
+        try {
+            $user = FegiAuth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated'
+                ], 401);
+            }
+
+            // Find collection
+            $collection = Collection::findOrFail($id);
+
+            // Check if user owns the collection
+            if ((int) $collection->creator_id !== (int) $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized to manage this collection'
+                ], 403);
+            }
+
+            // Check if collection already has EPP support (no need for subscription)
+            if ($collection->epp_project_id !== null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Collection already has EPP support. No subscription needed.'
+                ], 400);
+            }
+
+            // Process subscription via CollectionSubscriptionService
+            $subscriptionService = app(\App\Services\CollectionSubscriptionService::class);
+            $result = $subscriptionService->processSubscription($user, $collection);
+
+            if (!$result['success']) {
+                // Insufficient balance or other error
+                return response()->json($result, 400);
+            }
+
+            app(\Ultra\UltraLogManager\UltraLogManager::class)->info('[CollectionsController] Subscription activated', [
+                'user_id' => $user->id,
+                'collection_id' => $collection->id,
+                'transaction_id' => $result['transaction_id'] ?? null,
+                'log_category' => 'COLLECTION_SUBSCRIPTION_ACTIVATED'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subscription activated successfully',
+                'data' => [
+                    'expires_at' => $result['expires_at']->toDateTimeString(),
+                    'days_remaining' => $result['days_remaining'],
+                    'new_balance_egili' => $result['new_balance'],
+                ]
+            ]);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Collection not found'
+            ], 404);
+        } catch (\Throwable $e) {
+            app(\Ultra\UltraLogManager\UltraLogManager::class)->error('[CollectionsController] switchToSubscription failed', [
+                'collection_id' => $id,
+                'user_id' => FegiAuth::id(),
+                'error' => $e->getMessage(),
+                'log_category' => 'COLLECTION_SUBSCRIPTION_FAILED'
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while activating subscription'
+            ], 500);
+        }
+    }
 }

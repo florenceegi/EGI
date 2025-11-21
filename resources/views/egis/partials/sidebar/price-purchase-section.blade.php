@@ -5,10 +5,19 @@
     VARIABILI: $egi, $isForSale, $displayPrice, $priceLabel, $displayUser, $highestPriorityReservation, $isCreator, $canBeReserved
 --}}
 
+@php
+    // Check if collection has rights (EPP support OR active subscription)
+    $collectionHasRights = false;
+    if ($egi->collection_id) {
+        $subscriptionService = app(\App\Services\CollectionSubscriptionService::class);
+        $collectionHasRights = $subscriptionService->collectionHasRights($egi->collection);
+    }
+@endphp
+
 {{-- Badge e bottone mint SPOSTATI nel box "EGI Certificato su Blockchain" in crud-panel --}}
 
-{{-- Price & Purchase Section - Nascosta se EGI già mintato --}}
-@if (!$egi->isMinted() || !$egi->token_EGI)
+{{-- Price & Purchase Section - Nascosta se EGI già mintato O collection senza diritti --}}
+@if (($collectionHasRights) && (!$egi->isMinted() || !$egi->token_EGI))
 <div class="p-6 border rounded-xl border-gray-700/30 bg-gradient-to-br from-gray-800/50 to-gray-900/50">
     @if ($isForSale)
         <div class="mb-6 text-center">

@@ -193,18 +193,36 @@ class HomeController extends Controller {
      * 🛡️ Privacy: Uses only publicly published EGIs (is_published = true)
      * 🎲 Random: Uses inRandomOrder() for variety on each page load
      * 🎨 Filter: Only EGIs from creators with usertype = 'creator' (excludes PA fake EGIs)
+     * 💎 Rights: Only EGIs from collections with EPP support OR active subscription
      *
      * @return \Illuminate\Database\Eloquent\Collection Collection of 5 random published EGIs with collection data
-     * @privacy-safe Only public published content from creators
+     * @privacy-safe Only public published content from creators with rights
      */
     private function getRandomEgis() {
         // 🎲 RANDOM: Ordinamento casuale ad ogni reload
         // 🎯 FILTER: Solo EGI di creator con usertype = 'creator' (NO PA)
         // 🚫 EXCLUDE: Esclusi EGI con type = 'pa_act'
+        // 💎 RIGHTS: Solo EGI da collection con EPP o subscription attiva
         return Egi::where('is_published', true)
             ->where('type', '!=', 'pa_act') // Escludi PA Act
             ->whereHas('user', function ($query) {
                 $query->where('usertype', 'creator');
+            })
+            // Filter: Only collections with rights (EPP OR subscription)
+            ->whereHas('collection', function ($query) {
+                // EPP support (epp_project_id IS NOT NULL)
+                $query->whereNotNull('epp_project_id')
+                    // OR Active subscription
+                    ->orWhereIn('id', function ($subQuery) {
+                        $subQuery->select('source_id')
+                            ->from('ai_credits_transactions')
+                            ->where('source_model', 'App\\Models\\Collection')
+                            ->where('source_type', 'collection_subscription')
+                            ->where('transaction_type', 'subscription')
+                            ->where('status', 'completed')
+                            ->where('expires_at', '>', now())
+                            ->where('is_expired', false);
+                    });
             })
             ->with([
                 'collection',

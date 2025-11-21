@@ -411,6 +411,11 @@ Route::prefix('home')->name('home.')->group(function () {
     // Public collection viewing (accessible to all)
     Route::get('/collections', [CollectionsController::class, 'index'])->name('collections.index');
     Route::get('/collections/{id}', [CollectionsController::class, 'show'])->name('collections.show');
+    
+    // Collection subscription (Egili payment)
+    Route::post('/collections/{id}/monetization/switch-to-subscription', [CollectionsController::class, 'switchToSubscription'])
+        ->name('collections.subscription.activate')
+        ->middleware('auth');
 
     // Collection management (restricted to creators)
     // Route::middleware(['can:manage-collections'])->group(function () {
