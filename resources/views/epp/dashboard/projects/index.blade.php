@@ -123,8 +123,27 @@
 
                             <!-- Project Body -->
                             <div class="p-8 flex-1 flex flex-col">
-                                {{-- Project Name --}}
-                                <h4 class="font-bold text-2xl text-gray-900 mb-3 line-clamp-2 leading-tight">{{ $project->name }}</h4>
+                                {{-- Project Name with Avatar --}}
+                                <div class="flex items-center gap-4 mb-3">
+                                    @if($project->getFirstMediaUrl('project_avatar'))
+                                        <img src="{{ $project->getFirstMediaUrl('project_avatar') }}" 
+                                             alt="{{ $project->name }}"
+                                             class="w-16 h-16 rounded-full object-cover ring-4 ring-green-100">
+                                    @else
+                                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[#2D5016]/20 to-[#1B365D]/20 flex items-center justify-center ring-4 ring-green-100">
+                                            <span class="text-2xl">
+                                                @if($project->project_type === 'ARF')
+                                                    🌳
+                                                @elseif($project->project_type === 'APR')
+                                                    🌊
+                                                @elseif($project->project_type === 'BPE')
+                                                    🐝
+                                                @endif
+                                            </span>
+                                        </div>
+                                    @endif
+                                    <h4 class="font-bold text-2xl text-gray-900 line-clamp-2 leading-tight flex-1">{{ $project->name }}</h4>
+                                </div>
                                 {{-- Description --}}
                                 <p class="mb-6 text-base text-gray-700 line-clamp-3 flex-1 leading-relaxed">
                                     {{ $project->description }}

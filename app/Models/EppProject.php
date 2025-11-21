@@ -92,6 +92,20 @@ class EppProject extends Model implements HasMedia {
     ];
 
     /**
+     * Register media collections for this model.
+     */
+    public function registerMediaCollections(): void
+    {
+        // Banner/Cover image del progetto
+        $this->addMediaCollection('project_images')
+            ->singleFile();
+        
+        // Avatar/Logo del progetto
+        $this->addMediaCollection('project_avatar')
+            ->singleFile();
+    }
+
+    /**
      * Register media conversions for project images.
      */
     public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media $media = null): void
@@ -106,6 +120,12 @@ class EppProject extends Model implements HasMedia {
             ->width(800)
             ->height(600)
             ->sharpen(5)
+            ->nonQueued();
+            
+        $this->addMediaConversion('avatar')
+            ->width(200)
+            ->height(200)
+            ->sharpen(10)
             ->nonQueued();
     }
 

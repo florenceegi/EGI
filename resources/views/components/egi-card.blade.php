@@ -580,14 +580,18 @@ $isCreator = auth()->check() && auth()->id() === $creatorId;
             @if ($eppProject)
                 <div class="flex items-center gap-2 p-2 mb-2 border rounded-lg border-gray-700/50 bg-gray-800/50"
                     data-epp-project-info title="{{ __('egi.epp.supports_project', ['project' => $eppProject->name]) }}">
-                    <div
-                        class="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-[#2D5016]">
-                        {{-- TODO: Future integration with Spatie Media Library for project image --}}
-                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z" clip-rule="evenodd"/>
-                            <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z"/>
-                        </svg>
-                    </div>
+                    @if($eppProject->getFirstMediaUrl('project_avatar'))
+                        <img src="{{ $eppProject->getFirstMediaUrl('project_avatar') }}" 
+                             alt="{{ $eppProject->name }}"
+                             class="flex-shrink-0 w-7 h-7 rounded-full object-cover ring-2 ring-[#2D5016]">
+                    @else
+                        <div class="flex items-center justify-center flex-shrink-0 w-7 h-7 rounded-full bg-[#2D5016]">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z" clip-rule="evenodd"/>
+                                <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z"/>
+                            </svg>
+                        </div>
+                    @endif
                     <div class="flex-1 min-w-0">
                         <span class="text-xs font-medium text-gray-300">{{ __('egi.epp.supports') }}</span>
                         <span class="ml-1 text-xs font-semibold text-white truncate">{{ Str::limit($eppProject->name, 20) }}</span>

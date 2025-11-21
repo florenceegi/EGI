@@ -206,6 +206,7 @@ class EppDashboardController extends Controller {
                 'status' => 'required|in:planned,in_progress,completed,cancelled',
                 'evidence_url' => 'nullable|url',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ]);
 
             // ULM: Log project creation start
@@ -229,10 +230,16 @@ class EppDashboardController extends Controller {
                 'current_funds' => 0,
             ]);
 
-            // Handle Image Upload
+            // Handle Banner Image Upload
             if ($request->hasFile('image')) {
                 $project->addMediaFromRequest('image')
                     ->toMediaCollection('project_images');
+            }
+            
+            // Handle Avatar Image Upload
+            if ($request->hasFile('avatar')) {
+                $project->addMediaFromRequest('avatar')
+                    ->toMediaCollection('project_avatar');
             }
 
             // ULM: Log success
@@ -310,6 +317,7 @@ class EppDashboardController extends Controller {
                 'status' => 'required|in:planned,in_progress,completed,cancelled',
                 'evidence_url' => 'nullable|url',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ]);
 
             // ULM: Log update start
@@ -331,11 +339,18 @@ class EppDashboardController extends Controller {
                 'evidence_url' => $validated['evidence_url'] ?? null,
             ]);
 
-            // Handle Image Upload
+            // Handle Banner Image Upload
             if ($request->hasFile('image')) {
                 $project->clearMediaCollection('project_images'); // Replace existing image
                 $project->addMediaFromRequest('image')
                     ->toMediaCollection('project_images');
+            }
+            
+            // Handle Avatar Image Upload
+            if ($request->hasFile('avatar')) {
+                $project->clearMediaCollection('project_avatar'); // Replace existing avatar
+                $project->addMediaFromRequest('avatar')
+                    ->toMediaCollection('project_avatar');
             }
 
             // ULM: Log success

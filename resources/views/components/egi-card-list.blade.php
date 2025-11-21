@@ -308,14 +308,20 @@ $listMintedBorder = $isMinted ? 'border-2' : 'border';
                 @if ($eppProject)
                     <div class="flex items-center gap-1 text-[#2D5016] dark:text-green-400"
                         title="{{ __('egi.epp.supports_project', ['project' => $eppProject->name]) }}">
-                        <div class="flex h-3 w-3 items-center justify-center rounded-full bg-[#2D5016] text-white">
-                            <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z"
-                                    clip-rule="evenodd" />
-                                <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z" />
-                            </svg>
-                        </div>
+                        @if($eppProject->getFirstMediaUrl('project_avatar'))
+                            <img src="{{ $eppProject->getFirstMediaUrl('project_avatar') }}" 
+                                 alt="{{ $eppProject->name }}"
+                                 class="h-5 w-5 rounded-full object-cover ring-1 ring-[#2D5016]">
+                        @else
+                            <div class="flex h-5 w-5 items-center justify-center rounded-full bg-[#2D5016] text-white">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z"
+                                        clip-rule="evenodd" />
+                                    <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z" />
+                                </svg>
+                            </div>
+                        @endif
                         <span
                             class="max-w-[120px] truncate text-xs font-medium">{{ Str::limit($eppProject->name, 15) }}</span>
                     </div>

@@ -319,6 +319,108 @@
                         });
                         </script>
 
+                        <!-- Project Avatar -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ __('epp_dashboard.projects.form.avatar') }}
+                            </label>
+                            
+                            <div class="relative">
+                                <!-- Drop Zone Avatar -->
+                                <div id="dropZoneAvatar" 
+                                     class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-[#2D5016] transition-colors cursor-pointer bg-gray-50 hover:bg-green-50/30">
+                                    <input type="file" 
+                                           name="avatar" 
+                                           id="avatar" 
+                                           accept="image/jpeg,image/png,image/jpg,image/webp"
+                                           class="hidden">
+                                    
+                                    <div id="uploadPromptAvatar">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <div class="mt-4">
+                                            <span class="text-base font-semibold text-[#2D5016]">{{ __('epp_dashboard.projects.form.upload_click') }}</span>
+                                            <span class="text-gray-600"> {{ __('epp_dashboard.projects.form.upload_or_drag') }}</span>
+                                        </div>
+                                        <p class="mt-2 text-xs text-gray-500">
+                                            JPG, PNG, WEBP {{ __('epp_dashboard.projects.form.upload_max_size') }}
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Preview Avatar -->
+                                    <div id="avatarPreview" class="hidden">
+                                        <img id="previewAvatar" src="" alt="Avatar Preview" class="mx-auto h-32 w-32 rounded-full object-cover shadow-lg">
+                                        <button type="button" 
+                                                id="removeAvatar"
+                                                class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            {{ __('epp_dashboard.projects.form.remove_image') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @error('avatar')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            <p class="mt-2 text-sm text-gray-500">{{ __('epp_dashboard.projects.form.avatar_help') }}</p>
+                        </div>
+
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const dropZoneAvatar = document.getElementById('dropZoneAvatar');
+                            const fileInputAvatar = document.getElementById('avatar');
+                            const uploadPromptAvatar = document.getElementById('uploadPromptAvatar');
+                            const avatarPreview = document.getElementById('avatarPreview');
+                            const previewAvatar = document.getElementById('previewAvatar');
+                            const removeBtnAvatar = document.getElementById('removeAvatar');
+
+                            dropZoneAvatar.addEventListener('click', function(e) {
+                                if (e.target !== removeBtnAvatar && !removeBtnAvatar.contains(e.target)) {
+                                    fileInputAvatar.click();
+                                }
+                            });
+
+                            fileInputAvatar.addEventListener('change', function() {
+                                handleAvatarFiles(this.files);
+                            });
+
+                            function handleAvatarFiles(files) {
+                                if (files.length === 0) return;
+                                const file = files[0];
+                                
+                                if (!file.type.match('image.*')) {
+                                    alert('{{ __("epp_dashboard.projects.form.error_file_type") }}');
+                                    return;
+                                }
+                                
+                                if (file.size > 2 * 1024 * 1024) {
+                                    alert('{{ __("epp_dashboard.projects.form.error_file_size") }}');
+                                    return;
+                                }
+                                
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    previewAvatar.src = e.target.result;
+                                    uploadPromptAvatar.classList.add('hidden');
+                                    avatarPreview.classList.remove('hidden');
+                                };
+                                reader.readAsDataURL(file);
+                            }
+
+                            removeBtnAvatar.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                fileInputAvatar.value = '';
+                                previewAvatar.src = '';
+                                uploadPromptAvatar.classList.remove('hidden');
+                                avatarPreview.classList.add('hidden');
+                            });
+                        });
+                        </script>
+
                         <!-- Form Actions -->
                         <div class="flex items-center justify-end space-x-4 border-t pt-6">
                             <a href="{{ route('epp.dashboard.projects') }}" 
