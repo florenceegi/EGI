@@ -469,6 +469,8 @@ return [
 
         // EPP section
         'supporting_environmental_project' => 'Supporting Environmental Project',
+        'by' => 'by',
+        'completed' => 'completed',
         'of_sales_support_this_project' => 'of sales support this project',
 
         // EPP Modal

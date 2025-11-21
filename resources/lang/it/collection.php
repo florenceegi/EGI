@@ -522,6 +522,8 @@ return [
 
         // EPP section
         'supporting_environmental_project' => 'Sostiene un Progetto Ambientale',
+        'by' => 'di',
+        'completed' => 'completato',
         'of_sales_support_this_project' => 'delle vendite sostiene questo progetto',
 
         // EPP Modal
