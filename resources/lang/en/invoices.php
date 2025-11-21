@@ -5,6 +5,8 @@ return [
     'my_invoices' => 'My Invoices',
     'invoice' => 'Invoice',
     'invoices' => 'Invoices',
+    'subtitle' => 'Manage your invoices, monthly aggregations and invoicing settings',
+    'items_title' => 'Invoice Items Detail',
     
     // Tabs
     'tabs' => [

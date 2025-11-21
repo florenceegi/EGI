@@ -5,6 +5,8 @@ return [
     'my_invoices' => 'Le Mie Fatture',
     'invoice' => 'Fattura',
     'invoices' => 'Fatture',
+    'subtitle' => 'Gestisci le tue fatture, aggregazioni mensili e impostazioni di fatturazione',
+    'items_title' => 'Dettaglio Righe Fattura',
     
     // Tabs
     'tabs' => [

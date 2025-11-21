@@ -20,8 +20,7 @@ use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
  * @date 2025-11-21
  * @purpose Handles invoice management operations
  */
-class InvoiceController extends Controller
-{
+class InvoiceController extends Controller {
     protected UltraLogManager $logger;
     protected ErrorManagerInterface $errorManager;
     protected InvoiceService $invoiceService;
@@ -43,8 +42,7 @@ class InvoiceController extends Controller
      * @param Request $request
      * @return View
      */
-    public function index(Request $request): View
-    {
+    public function index(Request $request): View {
         try {
             $user = Auth::user();
             $activeTab = $request->get('tab', 'sales');
@@ -63,7 +61,7 @@ class InvoiceController extends Controller
             ];
 
             // Get data based on active tab
-            $salesInvoices = $activeTab === 'sales' 
+            $salesInvoices = $activeTab === 'sales'
                 ? $this->invoiceService->getUserInvoices($user, 'sales', $filters)
                 : collect();
 
@@ -86,7 +84,6 @@ class InvoiceController extends Controller
                 'activeTab',
                 'filters'
             ));
-
         } catch (\Exception $e) {
             return $this->errorManager->handle('INVOICE_INDEX_FAILED', [
                 'user_id' => Auth::id(),
@@ -101,11 +98,10 @@ class InvoiceController extends Controller
      * @param int $id
      * @return View
      */
-    public function show(int $id): View
-    {
+    public function show(int $id): View {
         try {
             $user = Auth::user();
-            
+
             $invoice = Invoice::with(['seller', 'buyer', 'items.egi', 'items.paymentDistribution'])
                 ->findOrFail($id);
 
@@ -120,7 +116,6 @@ class InvoiceController extends Controller
             ]);
 
             return view('account.invoices.show', compact('invoice'));
-
         } catch (\Exception $e) {
             return $this->errorManager->handle('INVOICE_SHOW_FAILED', [
                 'user_id' => Auth::id(),
@@ -136,11 +131,10 @@ class InvoiceController extends Controller
      * @param int $aggregationId
      * @return RedirectResponse
      */
-    public function generateFromAggregation(int $aggregationId): RedirectResponse
-    {
+    public function generateFromAggregation(int $aggregationId): RedirectResponse {
         try {
             $user = Auth::user();
-            
+
             $this->logger->info('InvoiceController: Generating invoice from aggregation', [
                 'user_id' => $user->id,
                 'aggregation_id' => $aggregationId,
@@ -163,7 +157,6 @@ class InvoiceController extends Controller
 
             return redirect()->route('account.invoices.show', $invoice->id)
                 ->with('success', __('invoices.messages.aggregation_generated'));
-
         } catch (\Exception $e) {
             return $this->errorManager->handle('INVOICE_GENERATION_FAILED', [
                 'user_id' => Auth::id(),
@@ -180,8 +173,7 @@ class InvoiceController extends Controller
      * @param Request $request
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function exportAggregation(int $aggregationId, Request $request)
-    {
+    public function exportAggregation(int $aggregationId, Request $request) {
         try {
             $user = Auth::user();
             $format = $request->get('format', 'csv');
@@ -202,7 +194,6 @@ class InvoiceController extends Controller
             ]);
 
             return response()->download($path)->deleteFileAfterSend(false);
-
         } catch (\Exception $e) {
             return $this->errorManager->handle('AGGREGATION_EXPORT_FAILED', [
                 'user_id' => Auth::id(),
@@ -218,8 +209,7 @@ class InvoiceController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function updateSettings(Request $request): RedirectResponse
-    {
+    public function updateSettings(Request $request): RedirectResponse {
         try {
             $user = Auth::user();
 
@@ -248,7 +238,6 @@ class InvoiceController extends Controller
 
             return redirect()->route('account.invoices', ['tab' => 'settings'])
                 ->with('success', __('invoices.messages.settings_saved'));
-
         } catch (\Exception $e) {
             return $this->errorManager->handle('INVOICE_SETTINGS_UPDATE_FAILED', [
                 'user_id' => Auth::id(),
@@ -263,11 +252,10 @@ class InvoiceController extends Controller
      * @param int $id
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|RedirectResponse
      */
-    public function downloadPdf(int $id)
-    {
+    public function downloadPdf(int $id) {
         try {
             $user = Auth::user();
-            
+
             $invoice = Invoice::findOrFail($id);
 
             // Check authorization
@@ -289,7 +277,6 @@ class InvoiceController extends Controller
                 storage_path('app/' . $invoice->pdf_path),
                 $invoice->invoice_code . '.pdf'
             );
-
         } catch (\Exception $e) {
             return $this->errorManager->handle('INVOICE_PDF_DOWNLOAD_FAILED', [
                 'user_id' => Auth::id(),
