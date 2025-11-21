@@ -14,7 +14,7 @@
         $collection = collect($collection);
     }
     // Verifica se questa collection è essa stessa un'iniziativa EPP (es. creata da un EPP user o legata al progetto come core)
-    $isEppCollection = $collection->creator && in_array($collection->creator->usertype, ['epp', 'natan', 'frangette']);
+$isEppCollection = $collection->creator && in_array($collection->creator->usertype, ['epp', 'natan', 'frangette']);
 @endphp
 
 <x-collection-layout :title="$collection->collection_name . ' | FlorenceEGI'" :metaDescription="Str::limit($collection->description, 155) ??
@@ -274,8 +274,9 @@
                             {{ $collection->collection_name }}
                         </h1>
 
-                        @if($isEppCollection)
-                            <div class="mt-1 rounded-full bg-[#2D5016] px-3 py-1 text-sm font-bold text-white shadow-lg border border-green-600/50 backdrop-blur-sm">
+                        @if ($isEppCollection)
+                            <div
+                                class="mt-1 rounded-full border border-green-600/50 bg-[#2D5016] px-3 py-1 text-sm font-bold text-white shadow-lg backdrop-blur-sm">
                                 {{ __('collection.show.official_epp_collection') }}
                             </div>
                         @endif

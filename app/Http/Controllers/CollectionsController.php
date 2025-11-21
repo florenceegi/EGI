@@ -248,6 +248,11 @@ class CollectionsController extends Controller {
         // Usa il conteggio ottimizzato invece del query aggiuntivo
         // $collection->likes_count è già disponibile tramite withCount
 
+        // Se è una collezione EPP (tipo environmental), usa la vista semplificata
+        if ($collection->type === 'environmental') {
+            return view('collections.show-epp', compact('collection'));
+        }
+
         return view('collections.show', compact('collection'));
     }
 
