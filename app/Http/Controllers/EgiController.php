@@ -347,12 +347,10 @@ class EgiController extends Controller
             $collection = $egi->collection;
             $merchantPspStatus = $this->resolveMerchantPspStatus($egi);
 
-            // 🌿 EPP CHECK: Use simplified view for EPP EGIs (Overrides role-based view)
-            // Extended check: also check creator user type for legacy/manual compatibility (Natan/Frangette are EPP-like)
-            $eppUserTypes = ['epp', 'natan', 'frangette'];
-            $isEppCreator = $collection && $collection->creator && in_array($collection->creator->usertype, $eppUserTypes);
-
-            if (($collection && $collection->epp_project_id) || $isEppCreator) {
+            // 🌿 EPP CHECK: Use simplified view ONLY for "environmental" collections
+            // These are collections created BY EPP to document their projects
+            // Regular collections that SUPPORT an EPP project should use the standard view
+            if ($collection && $collection->type === 'environmental') {
                 return view('egis.show-epp', compact('egi', 'collection', 'canManage', 'collectionEgis', 'merchantPspStatus'));
             }
 
