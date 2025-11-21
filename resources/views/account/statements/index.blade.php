@@ -29,6 +29,14 @@
                         💎 {{ __('statements.tabs.egili') }}
                     </button>
                     
+                    <button
+                        data-tab="eur"
+                        class="tab-button whitespace-nowrap border-b-2 border-transparent px-1 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                        onclick="switchTab('eur')"
+                    >
+                        💰 {{ __('statements.tabs.eur') }}
+                    </button>
+                    
                     {{-- Future tabs --}}
                     <button
                         data-tab="invoices"
@@ -64,6 +72,20 @@
                         'endDate' => $endDate,
                         'egiliTransactions' => $egiliTransactions,
                         'egiliSummary' => $egiliSummary,
+                    ])
+                </div>
+
+                {{-- EUR Tab --}}
+                <div id="tab-eur" class="tab-pane hidden">
+                    @include('account.statements.partials.eur-statement', [
+                        'user' => $user,
+                        'filter' => $filter,
+                        'dateFrom' => $dateFrom,
+                        'dateTo' => $dateTo,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate,
+                        'eurTransactions' => $eurTransactions,
+                        'eurSummary' => $eurSummary,
                     ])
                 </div>
 

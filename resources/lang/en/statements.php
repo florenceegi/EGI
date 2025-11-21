@@ -8,6 +8,7 @@ return [
     // Tabs
     'tabs' => [
         'egili' => 'Egili Statement',
+        'eur' => 'EUR Statement',
         'invoices' => 'Invoices', // Future
         'receipts' => 'Receipts', // Future
     ],
@@ -70,6 +71,43 @@ return [
             'collection_subscription' => 'Collection Subscription',
             'bonus' => 'Bonus',
             'other' => 'Other',
+        ],
+    ],
+
+    // EUR Statement
+    'eur' => [
+        'title' => 'EUR Statement',
+        'subtitle' => 'Expenses and income in EUR currency',
+        'period' => 'Period: :from - :to',
+        'download_pdf' => 'Download PDF',
+        'no_transactions' => 'No transactions in the selected period',
+        
+        // Summary
+        'summary' => [
+            'title' => 'Period Summary',
+            'total_expenses' => 'Total Expenses',
+            'total_income' => 'Total Income',
+            'net_balance' => 'Net Balance',
+            'transaction_count' => 'Number of Transactions',
+        ],
+        
+        // Table headers
+        'table' => [
+            'date' => 'Date',
+            'time' => 'Time',
+            'description' => 'Description',
+            'merchant' => 'Merchant / PSP',
+            'beneficiary' => 'Beneficiary',
+            'expenses' => 'Expenses',
+            'income' => 'Income',
+            'reference' => 'Reference',
+        ],
+        
+        // Transaction types
+        'types' => [
+            'egili_purchase' => 'Egili Purchase',
+            'egi_mint' => 'EGI Mint',
+            'egi_sale_distribution' => 'EGI Sale',
         ],
     ],
 

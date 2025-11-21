@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\EgiliService;
+use App\Services\EurTransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -20,11 +21,15 @@ use Carbon\Carbon;
 class AccountStatementsController extends Controller
 {
     protected EgiliService $egiliService;
+    protected EurTransactionService $eurService;
 
-    public function __construct(EgiliService $egiliService)
-    {
+    public function __construct(
+        EgiliService $egiliService,
+        EurTransactionService $eurService
+    ) {
         $this->middleware('auth');
         $this->egiliService = $egiliService;
+        $this->eurService = $eurService;
     }
 
     /**
@@ -55,6 +60,12 @@ class AccountStatementsController extends Controller
         // Calculate EGILI summary
         $egiliSummary = $this->calculateEgiliSummary($egiliTransactions, $startDate, $endDate);
         
+        // Get EUR transactions
+        $eurTransactions = $this->eurService->getTransactionHistory($user, $startDate, $endDate);
+        
+        // Calculate EUR summary
+        $eurSummary = $this->eurService->calculateSummary($eurTransactions);
+        
         return view('account.statements.index', [
             'user' => $user,
             'filter' => $filter,
@@ -64,6 +75,8 @@ class AccountStatementsController extends Controller
             'endDate' => $endDate,
             'egiliTransactions' => $egiliTransactions,
             'egiliSummary' => $egiliSummary,
+            'eurTransactions' => $eurTransactions,
+            'eurSummary' => $eurSummary,
         ]);
     }
 
@@ -108,6 +121,49 @@ class AccountStatementsController extends Controller
         // Filename format: estratto-conto-egili-2025-11.pdf
         $filename = sprintf(
             'estratto-conto-egili-%s.pdf',
+            $startDate->format('Y-m')
+        );
+        
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Download EUR statement as PDF
+     * 
+     * @param Request $request
+     * @return Response
+     */
+    public function downloadEurPdf(Request $request): Response
+    {
+        $user = Auth::user();
+        
+        // Parse date filters
+        $filter = $request->get('filter', 'month');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
+        
+        // Calculate date range
+        [$startDate, $endDate] = $this->calculateDateRange($filter, $dateFrom, $dateTo);
+        
+        // Get EUR transactions
+        $eurTransactions = $this->eurService->getTransactionHistory($user, $startDate, $endDate);
+        
+        // Calculate summary
+        $eurSummary = $this->eurService->calculateSummary($eurTransactions);
+        
+        // Generate PDF
+        $pdf = Pdf::loadView('account.statements.pdf.eur', [
+            'user' => $user,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'eurTransactions' => $eurTransactions,
+            'eurSummary' => $eurSummary,
+            'generatedAt' => now(),
+        ]);
+        
+        // Filename format: estratto-conto-eur-2025-11.pdf
+        $filename = sprintf(
+            'estratto-conto-eur-%s.pdf',
             $startDate->format('Y-m')
         );
         

@@ -8,6 +8,7 @@ return [
     // Tabs
     'tabs' => [
         'egili' => 'Estratto Conto Egili',
+        'eur' => 'Estratto Conto EUR',
         'invoices' => 'Fatture', // Future
         'receipts' => 'Ricevute', // Future
     ],
@@ -70,6 +71,43 @@ return [
             'collection_subscription' => 'Abbonamento Collection',
             'bonus' => 'Bonus',
             'other' => 'Altro',
+        ],
+    ],
+
+    // EUR Statement
+    'eur' => [
+        'title' => 'Estratto Conto EUR',
+        'subtitle' => 'Spese e incassi in valuta EUR',
+        'period' => 'Periodo: :from - :to',
+        'download_pdf' => 'Scarica PDF',
+        'no_transactions' => 'Nessuna transazione nel periodo selezionato',
+        
+        // Summary
+        'summary' => [
+            'title' => 'Riepilogo Periodo',
+            'total_expenses' => 'Totale Spese',
+            'total_income' => 'Totale Incassi',
+            'net_balance' => 'Saldo Netto',
+            'transaction_count' => 'Numero Transazioni',
+        ],
+        
+        // Table headers
+        'table' => [
+            'date' => 'Data',
+            'time' => 'Ora',
+            'description' => 'Descrizione',
+            'merchant' => 'Merchant / PSP',
+            'beneficiary' => 'Beneficiario',
+            'expenses' => 'Spese',
+            'income' => 'Incassi',
+            'reference' => 'Riferimento',
+        ],
+        
+        // Transaction types
+        'types' => [
+            'egili_purchase' => 'Acquisto Egili',
+            'egi_mint' => 'Mint EGI',
+            'egi_sale_distribution' => 'Vendita EGI',
         ],
     ],
 

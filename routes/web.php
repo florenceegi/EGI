@@ -645,6 +645,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             ->name('account.statements');
         Route::get('/account/statements/egili/pdf', [App\Http\Controllers\AccountStatementsController::class, 'downloadEgiliPdf'])
             ->name('account.statements.egili.pdf');
+        Route::get('/account/statements/eur/pdf', [App\Http\Controllers\AccountStatementsController::class, 'downloadEurPdf'])
+            ->name('account.statements.eur.pdf');
 
         // Upload configuration and authorization (override vendor routes)
         Route::get('/config/global-config', [GlobalConfigController::class, 'getGlobalConfig'])
