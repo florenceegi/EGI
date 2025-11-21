@@ -74,46 +74,41 @@
                      loading="lazy" decoding="async">
                 <div class="absolute inset-0 transition-opacity bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-95"></div>
 
-                {{-- 🌱 EPP PROJECT IMAGE & BADGE --}}
-                @if($eppProject)
-                    <div class="absolute top-3 right-3">
-                        @if($eppProjectImageUrl)
-                            {{-- EPP Project Image --}}
-                            <div class="relative group/epp">
-                                <img src="{{ $eppProjectImageUrl }}" 
-                                     alt="{{ $eppProject->name }}"
-                                     class="w-16 h-16 rounded-lg object-cover border-2 border-[#2D5016] shadow-lg transition-transform duration-300 group-hover/epp:scale-110"
-                                     title="{{ __('egi.epp.supports_project', ['project' => $eppProject->name]) }}">
-                                <div class="absolute inset-0 rounded-lg bg-[#2D5016]/20 opacity-0 group-hover/epp:opacity-100 transition-opacity"></div>
-                            </div>
-                        @else
-                            {{-- EPP Project Icon Badge --}}
-                            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-[#2D5016] border-2 border-[#2D5016]/50 shadow-lg"
-                                 title="{{ __('egi.epp.supports_project', ['project' => $eppProject->name]) }}">
-                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z" clip-rule="evenodd"/>
-                                    <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z"/>
-                                </svg>
-                            </div>
-                        @endif
-                    </div>
-                @endif
-
-                {{-- FIX: Questo 'absolute' ora è contenuto dal 'relative' sopra --}}
+                {{-- Content Section --}}
                 <div class="absolute bottom-0 left-0 right-0 p-4 md:p-5">
-                    {{-- 🌱 EPP PROJECT INFO BAR --}}
+                    {{-- 🌱 EPP PROJECT INFO BAR con Banner + Avatar --}}
                     @if($eppProject)
-                        <div class="mb-3 p-2 rounded-lg bg-[#2D5016]/80 backdrop-blur-sm border border-[#2D5016]/50">
-                            <div class="flex items-center gap-2">
-                                <div class="flex-shrink-0 p-1 rounded bg-white/20">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z" clip-rule="evenodd"/>
-                                        <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z"/>
-                                    </svg>
+                        <div class="relative mb-3 p-2 rounded-lg overflow-hidden backdrop-blur-sm border border-white/20 shadow-lg">
+                            {{-- Background Image Banner --}}
+                            @if($eppProject->getFirstMediaUrl('project_images'))
+                                <div class="absolute inset-0">
+                                    <img src="{{ $eppProject->getFirstMediaUrl('project_images') }}" 
+                                         alt="{{ $eppProject->name }}"
+                                         class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-gradient-to-r from-[#2D5016]/60 via-[#2D5016]/50 to-[#1B365D]/60"></div>
                                 </div>
+                            @else
+                                <div class="absolute inset-0 bg-gradient-to-r from-[#2D5016]/80 to-[#1B365D]/80"></div>
+                            @endif
+                            
+                            <div class="relative flex items-center gap-2">
+                                {{-- Avatar del progetto --}}
+                                @if($eppProject->getFirstMediaUrl('project_avatar'))
+                                    <img src="{{ $eppProject->getFirstMediaUrl('project_avatar') }}" 
+                                         alt="{{ $eppProject->name }}"
+                                         class="flex-shrink-0 w-10 h-10 rounded-full object-cover ring-2 ring-white/40">
+                                @else
+                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/40">
+                                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z" clip-rule="evenodd"/>
+                                            <path d="M4 19a2 2 0 100-4 2 2 0 000 4zM16 19a2 2 0 100-4 2 2 0 000 4z"/>
+                                        </svg>
+                                    </div>
+                                @endif
+                                
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-xs text-white/80 truncate">{{ __('egi.epp.supports') }}</p>
-                                    <p class="text-sm font-semibold text-white truncate">{{ $eppProject->name }}</p>
+                                    <p class="text-xs text-white/90 truncate drop-shadow">{{ __('egi.epp.supports') }}</p>
+                                    <p class="text-sm font-bold text-white truncate drop-shadow">{{ $eppProject->name }}</p>
                                 </div>
                             </div>
                         </div>
