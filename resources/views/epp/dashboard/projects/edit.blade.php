@@ -473,20 +473,20 @@
                         </script>
 
                         <!-- Form Actions -->
-                        <div class="flex items-center justify-between border-t pt-6">
+                        <div class="flex items-center justify-between border-t pt-6 mt-8">
                             <button type="button"
                                     onclick="if(confirm('{{ __('epp_dashboard.projects.form.delete_confirm') }}')) { document.getElementById('delete-form').submit(); }"
-                                    class="rounded-lg border border-red-500 px-6 py-2 text-red-600 hover:bg-red-50">
+                                    class="rounded-lg border-2 border-red-500 px-6 py-3 text-red-600 hover:bg-red-50 font-medium">
                                 {{ __('epp_dashboard.projects.form.delete_button') }}
                             </button>
                             
                             <div class="flex space-x-4">
                                 <a href="{{ route('epp.dashboard.projects') }}" 
-                                   class="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50">
+                                   class="rounded-lg border-2 border-gray-300 px-6 py-3 text-gray-700 hover:bg-gray-50 font-medium">
                                     {{ __('epp_dashboard.projects.form.cancel') }}
                                 </a>
                                 <button type="submit" 
-                                        class="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800">
+                                        class="rounded-lg bg-green-700 px-8 py-3 text-white hover:bg-green-800 font-bold shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105">
                                     {{ __('epp_dashboard.projects.form.update_button') }}
                                 </button>
                             </div>
