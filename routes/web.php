@@ -637,6 +637,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             ->name('profile.upload-banner');
         Route::post('/profile/set-current-banner', [App\Http\Controllers\ProfileImageController::class, 'setCurrentBanner'])
             ->name('profile.set-current-banner');
+
+        // Account Statements Routes
+        Route::get('/account/statements', [App\Http\Controllers\AccountStatementsController::class, 'index'])
+            ->name('account.statements');
+        Route::get('/account/statements/egili/pdf', [App\Http\Controllers\AccountStatementsController::class, 'downloadEgiliPdf'])
+            ->name('account.statements.egili.pdf');
         Route::delete('/profile/delete-banner', [App\Http\Controllers\ProfileImageController::class, 'deleteBanner'])
             ->name('profile.delete-banner');
 
