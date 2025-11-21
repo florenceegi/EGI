@@ -30,7 +30,6 @@ return [
     'psp_section_hint' => 'Connect your Stripe or PayPal account to enable card payments. You can reopen the onboarding at any time.',
     'psp_open_setup' => 'Open digital account',
     'psp_onboarding_summary' => 'Open onboarding summary',
-    'account_statements' => 'Account Statements',
     'psp_request_support' => 'Need help? Contact support',
     'psp_section_title' => 'Digital payout account',
     'psp_section_hint' => 'Connect your Stripe or PayPal merchant account to unlock card payments. You can reopen onboarding at any time.',
