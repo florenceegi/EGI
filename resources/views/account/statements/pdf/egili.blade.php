@@ -326,10 +326,10 @@
                     </td>
                     <td>
                         <div class="transaction-description">
-                            {{ $transaction->description ?? __('statements.egili.types.' . $transaction->type) }}
+                            {{ $transaction->description ?? __('statements.egili.types.' . $transaction->transaction_type) }}
                         </div>
                         <div class="transaction-type">
-                            {{ __('statements.egili.types.' . $transaction->type) }}
+                            {{ __('statements.egili.types.' . $transaction->transaction_type) }}
                         </div>
                     </td>
                     <td class="text-right">

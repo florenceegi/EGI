@@ -48,6 +48,7 @@ return [
     'psp_section_hint' => 'Collega il tuo conto Stripe o PayPal per abilitare i pagamenti con carta. Puoi riaprire l\'onboarding in qualsiasi momento.',
     'psp_open_setup' => 'Apri il conto digitale',
     'psp_onboarding_summary' => 'Apri il riepilogo onboarding',
+    'account_statements' => 'Estratti Conto',
     'psp_request_support' => 'Serve aiuto? Contatta il supporto',
     'profile_overview' => 'Panoramica Profilo',
     'edit_personal_data' => 'Modifica Dati Personali',

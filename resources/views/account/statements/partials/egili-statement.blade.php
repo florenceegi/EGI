@@ -193,10 +193,10 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                    {{ $transaction->description ?? __('statements.egili.types.' . $transaction->type) }}
+                                    {{ $transaction->description ?? __('statements.egili.types.' . $transaction->transaction_type) }}
                                 </div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ __('statements.egili.types.' . $transaction->type) }}
+                                    {{ __('statements.egili.types.' . $transaction->transaction_type) }}
                                 </div>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-right">

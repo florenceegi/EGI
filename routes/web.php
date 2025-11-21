@@ -411,7 +411,7 @@ Route::prefix('home')->name('home.')->group(function () {
     // Public collection viewing (accessible to all)
     Route::get('/collections', [CollectionsController::class, 'index'])->name('collections.index');
     Route::get('/collections/{id}', [CollectionsController::class, 'show'])->name('collections.show');
-    
+
     // Collection subscription (Egili payment)
     Route::post('/collections/{id}/monetization/switch-to-subscription', [CollectionsController::class, 'switchToSubscription'])
         ->name('collections.subscription.activate')
@@ -545,7 +545,7 @@ Route::get('/equilibrium', [App\Http\Controllers\EppProjectController::class, 'd
 Route::prefix('epp/dashboard')->name('epp.dashboard.')->middleware(['auth', 'check.user.type:EPP'])->group(function () {
     // Dashboard home
     Route::get('/', [App\Http\Controllers\Epp\EppDashboardController::class, 'index'])->name('index');
-    
+
     // Projects management
     Route::get('/projects', [App\Http\Controllers\Epp\EppDashboardController::class, 'projects'])->name('projects');
     Route::get('/projects/create', [App\Http\Controllers\Epp\EppDashboardController::class, 'createProject'])->name('projects.create');
@@ -553,7 +553,7 @@ Route::prefix('epp/dashboard')->name('epp.dashboard.')->middleware(['auth', 'che
     Route::get('/projects/{project}/edit', [App\Http\Controllers\Epp\EppDashboardController::class, 'editProject'])->name('projects.edit');
     Route::put('/projects/{project}', [App\Http\Controllers\Epp\EppDashboardController::class, 'updateProject'])->name('projects.update');
     Route::delete('/projects/{project}', [App\Http\Controllers\Epp\EppDashboardController::class, 'destroyProject'])->name('projects.destroy');
-    
+
     // Collections management
     Route::get('/collections', [App\Http\Controllers\Epp\EppDashboardController::class, 'collections'])->name('collections');
 });
@@ -639,6 +639,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             ->name('profile.set-current-banner');
         Route::delete('/profile/delete-banner', [App\Http\Controllers\ProfileImageController::class, 'deleteBanner'])
             ->name('profile.delete-banner');
+
+        // Account Statements Routes
+        Route::get('/account/statements', [App\Http\Controllers\AccountStatementsController::class, 'index'])
+            ->name('account.statements');
+        Route::get('/account/statements/egili/pdf', [App\Http\Controllers\AccountStatementsController::class, 'downloadEgiliPdf'])
+            ->name('account.statements.egili.pdf');
 
         // Upload configuration and authorization (override vendor routes)
         Route::get('/config/global-config', [GlobalConfigController::class, 'getGlobalConfig'])

@@ -57,11 +57,17 @@ return [
         
         // Transaction types
         'types' => [
+            'earned' => 'Guadagnati',
+            'spent' => 'Spesi',
             'purchase' => 'Acquisto Egili',
+            'admin_grant' => 'Bonus Amministratore',
+            'admin_deduct' => 'Deduzione Amministratore',
+            'refund' => 'Rimborso',
+            'expiration' => 'Scadenza',
+            'initial_bonus' => 'Bonus Iniziale',
             'gift' => 'Regalo Egili',
             'ai_feature' => 'Feature AI',
             'collection_subscription' => 'Abbonamento Collection',
-            'refund' => 'Rimborso',
             'bonus' => 'Bonus',
             'other' => 'Altro',
         ],

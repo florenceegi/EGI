@@ -57,11 +57,17 @@ return [
         
         // Transaction types
         'types' => [
+            'earned' => 'Earned',
+            'spent' => 'Spent',
             'purchase' => 'Egili Purchase',
+            'admin_grant' => 'Admin Grant',
+            'admin_deduct' => 'Admin Deduct',
+            'refund' => 'Refund',
+            'expiration' => 'Expiration',
+            'initial_bonus' => 'Initial Bonus',
             'gift' => 'Egili Gift',
             'ai_feature' => 'AI Feature',
             'collection_subscription' => 'Collection Subscription',
-            'refund' => 'Refund',
             'bonus' => 'Bonus',
             'other' => 'Other',
         ],
