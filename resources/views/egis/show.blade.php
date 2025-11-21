@@ -398,107 +398,6 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
             {{-- Custom Styles for Enhanced Interactivity --}}
             @include('egis.partials.styles.egi-show-styles')
 
-            {{-- JavaScript per CRUD Interactions --}}
-            <script>
-                console.log('🚀 [EGI-SHOW] Script loaded - BEFORE DOMContentLoaded');
-                
-                document.addEventListener('DOMContentLoaded', function() {
-                    console.log('🎯 [EGI-SHOW] DOMContentLoaded fired - DOM is ready');
-                    
-                    // Grid debug info
-                    const mainGrid = document.getElementById('egi-main-grid');
-                    if (mainGrid) {
-                        console.log('Grid DEBUG:');
-                        console.log('- gridTemplateColumns:', getComputedStyle(mainGrid).gridTemplateColumns);
-                        console.log('- Children count:', mainGrid.children.length);
-                    }
-
-                    const editStartBtn = document.getElementById('egi-edit-start');
-                    const editToggleBtn = document.getElementById('egi-edit-toggle');
-                    const editForm = document.getElementById('egi-edit-form');
-                    const viewMode = document.getElementById('egi-view-mode');
-                    const deleteBtn = document.getElementById('egi-delete-btn');
-                    const deleteModal = document.getElementById('delete-modal');
-                    const deleteCancel = document.getElementById('delete-cancel');
-
-                    // DEBUG: CRUD EDIT BUTTONS CHECK
-                    console.log('[CRUD-EDIT] DOM Elements Check:', {
-                        editStartBtn: editStartBtn ? '✅ FOUND' : '❌ NOT FOUND',
-                        editToggleBtn: editToggleBtn ? '✅ FOUND' : '❌ NOT FOUND',
-                        editForm: editForm ? '✅ FOUND' : '❌ NOT FOUND',
-                        viewMode: viewMode ? '✅ FOUND' : '❌ NOT FOUND'
-                    });
-
-                    // Toggle edit mode
-                    function toggleEditMode() {
-                        console.log('[CRUD-EDIT] toggleEditMode() called');
-                        const isEditing = editForm.style.display !== 'none';
-
-                        if (isEditing) {
-                            console.log('[CRUD-EDIT] Switching to VIEW mode');
-                            editForm.style.display = 'none';
-                            viewMode.style.display = 'block';
-                        } else {
-                            console.log('[CRUD-EDIT] Switching to EDIT mode');
-                            editForm.style.display = 'block';
-                            viewMode.style.display = 'none';
-                        }
-                    }
-
-                    if (editStartBtn) {
-                        console.log('[CRUD-EDIT] Event listener added to editStartBtn');
-                        editStartBtn.addEventListener('click', toggleEditMode);
-                    } else {
-                        console.error('[CRUD-EDIT] ❌ CRITICAL: editStartBtn NOT FOUND in DOM!');
-                    }
-
-                    if (editToggleBtn) {
-                        console.log('[CRUD-EDIT] Event listener added to editToggleBtn');
-                        editToggleBtn.addEventListener('click', toggleEditMode);
-                    } else {
-                        console.error('[CRUD-EDIT] ❌ WARNING: editToggleBtn NOT FOUND in DOM!');
-                    }
-
-                    // Delete modal
-                    if (deleteBtn && deleteModal) {
-                        deleteBtn.addEventListener('click', function() {
-                            deleteModal.classList.remove('hidden');
-                            deleteModal.classList.add('flex');
-                        });
-                    }
-
-                    if (deleteCancel) {
-                        deleteCancel.addEventListener('click', function() {
-                            deleteModal.classList.add('hidden');
-                            deleteModal.classList.remove('flex');
-                        });
-                    }
-
-                    // Close modal on background click
-                    if (deleteModal) {
-                        deleteModal.addEventListener('click', function(e) {
-                            if (e.target === deleteModal) {
-                                deleteModal.classList.add('hidden');
-                                deleteModal.classList.remove('flex');
-                            }
-                        });
-                    }
-
-                    // Character counter for title
-                    const titleInput = document.getElementById('title');
-                    if (titleInput) {
-                        titleInput.addEventListener('input', function() {
-                            const remaining = 60 - this.value.length;
-                            const hint = this.nextElementSibling;
-                            if (hint) {
-                                hint.textContent =
-                                    `{{ __('egi.crud.title_hint') }} (${remaining} {{ __('egi.crud.characters_remaining') }})`;
-                                hint.style.color = remaining < 10 ? '#fbbf24' : '#9ca3af';
-                            }
-                        });
-                    }
-                });
-            </script>
             {{-- Lightbox Zoom Overlay - Responsive ottimizzato per schermi piccoli --}}
             <div id="zoom-overlay"
                 class="fixed inset-0 z-50 items-center justify-center hidden p-4 bg-black/90 backdrop-blur-sm sm:p-6 md:p-8">
@@ -1556,6 +1455,98 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 @push('scripts')
     {{-- Also try in push for redundancy --}}
     @vite('resources/js/coa/vocabulary-modal.js')
+    
+    {{-- CRUD EDIT INTERACTIONS --}}
+    <script>
+        // Log IMMEDIATAMENTE - prima di tutto
+        console.log('==========================================');
+        console.log('🚀 [EGI-SHOW-CRUD] Script in @push EXECUTED');
+        console.log('==========================================');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 [EGI-SHOW-CRUD] DOMContentLoaded fired');
+            
+            const editStartBtn = document.getElementById('egi-edit-start');
+            const editToggleBtn = document.getElementById('egi-edit-toggle');
+            const editForm = document.getElementById('egi-edit-form');
+            const viewMode = document.getElementById('egi-view-mode');
+            const deleteBtn = document.getElementById('egi-delete-btn');
+            const deleteModal = document.getElementById('delete-modal');
+            const deleteCancel = document.getElementById('delete-cancel');
+
+            console.log('[CRUD-EDIT] DOM Elements Check:', {
+                editStartBtn: editStartBtn ? '✅ FOUND' : '❌ NOT FOUND',
+                editToggleBtn: editToggleBtn ? '✅ FOUND' : '❌ NOT FOUND',
+                editForm: editForm ? '✅ FOUND' : '❌ NOT FOUND',
+                viewMode: viewMode ? '✅ FOUND' : '❌ NOT FOUND'
+            });
+
+            function toggleEditMode() {
+                console.log('[CRUD-EDIT] toggleEditMode() called');
+                const isEditing = editForm.style.display !== 'none';
+
+                if (isEditing) {
+                    console.log('[CRUD-EDIT] Switching to VIEW mode');
+                    editForm.style.display = 'none';
+                    viewMode.style.display = 'block';
+                } else {
+                    console.log('[CRUD-EDIT] Switching to EDIT mode');
+                    editForm.style.display = 'block';
+                    viewMode.style.display = 'none';
+                }
+            }
+
+            if (editStartBtn) {
+                console.log('[CRUD-EDIT] ✅ Event listener added to editStartBtn');
+                editStartBtn.addEventListener('click', toggleEditMode);
+            } else {
+                console.error('[CRUD-EDIT] ❌ CRITICAL: editStartBtn NOT FOUND!');
+            }
+
+            if (editToggleBtn) {
+                console.log('[CRUD-EDIT] ✅ Event listener added to editToggleBtn');
+                editToggleBtn.addEventListener('click', toggleEditMode);
+            }
+
+            if (deleteBtn && deleteModal) {
+                deleteBtn.addEventListener('click', function() {
+                    deleteModal.classList.remove('hidden');
+                    deleteModal.classList.add('flex');
+                });
+            }
+
+            if (deleteCancel) {
+                deleteCancel.addEventListener('click', function() {
+                    deleteModal.classList.add('hidden');
+                    deleteModal.classList.remove('flex');
+                });
+            }
+
+            if (deleteModal) {
+                deleteModal.addEventListener('click', function(e) {
+                    if (e.target === deleteModal) {
+                        deleteModal.classList.add('hidden');
+                        deleteModal.classList.remove('flex');
+                    }
+                });
+            }
+
+            // Character counter for title
+            const titleInput = document.getElementById('edit_title');
+            if (titleInput) {
+                titleInput.addEventListener('input', function() {
+                    const remaining = 60 - this.value.length;
+                    const hint = this.nextElementSibling;
+                    if (hint) {
+                        hint.textContent = `{{ __('egi.crud.title_hint') }} (${remaining} {{ __('egi.crud.characters_remaining') }})`;
+                        hint.style.color = remaining < 10 ? '#fbbf24' : '#9ca3af';
+                    }
+                });
+            }
+
+            console.log('✅ [EGI-SHOW-CRUD] Setup completed');
+        });
+    </script>
 @endpush
 
 {{-- Feature Purchase Modal (EGI Living) --}}
