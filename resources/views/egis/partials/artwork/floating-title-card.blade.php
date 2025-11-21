@@ -24,7 +24,7 @@
                     <span class="h-0.5 w-0.5 flex-shrink-0 rounded-full bg-gray-500 sm:h-1 sm:w-1"></span>
                     <span
                         class="truncate">{{ __('egi.by_author', [
-                            'name' => $egi->user->name ?? ($collection->creator->name ?? __('egi.unknown_creator')),
+                            'name' => $egi->user->name ?? __('egi.unknown_creator'),
                         ]) }}</span>
                 </div>
             </div>
