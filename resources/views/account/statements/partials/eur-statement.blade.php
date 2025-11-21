@@ -194,11 +194,27 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                    {{ $transaction['description'] }}
+                                    @if(isset($transaction['metadata']['egi_id']))
+                                        <a href="{{ route('egis.show', $transaction['metadata']['egi_id']) }}" 
+                                           class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
+                                           target="_blank">
+                                            {{ $transaction['description'] }}
+                                            <svg class="inline-block ml-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </a>
+                                    @else
+                                        {{ $transaction['description'] }}
+                                    @endif
                                 </div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ __('statements.eur.types.' . $transaction['type']) }}
                                 </div>
+                                @if(isset($transaction['metadata']['is_split_payment']) && $transaction['metadata']['is_split_payment'])
+                                    <div class="mt-1 text-xs italic text-blue-600 dark:text-blue-400">
+                                        ↳ {{ $transaction['metadata']['split_breakdown'] }}
+                                    </div>
+                                @endif
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900 dark:text-white">

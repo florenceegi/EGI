@@ -107,7 +107,9 @@ return [
         'types' => [
             'egili_purchase' => 'Acquisto Egili',
             'egi_mint' => 'Mint EGI',
+            'egi_mint_split' => 'Mint EGI (Split Payment)',
             'egi_sale_distribution' => 'Vendita EGI',
+            'split_payment' => 'Pagamento Splittato',
         ],
     ],
 

@@ -95,6 +95,9 @@ class EurTransactionService
     /**
      * Get EGI mints (user spent EUR to mint EGI)
      * 
+     * IMPORTANT: For split payments, this returns MULTIPLE rows (one per beneficiary)
+     * to show the user WHERE their money went (transparency)
+     * 
      * @param User $user
      * @param \Carbon\Carbon|null $startDate
      * @param \Carbon\Carbon|null $endDate
@@ -114,32 +117,84 @@ class EurTransactionService
             $query->where('created_at', '<=', $endDate);
         }
         
-        return $query->with(['egi', 'egi.user'])->get()->map(function ($mint) {
-            // Beneficiary: EGI creator receives mint payment (through distribution)
-            $creator = $mint->egi->user ?? null;
-            $beneficiary = $creator ? $creator->name : 'N/A';
+        $transactions = collect();
+        
+        foreach ($query->with(['egi', 'egi.user'])->get() as $mint) {
+            // Check if this mint has split payment distributions
+            $distributions = PaymentDistribution::where('egi_id', $mint->egi_id)
+                ->where('created_at', '>=', $mint->created_at->subMinutes(5)) // Same transaction window
+                ->where('created_at', '<=', $mint->created_at->addMinutes(5))
+                ->get();
             
-            return [
-                'id' => 'mint_' . $mint->id,
-                'transaction_date' => $mint->created_at,
-                'type' => 'egi_mint',
-                'description' => 'Mint EGI: ' . ($mint->egi->title ?? '#' . $mint->egi_id),
-                'merchant' => $this->formatMerchant($mint->payment_provider, 'fiat'),
-                'beneficiary' => $beneficiary,
-                'amount_eur' => $mint->paid_amount,
-                'operation' => 'expense', // User spent money
-                'reference' => $mint->payment_reference ?? $mint->tx_id,
-                'metadata' => [
-                    'egi_id' => $mint->egi_id,
-                    'egi_title' => $mint->egi->title ?? null,
-                    'creator_name' => $beneficiary,
-                    'payment_provider' => $mint->payment_provider,
-                    'payment_reference' => $mint->payment_reference,
-                    'tx_id' => $mint->tx_id,
-                ],
-                'model' => $mint,
-            ];
-        });
+            if ($distributions->isNotEmpty()) {
+                // SPLIT PAYMENT: Show ONE row with breakdown in description
+                // Build breakdown string: "Yuri (€2,550) • Oceano Blu (€750) • ..."
+                $breakdownParts = [];
+                foreach ($distributions->unique('user_id') as $distribution) {
+                    $beneficiaryUser = \App\Models\User::find($distribution->user_id);
+                    $breakdownParts[] = sprintf(
+                        '%s (€%s)',
+                        $beneficiaryUser ? $beneficiaryUser->name : 'N/A',
+                        number_format($distribution->amount_eur, 2, ',', '.')
+                    );
+                }
+                $breakdown = implode(' • ', $breakdownParts);
+                
+                $transactions->push([
+                    'id' => 'mint_' . $mint->id,
+                    'transaction_date' => $mint->created_at,
+                    'type' => 'egi_mint_split',
+                    'description' => sprintf(
+                        'Mint EGI: %s',
+                        $mint->egi->title ?? '#' . $mint->egi_id
+                    ),
+                    'merchant' => $this->formatMerchant($mint->payment_provider, 'fiat'),
+                    'beneficiary' => 'Split Payment', // Indicates multiple beneficiaries
+                    'amount_eur' => $mint->paid_amount, // Total amount
+                    'operation' => 'expense',
+                    'reference' => $mint->payment_reference ?? $mint->tx_id,
+                    'metadata' => [
+                        'egi_id' => $mint->egi_id,
+                        'egi_title' => $mint->egi->title ?? null,
+                        'payment_provider' => $mint->payment_provider,
+                        'payment_reference' => $mint->payment_reference,
+                        'tx_id' => $mint->tx_id,
+                        'is_split_payment' => true,
+                        'split_breakdown' => $breakdown,
+                        'split_count' => $distributions->unique('user_id')->count(),
+                    ],
+                    'model' => $mint,
+                ]);
+            } else {
+                // NO SPLIT: Show single row with total (legacy or direct payment)
+                $creator = optional($mint->egi)->user ?? null;
+                $beneficiary = $creator ? $creator->name : 'N/A';
+                
+                $transactions->push([
+                    'id' => 'mint_' . $mint->id,
+                    'transaction_date' => $mint->created_at,
+                    'type' => 'egi_mint',
+                    'description' => 'Mint EGI: ' . ($mint->egi->title ?? '#' . $mint->egi_id),
+                    'merchant' => $this->formatMerchant($mint->payment_provider, 'fiat'),
+                    'beneficiary' => $beneficiary,
+                    'amount_eur' => $mint->paid_amount,
+                    'operation' => 'expense',
+                    'reference' => $mint->payment_reference ?? $mint->tx_id,
+                    'metadata' => [
+                        'egi_id' => $mint->egi_id,
+                        'egi_title' => $mint->egi->title ?? null,
+                        'creator_name' => $beneficiary,
+                        'payment_provider' => $mint->payment_provider,
+                        'payment_reference' => $mint->payment_reference,
+                        'tx_id' => $mint->tx_id,
+                        'is_split_payment' => false,
+                    ],
+                    'model' => $mint,
+                ]);
+            }
+        }
+        
+        return $transactions;
     }
     
     /**
