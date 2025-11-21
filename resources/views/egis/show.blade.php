@@ -291,6 +291,8 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
 
                         {{-- Col 2: CRUD Box - SOLO SE CREATOR --}}
                         @if ($canUpdateEgi)
+                            {{-- DEBUG: Verifica che il pannello CRUD viene incluso --}}
+                            {{-- User ID: {{ $currentUserId }}, EGI user_id: {{ $egi->user_id }}, canUpdateEgi: {{ $canUpdateEgi ? 'YES' : 'NO' }} --}}
                             @include(
                                 'egis.partials.sidebar.crud-panel',
                                 compact(
@@ -301,6 +303,9 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                                     'displayPrice',
                                     'displayUser',
                                     'highestPriorityReservation'))
+                        @else
+                            {{-- DEBUG: CRUD Panel NOT shown - canUpdateEgi is FALSE --}}
+                            {{-- User ID: {{ $currentUserId ?? 'NOT LOGGED' }}, EGI user_id: {{ $egi->user_id }}, canUpdateEgi: {{ $canUpdateEgi ? 'YES' : 'NO' }} --}}
                         @endif
 
                         {{-- Col 3: Info Panel (Col 2 se non-creator) --}}
@@ -412,42 +417,42 @@ if ($highestPriorityReservation && $highestPriorityReservation->status === 'acti
                     const deleteModal = document.getElementById('delete-modal');
                     const deleteCancel = document.getElementById('delete-cancel');
 
-                    // DEBUG: Log elementi trovati
-                    console.log('🔍 Edit buttons check:', {
-                        editStartBtn: editStartBtn ? 'FOUND' : 'NOT FOUND',
-                        editToggleBtn: editToggleBtn ? 'FOUND' : 'NOT FOUND',
-                        editForm: editForm ? 'FOUND' : 'NOT FOUND',
-                        viewMode: viewMode ? 'FOUND' : 'NOT FOUND'
+                    // DEBUG: CRUD EDIT BUTTONS CHECK
+                    console.log('[CRUD-EDIT] DOM Elements Check:', {
+                        editStartBtn: editStartBtn ? '✅ FOUND' : '❌ NOT FOUND',
+                        editToggleBtn: editToggleBtn ? '✅ FOUND' : '❌ NOT FOUND',
+                        editForm: editForm ? '✅ FOUND' : '❌ NOT FOUND',
+                        viewMode: viewMode ? '✅ FOUND' : '❌ NOT FOUND'
                     });
 
                     // Toggle edit mode
                     function toggleEditMode() {
-                        console.log('🔄 toggleEditMode called');
+                        console.log('[CRUD-EDIT] toggleEditMode() called');
                         const isEditing = editForm.style.display !== 'none';
 
                         if (isEditing) {
-                            console.log('➡️ Switching to view mode');
+                            console.log('[CRUD-EDIT] Switching to VIEW mode');
                             editForm.style.display = 'none';
                             viewMode.style.display = 'block';
                         } else {
-                            console.log('➡️ Switching to edit mode');
+                            console.log('[CRUD-EDIT] Switching to EDIT mode');
                             editForm.style.display = 'block';
                             viewMode.style.display = 'none';
                         }
                     }
 
                     if (editStartBtn) {
-                        console.log('✅ Adding click listener to editStartBtn');
+                        console.log('[CRUD-EDIT] Event listener added to editStartBtn');
                         editStartBtn.addEventListener('click', toggleEditMode);
                     } else {
-                        console.error('❌ editStartBtn NOT FOUND');
+                        console.error('[CRUD-EDIT] ❌ CRITICAL: editStartBtn NOT FOUND in DOM!');
                     }
 
                     if (editToggleBtn) {
-                        console.log('✅ Adding click listener to editToggleBtn');
+                        console.log('[CRUD-EDIT] Event listener added to editToggleBtn');
                         editToggleBtn.addEventListener('click', toggleEditMode);
                     } else {
-                        console.error('❌ editToggleBtn NOT FOUND');
+                        console.error('[CRUD-EDIT] ❌ WARNING: editToggleBtn NOT FOUND in DOM!');
                     }
 
                     // Delete modal
