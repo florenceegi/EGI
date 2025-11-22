@@ -321,20 +321,30 @@ class InvoiceService {
             $distributionIds = $aggregation->metadata['distribution_ids'] ?? [];
             $distributions = PaymentDistribution::whereIn('id', $distributionIds)
                 ->with([
-                    'egi.blockchain.buyer.billingInfo',
+                    'egi.blockchain.buyer',
                     'egi.collection',
                     'user' // seller
                 ])
                 ->get();
+            
+            // Load invoice preferences for all users
+            $userIds = $distributions->pluck('user_id')->merge(
+                $distributions->map(fn($d) => $d->egi?->blockchain?->buyer?->id)->filter()
+            )->unique();
+            
+            $invoicePrefs = \App\Models\UserInvoicePreference::whereIn('user_id', $userIds)
+                ->get()
+                ->keyBy('user_id');
 
             // Prepare export data with full invoice fields
-            $exportData = $distributions->map(function ($distribution) {
+            $exportData = $distributions->map(function ($distribution) use ($invoicePrefs) {
                 $buyer = $distribution->egi && $distribution->egi->blockchain 
                     ? $distribution->egi->blockchain->buyer 
                     : null;
                 
-                $billingInfo = $buyer?->billingInfo;
+                $buyerPrefs = $buyer ? ($invoicePrefs[$buyer->id] ?? null) : null;
                 $seller = $distribution->user;
+                $sellerPrefs = $seller ? ($invoicePrefs[$seller->id] ?? null) : null;
                 $egi = $distribution->egi;
                 
                 return [
@@ -344,26 +354,26 @@ class InvoiceService {
                     'sale_date' => $distribution->created_at->format('Y-m-d'),
                     
                     // Seller (chi emette la fattura)
-                    'seller_name' => $seller?->name ?? 'N/A',
+                    'seller_name' => $sellerPrefs?->invoice_name ?? $seller?->name ?? 'N/A',
                     'seller_email' => $seller?->email ?? 'N/A',
-                    'seller_vat' => $seller?->billingInfo?->vat_number ?? 'N/A',
-                    'seller_fiscal_code' => $seller?->billingInfo?->fiscal_code ?? 'N/A',
-                    'seller_address' => $seller?->billingInfo?->address ?? 'N/A',
-                    'seller_city' => $seller?->billingInfo?->city ?? 'N/A',
-                    'seller_postal_code' => $seller?->billingInfo?->postal_code ?? 'N/A',
-                    'seller_country' => $seller?->billingInfo?->country ?? 'IT',
+                    'seller_vat' => $sellerPrefs?->invoice_vat_number ?? 'N/A',
+                    'seller_fiscal_code' => $sellerPrefs?->invoice_fiscal_code ?? 'N/A',
+                    'seller_address' => $sellerPrefs?->invoice_address ?? 'N/A',
+                    'seller_city' => $sellerPrefs?->invoice_city ?? 'N/A',
+                    'seller_postal_code' => 'N/A', // TODO: add postal_code to user_invoice_preferences
+                    'seller_country' => $sellerPrefs?->invoice_country ?? 'IT',
                     
                     // Buyer (cliente)
-                    'buyer_name' => $buyer?->name ?? 'N/A',
+                    'buyer_name' => $buyerPrefs?->invoice_name ?? $buyer?->name ?? 'N/A',
                     'buyer_email' => $buyer?->email ?? 'N/A',
-                    'buyer_vat' => $billingInfo?->vat_number ?? 'N/A',
-                    'buyer_fiscal_code' => $billingInfo?->fiscal_code ?? 'N/A',
-                    'buyer_address' => $billingInfo?->address ?? 'N/A',
-                    'buyer_city' => $billingInfo?->city ?? 'N/A',
-                    'buyer_postal_code' => $billingInfo?->postal_code ?? 'N/A',
-                    'buyer_country' => $billingInfo?->country ?? 'IT',
-                    'buyer_sdi_code' => $billingInfo?->sdi_code ?? 'N/A',
-                    'buyer_pec' => $billingInfo?->pec_email ?? 'N/A',
+                    'buyer_vat' => $buyerPrefs?->invoice_vat_number ?? 'N/A',
+                    'buyer_fiscal_code' => $buyerPrefs?->invoice_fiscal_code ?? 'N/A',
+                    'buyer_address' => $buyerPrefs?->invoice_address ?? 'N/A',
+                    'buyer_city' => $buyerPrefs?->invoice_city ?? 'N/A',
+                    'buyer_postal_code' => 'N/A', // TODO: add postal_code to user_invoice_preferences
+                    'buyer_country' => $buyerPrefs?->invoice_country ?? 'IT',
+                    'buyer_sdi_code' => 'N/A', // TODO: add sdi_code to user_invoice_preferences
+                    'buyer_pec' => 'N/A', // TODO: add pec to user_invoice_preferences
                     
                     // Item details
                     'item_code' => $distribution->egi_id ? 'EGI-' . str_pad($distribution->egi_id, 7, '0', STR_PAD_LEFT) : 'N/A',
