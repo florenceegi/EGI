@@ -8,9 +8,11 @@ use App\Models\InvoiceAggregation;
 use App\Models\User;
 use App\Models\PaymentDistribution;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Collection;
 use Ultra\UltraLogManager\UltraLogManager;
 use Ultra\ErrorManager\Interfaces\ErrorManagerInterface;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
  * @package App\Services\Invoicing
@@ -227,11 +229,19 @@ class InvoiceService {
 
                 // Mark aggregation as invoiced
                 $aggregation->markAsInvoiced($invoice->id);
+                
+                // Generate PDF
+                $invoice->load(['seller.invoicePreferences', 'buyer.invoicePreferences', 'items']);
+                $pdfPath = $this->generateInvoicePdf($invoice);
+                
+                // Update invoice with PDF path
+                $invoice->update(['pdf_path' => $pdfPath]);
 
                 $this->logger->info('InvoiceService: Invoice generated from aggregation', [
                     'invoice_id' => $invoice->id,
                     'invoice_code' => $invoiceCode,
                     'total_eur' => $total,
+                    'pdf_path' => $pdfPath,
                 ]);
 
                 return $invoice;
@@ -239,6 +249,53 @@ class InvoiceService {
         } catch (\Exception $e) {
             $this->logger->error('InvoiceService: Failed to generate invoice', [
                 'aggregation_id' => $aggregation->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+    
+    /**
+     * Generate PDF for invoice
+     *
+     * @param Invoice $invoice
+     * @return string Path to generated PDF
+     * @throws \Exception
+     */
+    protected function generateInvoicePdf(Invoice $invoice): string {
+        try {
+            $this->logger->info('InvoiceService: Generating PDF', [
+                'invoice_id' => $invoice->id,
+                'invoice_code' => $invoice->invoice_code,
+            ]);
+            
+            // Generate PDF from view
+            $pdf = Pdf::loadView('account.invoices.pdf.invoice', [
+                'invoice' => $invoice,
+            ]);
+            
+            // Set paper size and orientation
+            $pdf->setPaper('a4', 'portrait');
+            
+            // Generate filename
+            $filename = sprintf(
+                'invoices/%s/%s.pdf',
+                $invoice->seller_user_id,
+                $invoice->invoice_code
+            );
+            
+            // Save PDF to storage
+            Storage::put($filename, $pdf->output());
+            
+            $this->logger->info('InvoiceService: PDF generated successfully', [
+                'invoice_id' => $invoice->id,
+                'pdf_path' => $filename,
+            ]);
+            
+            return $filename;
+        } catch (\Exception $e) {
+            $this->logger->error('InvoiceService: PDF generation failed', [
+                'invoice_id' => $invoice->id,
                 'error' => $e->getMessage(),
             ]);
             throw $e;

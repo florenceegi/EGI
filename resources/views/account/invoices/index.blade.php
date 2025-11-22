@@ -10,23 +10,23 @@
             
             {{-- Page Header --}}
             <div class="mb-6">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                <h1 class="text-3xl font-bold text-white">
                     {{ __('invoices.my_invoices') }}
                 </h1>
-                <p class="mt-2 text-gray-600 dark:text-gray-400">
+                <p class="mt-2 text-gray-300">
                     {{ __('invoices.subtitle') }}
                 </p>
             </div>
 
             {{-- Success/Error Messages --}}
             @if (session('success'))
-                <div class="mb-6 rounded-lg bg-green-50 p-4 text-green-800 dark:bg-green-900/20 dark:text-green-200">
+                <div class="mb-6 rounded-lg bg-green-900/30 border border-green-500/50 p-4 text-green-200">
                     <p class="font-medium">✓ {{ session('success') }}</p>
                 </div>
             @endif
 
             @if ($errors->any())
-                <div class="mb-6 rounded-lg bg-red-50 p-4 text-red-800 dark:bg-red-900/20 dark:text-red-200">
+                <div class="mb-6 rounded-lg bg-red-900/30 border border-red-500/50 p-4 text-red-200">
                     @foreach ($errors->all() as $error)
                         <p class="font-medium">✗ {{ $error }}</p>
                     @endforeach
@@ -34,11 +34,11 @@
             @endif
 
             {{-- Tabs Navigation --}}
-            <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="mb-6 border-b border-gray-700">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                     <button
                         data-tab="sales"
-                        class="tab-button {{ $activeTab === 'sales' ? 'active border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-gray-500 dark:text-gray-400' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300"
+                        class="tab-button {{ $activeTab === 'sales' ? 'active border-purple-500 text-purple-400' : 'border-transparent text-gray-400' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium hover:border-purple-400 hover:text-purple-300 transition-colors"
                         onclick="switchTab('sales')"
                     >
                         📤 {{ __('invoices.tabs.sales') }}
@@ -46,7 +46,7 @@
                     
                     <button
                         data-tab="purchases"
-                        class="tab-button {{ $activeTab === 'purchases' ? 'active border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-gray-500 dark:text-gray-400' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300"
+                        class="tab-button {{ $activeTab === 'purchases' ? 'active border-purple-500 text-purple-400' : 'border-transparent text-gray-400' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium hover:border-purple-400 hover:text-purple-300 transition-colors"
                         onclick="switchTab('purchases')"
                     >
                         📥 {{ __('invoices.tabs.purchases') }}
@@ -54,7 +54,7 @@
                     
                     <button
                         data-tab="aggregations"
-                        class="tab-button {{ $activeTab === 'aggregations' ? 'active border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-gray-500 dark:text-gray-400' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300"
+                        class="tab-button {{ $activeTab === 'aggregations' ? 'active border-purple-500 text-purple-400' : 'border-transparent text-gray-400' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium hover:border-purple-400 hover:text-purple-300 transition-colors"
                         onclick="switchTab('aggregations')"
                     >
                         📊 {{ __('invoices.tabs.aggregations') }}
@@ -62,7 +62,7 @@
                     
                     <button
                         data-tab="settings"
-                        class="tab-button {{ $activeTab === 'settings' ? 'active border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-gray-500 dark:text-gray-400' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300"
+                        class="tab-button {{ $activeTab === 'settings' ? 'active border-purple-500 text-purple-400' : 'border-transparent text-gray-400' }} whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium hover:border-purple-400 hover:text-purple-300 transition-colors"
                         onclick="switchTab('settings')"
                     >
                         ⚙️ {{ __('invoices.tabs.settings') }}
@@ -119,8 +119,8 @@
             
             // Remove active class from all tabs
             document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active', 'border-purple-500', 'text-purple-600', 'dark:text-purple-400');
-                btn.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                btn.classList.remove('active', 'border-purple-500', 'text-purple-400');
+                btn.classList.add('border-transparent', 'text-gray-400');
             });
             
             // Hide all tab panes
@@ -132,8 +132,8 @@
             // Activate selected tab
             const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
             if (activeButton) {
-                activeButton.classList.add('active', 'border-purple-500', 'text-purple-600', 'dark:text-purple-400');
-                activeButton.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                activeButton.classList.add('active', 'border-purple-500', 'text-purple-400');
+                activeButton.classList.remove('border-transparent', 'text-gray-400');
                 
                 // Show selected pane
                 const activePane = document.getElementById(`tab-${tabName}`);

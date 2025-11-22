@@ -152,6 +152,24 @@ return [
         'user_managed_info' => 'Gestirai le fatture tramite il tuo sistema esterno. La piattaforma ti fornirà i dati da importare.',
         'monthly_aggregation_info' => 'Le vendite del mese verranno aggregate e potrai generare una fattura unica o esportare i dati.',
         'instant_invoicing_info' => 'Verrà generata una fattura per ogni vendita.',
+        'aggregation_buyers_info' => 'Questa fattura include vendite a più acquirenti nel periodo indicato.',
+        'platform_managed_title' => 'Fattura Gestita dalla Piattaforma',
+        'platform_managed_invoice_info' => 'Questa fattura è gestita automaticamente da FlorenceEGI in conformità alle normative fiscali vigenti.',
+    ],
+    
+    // PDF Strings
+    'pdf' => [
+        'footer_line_1' => 'Documento generato elettronicamente - Validità ai sensi dell\'art. 21 D.P.R. 633/72',
+        'footer_line_2' => 'FlorenceEGI S.r.l. - P.IVA IT12345678901 - info@florenceegi.com',
+        'platform_description' => 'Piattaforma di Tokenizzazione Asset e Progetti Ambientali',
+        'generated_at' => 'Documento generato il',
+    ],
+    
+    // Misc
+    'tagline' => 'Piattaforma di Tokenizzazione Asset',
+    'invoice' => 'Fattura',
+    'aggregations' => [
+        'multiple_buyers' => 'Più Acquirenti',
     ],
 ];
 

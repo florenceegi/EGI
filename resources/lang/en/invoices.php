@@ -152,6 +152,24 @@ return [
         'user_managed_info' => 'You will manage invoices through your external system. The platform will provide data to import.',
         'monthly_aggregation_info' => 'Monthly sales will be aggregated and you can generate a single invoice or export the data.',
         'instant_invoicing_info' => 'An invoice will be generated for each sale.',
+        'aggregation_buyers_info' => 'This invoice includes sales to multiple buyers in the indicated period.',
+        'platform_managed_title' => 'Platform-Managed Invoice',
+        'platform_managed_invoice_info' => 'This invoice is automatically managed by FlorenceEGI in compliance with current tax regulations.',
+    ],
+    
+    // PDF Strings
+    'pdf' => [
+        'footer_line_1' => 'Electronically generated document - Valid under art. 21 D.P.R. 633/72',
+        'footer_line_2' => 'FlorenceEGI S.r.l. - VAT IT12345678901 - info@florenceegi.com',
+        'platform_description' => 'Asset Tokenization and Environmental Projects Platform',
+        'generated_at' => 'Document generated on',
+    ],
+    
+    // Misc
+    'tagline' => 'Asset Tokenization Platform',
+    'invoice' => 'Invoice',
+    'aggregations' => [
+        'multiple_buyers' => 'Multiple Buyers',
     ],
 ];
 
