@@ -116,7 +116,7 @@ class InvoiceService {
             ]);
 
             // Get all payment distributions where user received money in this period
-            $distributions = PaymentDistribution::where('recipient_user_id', $user->id)
+            $distributions = PaymentDistribution::where('user_id', $user->id)
                 ->whereBetween('created_at', [$periodStart, $periodEnd])
                 ->get();
 
