@@ -103,8 +103,12 @@ class CreatorHomeController extends Controller
 
         // EGIs posseduti attualmente dal creator (mint o secondary market)
         // Always load owned EGIs for public display
+        // Exclude EGIs created by the creator (only show purchased from others)
         $ownedQuery = Egi::with($baseWith)
             ->where('owner_id', $creator->id)
+            ->whereDoesntHave('collection', function ($q) use ($creator) {
+                $q->where('creator_id', $creator->id);
+            })
             ->when($query, function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%");
             })
