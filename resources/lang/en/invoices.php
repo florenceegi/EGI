@@ -76,6 +76,7 @@ return [
         'total_sales' => 'Total Sales',
         'total_items' => 'Items Sold',
         'total_buyers' => 'Buyers',
+        'multiple_buyers' => 'Multiple Buyers',
         'status' => [
             'pending' => 'Pending',
             'invoiced' => 'Invoiced',
@@ -168,8 +169,5 @@ return [
     // Misc
     'tagline' => 'Asset Tokenization Platform',
     'invoice' => 'Invoice',
-    'aggregations' => [
-        'multiple_buyers' => 'Multiple Buyers',
-    ],
 ];
 

@@ -76,6 +76,7 @@ return [
         'total_sales' => 'Vendite Totali',
         'total_items' => 'Articoli Venduti',
         'total_buyers' => 'Acquirenti',
+        'multiple_buyers' => 'Più Acquirenti',
         'status' => [
             'pending' => 'In Attesa',
             'invoiced' => 'Fatturata',
@@ -168,8 +169,5 @@ return [
     // Misc
     'tagline' => 'Piattaforma di Tokenizzazione Asset',
     'invoice' => 'Fattura',
-    'aggregations' => [
-        'multiple_buyers' => 'Più Acquirenti',
-    ],
 ];
 
