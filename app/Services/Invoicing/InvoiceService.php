@@ -317,26 +317,76 @@ class InvoiceService {
                 'format' => $format,
             ]);
 
-            // Get payment distributions
+            // Get payment distributions with all necessary data
             $distributionIds = $aggregation->metadata['distribution_ids'] ?? [];
             $distributions = PaymentDistribution::whereIn('id', $distributionIds)
-                ->with(['egi.blockchain.buyer'])
+                ->with([
+                    'egi.blockchain.buyer.billingInfo',
+                    'egi.collection',
+                    'user' // seller
+                ])
                 ->get();
 
-            // Prepare export data
+            // Prepare export data with full invoice fields
             $exportData = $distributions->map(function ($distribution) {
                 $buyer = $distribution->egi && $distribution->egi->blockchain 
                     ? $distribution->egi->blockchain->buyer 
                     : null;
                 
+                $billingInfo = $buyer?->billingInfo;
+                $seller = $distribution->user;
+                $egi = $distribution->egi;
+                
                 return [
-                    'date' => $distribution->created_at->format('Y-m-d'),
-                    'buyer_name' => $buyer ? $buyer->name : 'N/A',
-                    'buyer_email' => $buyer ? $buyer->email : 'N/A',
-                    'item_code' => $distribution->egi_id ? 'EGI-' . str_pad($distribution->egi_id, 7, '0', STR_PAD_LEFT) : 'N/A',
-                    'item_description' => $this->generateItemDescription($distribution),
-                    'amount_eur' => $distribution->amount_eur,
+                    // Transaction info
                     'transaction_id' => $distribution->id,
+                    'transaction_date' => $distribution->created_at->format('Y-m-d H:i:s'),
+                    'sale_date' => $distribution->created_at->format('Y-m-d'),
+                    
+                    // Seller (chi emette la fattura)
+                    'seller_name' => $seller?->name ?? 'N/A',
+                    'seller_email' => $seller?->email ?? 'N/A',
+                    'seller_vat' => $seller?->billingInfo?->vat_number ?? 'N/A',
+                    'seller_fiscal_code' => $seller?->billingInfo?->fiscal_code ?? 'N/A',
+                    'seller_address' => $seller?->billingInfo?->address ?? 'N/A',
+                    'seller_city' => $seller?->billingInfo?->city ?? 'N/A',
+                    'seller_postal_code' => $seller?->billingInfo?->postal_code ?? 'N/A',
+                    'seller_country' => $seller?->billingInfo?->country ?? 'IT',
+                    
+                    // Buyer (cliente)
+                    'buyer_name' => $buyer?->name ?? 'N/A',
+                    'buyer_email' => $buyer?->email ?? 'N/A',
+                    'buyer_vat' => $billingInfo?->vat_number ?? 'N/A',
+                    'buyer_fiscal_code' => $billingInfo?->fiscal_code ?? 'N/A',
+                    'buyer_address' => $billingInfo?->address ?? 'N/A',
+                    'buyer_city' => $billingInfo?->city ?? 'N/A',
+                    'buyer_postal_code' => $billingInfo?->postal_code ?? 'N/A',
+                    'buyer_country' => $billingInfo?->country ?? 'IT',
+                    'buyer_sdi_code' => $billingInfo?->sdi_code ?? 'N/A',
+                    'buyer_pec' => $billingInfo?->pec_email ?? 'N/A',
+                    
+                    // Item details
+                    'item_code' => $distribution->egi_id ? 'EGI-' . str_pad($distribution->egi_id, 7, '0', STR_PAD_LEFT) : 'N/A',
+                    'item_title' => $egi?->title ?? 'N/A',
+                    'item_description' => $this->generateItemDescription($distribution),
+                    'collection_name' => $egi?->collection?->name ?? 'N/A',
+                    
+                    // Financial details
+                    'quantity' => 1,
+                    'unit_price' => $distribution->amount_eur,
+                    'subtotal' => $distribution->amount_eur,
+                    'vat_rate' => '22', // IVA standard italiana
+                    'vat_amount' => round($distribution->amount_eur * 0.22, 2),
+                    'total_amount' => round($distribution->amount_eur * 1.22, 2),
+                    'currency' => 'EUR',
+                    
+                    // Payment info
+                    'payment_method' => $distribution->payment_method ?? 'stripe',
+                    'payment_status' => 'completed',
+                    
+                    // Blockchain info (if needed for traceability)
+                    'blockchain_tx_id' => $egi?->blockchain?->algorand_transaction_id ?? 'N/A',
+                    'nft_asset_id' => $egi?->blockchain?->asset_id ?? 'N/A',
                 ];
             });
 
