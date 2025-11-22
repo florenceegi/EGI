@@ -399,6 +399,13 @@ class InvoiceService {
                 mkdir(dirname($path), 0755, true);
             }
 
+            // Log export data count
+            $this->logger->info('InvoiceService: Preparing export', [
+                'rows_count' => $exportData->count(),
+                'format' => $format,
+                'path' => $path,
+            ]);
+            
             // Export based on format
             switch ($format) {
                 case 'csv':
@@ -410,6 +417,21 @@ class InvoiceService {
                 default:
                     throw new \Exception("Unsupported export format: {$format}");
             }
+            
+            // Verify file was created and has content
+            if (!file_exists($path)) {
+                throw new \Exception("Export file was not created: {$path}");
+            }
+            
+            $fileSize = filesize($path);
+            if ($fileSize === 0) {
+                throw new \Exception("Export file is empty: {$path}");
+            }
+            
+            $this->logger->info('InvoiceService: Export file created', [
+                'file_size' => $fileSize,
+                'path' => $path,
+            ]);
 
             // Mark aggregation as exported
             $aggregation->markAsExported($format, $filename);
@@ -507,6 +529,19 @@ class InvoiceService {
      * @return void
      */
     protected function exportToJson(Collection $data, string $path): void {
-        file_put_contents($path, json_encode($data->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $json = json_encode(
+            $data->values()->toArray(), 
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+        
+        if ($json === false) {
+            throw new \Exception('Failed to encode JSON: ' . json_last_error_msg());
+        }
+        
+        $written = file_put_contents($path, $json);
+        
+        if ($written === false) {
+            throw new \Exception('Failed to write JSON file to: ' . $path);
+        }
     }
 }
