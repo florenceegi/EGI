@@ -320,15 +320,19 @@ class InvoiceService {
             // Get payment distributions
             $distributionIds = $aggregation->metadata['distribution_ids'] ?? [];
             $distributions = PaymentDistribution::whereIn('id', $distributionIds)
-                ->with(['payer', 'egi'])
+                ->with(['egi.blockchain.buyer'])
                 ->get();
 
             // Prepare export data
             $exportData = $distributions->map(function ($distribution) {
+                $buyer = $distribution->egi && $distribution->egi->blockchain 
+                    ? $distribution->egi->blockchain->buyer 
+                    : null;
+                
                 return [
                     'date' => $distribution->created_at->format('Y-m-d'),
-                    'buyer_name' => $distribution->payer->name ?? 'N/A',
-                    'buyer_email' => $distribution->payer->email ?? 'N/A',
+                    'buyer_name' => $buyer ? $buyer->name : 'N/A',
+                    'buyer_email' => $buyer ? $buyer->email : 'N/A',
                     'item_code' => $distribution->egi_id ? 'EGI-' . str_pad($distribution->egi_id, 7, '0', STR_PAD_LEFT) : 'N/A',
                     'item_description' => $this->generateItemDescription($distribution),
                     'amount_eur' => $distribution->amount_eur,
