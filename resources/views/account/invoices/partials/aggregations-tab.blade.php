@@ -130,7 +130,7 @@
                     </div>
 
                     {{-- Actions Row --}}
-                    <div class="flex space-x-3">
+                    <div class="flex flex-wrap gap-3">
                         @if ($aggregation->isPending())
                             <form method="POST" action="{{ route('account.invoices.aggregation.generate', $aggregation->id) }}" class="inline">
                                 @csrf
@@ -139,7 +139,10 @@
                                     📄 {{ __('invoices.actions.generate_from_aggregation') }}
                                 </button>
                             </form>
-                            
+                        @endif
+                        
+                        {{-- Export buttons - always visible --}}
+                        @if (!$aggregation->isInvoiced())
                             <a href="{{ route('account.invoices.aggregation.export', ['aggregationId' => $aggregation->id, 'format' => 'csv']) }}" 
                                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                                 📊 {{ __('invoices.actions.export_aggregation') }} (CSV)
@@ -156,12 +159,17 @@
                                class="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
                                 👁️ {{ __('invoices.actions.view') }} {{ __('invoices.invoice') }}
                             </a>
-                        @endif
-                        
-                        @if ($aggregation->isExported())
-                            <span class="inline-flex items-center rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
-                                ✓ {{ __('invoices.aggregations.status.exported') }} ({{ strtoupper($aggregation->export_format) }})
-                            </span>
+                            
+                            {{-- Allow re-export even after invoice generation --}}
+                            <a href="{{ route('account.invoices.aggregation.export', ['aggregationId' => $aggregation->id, 'format' => 'csv']) }}" 
+                               class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                                📊 Re-export (CSV)
+                            </a>
+                            
+                            <a href="{{ route('account.invoices.aggregation.export', ['aggregationId' => $aggregation->id, 'format' => 'json']) }}" 
+                               class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                                📋 Re-export (JSON)
+                            </a>
                         @endif
                     </div>
 
