@@ -67,8 +67,9 @@ class CreatorHomeController extends Controller
         $sort = $request->input('sort', 'latest');
         $view = $request->input('view', 'grid');
         $requestedMode = $request->input('mode', 'created');
-        $canSwitchPortfolioMode = Auth::check() && (int) Auth::id() === (int) $creator->id;
-        $portfolioMode = $canSwitchPortfolioMode ? $requestedMode : 'created';
+        // Allow everyone to switch between created and owned modes (public information)
+        $canSwitchPortfolioMode = true;
+        $portfolioMode = $requestedMode;
         if (!in_array($portfolioMode, ['created', 'owned'], true)) {
             $portfolioMode = 'created';
         }
@@ -101,20 +102,18 @@ class CreatorHomeController extends Controller
         $createdEgis = $createdQuery->get();
 
         // EGIs posseduti attualmente dal creator (mint o secondary market)
-        $ownedEgis = collect();
-        if ($canSwitchPortfolioMode) {
-            $ownedQuery = Egi::with($baseWith)
-                ->where('owner_id', $creator->id)
-                ->when($query, function ($q) use ($query) {
-                    $q->where('title', 'like', "%{$query}%");
-                })
-                ->when($collection_filter, function ($q) use ($collection_filter) {
-                    $q->where('collection_id', $collection_filter);
-                });
+        // Always load owned EGIs for public display
+        $ownedQuery = Egi::with($baseWith)
+            ->where('owner_id', $creator->id)
+            ->when($query, function ($q) use ($query) {
+                $q->where('title', 'like', "%{$query}%");
+            })
+            ->when($collection_filter, function ($q) use ($collection_filter) {
+                $q->where('collection_id', $collection_filter);
+            });
 
-            $ownedQuery = $this->applyPortfolioSorting($ownedQuery, $sort);
-            $ownedEgis = $ownedQuery->get();
-        }
+        $ownedQuery = $this->applyPortfolioSorting($ownedQuery, $sort);
+        $ownedEgis = $ownedQuery->get();
 
         $creatorCollectionsCount = $creator->collections()->where('creator_id', $creator->id)->count();
 
