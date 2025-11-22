@@ -77,6 +77,7 @@ return [
         'total_items' => 'Items Sold',
         'total_buyers' => 'Buyers',
         'multiple_buyers' => 'Multiple Buyers',
+        'no_buyers_data' => 'No buyer data available',
         'status' => [
             'pending' => 'Pending',
             'invoiced' => 'Invoiced',

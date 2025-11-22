@@ -77,6 +77,7 @@ return [
         'total_items' => 'Articoli Venduti',
         'total_buyers' => 'Acquirenti',
         'multiple_buyers' => 'Più Acquirenti',
+        'no_buyers_data' => 'Nessun dato acquirente disponibile',
         'status' => [
             'pending' => 'In Attesa',
             'invoiced' => 'Fatturata',

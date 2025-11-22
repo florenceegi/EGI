@@ -55,25 +55,150 @@
                     </div>
 
                     {{-- Stats Row --}}
-                    <div class="mb-4 grid grid-cols-2 gap-4 md:grid-cols-3">
-                        <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-900">
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ __('invoices.aggregations.total_items') }}
+                    <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                        
+                        {{-- Items Sold Box --}}
+                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900">
+                            <div class="mb-3 flex items-center justify-between">
+                                <div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                                        {{ __('invoices.aggregations.total_items') }}
+                                    </div>
+                                    <div class="text-xl font-semibold text-gray-900 dark:text-white">
+                                        {{ $aggregation->total_items }}
+                                    </div>
+                                </div>
+                                <button 
+                                    onclick="toggleDetails('items-{{ $aggregation->id }}')"
+                                    class="text-purple-600 hover:text-purple-700 dark:text-purple-400"
+                                >
+                                    <span id="icon-items-{{ $aggregation->id }}">▼</span>
+                                </button>
                             </div>
-                            <div class="text-xl font-semibold text-gray-900 dark:text-white">
-                                {{ $aggregation->total_items }}
+                            
+                            {{-- Items List --}}
+                            <div id="items-{{ $aggregation->id }}" class="hidden space-y-2 border-t border-gray-300 pt-3 dark:border-gray-600">
+                                @php
+                                    $distributionIds = $aggregation->metadata['distribution_ids'] ?? [];
+                                    $distributions = \App\Models\PaymentDistribution::whereIn('id', $distributionIds)
+                                        ->with('egi')
+                                        ->get();
+                                @endphp
+                                
+                                @foreach($distributions as $dist)
+                                    @if($dist->egi)
+                                        <a href="{{ route('mint.show', $dist->egi_id) }}" 
+                                           class="flex items-center justify-between rounded-lg bg-white p-2 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
+                                            <div class="flex items-center space-x-3">
+                                                @if($dist->egi->getFirstMediaUrl('images'))
+                                                    <img src="{{ $dist->egi->getFirstMediaUrl('images') }}" 
+                                                         alt="{{ $dist->egi->title }}"
+                                                         class="h-10 w-10 rounded object-cover">
+                                                @else
+                                                    <div class="flex h-10 w-10 items-center justify-center rounded bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+                                                        🎨
+                                                    </div>
+                                                @endif
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                        {{ $dist->egi->title }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                        #{{ str_pad($dist->egi_id, 7, '0', STR_PAD_LEFT) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-sm font-semibold text-purple-600 dark:text-purple-400">
+                                                € {{ number_format($dist->amount_eur, 2, ',', '.') }}
+                                            </div>
+                                        </a>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
                         
-                        <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-900">
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ __('invoices.aggregations.total_buyers') }}
+                        {{-- Buyers Box --}}
+                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900">
+                            <div class="mb-3 flex items-center justify-between">
+                                <div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                                        {{ __('invoices.aggregations.total_buyers') }}
+                                    </div>
+                                    <div class="text-xl font-semibold text-gray-900 dark:text-white">
+                                        {{ $aggregation->total_buyers }}
+                                    </div>
+                                </div>
+                                <button 
+                                    onclick="toggleDetails('buyers-{{ $aggregation->id }}')"
+                                    class="text-purple-600 hover:text-purple-700 dark:text-purple-400"
+                                >
+                                    <span id="icon-buyers-{{ $aggregation->id }}">▼</span>
+                                </button>
                             </div>
-                            <div class="text-xl font-semibold text-gray-900 dark:text-white">
-                                {{ $aggregation->total_buyers }}
+                            
+                            {{-- Buyers List --}}
+                            <div id="buyers-{{ $aggregation->id }}" class="hidden space-y-2 border-t border-gray-300 pt-3 dark:border-gray-600">
+                                @php
+                                    $distributionIds = $aggregation->metadata['distribution_ids'] ?? [];
+                                    $distributions = \App\Models\PaymentDistribution::whereIn('id', $distributionIds)
+                                        ->with('egi.blockchain.buyer')
+                                        ->get();
+                                    
+                                    // Group by buyer
+                                    $buyerData = [];
+                                    foreach($distributions as $dist) {
+                                        if($dist->egi && $dist->egi->blockchain && $dist->egi->blockchain->buyer) {
+                                            $buyer = $dist->egi->blockchain->buyer;
+                                            $buyerId = $buyer->id;
+                                            
+                                            if(!isset($buyerData[$buyerId])) {
+                                                $buyerData[$buyerId] = [
+                                                    'user' => $buyer,
+                                                    'count' => 0,
+                                                    'total' => 0
+                                                ];
+                                            }
+                                            
+                                            $buyerData[$buyerId]['count']++;
+                                            $buyerData[$buyerId]['total'] += $dist->amount_eur;
+                                        }
+                                    }
+                                @endphp
+                                
+                                @forelse($buyerData as $data)
+                                    <div class="flex items-center justify-between rounded-lg bg-white p-2 dark:bg-gray-800">
+                                        <div class="flex items-center space-x-3">
+                                            @if($data['user']->profile_image)
+                                                <img src="{{ asset('storage/' . $data['user']->profile_image) }}" 
+                                                     alt="{{ $data['user']->name }}"
+                                                     class="h-10 w-10 rounded-full object-cover">
+                                            @else
+                                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+                                                    {{ strtoupper(substr($data['user']->name, 0, 1)) }}
+                                                </div>
+                                            @endif
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    {{ $data['user']->name }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ $data['count'] }} {{ $data['count'] === 1 ? 'acquisto' : 'acquisti' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-sm font-semibold text-purple-600 dark:text-purple-400">
+                                            € {{ number_format($data['total'], 2, ',', '.') }}
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="rounded-lg bg-white p-3 text-center text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                                        {{ __('invoices.aggregations.no_buyers_data') }}
+                                    </div>
+                                @endforelse
                             </div>
                         </div>
                         
+                        {{-- Invoice Code (if invoiced) --}}
                         @if ($aggregation->isInvoiced() && $aggregation->invoice)
                             <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-900">
                                 <div class="text-sm text-gray-600 dark:text-gray-400">
@@ -131,4 +256,19 @@
     @endif
 
 </div>
+
+<script>
+function toggleDetails(elementId) {
+    const element = document.getElementById(elementId);
+    const icon = document.getElementById('icon-' + elementId);
+    
+    if (element.classList.contains('hidden')) {
+        element.classList.remove('hidden');
+        icon.textContent = '▲';
+    } else {
+        element.classList.add('hidden');
+        icon.textContent = '▼';
+    }
+}
+</script>
 
