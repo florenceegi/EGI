@@ -90,8 +90,8 @@
                                         <a href="{{ route('mint.show', $dist->egi_id) }}" 
                                            class="flex items-center justify-between rounded-lg bg-white p-2 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
                                             <div class="flex items-center space-x-3">
-                                                @if($dist->egi->getFirstMediaUrl('images'))
-                                                    <img src="{{ $dist->egi->getFirstMediaUrl('images') }}" 
+                                                @if($dist->egi->thumbnail_image_url)
+                                                    <img src="{{ $dist->egi->thumbnail_image_url }}" 
                                                          alt="{{ $dist->egi->title }}"
                                                          class="h-10 w-10 rounded object-cover">
                                                 @else
