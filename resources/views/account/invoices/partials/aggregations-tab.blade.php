@@ -168,15 +168,14 @@
                                 @forelse($buyerData as $data)
                                     <div class="flex items-center justify-between rounded-lg bg-white p-2 dark:bg-gray-800">
                                         <div class="flex items-center space-x-3">
-                                            @if($data['user']->profile_image)
-                                                <img src="{{ asset('storage/' . $data['user']->profile_image) }}" 
+                                            {{-- Avatar identico a egi-card --}}
+                                            <div class="flex h-10 w-10 items-center justify-center flex-shrink-0 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
+                                                <img src="{{ $data['user']->profile_photo_url }}" 
                                                      alt="{{ $data['user']->name }}"
-                                                     class="h-10 w-10 rounded-full object-cover">
-                                            @else
-                                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300">
-                                                    {{ strtoupper(substr($data['user']->name, 0, 1)) }}
-                                                </div>
-                                            @endif
+                                                     class="h-full w-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
+                                                     loading="lazy" 
+                                                     decoding="async">
+                                            </div>
                                             <div>
                                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
                                                     {{ $data['user']->name }}
